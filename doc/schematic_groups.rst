@@ -95,24 +95,8 @@ Copy Group
 ^^^^^^^^^^
 
 	A group can be copied to a given place.
-
-	#. Absolute Coordinates
-
-	This example command copies the group
-	to the absolute position sheet 4 and x/y 
-	coordinates 30/40:
-
-	On copying to an absolute position, the
-	object that is at the lowest-left position (of the group)
-	will be placed at the specified coordinates.
-
-
-	.. code-block::
-	
-		copy group absolute 4  30 40
-
-
-	#. Relative Coordinates
+	The copy is placed with an offset relative
+	to the original group.
 
 	This example command copies the group
 	relative by -1 sheet and by an x/y offset
@@ -120,7 +104,7 @@ Copy Group
 
 	.. code-block::
 	
-		copy group relative -1  10 20
+		copy group -1  10 20
 
 
 

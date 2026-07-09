@@ -152,7 +152,6 @@ package body et_canvas_schematic_group is
 				module_cursor	=> active_module, 
 				sheet			=> 0, -- we stay on the current sheet
 				offset			=> offset,
-				coordinates		=> RELATIVE,
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
 				

@@ -506,7 +506,6 @@ package body et_schematic_ops_groups is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
-		coordinates		: in type_coordinates;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -522,7 +521,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			copy_selected_units (module_cursor, 
-				sheet, offset, coordinates, log_threshold + 2);
+				sheet, offset, log_threshold + 2);
 			
 			log_indentation_down;
 		end;
@@ -535,7 +534,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			copy_selected_netchangers (module_cursor, 
-				sheet, offset, coordinates, log_threshold + 2);
+				sheet, offset, log_threshold + 2);
 			
 			log_indentation_down;
 		end;
@@ -548,7 +547,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			copy_selected_net_segments (module_cursor, 
-				sheet, offset, coordinates, log_threshold + 2);
+				sheet, offset, log_threshold + 2);
 
 			log_indentation_down;
 		end;
@@ -556,20 +555,11 @@ package body et_schematic_ops_groups is
 
 		
 	begin
-		case coordinates is
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy group by sheet(s) " & relative_to_string (sheet) 
-					 & " offset " & to_string (offset),
-					level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+				& " copy group by sheet(s) " & relative_to_string (sheet) 
+				& " offset " & to_string (offset),
+			level => log_threshold);
 
-
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy group to sheet " & to_string (sheet) 
-					 & " " & to_string (offset),
-					level => log_threshold);
-		end case;
 				
 		log_indentation_up;
 		

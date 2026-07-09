@@ -45,7 +45,6 @@ procedure copy_unit (
 	unit_cursor		: in pac_units.cursor;
 	sheet			: in type_sheet_relative;
 	destination		: in type_vector_model;
-	coordinates		: in type_coordinates;
 	log_threshold	: in type_log_level)
 is
 
@@ -63,65 +62,30 @@ is
 		-- because we copy the rotation along with other
 		-- properties of the unit.
 
-		-- Now, depending on whether it is about relative
-		-- or absolute coordinates, we compute the
-		-- new sheet and place:
-		case coordinates is
-			when ABSOLUTE => 
-				-- Now we overwrite the sheet and the 
-				-- place with the parameters specified
-				-- by the caller.
-				set_sheet (position_new, sheet);
+		-- Add to the original unit
+		-- position the given number of
+		-- relative sheet offset:
+		move_by_sheets (position_new, sheet);
 
-				-- Regard the given destination
-				-- as absolute target position.
-				set_place (position_new, destination);
-				-- CS unclear ?
-
-				
-			when RELATIVE =>
-				-- Add to the original unit
-				-- position the given number of
-				-- relative sheet offset:
-				move_by_sheets (position_new, sheet);
-
-				-- Regard the given "destination" as offset.
-				-- Move the original position by
-				-- the given "destination":
-				move_by (position_new, destination);
-			
-		end case;
+		-- Regard the given "destination" as offset.
+		-- Move the original position by
+		-- the given "destination":
+		move_by (position_new, destination);
 
 		-- Now the absolute position of
 		-- the new unit is complete and
 		-- can be assigned to the new unit.
-
 	end compute_final_position;
 
 	
 	
 begin
-	case coordinates is
-		when ABSOLUTE =>
-		
-			log (text => "module " & to_string (module_cursor) 
-				& " device " & get_device_name (device_cursor) 
-				& " copy unit " & get_unit_name (unit_cursor)
-				& " to sheet " & to_string (sheet)
-				& " place " & to_string (destination),
-				level => log_threshold);
-
-
-		when RELATIVE =>
-
-			log (text => "module " & to_string (module_cursor) 
-				& " device " & get_device_name (device_cursor) 
-				& " copy unit " & get_unit_name (unit_cursor)
-				& " by sheet(s) " & relative_to_string (sheet)
-				& " offset " & to_string (destination),
-				level => log_threshold);
-
-	end case;
+	log (text => "module " & to_string (module_cursor) 
+		& " device " & get_device_name (device_cursor) 
+		& " copy unit " & get_unit_name (unit_cursor)
+		& " by sheet(s) " & relative_to_string (sheet)
+		& " offset " & to_string (destination),
+		level => log_threshold);
 
 
 	log_indentation_up;
