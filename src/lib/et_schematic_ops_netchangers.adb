@@ -3321,7 +3321,6 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		
 		offset			: in type_vector_model; -- x/y
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
 		-- In the course of this procedure selected
@@ -3379,34 +3378,15 @@ package body et_schematic_ops_netchangers is
 					-- In the following, the rotatation remains unchanged
 					-- because we copy the rotation along with other
 					-- properties of the netchanger.
-
-					-- Now, depending on whether it is about relative
-					-- or absolute coordinates, we compute the
-					-- new sheet and place:
-					case coordinates is
-						when ABSOLUTE => 
-							-- Now we overwrite the sheet and the 
-							-- place with the parameters specified
-							-- by the caller.
-							set_sheet (position_new, sheet);
-
-							-- Regard the given "offset"
-							-- as absolute destination position.
-							set_place (position_new, offset);
-							-- CS unclear ?
-
-							
-						when RELATIVE =>
-							-- Add to the original netchanger
-							-- position the given number of
-							-- relative sheet offset:
-							add_sheet (position_new, sheet);
-
-							-- Move the original position by
-							-- the gtiven offset:
-							move_by (position_new, offset);
 						
-					end case;
+					-- Add to the original netchanger
+					-- position the given number of
+					-- relative sheet offset:
+					add_sheet (position_new, sheet);
+
+					-- Move the original position by
+					-- the gtiven offset:
+					move_by (position_new, offset);
 
 					-- Now the absolute position of
 					-- the new netchanger is complete and
@@ -3432,23 +3412,11 @@ package body et_schematic_ops_netchangers is
 
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected netchangers to " 
-					 & " sheet " & to_string (sheet)
-					 & " destination " & to_string (offset),
-					level => log_threshold);
-
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected netchangers by " 
-					 & " sheet(s) " & relative_to_string (sheet)
-					 & " offset " & to_string (offset),
-					level => log_threshold);
-		end case;
-
+		log (text => "module " & to_string (module_cursor)
+			 & " copy selected netchangers by " 
+			 & " sheet(s) " & relative_to_string (sheet)
+			 & " offset " & to_string (offset),
+			level => log_threshold);
 		
 		log_indentation_up;
 

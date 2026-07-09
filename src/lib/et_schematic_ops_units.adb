@@ -941,7 +941,6 @@ package body et_schematic_ops_units is
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level) is separate;
 	
 
@@ -3844,7 +3843,6 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		
 		offset			: in type_vector_model; -- x/y
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
 
@@ -3924,22 +3922,11 @@ package body et_schematic_ops_units is
 
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected units to " 
-					 & " sheet " & to_string (sheet)
-					 & " destination " & to_string (offset),
-					level => log_threshold);
-
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected units by " 
-					 & " sheet(s) " & relative_to_string (sheet)
-					 & " offset " & to_string (offset),
-					level => log_threshold);
-		end case;
+		log (text => "module " & to_string (module_cursor)
+				& " copy selected units by " 
+				& " sheet(s) " & relative_to_string (sheet)
+				& " offset " & to_string (offset),
+			level => log_threshold);
 
 		
 		log_indentation_up;
@@ -3967,7 +3954,6 @@ package body et_schematic_ops_units is
 				unit_cursor		=> unit_cursor_old,
 				sheet			=> sheet,
 				destination		=> offset,
-				coordinates		=> coordinates,
 				log_threshold	=> log_threshold + 1);
       
 		

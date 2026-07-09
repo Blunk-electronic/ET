@@ -2756,7 +2756,6 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		
 		offset			: in type_vector_model; -- x/y
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
 		-- In the course of this procedure selected
@@ -2860,23 +2859,11 @@ package body et_schematic_ops_nets is
 
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected net segments to " 
-					 & " sheet " & to_string (sheet)
-					 & " destination " & to_string (offset),
-					level => log_threshold);
-
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					 & " copy selected net segments by " 
-					 & " sheet(s) " & relative_to_string (sheet)
-					 & " offset " & to_string (offset),
-					level => log_threshold);
-		end case;
-
+		log (text => "module " & to_string (module_cursor)
+			& " copy selected net segments by " 
+			& " sheet(s) " & relative_to_string (sheet)
+			& " offset " & to_string (offset),
+			level => log_threshold);
 		
 		log_indentation_up;
 
@@ -2902,7 +2889,6 @@ package body et_schematic_ops_nets is
 				object_segment	=> object_segment,
 				sheet			=> sheet,
 				destination		=> offset,
-				coordinates		=> coordinates,
 				log_threshold	=> log_threshold + 1);
 		
 			-- Restart the search for a selected segment:
@@ -6301,7 +6287,6 @@ package body et_schematic_ops_nets is
 		object_segment	: in type_object_segment;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
 	
@@ -6320,50 +6305,25 @@ package body et_schematic_ops_nets is
 				segment_out => segment_new,
 				offset		=> destination);
 			
-			case coordinates is
-				when ABSOLUTE =>
-					null;
 					
-					-- insert_net_segment (module_cursor,
-					-- 	object_segment.net_cursor, sheet,
-					-- 	segment_new, log_threshold + 1);
-						
-				when RELATIVE =>
-					sheet_new := get_sheet (object_segment);
-					add (sheet_new, sheet);
+				sheet_new := get_sheet (object_segment);
+				add (sheet_new, sheet);
 
-					insert_net_segment (module_cursor,
-						object_segment.net_cursor, sheet_new,
-						segment_new, log_threshold + 1);
+				insert_net_segment (module_cursor,
+					object_segment.net_cursor, sheet_new,
+					segment_new, log_threshold + 1);
 
-			end case;
 		end do_it;
 		
 			
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-			
-				log (text => "module " & to_string (module_cursor) 
-					& " copy net segment"
-					-- CS net name, A and B ?
-					& " to sheet " & to_string (sheet)
-					& " place " & to_string (destination),
-					level => log_threshold);
-
-
-			when RELATIVE =>
-
-				log (text => "module " & to_string (module_cursor) 
-					& " copy net segment"
-					-- CS net name, A and B ?
-					& " by sheet(s) " & relative_to_string (sheet)
-					& " offset " & to_string (destination),
-					level => log_threshold);
-
-		end case;
-
+		log (text => "module " & to_string (module_cursor) 
+			& " copy net segment"
+			-- CS net name, A and B ?
+			& " by sheet(s) " & relative_to_string (sheet)
+			& " offset " & to_string (destination),
+			level => log_threshold);
 
 		log_indentation_up;
 

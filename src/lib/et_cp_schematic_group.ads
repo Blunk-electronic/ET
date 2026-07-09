@@ -81,9 +81,8 @@ package et_cp_schematic_group is
 
 
 	-- This procedure parses a command that copies a group
-	-- of objects by a given offset or to a given place.
-	-- example 1: schematic demo copy group absolute 2 100 20
-	-- example 2: schematic demo copy group relative 1 10 -20
+	-- of objects by a given offset to a given place.
+	-- example: schematic demo copy group 1 10 -20
 	procedure copy_group (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

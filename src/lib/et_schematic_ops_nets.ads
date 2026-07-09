@@ -402,7 +402,6 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		
 		offset			: in type_vector_model; -- x/y
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level);
 
 
@@ -896,7 +895,6 @@ package et_schematic_ops_nets is
 		object_segment	: in type_object_segment;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
-		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level);
 		
 		
