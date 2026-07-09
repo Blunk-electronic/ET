@@ -6322,15 +6322,15 @@ package body et_schematic_ops_nets is
 			
 			case coordinates is
 				when ABSOLUTE =>
-					insert_net_segment (module_cursor,
-						object_segment.net_cursor, sheet,
-						segment_new, log_threshold + 1);
+					null;
+					
+					-- insert_net_segment (module_cursor,
+					-- 	object_segment.net_cursor, sheet,
+					-- 	segment_new, log_threshold + 1);
 						
 				when RELATIVE =>
 					sheet_new := get_sheet (object_segment);
 					add (sheet_new, sheet);
-					
-					-- move_by (segment_new, destination);
 
 					insert_net_segment (module_cursor,
 						object_segment.net_cursor, sheet_new,
