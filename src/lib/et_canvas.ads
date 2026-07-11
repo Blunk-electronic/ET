@@ -570,22 +570,49 @@ package et_canvas is
 
 
 
+
 	
 	-- This flag indicates that a group is
 	-- being moved by the operator.
 	-- Procedures that draw objects read this
 	-- flag in order to draw objects of a group
 	-- as the operator is moving the group:
-	group_is_moving : boolean := false;
+	group_is_moving : boolean := false; 
+	-- CS: It could be reasonable to derive
+	-- a new type like 
+	-- type type_group_moving_status is new boolean;
 
+	-- This procedure sets the flag group_is_moving:
 	procedure set_group_moving;
 
+	-- This procedure clears the flag group_is_moving:
 	procedure set_group_not_moving;
 
+
+
+	
+	
+	group_is_being_copied : boolean := false;
+	-- CS: It could be reasonable to derive
+	-- a new type like 
+	-- type type_group_begin_copied_status is new boolean;
+
+	-- This procedure sets the flag group_is_being_copied:
+	procedure set_group_being_copied;
+
+	-- This procedure clears the flag group_is_being_copied:
+	procedure set_group_not_being_copied;
+
+
+	
+
+	
+	
 	-- This function returns the offset by
-	-- which a group is being moved.
-	-- It returns the position of the current tool -
-	-- the value of object_point_of_attack:
+	-- which a group is being moved or copied.
+	-- It returns the this value:
+	-- result = (position of the current tool) 
+	-- - (the value of object_point_of_attack):
 	function get_group_offset 
 		return type_vector_model;
 

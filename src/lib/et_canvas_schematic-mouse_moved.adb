@@ -65,7 +65,7 @@ begin
 
 		when VERB_COPY =>
 			case noun is
-				when NOUN_DEVICE | NOUN_NETCHANGER =>
+				when NOUN_DEVICE | NOUN_GROUP | NOUN_NETCHANGER =>
 					if edit_process_running then
 						redraw;
 					end if;

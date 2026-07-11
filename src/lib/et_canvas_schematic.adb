@@ -555,6 +555,17 @@ package body et_canvas_schematic is
 			reset_zoom_area;
 			reset_group_area_keyboard;
 
+
+			
+			set_group_not_moving;
+
+			-- Clear all "moving"-flags:
+			et_schematic_ops_groups.set_group_as_not_moving (
+				active_module, log_threshold);
+
+			
+			set_group_not_being_copied;
+
 			pac_device_ops.reset_window_open_flags;
 
 			pac_net_ops.rename_window_open := false;

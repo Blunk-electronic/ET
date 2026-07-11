@@ -135,16 +135,12 @@ package body et_canvas_schematic_group is
 			use et_cmd_origin_to_commit;
 			offset : type_vector_model;
 		begin
-			-- CS
 			-- For the subprograms that draw objects
-			-- of a moving group:
-			-- set_group_not_moving;
+			-- of a group being copied:
+			set_group_not_being_copied;
 
-			-- Clear all "moving"-flags:
-			-- set_group_as_not_moving (active_module, log_threshold);
-			
 			-- Compute the final offset by which the
-			-- group is to be moved:
+			-- group is to be copied:
 			offset := point - object_point_of_attack;
 
 			-- Do the final copying with the group:
@@ -177,13 +173,9 @@ package body et_canvas_schematic_group is
 			-- grabbed (or attacked):
 			object_point_of_attack := point;
 			
-			-- CS
-			-- set selected objects as "moving"
-			-- set_group_as_moving (active_module, log_threshold);
-
 			-- For the subprograms that draw objects
-			-- of a moving group:
-			-- set_group_moving;
+			-- of a group being copied:
+			set_group_being_copied;
 			
 			set_edit_process_running;
 
