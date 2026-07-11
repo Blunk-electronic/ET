@@ -1034,7 +1034,6 @@ procedure draw_units is
 
 				
 				procedure draw_on_active_sheet is 
-					use et_modes.schematic;
 					offset : type_vector_model;
 				begin
 					-- CASE 1: We draw units which are on the active sheet:
@@ -1072,6 +1071,28 @@ procedure draw_units is
 
 						-- locate and draw the unit:
 						draw_unit (locate_unit (device_cursor_lib, unit_name));
+
+						
+						
+
+						if is_selected (unit) then
+							
+							-- The whole unit will be drawn highlighted:
+							brightness := BRIGHT;
+
+							-- Group being copied:
+							if group_is_being_copied then
+								unit_place := get_place (pos);
+								
+								move_by (unit_place, get_group_offset);
+
+								-- get the rotation of the unit
+								unit_rotation := get_rotation (pos);
+
+								-- locate and draw the unit:
+								draw_unit (locate_unit (device_cursor_lib, unit_name));
+							end if;
+						end if;
 					end if;
 				end draw_on_active_sheet;
 

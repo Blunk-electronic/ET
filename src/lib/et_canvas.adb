@@ -916,17 +916,34 @@ package body et_canvas is
 	
 
 
+	
 	procedure set_group_moving is begin
 		group_is_moving := true;
 	end;
-
 
 
 	procedure set_group_not_moving is begin
 		group_is_moving := false;
 	end;
 
+	
 
+
+
+	procedure set_group_being_copied is begin
+		group_is_being_copied := true;
+	end;
+
+
+	procedure set_group_not_being_copied is begin
+		group_is_being_copied := false;
+	end;
+
+
+	
+
+
+	
 
 	function get_group_offset 
 		return type_vector_model
