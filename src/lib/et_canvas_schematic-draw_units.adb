@@ -997,13 +997,15 @@ procedure draw_units is
 				unit		: in type_unit) 
 			is
 				-- Get the position of the unit candidate as it is
-				-- in the schematic:
-				pos : constant type_object_position := get_position (unit);
+				-- in the schematic database:
+				unit_position : constant type_object_position := 
+					get_position (unit);
 
 				unit_place : type_vector_model; -- x/y
 				unit_rotation : type_rotation;
 			
 
+			
 				-- This procedure maps from the given unit cursor
 				-- to the actual symbol and draws the symbol:
 				procedure draw_unit (
@@ -1033,71 +1035,97 @@ procedure draw_units is
 
 
 				
-				procedure draw_on_active_sheet is 
-					offset : type_vector_model;
+				
+
+				-- This procedure draws a unit on the 
+				-- currently active sheet:
+				procedure draw_on_active_sheet is
+					unit_cursors : constant type_unit_cursors :=
+						locate_unit (device_cursor_lib, unit_name);
 				begin
-					-- CASE 1: We draw units which are on the active sheet:
-					if get_sheet (pos) = active_sheet then
+					-- Get the place of the original unit.
+					-- This value will be overwritten if the
+					-- unit candidate is being moved or dragged
+					-- or if it is begin copied (as member of a group):
+					unit_place := get_place (unit_position);
+				
+					-- Get the rotation of the unit
+					unit_rotation := get_rotation (unit_position);
+
+					-- The default brightness is NORMAL. 
+					-- If the unit is selected, 
+					-- then the brightness will be increased:
+					brightness := NORMAL;
+
+					-- If the unit is selected then
+					-- the brightness and its place will be
+					-- modified. Otherwise we will draw the unit
+					-- just as it is according to the database:
+					if is_selected (unit) then
+						-- put_line ("selected");
 						
-						-- The default brightness is NORMAL. If the unit is selected, 
-						-- then the brightness will be increased:
-						brightness := NORMAL;
+						-- The whole unit will be drawn highlighted:
+						brightness := BRIGHT;
 
-						if is_selected (unit) then
-							-- put_line ("selected");
+						
+						-- If a group is being copied and the
+						-- unit is member of the group, then
+						-- we compute the position of the unit candidate
+						-- here and call procedure draw_unit:
+						if group_is_being_copied then
+							-- Get the place of the original unit:
+							unit_place := get_place (unit_position);
 							
-							-- The whole unit will be drawn highlighted:
-							brightness := BRIGHT;
+							-- Move the place by the current
+							-- group offset:
+							move_by (unit_place, get_group_offset);
 
-							-- Overwrite the position if the unit alone
-							-- is being moved or if a whole group is being
-							-- moved:
-							if is_moving (unit) then
+							-- Draw the copy of the unit:
+							draw_unit (unit_cursors);
 
-								-- If the unit is member of a group, then
-								-- the current unit position must be computed
-								-- based on the offset by which the group
-								-- is being moved:
-								if group_is_moving then
-									move_by (unit_place, get_group_offset);
-								else
-									unit_place := get_object_tool_position;
-								end if;
-							end if;
+							-- Restore the place of the original unit,
+							-- because the original unit will be drawn
+							-- later:
+							unit_place := get_place (unit_position);	
 						end if;
 
-						-- get the rotation of the unit
-						unit_rotation := get_rotation (pos);
-
-						-- locate and draw the unit:
-						draw_unit (locate_unit (device_cursor_lib, unit_name));
-
 						
-						
+						-- If the unit is being moved or dragged,
+						-- then we can have two cases.
+						-- 1. The unit is being moved as member
+						--    of a group. In this case the unit
+						--    is moved by the current group offset.
+						-- 2. The unit is being moved alone.
+						--    Then we must draw the unit a the
+						--    place where the current tool points to.
+						if is_moving (unit) then
 
-						if is_selected (unit) then
-							
-							-- The whole unit will be drawn highlighted:
-							brightness := BRIGHT;
+							if group_is_moving then
+								-- Case 1:
 
-							-- Group being copied:
-							if group_is_being_copied then
-								unit_place := get_place (pos);
-								
-								move_by (unit_place, get_group_offset);
+								-- Get the place of the original unit:
+								unit_place := get_place (unit_position);
 
-								-- get the rotation of the unit
-								unit_rotation := get_rotation (pos);
-
-								-- locate and draw the unit:
-								draw_unit (locate_unit (device_cursor_lib, unit_name));
+								-- Move the unit by the current 
+								-- group offset:
+								move_by (unit_place, get_group_offset);								
+							else
+								-- Case 2:
+								unit_place := get_object_tool_position;
 							end if;
 						end if;
 					end if;
+
+					-- Draw the original unit at the
+					-- current unit_place and with the unit_rotation.
+					draw_unit (unit_cursors);
+					
 				end draw_on_active_sheet;
 
-
 				
+				
+
+				-- CS
 				procedure draw_if_sheet_changes is begin
 					-- CASE 2: The unit being moved changes the sheet.
 					-- CS: NOT TESTED !
@@ -1126,15 +1154,11 @@ procedure draw_units is
 			begin
 				-- put_line ("unit " & to_string (unit_name));
 
-				-- Get the x/y-position of the unit.
-				-- If the unit is selected and being moved, then the x/y position
-				-- will be overwritten by the position of the mouse or the cursor.
-				unit_place := get_place (pos);
-
 				-- There are two cases when a unit is to be drawn:
-				
-				-- 1. The unit is on the current active sheet.
-				draw_on_active_sheet;
+				-- Case 1. The unit is on the current active sheet.
+				if get_sheet (unit_position) = active_sheet then
+					draw_on_active_sheet;
+				end if;
 				
 				-- 2. The unit is being moved from one sheet to another sheet.
 				-- CS: draw_if_sheet_changes;
@@ -1168,6 +1192,7 @@ procedure draw_units is
 	end query_module;
 
 
+	
 	
 
 
