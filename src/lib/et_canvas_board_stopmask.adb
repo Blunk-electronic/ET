@@ -50,8 +50,6 @@ with et_board_ops_stopmask;				use et_board_ops_stopmask;
 with et_logging;						use et_logging;
 with et_modes.board;
 with et_display.board;
-with et_undo_redo;
-with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_pcb_placeholders.non_conductor;		use et_pcb_placeholders.non_conductor;
@@ -493,10 +491,6 @@ package body et_canvas_board_stopmask is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -509,16 +503,10 @@ package body et_canvas_board_stopmask is
 				
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
