@@ -436,9 +436,14 @@ package body et_board_ops_stopmask is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -475,16 +480,29 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving stopmask " & to_string (line)
+			& " move stopmask " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_line;
@@ -493,6 +511,8 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
 	
 
 
@@ -552,6 +572,8 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
 
 	
 	
@@ -782,6 +804,7 @@ package body et_board_ops_stopmask is
 
 
 	
+
 	
 
 
@@ -932,6 +955,8 @@ package body et_board_ops_stopmask is
 	end get_first_arc;
 
 
+
+
 	
 
 
@@ -946,9 +971,14 @@ package body et_board_ops_stopmask is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -985,22 +1015,38 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving stopmask " & to_string (arc)
+			& " move stopmask " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_arc;
 
 
 
+
+	
+
+	
 	
 	
 
@@ -1063,6 +1109,8 @@ package body et_board_ops_stopmask is
 
 
 	
+
+
 
 
 
@@ -1134,6 +1182,8 @@ package body et_board_ops_stopmask is
 
 		log_indentation_down;
 	end add_circle;
+
+
 
 
 	
@@ -1259,6 +1309,8 @@ package body et_board_ops_stopmask is
 	
 
 
+	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1336,6 +1388,10 @@ package body et_board_ops_stopmask is
 
 		log_indentation_down;
 	end modify_status;
+
+
+
+
 
 
 	
@@ -1446,6 +1502,9 @@ package body et_board_ops_stopmask is
 	
 
 
+
+
+	
 	
 	
 	procedure reset_proposed_segments (
@@ -1539,6 +1598,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+	
 
 
 	
@@ -1655,7 +1717,12 @@ package body et_board_ops_stopmask is
 
 
 
+	
 
+
+
+
+	
 
 
 	procedure move_segment (
@@ -1664,8 +1731,13 @@ package body et_board_ops_stopmask is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_stop_zones;
@@ -1723,12 +1795,18 @@ package body et_board_ops_stopmask is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving stopmask zone segment " & to_string (segment.segment)
+			& " move stopmask zone segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -1736,11 +1814,22 @@ package body et_board_ops_stopmask is
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
 		-- 	 level => log_threshold + 1);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_segment;
 
 
+
+
+
+
+	
 	
 
 
@@ -1816,6 +1905,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
+
 	
 
 	procedure add_text (
@@ -1843,6 +1935,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text in stopmask at "
@@ -1876,6 +1969,7 @@ package body et_board_ops_stopmask is
 
 	
 
+	
 
 
 
@@ -1942,6 +2036,8 @@ package body et_board_ops_stopmask is
 	end get_texts;
 
 
+
+	
 	
 
 
@@ -2012,6 +2108,9 @@ package body et_board_ops_stopmask is
 
 
 
+	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2061,6 +2160,9 @@ package body et_board_ops_stopmask is
 	
 
 
+
+
+	
 	
 
 	procedure propose_texts (
@@ -2142,6 +2244,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+	
+
 	
 	
 
@@ -2149,9 +2255,14 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2177,16 +2288,28 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " moving stopmask text to "
+			& " move stopmask text to "
 			& to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_text;
@@ -2194,6 +2317,12 @@ package body et_board_ops_stopmask is
 
 	
 
+
+
+
+	
+
+	
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2232,6 +2361,10 @@ package body et_board_ops_stopmask is
 		
 		log_indentation_down;
 	end delete_text;
+
+
+
+
 
 
 
@@ -2316,6 +2449,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+
+
 	
 
 	procedure reset_proposed_texts (
@@ -2386,6 +2523,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
+
 	
 
 	
@@ -2451,6 +2591,9 @@ package body et_board_ops_stopmask is
 
 
 
+	
+
+
 
 	
 	procedure modify_status (
@@ -2503,6 +2646,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+
+	
 
 
 	procedure propose_placeholders (
@@ -2573,15 +2720,25 @@ package body et_board_ops_stopmask is
 	
 
 
+
+
+
+	
+
 	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2593,6 +2750,7 @@ package body et_board_ops_stopmask is
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
+
 			
 		begin
 			case placeholder.face is
@@ -2609,22 +2767,38 @@ package body et_board_ops_stopmask is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving text placeholder " 
+			& " move text placeholder " 
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_placeholder;
 
 
+
+
+
+	
 
 
 
@@ -2666,6 +2840,10 @@ package body et_board_ops_stopmask is
 		log_indentation_down;
 	end delete_placeholder;
 
+
+
+
+	
 
 	
 
@@ -2755,6 +2933,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
+
+
 	procedure reset_proposed_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -2808,6 +2990,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+	
 
 	
 
@@ -2985,6 +3170,9 @@ package body et_board_ops_stopmask is
 
 
 	
+
+
+
 	
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3335,6 +3523,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -3374,6 +3566,8 @@ package body et_board_ops_stopmask is
 
 	
 
+
+	
 	
 
 	procedure modify_status (
@@ -3390,6 +3584,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+	
+
 	
 
 	procedure move_object (
@@ -3401,7 +3599,7 @@ package body et_board_ops_stopmask is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving stopmask object " 
+			& " move stopmask object " 
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -3413,31 +3611,31 @@ package body et_board_ops_stopmask is
 			when CAT_LINE =>
 				move_line (module_cursor, object.line.face, 
 					element (object.line.cursor),
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
 				move_arc (module_cursor, object.arc.face, 
 					element (object.arc.cursor),
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 				
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_TEXT =>
 				move_text (module_cursor,
 					object.text,
-					destination,
+					destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_PLACEHOLDER =>
 				move_placeholder (module_cursor,
 					object.placeholder,
-					destination,
+					destination, DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
@@ -3447,6 +3645,9 @@ package body et_board_ops_stopmask is
 		log_indentation_down;
 	end move_object;
 	
+
+
+
 
 
 	
@@ -3475,6 +3676,10 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+
+	
 	
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;

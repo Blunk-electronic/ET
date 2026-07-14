@@ -403,11 +403,9 @@ package body et_canvas_board_stopmask is
 		-- Resets variable preliminary_object:
 		procedure finalize is
 			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
 
 			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
@@ -418,18 +416,12 @@ package body et_canvas_board_stopmask is
 				
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					point_of_attack	=> object_point_of_attack,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -487,6 +479,10 @@ package body et_canvas_board_stopmask is
 
 
 
+
+
+
+	
 	
 	
 -- DELETE:
