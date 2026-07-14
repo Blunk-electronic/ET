@@ -178,6 +178,19 @@ procedure draw_nets is
 -- 
 
 
+	-- This procedure draws a single net segment:
+	procedure draw_segment (
+		segment : in type_net_segment)
+	is begin
+		draw_line (
+			line	=> segment,
+			width	=> net_linewidth,
+			stroke	=> DO_STROKE);
+	end draw_segment;
+
+
+
+	
 	
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
@@ -202,17 +215,12 @@ procedure draw_nets is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 
-			procedure query_segment (segment : in type_net_segment) is 
+			-- This procedure draws a single net segment,
+			-- its net labels and net connectors:
+			procedure query_segment (
+				segment : in type_net_segment) 
+			is 
 				label_cursor : pac_net_labels.cursor := segment.labels.first;
-
-
-				-- This procedure draws a single net segment:
-				procedure draw_segment is begin
-					draw_line (
-						line	=> segment,
-						width	=> net_linewidth,
-						stroke	=> DO_STROKE);
-				end draw_segment;
 
 
 				-- This procedure queries a net label and draws it:
@@ -495,6 +503,8 @@ procedure draw_nets is
 				end draw_junctions;
 
 				
+				segment_is_selected : boolean := false;
+				segment_copy : type_net_segment := segment;
 				
 			begin			
 				-- Increase brightness if segment is selected
@@ -502,10 +512,21 @@ procedure draw_nets is
 				if is_selected (segment) 
 				or is_A_selected (segment)
 				or is_B_selected (segment) then
+					segment_is_selected := true;
 					set_color_nets (BRIGHT);
 				end if;				
 
-				draw_segment;				
+				draw_segment (segment);				
+				
+				-- CS: Experimental:
+				if segment_is_selected and group_is_being_copied then
+					move_by (segment_copy, get_group_offset);
+					-- put_line ("segment copy: " & to_string (segment_copy));
+					draw_segment (segment_copy);
+					
+					-- CS: draw copy of junctions and labels
+				end if;
+				
 				
 				-- Iterate through the net labels:
 				while has_element (label_cursor) loop
@@ -515,10 +536,11 @@ procedure draw_nets is
 				
 				draw_junctions;
 				draw_net_connectors;
-
-				if is_selected (segment) 
-				or is_A_selected (segment)
-				or is_B_selected (segment) then
+    -- 
+				-- if is_selected (segment) 
+				-- or is_A_selected (segment)
+				-- or is_B_selected (segment) then
+				if segment_is_selected then
 					set_color_nets (NORMAL);
 				end if;
 			end query_segment;
