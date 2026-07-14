@@ -520,9 +520,14 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_stop_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -558,15 +563,27 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " deleting in stopmask" & to_string (line),
+			& " delete in stopmask" & to_string (line),
 			level => log_threshold);
 		
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end delete_line;
 
@@ -1056,9 +1073,14 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		arc				: in type_stop_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1095,15 +1117,27 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " deleting stopmask arc " & to_string (arc),
+			& " delete stopmask arc " & to_string (arc),
 			level => log_threshold);
 		
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end delete_arc;
 
@@ -1837,8 +1871,13 @@ package body et_board_ops_stopmask is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use pac_contours;
 		use pac_segments;
 		use pac_stop_zones;
@@ -1886,20 +1925,33 @@ package body et_board_ops_stopmask is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting stopmask zone segment " 
+			& " delete stopmask zone segment " 
 			& to_string (segment.segment),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end delete_segment;
 	
 
+	
 
 
 
@@ -2327,9 +2379,14 @@ package body et_board_ops_stopmask is
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2349,18 +2406,31 @@ package body et_board_ops_stopmask is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " deleting stopmask text",
+			& " delete stopmask text",
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_text;
+
 
 
 
@@ -2806,8 +2876,13 @@ package body et_board_ops_stopmask is
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -2827,15 +2902,27 @@ package body et_board_ops_stopmask is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting text placeholder" & to_string (placeholder.cursor),
+			& " delete text placeholder" & to_string (placeholder.cursor),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_placeholder;
@@ -3687,7 +3774,7 @@ package body et_board_ops_stopmask is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting stopmask object",
+			& " delete stopmask object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
@@ -3699,6 +3786,7 @@ package body et_board_ops_stopmask is
 					module_cursor	=> module_cursor, 
 					face			=> object.line.face,
 					line			=> element (object.line.cursor),
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);					
 
 
@@ -3707,6 +3795,7 @@ package body et_board_ops_stopmask is
 					module_cursor	=> module_cursor, 
 					face			=> object.arc.face,
 					arc				=> element (object.arc.cursor),
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);					
 				
 			-- CS circles
@@ -3715,6 +3804,7 @@ package body et_board_ops_stopmask is
 				delete_segment (
 					module_cursor	=> module_cursor, 
 					segment			=> object.segment,
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -3722,6 +3812,7 @@ package body et_board_ops_stopmask is
 				delete_text (
 					module_cursor	=> module_cursor, 
 					text			=> object.text,
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
 
@@ -3729,6 +3820,7 @@ package body et_board_ops_stopmask is
 				delete_placeholder (
 					module_cursor	=> module_cursor, 
 					placeholder		=> object.placeholder,
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
 				
