@@ -6,7 +6,8 @@
 Stopmask
 --------
 
-#. Drawing Objects
+Drawing Objects
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 		
@@ -35,13 +36,15 @@ Stopmask
 
 		
 
-#. Move
+Move
+^^^^
 
 	|VNS| m t
 
 		
 		
-#. Deleting Objects
+Deleting Objects
+^^^^^^^^^^^^^^^^
 		
 	|VNS| del t
 		

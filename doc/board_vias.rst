@@ -7,7 +7,8 @@
 Vias
 ----
 
-#. Setting the Drill Size
+Setting the Drill Size
+^^^^^^^^^^^^^^^^^^^^^^
 
 	This example sets the drill size (diameter)
 	of vias to 0.6mm:
@@ -18,7 +19,8 @@ Vias
 
 
 		
-#. Setting the Restring
+Setting the Restring
+^^^^^^^^^^^^^^^^^^^^
 
 	This example sets the width of the
 	restring in inner signal layers to 0.25mm:
@@ -39,7 +41,8 @@ Vias
 		
 
 		
-#. Placing Vias
+Placing Vias
+^^^^^^^^^^^^
 
 	|VNS| p v
 	
@@ -85,7 +88,8 @@ Vias
 		
 		
 		
-#. Moving Vias
+Moving Vias
+^^^^^^^^^^^
 
 	.. code-block::
 
@@ -95,7 +99,8 @@ Vias
 
 	
 	
-#. Deleting Vias
+Deleting Vias
+^^^^^^^^^^^^^
 
 	.. code-block::
 

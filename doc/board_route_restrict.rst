@@ -12,7 +12,8 @@ pass through. These objects do not have a linewidth because
 they represent a barrier.
 
 
-#. Drawing Lines
+Drawing Lines
+^^^^^^^^^^^^^
 
 	This command draws a line in layer 1 starting at (50;30) and
 	ending at (70;30):
@@ -32,7 +33,8 @@ they represent a barrier.
 		
 
 
-#. Drawing Arcs
+Drawing Arcs
+^^^^^^^^^^^^
 
 	This command draws an arc in layer 1 having its center at (60;40),
 	starting at (50;40), ending at (70;40) in 
@@ -44,7 +46,8 @@ they represent a barrier.
 
 
 		
-#. Drawing Circles
+Drawing Circles
+^^^^^^^^^^^^^^^
 
 	This command draws a circle in layer 1
 	having its center at (60;40)
@@ -56,7 +59,8 @@ they represent a barrier.
 
 		
 		
-#. Drawing Zones
+Drawing Zones
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -65,7 +69,8 @@ they represent a barrier.
 	|VNS| d l
 		
 		
-#. Deleting
+Deleting
+^^^^^^^^
 
 	.. code-block::
 	

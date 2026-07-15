@@ -6,7 +6,8 @@
 Stencil
 -------
 
-#. Drawing Objects
+Drawing Objects
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 		
@@ -26,13 +27,15 @@ Stencil
 
 		
 
-#. Moving Objects
+Moving Objects
+^^^^^^^^^^^^^^
 
 	|VNS| m i
 
 	
 		
-#. Deleting Objects
+Deleting Objects
+^^^^^^^^^^^^^^^^
 
 	|VNS| del i
 

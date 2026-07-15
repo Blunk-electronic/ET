@@ -17,13 +17,15 @@ of devices is allowed.
 	|VNS| d l
 		
 
-#. Moving Objects
+Moving Objects
+^^^^^^^^^^^^^^
 
 	|VNS| m k
 
 	
 		
-#. Deleting Objects
+Deleting Objects
+^^^^^^^^^^^^^^^^
 
 	|VNS| del k
 

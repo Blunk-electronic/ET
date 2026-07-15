@@ -6,7 +6,8 @@
 Holes in the Board (Inner Edges)
 --------------------------------
 
-#. Drawing Holes
+Drawing Holes
+^^^^^^^^^^^^^
 
 	|VNS| d l
 	
@@ -27,7 +28,8 @@ Holes in the Board (Inner Edges)
 
 
 	
-#. Move Hole Segment
+Move Hole Segment
+^^^^^^^^^^^^^^^^^
 
 	To move a segment of a hole:
 
@@ -36,7 +38,8 @@ Holes in the Board (Inner Edges)
 	
 
 
-#. Delete Hole Segment
+Delete Hole Segment
+^^^^^^^^^^^^^^^^^^^
 
 	To delete a segment of a hole:
 

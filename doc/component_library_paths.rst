@@ -2,19 +2,19 @@
 
 .. include:: placeholders.rst
 
-***********************
+
 Component Library Paths
-***********************
+=======================
 
 
 
-++++++++++++++++
 Schematic Editor
-++++++++++++++++
+----------------
 
 
 
-#. Add a Path
+Add a Path
+^^^^^^^^^^
 
 	.. code-block::
 
@@ -22,7 +22,8 @@ Schematic Editor
 
 
 
-#. Remove a Path
+Remove a Path
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -32,13 +33,13 @@ Schematic Editor
 
 
 
-++++++++++++
+
 Board Editor
-++++++++++++
+------------
 
 
-
-#. Add a Path
+Add a Path
+^^^^^^^^^^
 
 	.. code-block::
 
@@ -49,7 +50,8 @@ Board Editor
 
 
 
-#. Remove a Path
+Remove a Path
+^^^^^^^^^^^^^
 
 	.. code-block::
 

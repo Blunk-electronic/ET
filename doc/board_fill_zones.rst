@@ -7,7 +7,8 @@ Fill Zones in Conductor Layers
 ------------------------------
 
 
-#. Define Outline
+Define Outline
+^^^^^^^^^^^^^^
 
 	Fill zone connected with a net:
 
@@ -26,7 +27,8 @@ Fill Zones in Conductor Layers
 		
 
 		
-#. Move Zone Segment
+Move Zone Segment
+^^^^^^^^^^^^^^^^^
 
 	To move a segment of a zone contour:
 
@@ -34,7 +36,8 @@ Fill Zones in Conductor Layers
 	
 		
 		
-#. Set Fill Style
+Set Fill Style
+^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -49,7 +52,8 @@ Fill Zones in Conductor Layers
 
 		
 
-#. Set Spacing
+Set Spacing
+^^^^^^^^^^^
 
 	The spacing defines the distance between fill lines
 	if the fill style is hatched.
@@ -60,7 +64,8 @@ Fill Zones in Conductor Layers
 
 		
 		
-#. Set Linewidth of Border and Fill Stripes
+Set Linewidth of Border and Fill Stripes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	The border of the zone consists of segments (like lines, arcs, circle)
 	and has a certain linewidth. When the outline
@@ -73,7 +78,8 @@ Fill Zones in Conductor Layers
 
 		
 
-#. Set Thermal Relief Maxium Gap Width
+Set Thermal Relief Maxium Gap Width
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This is the maximal space between terminal edge and fill zone.
 	For spaces greater than gap_max no spoke will be generated:
@@ -84,7 +90,8 @@ Fill Zones in Conductor Layers
 
 		
 
-#. Set Thermal Relief Minimum Track Width
+Set Thermal Relief Minimum Track Width
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This is the minimal width of the thermal relief spokes.
 	It applies to ALL terminals connected with the zone.
@@ -95,7 +102,8 @@ Fill Zones in Conductor Layers
 
 
 		
-#. Set Connection Style
+Set Connection Style
+^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 	
@@ -108,7 +116,8 @@ Fill Zones in Conductor Layers
 
 		
 
-#. Set Isolation
+Set Isolation
+^^^^^^^^^^^^^
 
 	This is the space between the zone and foreign conductor objects:
 
@@ -118,7 +127,8 @@ Fill Zones in Conductor Layers
 
 		
 
-#. Set Priority
+Set Priority
+^^^^^^^^^^^^
 
 	.. code-block::
 	
@@ -126,7 +136,8 @@ Fill Zones in Conductor Layers
 
 
 		
-#. Set Easing Style
+Set Easing Style
+^^^^^^^^^^^^^^^^
 
 	.. code-block::
 	
@@ -148,7 +159,8 @@ Fill Zones in Conductor Layers
 		
 		
 		
-#. (Re)fill or pour zones
+(Re)fill or pour zones
+^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -158,7 +170,8 @@ Fill Zones in Conductor Layers
 
 
 	
-#. Empty/Clear Fill Zone
+Empty/Clear Fill Zone
+^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 

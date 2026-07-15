@@ -2,16 +2,17 @@
 
 .. include:: placeholders.rst
 
-*********************
+
 Project Configuration
-*********************
+=====================
 
 |SysName| does not feature a main window or a control panel (|CS|).
 Instead the project configuration is done via the command line
 and with a text editor (like Joe, Kate, Mousepad, ...).
 
 
-#. Create Project
+Create Project
+--------------
 
 Change into the directory where the project is to live.
 
@@ -28,7 +29,11 @@ This command creates the project directory |MYP| with some files in it.
 		directory levels like ../ecad/my_et_project/ is not possible.
 
 
-#. Open Project
+
+
+
+Open Project
+------------
 
 	.. parsed-literal::
 
@@ -39,9 +44,11 @@ and board editor window opens an untitled module. All you see here
 for the moment is the default drawing frame.
 
 
-+++++++++++
+
+
+
 Conventions
-+++++++++++
+-----------
 
 The conventions file is the place where file where prefixes,
 units of measurement and other things are defined. It is not mandatory.

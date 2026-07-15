@@ -7,7 +7,8 @@ Texts and Placeholders
 ----------------------
 
 
-#. Place Text
+Place Text
+^^^^^^^^^^
 
 	.. code-block::
 
@@ -41,13 +42,15 @@ Texts and Placeholders
 
 	
 	
-#. Move Text
+Move Text
+^^^^^^^^^
 
 	|VNS| m x
 
 	
 
-#. Place Placeholder
+Place Placeholder
+^^^^^^^^^^^^^^^^^
 
 	Placeholders have a meaning such as 
 	COMPANY, CUSTOMER, PARTCODE, DRAWING_NUMBER,

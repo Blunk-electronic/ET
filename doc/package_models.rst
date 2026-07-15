@@ -2,15 +2,15 @@
 
 .. .. include:: placeholders.rst
 
-*******************************
+
 Device Packages (or Footprints)
-*******************************
+===============================
 
-++++++++++++++++++++++++++
 Importing and Syntax Check
-++++++++++++++++++++++++++
+--------------------------
 
-#. In Headless Mode
+In Headless Mode
+^^^^^^^^^^^^^^^^
 
 	
 	.. code-block::

@@ -2,15 +2,16 @@
 
 .. .. include:: placeholders.rst
 
-*************
+
 Device Models
-*************
+=============
 
-++++++++++++++++++++++++++
+
 Importing and Syntax Check
-++++++++++++++++++++++++++
+--------------------------
 
-#. In Headless Mode
+In Headless Mode
+^^^^^^^^^^^^^^^^
 
 	
 	.. code-block::

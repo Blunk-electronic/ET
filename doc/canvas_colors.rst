@@ -2,14 +2,13 @@
 
 .. include:: placeholders.rst
 
-****************************
+
 Color Settings of the Canvas
-****************************
+============================
 
 
-++++++++++
 Background
-++++++++++
+----------
 
 
 	.. code-block::
@@ -19,8 +18,7 @@ Background
 	
 
 
-	
-++++++
+
 Cursor
-++++++
+------
 
