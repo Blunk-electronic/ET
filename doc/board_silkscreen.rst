@@ -6,7 +6,8 @@
 Silkscreen
 ----------
 
-#. Drawing Objects
+Drawing Objects
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -35,13 +36,15 @@ Silkscreen
 	
 	
 
-#. Move
+Move
+^^^^
 
 	|VNS| m s
 	
 	
 
-#. Deleting Objects
+Deleting Objects
+^^^^^^^^^^^^^^^^
 
 	|VNS| del s
 

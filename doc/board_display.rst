@@ -9,7 +9,8 @@ Displaying Objects
 ------------------
 
 
-#. Display Conductor Layers
+Display Conductor Layers
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This requires to specify the affected conductor layer.
 
@@ -19,7 +20,8 @@ Displaying Objects
 
 
 
-#. Display Vias
+Display Vias
+^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -29,7 +31,8 @@ Displaying Objects
 
 
 
-#. Display Silkscreen
+Display Silkscreen
+^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -38,7 +41,8 @@ Displaying Objects
 
 
 
-#. Display Assembly Documentation
+Display Assembly Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -47,7 +51,8 @@ Displaying Objects
 
 
 
-#. Display Board Outline (Edges)
+Display Board Outline (Edges)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -56,7 +61,8 @@ Displaying Objects
 
 
 
-#. Display Keepout
+Display Keepout
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -65,7 +71,8 @@ Displaying Objects
 
 
 
-#. Display Stencil (Solder Paste Opening)
+Display Stencil (Solder Paste Opening)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -74,7 +81,8 @@ Displaying Objects
 
 
 
-#. Display Solder Stopmask
+Display Solder Stopmask
+^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -84,7 +92,8 @@ Displaying Objects
 
 
 
-#. Display Route Restrict
+Display Route Restrict
+^^^^^^^^^^^^^^^^^^^^^^
 
 	This requires to specify the affected conductor layer.
 
@@ -96,7 +105,8 @@ Displaying Objects
 
 
 
-#. Display Via Restrict
+Display Via Restrict
+^^^^^^^^^^^^^^^^^^^^
 
 	This requires to specify the affected conductor layer.
 

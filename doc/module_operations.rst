@@ -2,14 +2,15 @@
 
 .. include:: placeholders.rst
 
-*****************
+
 Module Operations
-*****************
+=================
 
 
 
 
-#. Show (or open) a module
+Show (or open) a module
+-----------------------
 
 	.. code-block::
 
@@ -26,7 +27,8 @@ Module Operations
 
 
 	
-#. Create a module
+Create a module
+---------------
 
 	created a module can currently be done in the schematic domain only:
 
@@ -47,10 +49,13 @@ Module Operations
 				
 		
 
-		
-#. Save a Module
 
-	Save with its own name:
+		
+Save a Module
+-------------
+
+Save with its own name
+^^^^^^^^^^^^^^^^^^^^^^
 	
 	.. code-block::
 
@@ -59,7 +64,8 @@ Module Operations
 	|VNS| |NI| Use the common shortcut CTRL-S instead.
 
 	
-	Save as:
+Save with another name
+^^^^^^^^^^^^^^^^^^^^^^
 	
 	.. code-block::
 
@@ -68,9 +74,11 @@ Module Operations
 	|VNS| |NI|
 
 	
+
 	
 
-#. Delete a module
+Delete a Module
+---------------
 
 	Deleting a module can currently be done in the schematic domain only:
 

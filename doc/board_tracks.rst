@@ -8,7 +8,8 @@ Ratsnest and Airwires
 ---------------------
 
 
-#. Update ratsnest
+Update ratsnest
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -24,7 +25,8 @@ Routing, laying out Tracks and Traces
 -------------------------------------
 
 
-#. Showing and Finding Nets
+Showing and Finding Nets
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 	To show a net:
 
@@ -40,7 +42,9 @@ Routing, laying out Tracks and Traces
 
 
 
-#. Laying out Tacks of a Net
+
+Laying out Tacks of a Net
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	|VNS| t n
 	
@@ -92,7 +96,9 @@ Routing, laying out Tracks and Traces
 		route net GND 1 arc 0.25 50 50 50 0 50 100 ccw
 
 
-#. Deleting Track Segments
+
+Deleting Track Segment
+^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -114,9 +120,11 @@ Routing, laying out Tracks and Traces
 Freetracks
 ----------
 
+Freetracks are conductor tracks that are not connected
+to any net.
 
-
-#. Draw Freetrack Segments
+Draw Freetrack Segments
+^^^^^^^^^^^^^^^^^^^^^^^
 
 	This example draws a freetrack line in signal layer 1
 	with linewidth 0.25mm from x/y 10/10 to x/y 16/13:
@@ -146,7 +154,8 @@ Freetracks
 
 
 
-#. Deleting Freetrack Segments
+Deleting Freetrack Segments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -156,11 +165,13 @@ Freetracks
 		
 
 
-#. Moving Track Segments
+Moving Track Segments
+^^^^^^^^^^^^^^^^^^^^^
 
 	|VNS| m c
 
 
-#. Moving Freetrack Segments
+Moving Freetrack Segments
+^^^^^^^^^^^^^^^^^^^^^^^^^
 	
 	|VNS| m c

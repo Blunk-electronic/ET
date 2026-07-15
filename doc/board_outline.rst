@@ -6,7 +6,8 @@
 Board Outline (Outer Edges)
 ---------------------------
 
-#. Drawing the Board Outline:
+Drawing the Board Outline
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	Only the start point of lines is required.
 	
@@ -33,7 +34,8 @@ Board Outline (Outer Edges)
 
 	
 		
-#. Move Outline Segment
+Move Outline Segment
+^^^^^^^^^^^^^^^^^^^^
 
 	To move a segment of the board contour:
 
@@ -42,7 +44,8 @@ Board Outline (Outer Edges)
 
 	
 
-#. Delete Outline Segment
+Delete Outline Segment
+^^^^^^^^^^^^^^^^^^^^^^
 
 	To delete a segment of the board contour:
 

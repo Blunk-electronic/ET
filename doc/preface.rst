@@ -1,9 +1,9 @@
 .. _preface:
 
-*******
-Preface
-*******
 
-| Here will be some introduction.
+Preface
+=======
+
+Here will be some introduction.
 
 

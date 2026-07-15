@@ -6,7 +6,8 @@
 Signal Layers
 -------------
 
-#. Adding a Signal Layer
+Adding a Signal Layer
+^^^^^^^^^^^^^^^^^^^^^
 
 	This example adds a signal layer with
 	conductor thickness of 0.035mm and a dielectric
@@ -17,7 +18,8 @@ Signal Layers
 		add layer 0.035 0.2
 		
 
-#. Deleting a Signal Layer
+Deleting a Signal Layer
+^^^^^^^^^^^^^^^^^^^^^^^
 
 	This example deletes signal layer 2:
 	

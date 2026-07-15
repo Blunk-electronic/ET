@@ -2,9 +2,9 @@
 
 .. include:: placeholders.rst
 
-***********
+
 Netchangers
-***********
+===========
 
 Netchangers are transition points between two nets.
 Other CAE-tools refer to them as "net-ties". 
@@ -16,12 +16,12 @@ point is defined in the schematic and in the board drawing.
 
 
 
-++++++++++++++++
 Schematic Editor
-++++++++++++++++
+----------------
 
 
-#. Place a Netchanger
+Place a Netchanger
+^^^^^^^^^^^^^^^^^^
 
 
 	This example places a netchanger on sheet 2 at x/y 60/30
@@ -44,7 +44,8 @@ Schematic Editor
 
 
 
-#. Move a Netchanger
+Move a Netchanger
+^^^^^^^^^^^^^^^^^
 
 	Moving a netchanger means that the existing
 	connections with net segments are severed and
@@ -70,7 +71,8 @@ Schematic Editor
 
 
 
-#. Drag a Netchanger
+Drag a Netchanger
+^^^^^^^^^^^^^^^^^
 
 	Dragging a netchanger means that the existing
 	connections with net segments are kept and thus
@@ -98,7 +100,8 @@ Schematic Editor
 
 
 
-#. Rotate a Netchanger
+Rotate a Netchanger
+^^^^^^^^^^^^^^^^^^^
 
 	The rotation of a netchanger is either 0 or 90 degrees.
 
@@ -110,7 +113,8 @@ Schematic Editor
 
 
 
-#. Copy a Netchanger
+Copy a Netchanger
+^^^^^^^^^^^^^^^^^
 
 	This example command copies the netchanger 1 to
 	sheet 4 x/y 100 40. The copy will be assigned the
@@ -125,7 +129,8 @@ Schematic Editor
 
 
 
-#. Set Direction
+Set Direction
+^^^^^^^^^^^^^
 
 	The direction of a netchanger is relevant for agile 
 	hardware development. This is not about the information
@@ -148,7 +153,8 @@ Schematic Editor
 
 
 
-#. Delete a Netchanger
+Delete a Netchanger
+^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 	
@@ -160,7 +166,8 @@ Schematic Editor
 
 	
 	
-#. Rename a Netchanger
+Rename a Netchanger
+^^^^^^^^^^^^^^^^^^^
 
 	This example command renames netchanger 1 to 14:
 	
@@ -174,7 +181,8 @@ Schematic Editor
 
 
 
-#. Showing and Finding a Netchanger:
+Showing and Finding a Netchanger
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This command is effective only in a graphical mode.
 	The schematic and board editor pan the drawing so 
@@ -191,7 +199,8 @@ Schematic Editor
 
 
 
-#. Dissolve a Netchanger:
+Dissolve a Netchanger
+^^^^^^^^^^^^^^^^^^^^^
 
 	Dissolving a netchanger means to merge the two connected
 	nets into a single one and removing the netchanger from the design.
@@ -204,12 +213,15 @@ Schematic Editor
 		dissovle netchanger 44
 
 
-	
-++++++++++++
-Board Editor
-++++++++++++
 
-#. Move a Netchanger
+
+	
+
+Board Editor
+------------
+
+Move a Netchanger
+^^^^^^^^^^^^^^^^^
 
 	|VNS| m e
 
@@ -225,7 +237,8 @@ Board Editor
 
 
 
-#. Set the Signal Layer
+Set the Signal Layer
+^^^^^^^^^^^^^^^^^^^^
 
 	A netchanger connects the tracks of two nets
 	in a certain signal layer.
@@ -239,7 +252,9 @@ Board Editor
 
 
 
-#. Showing and Finding a Netchanger:
+
+Showing and Finding a Netchanger
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This command is effective only in a graphical mode.
 	The schematic and board editor pan the drawing so 

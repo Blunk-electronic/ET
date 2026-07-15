@@ -6,7 +6,8 @@
 Assembly Documentation
 ----------------------
 
-#. Drawing Objects
+Drawing Objects
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -33,13 +34,15 @@ Assembly Documentation
 
 
 		
-#. Moving Objects
+Moving Objects
+^^^^^^^^^^^^^^
 
 	|VNS| m a
 
 
 	
-#. Deleting Objects
+Deleting Objects
+^^^^^^^^^^^^^^^^
 
 	.. code-block::
 	

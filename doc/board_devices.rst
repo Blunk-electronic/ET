@@ -10,7 +10,8 @@ Devices
 There are electrical devices (having a counterpart in the schematic) and
 non-electrical devices (without a representation in the schematic).
 
-#. Showing and Locating Devices
+Showing and Locating Devices
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	To locate a device, use this command.
 	The argument L1 .. L3 controls the level of information
@@ -27,7 +28,8 @@ non-electrical devices (without a representation in the schematic).
 
 
 
-#. Add Non-Electrical Devices
+Add Non-Electrical Devices
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This command places a fiducial (or reference mark) with prefix FD
 	at position 5/10:
@@ -48,7 +50,8 @@ non-electrical devices (without a representation in the schematic).
 
 
 
-#. Copy Non-Electrical Device
+Copy Non-Electrical Device
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	The specified device must be a non-electrical device.
 
@@ -61,7 +64,8 @@ non-electrical devices (without a representation in the schematic).
 
 
 
-#. Move Device
+Move Device
+^^^^^^^^^^^
 
 	.. code-block::
 
@@ -76,7 +80,8 @@ non-electrical devices (without a representation in the schematic).
 
 
 	
-#. Rotate Device
+Rotate Device
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -93,7 +98,8 @@ non-electrical devices (without a representation in the schematic).
 
 	
 	
-#. Flip Device
+Flip Device
+^^^^^^^^^^^
 
 	Flipping a device means to change the assembly side
 	from top to bottom or vice versa. The package of the device
@@ -123,7 +129,8 @@ non-electrical devices (without a representation in the schematic).
 
 	
 	
-#. Delete Non-Electrical Device
+Delete Non-Electrical Device
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	Devices which appear only in the board drawing
 	can be deleted only in the board editor. They are
@@ -141,7 +148,8 @@ non-electrical devices (without a representation in the schematic).
 	
 
 	
-#. Renaming a Non-Electrical Device
+Renaming a Non-Electrical Device
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -190,7 +198,8 @@ of the movement of the package. This implies:
   restored by assigning a relative position.
 
 
-#. Move Name
+Move Name
++++++++++
 
 	This example command moves the name placeholder number 2 of IC1
 	in the silkscreen on the top side of the board by -10/3:
@@ -204,7 +213,8 @@ of the movement of the package. This implies:
 	
 		
 
-#. Move Value
+Move Value
+++++++++++
 
 	.. code-block::
 
@@ -214,7 +224,8 @@ of the movement of the package. This implies:
 		
 
 
-#. Move Purpose
+Move Purpose
+++++++++++++
 
 	.. code-block::
 
@@ -225,7 +236,8 @@ of the movement of the package. This implies:
 
 
 
-#. Rotate Name
+Rotate Name
++++++++++++
 
 	This example command rotates the name placeholder number 2 of IC1
 	in the silkscreen on the top side of the board by 45 degrees:
@@ -238,7 +250,8 @@ of the movement of the package. This implies:
 		
 
 
-#. Rotate Value
+Rotate Value
+++++++++++++
 
 	.. code-block::
 
@@ -248,7 +261,8 @@ of the movement of the package. This implies:
 		
 
 
-#. Rotate Purpose
+Rotate Purpose
+++++++++++++++
 
 	.. code-block::
 
@@ -259,7 +273,8 @@ of the movement of the package. This implies:
 
 
 
-#. Reset Placholders
+Reset Placholders
++++++++++++++++++
 
 	The package model of a device specifies the default positions
 	of placeholders. In order to restore the default 

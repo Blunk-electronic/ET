@@ -7,6 +7,7 @@
 Executing Scripts
 -----------------
 
-#. Execute a Script
+Execute a Script
+^^^^^^^^^^^^^^^^
 
 	see section Scripting in schematic documentation

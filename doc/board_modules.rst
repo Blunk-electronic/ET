@@ -6,7 +6,8 @@
 Modules
 -------
 
-#. Show (or open) a module
+Show (or open) a module
+^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -18,7 +19,8 @@ Modules
 	
 
 				
-#. Save a module
+Save a module
+^^^^^^^^^^^^^
 
 	Save with its own name:
 	

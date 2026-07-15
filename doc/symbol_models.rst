@@ -2,15 +2,15 @@
 
 .. .. include:: placeholders.rst
 
-*****************
+
 Schematic Symbols
-*****************
+=================
 
-++++++++++++++++++++++++++
 Importing and Syntax Check
-++++++++++++++++++++++++++
+--------------------------
 
-#. In Headless Mode
+In Headless Mode
+^^^^^^^^^^^^^^^^
 
 	
 	.. code-block::

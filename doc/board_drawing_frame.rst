@@ -11,14 +11,16 @@ Position of the Drawing Frame
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-#. Absolute Coordinates
+Absolute Coordinates
+++++++++++++++++++++
 
 	.. code-block::
 
 		move frame absolute -150 -105
 
 
-#. Relative Coordinates
+Relative Coordinates
+++++++++++++++++++++
 
 	.. code-block::
 
