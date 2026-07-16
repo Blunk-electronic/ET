@@ -37,7 +37,7 @@
 
 ### Documetation and User Manual
 
-- User Manual <https://www.blunk-electronic/ET/pdf/caesystemet.pdf>
+- User Manual <http://www.blunk-electronic.de/ET/pdf/caesystemet.pdf>
 
 
 
