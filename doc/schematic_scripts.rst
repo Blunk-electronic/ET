@@ -15,11 +15,22 @@ perfoming a lot of erroneous and tedious tasks.
 Execute a Script
 ^^^^^^^^^^^^^^^^
 
-	The command to launch a script from the console:
+	ET has an internal script processor that reads and 
+	executes a script file. The scripting feature allows manipulating
+	designs without GUI:
+	The command to launch a script from the internal console:
 
 	.. code-block::
 
 		execute script set_grid.scr
+
+
+	Execute a script from outside vie the console of the operating
+	system:
+
+	.. parsed-literal::
+
+		$ et --open-project my_et_project/ --script my_et_project/my_script.scr --save-project-as modified_project --log-level 2
 
 
 The commands inside the Script

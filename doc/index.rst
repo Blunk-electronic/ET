@@ -27,6 +27,7 @@
    symbol_models.rst
    package_models.rst
    device_models.rst
+   system_log.rst
 ..    CS cam.rst
 
    
