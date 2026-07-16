@@ -17,6 +17,7 @@
    preface.rst
    features.rst 
    project.rst
+   rig_configuration.rst
    canvas_navigation.rst
    canvas_colors.rst
    module_operations.rst
