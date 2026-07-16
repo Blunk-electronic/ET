@@ -35,7 +35,7 @@
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>-->
 
 
-### Documetation and User Manual
+### Documentation
 
 - User Manual <http://www.blunk-electronic.de/ET/pdf/caesystemet.pdf>
 
