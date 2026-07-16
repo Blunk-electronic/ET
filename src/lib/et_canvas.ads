@@ -65,6 +65,7 @@ with gtk.adjustment;			use gtk.adjustment;
 with gtk.scrollbar;				use gtk.scrollbar;
 
 with gtk.table;					use gtk.table;
+with gtk.grid;					use gtk.grid;
 with gtk.label;					use gtk.label;
 with gtk.button;				use gtk.button;
 with gtk.text_view;				use gtk.text_view;
@@ -1240,7 +1241,7 @@ package et_canvas is
 
 -- BUTTONS:
 
-	buttons_table		: gtk_table;
+	buttons_grid		: gtk_grid;
 	
 	button_zoom_fit		: gtk_button;
 	button_zoom_area	: gtk_button;
