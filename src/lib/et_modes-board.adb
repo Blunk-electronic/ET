@@ -41,7 +41,7 @@ package body et_modes.board is
 	function to_string (verb : in type_verb) return string is 
 	-- Removes the verb_prefix from verb and returns the remainder as string.
 	-- VERB_ADD becomes ADD.
-		s : string := type_verb'image (verb);
+		s : constant string := type_verb'image (verb);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
@@ -59,7 +59,7 @@ package body et_modes.board is
 
 
 	function to_string (noun : in type_noun) return string is 
-		s : string := type_noun'image (noun);
+		s : constant string := type_noun'image (noun);
 	begin
 		return s (noun_prefix'length + 1 .. s'last);
 	end;

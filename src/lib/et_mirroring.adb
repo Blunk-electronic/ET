@@ -48,7 +48,7 @@ package body et_mirroring is
 		mirror	: in type_mirror)
 		return string
 	is
-		s : string := to_lower (type_mirror'image (mirror));
+		s : constant string := to_lower (type_mirror'image (mirror));
 	begin
 		return s (mirror_prefix'length + 1 .. s'last);
 	end to_string;

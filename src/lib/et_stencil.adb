@@ -396,7 +396,7 @@ package body et_stencil is
 		proceed : aliased boolean := true;
 
 		procedure query_contour (c : in pac_stencil_zones.cursor) is
-			status : type_contour_status := is_closed (element (c));
+			status : constant type_contour_status := is_closed (element (c));
 		begin
 			if not status.closed then
 				proceed := false;
@@ -419,7 +419,7 @@ package body et_stencil is
 		result : pac_stencil_zone_cursors.list;
 
 		procedure query_zone (c : in pac_stencil_zones.cursor) is
-			status : type_contour_status := is_closed (element (c));
+			status : constant type_contour_status := is_closed (element (c));
 		begin
 			if not status.closed then
 				result.append (c);

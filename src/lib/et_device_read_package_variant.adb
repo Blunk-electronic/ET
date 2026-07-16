@@ -87,7 +87,7 @@ package body et_device_read_package_variant is
 		use et_package_read;		
 		use et_package_library;
 		
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		
 		package_model_name : pac_package_model_file.bounded_string;		
 	begin

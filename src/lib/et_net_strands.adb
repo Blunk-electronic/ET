@@ -457,8 +457,8 @@ package body et_net_strands is
 			
 			
 			procedure query_primary (p : in pac_net_segments.cursor) is
-				PA : type_vector_model := get_A (p);
-				PB : type_vector_model := get_B (p);
+				PA : constant type_vector_model := get_A (p);
+				PB : constant type_vector_model := get_B (p);
 
 				-- The number of segments connected 
 				-- with the A end of the primary segment candidate:
@@ -478,8 +478,8 @@ package body et_net_strands is
 
 				
 				procedure query_secondary (s : in pac_net_segments.cursor) is 
-					SA : type_vector_model := get_A (s);
-					SB : type_vector_model := get_B (s);
+					SA : constant type_vector_model := get_A (s);
+					SB : constant type_vector_model := get_B (s);
 
 					-- The number of segments connected 
 					-- with the A end of the secondary segment candidate:
@@ -1122,15 +1122,15 @@ package body et_net_strands is
 		proceed : aliased boolean := true;
 
 		-- The point where the given segment will be attached:
-		point : type_vector_model := get_end_point (segment, AB_end);
+		point : constant type_vector_model := get_end_point (segment, AB_end);
 		
 		-- The orientation of the given segment:
-		orientation : type_line_orientation := get_orientation (segment);
+		orientation : constant type_line_orientation := get_orientation (segment);
 
 		
 		procedure query_segment (c : in pac_net_segments.cursor) is 
 			-- Get the orientation of the candidate segment:
-			o : type_line_orientation := get_segment_orientation (c);
+			o : constant type_line_orientation := get_segment_orientation (c);
 		begin
 			-- We pick out segments of same orientation as
 			-- the given segment:
@@ -1265,7 +1265,7 @@ package body et_net_strands is
 		-- Appends the two fragments to the strand.
 		-- Appends the given segment to the strand:
 		procedure split_segment is
-			fragments : type_split_segment := split_segment (target_to_split, point);
+			fragments : constant type_split_segment := split_segment (target_to_split, point);
 			-- CS: There should be two fragments. Otherwise
 			-- exception arises here.
 
@@ -2247,7 +2247,7 @@ package body et_net_strands is
 		procedure make_segments is
 			-- Split the given primary segment at
 			-- the split points and store the fragments here:			
-			f : type_split_line := split_line (primary, split_points);
+			f : constant type_split_line := split_line (primary, split_points);
 
 			-- A candidate segment:
 			s : type_net_segment;

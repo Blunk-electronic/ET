@@ -450,7 +450,7 @@ package body et_board_ops_ratsnest is
 	is 
 		use pac_objects;
 		use pac_nets;
-		aw : type_object_airwire := element (object);
+		aw : constant type_object_airwire := element (object);
 	begin
 		return get_net_name (aw.net_cursor);
 	end get_net_name;

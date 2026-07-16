@@ -60,7 +60,7 @@ procedure draw_route_restrict is
 
 
 	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
+	brightness : constant type_brightness := NORMAL;
 	
 	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is 

@@ -241,12 +241,12 @@ package body et_canvas_board_texts is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 		
 		use gdk.types;
-		key : gdk_key_type := event.keyval;
+		key : constant gdk_key_type := event.keyval;
 
-		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		gentry : constant gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
 	begin
 		case key is
@@ -298,12 +298,12 @@ package body et_canvas_board_texts is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 		
 		use gdk.types;
-		key : gdk_key_type := event.keyval;
+		key : constant gdk_key_type := event.keyval;
 
-		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		gentry : constant gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
 	begin
 		case key is
@@ -357,12 +357,12 @@ package body et_canvas_board_texts is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 		
 		use gdk.types;
-		key : gdk_key_type := event.keyval;
+		key : constant gdk_key_type := event.keyval;
 
-		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		gentry : constant gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
 	begin
 		case key is
@@ -469,7 +469,7 @@ package body et_canvas_board_texts is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -550,7 +550,7 @@ package body et_canvas_board_texts is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -602,7 +602,7 @@ package body et_canvas_board_texts is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;

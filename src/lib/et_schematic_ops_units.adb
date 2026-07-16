@@ -1323,7 +1323,7 @@ package body et_schematic_ops_units is
 		-- Queries a unit of the list unit_names and deletes it:
 		procedure query_unit (c : in pac_unit_names.cursor) is
 			use pac_unit_names;
-			name : pac_unit_name.bounded_string := element (c);
+			name : constant pac_unit_name.bounded_string := element (c);
 		begin
 			log (text => "Delete unit " & to_string (name), level => log_threshold + 1);
 
@@ -1715,7 +1715,7 @@ package body et_schematic_ops_units is
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 				
 			begin
 				-- Get the sheet where the unit is BEFORE the move operation:
@@ -1901,7 +1901,7 @@ package body et_schematic_ops_units is
 		
 		-- We start processing the sheets with the
 		-- sheet after sheet_delete:
-		sheet_start : type_sheet := sheet_delete + 1;
+		sheet_start : constant type_sheet := sheet_delete + 1;
 		
 		use et_schematic_ops_sheets;
 
@@ -2468,7 +2468,7 @@ package body et_schematic_ops_units is
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 				
 			begin
 				-- Get the sheet where the unit is:
@@ -2640,7 +2640,7 @@ package body et_schematic_ops_units is
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception 
 				-- will be raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 				
 			begin
 				-- Get the sheet where the unit is BEFORE the rotate operation:
@@ -2802,7 +2802,7 @@ package body et_schematic_ops_units is
 
 				-- Locate the targeted unit. It must exist.
 				-- Otherwise an exception will be raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 
 				
 			begin
@@ -4007,7 +4007,7 @@ package body et_schematic_ops_units is
 				-- Locate the targeted unit.
 				-- It must exist. Otherwise an exception
 				-- is raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 
 
 				procedure move_placeholder (
@@ -4115,7 +4115,7 @@ package body et_schematic_ops_units is
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- is raised here:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 
 				
 				procedure rotate_placeholder (
@@ -5211,7 +5211,7 @@ package body et_schematic_ops_units is
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is
 					-- Get the sheet where the candidate unit is:
-					sheet : type_sheet := get_sheet (device_cursor, unit_cursor);
+					sheet : constant type_sheet := get_sheet (device_cursor, unit_cursor);
 
 					-- This procedure takes a port position (indicated by cursor c)
 					-- and sets start or end points of net segments which are

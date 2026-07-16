@@ -164,7 +164,7 @@ package body et_module_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
+		module_cursor : constant pac_generic_modules.cursor := locate_module (module_name);
 
 		use ada.directories;
 		use et_project;

@@ -282,7 +282,7 @@ package body et_kicad.pcb is
 		closing_bracket : constant character := ')';
 
 		term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
-		term_char_set : character_set := to_set (term_char_seq);
+		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
 		sec_prefix : constant string (1..4) := "sec_";
@@ -462,7 +462,7 @@ package body et_kicad.pcb is
 	
 		function to_string (section : in type_keyword) return string is
 		-- Converts a section name to a string.
-			len : positive := type_keyword'image (section)'last;
+			len : constant positive := type_keyword'image (section)'last;
 		begin
 			-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 			-- the section image.
@@ -584,7 +584,7 @@ package body et_kicad.pcb is
 		terminal_net_id		: type_net_id_terminal;
 	
 -- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
-		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
+		terminal_copper_width_inner_layers : constant type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
@@ -3977,7 +3977,7 @@ package body et_kicad.pcb is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_segments.list := to_pad_milling_contour (
+								lines : constant pac_segments.list := to_pad_milling_contour (
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
@@ -4847,7 +4847,7 @@ package body et_kicad.pcb is
 			is
 				-- The nets of the module are copied here (in their present state):
 				use et_nets.pac_nets;
-				nets 		: et_kicad.schematic.type_nets.map := module.nets;
+				nets 		: constant et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				
 				net_id		: type_net_id; -- the net id used by kicad
@@ -4855,7 +4855,7 @@ package body et_kicad.pcb is
 				-- The components of the module are copied here (in their present state):
 				use schematic;
 				use schematic.type_components_schematic;
-				components			: type_components_schematic.map := module.components;
+				components			: constant type_components_schematic.map := module.components;
 				component_cursor	: type_components_schematic.cursor := components.first;
 
 				use type_packages_board;

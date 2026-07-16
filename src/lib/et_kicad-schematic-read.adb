@@ -354,7 +354,7 @@ is
 			segment	: in type_net_segment) 
 			return boolean 
 		is
-			line : type_line := type_line (to_line (
+			line : constant type_line := type_line (to_line (
 				A	=> get_point (segment.coordinates_start), 
 				B	=> get_point (segment.coordinates_end)));
 			
@@ -2957,7 +2957,7 @@ is
 			-- CS: Text is limited to 200 characters which seems sufficient.
 			subtype type_pos is positive range 2 .. 200;
 
-			pos : type_pos := index (text, ifs); -- get position of ifs
+			pos : constant type_pos := index (text, ifs); -- get position of ifs
 		begin -- generic_name
 			return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
 		end generic_name;
@@ -2971,7 +2971,7 @@ is
 			-- CS: Text is limited to 200 characters which seems sufficient.
 			subtype type_pos is positive range 2 .. 200;
 
-			pos : type_pos := index (text, ifs); -- get position of ifs
+			pos : constant type_pos := index (text, ifs); -- get position of ifs
 		begin -- extract_library_name
 			return type_library_name.to_bounded_string (text (text'first .. pos - 1)); -- bel_logic
 		end extract_library_name;

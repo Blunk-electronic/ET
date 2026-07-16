@@ -951,7 +951,7 @@ package body et_schematic_ops_netchangers is
 			net_cursor : pac_nets.cursor := module.nets.first;
 			
 			ports : pac_netchanger_ports.set;
-			proceed : boolean := true;
+			proceed : constant boolean := true;
 		begin
 			-- Iterate the nets of the module and abort
 			-- as soon as a net has been found that contains
@@ -1650,7 +1650,7 @@ package body et_schematic_ops_netchangers is
 		
 		-- We start processing the sheets with the
 		-- sheet after sheet_delete:
-		sheet_start : type_sheet := sheet_delete + 1;
+		sheet_start : constant type_sheet := sheet_delete + 1;
 		
 		use et_schematic_ops_sheets;
 
@@ -3818,7 +3818,7 @@ package body et_schematic_ops_netchangers is
 			is 
 
 				-- Get the sheet where the candidate netchanger is:
-				sheet : type_sheet := get_sheet (netchanger);
+				sheet : constant type_sheet := get_sheet (netchanger);
 
 				
 				-- This procedure takes a port position

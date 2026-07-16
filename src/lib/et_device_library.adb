@@ -135,7 +135,7 @@ package body et_device_library is
 		model : in pac_device_model_file.bounded_string)
 		return pac_device_models.cursor 
 	is
-		cursor : pac_device_models.cursor := find (device_library, model);
+		cursor : constant pac_device_models.cursor := find (device_library, model);
 	begin
 		return cursor;
 	end;

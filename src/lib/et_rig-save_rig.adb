@@ -79,7 +79,7 @@ is
 
 	
 	procedure query_connections (connection_cursor : in pac_module_connections.cursor) is
-		con : type_module_connection := element (connection_cursor);
+		con : constant type_module_connection := element (connection_cursor);
 	begin
 		section_mark (section_connector, HEADER);
 		write (keyword => keyword_instance_A, parameters => to_string (con.instance_A));

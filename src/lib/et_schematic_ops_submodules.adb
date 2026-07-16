@@ -432,7 +432,7 @@ package body et_schematic_ops_submodules is
 			is
 				use et_submodules.pac_submodule_ports;
 				port_xy : type_vector_model;
-				cursor : et_submodules.pac_submodule_ports.cursor := find (submodule.ports, port_name);
+				cursor : constant et_submodules.pac_submodule_ports.cursor := find (submodule.ports, port_name);
 			begin
 				if cursor /= et_submodules.pac_submodule_ports.no_element then
 
@@ -4684,10 +4684,10 @@ package body et_schematic_ops_submodules is
 			-- Map from submodule_cursor to module in et_project.modules:
 
 			-- submod_cursor points to a submodule in the submod_tree:
-			module_name	: pac_module_name.bounded_string := element (submod_cursor).name; -- motor_driver
+			module_name	: constant pac_module_name.bounded_string := element (submod_cursor).name; -- motor_driver
 			-- module_name now contains the generic module name like motor_driver
 			
-			module_cursor : pac_generic_modules.cursor := locate_module (module_name);
+			module_cursor : constant pac_generic_modules.cursor := locate_module (module_name);
 			-- module_cursor now points to the generic module
 		begin
 			-- If the range for this generic module has not been computed already, then do

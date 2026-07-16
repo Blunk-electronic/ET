@@ -60,7 +60,7 @@ package body et_pcb_placeholders.non_conductor is
 		placeholder : in type_placeholder_non_conductor)
 		return string
 	is 
-		tf : type_text_fab := type_text_fab (placeholder);
+		tf : constant type_text_fab := type_text_fab (placeholder);
 	begin
 		return to_string (tf) 
 			& " meaning " & to_string (get_meaning (placeholder));

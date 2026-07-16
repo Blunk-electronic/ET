@@ -72,7 +72,7 @@ package body et_net_ports_netchangers is
 		return boolean
 	is 
 		use pac_netchanger_ports;
-		item : type_port_netchanger := (index, port);			
+		item : constant type_port_netchanger := (index, port);			
 	begin
 		return ports.contains (item); 
 	end;

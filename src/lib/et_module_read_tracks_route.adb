@@ -79,7 +79,7 @@ package body et_module_read_tracks_route is
 	procedure read_track_line (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -119,7 +119,7 @@ package body et_module_read_tracks_route is
 	procedure read_track_arc (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3

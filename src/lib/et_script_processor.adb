@@ -76,7 +76,7 @@ package body et_script_processor is
 		-- The single command to be executed:
 		cmd : type_single_cmd;
 		
-		script_name : pac_script_name.bounded_string := to_script_name (file);
+		script_name : constant pac_script_name.bounded_string := to_script_name (file);
 
 
 		procedure log_command is begin

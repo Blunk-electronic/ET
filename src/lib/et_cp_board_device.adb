@@ -405,7 +405,7 @@ package body et_cp_board_device is
 		
 		procedure do_it is 
 			use et_board_ops_devices;
-			device_name : type_device_name := to_device_name (get_field (cmd, 5));
+			device_name : constant type_device_name := to_device_name (get_field (cmd, 5));
 		begin
 			-- Proceed if the specified non-electrical
 			-- device exists:

@@ -221,9 +221,9 @@ package body et_canvas_board_vias is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
-		key		: gdk_key_type := event.keyval;
-		gentry	: gtk_gentry := gtk_gentry (combo_entry);
+		event_handled : constant boolean := false;
+		key		: constant gdk_key_type := event.keyval;
+		gentry	: constant gtk_gentry := gtk_gentry (combo_entry);
 		text	: constant string := get_text (gentry);
 	begin
 		case key is
@@ -273,9 +273,9 @@ package body et_canvas_board_vias is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
-		key		: gdk_key_type := event.keyval;
-		gentry	: gtk_gentry := gtk_gentry (combo_entry);
+		event_handled : constant boolean := false;
+		key		: constant gdk_key_type := event.keyval;
+		gentry	: constant gtk_gentry := gtk_gentry (combo_entry);
 		text	: constant string := get_text (gentry);
 	begin
 		case key is
@@ -326,9 +326,9 @@ package body et_canvas_board_vias is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		event_handled : boolean := false;
-		key		: gdk_key_type := event.keyval;
-		gentry	: gtk_gentry := gtk_gentry (combo_entry);
+		event_handled : constant boolean := false;
+		key		: constant gdk_key_type := event.keyval;
+		gentry	: constant gtk_gentry := gtk_gentry (combo_entry);
 		text	: constant string := get_text (gentry);
 	begin
 		-- put_line ("restring_outer_key_pressed");
@@ -514,7 +514,7 @@ package body et_canvas_board_vias is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -565,7 +565,7 @@ package body et_canvas_board_vias is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -626,7 +626,7 @@ package body et_canvas_board_vias is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -686,7 +686,7 @@ package body et_canvas_board_vias is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -935,7 +935,7 @@ package body et_canvas_board_vias is
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : type_object_via := 
+			selected_object : constant type_object_via := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -1038,7 +1038,7 @@ package body et_canvas_board_vias is
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			object : type_object_via := get_first_object (
+			object : constant type_object_via := get_first_object (
 						active_module, PROPOSED, log_threshold + 1);
 		begin
 			modify_status (

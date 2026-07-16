@@ -263,7 +263,7 @@ package body et_drawing_frame.schematic is
 	is 
 		use pac_schematic_descriptions;
 		
-		total : type_sheet := get_sheet_count (frames);
+		total : constant type_sheet := get_sheet_count (frames);
 		
 		
 		procedure do_it is

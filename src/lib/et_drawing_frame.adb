@@ -195,7 +195,7 @@ package body et_drawing_frame is
 
 	
 	function to_string (domain : in type_domain) return string is
-		s : string := type_domain'image (domain);
+		s : constant string := type_domain'image (domain);
 	begin
 		return s (domain_prefix'length + 1 .. s'last);
 	end;

@@ -654,7 +654,7 @@ package body et_netlists is
 
 		-- Get the cursor to the parent module. If module_cursor points to the top
 		-- module, then parent_module_cursor will point to root.
-		parent_module_cursor : pac_netlist_modules.cursor := parent (module_cursor);
+		parent_module_cursor : constant pac_netlist_modules.cursor := parent (module_cursor);
 
 		port_to_search_for : type_submodule_port_extended; -- the submodule port we are looking for
 		port_found : boolean := false; -- signals loop in procedure query_nets to cancel the search

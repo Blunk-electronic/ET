@@ -400,7 +400,7 @@ package body et_nets is
 		c : pac_strands.cursor := strands.first;
 
 		procedure query_strand (s : in pac_strands.cursor) is
-			strand_to_delete : type_strand := element (s);
+			strand_to_delete : constant type_strand := element (s);
 			cursor : pac_strands.cursor;
 		begin
 			cursor := find (net.strands, strand_to_delete);
@@ -957,7 +957,7 @@ package body et_nets is
 		return pac_net_name.bounded_string
 	is 
 		use pac_object_strands;
-		s : type_object_strand := element (strand);
+		s : constant type_object_strand := element (strand);
 	begin
 		return key (s.net_cursor);
 	end;

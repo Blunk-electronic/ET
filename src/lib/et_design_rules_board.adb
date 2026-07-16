@@ -155,7 +155,7 @@ package body et_design_rules_board is
 		use pac_design_rules_board;
 
 		-- Locate the design rules:
-		c : pac_design_rules_board.cursor := find (design_rules, rules);
+		c : constant pac_design_rules_board.cursor := find (design_rules, rules);
 	begin
 		-- If the given rules file does not exist (of if rules is empty)
 		-- return default rules:

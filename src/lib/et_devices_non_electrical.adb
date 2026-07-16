@@ -544,7 +544,7 @@ package body et_devices_non_electrical is
 		cursor	: in pac_devices_non_electrical.cursor)
 		return pac_device_prefix.bounded_string
 	is
-		name : type_device_name := key (cursor);
+		name : constant type_device_name := key (cursor);
 	begin
 		return get_prefix (name);
 	end;

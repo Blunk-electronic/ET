@@ -161,7 +161,7 @@ package body et_kicad_libraries is
 		return type_device_name 
 	is
 		-- justify given text_in on the left
-		text_in_justified : string (1 .. text_in'length) := text_in;
+		text_in_justified : constant string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
 				prefix 		=> pac_device_prefix.to_bounded_string(""),
@@ -684,7 +684,7 @@ package body et_kicad_libraries is
 	-- The given text is something like CNN. We are interested in the first character only.
 	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 		a : type_text_alignment_vertical;
-		s : string (1..1) := text(text'first..text'first);
+		s : constant string (1..1) := text(text'first..text'first);
 	begin
 		case type_field_alignment_vertical'value(s) is
 			when T => a := ALIGN_TOP;
@@ -1887,7 +1887,7 @@ package body et_kicad_libraries is
 				-- #13 : optional field: pin style, see et_kicad.ads for more
 
 				function to_direction (dir : in string) return type_port_direction is
-					d_in : character := dir (dir'first);
+					d_in : constant character := dir (dir'first);
 					d_out : type_port_direction;
 				begin
 					case d_in is

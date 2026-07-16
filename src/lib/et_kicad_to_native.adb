@@ -144,7 +144,7 @@ package body et_kicad_to_native is
 		module_cursor : et_kicad.pcb.type_modules.cursor :=
 			et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
 
-		root : et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
+		root : constant et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
 -- 		before	: constant string (1..15) := "position before";
 -- 		now		: constant string (1..15) := "position now   ";
 		before	: constant string (1..6) := "before";
@@ -935,7 +935,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
-			log_threshold_add : type_log_level := 2;
+			log_threshold_add : constant type_log_level := 2;
 			
 			procedure move_silk_screen is
 				use pac_silk_lines;
@@ -2363,7 +2363,7 @@ package body et_kicad_to_native is
 			use type_symbol_points;
 
 			-- This is the given kicad polyline:
-			polyline : type_symbol_polyline := type_symbol_polylines.element (cursor);
+			polyline : constant type_symbol_polyline := type_symbol_polylines.element (cursor);
 
 			-- This cursor points to a particular point of the polyline:
 			point_cursor : type_symbol_points.cursor := polyline.points.first;
@@ -2545,11 +2545,11 @@ package body et_kicad_to_native is
 -- 						et_project.type_et_project_path.to_bounded_string (
 -- 							compose (et_general.work_directory, et_project.directory_import));
 
-		prefix_devices_dir : pac_device_model_file.bounded_string := -- libraries/devices
+		prefix_devices_dir : constant pac_device_model_file.bounded_string := -- libraries/devices
 			to_file_name (compose (
 				directory_libraries, directory_libraries_devices));
 	
-		prefix_packages_dir : pac_package_model_file.bounded_string := -- libraries/packages
+		prefix_packages_dir : constant pac_package_model_file.bounded_string := -- libraries/packages
 			to_package_model_name (compose (
 				directory_libraries, directory_libraries_packages));
 
@@ -2575,7 +2575,7 @@ package body et_kicad_to_native is
 
 			
 			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
-				text_kicad : et_kicad.schematic.type_text := et_kicad.schematic.type_texts.element (cursor);
+				text_kicad : constant et_kicad.schematic.type_text := et_kicad.schematic.type_texts.element (cursor);
 				text_native : et_schematic_text.type_text;
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
@@ -2626,7 +2626,7 @@ package body et_kicad_to_native is
 			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
-			characters : character_mapping := to_mapping ("./","_-");
+			characters : constant character_mapping := to_mapping ("./","_-");
 			
 		begin -- concatenate_lib_name_and_generic_name
 			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
@@ -2663,7 +2663,7 @@ package body et_kicad_to_native is
 			use pac_package_model_file;
 
 			-- In the containing directory . and / must be replaced by _ and -:
-			characters : character_mapping := to_mapping ("./","_-");
+			characters : constant character_mapping := to_mapping ("./","_-");
 
 			model_copy : pac_package_model_file.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
 			model_return : pac_package_model_file.bounded_string;
@@ -2706,7 +2706,7 @@ package body et_kicad_to_native is
 				component	: in out type_device_electrical) 
 			is
 				use et_kicad.schematic.type_units_schematic;
-				units_kicad			: et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
+				units_kicad			: constant et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
 				unit_cursor_kicad	: et_kicad.schematic.type_units_schematic.cursor := units_kicad.first; -- point to first unit
 
 				use et_units.pac_units;
@@ -2885,7 +2885,7 @@ package body et_kicad_to_native is
 			
 			use et_kicad.schematic.type_nets;
 			use et_kicad.schematic.type_strands;
-			kicad_nets			: et_kicad.schematic.type_nets.map := element (module_cursor_kicad).nets;
+			kicad_nets			: constant et_kicad.schematic.type_nets.map := element (module_cursor_kicad).nets;
 			kicad_net_cursor	: et_kicad.schematic.type_nets.cursor := kicad_nets.first;
 
 			use et_nets.pac_nets;
@@ -2901,7 +2901,7 @@ package body et_kicad_to_native is
 				net			: in out et_nets.type_net) 
 			is
 				use et_kicad.schematic.type_strands;
-				kicad_strands : et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
+				kicad_strands : constant et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
 				kicad_strand_cursor : et_kicad.schematic.type_strands.cursor := kicad_strands.first;
 								
 				use et_kicad.schematic.type_net_segments;
@@ -3133,12 +3133,12 @@ package body et_kicad_to_native is
 							et_kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
 							declare
-								line : pac_geometry_2.type_line := type_line (to_line (
+								line : constant pac_geometry_2.type_line := type_line (to_line (
 									A	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
 									B	=> et_kicad_coordinates.get_point (segment.coordinates_end)));
 
 								-- Get the position of the port:
-								position : type_vector_model := 
+								position : constant type_vector_model := 
 									et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates);
 							begin
 								-- If port sits on segment, append it to ports_of_segment.
@@ -3402,7 +3402,7 @@ package body et_kicad_to_native is
 					use et_kicad_libraries;
 					
 					-- Make a copy of the kicad units of the current kicad component:
-					units_kicad : et_kicad_libraries.type_units_library.map := element (component_cursor).units;
+					units_kicad : constant et_kicad_libraries.type_units_library.map := element (component_cursor).units;
 
 					-- This cursor points to a kicad unit:
 					use et_kicad_libraries.type_units_library;

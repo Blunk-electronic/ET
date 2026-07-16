@@ -98,7 +98,7 @@ package body et_pcb_signal_layers is
 		layer_string : type_layer_string.bounded_string; -- to be returned
 
 		-- set a cursor to the last layer in the given layer set:
-		last_layer : pac_signal_layers.cursor := layers.last;
+		last_layer : constant pac_signal_layers.cursor := layers.last;
 		
 		
 		procedure query_layer (cursor : in pac_signal_layers.cursor) is begin
@@ -160,7 +160,7 @@ package body et_pcb_signal_layers is
 
 		
 		procedure insert_layer is 
-			l : type_signal_layer := to_signal_layer (to_string (number));
+			l : constant type_signal_layer := to_signal_layer (to_string (number));
 		begin
 			if not contains (layer_set, l) then
 				insert (layer_set, l);

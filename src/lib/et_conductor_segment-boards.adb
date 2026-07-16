@@ -74,7 +74,7 @@ package body et_conductor_segment.boards is
 	is 
 		l : type_conductor_line renames line;
 
-		text : string := to_string (pac_geometry_2.type_line (l))
+		text : constant string := to_string (pac_geometry_2.type_line (l))
 				& "/ ly " & to_string (l.layer);
 	begin
 		if width then
@@ -310,7 +310,7 @@ package body et_conductor_segment.boards is
 	is 
 		a : type_conductor_arc renames arc;
 
-		text : string := to_string (pac_geometry_2.type_arc (a))
+		text : constant string := to_string (pac_geometry_2.type_arc (a))
 				& "/ ly " & to_string (a.layer);
 	begin
 		if width then
@@ -472,7 +472,7 @@ package body et_conductor_segment.boards is
 	is 
 		c : type_conductor_circle renames circle;
 
-		text : string := to_string (pac_geometry_2.type_circle (c))
+		text : constant string := to_string (pac_geometry_2.type_circle (c))
 				& "/ ly " & to_string (c.layer);
 	begin
 		if width then

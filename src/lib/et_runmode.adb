@@ -46,7 +46,7 @@ package body et_runmode is
 	end;
 
 	function to_string (mode : in type_runmode) return string is 
-		s : string := type_runmode'image (mode);
+		s : constant string := type_runmode'image (mode);
 	begin
 		return s (runmode_prefix'length + 1 .. s'last);
 	end;

@@ -220,8 +220,8 @@ package body et_devices_electrical.units is
 		unit	: in pac_units.cursor)
 		return string
 	is
-		d_name : string := get_device_name (device);
-		u_name : string := get_unit_name (unit);
+		d_name : constant string := get_device_name (device);
+		u_name : constant string := get_unit_name (unit);
 
 		u_count : type_unit_count;
 	begin
@@ -422,14 +422,14 @@ package body et_devices_electrical.units is
 		use pac_device_models;
 
 		-- This cursor points to the device model in the device library:
-		device_cursor_lib : pac_device_models.cursor := get_device_model (device);
+		device_cursor_lib : constant pac_device_models.cursor := get_device_model (device);
 		-- CS: constraint_error will arise here if no associated device exists.
 
 		-- In order to locate a unit inside the device model,
 		-- the actual name of the unit must be known.
 		-- So we translate the given unit cursor to a unit name
 		-- like A, C, IO_BANK_1:
-		unit_name : pac_unit_name.bounded_string := key (unit);
+		unit_name : constant pac_unit_name.bounded_string := key (unit);
 
 
 		
@@ -469,7 +469,7 @@ package body et_devices_electrical.units is
 
 
 		-- Get the position of the given unit in the schematic:
-		unit_position : type_object_position := get_position (unit);
+		unit_position : constant type_object_position := get_position (unit);
 		
 	begin
 		-- Locate the given unit among the external units 

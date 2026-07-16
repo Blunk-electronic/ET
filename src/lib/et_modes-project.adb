@@ -41,7 +41,7 @@ package body et_modes.project is
 
 
 	function to_string (verb : in type_verb_project) return string is 
-		s : string := type_verb_project'image (verb);
+		s : constant string := type_verb_project'image (verb);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
@@ -59,7 +59,7 @@ package body et_modes.project is
 
 	
 	function to_string (noun : in type_noun_project) return string is 
-		s : string := type_noun_project'image (noun);
+		s : constant string := type_noun_project'image (noun);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
 	end;

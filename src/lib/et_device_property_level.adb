@@ -63,7 +63,7 @@ package body et_device_property_level is
 		return type_properties_level
 	is 
 		use ada.characters.handling;
-		s : string := to_upper (level);
+		s : constant string := to_upper (level);
 	begin
 		error := false;
 		

@@ -142,7 +142,7 @@ procedure draw_conductors is
 	use pac_conductor_texts_board;
 
 	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
+	brightness : constant type_brightness := NORMAL;
 
 	
 	-- For diplaying net names and classes we need this stuff:
@@ -781,7 +781,7 @@ procedure draw_conductors is
 			use et_net_names;
 			use pac_net_name;
 			
-			position : type_vector_model := get_center (circle);
+			position : constant type_vector_model := get_center (circle);
 
 			use pac_draw_text;
 		begin

@@ -2131,7 +2131,7 @@ package body et_conventions is
 		use type_partcode_keyword_argument;
 		use et_string_processing;
 		
-		len 		: positive := get_length (partcode); 	-- the length of the given partcode
+		len 		: constant positive := get_length (partcode); 	-- the length of the given partcode
 		place 		: positive := from; 				-- the position of the character being processed
 		keyword_end : positive;							-- the last character position of the current keyword
 
@@ -2991,7 +2991,7 @@ package body et_conventions is
 		use et_string_processing;
 		
 		component_category : type_device_category;
-		value_length : natural := pac_device_value.length (value);
+		value_length : constant natural := pac_device_value.length (value);
 
 		procedure value_invalid is begin
 			log (SEVERITY_WARNING, "value " & enclose_in_quotes (to_string (value)) &
@@ -3028,7 +3028,7 @@ package body et_conventions is
 				return boolean 
 			is
 				use pac_device_value;
-				abbrevation : pac_unit_abbrevation.bounded_string := to_abbrevation (unit);
+				abbrevation : constant pac_unit_abbrevation.bounded_string := to_abbrevation (unit);
 			begin
 				if index (value, to_string (abbrevation), place) = place then
 					-- abbrevation valid. advance place to end of abbrevation.

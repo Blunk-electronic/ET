@@ -90,7 +90,7 @@ package body et_cmd_sts is
 		origin	: in type_cmd_origin)
 		return type_single_cmd
 	is 
-		cmd : type_single_cmd := (
+		cmd : constant type_single_cmd := (
 			fields => fields, 
 			origin	=> origin,						 
 			others => <>);

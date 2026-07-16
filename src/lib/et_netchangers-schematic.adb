@@ -413,7 +413,7 @@ package body et_netchangers.schematic is
 	procedure swap_ports (
 		ports : in out type_netchanger_ports)
 	is
-		master_bak : type_vector_model := ports.master;
+		master_bak : constant type_vector_model := ports.master;
 	begin
 		ports.master := ports.slave;
 		ports.slave := master_bak;
@@ -495,7 +495,7 @@ package body et_netchangers.schematic is
 	is
 		result : boolean := false;
 
-		netchanger_position : type_object_position := 
+		netchanger_position : constant type_object_position := 
 			to_object_position (netchanger.position_sch);
 	begin
 		-- The netchanger must be on the given sheet and

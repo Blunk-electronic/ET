@@ -114,11 +114,11 @@ procedure compute_bounding_box (
 	test_only				: in boolean := false)		
 is
 	-- debug : boolean := false;
-	debug : boolean := true;
+	debug : constant boolean := true;
 
 	-- In order to detect whether the bounding-box has
 	-- changed we take a copy of the current bounding-box:
-	bbox_old : type_area := bounding_box;
+	bbox_old : constant type_area := bounding_box;
 
 	-- This is the temporary bounding-box we are going to build
 	-- in the course of this procedure:
@@ -1579,7 +1579,7 @@ is
 
 					declare
 						-- Fetch the position of the package on the board:
-						pos : type_package_position := get_position (device_electric);
+						pos : constant type_package_position := get_position (device_electric);
 					begin
 						-- Extract x/y coordinates of the package:
 						package_position := pos.place;
@@ -1593,7 +1593,7 @@ is
 
 					declare
 						-- Fetch the position of the package on the board:
-						pos : type_package_position := get_position (device_non_electric);
+						pos : constant type_package_position := get_position (device_non_electric);
 					begin
 						-- Extract x/y coordinates of the package:
 						package_position := pos.place;

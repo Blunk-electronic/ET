@@ -88,7 +88,7 @@ procedure draw_netchangers is
 			add (port.rotation, get_rotation (netchanger_position));
 		
 		-- This is the start point of the line:
-		A : type_vector_model := port.position;
+		A : constant type_vector_model := port.position;
 
 		-- This is the end point of the line.
 		-- It will be computed according to the rotation of
@@ -291,11 +291,11 @@ procedure draw_netchangers is
 		use pac_draw_text;
 		use et_alignment;
 		
-		alignment : type_text_alignment := (
+		alignment : constant type_text_alignment := (
 			horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
 
 		-- The rotation of the netchanger:	
-		rotation : type_rotation_0_90 := get_rotation (position);
+		rotation : constant type_rotation_0_90 := get_rotation (position);
 		
 		-- The final position of the name.
 		-- Initially it is the same as the netchanger position
@@ -401,7 +401,7 @@ procedure draw_netchangers is
 			position : type_position := to_position (netchanger.position_sch);
 			
 			-- Get the sheet number where the netchanger is:
-			sheet : type_sheet := get_sheet (netchanger);
+			sheet : constant type_sheet := get_sheet (netchanger);
 		begin
 			-- Draw the netchanger if it is on the current
 			-- active sheet:

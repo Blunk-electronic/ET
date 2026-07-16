@@ -117,13 +117,13 @@ package body et_string_processing is
 		text_exact 			: in string) 
 		return boolean 
 	is
-		count_asterisk		: natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
-		count_question_mark	: natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.question);
-		pos_asterisk		: natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
+		count_asterisk		: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
+		count_question_mark	: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.question);
+		pos_asterisk		: constant natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
 		pos_question_mark	: natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.question); -- first question mark
 		
-		length_text_with_wildcards	: natural := text_with_wildcards'length;
-		length_text_exact			: natural := text_exact'length;		
+		length_text_with_wildcards	: constant natural := text_with_wildcards'length;
+		length_text_exact			: constant natural := text_exact'length;		
 		
 		match				: boolean := false;
 	begin
@@ -205,7 +205,7 @@ package body et_string_processing is
 		text_in : string) 
 		return type_field_count 
 	is
-		line_length	: natural := text_in'last;	-- length of given text
+		line_length	: constant natural := text_in'last;	-- length of given text
 		char_pt		: natural := 1;				-- charcter pointer (points to character being processed inside the given line)
 		IFS1		: constant character := ' '; 				-- field separator space
 		IFS2		: constant character := character'val(9); -- field separator tabulator
@@ -292,7 +292,7 @@ package body et_string_processing is
 		text_in : in string) 
 		return string 
 	is
-		text_scratch : string (1..text_in'length) := text_in;
+		text_scratch : constant string (1..text_in'length) := text_in;
 
 		universal_string_length_max	: constant natural := 1000;
 		package type_universal_string is new generic_bounded_length(universal_string_length_max);
@@ -300,7 +300,7 @@ package body et_string_processing is
 		
 		s : type_universal_string.bounded_string; -- CS: might be not sufficient ! use type_long_string instead
 		
-		l : natural := text_scratch'length;
+		l : constant natural := text_scratch'length;
 		sc : natural := natural'first;
 	begin
 		for c in 1..l loop
@@ -503,7 +503,7 @@ package body et_string_processing is
 		is
 			field_start : positive := 1; -- temporarily storage of the position where a field starts
 			field_entered : boolean := false; -- goes true once the first character of a field was found
-			length : natural := line'length; -- the length of the given line
+			length : constant natural := line'length; -- the length of the given line
 
 			-- As a safety measure, the pointer to the character being processed must be constrained
 			-- so that it never becomes greater than the acutal length of the given line:
@@ -526,7 +526,7 @@ package body et_string_processing is
 			-- The given string text_a has a lower bound greater than zero.
 			-- Convert the given string text_a to a string that has the lower bound of 1.
 			-- Then append the new string to the list of strings.
-				text_b : string (1..text_a'length) := text_a;
+				text_b : constant string (1..text_a'length) := text_a;
 			begin
 				pac_list_of_strings.append (list, text_b);
 			end append;
@@ -890,7 +890,7 @@ package body et_string_processing is
 	is 
 		count_found : constant type_field_count := get_field_count (line);
 
-		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
+		f1 : constant string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin
 		if count_found = count_expected then null; -- fine, field count as expected
 		

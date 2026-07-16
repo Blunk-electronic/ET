@@ -80,7 +80,7 @@ package body et_symbol_read_port is
 	procedure read_port (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		use et_port_visibility;
 		use et_port_sensitivity;
 		use et_port_strength;

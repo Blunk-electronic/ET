@@ -152,7 +152,7 @@ package body et_generic_modules is
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor 
 	is
-		cursor : pac_generic_modules.cursor := find (generic_modules, name);
+		cursor : constant pac_generic_modules.cursor := find (generic_modules, name);
 	begin
 		if cursor = pac_generic_modules.no_element then
 			raise semantic_error_1 with

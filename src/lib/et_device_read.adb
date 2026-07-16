@@ -119,7 +119,7 @@ package body et_device_read is
 			line			: in type_fields_of_line;
 			log_threshold 	: in type_log_level)
 		is
-			kw : string := f (line, 1);
+			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_prefix then -- prefix IC
@@ -549,7 +549,7 @@ package body et_device_read is
 			-- If the model file is to be read, first check if the file exists.
 			declare
 				use et_directory_and_file_ops;
-				file : string := expand (to_string (file_name));
+				file : constant string := expand (to_string (file_name));
 			begin
 				if ada.directories.exists (file) then
 

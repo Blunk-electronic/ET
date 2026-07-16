@@ -48,7 +48,7 @@ package body et_alignment is
 		alignment : in type_text_alignment_horizontal) 
 		return string 
 	is 
-		s : string := to_lower (type_text_alignment_horizontal'image (alignment));
+		s : constant string := to_lower (type_text_alignment_horizontal'image (alignment));
 	begin
 		return s (alignment_prefix'length + 1 .. s'last); 
 	end;
@@ -66,7 +66,7 @@ package body et_alignment is
 		alignment : in type_text_alignment_vertical) 
 		return string 
 	is 
-		s : string := to_lower (type_text_alignment_vertical'image (alignment));
+		s : constant string := to_lower (type_text_alignment_vertical'image (alignment));
 	begin
 		return s (alignment_prefix'length + 1 .. s'last); 
 	end;

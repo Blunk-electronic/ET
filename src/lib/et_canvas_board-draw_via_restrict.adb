@@ -59,7 +59,7 @@ procedure draw_via_restrict is
 
 
 	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
+	brightness : constant type_brightness := NORMAL;
 
 
 	

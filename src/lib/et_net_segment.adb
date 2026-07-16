@@ -706,7 +706,7 @@ package body et_net_segment is
 
 		-- Treat the segment as a regular line and split it.
 		-- Depending on the result we decide how to proceed further:
-		fragments : type_split_line := split_line (segment, point);
+		fragments : constant type_split_line := split_line (segment, point);
 
 		
 		procedure do_it is
@@ -781,10 +781,10 @@ package body et_net_segment is
 		
 		procedure merge_connectors is
 			-- Backup the connectors at the open end of the two segments:
-			tag_A : type_net_connector := 
+			tag_A : constant type_net_connector := 
 				get_connector (primary,   get_opposide_end (primary_end));
 			
-			tag_B : type_net_connector := 
+			tag_B : constant type_net_connector := 
 				get_connector (secondary, get_opposide_end (secondary_end));
 		begin
 			-- Overwrite the connectors of the given primary segment
@@ -1189,7 +1189,7 @@ package body et_net_segment is
 		segment : in pac_net_segments.cursor)
 		return boolean
 	is 
-		s : type_net_segment := element (segment);
+		s : constant type_net_segment := element (segment);
 	begin
 		return has_ports (s);
 	end has_ports;
@@ -1202,7 +1202,7 @@ package body et_net_segment is
 		AB_end	: in type_start_end_point)				   
 		return boolean
 	is
-		s : type_net_segment := element (segment);
+		s : constant type_net_segment := element (segment);
 	begin
 		return has_ports (s, AB_end);
 	end;
@@ -1348,7 +1348,7 @@ package body et_net_segment is
 		segment : in pac_net_segments.cursor) 
 		return type_line_orientation 
 	is		
-		S : type_net_segment := element (segment);
+		S : constant type_net_segment := element (segment);
 	begin
 		return get_orientation (S);
 	end get_segment_orientation;
@@ -1407,7 +1407,7 @@ package body et_net_segment is
 		segment 	: in pac_net_segments.cursor)
 		return boolean
 	is 
-		s : type_net_segment := element (segment);
+		s : constant type_net_segment := element (segment);
 	begin
 		return on_line (s, point);
 	end on_segment;
@@ -1436,8 +1436,8 @@ package body et_net_segment is
 	is 
 		result : type_connect_status;
 		
-		P : type_net_segment := element (primary);
-		S : type_net_segment := element (secondary);
+		P : constant type_net_segment := element (primary);
+		S : constant type_net_segment := element (secondary);
 	begin
 		result := get_connect_status (P, AB_end, S);
 		return result;

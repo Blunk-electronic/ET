@@ -173,12 +173,12 @@ package body et_canvas_board_tracks is
 	is
 		use et_canvas_board;
 		
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 		
 		use gdk.types;
-		key : gdk_key_type := event.keyval;
+		key : constant gdk_key_type := event.keyval;
 
-		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		gentry : constant gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
 	begin
 		case key is
@@ -218,7 +218,7 @@ package body et_canvas_board_tracks is
 		column_0 : constant := 0; -- for the net name
 		column_1 : constant := 1; -- for the net index
 
-		entry_structure : glib.gtype_array := (
+		entry_structure : constant glib.gtype_array := (
 				column_0 => glib.gtype_string,
 				column_1 => glib.gtype_string);
 
@@ -231,7 +231,7 @@ package body et_canvas_board_tracks is
 		use pac_net_names;
 
 		-- Fetch the net names of all nets of the current module:
-		nets : pac_net_names.list := get_nets (active_module, log_threshold + 1);
+		nets : constant pac_net_names.list := get_nets (active_module, log_threshold + 1);
 		
 		index : type_net_index := 0;
 
@@ -351,7 +351,7 @@ package body et_canvas_board_tracks is
 			column_0 : constant := 0;
 
 			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
@@ -496,7 +496,7 @@ package body et_canvas_board_tracks is
 			proposed_object : et_board_ops_ratsnest.pac_objects.cursor;
 
 			-- We start with the first airwire that is currently selected:
-			selected_object : type_object_airwire := 
+			selected_object : constant type_object_airwire := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin

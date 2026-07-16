@@ -182,7 +182,7 @@ package body et_units is
 	is 
 		result : boolean := false;
 
-		unit_position : type_object_position := get_position (unit);
+		unit_position : constant type_object_position := get_position (unit);
 	begin
 		-- The unit must be on the given sheet and
 		-- in the given catch zone:
@@ -588,7 +588,7 @@ package body et_units is
 		
 		procedure query_position (c : in pac_unit_positions.cursor) is
 			use pac_unit_positions;
-			pos : type_object_position := element (c);
+			pos : constant type_object_position := element (c);
 			sheet : type_sheet;
 		begin
 			sheet := get_sheet (pos);

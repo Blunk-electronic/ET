@@ -138,7 +138,7 @@ package body et_board_ops_signal_layers is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in type_signal_layer) 
 	is
-		layers_used : type_signal_layer := get_layer_count (module_cursor);
+		layers_used : constant type_signal_layer := get_layer_count (module_cursor);
 	begin
 		if layer > layers_used then
 			log (SEVERITY_ERROR, "Layer " & to_string (layer) & " invalid !" &
@@ -175,9 +175,9 @@ package body et_board_ops_signal_layers is
 			use package_layers;
 
 			-- get the total number of layers used by the module
-			layers_used : type_signal_layer := get_layer_count (module_cursor);
+			layers_used : constant type_signal_layer := get_layer_count (module_cursor);
 
-			old_stack : package_layers.vector := element (module_cursor).board.stack.layers;
+			old_stack : constant package_layers.vector := element (module_cursor).board.stack.layers;
 			new_stack : package_layers.vector;
 		begin
 			-- The bottom layer can not be deleted:

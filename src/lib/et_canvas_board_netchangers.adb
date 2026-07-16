@@ -100,7 +100,7 @@ package body et_canvas_board_netchangers is
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : type_object := 
+			selected_object : constant type_object := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -203,7 +203,7 @@ package body et_canvas_board_netchangers is
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 						active_module, PROPOSED, log_threshold + 1);
 		begin
 			modify_status (
@@ -401,7 +401,7 @@ package body et_canvas_board_netchangers is
 		procedure finalize is
 			use et_device_property_level;
 			
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize show", level => log_threshold);

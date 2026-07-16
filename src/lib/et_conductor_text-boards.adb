@@ -66,7 +66,7 @@ package body et_conductor_text.boards is
 		text	: in pac_conductor_texts_board.cursor)
 		return string
 	is 
-		t : type_conductor_text_board := element (text);
+		t : constant type_conductor_text_board := element (text);
 	begin
 		return to_string (t) & " layer " & to_string (get_layer (t));
 	end to_string;
@@ -77,7 +77,7 @@ package body et_conductor_text.boards is
 		text : in pac_conductor_texts_board.cursor)
 		return boolean
 	is 
-		t : type_conductor_text_board := element (text);
+		t : constant type_conductor_text_board := element (text);
 	begin
 		if is_selected (t) then
 			return true;
@@ -92,7 +92,7 @@ package body et_conductor_text.boards is
 		text : in pac_conductor_texts_board.cursor)
 		return boolean
 	is 
-		t : type_conductor_text_board := element (text);
+		t : constant type_conductor_text_board := element (text);
 	begin
 		if is_proposed (t) then
 			return true;

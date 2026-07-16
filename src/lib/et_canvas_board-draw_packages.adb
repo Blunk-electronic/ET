@@ -194,7 +194,7 @@ procedure draw_packages is
 			ph : type_text_placeholder renames element (c);
 
 			-- Build the content of the placeholder:
-			content : pac_text_content.bounded_string := placeholder_to_content (ph);
+			content : constant pac_text_content.bounded_string := placeholder_to_content (ph);
 
 
 			-- This procedure converts the placeholder to a complete
@@ -975,7 +975,7 @@ procedure draw_packages is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		use pac_devices_electrical;
 		cursor_electrical : pac_devices_electrical.cursor := 

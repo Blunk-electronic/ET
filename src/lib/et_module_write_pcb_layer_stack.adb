@@ -68,7 +68,7 @@ package body et_module_write_pcb_layer_stack is
 
 	
 	procedure query_layers (cursor : in package_layers.cursor) is
-		layer : type_layer := element (cursor);
+		layer : constant type_layer := element (cursor);
 	begin
 		-- write: "conductor   1 0.035"
 		write (keyword => keyword_conductor,

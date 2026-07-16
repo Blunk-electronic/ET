@@ -134,7 +134,7 @@ package body et_canvas_schematic is
 
 	procedure zoom_to_fit_all is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 	begin
 		-- put_line ("zoom_to_fit");
 
@@ -247,9 +247,9 @@ package body et_canvas_schematic is
 		use gdk.types;		
 		use gdk.types.keysyms;
 		
-		key_ctrl	: gdk_modifier_type := event.state and control_mask;
+		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
-		key			: gdk_key_type := event.keyval;
+		key			: constant gdk_key_type := event.keyval;
 
 
 
@@ -384,7 +384,7 @@ package body et_canvas_schematic is
 		use cairo;
 		use et_display.schematic;
 		
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 	begin
 		-- new_line;
 		-- put_line ("cb_draw (schematic) " & image (clock));
@@ -691,14 +691,14 @@ package body et_canvas_schematic is
 		event	: gdk_event_key)
 		return boolean
 	is
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		use gdk.types;		
 		use gdk.types.keysyms;
 		
-		key_ctrl	: gdk_modifier_type := event.state and control_mask;
-		key_shift	: gdk_modifier_type := event.state and shift_mask;
-		key			: gdk_key_type := event.keyval;
+		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
+		key_shift	: constant gdk_modifier_type := event.state and shift_mask;
+		key			: constant gdk_key_type := event.keyval;
 
 
 		-- Advances to next grid density up or down:
@@ -829,7 +829,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		mouse_event : type_mouse_event;
 	begin
@@ -862,7 +862,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		mouse_event : type_mouse_event;
 		
@@ -929,7 +929,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_motion)
 		return boolean
 	is
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		mp : type_vector_model;
 	begin
@@ -1096,7 +1096,7 @@ package body et_canvas_schematic is
 	is
 		use et_module_ops;
 		use et_module_read;
-		cursor : pac_generic_modules.cursor := find (generic_modules, module);
+		cursor : constant pac_generic_modules.cursor := find (generic_modules, module);
 	begin
 		-- CS force a full reset (call procedure reset)
 		

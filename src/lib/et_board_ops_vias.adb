@@ -338,7 +338,7 @@ package body et_board_ops_vias is
 	is 
 		use pac_objects;
 		use pac_vias;
-		v : type_object_via := element (object);
+		v : constant type_object_via := element (object);
 	begin
 		return get_net_name (v.net_cursor);
 	end get_net_name;
@@ -635,14 +635,14 @@ package body et_board_ops_vias is
 		use et_commit;
 
 		
-		console : boolean := false; -- for test and debugging only
+		console : constant boolean := false; -- for test and debugging only
 
 		
 		procedure locate_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			

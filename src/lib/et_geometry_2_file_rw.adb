@@ -95,7 +95,7 @@ package body et_geometry_2_file_rw is
 			end case;
 		end query_segment;		
 
-		contours : type_segments := get_segments (polygon);
+		contours : constant type_segments := get_segments (polygon);
 		
 	begin				
 		if contours.circular then

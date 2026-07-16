@@ -190,7 +190,7 @@ procedure draw_units is
 			rotation_total : constant type_rotation := add (port.rotation, unit_rotation);
 			
 			-- This is the start point of the line:
-			A : type_vector_model := port.position;
+			A : constant type_vector_model := port.position;
 
 			-- This is the end point of the line.
 			-- It will be computed according to the rotation of
@@ -1208,7 +1208,7 @@ procedure draw_units is
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
-			destination : type_vector_model := get_primary_tool_position;
+			destination : constant type_vector_model := get_primary_tool_position;
 			
 			symbol_cursor : pac_symbol_models.cursor;
 		begin
@@ -1274,7 +1274,7 @@ procedure draw_units is
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
-			destination : type_vector_model := get_primary_tool_position;
+			destination : constant type_vector_model := get_primary_tool_position;
 
 			symbol_cursor : pac_symbol_models.cursor;			
 		begin	

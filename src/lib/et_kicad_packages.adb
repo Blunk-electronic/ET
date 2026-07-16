@@ -460,7 +460,7 @@ package body et_kicad_packages is
 		use pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : pac_package_name.bounded_string :=
+		package_name : constant pac_package_name.bounded_string :=
 			to_package_name (ada.directories.base_name (file_name)); 
 
 		function path_and_file_name return string is
@@ -478,7 +478,7 @@ package body et_kicad_packages is
 		closing_bracket : constant character := ')';
 
 		term_char_seq : constant string (1..2) := space & closing_bracket;
-		term_char_set : character_set := to_set (term_char_seq);
+		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
 		sec_prefix : constant string := "sec_";
@@ -557,7 +557,7 @@ package body et_kicad_packages is
 	
 		function to_string (section : in type_keyword) return string is
 		-- Converts a section name to a string.
-			len : positive := type_keyword'image (section)'last;
+			len : constant positive := type_keyword'image (section)'last;
 		begin
 			-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 			-- the section image.
@@ -620,7 +620,7 @@ package body et_kicad_packages is
 		pad_size_y : type_pad_size;
 
 -- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
-		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
+		terminal_copper_width_inner_layers : constant type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
@@ -2014,7 +2014,7 @@ package body et_kicad_packages is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_segments.list := to_pad_milling_contour (
+								lines : constant pac_segments.list := to_pad_milling_contour (
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
@@ -2664,7 +2664,7 @@ package body et_kicad_packages is
 	
 		-- backup the directory of origin
 		use pac_directory_name;
-		origin_directory : pac_directory_name.bounded_string := to_bounded_string (current_directory);
+		origin_directory : constant pac_directory_name.bounded_string := to_bounded_string (current_directory);
 	
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.

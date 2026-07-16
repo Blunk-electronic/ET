@@ -57,14 +57,14 @@ is
 
 	-- The search of rig module files requires this stuff:
 	module_file_search : search_type; -- the state of the search
-	module_file_filter : filter_type := (ordinary_file => true, others => false);
+	module_file_filter : constant filter_type := (ordinary_file => true, others => false);
 
 	
 	procedure read_module_file_pre (
 	module_file_handle : in directory_entry_type) 
 	is 
 		use et_module_ops;
-		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
+		file_name : constant string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		et_module_read.read_module (file_name, log_threshold + 1);
 	end;
@@ -72,7 +72,7 @@ is
 	
 	-- The search of rig configuration files requires this stuff:
 	conf_file_search : search_type; -- the state of the search
-	conf_file_filter : filter_type := (ordinary_file => true, others => false);
+	conf_file_filter : constant filter_type := (ordinary_file => true, others => false);
 
 
 	
@@ -81,7 +81,7 @@ is
 		previous_input : ada.text_io.file_type renames current_input;
 
 		file_handle : ada.text_io.file_type;
-		file_name : string := simple_name (conf_file_handle); -- my_rig_configuration.conf
+		file_name : constant string := simple_name (conf_file_handle); -- my_rig_configuration.conf
 		rig_cursor : pac_rigs.cursor;
 		rig_inserted : boolean;
 		
@@ -348,7 +348,7 @@ is
 							when SEC_MODULE_INSTANCES =>							
 								declare
 									use et_module_ops;
-									kw : string := f (line, 1);
+									kw : constant string := f (line, 1);
 									module_cursor : pac_generic_modules.cursor;
 								begin
 									if kw = keyword_generic_name then
@@ -397,7 +397,7 @@ is
 						case pac_sections_stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
 								declare
-									kw : string := f (line, 1);
+									kw : constant string := f (line, 1);
 								begin
 									if kw = keyword_instance_A then
 										expect_field_count (line, 2);

@@ -73,7 +73,7 @@ package body et_geometry_2a.contours is
 		line : in type_line)
 		return type_segment
 	is
-		s : type_segment := (shape => contours.LINE, segment_line => line);
+		s : constant type_segment := (shape => contours.LINE, segment_line => line);
 	begin
 		return s;
 	end to_segment;
@@ -94,7 +94,7 @@ package body et_geometry_2a.contours is
 		segment	: in pac_segments.cursor)
 		return boolean
 	is 
-		s : type_segment := element (segment);
+		s : constant type_segment := element (segment);
 		result : boolean := false;
 	begin
 		case s.shape is
@@ -1098,7 +1098,7 @@ package body et_geometry_2a.contours is
 		source	: in type_contour;
 		status	: in out type_merge_result)
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 
 		target_length : constant natural := get_segments_total (target);
 		source_length : constant natural := get_segments_total (source);
@@ -1525,7 +1525,7 @@ package body et_geometry_2a.contours is
 		contour	: in type_contour)
 		return boolean
 	is
-		sts : type_contour_status := is_closed (contour);
+		sts : constant type_contour_status := is_closed (contour);
 	begin
 		return not sts.closed;
 	end is_open;
@@ -1922,7 +1922,7 @@ package body et_geometry_2a.contours is
 		-- The algorithm has further been extended to detect intersections
 		-- with arcs and even circles.
 
-		point_v : type_vector := to_vector (point);
+		point_v : constant type_vector := to_vector (point);
 		
 		-- A probe line will be formed which starts at the given point
 		-- and runs to the right (direction zero degree).
@@ -2408,7 +2408,7 @@ package body et_geometry_2a.contours is
 		proceed : aliased boolean := true;
 
 		procedure query_contour (c : in pac_contour_list.cursor) is
-			status : type_contour_status := is_closed (element (c));
+			status : constant type_contour_status := is_closed (element (c));
 		begin
 			if not status.closed then
 				proceed := false;

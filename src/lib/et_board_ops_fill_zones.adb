@@ -2205,7 +2205,7 @@ package body et_board_ops_fill_zones is
 		is
 			use pac_floating_solid;
 
-			p : type_floating_solid := 
+			p : constant type_floating_solid := 
 				type_floating_solid (zone);
 			
 		begin
@@ -2222,7 +2222,7 @@ package body et_board_ops_fill_zones is
 		is
 			use pac_floating_hatched;
 
-			p : type_floating_hatched := 
+			p : constant type_floating_hatched := 
 				type_floating_hatched (zone);
 			
 		begin
@@ -2252,7 +2252,7 @@ package body et_board_ops_fill_zones is
 		is
 			use pac_route_solid;
 
-			p : type_route_solid := 
+			p : constant type_route_solid := 
 				type_route_solid (zone);
 
 
@@ -2282,7 +2282,7 @@ package body et_board_ops_fill_zones is
 		is
 			use pac_route_hatched;
 
-			p : type_route_hatched := 
+			p : constant type_route_hatched := 
 				type_route_hatched (zone);
 		
 	

@@ -778,7 +778,7 @@ package body et_drawing_frame_rw is
 
 		
 		procedure read_general_stuff is
-			kw : string := f (line, 1);
+			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_domain then -- domain schematic/pcb
@@ -1392,7 +1392,7 @@ package body et_drawing_frame_rw is
 
 		
 		procedure read_general_stuff is
-			kw : string := f (line, 1);
+			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_domain then -- domain schematic/pcb

@@ -59,7 +59,7 @@ package body et_board_layer_category is
 		cat : in type_layer_category) 
 		return string 
 	is
-		s : string := type_layer_category'image (cat);
+		s : constant string := type_layer_category'image (cat);
 	begin
 		return s (layer_category_prefix'length + 1 .. s'last);
 	end to_string;

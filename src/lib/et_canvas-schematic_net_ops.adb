@@ -103,10 +103,10 @@ package body et_canvas.schematic_net_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_rename_window_key_pressed");

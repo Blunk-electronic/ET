@@ -79,7 +79,7 @@ package body et_schematic_ops_netlists_2 is
 		procedure query_ports (
 			port_cursor : in pac_device_ports.cursor) 
 		is
-			port_sch		: type_device_port := element (port_cursor);
+			port_sch		: constant type_device_port := element (port_cursor);
 			
 			use et_device_library.units;
 			more_properties	: type_port_properties_access;

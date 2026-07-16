@@ -68,7 +68,7 @@ package body et_module_write_meta is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		meta : et_meta.type_meta := element (module_cursor).meta;
+		meta : constant et_meta.type_meta := element (module_cursor).meta;
 
 		
 		procedure write_basic (basic : in type_meta_basic'class) is begin

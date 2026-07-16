@@ -58,7 +58,7 @@ package body et_device_appearance is
 		-- Remove the prefix from appearance and 
 		-- return the remainder as string.
 		-- APPEARANCE_PCB becomes PCB.
-		s : string := type_appearance'image (appearance);
+		s : constant string := type_appearance'image (appearance);
 	begin
 		if verbose then
 			case appearance is

@@ -514,7 +514,7 @@ package body et_stopmask is
 		result : pac_stop_texts.list;
 
 		procedure query_text (c : in pac_stop_texts.cursor) is
-			text : type_stop_text := element (c);
+			text : constant type_stop_text := element (c);
 		begin
 			result.append (text);
 		end query_text;

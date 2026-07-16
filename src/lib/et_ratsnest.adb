@@ -92,7 +92,7 @@ package body et_ratsnest is
 		shortest : type_float_positive := type_float_positive'last;
 
 		procedure query_wire (c : in pac_airwires.cursor) is
-			candidate_length : type_float_positive := get_length (element (c));
+			candidate_length : constant type_float_positive := get_length (element (c));
 		begin
 			if candidate_length < shortest then
 				shortest := candidate_length;
@@ -352,7 +352,7 @@ package body et_ratsnest is
 		result : type_float_positive := type_float_positive'last;
 
 		procedure query_node (c : in pac_vectors.cursor) is
-			distance : type_float_positive := get_distance_total (element (c), node);
+			distance : constant type_float_positive := get_distance_total (element (c), node);
 		begin
 			if distance < result then
 				result := distance;
@@ -622,7 +622,7 @@ package body et_ratsnest is
 			is
 				use pac_distances_table;
 				node_cursor : pac_distances_table.cursor;
-				result : boolean := true;
+				result : constant boolean := true;
 			begin
 				for i in distance_tables'first .. distance_tables'last loop
 					if i /= f_idx then -- ignore the given fragment

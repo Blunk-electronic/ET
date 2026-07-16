@@ -75,7 +75,7 @@ package body et_module_read_assy_doc is
 	procedure read_doc_line (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -115,7 +115,7 @@ package body et_module_read_assy_doc is
 	procedure read_doc_arc (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -168,7 +168,7 @@ package body et_module_read_assy_doc is
 	procedure read_doc_circle (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);

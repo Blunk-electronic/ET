@@ -306,7 +306,7 @@ package body et_kicad.schematic is
 		return type_device_name 
 	is
 		-- justify given text_in on the left
-		text_in_justified : string (1 .. text_in'length) := text_in;
+		text_in_justified : constant string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
 				prefix 		=> pac_device_prefix.to_bounded_string(""),
@@ -728,7 +728,7 @@ package body et_kicad.schematic is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : type_text_alignment_vertical;
-		s : string (1..1) := text(text'first..text'first);
+		s : constant string (1..1) := text(text'first..text'first);
 	begin
 		case type_field_alignment_vertical'value(s) is
 			when T => a := ALIGN_TOP;
@@ -1426,7 +1426,7 @@ package body et_kicad.schematic is
 			segment : in type_net_segment_base)
 			return boolean 
 		is
-			line : type_line := type_line (to_line (
+			line : constant type_line := type_line (to_line (
 				A	=> get_point (segment.coordinates_start), 
 				B	=> get_point (segment.coordinates_end)));
 			
@@ -1951,7 +1951,7 @@ package body et_kicad.schematic is
 		return et_schematic_geometry.type_rotation_relative 
 	is
 	-- CS: use a dedicated type for input parameter.
-		o_in	: type_label_orientation := type_label_orientation'value (text_in);
+		o_in	: constant type_label_orientation := type_label_orientation'value (text_in);
 		o_out	: et_schematic_geometry.type_rotation_relative;
 	begin
 		case o_in is
@@ -2443,7 +2443,7 @@ package body et_kicad.schematic is
 					closing_bracket : constant character := ')';
 
 					term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
-					term_char_set : character_set := to_set (term_char_seq);
+					term_char_set : constant character_set := to_set (term_char_seq);
 					
 					-- the section prefix is a workaround due to GNAT reserved keywords.
 					sec_prefix : constant string (1..4) := "sec_";
@@ -2492,7 +2492,7 @@ package body et_kicad.schematic is
 
 					function to_string (section : in type_keyword) return string is
 					-- Converts a section name to a string.
-						len : positive := type_keyword'image (section)'last;
+						len : constant positive := type_keyword'image (section)'last;
 					begin
 						-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 						-- the section image.
@@ -3449,7 +3449,7 @@ package body et_kicad.schematic is
 
 		d : type_distance_point_line;
 
-		line : type_line := type_line (to_line (
+		line : constant type_line := type_line (to_line (
 			A	=> get_point (segment.coordinates_start), 
 			B	=> get_point (segment.coordinates_end)));
 		
@@ -3848,7 +3848,7 @@ package body et_kicad.schematic is
 		end test_junction;
 
 		
-		line : type_line := type_line (to_line (
+		line : constant type_line := type_line (to_line (
 			A	=> get_point (segment.coordinates_start), 
 			B	=> get_point (segment.coordinates_end)));
 		
@@ -5554,7 +5554,7 @@ package body et_kicad.schematic is
 
 								-- CS this is a workaround in order to provide a line for function distance_point_line:
 								declare
-									line : type_line := type_line (to_line (
+									line : constant type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor_sec).coordinates_start), 
 										B	=> get_point (element (segment_cursor_sec).coordinates_end)));
 								begin
@@ -5766,7 +5766,7 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									line : type_line := type_line (to_line (
+									line : constant type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
 										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
@@ -5884,7 +5884,7 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									line : type_line := type_line (to_line (
+									line : constant type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
 										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
@@ -6067,7 +6067,7 @@ package body et_kicad.schematic is
 								element (segment_cursor).coordinates_start) then
 
 								declare
-									line : type_line := type_line (to_line (
+									line : constant type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
 										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
@@ -6320,7 +6320,7 @@ package body et_kicad.schematic is
 	-- Writes the properties of the given net label in the logfile.
 	procedure write_label_properties (label : in type_net_label) is
 		use et_string_processing;
-		log_threshold : type_log_level := 2;
+		log_threshold : constant type_log_level := 2;
 	begin
 		log_indentation_up;
 		

@@ -167,7 +167,7 @@ package body et_canvas_board_devices is
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : type_object := 
+			selected_object : constant type_object := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -279,7 +279,7 @@ package body et_canvas_board_devices is
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 						active_module, PROPOSED, log_threshold + 1);
 		begin
 			modify_status (
@@ -832,7 +832,7 @@ package body et_canvas_board_devices is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize copy", level => log_threshold);
@@ -880,7 +880,7 @@ package body et_canvas_board_devices is
 		procedure build_preview is
 
 			-- Get the selected original object:
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -1048,7 +1048,7 @@ package body et_canvas_board_devices is
 	is 
 
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize rotate", level => log_threshold);
@@ -1277,7 +1277,7 @@ package body et_canvas_board_devices is
 	is 
 
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize flip", level => log_threshold);
@@ -1348,7 +1348,7 @@ package body et_canvas_board_devices is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize delete", level => log_threshold);
@@ -1418,7 +1418,7 @@ package body et_canvas_board_devices is
 			use et_device_property_level;
 			use et_devices_electrical.units;
 			
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize show", level => log_threshold);

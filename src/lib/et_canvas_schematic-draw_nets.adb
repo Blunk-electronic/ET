@@ -295,7 +295,7 @@ procedure draw_nets is
 
 						box : type_area;
 						
-						content : pac_text_content.bounded_string := 
+						content : constant pac_text_content.bounded_string := 
 							to_content (to_string (net_name));
 						-- CS: append to content the position of the net
 						-- on the next sheet (strand position) using the quadrant bars.
@@ -624,7 +624,7 @@ procedure draw_nets is
 		procedure compute_route (s, e : in type_vector_model) is 
 
 			-- Do the actual route calculation.
-			r : type_path := to_path (s, e, live_path.bend_style);
+			r : constant type_path := to_path (s, e, live_path.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:

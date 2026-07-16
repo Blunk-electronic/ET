@@ -471,12 +471,12 @@ package body et_project is
 
 		-- break down destination into path and project name:
 		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
-		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
+		name : constant pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
-			module_name : pac_module_name.bounded_string := key (module_cursor); -- motor_driver
+			module_name : constant pac_module_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
 
@@ -511,7 +511,7 @@ package body et_project is
 		is
 			use et_rig_name;
 			use pac_file_name;
-			rig_name : pac_file_name.bounded_string := key (rig_cursor);
+			rig_name : constant pac_file_name.bounded_string := key (rig_cursor);
 		begin
 			log_indentation_up;
 			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);

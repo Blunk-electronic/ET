@@ -175,7 +175,7 @@ package body et_board_ops_conductors is
 		is
 			-- A track belonging to a net requires the net 
 			-- to be located in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -868,7 +868,7 @@ package body et_board_ops_conductors is
 				net 		: in type_net) 
 			is
 				use pac_conductor_lines;
-				lc : pac_conductor_lines.cursor := net.route.lines.first;
+				lc : constant pac_conductor_lines.cursor := net.route.lines.first;
 
 				procedure query_line (line : in type_conductor_line) is begin
 					if line.layer = layer then
@@ -1826,7 +1826,7 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -1990,7 +1990,7 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module) 
 		is
 			-- A track belonging to a net requires the net to be located in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -2706,7 +2706,7 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -2903,7 +2903,7 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -3028,7 +3028,7 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			

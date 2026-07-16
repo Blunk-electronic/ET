@@ -98,7 +98,7 @@ package body et_terminals is
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
-		log_threshold_1 : type_log_level := log_threshold + 1;
+		log_threshold_1 : constant type_log_level := log_threshold + 1;
 
 -- 		use type_pad_lines;
 -- 		use type_pad_arcs;

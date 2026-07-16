@@ -83,7 +83,7 @@ package body et_device_read_unit is
 	procedure read_unit_internal (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		use et_unit_swap_level;
 		use et_unit_add_level;
 	begin
@@ -218,7 +218,7 @@ package body et_device_read_unit is
 	is
 		use et_unit_swap_level;
 		use et_unit_add_level;
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name A, B, ...

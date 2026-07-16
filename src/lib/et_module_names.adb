@@ -62,7 +62,7 @@ package body et_module_names is
 	function remove_extension (file_name : in string) return string is
 	-- Removes from a string like templates/clock_generator.mod the extension so that
 	-- the return would be templates/clock_generator .
-		name_length : positive := file_name'length;
+		name_length : constant positive := file_name'length;
 		pos_last_character : positive;
 	begin
 		pos_last_character := name_length - module_file_name_extension'length - 1;

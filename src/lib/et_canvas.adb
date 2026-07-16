@@ -244,7 +244,7 @@ package body et_canvas is
 		return type_vector_model
 	is 
 		M : type_vector_model;
-		debug : boolean := false;
+		debug : constant boolean := false;
 	begin
 		if debug then
 			put_line ("canvas_to_real");
@@ -304,7 +304,7 @@ package body et_canvas is
 -- BASE-OFFSET:
 
 	procedure set_base_offset is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		x, y : type_logical_pixels;
 
@@ -354,7 +354,7 @@ package body et_canvas is
 		S2	: in type_zoom_factor;
 		Z1	: in type_logical_pixels_vector) -- a canvas point
 	is 
-		debug : boolean := false;
+		debug : constant boolean := false;
 
 		-- Convert the given canvas point to a
 		-- virtual model point according to the old zoom factor:
@@ -395,7 +395,7 @@ package body et_canvas is
 		S2	: in type_zoom_factor;
 		M	: in type_vector_model) -- real model point
 	is 
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- Convert the given real model point to 
 		-- a virtual model point:
@@ -597,7 +597,7 @@ package body et_canvas is
 	procedure zoom_to_fit (
 		area : in type_area)
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 	begin
 		put_line ("zoom_to_fit");
 
@@ -884,10 +884,10 @@ package body et_canvas is
 			-- We convert the corners (real coordinates CS1)
 			-- to canvas coordinates (CS2) and derive from them
 			-- the resulting rectangle to be drawn:
-			l1 : type_logical_pixels_vector := 
+			l1 : constant type_logical_pixels_vector := 
 				real_to_canvas (group_area_keyboard.K1, S);
 				
-			l2 : type_logical_pixels_vector := 
+			l2 : constant type_logical_pixels_vector := 
 				real_to_canvas (group_area_keyboard.K2, S);
 
 		begin
@@ -1052,7 +1052,7 @@ package body et_canvas is
 		area : in type_area)
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- The offset required to "move" all objects into
 		-- the center of the visible area:
@@ -1296,7 +1296,7 @@ package body et_canvas is
 
 	
 	procedure set_initial_scrollbar_settings is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		-- debug : boolean := true;
 	begin
 		put_line ("set initial scrollbar settings");
@@ -1411,16 +1411,16 @@ package body et_canvas is
 	
 
 	procedure show_adjustments_v is 
-		v_lower : type_logical_pixels := 
+		v_lower : constant type_logical_pixels := 
 			to_lp (scrollbar_v_adj.get_lower);
 
-		v_value : type_logical_pixels := 
+		v_value : constant type_logical_pixels := 
 			to_lp (scrollbar_v_adj.get_value);
 
-		v_upper : type_logical_pixels := 
+		v_upper : constant type_logical_pixels := 
 			to_lp (scrollbar_v_adj.get_upper);
 
-		v_page  : type_logical_pixels := 
+		v_page  : constant type_logical_pixels := 
 			to_lp (scrollbar_v_adj.get_page_size);
 		
 	begin
@@ -1435,11 +1435,11 @@ package body et_canvas is
 	
 
 	procedure show_adjustments_h is 
-		h_lower : type_logical_pixels := to_lp (scrollbar_h_adj.get_lower);
-		h_value : type_logical_pixels := to_lp (scrollbar_h_adj.get_value);
-		h_upper : type_logical_pixels := to_lp (scrollbar_h_adj.get_upper);
+		h_lower : constant type_logical_pixels := to_lp (scrollbar_h_adj.get_lower);
+		h_value : constant type_logical_pixels := to_lp (scrollbar_h_adj.get_value);
+		h_upper : constant type_logical_pixels := to_lp (scrollbar_h_adj.get_upper);
 		
-		h_page  : type_logical_pixels := 
+		h_page  : constant type_logical_pixels := 
 			to_lp (scrollbar_h_adj.get_page_size);
 	begin
 		put_line ("horizontal scrollbar adjustments:");
@@ -1506,7 +1506,7 @@ package body et_canvas is
 		C1, C2 : in type_bounding_box_corners)
 	is
 		use glib;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		scratch : type_logical_pixels;
 
 		HL : type_logical_pixels := to_lp (scrollbar_h_adj.get_lower);
@@ -1648,7 +1648,7 @@ package body et_canvas is
 
 	
 	procedure compute_canvas_size is
-		debug : boolean := true;
+		debug : constant boolean := true;
 
 		-- The maximal base-offset:
 		F_max : type_logical_pixels_vector;
@@ -2525,11 +2525,11 @@ package body et_canvas is
 			CP1 : type_logical_pixels_vector;
 			CP2 : type_logical_pixels_vector;
 
-			ax1f : type_distance := visible_area.position.x;
-			ax2f : type_distance := ax1f + visible_area.width;
+			ax1f : constant type_distance := visible_area.position.x;
+			ax2f : constant type_distance := ax1f + visible_area.width;
 			
-			ay1f : type_distance := visible_area.position.y;
-			ay2f : type_distance := ay1f + visible_area.height;
+			ay1f : constant type_distance := visible_area.position.y;
+			ay2f : constant type_distance := ay1f + visible_area.height;
 		begin
 			-- Set the linewidth of the lines:
 			set_line_width (context, to_gdouble (grid_width_lines));
@@ -2770,7 +2770,7 @@ package body et_canvas is
 	procedure draw_cursor is
 		use cairo;
 		
-		cp : type_logical_pixels_vector := 
+		cp : constant type_logical_pixels_vector := 
 			real_to_canvas (cursor.position, S);
 
 		-- These are the start and stop positions for the
@@ -3241,7 +3241,7 @@ package body et_canvas is
 		return boolean
 	is
 		use glib;
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		-- The point where the operator has clicked:
 		point : constant type_logical_pixels_vector :=
@@ -3332,7 +3332,7 @@ package body et_canvas is
 		event		: gdk.event.gdk_event_configure)
 		return boolean
 	is
-		result : boolean := false;
+		result : constant boolean := false;
 	begin
 		-- put_line ("cb_main_window_configure " & image (clock)); 
 		return result;
@@ -3358,7 +3358,7 @@ package body et_canvas is
 		event		: gdk.event.gdk_event_window_state)
 		return boolean
 	is
-		result : boolean := false;
+		result : constant boolean := false;
 	begin
 		-- put_line ("cb_main_window_state_change " & image (clock)); 
 		return result;
@@ -3686,7 +3686,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_v_pressed");
 		return event_handled;
@@ -3700,7 +3700,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_v_released");
 		backup_scrollbar_settings;
@@ -3718,7 +3718,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_h_pressed");
 		return event_handled;
@@ -3732,7 +3732,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
-		event_handled : boolean := false;
+		event_handled : constant boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_h_released");
 		backup_scrollbar_settings;
@@ -4697,7 +4697,7 @@ package body et_canvas is
 	procedure draw_drawing_origin is
 		use cairo;
 		
-		cp : type_logical_pixels_vector := real_to_canvas (origin, S);
+		cp : constant type_logical_pixels_vector := real_to_canvas (origin, S);
 	begin
 		set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
 
@@ -4752,7 +4752,7 @@ package body et_canvas is
 		return type_mouse_event
 	is
 		--debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- Get the affected mouse button:
 		button : constant type_mouse_button := type_mouse_button (event.button);
@@ -4852,7 +4852,7 @@ package body et_canvas is
 		return type_mouse_event
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- Get the affected mouse button:
 		button : constant type_mouse_button := type_mouse_button (event.button);
@@ -5013,7 +5013,7 @@ package body et_canvas is
 		return type_vector_model
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 
 		-- Get the canvas point in logical pixels:
 		cp : constant type_logical_pixels_vector := 
@@ -5149,12 +5149,12 @@ package body et_canvas is
 		event	: gdk_event_scroll)
 		return boolean
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		--debug : boolean := true;
 		
 		use gdk.types;
 		use gtk.accel_group;
-		event_handled : boolean := true;
+		event_handled : constant boolean := true;
 
 		accel_mask : constant gdk_modifier_type := 
 			get_default_mod_mask;

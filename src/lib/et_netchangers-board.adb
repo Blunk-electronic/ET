@@ -122,7 +122,7 @@ package body et_netchangers.board is
 	is
 		result : boolean := false;
 
-		netchanger_position : type_vector_model := 
+		netchanger_position : constant type_vector_model := 
 			netchanger.position_brd.place;
 			
 	begin

@@ -92,7 +92,7 @@ package body et_symbol_read is
 			line : in type_fields_of_line)
 		is
 			use et_keywords;
-			kw : string := f (line, 1);
+			kw : constant string := f (line, 1);
 			
 			use et_device_appearance;
 			appearance : type_appearance;

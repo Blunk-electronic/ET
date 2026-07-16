@@ -149,7 +149,7 @@ package body et_logging is
 		function write_text (indentation_on : in boolean := true) 
 			return string 
 		is 
-			fill : string := natural (log_indentation) * latin_1.space;
+			fill : constant string := natural (log_indentation) * latin_1.space;
 		begin
 			if indentation_on then
 				return fill & to_importance (importance) & text;

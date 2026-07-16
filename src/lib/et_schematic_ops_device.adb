@@ -127,14 +127,14 @@ package body et_schematic_ops_device is
 
 			procedure query_units (device_cursor : in pac_devices_electrical.cursor) is
 				use pac_units;
-				device_name : type_device_name := pac_devices_electrical.key (device_cursor); -- R1
+				device_name : constant type_device_name := pac_devices_electrical.key (device_cursor); -- R1
 
 				
 				procedure sort (
 					unit_cursor : in pac_units.cursor) 
 				is 
-					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
-					unit_position : type_object_position := element (unit_cursor).position;
+					unit_name : constant pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_position : constant type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : pac_renumber_devices.cursor;
 
@@ -1133,7 +1133,7 @@ package body et_schematic_ops_device is
 			cat : in type_device_category) 
 			return boolean 
 		is
-			result : boolean := true;
+			result : constant boolean := true;
 			
 			use pac_renumber_devices;
 			cursor : pac_renumber_devices.cursor := devices.first;

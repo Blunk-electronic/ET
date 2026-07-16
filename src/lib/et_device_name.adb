@@ -85,7 +85,7 @@ package body et_device_name is
 	function to_device_name (text_in : in string) return type_device_name is
 
 		-- justify given text_in on the left
-		text_in_justified : string (1 .. text_in'length) := to_upper (text_in);
+		text_in_justified : constant string (1 .. text_in'length) := to_upper (text_in);
 	
 		r : type_device_name := (
 				prefix		=> pac_device_prefix.to_bounded_string(""),
@@ -234,15 +234,15 @@ package body et_device_name is
 	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
-		id_width_wanted	: natural := name.id_width;
+		id_width_wanted	: constant natural := name.id_width;
 	
 		-- The width of the given id is obtained by converting the id to a string
 		-- and then by measuring its length:
-		id_width_given	: natural := trim (natural'image (name.id),left)'length;
+		id_width_given	: constant natural := trim (natural'image (name.id),left)'length;
 
 		-- Finally the number of zeros to prepend is the difference of wanted 
 		-- and given digits:
-		lz : natural := id_width_wanted - id_width_given;
+		lz : constant natural := id_width_wanted - id_width_given;
 	begin
 		case lz is
 			when 0 => -- no leading zeroes

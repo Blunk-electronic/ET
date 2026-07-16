@@ -243,7 +243,7 @@ package body et_module_read_nets is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
-		position_found_in_module_file : type_vector_model := strand.position.place;
+		position_found_in_module_file : constant type_vector_model := strand.position.place;
 	begin
 		log (text => "assign strand", level => log_threshold + 1);
 		log_indentation_up;
@@ -385,7 +385,7 @@ package body et_module_read_nets is
 		log_threshold	: in type_log_level)
 	is
 		AB_end : type_start_end_point;
-		error : boolean := false;
+		error : constant boolean := false;
 	begin
 		log (text => "read net junction", level => log_threshold + 1);
 		log_indentation_up;

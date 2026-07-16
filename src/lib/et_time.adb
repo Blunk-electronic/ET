@@ -75,14 +75,14 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : string (1..10) := image (time, time_zone => utc_time_offset (time)) (1..10);
+		now : constant string (1..10) := image (time, time_zone => utc_time_offset (time)) (1..10);
 	begin
 		return now;
 	end to_string_YMD;
 
 	
 	function date_first return time is
-		r : time := gnat.calendar.no_time; -- 1901-01-01
+		r : constant time := gnat.calendar.no_time; -- 1901-01-01
 		--time_of (year => 1970, month => 01, day => 01, seconds => 1.0); -- return 1970-01-01
 	begin
 		return r;
