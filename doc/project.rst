@@ -43,6 +43,38 @@ Since there is no module in this new bare project, the schematic
 and board editor window opens an untitled module. All you see here
 for the moment is the default drawing frame.
 
+Optionally the file name of the generic module to be opened can be added:
+
+	.. parsed-literal::
+		
+		$ et --open-project my_et_project/ --module my_et_project/power_supply.mod
+
+or just
+
+	.. parsed-literal::
+
+		$ et --open-project my_et_project/ --module power_supply.mod
+
+
+The module file must exist in the project directory.
+
+further-on a sheet can be specified so that the desired sheet gets opened right away:
+
+	.. parsed-literal::
+		
+		$ et --open-project my_et_project/ --module power_supply.mod --sheet 3
+
+
+NOTE: The project to be opened must be a child directory of the 
+current working directory. Opening a project across several directory levels like ecad/my_et_project/
+is not possible.
+
+A log level can also be passed:
+
+	.. parsed-literal::
+	
+		$ et --open-project my_et_project/ --log-level 2
+
 
 
 
@@ -62,5 +94,21 @@ file with this command:
 
 This file can now be found in the root directory of your projects.
 Edit it according to your customs.
+Assign the conventions file to the module by editing the rig configuration file.
+
+An example file can be seen here <https://github.com/Blunk-electronic/ET_training/blob/master/conventions.txt>
+
+Opening a project includes syntax checking. See the report for details.
+
+..
+	If a conventions file is available run:
+
+	$ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --log-level 2
+
+
+	The project can also be saved with a different name at a different place:
+
+
+	$ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2
 
 
