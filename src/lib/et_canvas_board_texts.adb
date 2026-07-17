@@ -257,7 +257,7 @@ package body et_canvas_board_texts is
 				--put_line ("size via tab " & text);
 				apply_size (text);
 				
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;
@@ -314,7 +314,7 @@ package body et_canvas_board_texts is
 				--put_line ("line width via tab " & text);
 				apply_line_width (text);
 
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;
@@ -373,7 +373,7 @@ package body et_canvas_board_texts is
 				--put_line ("rotation via tab " & text);
 				apply_rotation (text);
 
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;

@@ -80,7 +80,7 @@ package body et_fill_zones.boards is
 		
 		procedure connected_with_net (p : in type_route_solid) is begin
 			case p.connection is
-				when THERMAL => NULL;
+				when THERMAL => null;
 
 				when SOLID => null;
 			end case;
