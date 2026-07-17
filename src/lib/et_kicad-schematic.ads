@@ -456,9 +456,9 @@ package et_kicad.schematic is
 	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: type_vector_model;
 		rotation	: et_schematic_geometry.type_rotation_model;
-        text		: pac_net_name.bounded_string;
-        size		: et_schematic_text.pac_text_schematic.type_text_size;
-        width		: et_schematic_text.type_text_line_width;
+		text		: pac_net_name.bounded_string;
+		size		: et_schematic_text.pac_text_schematic.type_text_size;
+		width		: et_schematic_text.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when TAG => 
@@ -838,15 +838,15 @@ package et_kicad.schematic is
 		element_type => type_anonymous_strand);
 
 
-    -- A hierachic sheet is a box with coordinates and length x/y.
+	-- A hierachic sheet is a box with coordinates and length x/y.
 	-- On the box edges are ports. 
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
 		direction	: et_kicad_libraries.type_port_direction;
 		text_size	: et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates	: type_vector_model;
-        orientation	: et_schematic_geometry.type_rotation_model;
-        processed   : boolean; -- used when linking hierarchic nets
+		orientation	: et_schematic_geometry.type_rotation_model;
+		processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
 	package type_hierarchic_sheet_ports is new ordered_maps (
@@ -862,10 +862,10 @@ package et_kicad.schematic is
 	end record;
 	
 	type type_hierarchic_sheet is record
-        text_size_of_name   : et_schematic_text.pac_text_schematic.type_text_size;
-        text_size_of_file   : et_schematic_text.pac_text_schematic.type_text_size;
+		text_size_of_name   : et_schematic_text.pac_text_schematic.type_text_size;
+		text_size_of_file   : et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
-        size_x, size_y      : et_schematic_geometry.type_distance_model; -- size x/y of the box
+		size_x, size_y      : et_schematic_geometry.type_distance_model; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
 	end record;
