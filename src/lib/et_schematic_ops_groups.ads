@@ -124,7 +124,7 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 		
- end et_schematic_ops_groups;
+end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 

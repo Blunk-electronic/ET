@@ -179,26 +179,26 @@ package et_schematic_coordinates is
 
 	
 	
-	private 
+private 
 
-		type type_object_position is new pac_geometry_2.type_position with record
-			sheet : type_sheet := type_sheet'first;
-		end record;
+	type type_object_position is new pac_geometry_2.type_position with record
+		sheet : type_sheet := type_sheet'first;
+	end record;
 
-		type type_object_position_relative is new pac_geometry_2.type_position with record
-			sheet : type_sheet_relative := 0;
-		end record;
-
-		
-		zero_position : constant type_object_position := (
-			origin_zero_rotation with sheet => type_sheet'first);
+	type type_object_position_relative is new pac_geometry_2.type_position with record
+		sheet : type_sheet_relative := 0;
+	end record;
 
 		
-		-- A position in a schematic which is on the
-		-- last possible sheet and the greatest distance in
-		-- x and y from the origin:
-		greatest_position : constant type_object_position := (
-			far_upper_right_zero_rotation with sheet => type_sheet'last);
+	zero_position : constant type_object_position := (
+		origin_zero_rotation with sheet => type_sheet'first);
+
+		
+	-- A position in a schematic which is on the
+	-- last possible sheet and the greatest distance in
+	-- x and y from the origin:
+	greatest_position : constant type_object_position := (
+		far_upper_right_zero_rotation with sheet => type_sheet'last);
 
 		
 end et_schematic_coordinates;
