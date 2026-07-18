@@ -178,7 +178,9 @@ procedure draw_nets is
 -- 
 
 
-	-- This procedure draws a single net segment:
+	-- This procedure draws a single net segment.
+	-- The segment itself is just a line with a
+	-- certian width:
 	procedure draw_segment (
 		segment : in type_net_segment)
 	is begin
@@ -189,6 +191,331 @@ procedure draw_nets is
 	end draw_segment;
 
 
+
+	
+
+	-- This procedure draws the junctions of the segment. 
+	-- Note: A junction can be at the start or the end (A/B)
+	-- of the segment, but never somewhere between.
+	procedure draw_junctions (
+		segment : in type_net_segment)
+	is
+		j : type_circle := junction_symbol;
+
+		procedure draw is begin
+			draw_circle (
+				circle	=> type_circle (j),
+				filled	=> YES,
+				width	=> zero,
+				stroke	=> DO_STROKE);
+		end draw;
+		
+	begin
+		-- Probe start point of segment:
+		if segment.junctions.A then
+			set_center (j, get_A (segment));
+			draw;
+		end if;
+
+		-- Probe end point of segment:
+		if segment.junctions.B then
+			set_center (j, get_B (segment));
+			draw;
+		end if;
+	end draw_junctions;
+
+
+	
+
+
+	
+
+	-- This procedure draws the net connectors that
+	-- are attached to the A or B end of a net segment:
+	procedure draw_net_connectors (
+		net_name	: in pac_net_name.bounded_string;
+		segment		: in type_net_segment)
+	is 
+		use et_colors;
+		use et_colors.schematic;
+
+		
+		-- The place at which the label is to be drawn.
+		-- It will be taken from the A or B end of the segment,
+		-- depending on which end has a connector:
+		position : type_vector_model;
+		
+		-- The rotation of the connector must be deduced
+		-- from the orientation and affected A/B end
+		-- of the net segment:
+		rotation : type_rotation := 0.0;
+		
+		
+		-- This procedure draws a net connector:
+		procedure draw_connector (label : in type_net_connector) is
+			use pac_draw_text;
+			use et_alignment;
+			use pac_net_name;
+
+			box : type_area;
+			
+			content : pac_text_content.bounded_string := 
+				to_content (to_string (net_name));
+			-- CS: append to content the position of the net
+			-- on the next sheet (strand position) using the quadrant bars.
+
+			
+			procedure make_box is begin
+				-- Form a box that wraps around the net name:
+				box := to_area (get_text_extents (content, label.size, net_label_font));
+
+				-- Expand the box so that there is some empty space between
+				-- text and border:
+				box.height := box.height * net_connector_height_to_size_ratio;
+				box.width  := box.width  * net_connector_height_to_size_ratio;
+			end make_box;
+			
+			
+			-- The text rotation must be either 0 or 90 degree
+			-- (documentational text !) and is thus
+			-- to be calculated according to the rotation of the label:
+			text_rotation : type_rotation;
+
+			-- The alignment is assigned as if the text 
+			-- were drawn at zero rotation.
+			-- The vertical alignment is always CENTER. Horizontal alignment 
+			-- changes depending on the rotation of the label:
+			text_alignment : type_text_alignment := 
+				(vertical => ALIGN_CENTER, horizontal => <>);
+
+			-- The text position is not the same as the 
+			-- label position, thus it must be calculated according to 
+			-- the label rotation and net_connector_text_offset:
+			text_position : type_vector_model;
+
+			
+		begin
+			make_box;
+
+			-- Depending on the rotation the box
+			-- is drawn either vertically or horizontally.
+			-- Moreover the position, alignment and rotation of the text
+			-- inside the box depends on the rotation:
+			
+			if rotation = zero_rotation then
+		
+				box.position := set (
+					get_x (position), 
+					get_y (position) - box.height * 0.5);
+
+				text_rotation := zero_rotation;
+				text_position := set (get_x (position) + net_connector_text_offset, 
+										get_y (position));
+				
+				text_alignment.horizontal := ALIGN_LEFT;
+			end if;
+
+			
+			if rotation = 90.0 then
+
+				box.position := set (
+					get_x (position) - box.height * 0.5,
+					get_y (position));
+
+				swap_edges (box);
+
+				text_rotation := 90.0;
+				text_position := set (get_x (position), 
+										get_y (position) + net_connector_text_offset);
+				
+				text_alignment.horizontal := ALIGN_LEFT;
+			end if;
+
+			
+			if rotation = 180.0 then
+
+				box.position := set (
+					get_x (position) - box.width,
+					get_y (position) - box.height * 0.5);
+
+				text_rotation := zero_rotation;
+				text_position := set (get_x (position) - net_connector_text_offset, 
+										get_y (position));
+				
+				text_alignment.horizontal := ALIGN_RIGHT;
+			end if;
+
+			
+			if rotation = 270.0 then
+
+				box.position := set (
+					get_x (position) - box.height * 0.5,
+					get_y (position) - box.width);
+				
+				swap_edges (box);
+
+				text_rotation := 90.0;
+				text_position := set (get_x (position), 
+										get_y (position) - net_connector_text_offset);
+				
+				text_alignment.horizontal := ALIGN_RIGHT;
+			end if;
+
+
+			-- If the label is selected then draw it highlighted:
+			if is_selected (label) then
+				set_color_nets (BRIGHT);
+			end if;				
+
+			
+			-- Draw the box enshrouding the net name:
+			draw_rectangle (
+				rectangle	=> box, 
+				width		=> net_connector_box_linewidth);
+
+			-- Draw the actual net name:
+			draw_text (
+				content		=> content,
+				size		=> label.size,
+				font		=> net_connector_font,
+				anchor		=> text_position,
+				origin		=> false, -- no origin for net names required
+				
+				-- Text rotation about its anchor point. This is documentational text.
+				-- It is readable from the front or the right.
+				rotation	=> text_rotation,
+				alignment	=> text_alignment);
+
+			
+			if is_selected (label) then
+				set_color_nets (NORMAL);
+			end if;
+		end draw_connector;
+
+		
+	begin
+		-- put_line ("draw net connectors");
+		
+		-- Draw the label on the A end (if it is active):
+		if is_active (segment.connectors.A) then
+			--put_line ("A is active");
+			position := get_A (segment);
+
+			-- Deduce the rotation of the label from
+			-- the segment and the affected A end:
+			rotation := to_rotation (segment, A);
+			
+			-- If the parent segment is moving
+			-- with its A end, then move the label accordingly
+			-- by the current object_displacement:
+			if is_A_moving (segment) then
+				move_by (position, object_displacement);
+			end if;
+			
+			draw_connector (segment.connectors.A);
+		end if;
+
+		
+		-- Draw the label on the B end (if it is active):
+		if is_active (segment.connectors.B) then
+			--put_line ("B is active");
+			position := get_B (segment);
+
+			-- Deduce the rotation of the label from
+			-- the segment and the affected B end:
+			rotation := to_rotation (segment, B);
+
+			-- If the parent segment is moving
+			-- with its B end, then move the label accordingly
+			-- by the current object_displacement:
+			if is_B_moving (segment) then
+				move_by (position, object_displacement);
+			end if;
+
+			draw_connector (segment.connectors.B);
+		end if;					
+	end draw_net_connectors;
+
+
+	
+
+
+	
+	
+	-- This procedure draws the net labels that
+	-- are attached to a net segment:
+	procedure draw_labels (
+		net_name	: in pac_net_name.bounded_string;
+		segment 	: in type_net_segment)
+	is
+		use et_colors;
+		use et_colors.schematic;
+	
+		label_cursor : pac_net_labels.cursor := segment.labels.first;
+
+
+		-- This procedure queries a net label and draws it:
+		procedure query_label (label : in type_net_label) is
+			use pac_net_name;
+			use pac_draw_text;
+
+
+			-- This procedure draws a net label:
+			procedure draw_label is
+				-- Temporarily we store here the position
+				-- of the label. In case it is moving, then it
+				-- will be overwritten by the tool position:
+				position : type_vector_model := get_position (label);
+			begin
+				-- Overwrite position by get_object_tool_position
+				-- if the label is moving.
+				if is_moving (label) then
+					position := get_object_tool_position;
+					--put_line ("label pos" & to_string (position));
+				end if;
+				
+				draw_text (
+					content		=> to_content (to_string (net_name)),
+					size		=> label.size,
+					font		=> net_label_font,
+					anchor		=> position,
+					origin		=> true,
+					
+					-- Text rotation about its anchor point.
+					-- This is documentational text.
+					-- It is readable from the front or the right.
+					rotation	=> pac_text.to_rotation (label.rotation),
+					alignment	=> net_label_alignment);					
+			end draw_label;
+
+			
+		begin
+			-- If the candidate label is selected, then
+			-- draw it highlighted:
+			if is_selected (label) then
+				set_color_nets (BRIGHT);
+			end if;
+			
+			draw_label;
+
+			if is_selected (label) then
+				set_color_nets (NORMAL);
+			end if;
+		end query_label;
+	
+	
+	begin
+		-- Iterate through the net labels:
+		while has_element (label_cursor) loop
+			query_element (label_cursor, query_label'access);
+			next (label_cursor);
+		end loop;
+	end draw_labels;
+	
+	
+	
+	
+	
 
 	
 	
@@ -220,289 +547,6 @@ procedure draw_nets is
 			procedure query_segment (
 				segment : in type_net_segment) 
 			is 
-				label_cursor : pac_net_labels.cursor := segment.labels.first;
-
-
-				-- This procedure queries a net label and draws it:
-				procedure query_label (label : in type_net_label) is
-					use pac_net_name;
-					use pac_draw_text;
-
-
-					-- This procedure draws a net label:
-					procedure draw_label is
-						-- Temporarily we store here the position
-						-- of the label. In case it is moving, then it
-						-- will be overwritten by the tool position:
-						position : type_vector_model := get_position (label);
-					begin
-						-- Overwrite position by get_object_tool_position
-						-- if the label is moving.
-						if is_moving (label) then
-							position := get_object_tool_position;
-							--put_line ("label pos" & to_string (position));
-						end if;
-						
-						draw_text (
-							content		=> to_content (to_string (net_name)),
-							size		=> label.size,
-							font		=> net_label_font,
-							anchor		=> position,
-							origin		=> true,
-							
-							-- Text rotation about its anchor point.
-							-- This is documentational text.
-							-- It is readable from the front or the right.
-							rotation	=> pac_text.to_rotation (label.rotation),
-							alignment	=> net_label_alignment);					
-					end draw_label;
-
-					
-				begin
-					-- If the candidate label is selected, then
-					-- draw it highlighted:
-					if is_selected (label) then
-						set_color_nets (BRIGHT);
-					end if;
-					
-					draw_label;
-
-					if is_selected (label) then
-						set_color_nets (NORMAL);
-					end if;
-				end query_label;
-
-
-
-				
-				procedure draw_net_connectors is 
-					-- The place at which the label is to be drawn.
-					-- It will be taken from the A or B end of the segment,
-					-- depending on which end has a connector:
-					position : type_vector_model;
-					
-					-- The rotation of the connector must be deduced
-					-- from the orientation and affected A/B end
-					-- of the net segment:
-					rotation : type_rotation := 0.0;
-					
-					
-					-- This procedure draws a net connector:
-					procedure draw_connector (label : in type_net_connector) is
-						use pac_draw_text;
-						use et_alignment;
-						use pac_net_name;
-
-						box : type_area;
-						
-						content : pac_text_content.bounded_string := 
-							to_content (to_string (net_name));
-						-- CS: append to content the position of the net
-						-- on the next sheet (strand position) using the quadrant bars.
-
-						
-						procedure make_box is begin
-							-- Form a box that wraps around the net name:
-							box := to_area (get_text_extents (content, label.size, net_label_font));
-
-							-- Expand the box so that there is some empty space between
-							-- text and border:
-							box.height := box.height * net_connector_height_to_size_ratio;
-							box.width  := box.width  * net_connector_height_to_size_ratio;
-						end make_box;
-						
-						
-						-- The text rotation must be either 0 or 90 degree
-						-- (documentational text !) and is thus
-						-- to be calculated according to the rotation of the label:
-						text_rotation : type_rotation;
-
-						-- The alignment is assigned as if the text 
-						-- were drawn at zero rotation.
-						-- The vertical alignment is always CENTER. Horizontal alignment 
-						-- changes depending on the rotation of the label:
-						text_alignment : type_text_alignment := 
-							(vertical => ALIGN_CENTER, horizontal => <>);
-
-						-- The text position is not the same as the 
-						-- label position, thus it must be calculated according to 
-						-- the label rotation and net_connector_text_offset:
-						text_position : type_vector_model;
-
-						
-					begin
-						make_box;
-
-						-- Depending on the rotation the box
-						-- is drawn either vertically or horizontally.
-						-- Moreover the position, alignment and rotation of the text
-						-- inside the box depends on the rotation:
-						
-						if rotation = zero_rotation then
-					
-							box.position := set (
-								get_x (position), 
-								get_y (position) - box.height * 0.5);
-
-							text_rotation := zero_rotation;
-							text_position := set (get_x (position) + net_connector_text_offset, 
-												  get_y (position));
-							
-							text_alignment.horizontal := ALIGN_LEFT;
-						end if;
-
-						
-						if rotation = 90.0 then
-
-							box.position := set (
-								get_x (position) - box.height * 0.5,
-								get_y (position));
-
-							swap_edges (box);
-
-							text_rotation := 90.0;
-							text_position := set (get_x (position), 
-												  get_y (position) + net_connector_text_offset);
-							
-							text_alignment.horizontal := ALIGN_LEFT;
-						end if;
-
-						
-						if rotation = 180.0 then
-
-							box.position := set (
-								get_x (position) - box.width,
-								get_y (position) - box.height * 0.5);
-
-							text_rotation := zero_rotation;
-							text_position := set (get_x (position) - net_connector_text_offset, 
-												  get_y (position));
-							
-							text_alignment.horizontal := ALIGN_RIGHT;
-						end if;
-
-						
-						if rotation = 270.0 then
-
-							box.position := set (
-								get_x (position) - box.height * 0.5,
-								get_y (position) - box.width);
-							
-							swap_edges (box);
-
-							text_rotation := 90.0;
-							text_position := set (get_x (position), 
-												  get_y (position) - net_connector_text_offset);
-							
-							text_alignment.horizontal := ALIGN_RIGHT;
-						end if;
-
-
-						-- If the label is selected then draw it highlighted:
-						if is_selected (label) then
-							set_color_nets (BRIGHT);
-						end if;				
-
-						
-						-- Draw the box enshrouding the net name:
-						draw_rectangle (
-							rectangle	=> box, 
-							width		=> net_connector_box_linewidth);
-
-						-- Draw the actual net name:
-						draw_text (
-							content		=> content,
-							size		=> label.size,
-							font		=> net_connector_font,
-							anchor		=> text_position,
-							origin		=> false, -- no origin for net names required
-							
-							-- Text rotation about its anchor point. This is documentational text.
-							-- It is readable from the front or the right.
-							rotation	=> text_rotation,
-							alignment	=> text_alignment);
-
-						
-						if is_selected (label) then
-							set_color_nets (NORMAL);
-						end if;
-					end draw_connector;
-
-					
-				begin
-					-- put_line ("draw net connectors");
- 					
-					-- Draw the label on the A end (if it is active):
-					if is_active (segment.connectors.A) then
-						--put_line ("A is active");
-						position := get_A (segment);
-
-						-- Deduce the rotation of the label from
-						-- the segment and the affected A end:
-						rotation := to_rotation (segment, A);
-						
-						-- If the parent segment is moving
-						-- with its A end, then move the label accordingly
-						-- by the current object_displacement:
-						if is_A_moving (segment) then
-							move_by (position, object_displacement);
-						end if;
-						
-						draw_connector (segment.connectors.A);
-					end if;
-
-					
-					-- Draw the label on the B end (if it is active):
-					if is_active (segment.connectors.B) then
-						--put_line ("B is active");
-						position := get_B (segment);
-
-						-- Deduce the rotation of the label from
-						-- the segment and the affected B end:
-						rotation := to_rotation (segment, B);
-
-						-- If the parent segment is moving
-						-- with its B end, then move the label accordingly
-						-- by the current object_displacement:
-						if is_B_moving (segment) then
-							move_by (position, object_displacement);
-						end if;
-
-						draw_connector (segment.connectors.B);
-					end if;					
-				end draw_net_connectors;
-				
-				
-				
-				-- This procedure draws the junctions of the segment. 
-				-- Note: A junction can be at the start or the end (A/B)
-				-- of the segment, but never somewhere between.
-				procedure draw_junctions is
-					j : type_circle := junction_symbol;
-
-					procedure draw is begin
-						draw_circle (
-							circle	=> type_circle (j),
-							filled	=> YES,
-							width	=> zero,
-							stroke	=> DO_STROKE);
-					end draw;
-					
-				begin
-					-- Probe start point of segment:
-					if segment.junctions.A then
-						set_center (j, get_A (segment));
-						draw;
-					end if;
-
-					-- Probe end point of segment:
-					if segment.junctions.B then
-						set_center (j, get_B (segment));
-						draw;
-					end if;
-				end draw_junctions;
-
-				
 				segment_is_selected : boolean := false;
 				segment_copy : type_net_segment := segment;
 				
@@ -517,25 +561,23 @@ procedure draw_nets is
 				end if;				
 
 				draw_segment (segment);				
+				draw_labels (net_name, segment);
+				draw_junctions (segment);
+				draw_net_connectors (net_name, segment);
+
 				
 				-- CS: Experimental:
 				if segment_is_selected and group_is_being_copied then
 					move_by (segment_copy, get_group_offset);
 					-- put_line ("segment copy: " & to_string (segment_copy));
-					draw_segment (segment_copy);
 					
-					-- CS: draw copy of junctions and labels
+					draw_segment (segment_copy);					
+					draw_labels (net_name, segment_copy);
+					draw_junctions (segment_copy);
+					draw_net_connectors (net_name, segment_copy);
 				end if;
 				
-				
-				-- Iterate through the net labels:
-				while has_element (label_cursor) loop
-					query_element (label_cursor, query_label'access);
-					next (label_cursor);
-				end loop;
-				
-				draw_junctions;
-				draw_net_connectors;
+
     -- 
 				-- if is_selected (segment) 
 				-- or is_A_selected (segment)
