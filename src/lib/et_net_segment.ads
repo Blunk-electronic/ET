@@ -75,7 +75,9 @@ package et_net_segment is
 		ports		: type_net_ports_AB;
 	end record;
 
-
+	
+	
+	
 	-- Resets all components of a segment:
 	procedure reset_net_segment (
 		segment	: in out type_net_segment);
@@ -84,7 +86,8 @@ package et_net_segment is
 	-- Copies the given net segment_in to
 	-- segment_out. segment_out will be moved
 	-- away from segment_in by offset.
-	-- Copies also the net labels and connectors:
+	-- Copies also the net labels and connectors.
+	-- NOTE: junctions are not copied.
 	procedure copy_net_segment (
 		segment_in	: in type_net_segment;
 		segment_out	: out type_net_segment;

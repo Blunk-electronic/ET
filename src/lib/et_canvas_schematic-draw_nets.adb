@@ -37,10 +37,6 @@
 --   history of changes:
 --
 
--- with gnat;
--- with gnat.exception_traces;
-
--- with ada.exceptions;
 
 with et_primitive_objects;			use et_primitive_objects;
 with et_text_content;				use et_text_content;
@@ -55,9 +51,6 @@ with et_net_connectors;				use et_net_connectors;
 with et_net_names;					use et_net_names;
 
 
--- with et_schematic_ops_nets;
-
-
 separate (et_canvas_schematic)
 
 procedure draw_nets is
@@ -68,115 +61,7 @@ procedure draw_nets is
 	use pac_net_labels;
 
 	
-	-- Draws a single net label that is being moved:
--- 	procedure draw_simple_label_being_moved (
--- 		net		: in pac_net_name.bounded_string;
--- 		label	: in type_net_label)
--- 	is 
--- 		use pac_net_name;
--- 		use pac_draw_text;
--- 	begin
--- 		--case element (label).appearance is
--- 			--when SIMPLE =>
--- 				draw_text (
--- 					content		=> to_content (to_string (net)),
--- 					size		=> label.size,
--- 					font		=> net_label_font,
--- 					anchor		=> label.position,
--- 					origin		=> true, -- CS must be false on export to image
--- 					
--- 					-- Text rotation about its anchor point.
--- 					-- This is documentational text.
--- 					-- It is readable from the front or the right.
--- 					rotation	=> pac_text.to_rotation (label.rotation_simple),
--- 					alignment	=> net_label_alignment);
--- 
--- 			--when TAG =>
--- 				--draw_tag_label (self, in_area, context, net, element (label));
--- 
--- 		--end case;
--- 	end draw_simple_label_being_moved;
-
 	
-	
--- 	-- Draws the net label being moved. If no net label
--- 	-- is being moved, nothing happens here:
--- 	procedure draw_label_being_moved is
--- 		use et_modes.schematic;
--- 		use pac_net_name;
--- 		l : type_net_label (label.appearance);
--- 
--- 		use pac_draw_text;
--- 	begin
--- 		case verb is
--- 			when VERB_PLACE =>
--- 				if label.ready then
--- 
--- 					case label.tool is
--- 						when KEYBOARD	=> l.position := get_cursor_position;
--- 						when MOUSE		=> l.position := snap_to_grid (get_mouse_position);
--- 					end case;
--- 					
--- 					case label.appearance is
--- 						when SIMPLE =>
--- 
--- 							--l.rotation_simple := label.rotation_simple;
--- 							
--- 							draw_text (
--- 								content		=> to_content (to_string (selected_net)),
--- 								size		=> l.size,
--- 								font		=> net_label_font,
--- 								anchor		=> l.position,
--- 								origin		=> true, -- CS must be false on export to image
--- 								
--- 								-- Text rotation about its anchor point.
--- 								-- This is documentational text.
--- 								-- It is readable from the front or the right.
--- 								rotation	=> pac_text.to_rotation (label.rotation_simple),
--- 								alignment	=> net_label_alignment);
--- 							
--- 
--- 						when TAG =>
--- 
--- 							-- The current position must be tested whether it qualifies
--- 							-- for a tag label. If the position is suitable then the
--- 							-- flag label.finalizing_granted is set so that 
--- 							-- procedure finalize_place_label is allowed to do the final
--- 							-- placement of the label:
--- 							declare
--- 								use et_schematic_ops_nets;
--- 								s : constant type_stub := query_stub (
--- 										module_cursor	=> active_module,
--- 										net_name		=> selected_net,
--- 										position		=> to_position (type_vector_model (l.position), active_sheet),
--- 										log_threshold	=> log_threshold + 1);
--- 
--- 									-- CS use a function query_stub that take a module cursor and
--- 									-- a net cursor instead.
--- 
--- 							begin
--- 								if s.is_stub then
--- 									-- Set the rotation of the label according to the 
--- 									-- direction of the stub:
--- 									l.rotation_tag := to_label_rotation (s.direction);
--- 
--- 									label.finalizing_granted := true;
--- 								else
--- 									label.finalizing_granted := false;
--- 								end if;
--- 
--- 								draw_tag_label (selected_net, l);
--- 							end;
--- 							
--- 					end case;
--- 				end if;
--- 
--- 			when others => null;
--- 		end case;
--- 
--- 	end draw_label_being_moved;
--- 
-
 
 	-- This procedure draws a single net segment.
 	-- The segment itself is just a line with a
@@ -665,6 +550,8 @@ procedure draw_nets is
 
 
 
+	
+	
 	
 	
 	
