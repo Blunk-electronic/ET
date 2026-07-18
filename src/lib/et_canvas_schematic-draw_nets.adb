@@ -547,12 +547,33 @@ procedure draw_nets is
 			procedure query_segment (
 				segment : in type_net_segment) 
 			is 
+				-- This flag indicates that the net
+				-- segment candidate is selected, either
+				-- as a whole, its A end or its B end:
 				segment_is_selected : boolean := false;
-				segment_copy : type_net_segment := segment;
+				
+				
+				procedure draw_segment_being_copied is
+					segment_copy : type_net_segment := segment;
+				begin
+					-- If the segment is member of a group and the
+					-- group is being copied, then a copy of the segment
+					-- candidate must be created, and drawn as it
+					-- is being moved:
+					if segment_is_selected and group_is_being_copied then
+						copy_net_segment (segment, segment_copy, get_group_offset);
+						-- put_line ("segment copy: " & to_string (segment_copy));
+						
+						draw_segment (segment_copy);					
+						draw_labels (net_name, segment_copy);
+						draw_junctions (segment_copy);
+						draw_net_connectors (net_name, segment_copy);
+					end if;
+				end draw_segment_being_copied;
+
 				
 			begin			
-				-- Increase brightness if segment is selected
-				-- either as a whole, the A-end or the B-end:
+				-- Increase brightness if segment is selected::
 				if is_selected (segment) 
 				or is_A_selected (segment)
 				or is_B_selected (segment) then
@@ -560,28 +581,20 @@ procedure draw_nets is
 					set_color_nets (BRIGHT);
 				end if;				
 
+				-- Draw the segment, its labels, junctions
+				-- and connectors:
 				draw_segment (segment);				
 				draw_labels (net_name, segment);
 				draw_junctions (segment);
 				draw_net_connectors (net_name, segment);
 
-				
-				-- CS: Experimental:
-				if segment_is_selected and group_is_being_copied then
-					move_by (segment_copy, get_group_offset);
-					-- put_line ("segment copy: " & to_string (segment_copy));
-					
-					draw_segment (segment_copy);					
-					draw_labels (net_name, segment_copy);
-					draw_junctions (segment_copy);
-					draw_net_connectors (net_name, segment_copy);
-				end if;
-				
+				-- If the segment is member of a group and the
+				-- group is being copied, then we draw it here.
+				-- Otherwise nothing happens here:
+				draw_segment_being_copied;
 
-    -- 
-				-- if is_selected (segment) 
-				-- or is_A_selected (segment)
-				-- or is_B_selected (segment) then
+				-- Reset the brightness if the segment candidate
+				-- is selected:
 				if segment_is_selected then
 					set_color_nets (NORMAL);
 				end if;
