@@ -37,8 +37,20 @@
 
 ### Documentation
 
-- User Manual <http://www.blunk-electronic.de/ET/pdf/caesystemet.pdf>
+User Manual <http://www.blunk-electronic.de/ET/pdf/caesystemet.pdf>
 
+Documentation uses [Sphinx](https://www.sphinx-doc.org).
+The required Python dependencies can be installed using [uv](https://docs.astral.sh/uv/):
+
+```sh
+uv sync
+```
+
+and built with:
+
+```sh
+cd doc
+uv run make html
 
 
 ### Installation
