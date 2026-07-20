@@ -42,33 +42,26 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
 
 with et_text_content;				use et_text_content;
 
 with et_conductor_text;
 with et_conductor_text.boards;
 
-with et_board_text;					use et_board_text;
 with et_alignment;					use et_alignment;
 
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
-with et_module_board;				use et_module_board;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_mirroring;
 
 with et_stopmask;
 with et_silkscreen;

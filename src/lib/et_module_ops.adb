@@ -39,19 +39,10 @@
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
-with ada.exceptions;
 with ada.directories;
-with gnat.directory_operations;
 with et_directory_and_file_ops;
 with et_string_processing;		use et_string_processing;
-with et_system_info;
-with et_export;
-with et_text;					use et_text;
-with et_meta;
 with et_exceptions;				use et_exceptions;
 with et_project;
 with et_module_write;			use et_module_write;
@@ -166,7 +157,6 @@ package body et_module_ops is
 	is
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
-		use ada.directories;
 		use et_project;
 
 		file_name : constant string := to_string (module_name) &

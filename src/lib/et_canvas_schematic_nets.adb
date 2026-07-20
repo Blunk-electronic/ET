@@ -37,18 +37,11 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 with ada.characters.handling;
-with ada.exceptions;				use ada.exceptions;
 
 with gtk.window;
-with gtk.box;
-with gtk.label;
 
-with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
-with et_netlists;
-with et_net_class;
 with et_schematic_ops_groups;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
@@ -343,7 +336,6 @@ package body et_canvas_schematic_nets is
 		
 		-- Renames the selected object:
 		procedure finalize is
-			use et_modes.schematic;
 
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);

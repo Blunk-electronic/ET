@@ -46,8 +46,6 @@
 -- - clean up
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
 with et_keywords;						use et_keywords;
 with et_package_read_contour;			use et_package_read_contour;

@@ -42,20 +42,13 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
-with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_module;						use et_module;
 with et_route;						use et_route;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 -- with et_primitive_objects;			use et_primitive_objects;
 with et_directions;					use et_directions;
-with et_board_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_module_read_nets;
@@ -64,9 +57,7 @@ with et_module_read_nets;
 
 package body et_module_read_tracks_route is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_signal_layers;
 
 	track_line : type_conductor_line;
 	track_arc : type_conductor_arc;
@@ -168,7 +159,6 @@ package body et_module_read_tracks_route is
 		log_threshold	: in type_log_level)
 	is
 		use et_module_read_nets;
-		use pac_conductor_lines;
 	begin
 		-- CS log messages
 		-- CS use update_element

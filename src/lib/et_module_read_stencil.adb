@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -203,7 +200,6 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_lines;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -235,7 +231,6 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_arcs;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -268,7 +263,6 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_circles;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;

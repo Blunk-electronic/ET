@@ -37,8 +37,6 @@
 --
 
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
 
 
 

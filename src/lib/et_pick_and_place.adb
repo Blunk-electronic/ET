@@ -37,11 +37,8 @@
 --
 --   ToDo: 
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings; 				use ada.strings;
+with ada.strings;
 with ada.directories;
 with gnat.directory_operations;
 with ada.exceptions;

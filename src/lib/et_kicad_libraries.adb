@@ -51,9 +51,7 @@ with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
-with ada.environment_variables;
 
-with et_primitive_objects;				use et_primitive_objects;
 with et_directions;						use et_directions;
 with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
@@ -968,7 +966,6 @@ package body et_kicad_libraries is
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
 	-- The leading tilde marks a component whose value is set to "invisible".
-		use et_import;
 		use type_component_generic_name;
 		length : type_component_generic_name.length_range;
 	begin
@@ -985,7 +982,6 @@ package body et_kicad_libraries is
 	
 	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
 		type_component_generic_name.bounded_string is
-		use et_import;
 		use type_component_generic_name;
 	begin
 		return '~' & generic_name;
@@ -1040,7 +1036,6 @@ package body et_kicad_libraries is
 
 		use et_import;
 		use type_project_lib_dirs;
-		use ada.directories;
 
 		-- V4:
 		dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
@@ -1301,7 +1296,6 @@ package body et_kicad_libraries is
 	procedure read_components_libraries (
 		log_threshold : in type_log_level) 
 	is
-		use type_full_library_names;
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
 		lib_cursor		: type_device_libraries.cursor;
@@ -1644,7 +1638,6 @@ package body et_kicad_libraries is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
-				use et_schematic_geometry.pac_geometry_sch;
 
 				scratch_point : type_vector_model;
 			begin
@@ -1837,7 +1830,6 @@ package body et_kicad_libraries is
 					return pac_text_content.to_bounded_string (t);
 				end to_content;
 
-				use et_schematic_geometry.pac_geometry_sch;
 
 				
 			begin -- to_text
@@ -1987,7 +1979,6 @@ package body et_kicad_libraries is
 				end to_rotation;
 
 				use et_conventions;
-				use et_schematic_geometry.pac_geometry_sch;
 
 				
 			begin -- to_port
@@ -2062,8 +2053,6 @@ package body et_kicad_libraries is
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
-				use et_text;
-				use et_schematic_geometry.pac_geometry_sch;
 				
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);
@@ -2981,7 +2970,6 @@ package body et_kicad_libraries is
 					is
 						use et_package_library;
 						use pac_package_variants;
-						use pac_terminal_port_map;
 						use pac_package_variant_name;
 
 						package_model_name : pac_package_model_file.bounded_string;
@@ -3726,7 +3714,6 @@ package body et_kicad_libraries is
 		note 			: in type_text;
 		log_threshold	: in type_log_level := 0) 
 	is
-		use et_text;
 	begin
 		log (text => "text note" & to_string (
 			position => note.position, scope => et_kicad_coordinates.XY), level => log_threshold);

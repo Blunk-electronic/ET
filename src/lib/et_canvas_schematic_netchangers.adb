@@ -37,34 +37,22 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.exceptions;				use ada.exceptions;
 
-with glib;
-with glib.values;
 
-with gdk.types;						use gdk.types;
-with gdk.event;						use gdk.event;
-with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with et_sheets;							use et_sheets;
-with et_device_property_level;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 
-with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
 
-with et_net_strands;
 
 -- with et_commit;
 -- with et_undo_redo;
-with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
-with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
 
 
 package body et_canvas_schematic_netchangers is
@@ -1155,7 +1143,6 @@ package body et_canvas_schematic_netchangers is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
-			use et_device_property_level;
 			
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);

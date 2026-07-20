@@ -41,9 +41,6 @@
 -- - set exit code if targeted object does not exist
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_runmode;						use et_runmode;
 with et_sheets;							use et_sheets;
@@ -655,8 +652,7 @@ package body et_cp_schematic_netchanger is
 				position : et_board_geometry.pac_geometry_2.type_vector_model;
 
 				use et_board_ops_netchangers;
-				use et_canvas_board;
-				use pac_canvas;
+				use et_canvas_board.pac_canvas;
 			begin
 				-- Zoom on the netchanger:
 				position := get_netchanger_position (module, index);

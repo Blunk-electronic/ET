@@ -42,7 +42,6 @@
 --
 
 
-with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded;
 
@@ -50,16 +49,15 @@ with et_string_processing;		use et_string_processing;
 with et_module;					use et_module;
 
 with et_sheets;					use et_sheets;
-with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_schematic_coordinates;
 with et_schematic_ops_units;	use et_schematic_ops_units;
 with et_schematic_ops_groups;
-with et_exceptions;				use et_exceptions;
 
-with et_unit_name;				use et_unit_name;
+with et_unit_name;
 with et_units;					use et_units;
 
 with et_device_category;				use et_device_category;
-with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_device_library.packages;
 with et_devices_electrical.units;	use et_devices_electrical.units;

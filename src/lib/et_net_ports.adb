@@ -36,11 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;
 
-with et_keywords;				use et_keywords;
-with et_module_names;
 
 
 package body et_net_ports is

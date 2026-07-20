@@ -38,14 +38,12 @@
 --   ToDo: 
 
 
-with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;
 with gnat.directory_operations;
 
 with et_directory_and_file_ops;
-with et_string_processing;		use et_string_processing;
 
 
 package body et_project_name is

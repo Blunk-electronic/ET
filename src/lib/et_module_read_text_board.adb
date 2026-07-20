@@ -42,24 +42,19 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
 
 with et_text_content;				use et_text_content;
 
 with et_conductor_text;
 with et_conductor_text.boards;
 
-with et_board_text;					use et_board_text;
+with et_board_text;
 with et_alignment;					use et_alignment;
 
 with et_pcb_placeholders;				use et_pcb_placeholders;
@@ -83,7 +78,7 @@ package body et_module_read_text_board is
 
 	use pac_generic_modules;
 	use pac_geometry_2;	
-	use pac_text_board_vectorized;
+	use et_board_text.pac_text_board_vectorized;
 
 
 
@@ -334,9 +329,6 @@ package body et_module_read_text_board is
 			module		: in out type_generic_module) 
 		is
 			use et_pcb_sides;
-			use et_board_coordinates;
-			use et_board_text;
-			use et_pcb_placeholders;
 		begin
 			case face is
 				when TOP =>

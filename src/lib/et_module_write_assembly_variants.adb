@@ -54,14 +54,12 @@ with et_keywords;					use et_keywords;
 
 with et_module_instance;			use et_module_instance;
 with et_device_name;				use et_device_name;
-with et_device_model;
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
 with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
-with et_schematic_ops_units;		use et_schematic_ops_units;
 
 with et_file_write;					use et_file_write;
 
@@ -83,7 +81,6 @@ package body et_module_write_assembly_variants is
 			variant_name	: in pac_assembly_variant_name.bounded_string;
 			variant			: in type_assembly_variant) 
 		is
-			use et_device_model;
 			use et_device_partcode;
 			use et_device_value;
 			use pac_device_variants;

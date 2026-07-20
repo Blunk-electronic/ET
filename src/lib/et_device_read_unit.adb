@@ -42,16 +42,11 @@
 --
 
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
 
-with ada.exceptions;
 
-with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_schematic_geometry;			use et_schematic_geometry;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_file_sections;				use et_file_sections;
 
 with et_symbol_read;				use et_symbol_read;
 with et_symbol_name;				use et_symbol_name;

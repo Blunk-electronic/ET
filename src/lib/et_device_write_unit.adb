@@ -41,10 +41,7 @@
 --
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
 
-with ada.exceptions;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_schematic_geometry;			use et_schematic_geometry;

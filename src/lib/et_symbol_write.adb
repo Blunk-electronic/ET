@@ -37,15 +37,12 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
 
 with ada.exceptions;
 
 with et_system_info;
-with et_directory_and_file_ops;
 with et_file_sections;				use et_file_sections;
 with et_file_write;					use et_file_write;
-with et_symbol_library;				use et_symbol_library;
 
 with et_time;						use et_time;
 with et_keywords;					use et_keywords;

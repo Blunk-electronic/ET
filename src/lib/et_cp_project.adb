@@ -36,15 +36,9 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
 
-with ada.exceptions;
 with ada.directories;
-with gnat.directory_operations;
 
-with et_runmode;					use et_runmode;
-with et_domains;
-with et_project;
 
 with et_module_names;				use et_module_names;
 
@@ -52,7 +46,6 @@ with et_modes;						use et_modes;
 with et_module_ops;					use et_module_ops;
 with et_module_read;				use et_module_read;
 
-with et_script_processor;
 
 
 

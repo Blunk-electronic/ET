@@ -42,12 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
@@ -199,7 +195,6 @@ package body et_module_read_board_zones is
 	procedure read_cutout_conductor_non_electric (
 		line : in type_fields_of_line)
 	is
-		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -770,7 +765,6 @@ package body et_module_read_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			use et_stopmask;
 			use et_keepout;
 			
 			

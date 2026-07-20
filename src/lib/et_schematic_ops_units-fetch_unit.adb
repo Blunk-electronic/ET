@@ -37,7 +37,6 @@
 --
 
 with et_symbol_library;
-with et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;

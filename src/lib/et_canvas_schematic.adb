@@ -40,14 +40,9 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
-with ada.exceptions;				use ada.exceptions;
 
-with ada.calendar;					use ada.calendar;
-with ada.calendar.formatting;		use ada.calendar.formatting;
 
-with ada.containers;
 
 -- with et_pcb_coordinates;
 -- with et_terminals;
@@ -78,11 +73,9 @@ with et_undo_redo;
 with et_schematic_ops_grid;
 
 with et_schematic_ops_groups;
-with et_board_ops_groups;
 
 with et_system_info;
 with et_project_name;
-with et_module_ops;
 with et_module_write;
 with et_module_read;
 with et_canvas_schematic_preliminary_object;
@@ -1094,7 +1087,6 @@ package body et_canvas_schematic is
 	procedure set_module (
 		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
-		use et_module_ops;
 		use et_module_read;
 		cursor : pac_generic_modules.cursor := find (generic_modules, module);
 	begin
@@ -1137,7 +1129,6 @@ package body et_canvas_schematic is
 		use ada.directories;
 		use et_project_name;
 		use et_cp_schematic;
-		use et_modes;
 		use et_project;
 		use et_domains;
 		
@@ -1230,7 +1221,6 @@ package body et_canvas_schematic is
 		use ada.directories;	
 		use et_project_name;
 		use et_cp_schematic;
-		use et_modes;
 		use et_project;
 		use et_domains;
 		

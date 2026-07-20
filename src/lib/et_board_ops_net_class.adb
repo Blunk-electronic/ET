@@ -39,7 +39,7 @@
 
 with et_string_processing;			use et_string_processing;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
-with et_net_classes;				use et_net_classes;
+with et_net_classes;
 with et_module;						use et_module;
 
 with et_modes.board;
@@ -63,7 +63,7 @@ package body et_board_ops_net_class is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
-			use pac_net_classes;
+			use et_net_classes.pac_net_classes;
 			use pac_net_class_name;
 		begin
 			if class = net_class_name_default then
@@ -101,7 +101,7 @@ package body et_board_ops_net_class is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
-			use pac_net_classes;
+			use et_net_classes.pac_net_classes;
 			use pac_net_class_name;
 			use pac_nets;
 		begin

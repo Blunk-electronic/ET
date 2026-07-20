@@ -37,7 +37,6 @@
 --
 --   to do:
 
-with ada.strings;			use ada.strings;
 with et_directions;
 
 

@@ -36,12 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters.latin_1;
-with ada.characters.handling;
-with ada.exceptions;
 
-with et_contour_to_polygon;
 
 with et_device_library.packages;	use et_device_library.packages;
 
@@ -563,7 +558,6 @@ package body et_devices_electrical.packages is
 	is
 		use et_board_geometry.pac_polygons;
 		result : pac_polygon_list.list;
-		use et_contour_to_polygon;
 		
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
@@ -898,7 +892,6 @@ package body et_devices_electrical.packages is
 		face			: in type_face)
 		return type_silkscreen
 	is
-		use et_board_text;
 		
 		result : type_silkscreen;
 		device : type_device_electrical renames element (device_cursor);
@@ -917,9 +910,8 @@ package body et_devices_electrical.packages is
 			
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board_vectorized;
+				use et_board_text.pac_text_board_vectorized;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
-				use et_text;
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
 
@@ -1002,7 +994,6 @@ package body et_devices_electrical.packages is
 		face			: in type_face)
 		return type_assy_doc
 	is
-		use et_board_text;
 
 		result : type_assy_doc;
 		device : type_device_electrical renames element (device_cursor);
@@ -1021,9 +1012,8 @@ package body et_devices_electrical.packages is
 			
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board_vectorized;
+				use et_board_text.pac_text_board_vectorized;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
-				use et_text;
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
 
@@ -1183,7 +1173,6 @@ package body et_devices_electrical.packages is
 		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor
 	is
-		use et_terminals;
 		use pac_terminals;
 
 		-- Get the cursor to the full device model in the library:

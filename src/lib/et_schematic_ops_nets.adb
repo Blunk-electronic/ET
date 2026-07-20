@@ -39,18 +39,13 @@
 --
 --
 
-with ada.strings;						use ada.strings;
-with ada.strings.unbounded;				use ada.strings.unbounded;
 with ada.exceptions;					use ada.exceptions;
 
-with et_text;
 with et_axes;
 with et_assembly_variants;
-with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_groups;
 with et_schematic_ops_sheets;
 
-with et_symbol_model;
 with et_units;
 with et_unit_name;
 
@@ -68,7 +63,6 @@ with et_netchangers.schematic;
 
 with et_rotation_docu;					use et_rotation_docu;
 with et_exceptions;						use et_exceptions;
-with et_string_processing;				use et_string_processing;
 
 with et_modes.schematic;
 with et_undo_redo;
@@ -77,7 +71,6 @@ with et_commit;
 
 package body et_schematic_ops_nets is
 
-	use pac_text_schematic;
 	use pac_net_labels;
 	use pac_net_segments;
 	use pac_strands;
@@ -173,7 +166,6 @@ package body et_schematic_ops_nets is
 
 					
 					procedure query_port (port_cursor : in pac_symbol_ports.cursor) is
-						use et_symbol_model;
 						use pac_symbol_ports;
 					begin
 						log (text => "unit " & to_string (key (unit_cursor)) &
@@ -302,7 +294,6 @@ package body et_schematic_ops_nets is
 				
 				ports : type_netchanger_ports;
 				
-				use et_netlists;
 			begin
 				netchanger_position := element (netchanger_cursor).position_sch;
 
@@ -5458,9 +5449,8 @@ package body et_schematic_ops_nets is
 					use pac_device_ports;
 					use pac_port_name;
 
-					use et_unit_name;
-					use pac_unit_name;
-					
+					use et_unit_name.pac_unit_name;
+
 					use pac_devices_electrical;
 				begin
 					--log (text => to_string (element (p).device_name)
@@ -6916,7 +6906,6 @@ package body et_schematic_ops_nets is
 						-- so that it is readable from the front:
 						procedure horizontal_text is 
 							use et_axes;
-							use et_text;
 						begin
 							-- The x-component of the label position is the same
 							-- as the x-component of the given position:
@@ -6940,7 +6929,6 @@ package body et_schematic_ops_nets is
 						-- so that it is readable from the right:
 						procedure vertical_text is 
 							use et_axes;
-							use et_text;
 						begin
 							-- The y-component of the label position is the same
 							-- as the y-component of the given position:
@@ -9273,7 +9261,6 @@ package body et_schematic_ops_nets is
 					-- Use this procedure in case the caller of the main procedure
 					-- does not request a "movable test":
 					procedure query_segment_force (seg : in out type_net_segment) is
-						use pac_objects;
 						
 						-- Find the zone at which the segment
 						-- is being attacked:
@@ -9306,7 +9293,6 @@ package body et_schematic_ops_nets is
 					-- Use this procedure in case the caller of the main procedure
 					-- requests a "movable test":
 					procedure query_segment_movable (seg : in out type_net_segment) is
-						use pac_objects;
 						
 						-- Find the zone at which the segment
 						-- is being attacked:

@@ -42,7 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -123,7 +122,6 @@ package body et_module_read_meta is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_library_paths_schematic;
 		begin
 			-- CS check whether date drawn <= date checked <= date_approved
 			--  use type_meta_basic for the test of schematic and board data.
@@ -258,7 +256,6 @@ package body et_module_read_meta is
  		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
-		use et_meta;
 		lib : pac_library_path_schematic.bounded_string;
 	begin
 		if kw = keyword_path then
@@ -288,7 +285,6 @@ package body et_module_read_meta is
  		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
-		use et_meta;
 		lib : pac_library_path_board.bounded_string;
 	begin
 		if kw = keyword_path then

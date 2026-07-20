@@ -41,9 +41,6 @@
 -- - add commit operations ???
 
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 with ada.containers;
 
 with et_module_write;					use et_module_write;

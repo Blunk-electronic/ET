@@ -36,9 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.characters.handling;	use ada.characters.handling;
 
 with et_string_processing;		use et_string_processing;
 -- with et_exceptions;				use et_exceptions;

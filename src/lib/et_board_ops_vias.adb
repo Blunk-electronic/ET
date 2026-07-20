@@ -36,13 +36,10 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 
 
-with et_string_processing;			use et_string_processing;
 
-with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
 
@@ -199,14 +196,12 @@ package body et_board_ops_vias is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_vias;
 				
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				
 				procedure query_via (via : in out type_via) is
-					use pac_geometry_brd;
 				begin
 					if in_catch_zone (catch_zone, via) then
 						set_proposed (via);
@@ -276,14 +271,12 @@ package body et_board_ops_vias is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_vias;
 				
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				
 				procedure query_via (via : in out type_via) is
-					use pac_geometry_brd;
 				begin
 					reset_status (via);
 				end query_via;
@@ -337,7 +330,6 @@ package body et_board_ops_vias is
 		return pac_net_name.bounded_string
 	is 
 		use pac_objects;
-		use pac_vias;
 		v : type_object_via := element (object);
 	begin
 		return get_net_name (v.net_cursor);
@@ -553,11 +545,9 @@ package body et_board_ops_vias is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_vias;
 
 				procedure query_via (v : in out type_via) is 
-					use pac_geometry_brd;
 				begin
 					modify_status (v, operation);
 				end query_via;

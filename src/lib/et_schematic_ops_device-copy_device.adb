@@ -45,8 +45,6 @@
 
 
 with et_symbol_ports;					use et_symbol_ports;
-with et_symbol_model;
-with et_symbol_name;
 with et_symbol_library;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;
@@ -277,7 +275,6 @@ is
 				symbol_cursor : pac_symbol_models.cursor;
 				placeholders : type_text_placeholders;
 
-				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
 				log (text => "add_real", level => log_threshold + 3);

@@ -38,7 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 
@@ -60,14 +59,10 @@ with gtk.widget;					use gtk.widget;
 
 
 with gtk.cell_renderer_text;		
-with gtk.cell_layout;        		
 with gtk.list_store;				use gtk.list_store;
 with gtk.tree_model;				use gtk.tree_model;
 
 with gtk.gentry;					use gtk.gentry;
-with gtk.container;					use gtk.container;
-with gtk.text_buffer;
-with gtk.text_iter;
 
 with et_generic_modules;			use et_generic_modules;
 with et_schematic_ops_nets;
@@ -81,7 +76,6 @@ with et_modes.board;
 with et_display;					use et_display;
 with et_display.board;				use et_display.board;
 
-with et_exceptions;					use et_exceptions;
 with et_nets;
 with et_net_names;					use et_net_names;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
@@ -89,13 +83,10 @@ with et_object_status;				use et_object_status;
 with et_undo_redo;
 with et_commit;
 
-with et_module_board;				use et_module_board;
 
 with et_module_board_user_settings;
 with et_board_ops_user_settings;	use et_board_ops_user_settings;
 
-with et_fill_zones.boards;
-with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
@@ -422,7 +413,6 @@ package body et_canvas_board_vias is
 	procedure show_via_properties is
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
-		use gtk.cell_layout;
 		
 
 		box_net_name,

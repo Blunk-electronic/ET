@@ -41,7 +41,6 @@
 
 
 
-with ada.text_io;						use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
@@ -54,7 +53,6 @@ with et_text_content;					use et_text_content;
 with et_board_geometry;					use et_board_geometry;
 
 with et_silkscreen;						use et_silkscreen;
-with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_file_write;						use et_file_write;
 

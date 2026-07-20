@@ -46,7 +46,6 @@ package body et_design_rules is
 		rules : in type_design_rules)
 		return boolean
 	is
-		use et_design_rules_schematic;
 	begin
 		-- CS
 		-- if not is_empty (rules.schematic) then

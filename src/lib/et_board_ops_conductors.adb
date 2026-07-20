@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with et_text;
 
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
@@ -44,7 +43,6 @@ with et_mirroring;
 with et_module_names;				use et_module_names;
 
 with et_schematic_ops_device;		use et_schematic_ops_device;
-with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
@@ -54,10 +52,8 @@ with et_devices_electrical;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
 with et_text_content;
-with et_pcb_placeholders;			use et_pcb_placeholders;
+with et_pcb_placeholders;
 
-with et_vias;
-with et_route;
 with et_ripup;
 with et_module;						use et_module;
 with et_terminals;					use et_terminals;
@@ -1143,7 +1139,6 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
-					use et_nets;				
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
 					log (text => "net " & to_string (net_name), level => log_threshold + 1);
@@ -1213,7 +1208,6 @@ package body et_board_ops_conductors is
 			procedure query_line (
 				line : in out type_conductor_line)
 			is 
-				use et_object_status;
 			begin
 				reset_status (line);
 			end query_line;
@@ -1226,7 +1220,6 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
-					use et_nets;					
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
 					while has_element (line_cursor) loop
@@ -2224,7 +2217,6 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
-					use et_nets;				
 					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 				begin
 					log (text => "net " & to_string (net_name), level => log_threshold + 1);
@@ -2296,7 +2288,6 @@ package body et_board_ops_conductors is
 			procedure query_arc (
 				arc : in out type_conductor_arc)
 			is 
-				use et_object_status;
 			begin
 				reset_status (arc);
 			end query_arc;
@@ -2309,7 +2300,6 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
-					use et_nets;					
 					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 				begin
 					while arc_cursor /= pac_conductor_arcs.no_element loop
@@ -4504,7 +4494,6 @@ package body et_board_ops_conductors is
 		is
 			use pac_conductor_texts_board;
 			vectors : pac_character_lines.list;
-			use et_text;
 			mirror : type_mirror;
 
 			v_text : type_vector_text;
@@ -6379,8 +6368,6 @@ package body et_board_ops_conductors is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is 
-		use pac_conductor_lines;
-		use pac_nets;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving conductor object " 

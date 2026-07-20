@@ -41,15 +41,12 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.maps.constants;
 
 with ada.exceptions;
 
 with et_schematic_text;					use et_schematic_text;
 with et_system_info;
 with et_time;							use et_time;
-with et_project;
 -- with et_project.modules;
 -- with et_import;
 -- with et_csv;
@@ -1847,7 +1844,6 @@ package body et_conventions is
 	
 	function to_text (text : in string) return type_text_schematic is
 	-- Converts a string to type_text_schematic.
-		use et_string_processing;
 		text_out : type_text_schematic;
 	begin
 		text_out := type_text_schematic'value (text);
@@ -1884,7 +1880,6 @@ package body et_conventions is
 		category 	: in type_text_schematic;
 		size		: in et_schematic_geometry.pac_geometry_2.type_distance_positive) 
 	is
-		use et_string_processing;
 		use et_schematic_geometry;
 		use pac_geometry_2;
 		use type_text_sizes_schematic;
@@ -1995,7 +1990,6 @@ package body et_conventions is
 	
 	procedure check_partcode_keyword_length (keyword : in string) is
 	-- Tests if the given partcode keyword is longer than allowed.
-		use et_string_processing;
 	begin
 		if keyword'length > partcode_keyword_length_max then
 			log (SEVERITY_ERROR, "max. number of characters for part code keyword is" 
@@ -2015,7 +2009,6 @@ package body et_conventions is
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-		use et_string_processing;
 		use type_partcode_keyword;
 		invalid_character_position : natural := 0;
 	begin
@@ -2125,10 +2118,7 @@ package body et_conventions is
 		from			: in positive; -- the character position to start from
 		log_threshold	: in type_log_level) 
 	is
-		use et_material;
 		use pac_device_partcode;
-		use type_partcode_keywords;
-		use type_partcode_keyword_argument;
 		use et_string_processing;
 		
 		len 		: positive := get_length (partcode); 	-- the length of the given partcode
@@ -2267,7 +2257,6 @@ package body et_conventions is
 				". Expected " & enclose_in_quotes (pac_device_partcode.to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
-		use et_material;
 
 		
 	begin -- validate_partcode
@@ -3010,7 +2999,6 @@ package body et_conventions is
 		-- Tests if the first character is a digit.
 		-- Sets the result to false on first error and exits prematurely.
 		procedure unit_of_measurement_valid is
-			use ada.strings.maps.constants;
 			place		: positive := 1; -- the pointer to the character being examined
 			char 		: character; -- the character being examined
 
@@ -3018,7 +3006,6 @@ package body et_conventions is
 			unit_ok 	: boolean := false; 
 		
 			use pac_unit_abbrevation;
-			use pac_units_of_measurement;
 
 			
 			-- Sets unit_ok flag true if the given abbrevation starts at position "place".

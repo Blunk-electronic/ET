@@ -37,7 +37,7 @@
 --
 --   ToDo: 
 
-with ada.exceptions;					use ada.exceptions;
+with ada.exceptions;
 
 with et_conductor_segment.boards;
 with et_board_ops_devices;				use et_board_ops_devices;
@@ -154,7 +154,6 @@ package body et_board_ops_ratsnest is
 		module_cursor	: in pac_generic_modules.cursor;
 		lth				: in type_log_level)
 	is
-		use et_conductor_segment.boards;
 
 		
 		procedure query_module (
@@ -313,7 +312,6 @@ package body et_board_ops_ratsnest is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_airwires;
 				
 				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
@@ -388,7 +386,6 @@ package body et_board_ops_ratsnest is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_airwires;
 				
 				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
@@ -654,7 +651,6 @@ package body et_board_ops_ratsnest is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_airwires;
 
 				procedure query_airwire (w : in out type_airwire) is 

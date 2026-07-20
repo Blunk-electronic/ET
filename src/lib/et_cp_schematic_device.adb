@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
@@ -54,7 +51,6 @@ with et_unit_name;
 with et_device_name;					use et_device_name;
 with et_device_model_names;				use et_device_model_names;
 with et_package_variant_name;			use et_package_variant_name;
-with et_package_variant;				use et_package_variant;
 with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;

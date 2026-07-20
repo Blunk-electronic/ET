@@ -40,11 +40,8 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
-with ada.exceptions;				use ada.exceptions;
 
-with ada.containers;
 
 -- with et_pcb_coordinates;
 -- with et_terminals;

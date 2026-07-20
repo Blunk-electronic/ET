@@ -52,7 +52,6 @@ with et_commit;
 package body et_schematic_ops_sheets is
 
 
-	use pac_text_schematic;
 
 	
 	procedure sheet_not_found (

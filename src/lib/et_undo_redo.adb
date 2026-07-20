@@ -38,8 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;						use ada.text_io;
-with ada.containers;					use ada.containers;
 
 with et_domains;						use et_domains;
 with et_nets;
@@ -49,7 +47,6 @@ with et_module_board;					use et_module_board;
 
 with et_modes.schematic;
 with et_modes.board;
-with et_time;							use et_time;
 with et_module_names;					use et_module_names;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;

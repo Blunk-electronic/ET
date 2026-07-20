@@ -38,16 +38,13 @@
 
 with ada.strings.bounded;
 with ada.strings;
-with ada.strings.fixed;
 
 with gdk.types;
-with gdk.types.keysyms;
 with gtk.accel_group;
 with gdk.event;
 with gtk.enums;					use gtk.enums;
-with gtk.main;					use gtk.main;
+with gtk.main;
 
-with gtkada.types;
 
 with et_mirroring;
 with et_runmode;				use et_runmode;
@@ -2914,7 +2911,6 @@ package body et_canvas is
 		use pac_scale_io;
 		use ada.strings.bounded;
 		use ada.strings;
-		use ada.strings.fixed;
 
 		package pac_scale_bounded is new generic_bounded_length (10);
 		use pac_scale_bounded;
@@ -3263,7 +3259,6 @@ package body et_canvas is
 		window		: access gtk_widget_record'class;
 		allocation	: gtk_allocation)
 	is 
-		use glib;
 	begin
 		null;		
 		-- put_line ("cb_main_window_size_allocate " & image (clock)); 

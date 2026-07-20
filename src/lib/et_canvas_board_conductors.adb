@@ -49,10 +49,8 @@ with et_board_ops_signal_layers;			use et_board_ops_signal_layers;
 with et_logging;							use et_logging;
 with et_modes.board;
 with et_display.board;
-with et_keywords;							use et_keywords;
 with et_object_status;						use et_object_status;
 with et_nets;
-with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_pcb_placeholders.conductor;			use et_pcb_placeholders.conductor;
 
 
@@ -60,9 +58,7 @@ package body et_canvas_board_conductors is
 
 	use et_canvas_board.pac_canvas;
 	
-	use pac_conductor_lines;
 	use pac_conductor_arcs;
-	use pac_conductor_circles;
 
 
 	
@@ -152,7 +148,6 @@ package body et_canvas_board_conductors is
 	is 
 		praeamble : constant string := "selected: ";
 
-		use et_nets;
 		use et_board_geometry.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)

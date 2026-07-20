@@ -43,14 +43,8 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.characters.latin_1;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.strings;					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
 
-with ada.directories;				use ada.directories;
 with ada.exceptions;
-with gnat.directory_operations;
-with et_directory_and_file_ops;
 
 with et_file_write;					use et_file_write;
 with et_system_info;
@@ -110,8 +104,6 @@ package body et_module_write is
 		-- directs all outputs to it.
 		-- Writes s a nice header in the target file:
 		procedure write_header is 
-			use ada.directories;
-			use gnat.directory_operations;
 			-- use pac_project_name;
 			-- use pac_project_path;
 			use et_system_info;

@@ -40,10 +40,7 @@
 -- - command to set assembly variants
 -- - command to add a text note
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
-with ada.exceptions;					use ada.exceptions;
+with ada.exceptions;
 
 with et_runmode;						use et_runmode;
 with et_modes;							use et_modes;

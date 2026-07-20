@@ -38,7 +38,6 @@
 --   to do:
 
 
-with ada.text_io;				use ada.text_io;
 
 
 package body et_thermal_relief is
@@ -142,7 +141,6 @@ package body et_thermal_relief is
 	is
 		debug : boolean := false;
 		
-		use pac_terminals;
 
 		-- The center of the given terminal;
 		center : type_vector renames terminal.position.place;

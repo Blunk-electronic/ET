@@ -208,7 +208,6 @@ package body et_canvas.text is
 	is
 		use glib;
 		use cairo;
-		use pac_text;
 
 		-- The extents of the text on the canvas:
 		text_area : aliased cairo_text_extents;

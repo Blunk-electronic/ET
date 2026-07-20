@@ -43,11 +43,8 @@ with ada.strings.unbounded;
 
 with et_string_processing;				use et_string_processing;
 
-with et_board_text;						use et_board_text;
 
-with et_conventions;
 with et_assembly_variants;
-with et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
 
@@ -61,10 +58,8 @@ with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
 with et_net_ports_netchangers;
-with et_net_segment;
 with et_submodules;
 with et_package_read;
-with et_package_write;
 
 with et_module;							use et_module;
 with et_board_ops_groups;
@@ -82,7 +77,6 @@ package body et_board_ops_devices is
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	use pac_nets;
-	use pac_text_board;
 
 
 
@@ -3515,7 +3509,6 @@ package body et_board_ops_devices is
 		use pac_device_ports;
 		ports : type_net_ports;
 
-		use et_device_model;
 		port_properties : type_port_properties_access;
 
 		
@@ -3650,7 +3643,6 @@ package body et_board_ops_devices is
 	procedure terminal_not_found (
 		terminal_name : in pac_terminal_name.bounded_string) 
 	is 
-		use et_terminals;
 	begin
 		log (SEVERITY_ERROR, "terminal " 
 			 & enclose_in_quotes (to_string (terminal_name)) 

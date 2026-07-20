@@ -54,28 +54,22 @@ with et_schematic_ops_nets;
 with et_schematic_ops_sheets;
 -- with et_schematic_ops_groups;
 
-with et_netlists;
 with et_net_segment;						use et_net_segment;
 with et_net_strands;						use et_net_strands;
 with et_net_ports;							use et_net_ports;
 with et_net_ports_devices;					use et_net_ports_devices;
-with et_net_ports_submodules;				use et_net_ports_submodules;
-with et_net_ports_netchangers;				use et_net_ports_netchangers;
+with et_net_ports_submodules;
+with et_net_ports_netchangers;
 with et_nets;								use et_nets;
 
 with et_port_direction;
-with et_symbol_model;
 with et_device_model;						use et_device_model;
 
-with et_devices_non_electrical;				use et_devices_non_electrical;
-with et_devices_electrical.packages;		use et_devices_electrical.packages;
 
 with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
 with et_device_renumbering;
-with et_device_library.packages;
 
-with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 with et_schematic_ops_device;				use et_schematic_ops_device;
 with et_board_ops_devices;
 
@@ -2001,9 +1995,9 @@ package body et_schematic_ops_units is
 			point : type_object_position; -- the point
 			ports : type_net_ports;
 			port : type_device_port;
-			use pac_net_submodule_ports;
+			use et_net_ports_submodules.pac_net_submodule_ports;
 			use pac_device_ports;
-			use pac_netchanger_ports;
+			use et_net_ports_netchangers.pac_netchanger_ports;
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
@@ -2165,7 +2159,6 @@ package body et_schematic_ops_units is
 	is
 		result : boolean := false;
 		
-		use et_symbol_model;
 		use pac_symbol_ports;
 		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
@@ -2174,9 +2167,9 @@ package body et_schematic_ops_units is
 			point : type_object_position; -- the point
 			ports : type_net_ports;
 			port : type_device_port;
-			use pac_net_submodule_ports;
+			use et_net_ports_submodules.pac_net_submodule_ports;
 			use pac_device_ports;
-			use pac_netchanger_ports;
+			use et_net_ports_netchangers.pac_netchanger_ports;
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed

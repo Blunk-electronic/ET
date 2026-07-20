@@ -39,9 +39,7 @@
 -- 
 --
 
-with ada.text_io;					use ada.text_io;
 
-with et_coordinates_abs_rel;
 with et_schematic_ops_groups;		use et_schematic_ops_groups;
 with et_cmd_origin_to_commit;
 
@@ -131,7 +129,6 @@ package body et_canvas_schematic_group is
 	is
 
 		procedure finalize is
-			use et_coordinates_abs_rel;
 			use et_cmd_origin_to_commit;
 			offset : type_vector_model;
 		begin

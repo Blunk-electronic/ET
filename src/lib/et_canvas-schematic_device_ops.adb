@@ -304,9 +304,8 @@ package body et_canvas.schematic_device_ops is
 		index : natural := 0;
 
 		-- Writes the name and index in the storage model:
-		procedure query_variant (c : in pac_package_variants.cursor) is 
-			use et_package_variant_name;
-			use pac_package_variant_name;
+		procedure query_variant (c : in pac_package_variants.cursor) is
+			use et_package_variant_name.pac_package_variant_name;
 			use pac_package_variants;
 		begin
 			store.append (iter);

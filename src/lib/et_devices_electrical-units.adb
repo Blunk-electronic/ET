@@ -36,9 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
 with ada.characters.latin_1;
-with ada.characters.handling;
 with ada.strings.unbounded;
 with ada.exceptions;
 

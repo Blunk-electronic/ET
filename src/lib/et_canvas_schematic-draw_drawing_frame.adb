@@ -126,7 +126,6 @@ procedure draw_drawing_frame is
 
 		
 		procedure draw_sheet_description is
-			use et_project;
 			use et_schematic_ops_sheets;
 
 			-- Get the description of the current active sheet:

@@ -39,9 +39,7 @@
 -- - clean up, rework
 --
 
-with ada.text_io;							use ada.text_io;
-with ada.strings;							use ada.strings;
-with ada.exceptions;						use ada.exceptions;
+with ada.exceptions;
 
 with et_string_processing;					use et_string_processing;
 
@@ -50,7 +48,6 @@ with et_devices_electrical;					use et_devices_electrical;
 -- CS export non electrical devices missing ?
 
 with et_device_renumbering;					use et_device_renumbering;
-with et_symbol_model;
 with et_device_appearance;
 with et_device_name;
 with et_generic_stacks;
@@ -88,7 +85,6 @@ package body et_board_ops_material_pnp is
 			
 			-- Here we collect the pick and place data in the first step. It will then
 			-- be passed to procedure et_pick_and_place.write_pnp.
-			use et_pick_and_place;
 			pnp : et_pick_and_place.pac_devices.map;
 
 			
@@ -149,8 +145,6 @@ package body et_board_ops_material_pnp is
 					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
-						use et_assembly_variants.pac_device_variants;
-						use et_symbol_model;
 						use et_device_appearance;
 
 					begin -- query_properties_default
@@ -193,7 +187,6 @@ package body et_board_ops_material_pnp is
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
-						use et_symbol_model;
 						use et_device_appearance;
 						
 					begin -- query_properties_variants

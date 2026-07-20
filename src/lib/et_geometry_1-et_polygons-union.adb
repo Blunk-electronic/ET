@@ -37,9 +37,7 @@
 
 
 with ada.exceptions; 			use ada.exceptions;
-with gnat.source_info;
 
-with et_exceptions;				use et_exceptions;
 
 --pragma optimize (time);
 

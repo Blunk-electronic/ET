@@ -36,9 +36,7 @@
 --   history of changes:
 --
 
-with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
-with et_conductor_text.boards;
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_module;							use et_module;
 with et_meta;
@@ -57,7 +55,6 @@ package body et_board_ops_text is
 		use et_meta;
 		meta : constant type_meta_board := m.meta.board;
 
-		use et_assembly_variants;
 		use pac_assembly_variant_name;
 		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
 

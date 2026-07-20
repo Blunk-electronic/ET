@@ -37,8 +37,6 @@
 --
 --   to do:
 
-with ada.strings;				use ada.strings;
-with et_text;					use et_text;
 
 package body et_assy_doc.packages is
 

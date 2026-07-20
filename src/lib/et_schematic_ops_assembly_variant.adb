@@ -39,7 +39,6 @@
 -- - clean up, rework
 -- - add commit operations
 
-with ada.text_io;				use ada.text_io;
 
 with et_string_processing;		use et_string_processing;
 with et_module;					use et_module;
@@ -47,9 +46,6 @@ with et_module;					use et_module;
 with et_schematic_ops_device;	use et_schematic_ops_device;
 with et_exceptions;				use et_exceptions;
 
-with et_modes.board;
-with et_undo_redo;
-with et_commit;
 
 
 
@@ -156,7 +152,6 @@ package body et_schematic_ops_assembly_variant is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_assembly_variants;
 
 		
 		procedure create (

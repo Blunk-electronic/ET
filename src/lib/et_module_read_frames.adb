@@ -42,13 +42,9 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_drawing_frame;				use et_drawing_frame;
@@ -57,7 +53,6 @@ with et_drawing_frame_rw;			use et_drawing_frame_rw;
 
 with et_text_content;				use et_text_content;
 
-with et_schematic_coordinates;
 with et_sheets;						use et_sheets;
 
 
@@ -125,7 +120,6 @@ package body et_module_read_frames is
 	procedure read_sheet_description (
 		line : in type_fields_of_line)
 	is
-		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -152,7 +146,6 @@ package body et_module_read_frames is
 		
 		
 	procedure add_sheet_description is 
-		use et_schematic_coordinates;	
 		use pac_schematic_descriptions;
 		position : pac_schematic_descriptions.cursor;
 	begin

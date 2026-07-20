@@ -40,17 +40,12 @@
 -- - propose arguments if command incomplete
 -- - set exit code if targeted object does not exist
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_runmode;						use et_runmode;
 
-with et_board_coordinates;				use et_board_coordinates;
 with et_schematic_coordinates;
 
 with et_board_geometry;					use et_board_geometry;
-with et_schematic_geometry;
 
 with et_canvas_board;
 with et_canvas_schematic;

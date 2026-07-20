@@ -2385,7 +2385,6 @@ is
 			use type_lib_table;
 			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 
-			use type_device_libraries;
 			lib_cursor : type_device_libraries.cursor;
 			
 			use type_library_name;
@@ -2711,7 +2710,6 @@ is
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
-			use et_unit_name;
 			use pac_unit_name;
 		begin			
 			if to_string (unit_name) /= f (line,1) then

@@ -38,14 +38,11 @@
 
 with ada.directories;
 
-with et_project;
-with et_string_processing;
 
 
 package body et_import is
 
 	procedure validate_cad_format (format : in string) is
-		use et_string_processing;
 	begin
 		-- CS: use a loop to probe formats
 		if format = to_lower (type_cad_format'image (kicad_v4)) then

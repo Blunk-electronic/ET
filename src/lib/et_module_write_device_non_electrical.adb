@@ -42,7 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 
 with et_keywords;					use et_keywords;
@@ -57,12 +56,8 @@ with et_alignment;					use et_alignment;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
-with et_device_purpose;
-with et_device_value;
-with et_device_partcode;
 
 with et_devices_non_electrical;			use et_devices_non_electrical;
-with et_package_model_name;
 
 with et_device_placeholders.packages;
 
@@ -90,7 +85,6 @@ package body et_module_write_device_non_electrical is
 			device : type_device_non_electrical renames element (c);
 			-- CS use "device" instead of "element (c)"
 
-			use et_package_model_name;
 
 			
 			procedure query_placeholders (

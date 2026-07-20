@@ -40,9 +40,7 @@
 -- - propose arguments if command incomplete
 --
 
-with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_runmode;						use et_runmode;
 
@@ -57,7 +55,6 @@ with et_module_names;					use et_module_names;
 with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_thermal_relief;					use et_thermal_relief;
-with et_terminals;
 with et_keywords;						use et_keywords;
 
 with et_module_board_user_settings;
@@ -321,7 +318,6 @@ package body et_cp_board_conductors is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_pcb_signal_layers;
-		use et_terminals;
 		use et_terminal_name;
 		use et_board_ops_conductors;
 		use et_net_names;

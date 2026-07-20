@@ -45,9 +45,6 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.exceptions;				use ada.exceptions;
-with ada.containers;
 
 with et_drawing_frame;
 with et_drawing_frame.board;
@@ -62,7 +59,6 @@ with et_package_model;				use et_package_model;
 with et_package_library;
 with et_assembly_technology;
 with et_terminals;
-with et_pcb_stack;
 with et_conductor_segment;
 with et_conductor_segment.boards;
 with et_conductor_text.packages;
@@ -71,7 +67,6 @@ with et_board_holes;
 with et_board_outline;
 
 with et_mirroring;					use et_mirroring;
-with et_text;
 
 with et_silkscreen;
 with et_silkscreen.board;
@@ -80,23 +75,18 @@ with et_assy_doc;
 with et_assy_doc.board;
 
 with et_keepout;
-with et_keepout.packages;
 with et_keepout.board;
 
 with et_stopmask;
 with et_stopmask.board;
-with et_stopmask.packages;
 
 with et_stencil;
 with et_stencil.board;
-with et_stencil.packages;
 
 with et_route_restrict;
-with et_route_restrict.packages;
 with et_route_restrict.boards;
 
 with et_via_restrict;
-with et_via_restrict.packages;
 with et_via_restrict.boards;
 
 with et_fill_zones.boards;
@@ -735,8 +725,7 @@ is
 		-- and the holes (which can be regarded as inner contour):
 		procedure process_board_outline is
 			use et_board_outline;
-			use et_board_geometry.pac_contours; -- instance of generic package
-			use pac_segments;
+			 -- instance of generic package
 
 
 			-- Outer contour:
@@ -1168,7 +1157,6 @@ is
 
 				procedure process_stopmask is
 					use et_stopmask;			
-					use et_stopmask.packages;
 					
 					use pac_stop_lines;
 					use pac_stop_arcs;
@@ -1353,13 +1341,11 @@ is
 
 				procedure process_route_restrict is
 					use et_route_restrict;
-					use et_route_restrict.packages;
 					
 					use pac_route_restrict_lines;
 					use pac_route_restrict_arcs;
 					use pac_route_restrict_circles;
 					use pac_route_restrict_zones;
-					use pac_route_restrict_cutouts;
 
 					
 					procedure query_line (c : in pac_route_restrict_lines.cursor) is
@@ -1446,10 +1432,8 @@ is
 
 				procedure process_via_restrict is
 					use et_via_restrict;
-					use et_via_restrict.packages;
 					
 					use pac_via_restrict_zones;
-					use pac_via_restrict_cutouts;
 
 
 					procedure query_zone (c : in pac_via_restrict_zones.cursor) is 

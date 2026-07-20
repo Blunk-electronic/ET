@@ -41,13 +41,9 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings; 					use ada.strings;
 
 with ada.directories;
-with ada.exceptions;
 
-with et_file_sections;				use et_file_sections;
 with et_package_read;
 
 with et_package_name;				use et_package_name;

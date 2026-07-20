@@ -40,9 +40,6 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_directions;						use et_directions;
 with et_primitive_objects;				use et_primitive_objects;
@@ -379,7 +376,6 @@ package body et_cp_board_restrict is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops_via_restrict;
 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
