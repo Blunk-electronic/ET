@@ -1704,7 +1704,7 @@ package body et_geometry_2a is
 		return type_start_end_point
 	is begin
 		return type_start_end_point'value (point);
-end;
+	end;
 
 
 	

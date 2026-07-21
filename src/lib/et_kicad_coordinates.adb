@@ -183,8 +183,9 @@ package body et_kicad_coordinates is
 	
 	procedure set_path (
 		position	: in out type_position;
-		path		: in type_path_to_submodule.list) is begin
-	-- Sets the path in given position.
+		path		: in type_path_to_submodule.list) is
+	begin
+		-- Sets the path in given position.
 		position.path := path;
 	end;
 	

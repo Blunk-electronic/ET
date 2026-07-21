@@ -290,7 +290,7 @@ package body et_cp_schematic is
 							delete_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_TEXT =>
-							NULL; -- CS
+							null; -- CS
 							
 						when NOUN_UNIT =>
 							delete_unit (module_cursor, cmd, log_threshold + 1);
@@ -418,7 +418,7 @@ package body et_cp_schematic is
 							move_net_label (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_TEXT =>
-							NULL; -- CS
+							null; -- CS
 							
 						when NOUN_SUBMODULE =>
 							move_submodule (module_cursor, cmd, log_threshold + 1);
@@ -509,7 +509,7 @@ package body et_cp_schematic is
 				when VERB_ROTATE =>
 					case noun is
 						when NOUN_TEXT =>
-							NULL; -- CS
+							null; -- CS
 
 						when NOUN_UNIT =>
 							rotate_unit (module_cursor, cmd, log_threshold + 1);
@@ -578,7 +578,7 @@ package body et_cp_schematic is
 							set_device_package_variant (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_TEXT_SIZE =>
-							NULL; -- CS
+							null; -- CS
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -617,7 +617,7 @@ package body et_cp_schematic is
 				when VERB_WRITE =>
 					case noun is
 						when NOUN_TEXT =>
-							NULL; -- CS
+							null; -- CS
 
 						when others => invalid_noun (to_string (noun));
 					end case;

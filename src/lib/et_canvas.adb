@@ -1881,13 +1881,13 @@ package body et_canvas is
 
 		-- Create a table, that contains headers, text labels
 		-- and text views for the actual coordinates:
-		gtk_new (table, rows => 11, columns => 2, 
-			homogeneous => false);
+		gtk_new (coord_grid);
+		set_column_homogeneous (coord_grid, homogeneous => true);
 		-- table.set_col_spacings (50);
 		-- table.set_border_width (10);
 
 		-- The table shall not expand downward:
-		box_v1.pack_start (table, expand => false);
+		box_v1.pack_start (coord_grid, expand => false);
 
 
 		-- POINTER / MOUSE:
@@ -2048,142 +2048,114 @@ package body et_canvas is
 		scale_value.set_cursor_visible (false);
 		
 		----------------------------------------------------------------------
-		-- Put the items in the table:
+		-- Put the items in the grid:
 
 		-- MOUSE / POINTER:
-		table.attach (pointer_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 0, bottom_attach	=> 1);
+		coord_grid.attach (pointer_header,
+			left => 1, top => 1, width => 2);
 
 		-- x-coordinate:
-		table.attach (pointer_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 1, bottom_attach	=> 2);
+		coord_grid.attach (pointer_x_label,
+			left => 1, top => 2);
 
-		table.attach (pointer_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 1, bottom_attach	=> 2);
+		coord_grid.attach (pointer_x_value,
+			left => 2, top => 2);
 
 		-- y-coordinate:
-		table.attach (pointer_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 2, bottom_attach	=> 3);
+		coord_grid.attach (pointer_y_label,
+			left => 1, top => 3);
   
-		table.attach (pointer_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 2, bottom_attach	=> 3);
+		coord_grid.attach (pointer_y_value,
+			left => 2, top => 3);
 
 
 		-- CURSOR:
-		table.attach (cursor_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 3, bottom_attach	=> 4);
+		coord_grid.attach (cursor_header,
+			left => 1, top => 4, width => 2);
 
 		-- x-coordinate:
-		table.attach (cursor_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 4, bottom_attach	=> 5);
+		coord_grid.attach (cursor_x_label,
+			left => 1, top => 5);
 
-		table.attach (cursor_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 4, bottom_attach	=> 5);
+		coord_grid.attach (cursor_x_value,
+			left => 2, top => 5);
 
 		-- y-coordinate:
-		table.attach (cursor_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 5, bottom_attach	=> 6);
+		coord_grid.attach (cursor_y_label,
+			left => 1, top => 6);
   
-		table.attach (cursor_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 5, bottom_attach	=> 6);
+		coord_grid.attach (cursor_y_value,
+			left => 2, top => 6);
 
 
 
 		-- DISTANCES:
-		table.attach (distances_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 6, bottom_attach	=> 7);
+		coord_grid.attach (distances_header,
+			left => 1, top => 7, width => 2);
 
 		-- x-coordinate:
-		table.attach (distances_dx_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 7, bottom_attach	=> 8);
+		coord_grid.attach (distances_dx_label,
+			left => 1, top => 8);
 
-		table.attach (distances_dx_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 7, bottom_attach	=> 8);
+		coord_grid.attach (distances_dx_value,
+			left => 2, top => 8);
 
 		-- y-coordinate:
-		table.attach (distances_dy_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 9, bottom_attach	=> 10);
+		coord_grid.attach (distances_dy_label,
+			left => 1, top => 9);
   
-		table.attach (distances_dy_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 9, bottom_attach	=> 10);
+		coord_grid.attach (distances_dy_value,
+			left => 2, top => 9);
 
 		-- absolute:
-		table.attach (distances_absolute_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 10, bottom_attach => 11);
+		coord_grid.attach (distances_absolute_label,
+			left => 1, top => 10);
   
-		table.attach (distances_absolute_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 10, bottom_attach => 11);
+		coord_grid.attach (distances_absolute_value,
+			left => 2, top => 10);
 		
 		-- angle:
-		table.attach (distances_angle_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 11, bottom_attach => 12);
+		coord_grid.attach (distances_angle_label,
+			left => 1, top => 11);
   
-		table.attach (distances_angle_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 11, bottom_attach => 12);
+		coord_grid.attach (distances_angle_value,
+			left => 2, top => 11);
 
 
 		
 		-- GRID:
-		table.attach (grid_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 12, bottom_attach => 13);
+		coord_grid.attach (grid_header,
+			left => 1, top => 12, width => 2);
 
 		-- x-axis:
-		table.attach (grid_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 13, bottom_attach => 14);
+		coord_grid.attach (grid_x_label,
+			left => 1, top => 13);
   
-		table.attach (grid_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 13, bottom_attach => 14);
+		coord_grid.attach (grid_x_value,
+			left => 2, top => 13);
 
 		-- y-axis:
-		table.attach (grid_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 14, bottom_attach => 15);
+		coord_grid.attach (grid_y_label,
+			left => 1, top => 14);
   
-		table.attach (grid_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 14, bottom_attach => 15);
+		coord_grid.attach (grid_y_value,
+			left => 2, top => 14);
 
 		
 		-- ZOOM:
-		table.attach (zoom_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 15, bottom_attach => 16);
+		coord_grid.attach (zoom_label,
+			left => 1, top => 15);
   
-		table.attach (zoom_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 15, bottom_attach => 16);
+		coord_grid.attach (zoom_value,
+			left => 2, top => 15);
 
 		
 		-- SCALE:
-		table.attach (scale_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 16, bottom_attach => 17);
+		coord_grid.attach (scale_label,
+			left => 1, top => 16);
   
-		table.attach (scale_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 16, bottom_attach => 17);
+		coord_grid.attach (scale_value,
+			left => 2, top => 16);
 
 	end set_up_coordinates_display;
 
@@ -2294,39 +2266,37 @@ package body et_canvas is
 		spacing : gint;
 	begin
 		spacing := 10;
-		-- CS use a table !
 		
 		-- The main box around all kinds of position readouts:
 		gtk_new_vbox (mode_display.box_mode);
 		set_spacing (mode_display.box_mode, spacing);
-		set_border_width (mode_display.box_mode, 10);
 		pack_start (box_v1, mode_display.box_mode, expand => false);
 
 		gtk_new (mode_display.label_mode, "MODE");
 		pack_start (mode_display.box_mode, mode_display.label_mode, expand => false);
 
-		
-		gtk_new_hbox (mode_display.box_mode_verb);
-		set_spacing (mode_display.box_mode_verb, spacing);
-		pack_start (mode_display.box_mode, mode_display.box_mode_verb, expand => false);
-		
+
 		gtk_new (mode_display.label_mode_verb, "VERB");
-		pack_start (mode_display.box_mode_verb, mode_display.label_mode_verb, expand => false);
+		set_halign (mode_display.label_mode_verb, align_start);
 
 		gtk_new_with_entry (mode_display.cbox_mode_verb);
-		pack_start (mode_display.box_mode_verb, mode_display.cbox_mode_verb, expand => false);
+		set_halign (mode_display.cbox_mode_verb, align_end);
 
 		
-		gtk_new_hbox (mode_display.box_mode_noun);
-		set_spacing (mode_display.box_mode_noun, spacing);
-		pack_start (mode_display.box_mode, mode_display.box_mode_noun, expand => false);
-
 		gtk_new (mode_display.label_mode_noun, "NOUN");
-		pack_start (mode_display.box_mode_noun, mode_display.label_mode_noun, expand => false);
+		set_halign (mode_display.label_mode_noun, align_start);
 		
 		gtk_new_with_entry (mode_display.cbox_mode_noun);
-		pack_start (mode_display.box_mode_noun, mode_display.cbox_mode_noun, expand => false);
-		
+		set_halign (mode_display.cbox_mode_noun, align_end);
+
+
+		gtk_new (mode_display.grid_mode);
+		attach (mode_display.grid_mode, mode_display.label_mode_verb, 1, 1);
+		attach (mode_display.grid_mode, mode_display.cbox_mode_verb,  2, 1);
+		attach (mode_display.grid_mode, mode_display.label_mode_noun, 1, 2);
+		attach (mode_display.grid_mode, mode_display.cbox_mode_noun,  2, 2);
+		set_column_spacing (mode_display.grid_mode, guint (spacing));
+		pack_start (mode_display.box_mode, mode_display.grid_mode, expand => false);
 	end build_mode_display;
 
 
@@ -3036,8 +3006,7 @@ package body et_canvas is
 		box_h0.pack_start (box_v2, expand => false);
 
 
-		gtk_new (buttons_table, rows => 5, columns => 1, 
-			homogeneous => false);
+		gtk_new (buttons_grid);
 		-- table.set_col_spacings (50);
 		-- table_coordinates.set_border_width (10);
 
@@ -3052,33 +3021,27 @@ package body et_canvas is
 		
 
 		
-		-- The table shall not expand downward:
-		box_v2.pack_start (buttons_table, expand => false);
+		-- The grid shall not expand downward:
+		box_v2.pack_start (buttons_grid, expand => false);
 
 		
-		buttons_table.attach (button_zoom_fit,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 0, bottom_attach => 1);
+		buttons_grid.attach (button_zoom_fit,
+			left => 1, top => 1);
 
-		buttons_table.attach (button_zoom_area,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 1, bottom_attach => 2);
+		buttons_grid.attach (button_zoom_area,
+			left => 1, top => 2);
 		
-		buttons_table.attach (button_add,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 2, bottom_attach => 3);
+		buttons_grid.attach (button_add,
+			left => 1, top => 3);
 
-		buttons_table.attach (button_delete,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 3, bottom_attach => 4);
+		buttons_grid.attach (button_delete,
+			left => 1, top => 4);
 
-		buttons_table.attach (button_move,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 4, bottom_attach => 5);
+		buttons_grid.attach (button_move,
+			left => 1, top => 5);
 
-		buttons_table.attach (button_export,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 5, bottom_attach => 6);
+		buttons_grid.attach (button_export,
+			left => 1, top => 6);
 				
 	end create_buttons;	
 
@@ -4043,7 +4006,7 @@ package body et_canvas is
 	
 	
 -- PRIMARY TOOL:
-	
+
 	procedure build_primary_tool_display is
 		use glib;
 		spacing : gint;
@@ -4057,7 +4020,20 @@ package body et_canvas is
 		
 		gtk_new (label_primary_tool, "PRIMARY TOOL (F2)");
 		pack_start (box_primary_tool, label_primary_tool, expand => false);
-		gtk_new_with_entry (cbox_primary_tool);
+		gtk_new (cbox_primary_tool);
+
+		for t in type_tool loop
+			append (
+				cbox_primary_tool,
+				id   => to_string (t),
+				text => to_string (t));
+		end loop;
+
+		on_changed (
+			cbox_primary_tool,
+			call  => access_cb_primary_tool_change,
+			after => true);
+
 		pack_start (box_primary_tool, cbox_primary_tool);
 
 		update_primary_tool_display;
@@ -4065,17 +4041,28 @@ package body et_canvas is
 
 
 
+	procedure cb_primary_tool_change (self : access gtk_combo_box_record'class) is
+	begin
+		primary_tool := to_tool (get_active_id (self));
 
-	
-	procedure update_primary_tool_display is begin
-		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
+		if primary_tool = KEYBOARD then
+			focus_canvas;
+		end if;
+	end cb_primary_tool_change;
+
+
+
+	procedure update_primary_tool_display is
+		unused_found : boolean;
+	begin
+		unused_found :=
+			set_active_id (
+				cbox_primary_tool,
+				active_id => to_string (primary_tool));
 	end update_primary_tool_display;
 
-	
 
 
-
-	
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;

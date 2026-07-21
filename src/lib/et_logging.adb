@@ -287,7 +287,7 @@ package body et_logging is
 	procedure create_report is
 		use et_system_info;
 		previous_output : ada.text_io.file_type renames current_output;
-    begin
+	begin
 		create (file => report_handle,
 				mode => out_file, 
 				name => log_file_name);

@@ -273,7 +273,7 @@ package body et_canvas_board_lines is
 				--put_line ("line width via tab " & text);
 				apply_line_width (text);
 
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;

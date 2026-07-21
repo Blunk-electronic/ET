@@ -139,18 +139,18 @@ package et_board_coordinates is
 
 
 	
-	private
+private
 		
 		type type_package_position is new pac_geometry_2.type_position 
 			with record
 				face : type_face := TOP;
 			end record;
 
-		package_position_default : constant type_package_position := (
-			pac_geometry_2.origin_zero_rotation with face => TOP);
+	package_position_default : constant type_package_position := (
+		pac_geometry_2.origin_zero_rotation with face => TOP);
 
-		placeholder_position_default : constant type_package_position := (
-			pac_geometry_2.origin_zero_rotation with face => TOP);
+	placeholder_position_default : constant type_package_position := (
+		pac_geometry_2.origin_zero_rotation with face => TOP);
 
 		
 end et_board_coordinates;

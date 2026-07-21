@@ -234,7 +234,7 @@ package body et_canvas_board_vias is
 				--put_line ("size via tab " & text);
 				apply_drill_size (text);
 				
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;
@@ -286,7 +286,7 @@ package body et_canvas_board_vias is
 				--put_line ("line width via tab " & text);
 				apply_restring_inner (text);
 
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;
@@ -341,7 +341,7 @@ package body et_canvas_board_vias is
 				--put_line ("line width via tab " & text);
 				apply_restring_outer (text);
 
-			when others => nulL;
+			when others => null;
 		end case;
 		
 		return event_handled;

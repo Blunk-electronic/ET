@@ -1286,8 +1286,8 @@ package body et_kicad.schematic is
 		log_indentation_up;
 		while strand /= type_strands.no_element loop
 
-            case type_strands.element (strand).scope is
-                when LOCAL =>
+			case type_strands.element (strand).scope is
+				when LOCAL =>
 
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
@@ -1765,7 +1765,7 @@ package body et_kicad.schematic is
 				process		=> locate_net'access);
 		end append_hierarchic_strands;
 			
-    begin -- process_hierarchic_nets
+	begin -- process_hierarchic_nets
 		log (text => "linking hierarchic strands to nets ...", level => log_threshold);
 
 		-- Load one net after another. 
@@ -4671,13 +4671,13 @@ package body et_kicad.schematic is
 					
 					generic_name => element (component_cursor_sch).generic_name);
 					-- like TRANSISTOR_PNP or LED
-				else
-					-- As a safety measure we make sure that the appearance of the component
-					-- in the schematic equals that in the library.
-					check_appearance_sch_vs_lib;
+			else
+				-- As a safety measure we make sure that the appearance of the component
+				-- in the schematic equals that in the library.
+				check_appearance_sch_vs_lib;
 
-					extract_ports; -- uses component_cursor_lib
-				end if;
+				extract_ports; -- uses component_cursor_lib
+			end if;
 
 			log_indentation_down;
 			

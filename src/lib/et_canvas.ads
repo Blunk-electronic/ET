@@ -56,6 +56,7 @@ with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
 with gtk.gentry;				use gtk.gentry;
+with gtk.grid;					use gtk.grid;
 with gtk.combo_box;				use gtk.combo_box;
 with gtk.combo_box_text;		use gtk.combo_box_text;
 with gtk.drawing_area;			use gtk.drawing_area;
@@ -65,6 +66,7 @@ with gtk.adjustment;			use gtk.adjustment;
 with gtk.scrollbar;				use gtk.scrollbar;
 
 with gtk.table;					use gtk.table;
+with gtk.grid;					use gtk.grid;
 with gtk.label;					use gtk.label;
 with gtk.button;				use gtk.button;
 with gtk.text_view;				use gtk.text_view;
@@ -925,7 +927,7 @@ package et_canvas is
 	
 -- COORDINATES-DISPLAY:
 
-	table : gtk_table;
+	coord_grid : gtk_grid;
 
 	pointer_header							: gtk_label;
 	pointer_x_label, pointer_y_label		: gtk_label;
@@ -996,8 +998,6 @@ package et_canvas is
 
 	type type_mode is record -- CS rename to type_mode_display
 		box_mode			: gtk_vbox;
-		box_mode_verb		: gtk_hbox;
-		box_mode_noun		: gtk_hbox;
 		label_mode			: gtk_label;
 		label_mode_verb		: gtk_label;
 		label_mode_noun		: gtk_label;
@@ -1005,7 +1005,7 @@ package et_canvas is
 		-- cbox_mode_noun		: gtk_combo_box_text;
 		cbox_mode_verb		: gtk_combo_box;
 		cbox_mode_noun		: gtk_combo_box;
-
+		grid_mode			: gtk_grid;
 	end record;
 
 	mode_display : type_mode;
@@ -1240,7 +1240,7 @@ package et_canvas is
 
 -- BUTTONS:
 
-	buttons_table		: gtk_table;
+	buttons_grid		: gtk_grid;
 	
 	button_zoom_fit		: gtk_button;
 	button_zoom_area	: gtk_button;
@@ -1930,6 +1930,19 @@ private
 
 
 	
+-- PRIMARY TOOL:
+
+	-- This callback procedure is called when primary tool is changed in
+	-- combo box.
+	procedure cb_primary_tool_change (
+		self	: access gtk_combo_box_record'class);
+
+	access_cb_primary_tool_change : constant
+		cb_gtk_combo_box_void := cb_primary_tool_change'access;
+
+
+
+
 -- SCROLLED WINDOW AND SCROLLBARS:
 			
 	-- This callback procedure is called each time the size_allocate signal
