@@ -1227,7 +1227,7 @@ package body et_kicad.schematic is
 		use et_string_processing;
 		use type_strands;
 
-        net_name : pac_net_name.bounded_string;
+		net_name : pac_net_name.bounded_string;
 	
 		strand	: type_strands.cursor;
 	
@@ -1329,19 +1329,19 @@ package body et_kicad.schematic is
 							& to_string (element (strand).name));
 					end if;
 				
-                    -- Create net and append strand to module.nets
-                    modules.update_element (
-                        position	=> module_cursor,
-                        process		=> add_net'access);
+					-- Create net and append strand to module.nets
+					modules.update_element (
+						position	=> module_cursor,
+						process		=> add_net'access);
 
 				when GLOBAL =>
 					-- form the net name depending on scope
 					net_name := element (strand).name;
 
-                    -- Create net and append strand to module.nets
-                    modules.update_element (
-                        position	=> module_cursor,
-                        process		=> add_net'access);
+					-- Create net and append strand to module.nets
+					modules.update_element (
+						position	=> module_cursor,
+						process		=> add_net'access);
 
 				when UNKNOWN =>
 					log (SEVERITY_ERROR, "unknown scope of net !");
@@ -1413,11 +1413,11 @@ package body et_kicad.schematic is
 
 		
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
-        type type_hierachic_net is record
+		type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
 			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
 			name		: pac_net_name.bounded_string := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
-        end record;
+		end record;
 
 		
 		-- Returns true if given port sits on given segment.
@@ -2025,9 +2025,9 @@ package body et_kicad.schematic is
 
 		use et_generic_stacks;
 		package stack_of_sheet_lists is new stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
-        use stack_of_sheet_lists;
+		use stack_of_sheet_lists;
 
-		
+
 		function read_project_file (log_threshold : in type_log_level)
 			return type_schematic_file_name.bounded_string is
 		-- V4:
@@ -5273,8 +5273,8 @@ package body et_kicad.schematic is
 
 			if inserted then
 				if log_level >= 1 then
-                    null; -- CS: write this procedure:
-                    --log (text => "hierachic sheet", console => true);
+					null; -- CS: write this procedure:
+					--log (text => "hierachic sheet", console => true);
 					--et_schematic.write_gui_submodule_properties (gui_sub_mod => cursor);
 				end if;
 			else -- not inserted. net already in module -> abort
