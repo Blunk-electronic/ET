@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_script_processor;				use et_script_processor;
 
 

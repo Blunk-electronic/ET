@@ -78,6 +78,7 @@ with et_script_names;				use et_script_names;
 with et_sheets;						use et_sheets;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
+use et_schematic_geometry.pac_geometry_2;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
 -- 
@@ -136,7 +137,6 @@ package et_canvas_schematic is
 		
 	
 	use pac_canvas;
-	use et_schematic_geometry.pac_geometry_2;
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 

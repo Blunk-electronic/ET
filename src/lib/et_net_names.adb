@@ -37,6 +37,7 @@
 --
 
 
+with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
 

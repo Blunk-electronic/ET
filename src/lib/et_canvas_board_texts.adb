@@ -38,6 +38,9 @@
 -- DESCRIPTION:
 -- 
 
+with et_pcb_sides;						use et_pcb_sides;
+with et_board_layer_category;			use et_board_layer_category;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;

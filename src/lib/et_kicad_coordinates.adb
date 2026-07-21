@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with et_logging;				use et_logging;
+with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_mirroring;				use et_mirroring;
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded;
 

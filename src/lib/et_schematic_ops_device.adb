@@ -42,6 +42,7 @@
 --
 
 
+with ada.exceptions;
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded;
 

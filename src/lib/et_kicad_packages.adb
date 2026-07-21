@@ -36,6 +36,18 @@
 --   history of changes:
 --
 
+with et_stopmask;				use et_stopmask;
+with et_keepout;				use et_keepout;
+with et_device_placeholders;			use et_device_placeholders;
+with et_string_processing;		use et_string_processing;
+with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
+with et_stopmask.packages;		use et_stopmask.packages;
+with et_stencil.packages;		use et_stencil.packages;
+with et_keepout.packages;		use et_keepout.packages;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_import;
+with et_logging;				use et_logging;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;

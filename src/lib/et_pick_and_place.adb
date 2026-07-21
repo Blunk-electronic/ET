@@ -38,6 +38,9 @@
 --   ToDo: 
 
 
+with ada.text_io;				use ada.text_io;
+with et_string_processing;		use et_string_processing;
+with et_board_geometry;				use et_board_geometry;
 with ada.strings;
 with ada.directories;
 with gnat.directory_operations;

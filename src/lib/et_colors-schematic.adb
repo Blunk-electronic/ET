@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+with cairo;						use cairo;
 package body et_colors.schematic is
 
 	

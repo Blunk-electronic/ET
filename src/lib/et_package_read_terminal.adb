@@ -47,6 +47,7 @@
 --
 
 
+with et_terminals;						use et_terminals;
 with et_keywords;						use et_keywords;
 with et_package_read_contour;			use et_package_read_contour;
 

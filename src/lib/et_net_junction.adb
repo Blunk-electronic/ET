@@ -38,6 +38,7 @@
 
 
 
+with et_logging;				use et_logging;
 package body et_net_junction is
 	
 

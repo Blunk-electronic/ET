@@ -40,20 +40,14 @@
 
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
-with ada.containers.vectors;
 with ada.containers.ordered_sets;
 
-with et_board_geometry;			use et_board_geometry;
 with et_string_processing; 		use et_string_processing;
 with et_mirroring;				use et_mirroring;
-with et_logging;				use et_logging;
 
 
 

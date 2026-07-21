@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with et_coordinates_formatting;			use et_coordinates_formatting;
+with et_device_model_names;				use et_device_model_names;
+with et_coordinates_formatting;			use et_coordinates_formatting;
+with et_device_model_names;				use et_device_model_names;
 with ada.characters.latin_1;
 with ada.strings.unbounded;
 with ada.exceptions;

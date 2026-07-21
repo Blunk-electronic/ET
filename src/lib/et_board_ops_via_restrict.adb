@@ -37,6 +37,8 @@
 --
 
 
+with et_via_restrict.boards;			use et_via_restrict.boards;
+with et_generic_modules;				use et_generic_modules;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_module;						use et_module;

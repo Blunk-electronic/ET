@@ -39,6 +39,7 @@
 --   to do:
 
 
+with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.unbounded;
 
 with et_display.board;

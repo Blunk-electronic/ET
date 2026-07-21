@@ -38,8 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;	            use ada.containers;
-with ada.containers.doubly_linked_lists;
 
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
@@ -48,17 +46,10 @@ with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_generic_modules;			use et_generic_modules;
 
-with et_nets;						use et_nets;
-with et_net_segment;				use et_net_segment;
 
 with et_netchangers;				use et_netchangers;
-with et_netchangers.schematic;		use et_netchangers.schematic;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
-with et_canvas_schematic_nets;
 
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
@@ -66,7 +57,6 @@ with et_canvas_tool;				use et_canvas_tool;
 
 package et_canvas_schematic_netchangers is
 
-	use pac_generic_modules;
 
 
 	-- to be output in the status bar:

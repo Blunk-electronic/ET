@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_schematic_coordinates;
 
 with et_sheets;

@@ -42,6 +42,8 @@
 --
 --
 
+with et_pcb_stack;				use et_pcb_stack;
+with et_string_processing;		use et_string_processing;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;

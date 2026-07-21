@@ -37,6 +37,7 @@
 
 
 
+with ada.calendar.time_zones;	use ada.calendar.time_zones;
 package body et_time is
 
 	function date_now return type_date is

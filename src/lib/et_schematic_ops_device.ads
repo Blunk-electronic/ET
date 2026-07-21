@@ -38,7 +38,6 @@
 --   ToDo: 
 
 
-with ada.exceptions;			use ada.exceptions;
 
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_module_names;			use et_module_names;
@@ -47,9 +46,6 @@ with et_logging;				use et_logging;
 
 with et_generic_modules;		use et_generic_modules;
 
-with et_assembly_variants;		use et_assembly_variants;
-with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_material;
 
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;

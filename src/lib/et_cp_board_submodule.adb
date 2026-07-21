@@ -42,6 +42,7 @@
 -- - set exit code if targeted object does not exist
 
 
+with et_string_processing;		use et_string_processing;
 with et_board_geometry;					use et_board_geometry;
 with et_module_instance;				use et_module_instance;
 with et_board_ops_submodule;			use et_board_ops_submodule;

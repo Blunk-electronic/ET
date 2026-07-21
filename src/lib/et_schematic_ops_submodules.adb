@@ -41,6 +41,10 @@
 -- - remove the existence checks of submodules after these
 --   checks have been implemented in the package et_cp_schematic_submodule.
 
+with et_net_ports;						use et_net_ports;
+with et_devices_electrical;				use et_devices_electrical;
+with et_device_partcode;				use et_device_partcode;
+with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;

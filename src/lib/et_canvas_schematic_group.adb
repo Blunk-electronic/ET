@@ -40,6 +40,7 @@
 --
 
 
+with et_canvas_tool;				use et_canvas_tool;
 with et_schematic_ops_groups;		use et_schematic_ops_groups;
 with et_cmd_origin_to_commit;
 

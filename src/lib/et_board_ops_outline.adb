@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_module_names;					use et_module_names;
 with et_module;						use et_module;
 
 with et_modes.board;

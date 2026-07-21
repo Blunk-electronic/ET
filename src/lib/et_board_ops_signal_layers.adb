@@ -44,6 +44,7 @@
 -- with ada.exceptions;				use ada.exceptions;
 
 
+with et_module;						use et_module;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;

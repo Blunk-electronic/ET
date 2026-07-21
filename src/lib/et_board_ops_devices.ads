@@ -44,11 +44,8 @@ with et_board_coordinates;				use et_board_coordinates;
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_module_instance;				use et_module_instance;
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_package_model_name;				use et_package_model_name;
-with et_package_name;					use et_package_name;
 with et_package_library;				use et_package_library;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;

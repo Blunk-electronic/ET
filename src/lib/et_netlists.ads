@@ -50,9 +50,7 @@ with et_netchangers;			use et_netchangers;
 with et_netchangers.schematic;	use et_netchangers.schematic;
 
 with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_symbol_model;			use et_symbol_model;
 with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
@@ -62,7 +60,6 @@ with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
 with et_net_scope;				use et_net_scope;
-with et_netlist_name;			use et_netlist_name;
 
 
 package et_netlists is

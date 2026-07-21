@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_net_ports;					use et_net_ports;
 with ada.strings;						use ada.strings;
 
 with et_keywords;						use et_keywords;

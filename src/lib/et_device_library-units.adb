@@ -39,6 +39,8 @@
 
 
 
+with et_unit_add_level;					use et_unit_add_level;
+with et_unit_add_level;					use et_unit_add_level;
 with et_exceptions;				use et_exceptions;
 
 with et_symbol_library;

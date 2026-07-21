@@ -37,6 +37,12 @@
 --   history of changes:
 --
 
+with gdk.types.keysyms;				use gdk.types.keysyms;
+with et_board_coordinates;			use et_board_coordinates;
+with et_project;
+with et_module;						use et_module;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;

@@ -45,7 +45,6 @@ with et_board_text;						use et_board_text;
 
 package et_pcb_placeholders.non_conductor is
 	
-	use pac_text_board;
 	use pac_text_board_vectorized;
 	
 

@@ -42,30 +42,20 @@
 with ada.containers;
 with ada.containers.ordered_maps;
 
-with et_schematic_geometry;
-with et_schematic_coordinates;
-with et_schematic_text;
-with et_board_geometry;
-with et_nets;
-with et_netlists;
-with et_submodules;
 
 with et_module;						use et_module;
 
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_names;				use et_module_names;
 with et_meta;
-with et_commit;
 -- with et_drawing_frame;
 -- with et_drawing_frame.schematic;
 
-with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
 -- with et_net_classes;				use et_net_classes;
 -- with et_devices_electrical;			use et_devices_electrical;
 -- with et_devices_non_electrical;		use et_devices_non_electrical;
-with et_logging;					use et_logging;
 
 
 package et_generic_modules is

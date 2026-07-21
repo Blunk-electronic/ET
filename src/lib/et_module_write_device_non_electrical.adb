@@ -42,6 +42,7 @@
 --
 --
 
+with et_module_names;			use et_module_names;
 with ada.strings;					use ada.strings;
 
 with et_keywords;					use et_keywords;

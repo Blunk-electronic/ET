@@ -36,6 +36,11 @@
 --   history of changes:
 --
 
+with ada.strings.maps;				use ada.strings.maps;
+with et_schematic_geometry;
+with et_schematic_coordinates;
+with et_module_board;
+with et_board_geometry;
 with ada.strings; 				use ada.strings;
 with ada.directories;			use ada.directories;
 with gnat.source_info;

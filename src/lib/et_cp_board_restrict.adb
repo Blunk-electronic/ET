@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_directions;						use et_directions;
 with et_primitive_objects;				use et_primitive_objects;
 
@@ -50,7 +51,6 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_route_restrict;
 with et_board_ops_via_restrict;
-with et_keywords;
 
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 

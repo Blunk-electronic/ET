@@ -37,6 +37,8 @@
 --
 --   ToDo: 
 
+with et_module;						use et_module;
+with et_module_names;				use et_module_names;
 with ada.exceptions;
 
 with et_conductor_segment.boards;

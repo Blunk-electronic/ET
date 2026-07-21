@@ -40,6 +40,8 @@
 -- - propose arguments if command incomplete
 --
 
+with et_string_processing;		use et_string_processing;
+with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 with ada.characters.handling;			use ada.characters.handling;
 
 with et_exceptions;						use et_exceptions;
@@ -57,7 +59,6 @@ with et_drills;
 with et_design_rules_board;
 with et_vias;
 
-with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_via is

@@ -46,6 +46,8 @@ with et_canvas_board;
 package et_colors.board is
 
 	use et_canvas_board.pac_canvas;
+
+
 	-- The global variable "context" is now visible
 	-- for all procedures that set the color.
 

@@ -37,6 +37,10 @@
 --   history of changes:
 --
 
+with et_generic_modules;			use et_generic_modules;
+with et_schematic_geometry;			use et_schematic_geometry;
+with et_generic_modules;			use et_generic_modules;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;

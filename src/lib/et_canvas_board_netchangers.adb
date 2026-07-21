@@ -45,6 +45,7 @@
 -- with gdk.types.keysyms;				use gdk.types.keysyms;
 
 
+with et_generic_modules;			use et_generic_modules;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_board_ops_netchangers;		use et_board_ops_netchangers;

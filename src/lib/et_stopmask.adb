@@ -37,6 +37,7 @@
 --
 --   to do:
 
+with ada.strings;				use ada.strings;
 package body et_stopmask is
 
 	

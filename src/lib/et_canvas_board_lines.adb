@@ -38,6 +38,8 @@
 -- DESCRIPTION:
 -- 
 
+with et_board_geometry;					use et_board_geometry;
+with et_board_geometry;					use et_board_geometry;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 

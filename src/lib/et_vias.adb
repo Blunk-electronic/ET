@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_contour_to_polygon;
 with ada.strings;					use ada.strings;
 
 with et_exceptions;					use et_exceptions;

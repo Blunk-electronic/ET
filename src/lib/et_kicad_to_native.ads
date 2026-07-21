@@ -36,28 +36,13 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings.maps;				use ada.strings.maps;
-with ada.strings.bounded;   	    use ada.strings.bounded;
-with ada.containers;        	    use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_net_names;					use et_net_names;
 with et_project_name;				use et_project_name;
 
-with et_schematic_geometry;
-with et_schematic_coordinates;
 
 with et_logging;					use et_logging;
-with et_module_board;
 
-with et_board_geometry;
-with et_board_coordinates;
 
 
 package et_kicad_to_native is

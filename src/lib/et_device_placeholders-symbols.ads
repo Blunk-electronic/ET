@@ -59,7 +59,7 @@ package et_device_placeholders.symbols is
 	use et_fonts;
 	use pac_geometry_2;
 	use pac_text_schematic;
-	
+
 	-- This is a placeholder for a name, value or purpose.
 	-- It does not have content yet, but a meaning.
 	-- The position is just x/y relative to the symbol origin.

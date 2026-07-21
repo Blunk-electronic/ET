@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_logging;					use et_logging;
 with ada.strings; 				use ada.strings;
 
 

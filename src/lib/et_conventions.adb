@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+with ada.containers.doubly_linked_lists;
+with ada.directories;			use ada.directories;
+with et_package_name;			use et_package_name;
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;

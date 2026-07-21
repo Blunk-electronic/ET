@@ -39,6 +39,7 @@
 
 
 with ada.text_io;				use ada.text_io;
+with et_string_processing;		use et_string_processing;
 with ada.strings;
 with ada.strings.bounded;
 with ada.containers;
@@ -47,7 +48,6 @@ with ada.directories;
 with gnat.directory_operations;
 with ada.exceptions;
 
-with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
 

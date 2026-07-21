@@ -37,6 +37,7 @@
 --
 
 
+with ada.containers.doubly_linked_lists;
 with et_string_processing;				use et_string_processing;
 with et_text_content;
 with et_pcb_placeholders;

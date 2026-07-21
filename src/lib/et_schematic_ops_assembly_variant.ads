@@ -49,7 +49,6 @@ with et_generic_modules;		use et_generic_modules;
 
 with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_material;
 
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
@@ -58,7 +57,6 @@ with et_device_partcode;		use et_device_partcode;
 
 with et_logging;				use et_logging;
 
-with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 
 
 package et_schematic_ops_assembly_variant is

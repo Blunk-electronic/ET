@@ -40,6 +40,7 @@
 --   - command to set design rules
 --
 
+with et_string_processing;		use et_string_processing;
 with ada.exceptions;
 
 with et_runmode;					use et_runmode;

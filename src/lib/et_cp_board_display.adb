@@ -40,6 +40,7 @@
 --
 --
 
+with et_string_processing;		use et_string_processing;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 

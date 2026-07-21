@@ -37,37 +37,21 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_project;				use et_project;
 with et_project_name;			use et_project_name;
-with et_module_ops;				use et_module_ops;
 with et_generic_modules;		use et_generic_modules;
 with et_sheets;
 with et_script_names;			use et_script_names;
 
-with gdk;						use gdk;
-with gdk.event;					use gdk.event;
 
 with gtk.main;
-with gtk.window; 				use gtk.window;
-with gtk.widget;  				use gtk.widget;
-with gtk.box;					use gtk.box;
-with gtk.button;     			use gtk.button;
-with gtk.toolbar; 				use gtk.toolbar;
-with gtk.tool_button;			use gtk.tool_button;
-with gtk.enums;					use gtk.enums;
-with gtk.gentry;				use gtk.gentry;
-with gtk.frame;					use gtk.frame;
-with gtk.scrolled_window;		use gtk.scrolled_window;
 -- with gtk.combo_box_text;	with gtk.combo_box_text;	
 -- with gtkada.style;			use gtkada.style;
 
-with glib;						use glib;
-with glib.object;				use glib.object;
 
 package et_gui_2 is
+
+	use pac_generic_modules;
 
 	-- Starts the GUI and displays the given module (schematic and board):
 	procedure single_module (

@@ -41,6 +41,7 @@
 -- - set exit code if targeted object does not exist
 
 
+with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 
 with et_schematic_coordinates;

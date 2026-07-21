@@ -37,7 +37,6 @@
 --
 
 
-with et_string_processing;			use et_string_processing;
 
 with et_geometry_2a;
 with et_geometry_2a.contours;

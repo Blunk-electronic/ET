@@ -60,7 +60,6 @@ package et_package_model_name is
 	package_model_file_extension : constant string := "pac";
 
 	
-	use pac_package_model_file;
 	
 	function to_string (
 		name : in pac_package_model_file.bounded_string) 

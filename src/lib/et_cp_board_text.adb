@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_exceptions;						use et_exceptions;

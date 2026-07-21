@@ -40,7 +40,6 @@
 --
 
 with ada.characters.latin_1;
-with et_string_processing;		use et_string_processing;
 
 
 package et_file_write is

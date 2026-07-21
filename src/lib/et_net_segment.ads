@@ -42,15 +42,11 @@ with ada.containers.doubly_linked_lists;
 
 with et_module_instance;		use et_module_instance;
 with et_schematic_geometry;		use et_schematic_geometry;
-with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_logging;				use et_logging;
-with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
 with et_net_ports;				use et_net_ports;
 with et_net_junction;			use et_net_junction;
 with et_device_name;			use et_device_name;
-with et_netlists;
 with et_directions;				use et_directions;
 with et_net_ports_devices;		use et_net_ports_devices;
 with et_net_ports_submodules;	use et_net_ports_submodules;

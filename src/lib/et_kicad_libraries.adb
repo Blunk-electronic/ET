@@ -44,6 +44,13 @@
 --		2. Warning if virtual component with one power pin has pin direction differing from power_out
 --			Example: Power symbol "P3V3" must have pin direction power_out.	
 
+with et_terminals;
+with et_import;
+with et_kicad_packages;			use et_kicad_packages;
+with ada.text_io;				use ada.text_io;
+with et_package_name;			use et_package_name;
+with et_schematic_coordinates;
+with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;

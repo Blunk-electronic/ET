@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+with et_logging;					use et_logging;
 with ada.characters;				use ada.characters;
 with ada.characters.handling;		use ada.characters.handling;
 

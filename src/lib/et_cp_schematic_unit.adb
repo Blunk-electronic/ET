@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 with et_modes.schematic;
 with et_sheets;							use et_sheets;

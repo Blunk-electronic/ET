@@ -43,7 +43,7 @@
 -- It is a system wide constant.
 
 
-with et_schematic_geometry;		use et_schematic_geometry;
+with et_schematic_geometry;			use et_schematic_geometry;
 
 
 package et_net_linewidth is

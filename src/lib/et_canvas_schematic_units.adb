@@ -36,6 +36,12 @@
 --   history of changes:
 --
 
+with et_device_library;				use et_device_library;
+with et_canvas_messages;			use et_canvas_messages;
+with et_canvas_tool;				use et_canvas_tool;
+with et_device_library;				use et_device_library;
+with et_canvas_messages;			use et_canvas_messages;
+with et_canvas_tool;				use et_canvas_tool;
 with ada.text_io;					use ada.text_io;
 
 with glib;

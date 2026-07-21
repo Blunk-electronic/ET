@@ -40,6 +40,7 @@
 
 
 
+with ada.characters.handling;	use ada.characters.handling;
 package body et_thermal_relief is
 	
 	function to_string (connection : in type_pad_connection) return string is begin

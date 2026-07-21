@@ -37,6 +37,7 @@
 --
 
 
+with et_module_names;				use et_module_names;
 with et_string_processing;			use et_string_processing;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
 with et_net_classes;

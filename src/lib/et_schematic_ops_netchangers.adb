@@ -39,6 +39,8 @@
 --
 --
 
+with et_module_names;					use et_module_names;
+with et_net_names;						use et_net_names;
 with ada.containers;
 
 with et_string_processing;				use et_string_processing;

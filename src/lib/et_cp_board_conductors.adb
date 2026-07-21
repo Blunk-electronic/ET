@@ -40,6 +40,7 @@
 -- - propose arguments if command incomplete
 --
 
+with et_string_processing;		use et_string_processing;
 with ada.characters.handling;			use ada.characters.handling;
 
 with et_runmode;						use et_runmode;
@@ -49,7 +50,6 @@ with et_modes.board;					use et_modes.board;
 
 with et_primitive_objects;				use et_primitive_objects;
 with et_exceptions;						use et_exceptions;
-with et_modes.board;					use et_modes.board;
 with et_module;							use et_module;
 with et_module_names;					use et_module_names;
 with et_fill_zones;						use et_fill_zones;
@@ -59,7 +59,6 @@ with et_keywords;						use et_keywords;
 
 with et_module_board_user_settings;
 with et_board_geometry;					use et_board_geometry;
-with et_keywords;						use et_keywords;
 
 with et_ratsnest;
 with et_board_ops_ratsnest;

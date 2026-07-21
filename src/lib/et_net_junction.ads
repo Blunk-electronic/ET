@@ -38,7 +38,6 @@
 
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_logging;				use et_logging;
 
 
 package et_net_junction is

@@ -40,14 +40,13 @@
 
 with et_sheets;							use et_sheets;
 with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
 
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_text_content;					use et_text_content;
 with et_rotation_docu;					use et_rotation_docu;
-with et_text;							use et_text;
+with et_text;						use et_text;
 with et_text_vectorized;				use et_text_vectorized;
 with et_fonts;							use et_fonts;
 
@@ -75,7 +74,7 @@ package et_schematic_text is
 		size_max			=> text_size_max,
 		size_default		=> text_size_default);
 
-	use pac_text_schematic; 
+	use pac_text_schematic;
 
 
 	-- The vector-text package is never used, but mandatory for instantiation

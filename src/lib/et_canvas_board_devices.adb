@@ -38,6 +38,9 @@
 -- DESCRIPTION:
 -- 
 
+with gtk.box;						use gtk.box;
+with et_package_library;			use et_package_library;
+with et_package_library;			use et_package_library;
 with ada.text_io;					use ada.text_io;
 
 with glib;
@@ -68,7 +71,6 @@ with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
-with et_package_library;
 with et_package_model_name;
 with et_package_read;
 

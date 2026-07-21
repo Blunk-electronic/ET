@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_board_ops_material_pnp;			use et_board_ops_material_pnp;
 
 

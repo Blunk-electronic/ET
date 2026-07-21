@@ -44,7 +44,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_generic_modules;		use et_generic_modules;
-with et_module_names;			use et_module_names;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 
 with et_net_names;				use et_net_names;
@@ -58,6 +57,8 @@ with et_logging;				use et_logging;
 
 
 package et_netlist_cat_1 is
+
+	use pac_generic_modules;
 
 
 	-- These constants are used when the netlist 

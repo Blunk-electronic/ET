@@ -38,6 +38,24 @@
 --   To Do:
 --	- distinguish between through, blind and buried vias.
 
+with ada.characters;			use ada.characters;
+with et_package_name;				use et_package_name;
+with et_pcb_sides;					use et_pcb_sides;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_conductor_text;
+with et_conductor_text.boards;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_stopmask.packages;
+with ada.text_io;				use ada.text_io;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.maps;			use ada.strings.maps;
+with et_package_model_name;			use et_package_model_name;
+with et_conductors_floating_board;	use et_conductors_floating_board;
+with et_device_value;					use et_device_value;
+with et_conductor_text.boards;
+with et_conductor_segment;
+with et_stopmask.board;				use et_stopmask.board;
 with ada.directories;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;

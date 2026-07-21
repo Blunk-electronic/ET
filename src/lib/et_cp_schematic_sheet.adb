@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_drawing_frame.schematic;
 with et_sheets;							use et_sheets;
 with et_schematic_ops_sheets;			use et_schematic_ops_sheets;

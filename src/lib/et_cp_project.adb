@@ -37,6 +37,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with ada.directories;
 
 

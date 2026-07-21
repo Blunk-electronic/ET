@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_board_text;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with ada.characters.latin_1;
 with ada.strings.unbounded;
 
@@ -1463,7 +1466,7 @@ package body et_devices_non_electrical is
 
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board_vectorized;
+				use et_board_text.pac_text_board_vectorized;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
@@ -1559,7 +1562,7 @@ package body et_devices_non_electrical is
 
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board_vectorized;
+				use et_board_text.pac_text_board_vectorized;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content

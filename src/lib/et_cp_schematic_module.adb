@@ -41,6 +41,7 @@
 -- - add commit operations ???
 
 
+with et_string_processing;		use et_string_processing;
 with ada.containers;
 
 with et_module_write;					use et_module_write;

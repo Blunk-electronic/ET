@@ -38,6 +38,8 @@
 -- DESCRIPTION:
 -- 
 
+
+
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -71,12 +73,15 @@ with et_logging;					use et_logging;
 package et_canvas_schematic_nets is
 
 	use pac_generic_modules;
-	
+
 
 	use pac_net_name;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
+
+
+	use pac_net_name;
 
 
 

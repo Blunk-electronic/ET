@@ -37,6 +37,7 @@
 --   history of changes:
 --
 
+with et_generic_modules;		use et_generic_modules;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 

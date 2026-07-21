@@ -40,6 +40,7 @@
 
 
 
+with et_logging;				use et_logging;
 package body et_device_category is
 
 	

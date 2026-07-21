@@ -41,6 +41,7 @@
 --
 
 
+with et_string_processing;		use et_string_processing;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_outline;				use et_board_ops_outline;
 

@@ -52,7 +52,6 @@ with et_logging;						use et_logging;
 with et_symbol_model;					use et_symbol_model;
 with et_symbol_name;					use et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
-with et_string_processing;				use et_string_processing;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 

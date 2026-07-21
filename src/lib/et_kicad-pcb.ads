@@ -39,17 +39,11 @@
 --  To Do:
 --  1. rename package instantiations starting with type_* to pac_*
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
@@ -61,15 +55,13 @@ with et_net_classes;				use et_net_classes;
 with et_net_class_name;				use et_net_class_name;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
-with et_package_name;				use et_package_name;
 with et_package_model_name;			use et_package_model_name;
+with et_device_value;					use et_device_value;
 
 with et_module;
 with et_module_board;
 
 with et_board_outline;				use et_board_outline;
-with et_pcb_sides;					use et_pcb_sides;
-with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 with et_kicad_general;				use et_kicad_general;
@@ -81,8 +73,6 @@ with et_vias;						use et_vias;
 with et_drills;						use et_drills;
 
 with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_drawing_frame;
 with et_design_rules_board;			use et_design_rules_board;
@@ -90,10 +80,8 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_thermal_relief;				use et_thermal_relief;
-with et_conductor_text;
-with et_conductor_text.boards;
 with et_conductor_segment;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_conductors_floating_board;	use et_conductors_floating_board;
 
 with et_stencil.board;				use et_stencil.board;
 
@@ -109,7 +97,6 @@ with et_keepout;					use et_keepout;
 with et_keepout.board;				use et_keepout.board;
 
 with et_stopmask;					use et_stopmask;
-with et_stopmask.packages;
 with et_stopmask.board;				use et_stopmask.board;
 
 with et_kicad.schematic;

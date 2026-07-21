@@ -39,6 +39,10 @@
 -- - clean up, rework
 --
 
+with et_board_coordinates;			use et_board_coordinates;
+with et_assembly_variant_name;		use et_assembly_variant_name;
+with et_board_coordinates;			use et_board_coordinates;
+with et_assembly_variant_name;		use et_assembly_variant_name;
 with ada.exceptions;
 
 with et_string_processing;					use et_string_processing;

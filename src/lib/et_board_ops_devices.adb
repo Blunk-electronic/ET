@@ -39,6 +39,12 @@
 --
 --
 
+with et_module_instance;				use et_module_instance;
+with et_module_names;					use et_module_names;
+with et_device_placeholders;			use et_device_placeholders;
+with et_module_instance;				use et_module_instance;
+with et_module_names;					use et_module_names;
+with et_device_placeholders;			use et_device_placeholders;
 with ada.strings.unbounded;
 
 with et_string_processing;				use et_string_processing;

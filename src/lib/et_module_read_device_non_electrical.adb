@@ -43,7 +43,7 @@
 --
 
 
-with et_module_names;				use et_module_names;
+with et_module_names;			use et_module_names;
 with et_keywords;					use et_keywords;
 with et_pcb_sides;
 with et_board_geometry;

@@ -49,12 +49,12 @@ with et_module_board_user_settings;	use et_module_board_user_settings;
 -- with et_board_geometry;				use et_board_geometry;
 -- use et_board_geometry.pac_geometry_2;
 
-with et_logging;					use et_logging;
 
 
 package et_board_ops_user_settings is
 
 	use pac_generic_modules;
+
 
 
 	

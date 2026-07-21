@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with et_logging;				use et_logging;
+with ada.containers; 			use ada.containers;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 

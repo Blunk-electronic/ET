@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with et_generic_modules;			use et_generic_modules;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 
 
