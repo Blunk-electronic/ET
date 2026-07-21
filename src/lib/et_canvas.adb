@@ -3006,8 +3006,7 @@ package body et_canvas is
 		box_h0.pack_start (box_v2, expand => false);
 
 
-		gtk_new (buttons_table, rows => 5, columns => 1, 
-			homogeneous => false);
+		gtk_new (buttons_grid);
 		-- table.set_col_spacings (50);
 		-- table_coordinates.set_border_width (10);
 
@@ -3022,33 +3021,27 @@ package body et_canvas is
 		
 
 		
-		-- The table shall not expand downward:
-		box_v2.pack_start (buttons_table, expand => false);
+		-- The grid shall not expand downward:
+		box_v2.pack_start (buttons_grid, expand => false);
 
 		
-		buttons_table.attach (button_zoom_fit,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 0, bottom_attach => 1);
+		buttons_grid.attach (button_zoom_fit,
+			left => 1, top => 1);
 
-		buttons_table.attach (button_zoom_area,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 1, bottom_attach => 2);
+		buttons_grid.attach (button_zoom_area,
+			left => 1, top => 2);
 		
-		buttons_table.attach (button_add,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 2, bottom_attach => 3);
+		buttons_grid.attach (button_add,
+			left => 1, top => 3);
 
-		buttons_table.attach (button_delete,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 3, bottom_attach => 4);
+		buttons_grid.attach (button_delete,
+			left => 1, top => 4);
 
-		buttons_table.attach (button_move,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 4, bottom_attach => 5);
+		buttons_grid.attach (button_move,
+			left => 1, top => 5);
 
-		buttons_table.attach (button_export,
-			left_attach => 0, right_attach => 1,
-			top_attach  => 5, bottom_attach => 6);
+		buttons_grid.attach (button_export,
+			left => 1, top => 6);
 				
 	end create_buttons;	
 

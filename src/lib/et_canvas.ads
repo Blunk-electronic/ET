@@ -1240,7 +1240,7 @@ package et_canvas is
 
 -- BUTTONS:
 
-	buttons_table		: gtk_table;
+	buttons_grid		: gtk_grid;
 	
 	button_zoom_fit		: gtk_button;
 	button_zoom_area	: gtk_button;
