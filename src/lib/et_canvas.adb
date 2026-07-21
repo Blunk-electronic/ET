@@ -1881,13 +1881,13 @@ package body et_canvas is
 
 		-- Create a table, that contains headers, text labels
 		-- and text views for the actual coordinates:
-		gtk_new (table, rows => 11, columns => 2, 
-			homogeneous => false);
+		gtk_new (coord_grid);
+		set_column_homogeneous (coord_grid, homogeneous => true);
 		-- table.set_col_spacings (50);
 		-- table.set_border_width (10);
 
 		-- The table shall not expand downward:
-		box_v1.pack_start (table, expand => false);
+		box_v1.pack_start (coord_grid, expand => false);
 
 
 		-- POINTER / MOUSE:
@@ -2048,142 +2048,114 @@ package body et_canvas is
 		scale_value.set_cursor_visible (false);
 		
 		----------------------------------------------------------------------
-		-- Put the items in the table:
+		-- Put the items in the grid:
 
 		-- MOUSE / POINTER:
-		table.attach (pointer_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 0, bottom_attach	=> 1);
+		coord_grid.attach (pointer_header,
+			left => 1, top => 1, width => 2);
 
 		-- x-coordinate:
-		table.attach (pointer_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 1, bottom_attach	=> 2);
+		coord_grid.attach (pointer_x_label,
+			left => 1, top => 2);
 
-		table.attach (pointer_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 1, bottom_attach	=> 2);
+		coord_grid.attach (pointer_x_value,
+			left => 2, top => 2);
 
 		-- y-coordinate:
-		table.attach (pointer_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 2, bottom_attach	=> 3);
+		coord_grid.attach (pointer_y_label,
+			left => 1, top => 3);
   
-		table.attach (pointer_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 2, bottom_attach	=> 3);
+		coord_grid.attach (pointer_y_value,
+			left => 2, top => 3);
 
 
 		-- CURSOR:
-		table.attach (cursor_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 3, bottom_attach	=> 4);
+		coord_grid.attach (cursor_header,
+			left => 1, top => 4, width => 2);
 
 		-- x-coordinate:
-		table.attach (cursor_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 4, bottom_attach	=> 5);
+		coord_grid.attach (cursor_x_label,
+			left => 1, top => 5);
 
-		table.attach (cursor_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 4, bottom_attach	=> 5);
+		coord_grid.attach (cursor_x_value,
+			left => 2, top => 5);
 
 		-- y-coordinate:
-		table.attach (cursor_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 5, bottom_attach	=> 6);
+		coord_grid.attach (cursor_y_label,
+			left => 1, top => 6);
   
-		table.attach (cursor_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 5, bottom_attach	=> 6);
+		coord_grid.attach (cursor_y_value,
+			left => 2, top => 6);
 
 
 
 		-- DISTANCES:
-		table.attach (distances_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 6, bottom_attach	=> 7);
+		coord_grid.attach (distances_header,
+			left => 1, top => 7, width => 2);
 
 		-- x-coordinate:
-		table.attach (distances_dx_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 7, bottom_attach	=> 8);
+		coord_grid.attach (distances_dx_label,
+			left => 1, top => 8);
 
-		table.attach (distances_dx_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 7, bottom_attach	=> 8);
+		coord_grid.attach (distances_dx_value,
+			left => 2, top => 8);
 
 		-- y-coordinate:
-		table.attach (distances_dy_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 9, bottom_attach	=> 10);
+		coord_grid.attach (distances_dy_label,
+			left => 1, top => 9);
   
-		table.attach (distances_dy_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 9, bottom_attach	=> 10);
+		coord_grid.attach (distances_dy_value,
+			left => 2, top => 9);
 
 		-- absolute:
-		table.attach (distances_absolute_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 10, bottom_attach => 11);
+		coord_grid.attach (distances_absolute_label,
+			left => 1, top => 10);
   
-		table.attach (distances_absolute_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 10, bottom_attach => 11);
+		coord_grid.attach (distances_absolute_value,
+			left => 2, top => 10);
 		
 		-- angle:
-		table.attach (distances_angle_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 11, bottom_attach => 12);
+		coord_grid.attach (distances_angle_label,
+			left => 1, top => 11);
   
-		table.attach (distances_angle_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 11, bottom_attach => 12);
+		coord_grid.attach (distances_angle_value,
+			left => 2, top => 11);
 
 
 		
 		-- GRID:
-		table.attach (grid_header, 
-			left_attach	=> 0, right_attach	=> 2, 
-			top_attach	=> 12, bottom_attach => 13);
+		coord_grid.attach (grid_header,
+			left => 1, top => 12, width => 2);
 
 		-- x-axis:
-		table.attach (grid_x_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 13, bottom_attach => 14);
+		coord_grid.attach (grid_x_label,
+			left => 1, top => 13);
   
-		table.attach (grid_x_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 13, bottom_attach => 14);
+		coord_grid.attach (grid_x_value,
+			left => 2, top => 13);
 
 		-- y-axis:
-		table.attach (grid_y_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 14, bottom_attach => 15);
+		coord_grid.attach (grid_y_label,
+			left => 1, top => 14);
   
-		table.attach (grid_y_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 14, bottom_attach => 15);
+		coord_grid.attach (grid_y_value,
+			left => 2, top => 14);
 
 		
 		-- ZOOM:
-		table.attach (zoom_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 15, bottom_attach => 16);
+		coord_grid.attach (zoom_label,
+			left => 1, top => 15);
   
-		table.attach (zoom_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 15, bottom_attach => 16);
+		coord_grid.attach (zoom_value,
+			left => 2, top => 15);
 
 		
 		-- SCALE:
-		table.attach (scale_label, 
-			left_attach	=> 0, right_attach	=> 1, 
-			top_attach	=> 16, bottom_attach => 17);
+		coord_grid.attach (scale_label,
+			left => 1, top => 16);
   
-		table.attach (scale_value, 
-			left_attach	=> 1, right_attach	=> 2, 
-			top_attach	=> 16, bottom_attach => 17);
+		coord_grid.attach (scale_value,
+			left => 2, top => 16);
 
 	end set_up_coordinates_display;
 

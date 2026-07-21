@@ -66,6 +66,7 @@ with gtk.adjustment;			use gtk.adjustment;
 with gtk.scrollbar;				use gtk.scrollbar;
 
 with gtk.table;					use gtk.table;
+with gtk.grid;					use gtk.grid;
 with gtk.label;					use gtk.label;
 with gtk.button;				use gtk.button;
 with gtk.text_view;				use gtk.text_view;
@@ -926,7 +927,7 @@ package et_canvas is
 	
 -- COORDINATES-DISPLAY:
 
-	table : gtk_table;
+	coord_grid : gtk_grid;
 
 	pointer_header							: gtk_label;
 	pointer_x_label, pointer_y_label		: gtk_label;
