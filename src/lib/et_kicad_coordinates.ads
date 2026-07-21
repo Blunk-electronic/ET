@@ -159,14 +159,14 @@ package et_kicad_coordinates is
 	-- Sets the sheet number in given position.
 
 	
-	private 
+private 
 	
-		--type type_position is new type_vector_model with record
-		type type_position is record
-			point			: type_vector_model;
-			path            : type_path_to_submodule.list; 
-			sheet_number	: type_sheet := type_sheet'first;
-		end record;
+	--type type_position is new type_vector_model with record
+	type type_position is record
+		point			: type_vector_model;
+		path            : type_path_to_submodule.list; 
+		sheet_number	: type_sheet := type_sheet'first;
+	end record;
 
 		
 end et_kicad_coordinates;

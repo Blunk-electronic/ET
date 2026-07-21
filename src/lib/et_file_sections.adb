@@ -72,7 +72,8 @@ package body et_file_sections is
 	end;
 
 	function write_section_stack_not_empty return string is begin
-		return "section stack not empty !"; end;
+		return "section stack not empty !";
+	end;
 	
 	procedure invalid_section is begin
 		log (SEVERITY_ERROR, "invalid section name !", console => true);

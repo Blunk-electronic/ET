@@ -66,7 +66,7 @@ package et_device_model_unit_external is
 	
 	
 	-- An external unit has a reference and a swap level.
-    type type_unit_external is record
+	type type_unit_external is record
 
 		-- This is the link to the symbol in symbol library:
 		model_cursor : pac_symbol_models.cursor;

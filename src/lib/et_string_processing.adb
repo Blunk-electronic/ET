@@ -216,27 +216,27 @@ package body et_string_processing is
 		char_last	: character := ' ';		 -- holds character processed previous to char_current
 	begin
 		while char_pt <= line_length
-			loop
-				--put (char_pt);
-				char_current:= text_in(char_pt); 
-				if char_current = IFS1 or char_current = IFS2 then
-					inside_field := false;
-				else
-					inside_field := true;
-				end if;
+		loop
+			--put (char_pt);
+			char_current:= text_in(char_pt); 
+			if char_current = IFS1 or char_current = IFS2 then
+				inside_field := false;
+			else
+				inside_field := true;
+			end if;
 
-				-- count fields if character other than IFS found
-				if ((char_last = IFS1 or char_last = IFS2) and (char_current /= IFS1 and char_current /= IFS2)) then
-					field_ct:=field_ct+1;
-				end if;
+			-- count fields if character other than IFS found
+			if ((char_last = IFS1 or char_last = IFS2) and (char_current /= IFS1 and char_current /= IFS2)) then
+				field_ct:=field_ct+1;
+			end if;
 
-				-- save last character
-				char_last:=char_current;
+			-- save last character
+			char_last:=char_current;
 
-				-- advance character pointer by one
-				char_pt:=char_pt+1; 
-				--put (char_current); put (" --"); new_line;
-			end loop;
+			-- advance character pointer by one
+			char_pt:=char_pt+1; 
+			--put (char_current); put (" --"); new_line;
+		end loop;
 		return field_ct;
 	end get_field_count;
 
