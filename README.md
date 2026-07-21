@@ -51,7 +51,7 @@ and built with:
 ```sh
 cd doc
 uv run make html
-
+```
 
 ### Installation
 - Currently there is no proper install script.
