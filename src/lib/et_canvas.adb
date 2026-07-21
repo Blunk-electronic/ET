@@ -4041,7 +4041,7 @@ package body et_canvas is
 	
 	
 -- PRIMARY TOOL:
-	
+
 	procedure build_primary_tool_display is
 		use glib;
 		spacing : gint;
@@ -4055,7 +4055,20 @@ package body et_canvas is
 		
 		gtk_new (label_primary_tool, "PRIMARY TOOL (F2)");
 		pack_start (box_primary_tool, label_primary_tool, expand => false);
-		gtk_new_with_entry (cbox_primary_tool);
+		gtk_new (cbox_primary_tool);
+
+		for t in type_tool loop
+			append (
+				cbox_primary_tool,
+				id   => to_string (t),
+				text => to_string (t));
+		end loop;
+
+		on_changed (
+			cbox_primary_tool,
+			call  => access_cb_primary_tool_change,
+			after => true);
+
 		pack_start (box_primary_tool, cbox_primary_tool);
 
 		update_primary_tool_display;
@@ -4063,17 +4076,28 @@ package body et_canvas is
 
 
 
+	procedure cb_primary_tool_change (self : access gtk_combo_box_record'class) is
+	begin
+		primary_tool := to_tool (get_active_id (self));
 
-	
-	procedure update_primary_tool_display is begin
-		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
+		if primary_tool = KEYBOARD then
+			focus_canvas;
+		end if;
+	end cb_primary_tool_change;
+
+
+
+	procedure update_primary_tool_display is
+		unused_found : boolean;
+	begin
+		unused_found :=
+			set_active_id (
+				cbox_primary_tool,
+				active_id => to_string (primary_tool));
 	end update_primary_tool_display;
 
-	
 
 
-
-	
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;
