@@ -46,6 +46,7 @@
 
 
 with et_generic_modules;			use et_generic_modules;
+with et_logging;					use et_logging;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_board_ops_netchangers;		use et_board_ops_netchangers;
