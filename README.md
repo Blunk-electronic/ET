@@ -91,8 +91,9 @@ $ sh install.sh
 - Ada is beautiful :-)
 
 ### Roadmap and required Contribution
-Your help is appreciated are highly welcome !
+Your help is appreciated and is highly welcome !
 For most of the issues below a separate issue exists on the GitHub page.
+All code must be written in Ada for the reasons mentioned above.
 
 #### Major Construction Sites
 - graphical editors for symbol, package/footprint and device models
