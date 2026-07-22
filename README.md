@@ -24,12 +24,16 @@
 - interfacing with system modelling tools
 
 ### Examples of design and component models
-- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET_training/blob/master/single-led/main.mod>
+- A module file (containing schematic and layout stuff) looks like 
+this <https://github.com/Blunk-electronic/ET_training/blob/master/demo/heater_driver.mod>
+- An example script file can be seen here 
+ <https://github.com/Blunk-electronic/ET_training/blob/master/demo/test_device_commands.scr>
 - There is a strict separation between symbol, package/footprint and device:
 - Device model <https://github.com/Blunk-electronic/ET_component_library/blob/master/devices/active/logic/7400_ext.dev>
 - Symbol model <https://github.com/Blunk-electronic/ET_component_library/blob/master/symbols/logic/NAND.sym>
 - Package model <https://github.com/Blunk-electronic/ET_component_library/blob/master/packages/S_SO14.pac>
-- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET_training/blob/master/single-led/single-led.rig>
+- A so called rig-configuration that describes module instances and board-to-board connections
+ <https://github.com/Blunk-electronic/ET_training/blob/master/demo/demo.rig>
 
 <!--### Example of an ERC configuration file
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>-->
