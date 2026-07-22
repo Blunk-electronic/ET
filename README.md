@@ -13,7 +13,7 @@
 - Currently the GUI is under construction.
 - Your feedback and collaboration is highly welcome !
 
-## Outstanding Features
+### Outstanding Features
 - native Linux support
 - ASCII / text based design and device model files - optimized for version control with GIT
 - human readable and editable design and model files
@@ -90,12 +90,22 @@ $ sh install.sh
 - Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)
 
-### Roadmap, things to do and issues
+### Roadmap and required Contribution
+Your help is appreciated are highly welcome !
+For most of the issues below a separate issue exists on the GitHub page.
+
+#### Major Construction Sites
+- graphical editors for symbol, package/footprint and device models
+- CAM processor
+- export PDF, PNG, ...
+- import and append native ET modules to current active module
+- import EAGLE and KiCad projects and component libraries
+- realization of true hierarchical design
+- net converter checks connector pinouts of modules
+
+#### Miscellaneous
 - zero-Ohms resistors
 - accessories of components (screws, washers, clamps, ...)
-- import EAGLE and KiCad V6 projects and libraries
 - web browser support so that ET can be operated on every operating system
+- a nice web site for the project
 
-### Collaboration
-- We need a nice web site for the project.
-- You are highly welcome !
