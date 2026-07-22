@@ -57,6 +57,10 @@ cd doc
 uv run make html
 ```
 
+For those interested in the basic mechanisms of the canvas engine, a textbook is available
+at <http://www.blunk-electronic.de/en/index.html>.
+
+
 ### Installation
 - Currently there is no proper install script.
 - Install the following packages: 
