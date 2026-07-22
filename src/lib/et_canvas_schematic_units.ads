@@ -38,8 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;	            use ada.containers;
-with ada.containers.doubly_linked_lists;
 
 with gtk.widget;					use gtk.widget;
 with gtk.menu_item;					use gtk.menu_item;
@@ -54,24 +52,13 @@ with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_generic_modules;			use et_generic_modules;
-with et_symbol_model;				use et_symbol_model;
 with et_package_variant_name;		use et_package_variant_name;
-with et_package_variant;			use et_package_variant;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
 with et_device_name;				use et_device_name;
 with et_device_value;				use et_device_value;
-with et_nets;						use et_nets;
-with et_net_segment;				use et_net_segment;
 with et_unit_name;					use et_unit_name;
-with et_units;						use et_units;
-with et_devices_electrical;			use et_devices_electrical;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
-with et_canvas_schematic_nets;
-with et_device_placeholders;		use et_device_placeholders;
 
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
@@ -79,7 +66,6 @@ with et_canvas_tool;				use et_canvas_tool;
 
 package et_canvas_schematic_units is
 
-	use pac_generic_modules;
 
 
 

@@ -37,14 +37,23 @@
 --   history of changes:
 --
 
-with et_generic_modules;			use et_generic_modules;
+with et_generic_modules;
 with et_schematic_geometry;			use et_schematic_geometry;
-with et_generic_modules;			use et_generic_modules;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
 with ada.directories;
+
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
+with glib;							use glib;
+
+with et_module;						use et_module;
+with et_sheets;						use et_sheets;
+with et_project;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 
 

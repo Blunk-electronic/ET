@@ -44,8 +44,7 @@ with et_sheets;
 with et_script_names;			use et_script_names;
 
 
-with gtk.main;
--- with gtk.combo_box_text;	with gtk.combo_box_text;	
+-- with gtk.combo_box_text;	with gtk.combo_box_text;
 -- with gtkada.style;			use gtkada.style;
 
 

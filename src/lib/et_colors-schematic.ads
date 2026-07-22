@@ -45,6 +45,8 @@ package et_colors.schematic is
 	use et_canvas_schematic.pac_canvas;
 
 
+
+
 	-- The global context is now visible
 	-- for all procedures that set the color.
 

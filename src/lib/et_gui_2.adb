@@ -40,8 +40,9 @@
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
 with gtk.window; 				use gtk.window;
-with et_logging;				use et_logging;
-with et_project_name;			use et_project_name;
+with gtk.main;
+with et_logging;
+with et_project_name;
 with gtk.enums;
 with et_runmode;					use et_runmode;
 

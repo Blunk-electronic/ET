@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with et_canvas_tool;			use et_canvas_tool;
+with et_canvas_tool;
 with ada.strings.bounded;
 with ada.strings;
 

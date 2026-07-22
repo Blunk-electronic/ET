@@ -42,15 +42,11 @@
 with et_module;							use et_module;
 with et_net_labels;						use et_net_labels;
 with et_devices_electrical.units;		use et_devices_electrical.units;
-with et_port_names;						use et_port_names;
-with et_terminal_name;					use et_terminal_name;
-with et_logging;						use et_logging;
-with et_module;							use et_module;
-with et_net_labels;						use et_net_labels;
-with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_symbol_ports;					use et_symbol_ports;
 with et_port_names;						use et_port_names;
-with et_terminal_name;					use et_terminal_name;
+with et_terminal_name;
+with et_logging;
+with et_package_variant;				use et_package_variant;
 with ada.exceptions;					use ada.exceptions;
 
 with et_axes;

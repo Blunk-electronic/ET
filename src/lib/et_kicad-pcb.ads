@@ -72,7 +72,6 @@ with et_board_text;					use et_board_text;
 with et_vias;						use et_vias;
 with et_drills;						use et_drills;
 
-with et_device_placeholders;			use et_device_placeholders;
 with et_device_name;					use et_device_name;
 with et_drawing_frame;
 with et_design_rules_board;			use et_design_rules_board;

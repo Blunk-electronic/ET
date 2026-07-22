@@ -40,7 +40,7 @@
 with ada.strings.fixed; 		use ada.strings.fixed;
 with et_string_processing;		use et_string_processing;
 with ada.directories;			use ada.directories;
-with ada.characters;			use ada.characters;
+with ada.characters;
 with ada.strings;				use ada.strings;
 
 --with ada.exceptions;

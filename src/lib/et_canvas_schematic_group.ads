@@ -41,29 +41,14 @@
 
 
 
-with ada.containers;				use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with gdk.event;						use gdk.event;
-with gdk.types;						use gdk.types;
-with gdk.types.keysyms;				use gdk.types.keysyms;
-with gtk.widget;					use gtk.widget;
-with gtk.gentry;
 with et_canvas_tool;				use et_canvas_tool;
-with et_canvas_schematic;			use et_canvas_schematic;
 with et_canvas_messages;			use et_canvas_messages;
 with et_schematic_geometry;			use et_schematic_geometry;
-with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
-
-with et_generic_modules;			use et_generic_modules;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
 
 package et_canvas_schematic_group is
 
-	use pac_generic_modules;
 
 
 	

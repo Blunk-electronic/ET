@@ -77,7 +77,6 @@ with et_stopmask;						use et_stopmask;
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_text_content;					use et_text_content;
-with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 

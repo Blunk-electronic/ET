@@ -46,7 +46,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_text_content;					use et_text_content;
 with et_rotation_docu;					use et_rotation_docu;
-with et_text;						use et_text;
+with et_text;
 with et_text_vectorized;				use et_text_vectorized;
 with et_fonts;							use et_fonts;
 

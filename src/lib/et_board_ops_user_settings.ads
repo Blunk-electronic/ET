@@ -53,7 +53,6 @@ with et_module_board_user_settings;	use et_module_board_user_settings;
 
 package et_board_ops_user_settings is
 
-	use pac_generic_modules;
 
 
 

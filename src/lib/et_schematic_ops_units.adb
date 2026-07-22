@@ -45,12 +45,7 @@
 
 
 with et_module;							use et_module;
-with et_schematic_text;
-with et_device_model_names;				use et_device_model_names;
-with et_package_variant;				use et_package_variant;
-with et_terminal_name;					use et_terminal_name;
-with et_module;							use et_module;
-with et_schematic_text;
+with et_schematic_text;					use et_schematic_text;
 with et_device_model_names;				use et_device_model_names;
 with et_package_variant;				use et_package_variant;
 with et_terminal_name;					use et_terminal_name;

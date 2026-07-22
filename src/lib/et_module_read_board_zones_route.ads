@@ -57,7 +57,6 @@ with et_logging;				use et_logging;
 
 package et_module_read_board_zones_route is
 
-	use pac_generic_modules;
 
 
 	procedure read_cutout_route (

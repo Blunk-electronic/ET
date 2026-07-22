@@ -48,9 +48,7 @@
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board;
-with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
-with et_board_layer_category;			use et_board_layer_category;
 
 
 
@@ -60,8 +58,10 @@ package et_canvas_board_outline is
 	use pac_contours;
 	use pac_path_and_bend;
 
-
 	use et_canvas_board.pac_canvas;
+
+
+
 
 
 	

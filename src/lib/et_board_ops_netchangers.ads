@@ -47,7 +47,6 @@ with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_generic_modules;				use et_generic_modules;
-with et_module_names;					use et_module_names;
 with et_netchangers;					use et_netchangers;
 
 with et_object_status;					use et_object_status;

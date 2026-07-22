@@ -41,6 +41,7 @@
 with ada.characters;			use ada.characters;
 with et_package_name;				use et_package_name;
 with et_pcb_sides;					use et_pcb_sides;
+with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_conductor_text;
 with et_conductor_text.boards;

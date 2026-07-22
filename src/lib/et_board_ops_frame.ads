@@ -37,11 +37,9 @@
 --
 --   ToDo: 
 
-with et_board_geometry;
 with et_generic_modules;				use et_generic_modules;
 
-with et_module_names;					use et_module_names;
-with et_drawing_frame.board;			use et_drawing_frame.board;
+with et_drawing_frame;
 
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;

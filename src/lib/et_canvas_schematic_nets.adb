@@ -36,13 +36,14 @@
 --   history of changes:
 --
 
-with et_schematic_geometry;			use et_schematic_geometry;
-with et_schematic_geometry;			use et_schematic_geometry;
+with et_schematic_geometry;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;
 
 with gtk.window;
 
+with et_canvas_schematic;			use et_canvas_schematic;
+with et_nets;						use et_nets;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops_groups;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;

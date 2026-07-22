@@ -39,8 +39,10 @@
 -- 
 
 with gtk.box;						use gtk.box;
-with et_package_library;			use et_package_library;
-with et_package_library;			use et_package_library;
+with et_package_library;
+with et_pcb_sides;					use et_pcb_sides;
+with et_board_coordinates;			use et_board_coordinates;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 
 with glib;

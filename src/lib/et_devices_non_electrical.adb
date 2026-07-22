@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
-with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_coordinates_abs_rel;
 with et_board_text;
-with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_coordinates_abs_rel;
 with ada.characters.latin_1;
 with ada.strings.unbounded;
 
@@ -46,7 +46,7 @@ with et_contour_to_polygon;
 with et_stopmask.packages;
 with et_silkscreen.packages;
 with et_assy_doc.packages;
-with et_logging;
+with et_logging;					use et_logging;
 with et_string_processing;			use et_string_processing;
 
 

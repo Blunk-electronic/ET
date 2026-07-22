@@ -37,7 +37,7 @@
 --
 
 with et_logging;				use et_logging;
-with et_alignment;				use et_alignment;
+with et_alignment;
 with ada.strings;
 
 

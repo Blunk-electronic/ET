@@ -58,7 +58,6 @@ package et_board_ops_material_pnp is
 	use pac_generic_modules;
 
 
-
 	
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.

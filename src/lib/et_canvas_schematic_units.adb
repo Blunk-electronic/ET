@@ -36,12 +36,9 @@
 --   history of changes:
 --
 
-with et_device_library;				use et_device_library;
-with et_canvas_messages;			use et_canvas_messages;
-with et_canvas_tool;				use et_canvas_tool;
-with et_device_library;				use et_device_library;
-with et_canvas_messages;			use et_canvas_messages;
-with et_canvas_tool;				use et_canvas_tool;
+with et_device_library;
+with et_canvas_messages;
+with et_canvas_tool;
 with ada.text_io;					use ada.text_io;
 
 with glib;
@@ -58,7 +55,12 @@ with gtk.list_store;
 with gtk.tree_model;
 
 with et_device_read;
-with et_package_variant;
+with et_generic_modules;				use et_generic_modules;
+with et_package_variant;				use et_package_variant;
+with et_units;							use et_units;
+with et_devices_electrical;			use et_devices_electrical;
+with et_string_processing;			use et_string_processing;
+with et_logging;						use et_logging;
 with et_device_library.units;			use et_device_library.units;
 with et_device_library.packages;		use et_device_library.packages;
 with et_device_purpose;					use et_device_purpose;

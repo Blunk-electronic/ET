@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-
 with et_project_name;			use et_project_name;
 
 

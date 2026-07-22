@@ -45,8 +45,8 @@ with ada.numerics.generic_elementary_functions;
 
 with et_mirroring;					use et_mirroring;
 with et_object_status;				use et_object_status;
-with et_directions;					use et_directions;
 with et_logging;					use et_logging;
+with et_directions;					use et_directions;
 
 
 generic

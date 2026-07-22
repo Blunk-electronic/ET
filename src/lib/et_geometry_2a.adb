@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
-with et_object_status;				use et_object_status;
+with et_object_status;
 with ada.numerics;
-with et_mirroring;					use et_mirroring;
+with et_mirroring;
 with ada.text_io;					use ada.text_io;
 
 with ada.strings;					use ada.strings;

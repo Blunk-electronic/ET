@@ -46,7 +46,6 @@ with et_cmd_sts;				use et_cmd_sts;
 
 package et_cp_schematic_canvas is
 
-	use pac_generic_modules;
 
 
 	-- This procedure parses a zoom related command.

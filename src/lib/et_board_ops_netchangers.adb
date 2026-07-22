@@ -40,8 +40,9 @@
 --
 
 
-with et_netchangers;					use et_netchangers;
-with et_generic_modules;				use et_generic_modules;
+with et_netchangers;
+with et_generic_modules;
+with et_module_names;					use et_module_names;
 with ada.containers;
 
 

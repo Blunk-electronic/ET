@@ -41,7 +41,6 @@ with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
-with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
 
 

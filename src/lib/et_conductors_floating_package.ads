@@ -41,11 +41,6 @@
 with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
-with et_board_coordinates;		use et_board_coordinates;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_text;				use et_board_text;
-with et_design_rules_board;				use et_design_rules_board;
-with et_logging;						use et_logging;
 
 with et_conductor_segment;				use et_conductor_segment;
 
@@ -58,10 +53,7 @@ package et_conductors_floating_package is
 
 
 	use pac_geometry_2;
-	use pac_geometry_brd;
 	use pac_polygons;
-	use pac_contours;
-	use pac_text_board;
 
 
 

@@ -36,12 +36,8 @@
 --   history of changes:
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.text_io;				use ada.text_io;
 
 with ada.calendar;				use ada.calendar;
-with ada.calendar.formatting;	use ada.calendar.formatting;
-
-with gnat.calendar;
 
 
 package et_time is

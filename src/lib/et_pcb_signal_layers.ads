@@ -39,9 +39,6 @@
 
 
 
-with ada.characters;			use ada.characters;
-
-with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.ordered_sets;

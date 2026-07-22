@@ -37,9 +37,6 @@
 --
 
 
-with et_string_processing;		--use et_string_processing;
-
-
 package et_export is
 
 	directory_export		: constant string := "export";

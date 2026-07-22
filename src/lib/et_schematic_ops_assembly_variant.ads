@@ -39,8 +39,6 @@
 -- - add commit operations
 
 
-with ada.exceptions;			use ada.exceptions;
-
 with et_module_names;			use et_module_names;
 
 with et_logging;				use et_logging;
