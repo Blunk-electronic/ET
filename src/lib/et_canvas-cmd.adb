@@ -375,6 +375,7 @@ package body et_canvas.cmd is
 							
 					move_cursor_by (c);
 				end move;
+				pragma unreferenced (move);
 
 				
 			begin

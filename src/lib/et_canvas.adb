@@ -3496,6 +3496,7 @@ package body et_canvas is
 
 			-- put_line ("S1:" & to_string (S1));
 		end show_size;
+		pragma unreferenced (show_size);
 		
 		
 		-- When the scrolled window is resized, then it expands away

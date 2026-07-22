@@ -121,6 +121,7 @@ package body et_canvas_board_devices is
 			end if;
 		end if;
 	end show_selected_device;
+	pragma unreferenced (show_selected_device);
 
 
 

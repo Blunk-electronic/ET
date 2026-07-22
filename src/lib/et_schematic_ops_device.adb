@@ -1221,6 +1221,7 @@ package body et_schematic_ops_device is
 					next (cursor_done);
 				end loop;
 			end mark_units_done;
+			pragma unreferenced (mark_units_done);
 
 
 			

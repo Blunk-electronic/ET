@@ -333,6 +333,7 @@ package body et_project is
 			create_directory (compose (path, directory_libraries_symbols));
 			create_directory (compose (path, directory_libraries_packages));			
 		end create_library_subdirs;
+		pragma unreferenced (create_library_subdirs);
 
 		
 	begin -- create_project_directory_bare

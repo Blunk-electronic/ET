@@ -521,6 +521,7 @@ package body et_kicad_libraries is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
+	pragma unreferenced (validate_prefix);
 
 
 	
@@ -537,6 +538,7 @@ package body et_kicad_libraries is
 		
 		return point;
 	end to_point;
+	pragma unreferenced (to_point);
 
 	
 	
@@ -880,6 +882,7 @@ package body et_kicad_libraries is
 				raise;			
 		
 	end to_alternative_representation;
+	pragma unreferenced (to_alternative_representation);
 
 	
 	
@@ -3643,6 +3646,7 @@ package body et_kicad_libraries is
 		
 		return variant;
 	end to_package_variant;
+	pragma unreferenced (to_package_variant);
 
 
 	
@@ -3689,6 +3693,7 @@ package body et_kicad_libraries is
 
 		return port_cursor;
 	end first_port;
+	pragma unreferenced (first_port);
 
 
 	

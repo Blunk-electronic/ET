@@ -3460,6 +3460,7 @@ package body et_board_ops_devices is
 
 		return position;
 	end get_position;
+	pragma unreferenced (get_position);
 
 	
 	--function get_terminal_position (

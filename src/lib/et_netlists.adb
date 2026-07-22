@@ -361,6 +361,7 @@ package body et_netlists is
 
 		return result;
 	end contains;
+	pragma unreferenced (contains);
 
 
 

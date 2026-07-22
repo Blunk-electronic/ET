@@ -1613,6 +1613,7 @@ package body et_net_strands is
 		begin
 			strand.segments.delete (c);
 		end;
+		pragma unreferenced (delete_start_segment);
 		
 
 		-- A precheck is required before the actual splitting.

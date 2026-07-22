@@ -100,6 +100,7 @@ package body et_schematic_ops_netchangers is
 			);
 		raise constraint_error;
 	end;
+	pragma unreferenced (relative_rotation_invalid);
 
 	
 

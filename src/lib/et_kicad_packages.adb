@@ -447,6 +447,7 @@ package body et_kicad_packages is
 	is begin
 		return pac_directory_name.to_bounded_string (directory_name);
 	end to_directory;
+	pragma unreferenced (to_directory);
 
 
 	

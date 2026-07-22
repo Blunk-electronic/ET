@@ -109,6 +109,7 @@ package body et_schematic_ops_submodules is
 			);
 		raise constraint_error;
 	end;
+	pragma unreferenced (relative_rotation_invalid);
 
 	
 
@@ -3580,6 +3581,7 @@ package body et_schematic_ops_submodules is
 
 		procedure error is begin errors := errors + 1; end;
 		procedure warning is begin warnings := warnings + 1; end;
+		pragma unreferenced (warning);
 
 		
 		procedure query_nets (

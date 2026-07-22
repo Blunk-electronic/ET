@@ -1147,6 +1147,7 @@ procedure draw_units is
 						end if;
 					end if;
 				end draw_if_sheet_changes;
+				pragma unreferenced (draw_if_sheet_changes);
 				
 				
 			begin

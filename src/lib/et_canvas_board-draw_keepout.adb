@@ -59,11 +59,13 @@ is
 	procedure set_default_brightness is begin
 		set_color_keepout (face, NORMAL);
 	end set_default_brightness;
+	pragma unreferenced (set_default_brightness);
 
 	
 	procedure set_highlight_brightness is begin
 		set_color_keepout (face, BRIGHT);
 	end set_highlight_brightness;
+	pragma unreferenced (set_highlight_brightness);
 		
 	
 

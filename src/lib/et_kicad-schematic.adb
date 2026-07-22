@@ -285,6 +285,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end check_prefix_characters;
+	pragma unreferenced (check_prefix_characters);
 
 	
 	
@@ -531,6 +532,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
+	pragma unreferenced (validate_prefix);
 
 
 	
@@ -942,6 +944,7 @@ package body et_kicad.schematic is
 
 		-- CS: exception handler
 	end to_degrees;
+	pragma unreferenced (to_degrees);
 
 
 
@@ -985,6 +988,7 @@ package body et_kicad.schematic is
 			no_package;
 		end if;
 	end validate_component_package_name;
+	pragma unreferenced (validate_component_package_name);
 
 
 
@@ -5195,6 +5199,7 @@ package body et_kicad.schematic is
 
 		return count;
 	end junction_count;
+	pragma unreferenced (junction_count);
 
 
 	
@@ -6487,6 +6492,7 @@ package body et_kicad.schematic is
 				function sum_connectives return natural is begin
 					return connector_count + testpoint_count + jumper_count + switch_count;
 				end sum_connectives;
+				pragma unreferenced (sum_connectives);
 
 				function sum_drivers return natural is begin
 					return output_count + bidir_count + weak0_count + weak1_count;

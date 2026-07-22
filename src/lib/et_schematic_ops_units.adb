@@ -2095,6 +2095,7 @@ package body et_schematic_ops_units is
 		
 		log_indentation_down;
 	end movable_test;
+	pragma unreferenced (movable_test);
 
 
 

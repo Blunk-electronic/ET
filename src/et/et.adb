@@ -367,6 +367,7 @@ procedure et is
 		-- CS: log ?
 		projects_root_dir := to_bounded_string (current_directory);
 	end;
+	pragma unreferenced (backup_projects_root_directory);
 
 
 	
@@ -380,6 +381,7 @@ procedure et is
 			 level => 1);
 		set_directory (to_string (projects_root_dir));
 	end;
+	pragma unreferenced (restore_projects_root_directory);
 	
 
 

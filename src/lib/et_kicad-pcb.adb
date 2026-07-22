@@ -3174,6 +3174,7 @@ package body et_kicad.pcb is
 						 & to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
+			pragma unreferenced (warn_on_missing_net);
 
 			
 			-- Builds and inserts package in board.

@@ -3084,6 +3084,7 @@ package body et_geometry_1.et_polygons is
 
 		vertices := result;
 	end replace_entering_leaving_by_regular;
+	pragma unreferenced (replace_entering_leaving_by_regular);
 	
 		
 	function get_vertices (
