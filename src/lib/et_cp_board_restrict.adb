@@ -376,6 +376,7 @@ package body et_cp_board_restrict is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (module);
 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);

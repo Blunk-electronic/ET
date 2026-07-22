@@ -64,6 +64,7 @@ package body et_board_ops_net_class is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_net_classes.pac_net_classes;
 			use pac_net_class_name;
 		begin
@@ -102,6 +103,7 @@ package body et_board_ops_net_class is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_net_classes.pac_net_classes;
 			use pac_net_class_name;
 			use pac_nets;
@@ -147,12 +149,15 @@ package body et_board_ops_net_class is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name, module);
 			use pac_nets;
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				result := get_class_name (net);
 			end;
 			
@@ -194,12 +199,14 @@ package body et_board_ops_net_class is
 			name	: in pac_module_name.bounded_string;
 			module	: in out type_generic_module)
 		is
+			pragma unreferenced (name);
 
 			
 			procedure set_class (
 				name	: in pac_net_name.bounded_string;
 				net		: in out type_net)
 			is 
+				pragma unreferenced (name);
 				use pac_net_class_name;
 			begin
 				if net.class = net_class then

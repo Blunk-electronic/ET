@@ -204,12 +204,15 @@ package body et_module_read_route_restrict is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_lines;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.lines,
 				new_item	=> restrict_line);
@@ -236,12 +239,15 @@ package body et_module_read_route_restrict is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_arcs;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.arcs,
 				new_item	=> restrict_arc);
@@ -270,12 +276,15 @@ package body et_module_read_route_restrict is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_circles;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.circles,
 				new_item	=> restrict_circle);

@@ -146,6 +146,7 @@ procedure draw_route_restrict is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is 
+		pragma unreferenced (module_name);
 		use et_colors.board;
 	begin
 		set_color_route_restrict (brightness);

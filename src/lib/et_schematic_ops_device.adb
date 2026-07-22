@@ -93,7 +93,9 @@ package body et_schematic_ops_device is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := get_device_names (module.devices);
 		end query_module;
 
@@ -123,6 +125,7 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_units (device_cursor : in pac_devices_electrical.cursor) is
 				use pac_units;
@@ -218,7 +221,9 @@ package body et_schematic_ops_device is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			if contains (module.devices, device) then
 				device_found := true;
 			end if;
@@ -247,7 +252,9 @@ package body et_schematic_ops_device is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := find (module.devices, device);
 		end;
 
@@ -276,7 +283,9 @@ package body et_schematic_ops_device is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := module.devices.first;
 		end;
 
@@ -361,12 +370,15 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				-- Independend on the search mode, set the whole device as selected.
 				-- This is relevant for highlighting the package in the board editor. 
 				-- If the device is virtual, then this has no meaning because virtual
@@ -449,12 +461,14 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name, module);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical) 
 			is 
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor;
 			begin
 				-- Get the cursor to the targeted unit.
@@ -558,12 +572,15 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure set_value (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				-- CS log value old and value new
 				device.value := value;
 			end;
@@ -658,11 +675,14 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				device.purpose := purpose;
 				-- CS log purpose before and after
 			end;
@@ -745,11 +765,14 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				device.partcode := partcode;
 				-- CS log old and new partcode
 			end;
@@ -879,11 +902,13 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is 
+				pragma unreferenced (device_name);
 				use et_device_library.packages;
 				cursor_lib : pac_device_models.cursor;
 			begin
@@ -970,6 +995,7 @@ package body et_schematic_ops_device is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_device (c : in pac_devices_electrical.cursor) is
 				use pac_device_prefix;
@@ -1168,7 +1194,9 @@ package body et_schematic_ops_device is
 				procedure set_done (
 					coordinates : in type_object_position;
 					device		: in out type_renumber_device)
-				is begin
+				is
+					pragma unreferenced (coordinates);
+				begin
 					device.done := true;
 				end;
 

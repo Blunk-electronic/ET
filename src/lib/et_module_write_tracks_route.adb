@@ -73,6 +73,7 @@ package body et_module_write_tracks_route is
 		net_name	: in pac_net_name.bounded_string;
 		net			: in type_net) 
 	is
+		pragma unreferenced (net_name);
 		use et_board_geometry;
 		use pac_contours;
 

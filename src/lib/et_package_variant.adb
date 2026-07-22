@@ -81,6 +81,7 @@ package body et_package_variant is
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
 		is
+			pragma unreferenced (name);
 			-- Locate in the given package variant the given terminal:
 			use pac_terminal_port_map;
 			c : pac_terminal_port_map.cursor := 
@@ -121,6 +122,7 @@ package body et_package_variant is
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
 		is
+			pragma unreferenced (name);
 			use pac_unit_name;
 			use pac_port_name;
 			use pac_terminal_port_map;

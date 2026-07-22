@@ -74,7 +74,9 @@ package body et_schematic_ops_sheets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := get_sheet_count (module.frames);
 		end query_module;
 		
@@ -102,7 +104,9 @@ package body et_schematic_ops_sheets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := sheet_exists (module.frames, sheet);
 		end query_module;
 
@@ -131,7 +135,9 @@ package body et_schematic_ops_sheets is
 		procedure query_descriptions (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			cursor := module.frames.descriptions.to_cursor (sheet);
 		end query_descriptions;
 
@@ -166,11 +172,14 @@ package body et_schematic_ops_sheets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (commit_design);
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			set_category (
 				frames	=> module.frames,
 				sheet	=> sheet,
@@ -218,6 +227,7 @@ package body et_schematic_ops_sheets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 			use et_schematic_ops_nets;
 			use et_schematic_ops_units;
 			use et_schematic_ops_netchangers;

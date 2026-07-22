@@ -512,6 +512,7 @@ package body et_stopmask is
 		texts	: in out pac_stop_texts.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_stop_texts.list;
 
 		procedure query_text (c : in pac_stop_texts.cursor) is

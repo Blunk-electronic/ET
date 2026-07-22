@@ -92,6 +92,7 @@ package body et_module_write_device_non_electrical is
 				device_name : in type_device_name;
 				device 		: in type_device_non_electrical) 
 			is
+				pragma unreferenced (device_name);
 				use et_device_placeholders;
 				use et_device_placeholders.packages;
 				use et_device_placeholders.packages.pac_text_placeholders;
@@ -187,7 +188,9 @@ package body et_module_write_device_non_electrical is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_devices_non_electric, HEADER);
 			iterate (module.devices_non_electric, query_devices_non_electric'access);
 			section_mark (section_devices_non_electric, FOOTER);

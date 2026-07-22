@@ -215,6 +215,7 @@ package body et_module_read_device_electrical is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_devices_electrical;
 			use et_device_model;
 			use et_device_model_names;

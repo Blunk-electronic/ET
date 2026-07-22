@@ -193,6 +193,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_lines;
 	begin
 		case face is
@@ -216,6 +217,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_arcs;
 	begin
 		-- CS check arc
@@ -242,6 +244,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_circles;
 	begin
 		case face is
@@ -266,6 +269,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.stencil, (contour with null record), face);

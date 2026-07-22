@@ -476,7 +476,9 @@ package body et_geometry_2a is
 	function is_orthogonal (
 		rotation : in type_rotation)
 		return boolean
-	is begin
+	is
+		pragma unreferenced (rotation);
+	begin
 		-- CS
 		return false;
 	end;
@@ -1189,6 +1191,7 @@ package body et_geometry_2a is
 		reference	: in type_vector_model;
 		mode		: in type_sort_mode := SORT_ASCENDING)
 	is
+		pragma unreferenced (mode);
 		-- Convert the given points to vectors:
 		vectors : pac_vectors.list := to_vectors (points);				
 	begin
@@ -3011,6 +3014,7 @@ end;
 		area	: in type_area)
 		return type_line_array
 	is
+		pragma unreferenced (area);
 		result : type_line_array (1 .. 4);
 	begin
 		-- CS

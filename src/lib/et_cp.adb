@@ -96,6 +96,7 @@ package body et_cp is
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (script_name);
 
 		-- Get the number of fields of the given command:
 		field_count : constant natural := get_field_count (cmd);

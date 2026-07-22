@@ -143,7 +143,9 @@ package body et_submodules is
 		procedure move (
 			name	: in pac_net_name.bounded_string;
 			port	: in out type_submodule_port) 
-		is begin
+		is
+			pragma unreferenced (name);
+		begin
 			move_by (port.position, offset.place);
 		end;
 

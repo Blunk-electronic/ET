@@ -1115,6 +1115,7 @@ procedure draw_conductors is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is
+		pragma unreferenced (module_name);
 		use et_colors.board;
 		
 
@@ -1129,6 +1130,7 @@ procedure draw_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is 
+				pragma unreferenced (net_name);
 				use pac_airwires;
 				airwire_cursor : pac_airwires.cursor;
 
@@ -1225,6 +1227,7 @@ procedure draw_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is 
+				pragma unreferenced (net_name);
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				-- If the whole net is selected, then
@@ -1276,6 +1279,7 @@ procedure draw_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is 
+				pragma unreferenced (net_name);
 
 				-- If the whole net is selected, then
 				-- this flag should improve perfomance.

@@ -146,7 +146,9 @@ package body et_module_write_submodules is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_submodules, HEADER);
 			iterate (module.submods, write'access);
 			section_mark (section_submodules, FOOTER);

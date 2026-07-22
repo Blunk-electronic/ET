@@ -1211,6 +1211,7 @@ package body et_geometry_1 is
 		rotation	: in type_angle;
 		debug		: in boolean := false)
 	is
+		pragma unreferenced (debug);
 		angle_out			: type_float; -- degrees
 		distance_to_origin	: type_float; -- unit is mm
 		scratch				: type_float;
@@ -2241,6 +2242,7 @@ package body et_geometry_1 is
 		debug		: in boolean := false)
 		return type_line_vector_intersection
 	is
+		pragma unreferenced (debug);
 		-- In this function we must test angles for equality.
 		-- The direction of the ray must be positive in any case:
 		ray_direction_positive : constant type_angle_positive := 
@@ -4018,6 +4020,7 @@ package body et_geometry_1 is
 		debug		: in boolean := false)
 		return type_distance_point_line 
 	is
+		pragma unreferenced (debug);
 		--debug_2 : boolean := true;
 		debug_2 : boolean := false;
 

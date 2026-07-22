@@ -61,6 +61,7 @@ package body et_conductor_text.packages is
 		texts	: in out pac_conductor_texts.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_conductor_texts.list;
 
 		procedure query_text (c : in pac_conductor_texts.cursor) is 

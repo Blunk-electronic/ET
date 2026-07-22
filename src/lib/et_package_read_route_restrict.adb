@@ -177,6 +177,7 @@ package body et_package_read_route_restrict is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_lines;
 	begin
 		case face is
@@ -202,6 +203,7 @@ package body et_package_read_route_restrict is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_arcs;
 	begin
 		-- CS check arc
@@ -229,6 +231,7 @@ package body et_package_read_route_restrict is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_route_restrict_circles;
 	begin
 		case face is
@@ -253,6 +256,7 @@ package body et_package_read_route_restrict is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.route_restrict, (contour with null record), face);
@@ -269,6 +273,7 @@ package body et_package_read_route_restrict is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_cutout (packge.route_restrict, (contour with null record), face);

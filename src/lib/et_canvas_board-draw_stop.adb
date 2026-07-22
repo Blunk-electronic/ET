@@ -200,7 +200,9 @@ is
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
-	is begin
+	is
+		pragma unreferenced (module_name);
+	begin
 		-- All stop mask segments will be drawn with the same color:
 		set_color_stop_mask (face, NORMAL);
 

@@ -145,6 +145,7 @@ package body et_module_read_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			inserted : boolean;
 			use pac_netchangers;
 			cursor : pac_netchangers.cursor;

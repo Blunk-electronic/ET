@@ -1166,6 +1166,7 @@ package body et_kicad.pcb is
 
 			
 			procedure test_format (format : in string) is
+				pragma unreferenced (format);
 				use et_import;
 			begin
 				case cad_format is
@@ -5122,7 +5123,9 @@ package body et_kicad.pcb is
 				procedure add_route (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out schematic.type_net) 
-				is begin
+				is
+					pragma unreferenced (net_name);
+				begin
 					net.route := route (net_id);
 				end add_route;
 
@@ -5131,6 +5134,7 @@ package body et_kicad.pcb is
 				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in type_device_name;
 					component	: in out type_component_schematic) is
+				pragma unreferenced (comp_ref);
 				begin
 					component.position := package_position;
 					component.text_placeholders := text_placeholders;
@@ -5147,6 +5151,7 @@ package body et_kicad.pcb is
 						comp_reference	: in type_device_name;
 						comp_package	: in type_package_board)
 					is
+						pragma unreferenced (comp_reference);
 						use pac_text_placeholders;
 
 						-- points to a placeholder in the package
@@ -5275,6 +5280,7 @@ package body et_kicad.pcb is
 							package_name	: in type_device_name;
 							packge			: in type_package_board)
 						is
+							pragma unreferenced (package_name);
 							use pac_terminals;
 							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
@@ -5589,6 +5595,7 @@ package body et_kicad.pcb is
 		procedure set_board_available_flag (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
+		pragma unreferenced (module_name);
 		begin
 			module.board_available := et_module.TRUE;
 		end set_board_available_flag;
@@ -5696,6 +5703,7 @@ package body et_kicad.pcb is
 			library_name	: in pac_package_model_file.bounded_string;
 			packages		: in type_packages_library.map) 
 		is
+			pragma unreferenced (library_name);
 			use et_terminals.pac_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;

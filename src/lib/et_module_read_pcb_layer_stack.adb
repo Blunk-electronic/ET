@@ -81,6 +81,7 @@ package body et_module_read_pcb_layer_stack is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)					 
 	is
+		pragma unreferenced (log_threshold);
 		kw : constant string := f (line, 1);
 		use package_layers;
 	begin
@@ -136,7 +137,9 @@ package body et_module_read_pcb_layer_stack is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			log (text => "board layer stack", level => log_threshold + 1);
 
 			-- Copy the collected layers (except the bottom conductor layer) into the module:

@@ -64,6 +64,7 @@ procedure compute_bounding_box (
 	ignore_errors			: in boolean := false;
 	test_only				: in boolean := false)		
 is
+	pragma unreferenced (abort_on_first_error);
 	-- debug : boolean := false;
 	debug : boolean := true;
 
@@ -139,6 +140,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is
+				pragma unreferenced (module_name);
 				use et_nets;
 				use pac_nets;
 
@@ -236,6 +238,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is
+				pragma unreferenced (module_name);
 				use pac_devices_electrical;
 				use pac_units;
 

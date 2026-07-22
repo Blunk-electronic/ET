@@ -63,7 +63,9 @@ package body et_board_ops_outline is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.board_contour.outline := outline;
 		end;
 							   
@@ -111,6 +113,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			mr : type_merge_result;
 		begin
 			if is_open (outline) then
@@ -160,6 +163,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -210,6 +214,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -261,6 +266,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 			c : pac_segments.cursor;
 
@@ -323,6 +329,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 			c : pac_segments.cursor;
 
@@ -387,6 +394,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 			proceed : aliased boolean := true;
 
@@ -457,6 +465,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 			proceed : aliased boolean := true;
 
@@ -531,6 +540,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 			c : pac_segments.cursor := next (segment);
 		begin
@@ -594,6 +604,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 
 			procedure do_it (s : in out type_segment) is begin
@@ -651,6 +662,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_segments;
 
 			procedure do_it (s : in out type_segment) is begin
@@ -753,6 +765,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 
 			
@@ -849,6 +862,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 			c : pac_segments.cursor := segment;
 		begin
 			module.board.board_contour.outline.contour.segments.delete (c);
@@ -899,6 +913,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 			c : pac_segments.cursor := segment.segment;
 		begin
 			-- CS test circular flag ?
@@ -962,6 +977,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -1033,6 +1049,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_holes;
 			hc : pac_holes.cursor;
 
@@ -1123,6 +1140,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_holes;
 			hc : pac_holes.cursor;
 
@@ -1215,6 +1233,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_holes;
@@ -1328,6 +1347,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
@@ -1424,6 +1444,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_hole (
 				hole : in out type_hole)
@@ -1502,6 +1523,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_holes;
 		begin
 			append (module.board.board_contour.holes, hole);
@@ -1553,6 +1575,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_holes;
 			hc : pac_holes.cursor := module.board.board_contour.holes.first;
 
@@ -1806,6 +1829,7 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 

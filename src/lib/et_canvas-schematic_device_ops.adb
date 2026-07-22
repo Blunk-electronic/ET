@@ -472,6 +472,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -521,6 +522,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -571,6 +573,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -620,6 +623,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -669,6 +673,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -714,6 +719,7 @@ package body et_canvas.schematic_device_ops is
 	procedure cb_properties_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		null;
 		-- put_line ("cb_properties_window_destroy");
@@ -728,6 +734,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;

@@ -135,6 +135,7 @@ package body et_device_read_unit is
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (symbol, log_threshold);
 		position : pac_units_internal.cursor;
 		inserted : boolean;
 

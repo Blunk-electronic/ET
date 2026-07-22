@@ -79,7 +79,9 @@ package body et_schematic_ops_meta is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			add_device_library (module.meta.schematic, path);
 		end query_module;
 
@@ -116,7 +118,9 @@ package body et_schematic_ops_meta is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			remove_device_library (module.meta.schematic, path);
 		end query_module;
 

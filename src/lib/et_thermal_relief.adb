@@ -140,6 +140,7 @@ package body et_thermal_relief is
 		log_threshold		: in type_log_level)
 		return type_relief
 	is
+		pragma unreferenced (zone_clearance);
 		debug : boolean := false;
 		
 

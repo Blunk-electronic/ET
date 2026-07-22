@@ -176,7 +176,9 @@ package body et_module_read_frames is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
 				level => log_threshold + 1);
 
@@ -223,7 +225,9 @@ package body et_module_read_frames is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
 
 			-- set the frame template name

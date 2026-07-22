@@ -68,6 +68,7 @@ package body et_device_write_package_variant is
 		variants		: in pac_package_variants.map;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_package_variant_name;
 		
 		use pac_package_variants;
@@ -79,6 +80,7 @@ package body et_device_write_package_variant is
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant) 
 		is
+			pragma unreferenced (packge);
 			use et_package_library;
 			use et_port_names;
 

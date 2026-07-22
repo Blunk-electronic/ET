@@ -73,6 +73,7 @@ package body et_module_write_frames is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 
 			-- This procedure writes the stuff related to the
 			-- drawing frames of the schematic:

@@ -128,6 +128,7 @@ is
 					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) 
 				is
+					pragma unreferenced (rig_name);
 					instance_created : boolean;
 					instance_cursor : pac_module_instances.cursor;
 				begin
@@ -155,6 +156,7 @@ is
 				procedure create_connection (
 					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
+					pragma unreferenced (rig_name);
 					connection_inserted : boolean;
 					connection_cursor : pac_module_connections.cursor;
 					

@@ -55,7 +55,9 @@ package body et_board_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Set the grid in the database:			
 			module.board.grid := grid;
 		end;
@@ -87,7 +89,9 @@ package body et_board_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Set the grid in the database:
 			module.board.grid := grid;
 		end;
@@ -122,7 +126,9 @@ package body et_board_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Get the grid from the database:
 			result := module.board.grid;
 		end;

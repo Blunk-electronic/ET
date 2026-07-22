@@ -86,6 +86,7 @@ package body et_module_write_board_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			hole_cursor : pac_holes.cursor := module.board.board_contour.holes.first;
 
 		begin

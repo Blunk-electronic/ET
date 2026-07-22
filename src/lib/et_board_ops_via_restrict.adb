@@ -162,6 +162,7 @@ package body et_board_ops_via_restrict is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_via_restrict_contours;
 			c : pac_via_restrict_contours.cursor;
 

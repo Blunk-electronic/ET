@@ -193,6 +193,7 @@ package body et_module_read_submodules is
 	procedure insert_submodule_port (
 		line : in type_fields_of_line)
 	is
+		pragma unreferenced (line);
 		cursor : et_submodules.pac_submodule_ports.cursor;
 		inserted : boolean;
 
@@ -256,6 +257,7 @@ package body et_module_read_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			inserted : boolean;
 			cursor : pac_submodules.cursor;
 		begin

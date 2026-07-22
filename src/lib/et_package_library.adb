@@ -227,6 +227,7 @@ package body et_package_library is
 			model_name	: in pac_package_model_file.bounded_string;
 			model		: in type_package_model) 
 		is
+			pragma unreferenced (model_name);
 			use pac_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);

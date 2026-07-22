@@ -151,6 +151,7 @@ package body et_module_read_device_non_electrical is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure read_package_model is 

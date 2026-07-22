@@ -128,7 +128,9 @@ package body et_module_read_text_schematic is
 		procedure insert_schematic_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- append schematic note to collection of notes
 			pac_texts.append (module.texts, schematic_text);
 		end insert_schematic_text;

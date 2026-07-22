@@ -385,6 +385,7 @@ package body et_canvas_board_texts is
 	
 	
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
+		pragma unreferenced (button);
 		use gtk.text_view;
 		use gtk.text_buffer;
 		use gtk.text_iter;

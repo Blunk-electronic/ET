@@ -200,11 +200,14 @@ package body et_module_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check line
 			add_line (module.board.stopmask, stop_line, face);
 		end do_it;
@@ -231,11 +234,14 @@ package body et_module_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check arc
 			add_arc (module.board.stopmask, stop_arc, face);
 		end do_it;
@@ -263,11 +269,14 @@ package body et_module_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check circle
 			add_circle (module.board.stopmask, stop_circle, face);
 		end do_it;

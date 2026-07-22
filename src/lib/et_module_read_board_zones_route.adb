@@ -224,6 +224,7 @@ package body et_module_read_board_zones_route is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)									  
 	is
+		pragma unreferenced (module_cursor, log_threshold);
 		use et_thermal_relief;
 		use et_module_read_nets;
 		

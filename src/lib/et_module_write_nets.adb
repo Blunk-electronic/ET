@@ -92,6 +92,7 @@ package body et_module_write_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_nets;
 
 
@@ -99,6 +100,7 @@ package body et_module_write_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				use pac_strands;
 				use et_schematic_geometry;
 				use et_schematic_geometry.pac_geometry_2;

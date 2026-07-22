@@ -107,6 +107,7 @@ package body et_module_write_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			assy_doc : type_assy_doc_both_sides 
 				renames module.board.assy_doc;
 		begin

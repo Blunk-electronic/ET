@@ -104,6 +104,7 @@ package body et_module_write_route_restrict is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			route_restrict : type_route_restrict
 				renames module.board.route_restrict;
 		begin

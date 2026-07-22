@@ -70,6 +70,7 @@ package body et_module_write_design_rules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			rules : type_design_rules := get_design_rules (module);
 		begin
 			section_mark (section_rules, HEADER);

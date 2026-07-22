@@ -779,6 +779,7 @@ package body et_nets is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
+			pragma unreferenced (net_name);
 
 			procedure query_strand (c : in pac_strands.cursor) is begin
 				if element (c).position < strand_position then
@@ -819,6 +820,7 @@ package body et_nets is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
+			pragma unreferenced (net_name);
 			c : pac_strands.cursor := net.strands.first;
 		begin			
 			while c /= pac_strands.no_element loop

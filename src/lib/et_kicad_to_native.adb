@@ -385,6 +385,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_kicad.schematic.type_texts;
 			note_cursor : et_kicad.schematic.type_texts.cursor := module.notes.first;
 
@@ -429,6 +430,7 @@ package body et_kicad_to_native is
 		procedure flatten_frames (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
+		pragma unreferenced (module_name);
 		-- Changes the path of drawing frames (in schematic) to root path.
 			
 			use et_kicad.schematic.type_frames;
@@ -476,6 +478,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is			
+			pragma unreferenced (module_name);
 			use et_kicad.schematic.type_components_schematic;
 			component_cursor : et_kicad.schematic.type_components_schematic.cursor := module.components.first;
 
@@ -486,6 +489,7 @@ package body et_kicad_to_native is
 				reference	: in type_device_name;
 				component	: in out et_kicad.schematic.type_component_schematic) 
 			is
+				pragma unreferenced (reference);
 				use et_kicad.schematic.type_units_schematic;
 				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
 
@@ -581,6 +585,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
+		pragma unreferenced (module_name);
 		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
 		-- MOves the y position of copper objects (in layout).
 
@@ -591,6 +596,7 @@ package body et_kicad_to_native is
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_kicad.schematic.type_net) is
+					pragma unreferenced (net_name);
 
 				use et_kicad.schematic.type_strands;
 				strand_cursor : et_kicad.schematic.type_strands.cursor := net.strands.first;
@@ -924,6 +930,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
+			pragma unreferenced (module_name);
 			log_threshold_add : type_log_level := 2;
 			
 			procedure move_silk_screen is
@@ -2132,6 +2139,7 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_kicad.schematic.type_netlist;
 			net_cursor : et_kicad.schematic.type_netlist.cursor := module.netlist.first;
 
@@ -2674,6 +2682,7 @@ package body et_kicad_to_native is
 				reference	: in type_device_name;
 				component	: in out type_device_electrical) 
 			is
+				pragma unreferenced (reference);
 				use et_kicad.schematic.type_units_schematic;
 				units_kicad			: et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
 				unit_cursor_kicad	: et_kicad.schematic.type_units_schematic.cursor := units_kicad.first; -- point to first unit
@@ -3251,6 +3260,7 @@ package body et_kicad_to_native is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_nets.type_net) 
 			is 
+				pragma unreferenced (net_name);
 				use et_net_class_name;
 			begin
 				log_indentation_up;
@@ -3322,6 +3332,7 @@ package body et_kicad_to_native is
 			module_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in et_kicad.pcb.type_module) 
 		is			
+			pragma unreferenced (module_name);
 			-- This cursor points to the kicad component library being converted:
 			use et_kicad_libraries.type_device_libraries;
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
@@ -3340,6 +3351,7 @@ package body et_kicad_to_native is
 				library_name	: in pac_device_model_file.bounded_string; -- lbr/logic.lib
 				library			: in et_kicad_libraries.type_components_library.map) 
 			is				
+				pragma unreferenced (library_name);
 				use et_symbol_model;
 				use et_device_appearance;
 				use et_kicad_libraries.type_components_library;
@@ -3359,6 +3371,7 @@ package body et_kicad_to_native is
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model) 
 				is
+					pragma unreferenced (device_name);
 					use et_kicad_libraries;
 					
 					-- Make a copy of the kicad units of the current kicad component:
@@ -3380,6 +3393,7 @@ package body et_kicad_to_native is
 						unit_name	: in pac_unit_name.bounded_string;
 						unit		: in out type_unit_internal) 
 					is
+						pragma unreferenced (unit_name);
 						use et_symbol_ports;
 						use et_port_sensitivity;
 						use et_logic;
@@ -3734,6 +3748,7 @@ package body et_kicad_to_native is
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model) 
 				is
+					pragma unreferenced (device_name);
 					use et_package_variant_name;
 					
 					use et_package_variant;

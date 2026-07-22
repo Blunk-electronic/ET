@@ -964,6 +964,7 @@ package body et_canvas is
 		canvas	: access gtk_widget_record'class)
 		return type_area
 	is
+		pragma unreferenced (canvas);
 		result : type_area;
 
 		-- The allocation of the scrolled window:
@@ -3160,7 +3161,9 @@ package body et_canvas is
 	
 	procedure cb_add (
 		button : access gtk_button_record'class)
-	is begin
+	is
+		pragma unreferenced (button);
+	begin
 		put_line ("cb_add");
 		-- add_object;
 
@@ -3172,7 +3175,9 @@ package body et_canvas is
 	
 	procedure cb_delete (
 		button : access gtk_button_record'class)
-	is begin
+	is
+		pragma unreferenced (button);
+	begin
 		put_line ("cb_delete");
 		-- delete_object;
 
@@ -3184,7 +3189,9 @@ package body et_canvas is
 	
 	procedure cb_move (
 		button : access gtk_button_record'class)
-	is begin
+	is
+		pragma unreferenced (button);
+	begin
 		put_line ("cb_move");
 		-- CS
 	end cb_move;
@@ -3194,6 +3201,7 @@ package body et_canvas is
 	procedure cb_export (
 		button : access gtk_button_record'class)
 	is
+	pragma unreferenced (button);
 	begin
 		put_line ("cb_export");
 		-- CS
@@ -3211,7 +3219,9 @@ package body et_canvas is
 	
 	procedure cb_terminate (
 		window : access gtk_widget_record'class) 
-	is begin
+	is
+		pragma unreferenced (window);
+	begin
 		put_line ("cb_terminate");
 		gtk.main.main_quit;
 	end cb_terminate;
@@ -3222,7 +3232,9 @@ package body et_canvas is
 
 	procedure cb_window_focus (
 		window : access gtk_window_record'class) 
-	is begin
+	is
+		pragma unreferenced (window);
+	begin
 		put_line ("cb_window_focus");
 	end cb_window_focus;
 
@@ -3235,6 +3247,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (window);
 		use glib;
 		event_handled : boolean := true;
 
@@ -3326,6 +3339,7 @@ package body et_canvas is
 		event		: gdk.event.gdk_event_configure)
 		return boolean
 	is
+		pragma unreferenced (window, event);
 		result : boolean := false;
 	begin
 		-- put_line ("cb_main_window_configure " & image (clock)); 
@@ -3352,6 +3366,7 @@ package body et_canvas is
 		event		: gdk.event.gdk_event_window_state)
 		return boolean
 	is
+		pragma unreferenced (window, event);
 		result : boolean := false;
 	begin
 		-- put_line ("cb_main_window_state_change " & image (clock)); 
@@ -3449,6 +3464,7 @@ package body et_canvas is
 		swin		: access gtk_widget_record'class;
 		allocation	: gtk_allocation)
 	is 
+		pragma unreferenced (swin);
 		-- Each time ths procedure is called, the argument "allocation"
 		-- provides the new size of the scrolled window. Later this size will 
 		-- be compared with the old size (stored in global 
@@ -3654,7 +3670,9 @@ package body et_canvas is
 	
 	procedure cb_horizontal_moved (
 		scrollbar : access gtk_adjustment_record'class)
-	is begin
+	is
+		pragma unreferenced (scrollbar);
+	begin
 		-- put_line ("horizontal moved " & image (clock));
 		-- show_adjustments_h;
 		refresh;
@@ -3665,7 +3683,9 @@ package body et_canvas is
 	
 	procedure cb_vertical_moved (
 		scrollbar : access gtk_adjustment_record'class)
-	is begin		
+	is
+		pragma unreferenced (scrollbar);
+	begin		
 		-- put_line ("vertical moved " & image (clock));
 		-- show_adjustments_v;
 		refresh;
@@ -3680,6 +3700,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (bar, event);
 		event_handled : boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_v_pressed");
@@ -3694,6 +3715,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (bar, event);
 		event_handled : boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_v_released");
@@ -3712,6 +3734,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (bar, event);
 		event_handled : boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_h_pressed");
@@ -3726,6 +3749,7 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (bar, event);
 		event_handled : boolean := false;
 	begin
 		-- put_line ("cb_scrollbar_h_released");
@@ -4216,6 +4240,7 @@ package body et_canvas is
 		path		: in type_draw_path := NO_PATH;
 		force		: in type_force := NO_FORCE)
 	is
+		pragma unreferenced (style);
 		-- Make a copy of the given line:
 		l : type_line'class := line;
 
@@ -4373,6 +4398,7 @@ package body et_canvas is
 		style		: in type_line_style := CONTINUOUS;
 		stroke		: in type_stroke := NO_STROKE)
 	is
+		pragma unreferenced (style);
 		-- CS move the actual drawing to a procedure as in draw_line
 		
 		use cairo;
@@ -4482,6 +4508,7 @@ package body et_canvas is
 		path		: in type_draw_path := NO_PATH;
 		force		: in type_force := NO_FORCE)
 	is
+		pragma unreferenced (style, force);
 		-- CS:
 		-- handle the force-flag as in procedure draw_line
 		-- move the actual drawing to a procedure as in draw_line
@@ -4620,6 +4647,7 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		width		: in type_distance_positive)
 	is
+		pragma unreferenced (mirror);
 		use cairo;
 		l : type_line;
 	begin

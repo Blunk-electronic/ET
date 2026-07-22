@@ -57,7 +57,9 @@ package body et_package_read_via_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (log_threshold);
+	begin
 		add_zone (packge.via_restrict, (contour with null record), face);
 		
 		-- clean up for next contour
@@ -71,7 +73,9 @@ package body et_package_read_via_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (log_threshold);
+	begin
 		add_cutout (packge.via_restrict, (contour with null record), face);
 		
 		-- clean up for next contour

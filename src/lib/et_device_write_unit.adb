@@ -119,6 +119,7 @@ package body et_device_write_unit is
 		units 			: in pac_units_external.map;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_units_external;
 
 		unit_external_cursor : pac_units_external.cursor := units.first;

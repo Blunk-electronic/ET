@@ -59,6 +59,7 @@ package body et_package_read_meta is
 		line 			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		kw : string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -99,7 +100,9 @@ package body et_package_read_meta is
 	procedure assign_meta (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (log_threshold);
+	begin
 		packge.description := pac_description;
 		packge.technology := pac_technology;
 	end assign_meta;

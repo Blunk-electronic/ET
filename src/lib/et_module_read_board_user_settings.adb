@@ -197,7 +197,9 @@ package body et_module_read_board_user_settings is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings := user_settings_board;
 		end do_it;
 		

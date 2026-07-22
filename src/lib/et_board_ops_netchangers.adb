@@ -75,13 +75,16 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name, module);
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in type_netchanger) 
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				result := get_place (netchanger);
 			end;
 
@@ -125,6 +128,7 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			
@@ -132,6 +136,7 @@ package body et_board_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is 
+				pragma unreferenced (index);
 				place : type_vector_model;
 			begin
 				-- calculate the new position 
@@ -236,13 +241,16 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			
 			procedure set_layer (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				set_layer (netchanger, layer);
 			end set_layer;
 
@@ -328,11 +336,14 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is	
+			pragma unreferenced (module_name);
 			
 			procedure query_netchanger (
 				name	: in type_netchanger_id;
 				nc		: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (name);
+			begin
 				modify_status (nc, operation);
 				-- log (text => "done", level => log_threshold + 1);
 
@@ -387,6 +398,7 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
@@ -447,6 +459,7 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+		pragma unreferenced (module_name);
 		
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
@@ -508,6 +521,7 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
@@ -681,6 +695,7 @@ package body et_board_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- This procedure queries the netchangers
 			-- and collects those which have the given flag set:			

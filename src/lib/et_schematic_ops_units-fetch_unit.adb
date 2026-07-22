@@ -64,6 +64,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
+		pragma unreferenced (module_name);
 		-- CS:
 		-- There is a lot of code almost the same as with
 		-- copying and fetching devices and units. 
@@ -100,6 +101,7 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				placeholders : type_text_placeholders;
 			begin
 				log (text => "fetch internal unit " 
@@ -177,6 +179,7 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				use et_symbol_library;
 				use pac_symbol_models;
 				placeholders : type_text_placeholders;

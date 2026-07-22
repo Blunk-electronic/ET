@@ -123,7 +123,9 @@ package body et_module_write_netchangers is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_netchangers, HEADER);
 			iterate (module.netchangers, query_netchanger'access);
 			section_mark (section_netchangers, FOOTER);

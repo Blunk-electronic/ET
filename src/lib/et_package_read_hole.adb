@@ -60,7 +60,9 @@ package body et_package_read_hole is
 	procedure insert_hole (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (log_threshold);
+	begin
 		packge.holes.append ((contour with null record));
 
 		reset_contour (contour);

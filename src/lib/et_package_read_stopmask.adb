@@ -195,6 +195,7 @@ package body et_package_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stop_lines;
 	begin
 		case face is
@@ -219,6 +220,7 @@ package body et_package_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stop_arcs;
 	begin
 		-- CS check arc
@@ -246,6 +248,7 @@ package body et_package_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stop_circles;
 	begin
 		case face is
@@ -273,6 +276,7 @@ package body et_package_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.stop_mask, (contour with null record), face);
@@ -290,6 +294,7 @@ package body et_package_read_stopmask is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
 		add_text (packge.stop_mask, (pac_text with null record), face);

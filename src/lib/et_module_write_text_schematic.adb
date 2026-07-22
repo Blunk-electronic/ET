@@ -108,7 +108,9 @@ package body et_module_write_text_schematic is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_texts, HEADER);
 			iterate (module.texts, write'access);
 			section_mark (section_texts, FOOTER);

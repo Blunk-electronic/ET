@@ -962,6 +962,7 @@ procedure draw_packages is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is
+		pragma unreferenced (module_name);
 		debug : boolean := false;
 		
 		use pac_devices_electrical;

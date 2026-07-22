@@ -128,7 +128,9 @@ package body et_devices_non_electrical is
 		device	: in type_device_non_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is begin
+	is
+		pragma unreferenced (format);
+	begin
 		return to_string (device.position);
 	end;
 

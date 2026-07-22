@@ -212,6 +212,7 @@ package body et_package_read_terminal is
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		cursor : pac_terminals.cursor;
 		inserted : boolean;
 

@@ -179,6 +179,7 @@ package body et_device_read_package_variant is
 		line 			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use et_unit_name;
 		use et_port_names;
 		use et_terminal_name;		

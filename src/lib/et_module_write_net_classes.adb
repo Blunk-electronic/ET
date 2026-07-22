@@ -98,7 +98,9 @@ package body et_module_write_net_classes is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_net_classes, HEADER);
 			iterate (module.net_classes, query_class'access);
 			section_mark (section_net_classes, FOOTER);		

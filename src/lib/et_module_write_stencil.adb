@@ -103,6 +103,7 @@ package body et_module_write_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			stencil : type_stencil_both_sides 
 				renames module.board.stencil;
 		begin

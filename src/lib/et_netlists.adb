@@ -185,6 +185,7 @@ package body et_netlists is
 			net_name	: in type_net_name;
 			net			: in type_netlist_ports) 
 		is
+			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;
 			use pac_netchanger_ports;
 
@@ -335,6 +336,7 @@ package body et_netlists is
 			net_name	: in type_net_name;
 			net			: in type_netlist_ports) 
 		is
+			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
 			use pac_net_name;
@@ -483,7 +485,9 @@ package body et_netlists is
 			procedure query_netchangers (
 				net_name	: in type_net_name;
 				net			: in type_netlist_ports) 
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				netchanger_cursor := find 
 					(
 					container	=> net.netchangers,
@@ -661,6 +665,7 @@ package body et_netlists is
 		procedure query_submodules (
 			net_name	: in type_net_name;
 			net			: in type_netlist_ports) is
+			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor;
 		begin

@@ -127,6 +127,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 
 			procedure query_netchanger (
 				c : pac_netchangers.cursor) 
@@ -165,7 +166,9 @@ package body et_schematic_ops_netchangers is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := module.netchangers.first;
 		end;
 		
@@ -195,7 +198,9 @@ package body et_schematic_ops_netchangers is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := get_netchanger (module.netchangers, index);
 		end;
 		
@@ -251,6 +256,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -259,6 +265,7 @@ package body et_schematic_ops_netchangers is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -338,6 +345,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -362,6 +370,7 @@ package body et_schematic_ops_netchangers is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -491,6 +500,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure probe_port (
 				port : in type_vector_model; -- x/y
@@ -509,6 +519,7 @@ package body et_schematic_ops_netchangers is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) 
 				is
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -656,6 +667,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -664,6 +676,7 @@ package body et_schematic_ops_netchangers is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once port_before has been found the first time
@@ -854,6 +867,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			-- We start the search with index 1.
@@ -911,6 +925,7 @@ package body et_schematic_ops_netchangers is
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
@@ -948,6 +963,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 			
 			ports : pac_netchanger_ports.set;
@@ -998,6 +1014,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			nc_cursor : pac_netchangers.cursor;
 			nc_position : type_netchanger_position_schematic;
 			port_xy : type_vector_model;
@@ -1085,6 +1102,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			cursor : pac_netchangers.cursor;
 			index : type_netchanger_id;
 			netchanger : type_netchanger;
@@ -1278,6 +1296,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			-- The sheet where the netchanger is located
@@ -1292,7 +1311,9 @@ package body et_schematic_ops_netchangers is
 			procedure move (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				-- calculate the new position the netchanger will have AFTER the move:
 				case coordinates is
 					when ABSOLUTE =>
@@ -1451,6 +1472,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			-- The sheet where the netchanger is located
@@ -1465,6 +1487,7 @@ package body et_schematic_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is 
+				pragma unreferenced (index);
 				location : type_object_position;			
 			begin
 				-- calculate the new position 
@@ -1593,12 +1616,14 @@ package body et_schematic_ops_netchangers is
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 
 	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := 
 				module.netchangers.first;
 	
@@ -1608,7 +1633,9 @@ package body et_schematic_ops_netchangers is
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if get_sheet (netchanger) = sheet_old then
 					move_netchanger (netchanger, offset);
 				end if;
@@ -1750,6 +1777,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			-- The sheet where the netchanger is located
@@ -1762,7 +1790,9 @@ package body et_schematic_ops_netchangers is
 			procedure rotate (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if toggle then
 					toggle_rotation (netchanger);
 					-- CS log messages
@@ -1879,6 +1909,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			ports : type_netchanger_ports;
@@ -2008,6 +2039,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			sheet : type_sheet;
@@ -2131,6 +2163,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			-- The sheet where the netchanger is located
@@ -2278,6 +2311,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name, module);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor;
 
@@ -2417,6 +2451,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			-- The sheet where the netchanger is located
@@ -2429,7 +2464,9 @@ package body et_schematic_ops_netchangers is
 			procedure query_netchanger (
 				index	: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				set_selected (netchanger);
 			end query_netchanger;
 			
@@ -2503,6 +2540,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
 
 			-- The sheet where the netchanger is located
@@ -2515,7 +2553,9 @@ package body et_schematic_ops_netchangers is
 			procedure set_direction (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if toggle then
 					toggle_direction (netchanger);				
 				else
@@ -2659,11 +2699,14 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is	
+			pragma unreferenced (module_name);
 			
 			procedure query_netchanger (
 				name	: in type_netchanger_id;
 				nc		: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (name);
+			begin
 				modify_status (nc, operation);
 				-- log (text => "done", level => log_threshold + 1);
 
@@ -2719,6 +2762,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
@@ -2780,6 +2824,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+		pragma unreferenced (module_name);
 		
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
@@ -2843,6 +2888,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
@@ -2930,13 +2976,16 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if on_sheet_and_in_area (netchanger, sheet, area) then
 					-- CS: log the full name like N2
 					-- log netchanger name
@@ -2994,6 +3043,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
@@ -3079,6 +3129,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
@@ -3149,13 +3200,16 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if is_selected (netchanger) then
 					-- CS: log the full name like N2
 
@@ -3210,13 +3264,16 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				if is_selected (netchanger) then
 					-- CS: log the full name like N2
 
@@ -3273,13 +3330,16 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is
+				pragma unreferenced (index);
+			begin
 				-- CS: log the full name like N2
 				clear_moving (netchanger);
 			end query_netchanger;
@@ -3343,6 +3403,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor := 
 				module.netchangers.first;
 
@@ -3554,6 +3615,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- This procedure queries the netchangers
 			-- and collects those which have the given flag set:			
@@ -3808,6 +3870,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 

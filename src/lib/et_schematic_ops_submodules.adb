@@ -160,6 +160,7 @@ package body et_schematic_ops_submodules is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
+			pragma unreferenced (net_name);
 			use pac_strands;
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -272,6 +273,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_nets;
 			net_cursor : pac_nets.cursor;
 
@@ -350,6 +352,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
@@ -357,6 +360,7 @@ package body et_schematic_ops_submodules is
 			-- Exits prematurely on match.
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in et_submodules.type_submodule) is
+				pragma unreferenced (submod_name);
 				use pac_net_name;
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
@@ -419,6 +423,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules;			
 
 			submod_cursor : pac_submodules.cursor;
@@ -429,6 +434,7 @@ package body et_schematic_ops_submodules is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				use et_submodules.pac_submodule_ports;
 				port_xy : type_vector_model;
 				cursor : et_submodules.pac_submodule_ports.cursor := find (submodule.ports, port_name);
@@ -527,6 +533,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- This flag goes true on the first match. It signals
 			-- all iterations to cancel prematurely.
 			port_processed : boolean := false;
@@ -540,6 +547,7 @@ package body et_schematic_ops_submodules is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -684,6 +692,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_submodules;
 			submod_cursor : pac_submodules.cursor;
 
@@ -692,6 +701,7 @@ package body et_schematic_ops_submodules is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				use et_submodules.pac_submodule_ports;
 				cursor : et_submodules.pac_submodule_ports.cursor;
 				inserted : boolean;
@@ -846,6 +856,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- This flag goes true on the first match. It signals
 			-- all iterations to cancel prematurely.
@@ -859,6 +870,7 @@ package body et_schematic_ops_submodules is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -998,12 +1010,14 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 			begin
@@ -1123,6 +1137,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			
@@ -1130,6 +1145,7 @@ package body et_schematic_ops_submodules is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
@@ -1387,10 +1403,12 @@ package body et_schematic_ops_submodules is
 		pos_after		: in type_object_position;	-- the new port position
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (port);
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -1399,6 +1417,7 @@ package body et_schematic_ops_submodules is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once the port has been found the first time
@@ -1580,6 +1599,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			
@@ -1587,6 +1607,7 @@ package body et_schematic_ops_submodules is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
@@ -1779,6 +1800,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure probe_port (
 				port : in type_vector_model; -- x/y
@@ -1797,6 +1819,7 @@ package body et_schematic_ops_submodules is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) 
 				is
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -1938,6 +1961,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (commit_design);
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -1951,6 +1975,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
 			submodule : et_submodules.type_submodule;
@@ -2048,6 +2073,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -2056,6 +2082,7 @@ package body et_schematic_ops_submodules is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2158,6 +2185,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (commit_design);
 
 		use et_submodules;
 
@@ -2171,6 +2199,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_submodules;
 			submod_cursor : pac_submodules.cursor;
 		begin
@@ -2248,6 +2277,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
@@ -2256,6 +2286,7 @@ package body et_schematic_ops_submodules is
 			procedure move (
 				instance	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) is
+			pragma unreferenced (instance);
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -2438,6 +2469,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
@@ -2449,6 +2481,7 @@ package body et_schematic_ops_submodules is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 
 				procedure build_drag_point (
@@ -2526,7 +2559,9 @@ package body et_schematic_ops_submodules is
 			procedure move_box (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
-			is begin
+			is
+				pragma unreferenced (submod_name);
+			begin
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
 					when ABSOLUTE =>
@@ -2671,6 +2706,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
 			submodule : et_submodules.type_submodule;
@@ -2823,6 +2859,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 			submodule_old : et_submodules.type_submodule;
 
@@ -2969,6 +3006,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -2976,6 +3014,7 @@ package body et_schematic_ops_submodules is
 			procedure mount (
 				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
+				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
 				cursor : pac_submodule_variants.cursor;
 			begin
@@ -3098,6 +3137,7 @@ package body et_schematic_ops_submodules is
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -3105,6 +3145,7 @@ package body et_schematic_ops_submodules is
 			procedure remove (
 				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
+				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
 				cursor : pac_submodule_variants.cursor;
 			begin
@@ -3207,6 +3248,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
 		begin
 			if contains (module.submods, instance) then
@@ -3245,6 +3287,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules;
 			use et_submodules.pac_submodules;
 			submod_instance_cursor : et_submodules.pac_submodules.cursor;
@@ -3259,6 +3302,7 @@ package body et_schematic_ops_submodules is
 				submodule_name	: in pac_module_name.bounded_string;
 				submodule		: in type_generic_module)
 			is
+				pragma unreferenced (submodule_name);
 				use et_assembly_variants;
 			begin
 				if variant_exists (submodule.assembly_variants, variant) then
@@ -3319,6 +3363,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_assembly_variants;
 
 			variant_cursor : pac_assembly_variants.cursor;
@@ -3328,6 +3373,7 @@ package body et_schematic_ops_submodules is
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant) 
 			is
+				pragma unreferenced (variant_name);
 				use pac_submodule_variants;
 			begin
 				cursor := find (variant.submodules, submod);
@@ -3370,6 +3416,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (commit_design);
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -3383,12 +3430,14 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			procedure set_file (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is
+				pragma unreferenced (submod_name);
 				-- Prior to assigning the file, we create a test submodule and test
 				-- whether it provides all the ports as required by the graphical 
 				-- representation of the submodule (the box). 
@@ -3537,6 +3586,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 
 			-- Here we collect all ports of devices (like IC4 CE, R2 1, ...) across all the nets.
@@ -3846,6 +3896,7 @@ package body et_schematic_ops_submodules is
    			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query (cursor : in pac_renumber_modules.cursor) is
 				use pac_renumber_modules;
@@ -3895,6 +3946,7 @@ package body et_schematic_ops_submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
 			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
@@ -4657,7 +4709,9 @@ package body et_schematic_ops_submodules is
 		procedure replace_tree (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.submod_tree := submod_tree;
 		end;
 		

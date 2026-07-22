@@ -170,6 +170,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net 
 			-- to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -182,6 +183,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				use pac_conductor_lines;
 			begin
 				append (
@@ -255,7 +257,9 @@ package body et_board_ops_conductors is
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> line);
@@ -752,10 +756,12 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_line (l : in out type_conductor_line) is begin
 					modify_status (l, operation);
@@ -807,6 +813,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_line (l : in out type_conductor_line) is begin
 				modify_status (l, operation);
@@ -856,6 +863,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -864,6 +872,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				use pac_conductor_lines;
 				lc : pac_conductor_lines.cursor := net.route.lines.first;
 
@@ -933,6 +942,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_name : pac_net_name.bounded_string;
 
 			
@@ -999,6 +1009,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -1100,6 +1111,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_conductor_lines;
 			
@@ -1203,6 +1215,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_lines;
 
 			
@@ -1221,6 +1234,7 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
+					pragma unreferenced (net_name);
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
 					while has_element (line_cursor) loop
@@ -1308,6 +1322,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -1319,6 +1334,7 @@ package body et_board_ops_conductors is
 						net_name	: in pac_net_name.bounded_string;
 						net 		: in type_net)
 					is 
+						pragma unreferenced (net_name);
 
 						procedure query_line (l : in pac_conductor_lines.cursor) is begin
 							case flag is
@@ -1411,6 +1427,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -1485,6 +1502,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_lines;
 
 			
@@ -1546,6 +1564,7 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net)
 				is
+					pragma unreferenced (net_name);
 					-- A temporarily cursor that points to the
 					-- line segment being probed:
 					lc : pac_conductor_lines.cursor;
@@ -1680,6 +1699,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure update_net (
 				net_name	: in pac_net_name.bounded_string;
@@ -1754,6 +1774,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_conductor_lines;
 
@@ -1819,6 +1840,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -1828,6 +1850,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
 				use pac_conductor_lines;
 				line_cursor : pac_conductor_lines.cursor := net.route.lines.find (line);
@@ -1904,6 +1927,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			conductors : type_conductors_floating renames module.board.conductors_floating;
 			use pac_conductor_lines;
 			l : pac_conductor_lines.cursor;
@@ -1972,7 +1996,9 @@ package body et_board_ops_conductors is
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.conductors_floating.arcs,
 				new_item	=> arc);
@@ -1983,6 +2009,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -1992,7 +2019,9 @@ package body et_board_ops_conductors is
 			procedure add (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				append (
 					container	=> net.route.arcs,
 					new_item	=> arc);
@@ -2074,10 +2103,12 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_arc (l : in out type_conductor_arc) is begin
 					modify_status (l, operation);
@@ -2130,6 +2161,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_arc (l : in out type_conductor_arc) is begin
 				modify_status (l, operation);
@@ -2178,6 +2210,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_conductor_arcs;
 			
@@ -2283,6 +2316,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_arcs;
 
 			
@@ -2301,6 +2335,7 @@ package body et_board_ops_conductors is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
+					pragma unreferenced (net_name);
 					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 				begin
 					while arc_cursor /= pac_conductor_arcs.no_element loop
@@ -2376,6 +2411,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -2387,6 +2423,7 @@ package body et_board_ops_conductors is
 						net_name	: in pac_net_name.bounded_string;
 						net 		: in type_net)
 					is 
+						pragma unreferenced (net_name);
 
 						procedure query_arc (l : in pac_conductor_arcs.cursor) is begin
 							case flag is
@@ -2479,6 +2516,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -2560,6 +2598,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure update_net (
 				net_name	: in pac_net_name.bounded_string;
@@ -2632,6 +2671,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_conductor_arcs;
 
@@ -2696,6 +2736,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -2705,6 +2746,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
 				use pac_conductor_arcs;
 				arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.find (arc);
@@ -2778,6 +2820,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			conductors : type_conductors_floating renames module.board.conductors_floating;
 			use pac_conductor_arcs;
 			l : pac_conductor_arcs.cursor;
@@ -2849,6 +2892,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			line_cursor : pac_conductor_lines.cursor := module.board.conductors_floating.lines.first;
 			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors_floating.arcs.first;
 		begin
@@ -2893,6 +2937,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- Locate the given net in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -2903,6 +2948,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				arc_cursor  : pac_conductor_arcs.cursor := net.route.arcs.first;
 			begin
@@ -3018,6 +3064,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -3027,6 +3074,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
 				use pac_conductor_lines;
 			begin
@@ -3099,6 +3147,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -3111,6 +3160,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				
 				procedure query_zone_solid (zone : in out type_route_solid) is begin
 					if is_circular (zone) then
@@ -3208,6 +3258,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -3300,6 +3351,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_route_solid;
@@ -3310,6 +3362,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_segment (segment : in out type_segment) is begin
 					if in_catch_zone (catch_zone, segment) then
@@ -3415,6 +3468,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_floating_solid;
@@ -3514,6 +3568,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_route_solid;
@@ -3524,6 +3579,7 @@ package body et_board_ops_conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_segment (segment : in out type_segment) is begin
 					reset_status (segment);
@@ -3618,6 +3674,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_floating_solid;
@@ -3735,6 +3792,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			
 			procedure query_net (
@@ -3924,6 +3982,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_segment (segment : in type_segment) is begin
 				case flag is
@@ -4082,11 +4141,13 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				-- Moves the candidate segment:
 				procedure query_segment (s : in out type_segment) is begin
@@ -4192,6 +4253,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- Moves the candidate segment:
 			procedure query_segment (s : in out type_segment) is begin
@@ -4287,11 +4349,13 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				
 				procedure query_zone_solid (zone : in out type_route_solid) is 
 					c : pac_segments.cursor := segment.segment;
@@ -4398,6 +4462,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 				
 			procedure query_zone_solid (zone : in out type_floating_solid) is 
@@ -4493,6 +4558,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
 			vectors : pac_character_lines.list;
 			mirror : type_mirror;
@@ -4590,6 +4656,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_text (c : in pac_conductor_texts_board.cursor) is
 				text : type_conductor_text_board renames element (c);
 			begin
@@ -4659,6 +4726,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			text_cursor : pac_conductor_texts_board.cursor;
 
 			procedure query_text (
@@ -4730,6 +4798,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_text (
 				text : in out type_conductor_text_board) 
@@ -4779,6 +4848,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
 			c : pac_conductor_texts_board.cursor := 
 				module.board.conductors_floating.texts.first;
@@ -4850,6 +4920,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_text (
 				text : in out type_conductor_text_board) 
@@ -4919,6 +4990,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			c : pac_conductor_texts_board.cursor := text.cursor;			
 		begin
 			module.board.conductors_floating.texts.delete (c);
@@ -4972,6 +5044,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
 			
 			proceed : aliased boolean := true;
@@ -5047,6 +5120,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_text (
 				text	: in out type_conductor_text_board)
@@ -5103,6 +5177,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
 		begin
 			append (module.board.conductors_floating.placeholders, placeholder);
@@ -5154,6 +5229,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_placeholder (
 				ph : in out type_placeholder_conductor) 
@@ -5203,6 +5279,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
 			c : pac_placeholders_conductor.cursor := module.board.conductors_floating.placeholders.first;
 
@@ -5266,6 +5343,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_placeholder (
 				ph : in out type_placeholder_conductor) 
@@ -5333,6 +5411,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			c : pac_placeholders_conductor.cursor := placeholder.cursor;			
 		begin
 			module.board.conductors_floating.placeholders.delete (c);
@@ -5389,6 +5468,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
 			
 			proceed : aliased boolean := true;
@@ -5464,6 +5544,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_placeholder (
 				ph : in out type_placeholder_conductor)
@@ -5798,6 +5879,7 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor;
 			
 			-- This procedure queries a net:

@@ -123,6 +123,7 @@ package body et_module_write_devices_electrical is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical) 
 		is
+			pragma unreferenced (device_name);
 			use et_schematic_coordinates;
 			use et_units;
 			use pac_units;
@@ -190,6 +191,7 @@ package body et_module_write_devices_electrical is
 			device_name : in type_device_name;
 			device 		: in type_device_electrical) 
 		is
+			pragma unreferenced (device_name);
 			use et_pcb_sides;
 			use et_board_coordinates;
 			use et_device_placeholders.packages;
@@ -327,7 +329,9 @@ package body et_module_write_devices_electrical is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_devices, HEADER);
 			iterate (module.devices, write'access);
 			section_mark (section_devices, FOOTER);

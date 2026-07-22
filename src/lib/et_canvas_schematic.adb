@@ -192,6 +192,7 @@ package body et_canvas_schematic is
 	procedure cb_zoom_to_fit (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		-- debug : boolean := true;
 		debug : boolean := false;
 	begin
@@ -206,6 +207,7 @@ package body et_canvas_schematic is
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		use et_modes.schematic;
 		
 		-- debug : boolean := true;
@@ -243,6 +245,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		event_handled : boolean := false;
 
 		-- If event_handled is true then
@@ -697,6 +700,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		use gdk.types;		
@@ -835,6 +839,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -868,6 +873,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -935,6 +941,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_motion)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mp : type_vector_model;

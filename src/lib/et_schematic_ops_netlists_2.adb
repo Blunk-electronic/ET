@@ -132,6 +132,7 @@ package body et_schematic_ops_netlists_2 is
 		ports 			: in pac_net_submodule_ports.set)
 		return pac_submodule_ports_extended.set 
 	is
+		pragma unreferenced (module_cursor);
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
 		use pac_net_submodule_ports;
@@ -194,6 +195,7 @@ package body et_schematic_ops_netlists_2 is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_nets;
 			use pac_nets;
 			
@@ -206,6 +208,7 @@ package body et_schematic_ops_netlists_2 is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
+				pragma unreferenced (net);
 				use et_net_ports;
 				all_ports : type_net_ports;
 				

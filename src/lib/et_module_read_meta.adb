@@ -122,6 +122,7 @@ package body et_module_read_meta is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+		pragma unreferenced (module_name);
 		begin
 			-- CS check whether date drawn <= date checked <= date_approved
 			--  use type_meta_basic for the test of schematic and board data.

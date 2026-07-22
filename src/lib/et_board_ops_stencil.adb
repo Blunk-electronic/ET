@@ -68,6 +68,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_lines;
 		begin
 			case face is
@@ -134,6 +135,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_line (
 				line	: in out type_stencil_line)
@@ -202,6 +204,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			lc : pac_stencil_lines.cursor;
 
 			procedure query_line (
@@ -284,6 +287,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			top 	: pac_stencil_lines.list renames module.board.stencil.top.lines;
 			bottom	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 
@@ -358,6 +362,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_stencil_lines.list renames module.board.stencil.top.lines;
@@ -445,6 +450,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			line_cursor : pac_stencil_lines.cursor;
 
 			
@@ -528,6 +534,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			line_cursor : pac_stencil_lines.cursor;
 		begin
 			case face is
@@ -612,6 +619,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_arcs;
 		begin
 			case face is
@@ -680,6 +688,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_arc (
 				arc	: in out type_stencil_arc)
@@ -749,6 +758,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			lc : pac_stencil_arcs.cursor;
 
 			procedure query_arc (
@@ -832,6 +842,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			top 	: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			bottom	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 
@@ -908,6 +919,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
@@ -997,6 +1009,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			arc_cursor : pac_stencil_arcs.cursor;
 
 			
@@ -1079,6 +1092,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_arcs;
 			arc_cursor : pac_stencil_arcs.cursor;
 		begin
@@ -1164,6 +1178,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_circles;
 		begin
 			case face is
@@ -1244,6 +1259,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			c : pac_stencil_zones.cursor;
 
@@ -1358,6 +1374,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -1439,6 +1456,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			zc : pac_stencil_zones.cursor;
 
@@ -1545,6 +1563,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			zc : pac_stencil_zones.cursor;
 
@@ -1646,6 +1665,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_stencil_zones;
@@ -1773,6 +1793,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
@@ -1876,6 +1897,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_zone (
 				zone : in out type_stencil_zone)
@@ -2088,6 +2110,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			zone_cursor : pac_stencil_zones.cursor;
 			face : type_face := TOP;
@@ -2515,6 +2538,7 @@ package body et_board_ops_stencil is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_stencil_lines;
 			use pac_stencil_arcs;
 			use pac_stencil_circles;

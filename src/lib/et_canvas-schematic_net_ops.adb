@@ -103,6 +103,7 @@ package body et_canvas.schematic_net_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;

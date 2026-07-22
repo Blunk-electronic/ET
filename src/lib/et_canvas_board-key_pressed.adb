@@ -57,6 +57,7 @@ procedure key_pressed (
 	key			: in gdk_key_type;
 	key_shift	: in gdk_modifier_type)
 is
+	pragma unreferenced (key_shift);
 	use gdk.types;
 
 	use et_modes;

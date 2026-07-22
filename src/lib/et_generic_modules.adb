@@ -193,7 +193,9 @@ package body et_generic_modules is
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := variant_exists (module, variant);
 		end;
 		

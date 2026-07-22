@@ -103,6 +103,7 @@ procedure compute_bounding_box (
 	ignore_errors			: in boolean := false;
 	test_only				: in boolean := false)		
 is
+	pragma unreferenced (abort_on_first_error);
 	-- debug : boolean := false;
 	debug : boolean := true;
 
@@ -187,6 +188,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_silkscreen;
 				use et_silkscreen.board;
 				use pac_silk_lines;
@@ -263,6 +265,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_assy_doc;
 				use et_assy_doc.board;
 				use pac_doc_lines;
@@ -337,6 +340,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_stencil;
 				use et_stencil.board;
 				use pac_stencil_lines;
@@ -406,6 +410,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_stopmask;
 				use et_stopmask.board;
 				use pac_stop_lines;
@@ -478,6 +483,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_keepout;
 				use et_keepout.board;
 				use pac_keepout_zones;
@@ -523,6 +529,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_route_restrict.boards;
 				use pac_route_restrict_lines;
 				use pac_route_restrict_arcs;
@@ -595,6 +602,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				use et_via_restrict.boards;
 				use pac_via_restrict_contours;
 				use pac_via_restrict_cutouts;
@@ -636,6 +644,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
+				pragma unreferenced (module_name);
 				-- use et_conductor_text.packages;
 				-- use pac_conductor_texts;
 				-- use et_conductor_segment;
@@ -734,7 +743,9 @@ is
 				procedure query_outline (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module)
-				is begin
+				is
+					pragma unreferenced (module_name);
+				begin
 					b := get_bounding_box (
 						contour	=> module.board.board_contour.outline,
 						width	=> zero);
@@ -764,6 +775,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
+					pragma unreferenced (module_name);
 					use pac_holes;
 
 					contour : type_board_outline renames module.board.board_contour;
@@ -1612,6 +1624,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
+					pragma unreferenced (module_name);
 					use pac_devices_electrical;
 
 					procedure query_device (
@@ -1661,6 +1674,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
+					pragma unreferenced (module_name);
 					use et_devices_non_electrical;
 					use pac_devices_non_electrical;
 
@@ -1716,6 +1730,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 				use et_nets;
 				use et_route;
 				use pac_nets;

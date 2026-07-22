@@ -263,6 +263,7 @@ package body et_kicad_libraries is
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return pac_package_name.bounded_string 
 	is
+		pragma unreferenced (library_name, generic_name, package_variant);
 		package_name : pac_package_name.bounded_string; -- to be returned
 	begin -- to_package_name
 		-- CS
@@ -355,6 +356,7 @@ package body et_kicad_libraries is
 		procedure locate (
 			name		: in type_component_generic_name.bounded_string;
 			component	: in type_component_library) is
+				pragma unreferenced (name);
 
 			use type_units_library;
 		begin
@@ -395,6 +397,7 @@ package body et_kicad_libraries is
 			name : in pac_unit_name.bounded_string;
 			unit : in type_unit_library) 
 		is
+			pragma unreferenced (name);
 			use type_ports_library;
 			use pac_unit_name;
 		begin
@@ -849,6 +852,7 @@ package body et_kicad_libraries is
 	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return type_de_morgan_representation is
+			pragma unreferenced (schematic);
 
 		rep_in : type_alternative_representation;
 		rep_out : type_de_morgan_representation;
@@ -1062,6 +1066,7 @@ package body et_kicad_libraries is
 		procedure search_package (
 			lib_name	: in pac_package_model_file.bounded_string;
 			library		: in type_packages_library.map) is
+		pragma unreferenced (lib_name);
 		begin
 			if type_packages_library.contains (
 				container	=> library,
@@ -2256,7 +2261,9 @@ package body et_kicad_libraries is
 			-- for later inserting the units:
 				key			: in pac_device_model_file.bounded_string;
 				components	: in out type_components_library.map) 
-			is begin
+			is
+				pragma unreferenced (key);
+			begin
 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
@@ -2339,6 +2346,7 @@ package body et_kicad_libraries is
 
 			
 			procedure set_unit_cursor (libraries : in out type_device_libraries.map) is
+			pragma unreferenced (libraries);
 			-- Sets the unit_cursor according to the current unit_id.
 			-- If the unit_id is 0, the unit_cursor is not changed.
 		
@@ -2346,6 +2354,7 @@ package body et_kicad_libraries is
 				-- sets the unit_cursor
 					key			: in type_component_generic_name.bounded_string;
 					component	: in type_component_library) is
+				pragma unreferenced (key);
 				begin
 					unit_cursor := component.units.find (to_unit_name (tmp_unit_id));
 				end locate_unit;
@@ -2353,6 +2362,7 @@ package body et_kicad_libraries is
 				procedure locate_component ( 
 					key			: in pac_device_model_file.bounded_string;
 					components	: in type_components_library.map) is
+				pragma unreferenced (key, components);
 				begin
 					type_components_library.query_element (comp_cursor, locate_unit'access);
 				end locate_component;
@@ -2393,6 +2403,7 @@ package body et_kicad_libraries is
 				-- Inserts an internal unit in a component.
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
+						pragma unreferenced (key);
 
 					unit : type_unit_library (tmp_appearance);
 				begin
@@ -2408,6 +2419,7 @@ package body et_kicad_libraries is
 				procedure locate_component ( 
 					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
+				pragma unreferenced (key);
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
 				end locate_component;
@@ -2453,6 +2465,7 @@ package body et_kicad_libraries is
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
 					key		: in pac_unit_name.bounded_string;
 					unit	: in out type_unit_library) is
+					pragma unreferenced (key);
 					pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
 					case element is
@@ -2516,6 +2529,7 @@ package body et_kicad_libraries is
 				-- Locates the unit indicated by unit_cursor.
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
+				pragma unreferenced (key);
 				begin
 					component.units.update_element (unit_cursor, insert'access);
 				end locate_unit;
@@ -2524,6 +2538,7 @@ package body et_kicad_libraries is
 				-- Locates the component indicated by comp_cursor.
 					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
+				pragma unreferenced (key);
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
@@ -2567,6 +2582,7 @@ package body et_kicad_libraries is
 				-- Sets the properties of the placeholders in the current unit.
 					key		: in pac_unit_name.bounded_string;
 					unit	: in out type_unit_library) is
+				pragma unreferenced (key);
 				begin
 					-- For the unit we are interested in the properties of the component text fields.
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
@@ -2601,6 +2617,7 @@ package body et_kicad_libraries is
 				-- Locates the unit indicated by unit_cursor.
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
+				pragma unreferenced (key);
 				begin
 					component.units.update_element (unit_cursor, set'access);
 				end locate_unit;
@@ -2609,6 +2626,7 @@ package body et_kicad_libraries is
 				-- Locates the component indicated by comp_cursor.
 					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
+				pragma unreferenced (key);
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
@@ -2868,6 +2886,7 @@ package body et_kicad_libraries is
 					procedure insert_footprint (
 						key			: in type_component_generic_name.bounded_string;
 						component	: in out type_component_library) is
+					pragma unreferenced (key);
 					begin
 						component.package_filter.insert (fp);
 					end insert_footprint;
@@ -2875,6 +2894,7 @@ package body et_kicad_libraries is
 					procedure locate_component ( 
 						key			: in pac_device_model_file.bounded_string;
 						components	: in out type_components_library.map) is
+					pragma unreferenced (key);
 					begin
 						components.update_element (comp_cursor, insert_footprint'access);
 					end locate_component;
@@ -2904,6 +2924,7 @@ package body et_kicad_libraries is
 		
 
 			procedure read_field (line : in type_fields_of_line; log_threshold : in type_log_level) is
+			pragma unreferenced (log_threshold);
 			-- NOTE: This is library related stuff.
 			-- Reads the text field of a component in a set of temporarily variables field_reference, field_value, ...
 			-- Sets the "field found flag" according to the field being detected.
@@ -2970,11 +2991,13 @@ package body et_kicad_libraries is
 					lib_name	: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map)
 				is
+					pragma unreferenced (lib_name);
 
 					procedure build (
 						comp_name	: in type_component_generic_name.bounded_string;
 						component	: in out type_component_library) 
 					is
+						pragma unreferenced (comp_name);
 						use et_package_library;
 						use pac_package_variants;
 						use pac_package_variant_name;
@@ -3430,6 +3453,7 @@ package body et_kicad_libraries is
 			library_name	: in pac_device_model_file.bounded_string;
 			components 		: in out type_components_library.map) 
 		is
+			pragma unreferenced (library_name);
 			use type_components_library;
 			component_cursor : type_components_library.cursor; -- points to the generic component
 
@@ -3439,6 +3463,7 @@ package body et_kicad_libraries is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) 
 			is
+				pragma unreferenced (component_name);
 				use et_package_library;
 				use pac_package_variants;
 
@@ -3652,6 +3677,7 @@ package body et_kicad_libraries is
 		procedure set_cursor (
 			name 	: in type_device_name;
 			ports	: in type_ports.list) is
+		pragma unreferenced (name);
 		begin
 			port_cursor := type_ports.first (ports);
 		end set_cursor;
@@ -3681,6 +3707,7 @@ package body et_kicad_libraries is
 		procedure locate (
 			library 	: in pac_device_model_file.bounded_string;
 			components	: in type_components_library.map) is
+		pragma unreferenced (library);
 		begin
 			-- Generic names in library sometimes start with a tilde. 
 			-- So, first we search for the given component without tilde.

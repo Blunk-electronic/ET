@@ -151,6 +151,7 @@ package body et_module_read_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_net_name;
 			inserted : boolean;
 			cursor : pac_nets.cursor;
@@ -639,6 +640,7 @@ package body et_module_read_nets is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use et_module_instance;
 		use et_net_ports_devices;
 		use et_netchangers;

@@ -98,6 +98,7 @@ package body et_module_write_pcb_layer_stack is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			bottom_layer : type_signal_layer;
 			bottom_layer_thickness : type_conductor_thickness;
 		begin

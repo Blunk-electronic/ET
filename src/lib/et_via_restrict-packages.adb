@@ -73,6 +73,7 @@ package body et_via_restrict.packages is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
+		pragma unreferenced (restrict, tolerance);
 		scratch, result : pac_polygon_list.list;
 		
 	begin

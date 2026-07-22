@@ -963,6 +963,7 @@ procedure draw_units is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is
+		pragma unreferenced (module_name);
 		use pac_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor := module.devices.first; 
 
