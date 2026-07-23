@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+with et_module_names;					use et_module_names;
 with et_module;						use et_module;
 
 with et_modes.board;
@@ -69,6 +70,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			c : pac_keepout_zones.cursor;
 
@@ -183,6 +185,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -264,6 +267,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			zc : pac_keepout_zones.cursor;
 
@@ -371,6 +375,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			zc : pac_keepout_zones.cursor;
 
@@ -473,6 +478,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_keepout_zones;
@@ -601,6 +607,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
@@ -705,6 +712,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_zone (
 				zone : in out type_keepout_zone)
@@ -860,6 +868,7 @@ package body et_board_ops_keepout is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			zone_cursor : pac_keepout_zones.cursor;
 			face : type_face := TOP;

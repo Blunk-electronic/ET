@@ -39,18 +39,21 @@
 --
 --
 
-with ada.strings;						use ada.strings;
-with ada.strings.unbounded;				use ada.strings.unbounded;
+with et_module;							use et_module;
+with et_net_labels;						use et_net_labels;
+with et_devices_electrical.units;		use et_devices_electrical.units;
+with et_symbol_ports;					use et_symbol_ports;
+with et_port_names;						use et_port_names;
+with et_terminal_name;
+with et_logging;
+with et_package_variant;				use et_package_variant;
 with ada.exceptions;					use ada.exceptions;
 
-with et_text;
 with et_axes;
 with et_assembly_variants;
-with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_groups;
 with et_schematic_ops_sheets;
 
-with et_symbol_model;
 with et_units;
 with et_unit_name;
 
@@ -68,7 +71,6 @@ with et_netchangers.schematic;
 
 with et_rotation_docu;					use et_rotation_docu;
 with et_exceptions;						use et_exceptions;
-with et_string_processing;				use et_string_processing;
 
 with et_modes.schematic;
 with et_undo_redo;
@@ -77,7 +79,6 @@ with et_commit;
 
 package body et_schematic_ops_nets is
 
-	use pac_text_schematic;
 	use pac_net_labels;
 	use pac_net_segments;
 	use pac_strands;
@@ -97,7 +98,9 @@ package body et_schematic_ops_nets is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := type_net_count (length (module.nets));
 		end query_nets;
 		
@@ -122,7 +125,9 @@ package body et_schematic_ops_nets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := module.nets.first;
 		end;
 	
@@ -153,6 +158,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_devices_electrical;
 			use et_netchangers;
 			use pac_netchangers;
@@ -173,7 +179,6 @@ package body et_schematic_ops_nets is
 
 					
 					procedure query_port (port_cursor : in pac_symbol_ports.cursor) is
-						use et_symbol_model;
 						use pac_symbol_ports;
 					begin
 						log (text => "unit " & to_string (key (unit_cursor)) &
@@ -302,7 +307,6 @@ package body et_schematic_ops_nets is
 				
 				ports : type_netchanger_ports;
 				
-				use et_netlists;
 			begin
 				netchanger_position := element (netchanger_cursor).position_sch;
 
@@ -405,6 +409,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
@@ -412,6 +417,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -503,6 +509,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
@@ -510,6 +517,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -589,11 +597,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -651,6 +661,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -658,6 +669,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 			
@@ -750,6 +762,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			proceed : boolean := true;
@@ -759,6 +772,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -866,12 +880,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				-- In the course of the deleting process, the strand
 				-- that contains the target segment can:
 				-- 1. become empty (because it contains only one segment)
@@ -1152,11 +1168,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is			
+			pragma unreferenced (module_name, module);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
+				pragma unreferenced (net_name, net);
 
 				procedure query_strand (strand : in type_strand) is begin
 					-- Test the given segment and all connected secondary
@@ -1252,11 +1270,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				-- This procedure searches for segments which are connected
 				-- with the given primary segment.
@@ -1378,6 +1398,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -1386,6 +1407,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in type_strand) is
@@ -1483,6 +1505,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -1581,6 +1604,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			
 			-- Searches the strands of the given net 
 			-- for a segment that sits on given point_of_attack.
@@ -1588,6 +1612,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 
 				
 				procedure query_strand (strand : in out type_strand) is
@@ -2118,6 +2143,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2233,6 +2259,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2240,6 +2267,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2350,6 +2378,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2357,6 +2386,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2481,6 +2511,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2488,6 +2519,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2577,6 +2609,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2584,6 +2617,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2672,6 +2706,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2679,6 +2714,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2773,6 +2809,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -2780,6 +2817,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net 		: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -2924,11 +2962,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				net.strands.append (strand);
 			end query_net;
 			
@@ -2973,11 +3014,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 
@@ -3133,10 +3176,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name, module);
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				result := get_strands (net, place);
 			end query_net;
 			
@@ -3192,6 +3238,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3265,6 +3312,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3358,6 +3406,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3370,7 +3419,9 @@ package body et_schematic_ops_nets is
 				
 				procedure query_strand (
 					strand : in type_strand) 
-				is begin
+				is
+					pragma unreferenced (strand);
+				begin
 					result.append ((net_cursor, strand_cursor));
 				end query_strand;
 
@@ -3437,6 +3488,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3444,6 +3496,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- As soon as a segment has been found that is in the
@@ -3534,6 +3587,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3541,6 +3595,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- As soon as a segment has been found that is in the
@@ -3639,11 +3694,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is begin
 					modify_status (strand, operation);
@@ -3698,6 +3755,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			proceed : boolean := true;
@@ -3707,6 +3765,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -3797,12 +3856,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				c : pac_strands.cursor := strand.strand_cursor;
 			begin
 				delete (net.strands, c);
@@ -3949,6 +4010,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -3956,6 +4018,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				
@@ -4026,13 +4089,16 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				reset_status (net);
 			end query_net;
 
@@ -4082,11 +4148,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				modify_status (net, operation);
 			end query_net;
 			
@@ -4134,6 +4203,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			proceed : boolean := true;
@@ -4143,6 +4213,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				
 				procedure set_result is begin
 					result.net_cursor := net_cursor;
@@ -4211,6 +4282,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -4218,6 +4290,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- As soon as a segment has been found, there is no
@@ -4313,7 +4386,9 @@ package body et_schematic_ops_nets is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			cursor := pac_nets.find (module.nets, net_name);
 		end query_nets;
 		
@@ -4361,7 +4436,9 @@ package body et_schematic_ops_nets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.nets.insert (
 				key			=> net_name,
 				position	=> net_cursor,
@@ -4416,6 +4493,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 
 			-- Transfers the contents of the source net
 			-- to the target net.
@@ -4424,6 +4502,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				target_net	: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				-- Get the actual source net:
 				source_net : type_net := element (source);
 			begin
@@ -4820,6 +4899,7 @@ package body et_schematic_ops_nets is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module) 
 			is
+				pragma unreferenced (module_name, module);
 				-- Get the cursor to the given net:
 				net_cursor : pac_nets.cursor := locate_net (module_cursor, net_name);
 				-- NOTE: The net cursor provied by net.net_cursor can not be
@@ -4833,6 +4913,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 				begin
 					while has_element (strand_cursor) loop
@@ -5051,6 +5132,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- This procedure deletes the whole net on
 			-- all sheets:
@@ -5069,6 +5151,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) 
 				is
+					pragma unreferenced (net_name);
 					strands : pac_strands.list;
 				begin
 					-- Get the strands on the given sheet:
@@ -5292,11 +5375,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				set_selected (net);
 			end query_net;
 			
@@ -5340,11 +5426,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				set_selected (net);
 			end query_net;
 			
@@ -5395,7 +5484,9 @@ package body et_schematic_ops_nets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := key (module.nets.first);
 		end query_module;
 
@@ -5441,6 +5532,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 			
 			procedure query_net (n : in pac_nets.cursor) is 
@@ -5458,9 +5550,8 @@ package body et_schematic_ops_nets is
 					use pac_device_ports;
 					use pac_port_name;
 
-					use et_unit_name;
-					use pac_unit_name;
-					
+					use et_unit_name.pac_unit_name;
+
 					use pac_devices_electrical;
 				begin
 					--log (text => to_string (element (p).device_name)
@@ -5521,6 +5612,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_net (c : in pac_nets.cursor) is begin
 				result.append (key (c));
 			end query_net;
@@ -5608,6 +5700,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
 				net : type_net := element (net_cursor);
@@ -5724,6 +5817,7 @@ package body et_schematic_ops_nets is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 
 				procedure query_net (n : in pac_nets.cursor) is
 					net : type_net renames element (n);
@@ -5844,11 +5938,13 @@ package body et_schematic_ops_nets is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is
+					pragma unreferenced (net_name);
 					type type_insert_mode is (
 						-- The given segment has no connection with any strand.
 						-- For the given segment a new strand will be created:
@@ -6360,11 +6456,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure set (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				net.scope := scope;
 			end set;
 
@@ -6466,6 +6565,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
@@ -6473,6 +6573,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -6567,11 +6668,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -6637,6 +6740,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -6644,6 +6748,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 			
@@ -6749,6 +6854,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			proceed : boolean := true;
@@ -6758,6 +6864,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -6884,11 +6991,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -6916,7 +7025,6 @@ package body et_schematic_ops_nets is
 						-- so that it is readable from the front:
 						procedure horizontal_text is 
 							use et_axes;
-							use et_text;
 						begin
 							-- The x-component of the label position is the same
 							-- as the x-component of the given position:
@@ -6940,7 +7048,6 @@ package body et_schematic_ops_nets is
 						-- so that it is readable from the right:
 						procedure vertical_text is 
 							use et_axes;
-							use et_text;
 						begin
 							-- The y-component of the label position is the same
 							-- as the y-component of the given position:
@@ -7142,10 +7249,12 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -7224,6 +7333,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -7231,6 +7341,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -7358,11 +7469,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -7537,11 +7650,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -7603,6 +7718,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
@@ -7610,6 +7726,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -7691,11 +7808,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -7758,6 +7877,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -7765,6 +7885,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 			
@@ -7864,6 +7985,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			proceed : boolean := true;
@@ -7873,6 +7995,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
 			is
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -8002,11 +8125,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
+				pragma unreferenced (net_name);
 				
 				procedure query_strand (strand : in out type_strand) is begin
 					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
@@ -8172,11 +8297,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
@@ -8253,11 +8380,13 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 
 				procedure query_strand (strand : in out type_strand) is
 
@@ -8567,6 +8696,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure search_nets is
@@ -8577,6 +8707,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is 
+					pragma unreferenced (net_name);
 
 					-- This procedure appends the matching
 					-- net cursor to the result:
@@ -8633,6 +8764,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is 
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -8704,6 +8836,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is 
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -8794,6 +8927,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is 
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -8900,6 +9034,7 @@ package body et_schematic_ops_nets is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) 
 				is 
+					pragma unreferenced (net_name);
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					
@@ -9128,6 +9263,7 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -9136,6 +9272,7 @@ package body et_schematic_ops_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is 
+				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 
@@ -9256,12 +9393,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				
 
 				procedure query_strand (strand : in out type_strand) is
@@ -9273,7 +9412,6 @@ package body et_schematic_ops_nets is
 					-- Use this procedure in case the caller of the main procedure
 					-- does not request a "movable test":
 					procedure query_segment_force (seg : in out type_net_segment) is
-						use pac_objects;
 						
 						-- Find the zone at which the segment
 						-- is being attacked:
@@ -9306,7 +9444,6 @@ package body et_schematic_ops_nets is
 					-- Use this procedure in case the caller of the main procedure
 					-- requests a "movable test":
 					procedure query_segment_movable (seg : in out type_net_segment) is
-						use pac_objects;
 						
 						-- Find the zone at which the segment
 						-- is being attacked:
@@ -9417,12 +9554,14 @@ package body et_schematic_ops_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				
 
 				procedure query_strand (strand : in out type_strand) is
@@ -9515,7 +9654,9 @@ package body et_schematic_ops_nets is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (point_of_attack);
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move object " 
 			-- CS & to_string (object)

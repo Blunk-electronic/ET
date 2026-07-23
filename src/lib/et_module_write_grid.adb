@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -76,12 +73,12 @@ package body et_module_write_grid is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 
 			
 			procedure schematic is
-				use et_schematic_geometry;
-				use pac_geometry_2;
-				use pac_grid;
+				use et_schematic_geometry.pac_geometry_2;
+				use et_schematic_geometry.pac_grid;
 				g : type_grid;
 			begin
 				g := get_grid_schematic (module);
@@ -93,9 +90,8 @@ package body et_module_write_grid is
 
 
 			procedure board is
-				use et_board_geometry;
-				use pac_geometry_2;
-				use pac_grid;
+				use et_board_geometry.pac_geometry_2;
+				use et_board_geometry.pac_grid;
 				g : type_grid;
 			begin
 				g := get_grid_board (module);

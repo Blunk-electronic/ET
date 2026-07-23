@@ -86,6 +86,7 @@ package body et_fill_zones.boards is
 			end case;
 
 		end connected_with_net;
+		pragma unreferenced (connected_with_net);
 
 		
 	begin

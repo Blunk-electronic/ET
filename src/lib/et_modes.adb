@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_exceptions;					use et_exceptions;
 
 

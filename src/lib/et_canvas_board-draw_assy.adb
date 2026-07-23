@@ -54,9 +54,7 @@ procedure draw_assy (
 	face : in type_face)
 is
 	use et_colors.board;
-	use et_board_text;
 
-	use et_canvas_board_assy_doc;
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;
@@ -64,7 +62,6 @@ is
 	use pac_doc_texts;
 	use pac_placeholders_non_conductor;
 
-	use et_canvas_board_preliminary_object;
 
 
 
@@ -154,6 +151,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is 
+		pragma unreferenced (module_name);
 
 		
 		procedure query_text (c : in pac_doc_texts.cursor) is 

@@ -38,6 +38,11 @@
 -- DESCRIPTION:
 -- 
 
+with gtk.box;						use gtk.box;
+with et_package_library;
+with et_pcb_sides;					use et_pcb_sides;
+with et_board_coordinates;			use et_board_coordinates;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 
 with glib;
@@ -45,7 +50,6 @@ with glib.values;
 
 with gtk.file_chooser;
 with gtk.file_filter;
-with gtk.main;
 with gtk.label;
 with gtk.cell_renderer_text;
 with gtk.list_store;
@@ -67,10 +71,8 @@ with et_device_prefix;
 with et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;
-with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
-with et_package_library;
 with et_package_model_name;
 with et_package_read;
 
@@ -119,6 +121,7 @@ package body et_canvas_board_devices is
 			end if;
 		end if;
 	end show_selected_device;
+	pragma unreferenced (show_selected_device);
 
 
 
@@ -1176,6 +1179,7 @@ package body et_canvas_board_devices is
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_rename_window_destroy");
 		reset;

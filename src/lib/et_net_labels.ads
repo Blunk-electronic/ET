@@ -42,10 +42,7 @@ with ada.containers.doubly_linked_lists;
 with cairo;
 
 with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_sheets;							use et_sheets;
 with et_rotation_docu;					use et_rotation_docu;
-with et_text;							use et_text;
 with et_schematic_text;					use et_schematic_text;
 
 with et_alignment;						use et_alignment;

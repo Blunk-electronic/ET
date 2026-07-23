@@ -40,9 +40,9 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
 
-with et_generic_modules;				use et_generic_modules;
+with et_string_processing;		use et_string_processing;
+with et_generic_modules;
 with et_runmode;						use et_runmode;
 with et_modes.board;					use et_modes.board;
 with et_board_ops_grid;
@@ -181,7 +181,9 @@ package body et_cp_board_canvas is
 	procedure move_cursor (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (cmd);
+	begin
 		log (text => "move cursor", level => log_threshold);
 		log_indentation_up;
 
@@ -215,7 +217,9 @@ package body et_cp_board_canvas is
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (module);
+	begin
 		log (text => "set color", level => log_threshold);
 		log_indentation_up;
 

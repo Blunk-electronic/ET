@@ -41,13 +41,11 @@
 -- - use renames
 --
 
-with ada.text_io;					use ada.text_io;
 with ada.strings; 					use ada.strings;
-with ada.exceptions;
 
 with et_package_library;
 with et_package_variant_name;		use et_package_variant_name;
-with et_package_variant;			use et_package_variant;
+with et_package_variant;
 with et_package_variant_terminal_port_map;
 
 with et_unit_name;
@@ -70,6 +68,7 @@ package body et_device_write_package_variant is
 		variants		: in pac_package_variants.map;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use pac_package_variant_name;
 		
 		use pac_package_variants;
@@ -81,6 +80,7 @@ package body et_device_write_package_variant is
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant) 
 		is
+			pragma unreferenced (packge);
 			use et_package_library;
 			use et_port_names;
 
@@ -90,9 +90,8 @@ package body et_device_write_package_variant is
 			
 			procedure write_terminal (
 				terminal_cursor : in pac_terminal_port_map.cursor) 
-			is 
-				use et_unit_name;
-				use pac_unit_name;
+			is
+				use et_unit_name.pac_unit_name;
 				use et_terminal_name;
 			begin
 				write (keyword => keyword_terminal, parameters => 

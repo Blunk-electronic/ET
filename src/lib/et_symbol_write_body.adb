@@ -36,10 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
 
-with ada.exceptions;
 
 with et_directions;					use et_directions;
 

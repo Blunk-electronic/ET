@@ -36,16 +36,18 @@
 --   history of changes:
 --
 
+with ada.characters.handling;	use ada.characters.handling;
+with ada.directories;			use ada.directories;
+with et_logging;				use et_logging;
+with ada.strings;
+with et_project_name;
 with ada.directories;
 
-with et_project;
-with et_string_processing;
 
 
 package body et_import is
 
 	procedure validate_cad_format (format : in string) is
-		use et_string_processing;
 	begin
 		-- CS: use a loop to probe formats
 		if format = to_lower (type_cad_format'image (kicad_v4)) then
@@ -92,6 +94,7 @@ package body et_import is
 		name		: in pac_project_name.bounded_string;
 		cad_format	: in type_cad_format := UNKNOWN) 
 	is
+	pragma unreferenced (cad_format);
 	-- CS: currently this is just a test, whether the directory "name" exists.
 	-- CS: do a more detailled check depending on cad format (look for project files).
 	begin

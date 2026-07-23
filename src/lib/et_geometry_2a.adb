@@ -36,11 +36,12 @@
 --   history of changes:
 --
 
+with et_object_status;
+with ada.numerics;
+with et_mirroring;
 with ada.text_io;					use ada.text_io;
 
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;		use ada.characters.handling;
 
@@ -254,7 +255,6 @@ package body et_geometry_2a is
 	function to_distance (f : in type_float)
 		return type_distance 
 	is
-		use pac_float_numbers_io;
 		
 		d1 : type_distance;
 		d2 : type_float;
@@ -386,7 +386,6 @@ package body et_geometry_2a is
 	function to_rotation (f : in type_float)
 		return type_rotation 
 	is
-		use pac_float_numbers_io;
 
 		d1 : type_rotation := type_rotation (f);
 		d2 : type_float;
@@ -477,7 +476,9 @@ package body et_geometry_2a is
 	function is_orthogonal (
 		rotation : in type_rotation)
 		return boolean
-	is begin
+	is
+		pragma unreferenced (rotation);
+	begin
 		-- CS
 		return false;
 	end;
@@ -1190,6 +1191,7 @@ package body et_geometry_2a is
 		reference	: in type_vector_model;
 		mode		: in type_sort_mode := SORT_ASCENDING)
 	is
+		pragma unreferenced (mode);
 		-- Convert the given points to vectors:
 		vectors : pac_vectors.list := to_vectors (points);				
 	begin
@@ -3012,6 +3014,7 @@ package body et_geometry_2a is
 		area	: in type_area)
 		return type_line_array
 	is
+		pragma unreferenced (area);
 		result : type_line_array (1 .. 4);
 	begin
 		-- CS

@@ -36,14 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
+with ada.strings;
 
-with et_logging;				use et_logging;
 with et_exceptions;				use et_exceptions;
 
 
@@ -84,6 +81,7 @@ package body et_package_variant is
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
 		is
+			pragma unreferenced (name);
 			-- Locate in the given package variant the given terminal:
 			use pac_terminal_port_map;
 			c : pac_terminal_port_map.cursor := 
@@ -124,6 +122,7 @@ package body et_package_variant is
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
 		is
+			pragma unreferenced (name);
 			use pac_unit_name;
 			use pac_port_name;
 			use pac_terminal_port_map;

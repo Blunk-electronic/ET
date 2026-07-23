@@ -39,7 +39,6 @@
 --
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.multiway_trees;
@@ -47,7 +46,6 @@ with ada.containers.multiway_trees;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_string_processing;		use et_string_processing;
 
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;

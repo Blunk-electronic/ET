@@ -42,39 +42,30 @@
 -- - move write fill zone to separate package
 --
 
-with ada.text_io;					use ada.text_io;
 
-with et_module_names;				use et_module_names;
 
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 
-with et_pcb_stack;					use et_pcb_stack;
-with et_route;						use et_route;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_vias;						use et_vias;
-with et_drills;						use et_drills;
-with et_terminals;					use et_terminals;
 with et_thermal_relief;				use et_thermal_relief;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 
 with et_file_write;					use et_file_write;
 
-with et_module_read_nets;
 
 
 
 package body et_module_write_tracks_route is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	use pac_file_rw;
-	use pac_signal_layers;
 
 
 	
@@ -82,6 +73,7 @@ package body et_module_write_tracks_route is
 		net_name	: in pac_net_name.bounded_string;
 		net			: in type_net) 
 	is
+		pragma unreferenced (net_name);
 		use et_board_geometry;
 		use pac_contours;
 
@@ -93,7 +85,6 @@ package body et_module_write_tracks_route is
 		use et_fill_zones.boards;
 		use et_thermal_relief;		
 
-		use boards.pac_cutouts;
 		
 
 

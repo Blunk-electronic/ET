@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;
 
 with et_keywords;				use et_keywords;
 
@@ -114,7 +112,6 @@ package body et_net_ports_devices is
 		error		: out boolean;
 		port		: out type_device_port)
 	is
-		use ada.characters.handling;
 		
 		function f (place : in type_field_count_positive) 
 			return string 

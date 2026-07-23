@@ -37,7 +37,8 @@
 --
 --   to do:
 
-with ada.strings;			use ada.strings;
+with et_design_rules_board;		use et_design_rules_board;
+with et_string_processing;		use et_string_processing;
 with et_directions;
 
 
@@ -435,6 +436,7 @@ package body et_conductor_segment.boards is
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean 
 	is
+		pragma unreferenced (point);
 		result : boolean := false; -- to be returned
 	begin
 		if element (arc).layer = layer then

@@ -44,13 +44,10 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
 
 with et_keywords;						use et_keywords;
-with et_package_model;					use et_package_model;
+with et_package_model;
 
 
 
@@ -62,6 +59,7 @@ package body et_package_read_meta is
 		line 			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		kw : string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -102,7 +100,9 @@ package body et_package_read_meta is
 	procedure assign_meta (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		pragma unreferenced (log_threshold);
+	begin
 		packge.description := pac_description;
 		packge.technology := pac_technology;
 	end assign_meta;

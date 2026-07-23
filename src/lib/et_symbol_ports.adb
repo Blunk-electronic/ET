@@ -35,10 +35,7 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with et_mirroring;
 
@@ -138,7 +135,9 @@ package body et_symbol_ports is
 		procedure move (
 			name	: in pac_port_name.bounded_string;
 			port	: in out type_symbol_port) 
-		is begin
+		is
+			pragma unreferenced (name);
+		begin
 			move_by (port.position, offset.place);
 			-- CS use primitive operation of et_symbol_port_general
 		end;
@@ -165,7 +164,9 @@ package body et_symbol_ports is
 		procedure rotate (
 			name	: in pac_port_name.bounded_string;
 			port	: in out type_symbol_port) 
-		is begin
+		is
+			pragma unreferenced (name);
+		begin
 			rotate_by (port.position, angle);
 			-- CS use primitive operation of et_symbol_port_general
 		end;
@@ -200,6 +201,7 @@ package body et_symbol_ports is
 			name : in pac_port_name.bounded_string;
 			port : in out type_symbol_port)
 		is
+			pragma unreferenced (name);
 			use et_mirroring;
 		begin
 			mirror_point (port.position, MIRROR_ALONG_Y_AXIS);

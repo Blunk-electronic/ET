@@ -39,6 +39,7 @@
 --   to do:
 
 
+with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.unbounded;
 
 with et_display.board;
@@ -447,6 +448,7 @@ package body et_device_placeholders.packages is
 		coordinates			: in type_coordinates; -- relative/absolute
 		point				: in type_vector_model)
 	is
+		pragma unreferenced (package_position);
 		-- The addressed placeholder must be located among the given
 		-- placeholders. If the placeholder exists, then this cursor
 		-- will be pointing to it:
@@ -462,6 +464,7 @@ package body et_device_placeholders.packages is
 			-- and assigns the given relative position to
 			-- the given placeholder:
 			procedure move_relative (offset : in type_vector_model) is
+				pragma unreferenced (offset);
 				-- tp_1, tp_2 : type_vector_model;
 				-- a : type_rotation_model := get_rotation (package_position);
 				-- pp : type_vector_model := get_place (package_position);

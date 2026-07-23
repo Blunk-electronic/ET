@@ -43,7 +43,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 
-with et_logging;					use et_logging;
 
 
 

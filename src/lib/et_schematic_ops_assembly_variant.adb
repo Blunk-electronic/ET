@@ -39,7 +39,6 @@
 -- - clean up, rework
 -- - add commit operations
 
-with ada.text_io;				use ada.text_io;
 
 with et_string_processing;		use et_string_processing;
 with et_module;					use et_module;
@@ -47,9 +46,6 @@ with et_module;					use et_module;
 with et_schematic_ops_device;	use et_schematic_ops_device;
 with et_exceptions;				use et_exceptions;
 
-with et_modes.board;
-with et_undo_redo;
-with et_commit;
 
 
 
@@ -126,7 +122,9 @@ package body et_schematic_ops_assembly_variant is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;					   
 			module 		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			av := find (module.assembly_variants.variants, variant);
 		end query_module;
 	
@@ -156,12 +154,12 @@ package body et_schematic_ops_assembly_variant is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_assembly_variants;
 
 		
 		procedure create (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+			pragma unreferenced (module_name);
 			inserted : boolean;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
@@ -213,6 +211,7 @@ package body et_schematic_ops_assembly_variant is
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
@@ -267,12 +266,14 @@ package body et_schematic_ops_assembly_variant is
 		procedure describe (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure assign_description (
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
+			pragma unreferenced (name);
 			begin
 				variant.description := description;
 			end assign_description;
@@ -335,6 +336,7 @@ package body et_schematic_ops_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_assembly_variants;
 			variant_cursor : pac_assembly_variants.cursor;
 
@@ -343,6 +345,7 @@ package body et_schematic_ops_assembly_variant is
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant) 
 			is
+				pragma unreferenced (variant_name);
 				use et_assembly_variants;
 				use pac_device_variants;
 				device_cursor : pac_device_variants.cursor;
@@ -404,6 +407,7 @@ package body et_schematic_ops_assembly_variant is
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) is
+			pragma unreferenced (module_name);
 			use pac_assembly_variants;
 			
 			variant_cursor : pac_assembly_variants.cursor;
@@ -411,6 +415,7 @@ package body et_schematic_ops_assembly_variant is
 			procedure query_devices (
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant) is
+				pragma unreferenced (variant_name);
 				use pac_device_variants;
 			begin
 				cursor := find (variant.devices, device);
@@ -468,6 +473,7 @@ package body et_schematic_ops_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -475,6 +481,7 @@ package body et_schematic_ops_assembly_variant is
 			procedure insert_device (
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
+				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
 				cursor : et_assembly_variants.pac_device_variants.cursor;
 				inserted : boolean;
@@ -569,6 +576,7 @@ package body et_schematic_ops_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -576,6 +584,7 @@ package body et_schematic_ops_assembly_variant is
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) 
 			is
+				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
 				cursor : et_assembly_variants.pac_device_variants.cursor;
 				inserted : boolean;
@@ -663,6 +672,7 @@ package body et_schematic_ops_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -671,6 +681,7 @@ package body et_schematic_ops_assembly_variant is
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) 
 			is
+				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
 				cursor : et_assembly_variants.pac_device_variants.cursor;
 			begin

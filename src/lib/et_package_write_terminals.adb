@@ -40,7 +40,6 @@
 -- - clean up, use renames
 
 
-with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 
@@ -77,6 +76,7 @@ package body et_package_write_terminals is
 		packge			: in type_package_model;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
 

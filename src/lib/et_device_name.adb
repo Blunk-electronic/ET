@@ -36,8 +36,8 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
+with ada.strings.maps;			use ada.strings.maps;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -422,6 +422,7 @@ package body et_device_name is
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is
+		pragma unreferenced (log_threshold);
 		-- CS: This code is easy to understand but probably
 		-- not very efficient because the given list of device names
 		-- is tested for the existence of each proposed device name

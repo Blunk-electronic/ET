@@ -40,13 +40,11 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 -- with et_module_names;					use et_module_names;
 -- with et_board_ops;						use et_board_ops;
 
+with et_string_processing;		use et_string_processing;
 with et_schematic_ops_submodules;
 
 

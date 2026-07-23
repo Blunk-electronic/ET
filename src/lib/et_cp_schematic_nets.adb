@@ -42,10 +42,8 @@
 --
 
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
+with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 
 with et_sheets;							use et_sheets;
@@ -346,6 +344,7 @@ package body et_cp_schematic_nets is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
@@ -467,6 +466,7 @@ package body et_cp_schematic_nets is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin

@@ -42,7 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
+with et_pcb_stack;				use et_pcb_stack;
+with et_string_processing;		use et_string_processing;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
@@ -52,7 +53,6 @@ with et_file_sections;				use et_file_sections;
 
 -- with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 
 with et_file_write;					use et_file_write;
@@ -98,6 +98,7 @@ package body et_module_write_pcb_layer_stack is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			bottom_layer : type_signal_layer;
 			bottom_layer_thickness : type_conductor_thickness;
 		begin

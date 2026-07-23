@@ -44,6 +44,7 @@ with et_board_geometry;			use et_board_geometry;
 
 package et_terminal_stopmask is
 
+	use pac_geometry_2;
 	use pac_contours;
 
 	

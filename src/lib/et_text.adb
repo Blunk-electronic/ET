@@ -36,11 +36,10 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.characters.handling;	use ada.characters.handling;
+with et_logging;				use et_logging;
+with et_alignment;
+with ada.strings;
 
-with et_exceptions;				use et_exceptions;
 
 
 package body et_text is

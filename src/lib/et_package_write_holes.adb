@@ -41,23 +41,20 @@
 
 
 
-with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with ada.strings; 				use ada.strings;
 
-with et_keywords;						use et_keywords;
 with et_file_sections;					use et_file_sections;
 
 with et_board_holes;					use et_board_holes;
 
-with et_board_geometry;					use et_board_geometry;
+with et_board_geometry;
 with et_file_write;						use et_file_write;
 
 
 package body et_package_write_holes is
 
-	use pac_geometry_2;
-	use pac_file_rw;
+	use et_board_geometry.pac_file_rw;
 	
 	use pac_holes;
 

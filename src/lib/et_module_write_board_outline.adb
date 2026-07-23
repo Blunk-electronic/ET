@@ -42,16 +42,12 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
 with et_module_names;				use et_module_names;
 with et_module;						use et_module;
-with et_board_geometry;				use et_board_geometry;
-with et_keywords;					use et_keywords;
+with et_board_geometry;
 
-with et_module_read_board_contour;	use et_module_read_board_contour;
 with et_board_holes;				use et_board_holes;
-with et_board_outline;				use et_board_outline;
 
 with et_file_sections;				use et_file_sections;
 with et_file_write;					use et_file_write;
@@ -60,7 +56,7 @@ with et_file_write;					use et_file_write;
 package body et_module_write_board_outline is
 	
 	use pac_generic_modules;
-	use pac_file_rw;
+	use et_board_geometry.pac_file_rw;
 	-- use pac_geometry_2;
 	-- use pac_contours;
 		
@@ -71,7 +67,6 @@ package body et_module_write_board_outline is
 		log_threshold	: in type_log_level)
 	is 
 		use et_board_holes;
-		use et_board_outline;
 		use pac_holes;
 
 
@@ -91,6 +86,7 @@ package body et_module_write_board_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			hole_cursor : pac_holes.cursor := module.board.board_contour.holes.first;
 
 		begin

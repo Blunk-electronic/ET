@@ -36,17 +36,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
-with et_string_processing;		use et_string_processing;
-with et_exceptions;				use et_exceptions;
 
 with et_package_library;
 
@@ -66,6 +58,7 @@ package body et_device_library.packages is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is 
+			pragma unreferenced (device_name);
 			use pac_package_variants;
 			--vc : constant pac_package_variants.cursor := find (device.variants, variant);
 		begin
@@ -99,6 +92,7 @@ package body et_device_library.packages is
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) is
+		pragma unreferenced (device_name);
 		begin
 			if pac_package_variants.contains (device.variants, variant) then
 				result := true;
@@ -162,6 +156,7 @@ package body et_device_library.packages is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is
+			pragma unreferenced (device_name);
 			use et_package_library;
 			use pac_package_variants;
 			variant_cursor : pac_package_variants.cursor;

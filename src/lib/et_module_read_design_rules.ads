@@ -50,6 +50,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_design_rules is
 
+	use pac_generic_modules;
+
 
 	-- The design rules is simply the name of the DRU file
 	-- like JLP_ML4_standard.dru. The content of the DRU file itself

@@ -39,7 +39,7 @@
 -- - clean up, rework
 --
 
-with ada.exceptions;				use ada.exceptions;
+with ada.exceptions;
 
 with et_module;						use et_module;
 with et_submodules;					use et_submodules;
@@ -69,6 +69,7 @@ package body et_board_ops_submodule is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 		begin
@@ -115,6 +116,7 @@ package body et_board_ops_submodule is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 
@@ -122,7 +124,9 @@ package body et_board_ops_submodule is
 			procedure move (
 				instance	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
-			is begin
+			is
+				pragma unreferenced (instance);
+			begin
 				case coordinates is
 					when ABSOLUTE =>
 						set_place (submodule.position_in_board, point);

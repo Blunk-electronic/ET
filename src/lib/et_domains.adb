@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings.maps;			use ada.strings.maps;
 with et_logging;				use et_logging;
 with et_string_processing;		use et_string_processing;
 

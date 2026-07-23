@@ -38,12 +38,10 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with et_exceptions;				use et_exceptions;
 
 
 	
@@ -2363,6 +2361,7 @@ package body et_geometry_2a.contours is
 		contours	: in out pac_contour_list.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_contour_list.list;
 		
 		procedure query_contour (c : in pac_contour_list.cursor) is 

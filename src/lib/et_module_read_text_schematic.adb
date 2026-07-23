@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -131,7 +128,9 @@ package body et_module_read_text_schematic is
 		procedure insert_schematic_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- append schematic note to collection of notes
 			pac_texts.append (module.texts, schematic_text);
 		end insert_schematic_text;

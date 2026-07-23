@@ -36,17 +36,12 @@
 --   history of changes:
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
 with et_board_text;
 
-with et_primitive_objects;				use et_primitive_objects;
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
-with et_package_model;					use et_package_model;
+with et_package_model;
 with et_directions;						use et_directions;
 
 with et_assy_doc;						use et_assy_doc;
@@ -60,7 +55,7 @@ with et_package_read_text;				use et_package_read_text;
 
 package body et_package_read_assy_doc is
 
-	use pac_geometry_2;
+	use et_board_geometry.pac_geometry_2;
 	
 	doc_line : type_doc_line;
 	doc_arc : type_doc_arc;
@@ -202,6 +197,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_lines;
 	begin
 		case face is
@@ -226,6 +222,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_arcs;
 	begin
 		case face is
@@ -251,6 +248,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_circles;
 	begin
 		-- CS log message
@@ -279,6 +277,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.assy_doc, (contour with null record), face);
@@ -296,9 +295,9 @@ package body et_package_read_assy_doc is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
-		use et_board_text;
-		use pac_text_board_vectorized;
+	is
+		pragma unreferenced (log_threshold);
+		use et_board_text.pac_text_board_vectorized;
 	begin
 		-- CS log message
 		add_text (packge.assy_doc, (pac_text with null record), face);
@@ -317,6 +316,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use et_device_placeholders.packages;
 	begin
 		-- CS log message

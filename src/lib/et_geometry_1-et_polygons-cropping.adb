@@ -40,9 +40,7 @@ with ada.strings.unbounded;
 with ada.characters.latin_1;
 
 with ada.exceptions; 			use ada.exceptions;
-with gnat.source_info;
 
-with et_exceptions;				use et_exceptions;
 
 
 package body et_geometry_1.et_polygons.cropping is
@@ -427,6 +425,7 @@ package body et_geometry_1.et_polygons.cropping is
 		debug			: in boolean := false)
 		return pac_polygon_list.list
 	is
+		pragma unreferenced (debug);
 		result : pac_polygon_list.list;
 
 		P_init : type_polygon := polygon_B;

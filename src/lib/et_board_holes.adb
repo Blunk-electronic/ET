@@ -37,7 +37,6 @@
 --
 --   to do:
 
-with ada.text_io;				use ada.text_io;
 
 with et_contour_to_polygon;
 
@@ -67,6 +66,7 @@ package body et_board_holes is
 		holes	: in out pac_holes.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_holes.list;
 
 		procedure query_hole (c : in pac_holes.cursor) is

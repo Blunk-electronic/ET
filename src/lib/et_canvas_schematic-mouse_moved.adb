@@ -46,6 +46,7 @@ separate (et_canvas_schematic)
 procedure mouse_moved (
 	point	: in type_vector_model) 
 is
+	pragma unreferenced (point);
 	use et_modes.schematic;
 begin
 	case verb is

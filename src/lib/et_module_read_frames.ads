@@ -50,6 +50,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_frames is
 
+	use pac_generic_modules;
+
 
 	-- Reads the name of the schematic frame template.
 	procedure read_frame_template_schematic (

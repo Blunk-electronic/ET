@@ -114,6 +114,7 @@ package body et_ratsnest is
 		arcs	: in pac_conductor_arcs.list)
 		return pac_isolated_fragments.list
 	is
+		pragma unreferenced (arcs);
 		result : pac_isolated_fragments.list;
 
 		use pac_conductor_lines;

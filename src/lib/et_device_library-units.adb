@@ -36,16 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
-with et_string_processing;		use et_string_processing;
+with et_unit_add_level;					use et_unit_add_level;
+with et_unit_add_level;					use et_unit_add_level;
 with et_exceptions;				use et_exceptions;
 
 with et_symbol_library;
@@ -69,7 +64,9 @@ package body et_device_library.units is
 		procedure query_internal (
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model)
-		is begin
+		is
+			pragma unreferenced (model);
+		begin
 			if device.units_internal.contains (unit_name) then
 				found := true;
 			end if;
@@ -79,7 +76,9 @@ package body et_device_library.units is
 		procedure query_external (
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model)
-		is begin
+		is
+			pragma unreferenced (model);
+		begin
 			if device.units_external.contains (unit_name) then
 				found := true;
 			end if;
@@ -118,6 +117,7 @@ package body et_device_library.units is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is
+			pragma unreferenced (device_name);
 
 			function first_internal (add_level : in type_add_level) 
 				return pac_units_internal.cursor 
@@ -280,7 +280,9 @@ package body et_device_library.units is
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
-		is begin
+		is
+			pragma unreferenced (device_name);
+		begin
 			-- First search among the internal units:
 			cursors.int := device.units_internal.first;
 
@@ -390,6 +392,7 @@ package body et_device_library.units is
 		procedure query_units (
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) is
+		pragma unreferenced (model);
 		begin
 			-- Most likely the requested unit is external. So we search first in 
 			-- the list of external units of the given device:
@@ -471,6 +474,7 @@ package body et_device_library.units is
 		procedure query_units (
 			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 			device	: in type_device_model) is
+				pragma unreferenced (model);
 
 			use pac_units_internal;
 			unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;
@@ -485,6 +489,7 @@ package body et_device_library.units is
 			procedure query_ports (
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_internal) is
+			pragma unreferenced (unit_name);
 			begin				
 				port_cursor := find (unit.symbol.ports, port_name);
 			end query_ports;
@@ -495,6 +500,7 @@ package body et_device_library.units is
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_external) 
 			is
+				pragma unreferenced (unit_name);
 				use et_symbol_name;
 				use et_symbol_library;
 				use pac_symbol_models;
@@ -503,7 +509,9 @@ package body et_device_library.units is
 				procedure query_ports (
 					file	: in pac_symbol_model_name.bounded_string; -- ../libraries/symbols/NAND.sym
 					symbol	: in type_symbol_model) 
-				is begin
+				is
+					pragma unreferenced (file);
+				begin
 					port_cursor := find (symbol.ports, port_name);
 				end;
 				
@@ -580,6 +588,7 @@ package body et_device_library.units is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			pragma unreferenced (model);
 			unit_cursor : pac_units_internal.cursor;
 		begin
 			-- locate the given unit among the internal units:
@@ -595,6 +604,7 @@ package body et_device_library.units is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			pragma unreferenced (model);
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 		begin

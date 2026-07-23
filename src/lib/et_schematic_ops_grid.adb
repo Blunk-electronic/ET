@@ -37,6 +37,7 @@
 --
 
 
+with et_module;							use et_module;
 with et_string_processing;				use et_string_processing;
 
 
@@ -56,7 +57,9 @@ package body et_schematic_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Set the grid in the database:
 			module.grid := grid;
 		end;
@@ -91,7 +94,9 @@ package body et_schematic_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Set the grid in the database:
 			module.grid := grid;
 		end;
@@ -126,7 +131,9 @@ package body et_schematic_ops_grid is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- Get the grid from the database:
 			result := module.grid;
 		end;

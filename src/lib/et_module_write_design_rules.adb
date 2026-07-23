@@ -42,8 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -72,6 +70,7 @@ package body et_module_write_design_rules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			rules : type_design_rules := get_design_rules (module);
 		begin
 			section_mark (section_rules, HEADER);

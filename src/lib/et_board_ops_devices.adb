@@ -39,15 +39,16 @@
 --
 --
 
+with et_module_instance;				use et_module_instance;
+with et_module_names;					use et_module_names;
+with et_device_placeholders;
+with et_package_library;				use et_package_library;
 with ada.strings.unbounded;
 
 with et_string_processing;				use et_string_processing;
 
-with et_board_text;						use et_board_text;
 
-with et_conventions;
 with et_assembly_variants;
-with et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
 
@@ -61,10 +62,8 @@ with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
 with et_net_ports_netchangers;
-with et_net_segment;
 with et_submodules;
 with et_package_read;
-with et_package_write;
 
 with et_module;							use et_module;
 with et_board_ops_groups;
@@ -82,7 +81,6 @@ package body et_board_ops_devices is
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	use pac_nets;
-	use pac_text_board;
 
 
 
@@ -126,11 +124,14 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				modify_status (device, operation);
 			end query_device;
 
@@ -175,6 +176,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -251,6 +253,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 		begin
 			while device_cursor /= pac_devices_electrical.no_element loop
@@ -317,6 +320,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -324,7 +328,9 @@ package body et_board_ops_devices is
 			procedure move_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				case coordinates is
 					when ABSOLUTE =>
 						set_place (device, point); -- preserve angle and face
@@ -339,7 +345,9 @@ package body et_board_ops_devices is
 			procedure move_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				case coordinates is
 					when ABSOLUTE =>
 						set_place (device, point); -- preserve angle and face
@@ -448,6 +456,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -455,7 +464,9 @@ package body et_board_ops_devices is
 			procedure rotate_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				case coordinates is
 					when ABSOLUTE =>
 						set_rotation (device, rotation); -- preserve x/y and face
@@ -469,7 +480,9 @@ package body et_board_ops_devices is
 			procedure rotate_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				case coordinates is
 					when ABSOLUTE =>
 						set_rotation (device, rotation); -- preserve x/y and face
@@ -575,6 +588,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -582,7 +596,9 @@ package body et_board_ops_devices is
 			procedure flip_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				if toggle then
 					toggle_face (device);
 				else
@@ -597,7 +613,9 @@ package body et_board_ops_devices is
 			procedure flip_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				if toggle then
 					toggle_face (device);
 				else
@@ -691,7 +709,9 @@ package body et_board_ops_devices is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			if contains (module.devices_non_electric, device) then
 				device_found := true;
 			end if;
@@ -723,7 +743,9 @@ package body et_board_ops_devices is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := find (module.devices_non_electric, device);
 		end;
 
@@ -755,11 +777,14 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				set_selected (device);
 			end query_device;
 			
@@ -871,11 +896,14 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				modify_status (device, operation);
 			end query_device;
 
@@ -919,6 +947,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -987,6 +1016,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -1049,6 +1079,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
@@ -1110,6 +1141,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor := 
 				module.devices_non_electric.first;
 		begin
@@ -1171,6 +1203,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (c : in pac_devices_non_electrical.cursor) is
 				use pac_device_prefix;
@@ -1235,6 +1268,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor;
 			inserted : boolean;
 
@@ -1353,6 +1387,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			-- Take a copy of the original device:
 			new_device : type_device_non_electrical := element (device_cursor);
 		begin
@@ -1426,7 +1461,9 @@ package body et_board_ops_devices is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			delete (module.devices_non_electric, device_cursor);
 		end query_module;
 
@@ -1487,6 +1524,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			device_after : pac_devices_non_electrical.cursor;
 			inserted : boolean;
 		begin
@@ -1603,6 +1641,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -1610,7 +1649,9 @@ package body et_board_ops_devices is
 			procedure reset_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "reset_electrical", level => log_threshold + 1);
 				reset_placeholder_positions (device);
 			end;
@@ -1619,7 +1660,9 @@ package body et_board_ops_devices is
 			procedure reset_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "reset_non_electrical", level => log_threshold + 1);
 				reset_placeholder_positions (device);
 			end;
@@ -1714,6 +1757,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -1721,7 +1765,9 @@ package body et_board_ops_devices is
 			procedure move_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "move_electrical", level => log_threshold + 1);
 				move_placeholder (device, meaning, layer, face, index, coordinates, point);
 
@@ -1733,7 +1779,9 @@ package body et_board_ops_devices is
 			procedure move_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "move_non_electrical", level => log_threshold + 1);
 				move_placeholder (device, meaning, layer, face, index, coordinates, point);
 
@@ -1854,6 +1902,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
 			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
@@ -1861,7 +1910,9 @@ package body et_board_ops_devices is
 			procedure rotate_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "rotate_electrical", level => log_threshold + 1);
 				
 				rotate_placeholder (device, meaning, layer, face,
@@ -1872,7 +1923,9 @@ package body et_board_ops_devices is
 			procedure rotate_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				log (text => "rotate_non_electrical", level => log_threshold + 1);
 				
 				rotate_placeholder (device, meaning, layer, face,
@@ -2055,6 +2108,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			
 			-- This procedure queries the placeholders of
@@ -2165,11 +2219,14 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				modify_status (
 					placeholders		=> device.placeholders, 
 					layer				=> placeholder.layer, 
@@ -2182,7 +2239,9 @@ package body et_board_ops_devices is
 			procedure query_non_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				modify_status (
 					placeholders		=> device.placeholders, 
 					layer				=> placeholder.layer, 
@@ -2245,6 +2304,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+		pragma unreferenced (module_name);
 		
 			-- This procedure searches among the electrical devices
 			-- for the one that has the first placeholder set as
@@ -2406,11 +2466,14 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				if is_real (device) then
 					reset_status (device.placeholders);
 				end if;
@@ -2420,7 +2483,9 @@ package body et_board_ops_devices is
 			procedure query_non_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
-			is begin
+			is
+				pragma unreferenced (device_name);
+			begin
 				reset_status (device.placeholders);
 			end query_non_electrical_device;
 
@@ -2607,6 +2672,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+		pragma unreferenced (module_name);
 		-- DEVICES ---------------------------------------------
 	
 			-- This procedure collects electrical devices
@@ -2621,6 +2687,7 @@ package body et_board_ops_devices is
 					name	: in type_device_name;
 					device	: in type_device_electrical) 
 				is 
+					pragma unreferenced (name);
 
 					procedure collect is begin
 						result.append ((
@@ -2676,6 +2743,7 @@ package body et_board_ops_devices is
 					name	: in type_device_name;
 					device	: in type_device_non_electrical) 
 				is 
+					pragma unreferenced (name);
 
 					procedure collect is begin
 						result.append ((
@@ -3374,6 +3442,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 		begin
@@ -3391,6 +3460,7 @@ package body et_board_ops_devices is
 
 		return position;
 	end get_position;
+	pragma unreferenced (get_position);
 
 	
 	--function get_terminal_position (
@@ -3515,7 +3585,6 @@ package body et_board_ops_devices is
 		use pac_device_ports;
 		ports : type_net_ports;
 
-		use et_device_model;
 		port_properties : type_port_properties_access;
 
 		
@@ -3650,7 +3719,6 @@ package body et_board_ops_devices is
 	procedure terminal_not_found (
 		terminal_name : in pac_terminal_name.bounded_string) 
 	is 
-		use et_terminals;
 	begin
 		log (SEVERITY_ERROR, "terminal " 
 			 & enclose_in_quotes (to_string (terminal_name)) 
@@ -3669,6 +3737,7 @@ package body et_board_ops_devices is
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine
 	is
+		pragma unreferenced (module_cursor);
 		-- This is the position of the package as it is in the layout:
 		package_position : et_board_coordinates.type_package_position; -- incl. angle and face
 
@@ -3800,6 +3869,7 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_nets;
 
 			procedure query_net (net_cursor : in pac_nets.cursor) is

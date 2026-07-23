@@ -38,8 +38,9 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;						use ada.text_io;
 
+with et_board_geometry;					use et_board_geometry;
+with et_board_geometry;					use et_board_geometry;
 with et_generic_modules;				use et_generic_modules;
 with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
@@ -51,7 +52,6 @@ with et_logging;						use et_logging;
 with et_modes.board;
 with et_display.board;
 with et_object_status;						use et_object_status;
-with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_pcb_placeholders.non_conductor;		use et_pcb_placeholders.non_conductor;
 
 
@@ -61,7 +61,6 @@ package body et_canvas_board_silkscreen is
 
 	use pac_silk_lines;
 	use pac_silk_arcs;
-	use pac_silk_circles;
 
 
 
@@ -127,7 +126,6 @@ package body et_canvas_board_silkscreen is
 	is 
 		praeamble : constant string := "selected: ";
 		use et_pcb_placeholders;
-		use pac_placeholders_non_conductor;
 	begin
 		set_status (praeamble & to_string (selected.cursor)
 			& status_next_object_clarification);

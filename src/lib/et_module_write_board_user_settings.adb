@@ -42,8 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
@@ -54,7 +52,6 @@ with et_fill_zones.boards;
 with et_thermal_relief;
 
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 with et_module_board_user_settings;	use et_module_board_user_settings;
 -- with et_pcb_stack;					use et_pcb_stack;
 
@@ -81,6 +78,7 @@ package body et_module_write_board_user_settings is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			us : type_user_settings renames module.board.user_settings;
 
 			

@@ -42,19 +42,13 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_route;						use et_route;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
-with et_board_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 
@@ -63,7 +57,6 @@ package body et_module_read_freetracks is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_signal_layers;
 
 	track_line : type_conductor_line;
 	track_arc : type_conductor_arc;
@@ -202,13 +195,15 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_conductor_lines;
+		pragma unreferenced (log_threshold);
 		
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_conductor_lines.append (
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> track_line);
@@ -241,13 +236,15 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_conductor_arcs;
+		pragma unreferenced (log_threshold);
 		
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_conductor_arcs.append (
 				container	=> module.board.conductors_floating.arcs,
 				new_item	=> track_arc);
@@ -280,13 +277,15 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_conductor_circles;
+		pragma unreferenced (log_threshold);
 		
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_conductor_circles.append (
 				container	=> module.board.conductors_floating.circles,
 				new_item	=> track_circle);

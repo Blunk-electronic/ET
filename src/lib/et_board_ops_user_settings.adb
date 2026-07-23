@@ -41,7 +41,6 @@
 --
 
 
-with ada.text_io;					use ada.text_io;
 -- with ada.strings;					use ada.strings;
 -- with ada.exceptions;				use ada.exceptions;
 
@@ -63,7 +62,9 @@ package body et_board_ops_user_settings is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			settings := module.board.user_settings;
 		end;
 	begin

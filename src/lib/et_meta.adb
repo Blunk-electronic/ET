@@ -37,9 +37,6 @@
 --
 --   ToDo: 
 
-with ada.directories;
-with et_string_processing;		use et_string_processing;
-with et_directory_and_file_ops;
 
 
 package body et_meta is

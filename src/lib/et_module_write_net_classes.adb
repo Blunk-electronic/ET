@@ -42,8 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -53,7 +51,6 @@ with et_file_sections;				use et_file_sections;
 with et_board_geometry;				use et_board_geometry;
 
 with et_net_class;					use et_net_class;
-with et_net_class_name;				use et_net_class_name;
 with et_net_class_description;		use et_net_class_description;
 with et_net_classes;				use et_net_classes;
 
@@ -101,7 +98,9 @@ package body et_module_write_net_classes is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_net_classes, HEADER);
 			iterate (module.net_classes, query_class'access);
 			section_mark (section_net_classes, FOOTER);		

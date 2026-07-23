@@ -50,13 +50,14 @@
 --
 
 with et_generic_modules;		use et_generic_modules;
-with et_pcb_stack;				use et_pcb_stack;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
 
 package et_module_read_freetracks is
+
+	use pac_generic_modules;
 
 
 	procedure read_freetrack_line (

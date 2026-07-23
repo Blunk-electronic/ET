@@ -41,7 +41,6 @@ with ada.text_io;				use ada.text_io;
 with et_conductor_segment.boards;
 with et_fill_zones.boards;
 with et_vias;
-with et_module_names;
 
 
 package body et_nets is
@@ -501,7 +500,6 @@ package body et_nets is
 		use et_fill_zones.boards;
 		use pac_route_solid;
 		use pac_route_hatched;
-		use pac_cutouts;
 		
 	begin
 		-- SCHEMATIC
@@ -781,6 +779,7 @@ package body et_nets is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
+			pragma unreferenced (net_name);
 
 			procedure query_strand (c : in pac_strands.cursor) is begin
 				if element (c).position < strand_position then
@@ -821,6 +820,7 @@ package body et_nets is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
+			pragma unreferenced (net_name);
 			c : pac_strands.cursor := net.strands.first;
 		begin			
 			while c /= pac_strands.no_element loop

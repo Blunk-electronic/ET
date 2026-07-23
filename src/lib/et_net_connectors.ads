@@ -42,7 +42,6 @@ with cairo;
 with et_fonts;
 
 with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_object_status;					use et_object_status;
 with et_string_processing;				use et_string_processing;
@@ -223,7 +222,6 @@ package et_net_connectors is
 
 	
 
-	use pac_geometry_sch;
 	
 	-- GUI relevant only: The line width of the box that enshroudes 
 	-- the net name of a connector:

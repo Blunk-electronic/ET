@@ -51,7 +51,6 @@ procedure draw_keepout (
 	face	: in type_face) 
 is
 	use et_colors.board;
-	use et_board_text;
 
 	use pac_keepout_zones;
 	use pac_keepout_cutouts;
@@ -60,11 +59,13 @@ is
 	procedure set_default_brightness is begin
 		set_color_keepout (face, NORMAL);
 	end set_default_brightness;
+	pragma unreferenced (set_default_brightness);
 
 	
 	procedure set_highlight_brightness is begin
 		set_color_keepout (face, BRIGHT);
 	end set_highlight_brightness;
+	pragma unreferenced (set_highlight_brightness);
 		
 	
 
@@ -97,7 +98,9 @@ is
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
-	is begin
+	is
+		pragma unreferenced (module_name);
+	begin
 		-- All keepout segments will be drawn with the same color:
 		set_color_keepout (face, NORMAL);
 		

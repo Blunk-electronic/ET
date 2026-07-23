@@ -37,9 +37,10 @@
 --
 
 
+with ada.containers.doubly_linked_lists;
 with et_string_processing;				use et_string_processing;
 with et_text_content;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders;
 with et_module;							use et_module;
 
 with et_modes.board;
@@ -72,7 +73,9 @@ package body et_board_ops_assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					append (
@@ -141,6 +144,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_line (c : in pac_doc_lines.cursor) is
 				line : type_doc_line renames element (c);
@@ -203,6 +207,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_line (
 				line	: in out type_doc_line)
@@ -271,6 +276,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			lc : pac_doc_lines.cursor;
 
 			procedure query_line (
@@ -353,6 +359,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
@@ -428,6 +435,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
@@ -509,6 +517,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 			
@@ -636,6 +645,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			line_cursor : pac_doc_lines.cursor;
 
 			
@@ -718,6 +728,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_lines;
 			line_cursor : pac_doc_lines.cursor;
 		begin
@@ -797,7 +808,9 @@ package body et_board_ops_assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					append (
@@ -864,6 +877,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_arc (
 				arc	: in out type_doc_arc)
@@ -934,6 +948,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			lc : pac_doc_arcs.cursor;
 
 			procedure query_arc (
@@ -1017,6 +1032,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			top 	: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
 			bottom	: pac_doc_arcs.list renames module.board.assy_doc.bottom.arcs;
 
@@ -1093,6 +1109,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
@@ -1181,6 +1198,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			arc_cursor : pac_doc_arcs.cursor;
 
 			
@@ -1264,6 +1282,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_arcs;
 			arc_cursor : pac_doc_arcs.cursor;
 		begin
@@ -1348,7 +1367,9 @@ package body et_board_ops_assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					append (
@@ -1430,6 +1451,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_doc_zones;
 			c : pac_doc_zones.cursor;
 
@@ -1543,6 +1565,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_segment (
 				segment	: in out type_segment)
@@ -1622,6 +1645,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_zones;
 			zc : pac_doc_zones.cursor;
 
@@ -1724,6 +1748,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_zones;
 			zc : pac_doc_zones.cursor;
 
@@ -1822,6 +1847,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_doc_zones;
@@ -1940,6 +1966,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 
@@ -2114,6 +2141,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
@@ -2220,6 +2248,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_zone (
 				zone : in out type_doc_zone)
@@ -2306,7 +2335,9 @@ package body et_board_ops_assy_doc is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin			
+		is
+			pragma unreferenced (module_name);
+		begin			
 			case face is
 				when TOP =>
 					append (module.board.assy_doc.top.texts, (text with null record));
@@ -2368,6 +2399,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			procedure query_text (c : in pac_doc_texts.cursor) is
 				text : type_doc_text renames element (c);
 			begin
@@ -2439,6 +2471,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			text_cursor : pac_doc_texts.cursor;
 
 			procedure query_text (text : in out type_doc_text) is begin
@@ -2502,6 +2535,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_text (text : in out type_doc_text) is begin
 				modify_status (text, operation);
@@ -2553,6 +2587,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			c : pac_doc_texts.cursor;
 
 			procedure query_text (
@@ -2642,6 +2677,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_text (text : in out type_doc_text) is begin
 				move_text_to (text, destination);
@@ -2714,6 +2750,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			c : pac_doc_texts.cursor := text.cursor;			
 		begin
 			case text.face is
@@ -2774,6 +2811,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_texts;
 			
 			proceed : aliased boolean := true;
@@ -2855,6 +2893,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			top 	: pac_doc_texts.list renames module.board.assy_doc.top.texts;
 			bottom	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
 
@@ -2938,6 +2977,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;						
 		begin
 			case face is
@@ -2998,6 +3038,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
 			
 			procedure query_placeholder (
@@ -3056,6 +3097,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
 			c : pac_placeholders_non_conductor.cursor;
 
@@ -3134,6 +3176,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
 			
 			procedure query_placeholder (
@@ -3206,6 +3249,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;			
 		begin
 			case placeholder.face is
@@ -3267,6 +3311,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
 			
 			proceed : aliased boolean := true;
@@ -3348,6 +3393,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_placeholder (
 				ph : in out type_placeholder_non_conductor)
@@ -3586,6 +3632,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_doc_zones;
 			zone_cursor : pac_doc_zones.cursor;
 			face : type_face := TOP;
@@ -4153,6 +4200,7 @@ package body et_board_ops_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			line_cursor   : pac_doc_lines.cursor;
 			arc_cursor    : pac_doc_arcs.cursor;
 			circle_cursor : pac_doc_circles.cursor;

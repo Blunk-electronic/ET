@@ -43,13 +43,14 @@
 --
 
 with et_generic_modules;		use et_generic_modules;
-with et_route;					use et_route;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
 
 package et_module_read_board_user_settings is
+
+	use pac_generic_modules;
 
 	
 	procedure read_user_settings_vias (

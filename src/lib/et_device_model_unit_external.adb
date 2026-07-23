@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 -- with et_exceptions;				use et_exceptions;
 
@@ -58,7 +57,9 @@ package body et_device_model_unit_external is
 		procedure query_symbol (
 			symbol_name	: in pac_symbol_model_name.bounded_string;
 			symbol		: in type_symbol_model) 
-		is begin
+		is
+			pragma unreferenced (symbol_name);
+		begin
 			result := symbol.ports;
 		end query_symbol;
 

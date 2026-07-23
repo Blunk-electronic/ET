@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
 
 with et_geometry_1;
 with et_geometry_1.et_polygons;

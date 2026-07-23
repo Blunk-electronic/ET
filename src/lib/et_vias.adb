@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
+with et_contour_to_polygon;
 with ada.strings;					use ada.strings;
 
 with et_exceptions;					use et_exceptions;
@@ -296,7 +296,6 @@ package body et_vias is
 		tolerance	: in type_distance_positive)
 		return type_polygon
 	is 
-		use pac_geometry_brd;
 		use et_contour_to_polygon;
 	begin
 		return optimize_edges ((

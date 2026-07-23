@@ -40,10 +40,8 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
+with et_string_processing;		use et_string_processing;
 with et_directions;						use et_directions;
 with et_primitive_objects;				use et_primitive_objects;
 with et_pcb_sides;						use et_pcb_sides;
@@ -52,7 +50,6 @@ with et_keywords;						use et_keywords;
 
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_assy_doc;				use et_board_ops_assy_doc;
-with et_keywords;
 
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 

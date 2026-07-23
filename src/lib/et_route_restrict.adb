@@ -47,6 +47,7 @@ package body et_route_restrict is
 		lines	: in out pac_route_restrict_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_route_restrict_lines.list;
 
 		procedure query_line (c : in pac_route_restrict_lines.cursor) is
@@ -110,6 +111,7 @@ package body et_route_restrict is
 		arcs	: in out pac_route_restrict_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_route_restrict_arcs.list;
 
 		procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
@@ -223,6 +225,7 @@ package body et_route_restrict is
 		circles	: in out pac_route_restrict_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_route_restrict_circles.list;
 
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is

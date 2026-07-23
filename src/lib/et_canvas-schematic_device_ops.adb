@@ -304,9 +304,8 @@ package body et_canvas.schematic_device_ops is
 		index : natural := 0;
 
 		-- Writes the name and index in the storage model:
-		procedure query_variant (c : in pac_package_variants.cursor) is 
-			use et_package_variant_name;
-			use pac_package_variant_name;
+		procedure query_variant (c : in pac_package_variants.cursor) is
+			use et_package_variant_name.pac_package_variant_name;
 			use pac_package_variants;
 		begin
 			store.append (iter);
@@ -473,6 +472,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -522,6 +522,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -572,6 +573,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -621,6 +623,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -670,6 +673,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;
@@ -715,6 +719,7 @@ package body et_canvas.schematic_device_ops is
 	procedure cb_properties_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		null;
 		-- put_line ("cb_properties_window_destroy");
@@ -729,6 +734,7 @@ package body et_canvas.schematic_device_ops is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		debug : boolean := false;
 		
 		event_handled : boolean;

@@ -36,10 +36,10 @@
 --   history of changes:
 --
 
+with et_logging;					use et_logging;
 with ada.strings; 				use ada.strings;
 
 
-with et_string_processing;		use et_string_processing;
 
 
 

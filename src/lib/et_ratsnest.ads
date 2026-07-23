@@ -39,7 +39,6 @@
 --		- 
 --		- 
 
-with ada.text_io;					use ada.text_io;
 with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
@@ -47,8 +46,6 @@ with ada.containers.ordered_maps;
 with et_board_geometry;				use et_board_geometry;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
-with et_vias;						use et_vias;
-with et_pcb_stack;					use et_pcb_stack;
 
 
 package et_ratsnest is

@@ -37,6 +37,10 @@
 
 
 
+with ada.calendar.time_zones;	use ada.calendar.time_zones;
+with ada.calendar.formatting;	use ada.calendar.formatting;
+with ada.text_io;				use ada.text_io;
+with gnat.calendar;
 package body et_time is
 
 	function date_now return type_date is
@@ -111,6 +115,7 @@ package body et_time is
 
 	
 	function date_valid (date : in type_date) return boolean is
+	pragma unreferenced (date);
 	begin
 		-- CS
 		-- CS: call a procedure that says something like "date format invalid" or "date in stone age or date in future"

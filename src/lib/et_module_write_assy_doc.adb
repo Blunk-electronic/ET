@@ -42,16 +42,11 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 with et_board_geometry;				use et_board_geometry;
-with et_directions;					use et_directions;
 with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.board;				use et_assy_doc.board;
 
@@ -112,6 +107,7 @@ package body et_module_write_assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			assy_doc : type_assy_doc_both_sides 
 				renames module.board.assy_doc;
 		begin

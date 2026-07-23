@@ -54,7 +54,6 @@ with et_net_names;					use et_net_names;
 separate (et_canvas_schematic)
 
 procedure draw_nets is
-	use et_canvas_schematic_nets;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
@@ -408,10 +407,10 @@ procedure draw_nets is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is
+		pragma unreferenced (module_name);
 		use et_colors;
 		use et_colors.schematic;
 
-		use et_modes.schematic;
 
 		-- This cursor points to the current net being drawn:
 		net_cursor : pac_nets.cursor := module.nets.first;

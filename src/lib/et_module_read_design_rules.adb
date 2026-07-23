@@ -42,8 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
@@ -91,7 +89,9 @@ package body et_module_read_design_rules is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- assign rules
 			module.rules := rules;
 

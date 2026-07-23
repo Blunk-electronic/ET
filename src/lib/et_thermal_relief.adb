@@ -38,9 +38,9 @@
 --   to do:
 
 
-with ada.text_io;				use ada.text_io;
 
 
+with ada.characters.handling;	use ada.characters.handling;
 package body et_thermal_relief is
 	
 	function to_string (connection : in type_pad_connection) return string is begin
@@ -140,9 +140,9 @@ package body et_thermal_relief is
 		log_threshold		: in type_log_level)
 		return type_relief
 	is
+		pragma unreferenced (zone_clearance);
 		debug : boolean := false;
 		
-		use pac_terminals;
 
 		-- The center of the given terminal;
 		center : type_vector renames terminal.position.place;

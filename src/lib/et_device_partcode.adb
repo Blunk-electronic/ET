@@ -38,7 +38,6 @@
 --   ToDo: 
 
 
-with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 
 with et_logging;				use et_logging;
@@ -124,6 +123,7 @@ package body et_device_partcode is
 		partcode 					: in string;
 		error_on_invalid_character	: in boolean := true) 
 		return pac_device_partcode.bounded_string is
+			pragma unreferenced (error_on_invalid_character);
 
 		partcode_out : pac_device_partcode.bounded_string; -- to be returned
 	begin

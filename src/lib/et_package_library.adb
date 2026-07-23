@@ -36,11 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
-with ada.exceptions;
 
 with et_assembly_technology;	use et_assembly_technology;
 with et_terminal_hole;			use et_terminal_hole;
@@ -231,6 +227,7 @@ package body et_package_library is
 			model_name	: in pac_package_model_file.bounded_string;
 			model		: in type_package_model) 
 		is
+			pragma unreferenced (model_name);
 			use pac_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);

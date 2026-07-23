@@ -57,6 +57,7 @@ package et_board_ops_submodule is
 	use pac_generic_modules;
 
 
+
 	-- Returns the position (x/y/rotation) of a submodule instance.
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.

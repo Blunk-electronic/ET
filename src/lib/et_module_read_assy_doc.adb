@@ -42,14 +42,10 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_module_board;				use et_module_board;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_assy_doc;					use et_assy_doc;
@@ -204,12 +200,14 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_lines;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check line
 			add_line (module.board.assy_doc, doc_line, face);
 		end do_it;
@@ -236,12 +234,14 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_arcs;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check arc
 			add_arc (module.board.assy_doc, doc_arc, face);
 		end do_it;
@@ -269,12 +269,14 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_circles;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check circle
 			add_circle (module.board.assy_doc, doc_circle, face);
 		end do_it;

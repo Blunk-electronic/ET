@@ -37,8 +37,14 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+with et_project;				use et_project;
+with gtk.window; 				use gtk.window;
+with gtk.main;
+with et_logging;
+with et_project_name;
+with gtk.enums;
 with et_runmode;					use et_runmode;
-with et_modes;						use et_modes;
 
 with et_canvas_schematic;
 with et_schematic_geometry;
@@ -189,6 +195,7 @@ package body et_gui_2 is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) 
 	is
+		pragma unreferenced (project);
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
 		use et_board_geometry.pac_geometry_2;
@@ -283,7 +290,6 @@ package body et_gui_2 is
 		log_threshold	: in type_log_level) 
 	is
 		use et_sheets;
-		use et_schematic_coordinates;
 	begin
 		log (text => row_separator_single, level => log_threshold);
 		log (text => "starting GUI ...", level => log_threshold);

@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 with ada.directories;
 
 with et_module;						use et_module;
@@ -58,7 +55,6 @@ with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;
 
-with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
 with et_device_model;
@@ -74,12 +70,9 @@ with et_devices_non_electrical;
 
 with et_schematic_text;
 
-with et_symbol_read;
 
 with et_package_library;
-with et_package_read;
 with et_package_name;
-with et_package_model_name;
 with et_package_variant_name;
 with et_package_variant;
 
@@ -91,10 +84,8 @@ with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_board_outline;
 
 with et_pcb_stack;
-with et_pcb_placeholders;
 
 with et_unit_name;
 with et_units;
@@ -138,14 +129,12 @@ package body et_module_read_device_electrical is
 	procedure read_device_electrical (
 		line : in type_fields_of_line)
 	is
-		use et_device_model;
 		use et_device_purpose;
 		use et_device_model_names;
 		use et_devices_electrical;
 		use et_device_appearance;
 		use et_device_value;
 		use et_device_partcode;
-		use et_package_variant;
 		use et_package_variant_name;
 		
 		kw : constant string := f (line, 1);
@@ -226,11 +215,11 @@ package body et_module_read_device_electrical is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_devices_electrical;
 			use et_device_model;
 			use et_device_model_names;
 			use et_package_name;
-			use et_package_model_name;
 			use et_package_variant;
 
 
@@ -387,8 +376,7 @@ package body et_module_read_device_electrical is
 			function get_package_name 
 				return pac_package_name.bounded_string 
 			is
-				use et_package_variant_name;
-				use pac_package_variant_name;
+				use et_package_variant_name.pac_package_variant_name;
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 
 				
@@ -587,10 +575,7 @@ package body et_module_read_device_electrical is
 	procedure read_unit (
 		line : in type_fields_of_line)
 	is
-		use et_schematic_geometry;	
-		use pac_geometry_2;
 		use et_schematic_coordinates;
-		use et_units;
 		use et_unit_name;
 		use pac_unit_name;
 		
@@ -735,7 +720,6 @@ package body et_module_read_device_electrical is
 	is
 		use et_device_placeholders;
 		use et_schematic_text;
-		use et_symbol_read;
 		use et_schematic_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -782,7 +766,6 @@ package body et_module_read_device_electrical is
 	
 	procedure build_unit_placeholder is
 		use et_device_placeholders;
-		use et_schematic_coordinates;	
 		use et_schematic_geometry;
 	begin
 		case unit_placeholder_meaning is

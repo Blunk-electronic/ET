@@ -38,6 +38,25 @@
 --   To Do:
 --	- distinguish between through, blind and buried vias.
 
+with ada.characters;			use ada.characters;
+with et_package_name;				use et_package_name;
+with et_pcb_sides;					use et_pcb_sides;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_conductor_text;
+with et_conductor_text.boards;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_stopmask.packages;
+with ada.text_io;				use ada.text_io;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.maps;			use ada.strings.maps;
+with et_package_model_name;			use et_package_model_name;
+with et_conductors_floating_board;	use et_conductors_floating_board;
+with et_device_value;					use et_device_value;
+with et_conductor_text.boards;
+with et_conductor_segment;
+with et_stopmask.board;				use et_stopmask.board;
 with ada.directories;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
@@ -47,8 +66,6 @@ with ada.exceptions;
 with et_import;
 with et_vias;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_pcb_stack;
-with et_nets;
 with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
 
@@ -271,7 +288,6 @@ package body et_kicad.pcb is
 	is
 		board : type_board; -- to be returned
 
-		use et_module_board;
 		use et_package_bom_relevance;
 		use pac_lines_of_file;
 
@@ -627,7 +643,6 @@ package body et_kicad.pcb is
 
 		procedure set_stop_and_mask is
 		-- From the SMT terminal face, validates the status of stop mask and solder paste.
-			use et_board_coordinates;
 			
 			procedure invalid is begin
 				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
@@ -1151,6 +1166,7 @@ package body et_kicad.pcb is
 
 			
 			procedure test_format (format : in string) is
+				pragma unreferenced (format);
 				use et_import;
 			begin
 				case cad_format is
@@ -3158,6 +3174,7 @@ package body et_kicad.pcb is
 						 & to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
+			pragma unreferenced (warn_on_missing_net);
 
 			
 			-- Builds and inserts package in board.
@@ -3412,9 +3429,6 @@ package body et_kicad.pcb is
 				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
@@ -3471,12 +3485,9 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_circle is 
-				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
@@ -3557,9 +3568,6 @@ package body et_kicad.pcb is
 				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- The board_line is converted back to its anchestor, and
 				-- depending on the layer, extended with specific properties.
@@ -3685,10 +3693,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_arc is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 
 				-- compute end point of arc from center, start point and angle
@@ -3754,10 +3758,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_circle is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 				-- Compute the circle radius from its center and point at circle:
 				set_radius (package_circle, to_distance (
@@ -3845,10 +3845,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_line is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
@@ -4245,8 +4241,6 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_fp_text is 
-				use et_silkscreen;
-				use et_assy_doc.packages;
 			begin
 				-- Since there is no alignment information provided, use default values:
 				package_text.alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
@@ -4402,8 +4396,6 @@ package body et_kicad.pcb is
 			procedure insert_polygon is
 			-- inserts the current polygon in the list "polygons"
 				--use et_packages;
-				use et_fill_zones.boards;
-				use type_polygon_points;
 			begin
 				board.polygons.append (polygon);
 
@@ -4726,7 +4718,6 @@ package body et_kicad.pcb is
 	is
 		use et_fill_zones;
 		use pac_floating_solid;
-		use et_pcb_stack;
 	begin
 		-- general stuff
 		log (text => "polygon" & 
@@ -4846,7 +4837,6 @@ package body et_kicad.pcb is
 				module   : in out type_module) 
 			is
 				-- The nets of the module are copied here (in their present state):
-				use et_nets.pac_nets;
 				nets 		: et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				
@@ -4956,7 +4946,6 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					use et_board_coordinates;
 				begin
 					log_indentation_up;
 					log (text => "segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", level => log_threshold + 3);
@@ -5135,7 +5124,9 @@ package body et_kicad.pcb is
 				procedure add_route (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out schematic.type_net) 
-				is begin
+				is
+					pragma unreferenced (net_name);
+				begin
 					net.route := route (net_id);
 				end add_route;
 
@@ -5144,6 +5135,7 @@ package body et_kicad.pcb is
 				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in type_device_name;
 					component	: in out type_component_schematic) is
+				pragma unreferenced (comp_ref);
 				begin
 					component.position := package_position;
 					component.text_placeholders := text_placeholders;
@@ -5153,7 +5145,6 @@ package body et_kicad.pcb is
 				function to_placeholders return type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
-					use et_board_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
 
 					
@@ -5161,6 +5152,7 @@ package body et_kicad.pcb is
 						comp_reference	: in type_device_name;
 						comp_package	: in type_package_board)
 					is
+						pragma unreferenced (comp_reference);
 						use pac_text_placeholders;
 
 						-- points to a placeholder in the package
@@ -5289,6 +5281,7 @@ package body et_kicad.pcb is
 							package_name	: in type_device_name;
 							packge			: in type_package_board)
 						is
+							pragma unreferenced (package_name);
 							use pac_terminals;
 							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
@@ -5603,6 +5596,7 @@ package body et_kicad.pcb is
 		procedure set_board_available_flag (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
+		pragma unreferenced (module_name);
 		begin
 			module.board_available := et_module.TRUE;
 		end set_board_available_flag;
@@ -5710,6 +5704,7 @@ package body et_kicad.pcb is
 			library_name	: in pac_package_model_file.bounded_string;
 			packages		: in type_packages_library.map) 
 		is
+			pragma unreferenced (library_name);
 			use et_terminals.pac_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;

@@ -44,6 +44,7 @@ separate (et_canvas_board)
 procedure mouse_moved (
 	point	: in type_vector_model) 
 is 
+	pragma unreferenced (point);
 	use et_modes.board;
 
 begin

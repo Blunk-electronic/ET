@@ -44,7 +44,6 @@ with ada.containers.doubly_linked_lists;
 
 -- with et_logging;						use et_logging;
 
-with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 
 with et_pcb_stack;						use et_pcb_stack;
@@ -52,7 +51,6 @@ with et_pcb_stack;						use et_pcb_stack;
 with et_drawing_frame;
 with et_drawing_frame.board;
 
-with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_via_restrict.boards;			use et_via_restrict.boards;
 with et_stopmask.board;					use et_stopmask.board;

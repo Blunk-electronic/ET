@@ -43,7 +43,6 @@
 
 with glib;
 
-with ada.numerics;
 
 
 package body et_canvas.contours is

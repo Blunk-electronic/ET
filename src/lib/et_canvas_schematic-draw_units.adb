@@ -51,18 +51,15 @@ with et_symbol_model;					use et_symbol_model;
 with et_port_names;
 with et_port_visibility;
 with et_symbol_library;					use et_symbol_library;
-with et_symbol_name;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
-with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;
 with et_device_model;					use et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
-with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 
@@ -966,6 +963,7 @@ procedure draw_units is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is
+		pragma unreferenced (module_name);
 		use pac_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor := module.devices.first; 
 
@@ -1149,6 +1147,7 @@ procedure draw_units is
 						end if;
 					end if;
 				end draw_if_sheet_changes;
+				pragma unreferenced (draw_if_sheet_changes);
 				
 				
 			begin

@@ -42,31 +42,26 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.directories;
 
-with et_module_names;				use et_module_names;
+with et_module_names;			use et_module_names;
 with et_keywords;					use et_keywords;
 with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 
-with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
 with et_package_variant_name;
-with et_package_variant;
 
 with et_devices_electrical;			
 with et_devices_non_electrical;		use et_devices_non_electrical;
-with et_pcb_stack;
 
 with et_package_library;
 with et_package_read;
-with et_package_name;
+with et_pcb_stack;
 with et_package_model_name;
 
 with et_conventions;
@@ -75,7 +70,6 @@ with et_device_placeholders.packages;
 
 with et_module;							use et_module;
 
-with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 
 
@@ -157,6 +151,7 @@ package body et_module_read_device_non_electrical is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure read_package_model is 

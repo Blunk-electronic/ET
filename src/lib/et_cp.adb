@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
 -- with ada.exceptions;
 
 with et_domains;
@@ -45,14 +44,12 @@ with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
 with et_modes.project;				use et_modes.project;
 
-with et_script_processor;
 
 with et_cp_schematic;				use et_cp_schematic;
 with et_cp_board;					use et_cp_board;
 with et_cp_project;					use et_cp_project;
 
 with et_module_read;				use et_module_read;
-with et_module_write;				use et_module_write;
 
 with et_string_processing;		use et_string_processing;
 
@@ -99,6 +96,7 @@ package body et_cp is
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (script_name);
 
 		-- Get the number of fields of the given command:
 		field_count : constant natural := get_field_count (cmd);

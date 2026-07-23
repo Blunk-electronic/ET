@@ -42,7 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -51,7 +50,6 @@ with et_keywords;					use et_keywords;
 
 with et_module_instance;			use et_module_instance;
 with et_device_name;				use et_device_name;
-with et_device_model;
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
@@ -84,12 +82,14 @@ package body et_module_read_assembly_variant is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		kw : constant string := f (line, 1);
 
 		
 		procedure set_variant (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+		pragma unreferenced (module_name);
 		begin
 			module.assembly_variants.active := active_assembly_variant;
 		end;
@@ -115,7 +115,6 @@ package body et_module_read_assembly_variant is
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_fields_of_line)
 	is
-		use et_device_model;
 		use et_device_purpose;
 		use et_device_value;
 		use et_device_partcode;
@@ -303,6 +302,7 @@ package body et_module_read_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			inserted : boolean;
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
@@ -367,6 +367,7 @@ package body et_module_read_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			
 			variant_cursor : pac_assembly_variants.cursor := 
@@ -379,6 +380,7 @@ package body et_module_read_assembly_variant is
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant)
 			is
+				pragma unreferenced (variant_name);
 				use pac_submodule_variants;
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR

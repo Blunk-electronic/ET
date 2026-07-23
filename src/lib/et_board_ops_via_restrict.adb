@@ -37,6 +37,9 @@
 --
 
 
+with et_via_restrict.boards;
+with et_board_geometry;				use et_board_geometry;
+with et_generic_modules;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_module;						use et_module;
@@ -159,6 +162,7 @@ package body et_board_ops_via_restrict is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_via_restrict_contours;
 			c : pac_via_restrict_contours.cursor;
 

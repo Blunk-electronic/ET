@@ -38,7 +38,9 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;					use ada.text_io;
+with et_pcb_sides;						use et_pcb_sides;
+with et_board_layer_category;			use et_board_layer_category;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;
@@ -62,12 +64,10 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 with gtk.widget;					use gtk.widget;
 
 with gtk.cell_renderer_text;		
-with gtk.cell_layout;        		
 with gtk.list_store;				
 with gtk.tree_model;
 
 with gtk.gentry;					use gtk.gentry;
-with gtk.container;					use gtk.container;
 
 with gtk.text_buffer;
 with gtk.text_iter;
@@ -76,7 +76,6 @@ with gtk.text_iter;
 --with gtk.menu_shell;
 
 with et_generic_modules;				use et_generic_modules;
-with et_module_board;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
@@ -85,17 +84,12 @@ with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;
 with et_board_ops_stopmask;
 with et_board_ops_conductors;
-with et_modes.board;
 
 with et_display;						use et_display;
 with et_display.board;					use et_display.board;
 
 with et_logging;						use et_logging;
-with et_string_processing;				use et_string_processing;
-with et_exceptions;						use et_exceptions;
 
-with et_undo_redo;
-with et_commit;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
@@ -126,9 +120,7 @@ package body et_canvas_board_texts is
 	
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
-		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -153,7 +145,6 @@ package body et_canvas_board_texts is
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -194,7 +185,6 @@ package body et_canvas_board_texts is
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -395,10 +385,10 @@ package body et_canvas_board_texts is
 	
 	
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
+		pragma unreferenced (button);
 		use gtk.text_view;
 		use gtk.text_buffer;
 		use gtk.text_iter;
-		use et_text;
 		
 		text_buffer : constant gtk_text_buffer := get_buffer (preliminary_text.entry_content);
 		lower_bound, upper_bound : gtk_text_iter;
@@ -417,7 +407,6 @@ package body et_canvas_board_texts is
 
 	procedure show_text_properties is
 		use gtk.cell_renderer_text;
-		use gtk.cell_layout;
 		use gtk.list_store;
 		use gtk.tree_model;
 		use gtk.text_view;

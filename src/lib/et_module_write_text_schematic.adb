@@ -42,14 +42,12 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_schematic_geometry;			use et_schematic_geometry;
-with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_sheets;						use et_sheets;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -110,7 +108,9 @@ package body et_module_write_text_schematic is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			section_mark (section_texts, HEADER);
 			iterate (module.texts, write'access);
 			section_mark (section_texts, FOOTER);

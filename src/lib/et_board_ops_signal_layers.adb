@@ -41,12 +41,10 @@
 
 
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 -- with ada.exceptions;				use ada.exceptions;
 
-with et_string_processing;			use et_string_processing;
 
+with et_module;						use et_module;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
@@ -75,6 +73,7 @@ package body et_board_ops_signal_layers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_pcb_stack.package_layers;
 		begin
 			append (module.board.stack.layers, layer);
@@ -172,6 +171,7 @@ package body et_board_ops_signal_layers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use package_layers;
 
 			-- get the total number of layers used by the module
@@ -272,7 +272,9 @@ package body et_board_ops_signal_layers is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := get_deepest_layer (module.board.stack);
 		end query_module;
 		

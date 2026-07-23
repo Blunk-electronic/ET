@@ -40,14 +40,10 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
-with et_board_geometry;					use et_board_geometry;
+with et_string_processing;		use et_string_processing;
 with et_drawing_frame;					use et_drawing_frame;
 with et_board_ops_frame;				use et_board_ops_frame;
-with et_canvas_board;					use et_canvas_board;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
@@ -56,8 +52,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_board_frame is
 
-	use pac_geometry_2;
-	use pac_drawing_frame;
 	
 
 	procedure move_drawing_frame (

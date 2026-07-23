@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with ada.text_io;
 with ada.strings;
 with ada.strings.unbounded;
 
@@ -459,7 +458,6 @@ package body et_display.board is
 
 	
 	function enabled_conductor_layers return string is
-		use ada.text_io;
 		use ada.strings;
 		use ada.strings.unbounded;
 

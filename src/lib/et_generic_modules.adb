@@ -39,6 +39,11 @@
 --  
 
 
+with et_board_geometry;
+with et_design_rules;				use et_design_rules;
+with et_schematic_geometry;
+with et_module;
+with et_logging;					use et_logging;
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
@@ -61,6 +66,7 @@ package body et_generic_modules is
 	is begin
 		return schematic_rules_assigned (module.rules);
 	end;
+	pragma unreferenced (design_rules_schematic_assigned);
 
 		
 	function design_rules_board_assigned (
@@ -81,6 +87,7 @@ package body et_generic_modules is
 	is begin
 		return module.grid;
 	end;
+	pragma unreferenced (get_grid_schematic);
 
 
 
@@ -90,6 +97,7 @@ package body et_generic_modules is
 	is begin
 		return module.board.grid;
 	end;
+	pragma unreferenced (get_grid_board);
 
 	
 
@@ -188,7 +196,9 @@ package body et_generic_modules is
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := variant_exists (module, variant);
 		end;
 		

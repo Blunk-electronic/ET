@@ -36,13 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
+with et_module_names;					use et_module_names;
 with ada.strings;					use ada.strings;
 
 
-with et_string_processing;			use et_string_processing;
 
-with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
 
@@ -116,6 +114,7 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
@@ -194,19 +193,18 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_vias;
 				
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				
 				procedure query_via (via : in out type_via) is
-					use pac_geometry_brd;
 				begin
 					if in_catch_zone (catch_zone, via) then
 						set_proposed (via);
@@ -271,19 +269,18 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
 				use pac_vias;
 				
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				
 				procedure query_via (via : in out type_via) is
-					use pac_geometry_brd;
 				begin
 					reset_status (via);
 				end query_via;
@@ -337,7 +334,6 @@ package body et_board_ops_vias is
 		return pac_net_name.bounded_string
 	is 
 		use pac_objects;
-		use pac_vias;
 		v : type_object_via := element (object);
 	begin
 		return get_net_name (v.net_cursor);
@@ -375,6 +371,7 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -384,6 +381,7 @@ package body et_board_ops_vias is
 					net_name	: in pac_net_name.bounded_string;
 					net 		: in type_net)
 				is 
+					pragma unreferenced (net_name);
 
 					procedure query_via (v : in pac_vias.cursor) is begin
 						case flag is
@@ -464,6 +462,7 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
 
@@ -473,6 +472,7 @@ package body et_board_ops_vias is
 					net_name	: in pac_net_name.bounded_string;
 					net 		: in type_net)
 				is 
+					pragma unreferenced (net_name);
 
 					procedure query_via (v : in pac_vias.cursor) is begin
 						case flag is
@@ -547,17 +547,17 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+  pragma unreferenced (module_name);
   
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				use et_nets;
+				pragma unreferenced (net_name);
 				use pac_vias;
 
 				procedure query_via (v : in out type_via) is 
-					use pac_geometry_brd;
 				begin
 					modify_status (v, operation);
 				end query_via;
@@ -642,6 +642,7 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
@@ -650,6 +651,7 @@ package body et_board_ops_vias is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
+				pragma unreferenced (net_name);
 				use pac_vias;
 			begin
 				append (
@@ -827,11 +829,13 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				
 				procedure query_via (v : in out type_via) is begin
 					v.position := new_position;
@@ -887,11 +891,13 @@ package body et_board_ops_vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				c : pac_vias.cursor := object.via_cursor;
 			begin
 				net.route.vias.delete (c);

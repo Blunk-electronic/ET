@@ -49,7 +49,6 @@ separate (et_canvas_board)
 procedure draw_outline is
 	
 	use et_board_geometry.pac_contours;
-	use pac_segments;
 
 	use pac_draw_contours;
 	
@@ -58,7 +57,9 @@ procedure draw_outline is
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
-	is begin
+	is
+		pragma unreferenced (module_name);
+	begin
 		draw_contour (
 			contour	=> module.board.board_contour.outline,
 			filled	=> NO,
@@ -71,6 +72,7 @@ procedure draw_outline is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is
+		pragma unreferenced (module_name);
 		use pac_holes;
 		
 		procedure query_hole (c : in pac_holes.cursor) is 

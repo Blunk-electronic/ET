@@ -514,7 +514,9 @@ package body et_stencil is
 	procedure mirror_stencil_objects (
 		stencil	: in out type_stencil;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
-	is begin
+	is
+		pragma unreferenced (axis);
+	begin
 		mirror_lines (stencil.lines);
 		mirror_arcs (stencil.arcs);
 		mirror_circles (stencil.circles);

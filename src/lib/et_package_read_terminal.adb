@@ -46,9 +46,8 @@
 -- - clean up
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
+with et_terminals;						use et_terminals;
 with et_keywords;						use et_keywords;
 with et_package_read_contour;			use et_package_read_contour;
 
@@ -213,6 +212,7 @@ package body et_package_read_terminal is
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		cursor : pac_terminals.cursor;
 		inserted : boolean;
 

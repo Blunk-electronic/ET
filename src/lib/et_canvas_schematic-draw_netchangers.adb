@@ -386,6 +386,7 @@ procedure draw_netchangers is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is 
+		pragma unreferenced (module_name);
 		use pac_netchangers;
 		netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 

@@ -36,7 +36,11 @@
 --   history of changes:
 --
 
+with et_drawing_frame;					use et_drawing_frame;
+with et_drawing_frame.board;			use et_drawing_frame.board;
+with et_generic_modules;
 with et_module;							use et_module;
+with et_module_names;					use et_module_names;
 
 with et_modes.board;
 with et_undo_redo;
@@ -62,6 +66,7 @@ package body et_board_ops_frame is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
+			pragma unreferenced (module_name);
 			p1 : et_drawing_frame.type_position;
 		begin
 			case coordinates is
@@ -134,7 +139,9 @@ package body et_board_ops_frame is
 		procedure get_origin (
 			module_name	: in pac_module_name.bounded_string;
 			module 		: in type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			result := get_position (module.board.frame.frame);
 		end get_origin;
 
@@ -166,7 +173,9 @@ package body et_board_ops_frame is
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
 			module 		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			set_position (module.board.frame.frame, position);
 		end set_origin;
 

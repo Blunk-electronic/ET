@@ -38,14 +38,12 @@
 --   ToDo: 
 
 
-with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;
 with gnat.directory_operations;
 
 with et_directory_and_file_ops;
-with et_string_processing;		use et_string_processing;
 
 
 package body et_project_name is
@@ -83,6 +81,7 @@ package body et_project_name is
 		project_name	: in pac_project_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use ada.directories;
 		use gnat.directory_operations;
 		use et_directory_and_file_ops;

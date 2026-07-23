@@ -54,9 +54,7 @@ procedure draw_silkscreen (
 	face : in type_face)
 is
 	use et_colors.board;
-	use et_board_text;
 
-	use et_canvas_board_silkscreen;
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
@@ -64,7 +62,6 @@ is
 	use pac_silk_texts;
 	use pac_placeholders_non_conductor;
 
-	use et_canvas_board_preliminary_object;
 	
 
 	procedure set_default_brightness is begin
@@ -152,6 +149,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is 
+		pragma unreferenced (module_name);
 
 
 		procedure query_text (c : in pac_silk_texts.cursor) is 

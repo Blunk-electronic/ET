@@ -40,10 +40,8 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
+with et_string_processing;		use et_string_processing;
 with et_schematic_coordinates;
 
 with et_sheets;

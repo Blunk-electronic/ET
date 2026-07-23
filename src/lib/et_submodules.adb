@@ -38,7 +38,7 @@
 --   ToDo: 
 
 
-with ada.text_io;					use ada.text_io;
+with et_logging;					use et_logging;
 with ada.characters;				use ada.characters;
 with ada.characters.handling;		use ada.characters.handling;
 
@@ -143,7 +143,9 @@ package body et_submodules is
 		procedure move (
 			name	: in pac_net_name.bounded_string;
 			port	: in out type_submodule_port) 
-		is begin
+		is
+			pragma unreferenced (name);
+		begin
 			move_by (port.position, offset.place);
 		end;
 

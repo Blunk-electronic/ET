@@ -36,13 +36,15 @@
 --   history of changes:
 --
 
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with et_logging;				use et_logging;
+with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_mirroring;
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded;
 
-with ada.exceptions;
 
-with ada.numerics.generic_elementary_functions;
-with et_string_processing;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
@@ -63,7 +65,6 @@ package body et_kicad_coordinates is
 	-- Checks for forbidden characters in submodule name.
 		name		: in type_submodule_name.bounded_string;
 		characters	: in character_set := submodule_name_characters) is
-		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given submodule name and get position of possible invalid characters.
@@ -304,7 +305,6 @@ package body et_kicad_coordinates is
 			& axis_separator
 			& "y) ";
 		
-		use et_string_processing;
 	begin
 		case scope is
 			when MODULE =>

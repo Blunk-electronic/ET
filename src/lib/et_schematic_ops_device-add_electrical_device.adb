@@ -83,6 +83,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
+		pragma unreferenced (module_name);
 		use et_symbol_ports;
 		use pac_unit_name;
 		use pac_devices_electrical;
@@ -264,6 +265,7 @@ is
 			device_name	: in type_device_name;
 			device		: in out type_device_electrical) 
 		is 
+			pragma unreferenced (device_name);
 
 			-- This procedure composes the virtual unit and adds
 			-- it to the schematic:
@@ -348,6 +350,7 @@ is
 			device_name	: in type_device_name;
 			device		: in out type_device_electrical) 
 		is
+			pragma unreferenced (device_name);
 
 
 			-- This procedure composes the virtual unit and adds
@@ -380,7 +383,6 @@ is
 				symbol_cursor : pac_symbol_models.cursor;
 				placeholders : type_text_placeholders;
 
-				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
 				log (text => "add_real", level => log_threshold + 3);

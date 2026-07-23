@@ -42,13 +42,9 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_schematic_geometry;
@@ -60,7 +56,6 @@ with et_schematic_coordinates;
 with et_netchangers;				use et_netchangers;
 with et_netchangers.schematic;		use et_netchangers.schematic;
 
-with et_net_names;					use et_net_names;
 
 
 
@@ -150,6 +145,7 @@ package body et_module_read_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			inserted : boolean;
 			use pac_netchangers;
 			cursor : pac_netchangers.cursor;

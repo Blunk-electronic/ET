@@ -43,7 +43,6 @@
 
 with et_canvas_tool;					use et_canvas_tool;
 
-with et_board_ops_conductors;			use et_board_ops_conductors;
 with et_board_ops_fill_zones;
 with et_board_ops_ratsnest;
 with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
@@ -58,8 +57,8 @@ procedure key_pressed (
 	key			: in gdk_key_type;
 	key_shift	: in gdk_modifier_type)
 is
+	pragma unreferenced (key_shift);
 	use gdk.types;
-	use gdk.types.keysyms;
 
 	use et_modes;
 	use et_modes.board;
@@ -619,8 +618,6 @@ is
 	procedure draw is 
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
-		use et_canvas_board_outline;
-		use et_canvas_board_preliminary_object;
 	begin
 		case key is
 			when key_noun_line =>
@@ -907,7 +904,6 @@ is
 	
 	procedure update is 
 		use et_board_ops_ratsnest;
-		use et_ratsnest;
 	begin
 		case key is
 			when key_noun_ratsnest =>

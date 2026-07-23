@@ -59,7 +59,6 @@ with et_submodules;						use et_submodules;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
-with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules; 			use et_net_ports_submodules;
 with et_net_ports_netchangers; 			use et_net_ports_netchangers;
@@ -68,10 +67,7 @@ with et_net_names;						use et_net_names;
 
 with et_sheets;							use et_sheets;
 with et_device_name;					use et_device_name;
-with et_devices_electrical;				use et_devices_electrical;
-with et_device_partcode;				use et_device_partcode;
 
-with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 

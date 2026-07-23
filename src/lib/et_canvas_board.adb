@@ -37,16 +37,17 @@
 --   history of changes:
 --
 
+with gdk.types.keysyms;				use gdk.types.keysyms;
+with et_board_coordinates;			use et_board_coordinates;
+with et_project;
+with et_module;						use et_module;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
-with ada.exceptions;				use ada.exceptions;
-with ada.containers;
 
-with ada.calendar;					use ada.calendar;
-with ada.calendar.formatting;		use ada.calendar.formatting;
 
 with et_system_info;
 with et_domains;
@@ -66,9 +67,7 @@ with et_board_ops_grid;
 with et_schematic_ops_groups;
 with et_board_ops_groups;
 
-with et_module_board;
 
-with et_text;
 with et_canvas_board_lines;
 with et_canvas_board_outline;
 with et_canvas_board_texts;
@@ -195,6 +194,7 @@ package body et_canvas_board is
 	procedure cb_zoom_to_fit (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		-- debug : boolean := true;
 		debug : boolean := false;
 	begin
@@ -208,6 +208,7 @@ package body et_canvas_board is
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		use et_modes.board;
 		
 		-- debug : boolean := true;
@@ -244,6 +245,7 @@ package body et_canvas_board is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		event_handled : boolean := false;
 
 		-- If event_handled is true then
@@ -401,11 +403,9 @@ package body et_canvas_board is
 	procedure draw_path (
 		cat : in type_layer_category) 
 	is
-		use et_canvas_board_lines;
 		use et_colors.board;
 		use pac_path_and_bend;
 		use et_modes.board;
-		use et_canvas_tool;
 		use et_canvas_board_preliminary_object;
 		
 		-- PL : type_preliminary_object renames preliminary_object;	
@@ -507,7 +507,6 @@ package body et_canvas_board is
 	is
 		use pac_path_and_bend;
 		use et_modes.board;
-		use et_canvas_tool;
 		use et_canvas_board_preliminary_object;
 
 
@@ -792,7 +791,6 @@ package body et_canvas_board is
 		return boolean
 	is
 		use cairo;
-		use et_display.board;
 		
 		event_handled : boolean := true;
 	begin
@@ -894,10 +892,7 @@ package body et_canvas_board is
 		-- use et_canvas_board_zone;
 		use et_canvas_board_texts;
 		use et_canvas_board_devices;
-		use et_canvas_board_vias;
-		use et_canvas_board_tracks;
 
-		use et_ripup;
 
 
 		-- Do a level 1 reset. This is a partly reset:
@@ -997,6 +992,7 @@ package body et_canvas_board is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		use gdk.types;		
@@ -1114,6 +1110,7 @@ package body et_canvas_board is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -1142,6 +1139,7 @@ package body et_canvas_board is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -1172,6 +1170,7 @@ package body et_canvas_board is
 		event	: gdk_event_motion)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mp : type_vector_model;
@@ -1214,7 +1213,6 @@ package body et_canvas_board is
 	-- calls other procedures that initialize the values used in 
 	-- property bars for vias, tracks, ...
 	procedure init_property_bars is 
-		use et_canvas_board_vias;
 	begin
 		null;
 		-- CS reset_preliminary_via;
@@ -1295,7 +1293,6 @@ package body et_canvas_board is
 		use ada.directories;
 		use et_project_name;
 		use et_cp_board;
-		use et_modes;
 		use et_domains;
 		use et_project;
 		use et_cmd_sts;
@@ -1389,7 +1386,6 @@ package body et_canvas_board is
 		use et_project_name;
 		use et_string_processing;
 		use et_cp_board;
-		use et_modes;
 		use et_domains;
 		use et_project;
 		use et_cmd_sts;

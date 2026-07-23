@@ -42,33 +42,26 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
 
 with et_text_content;				use et_text_content;
 
 with et_conductor_text;
 with et_conductor_text.boards;
 
-with et_board_text;					use et_board_text;
 with et_alignment;					use et_alignment;
 
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
-with et_module_board;				use et_module_board;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_mirroring;
 
 with et_stopmask;
 with et_silkscreen;
@@ -133,6 +126,7 @@ package body et_module_write_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			texts : pac_conductor_texts_board.list 
 				renames module.board.conductors_floating.texts;
 		begin
@@ -266,7 +260,9 @@ package body et_module_write_text_board is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					case layer_cat is
@@ -370,6 +366,7 @@ package body et_module_write_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			texts : pac_placeholders_conductor.list 
 				renames module.board.conductors_floating.placeholders;
 		begin
@@ -443,7 +440,9 @@ package body et_module_write_text_board is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					case layer_cat is

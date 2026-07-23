@@ -42,12 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
@@ -199,7 +195,6 @@ package body et_module_read_board_zones is
 	procedure read_cutout_conductor_non_electric (
 		line : in type_fields_of_line)
 	is
-		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -335,7 +330,9 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.contours,
 				new_item	=> (contour with signal_layers));
@@ -378,7 +375,9 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.via_restrict.contours,
 				new_item	=> (contour with signal_layers));
@@ -421,7 +420,9 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case board_fill_style is
 				when SOLID =>
 					pac_floating_solid.append (
@@ -497,6 +498,7 @@ package body et_module_read_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			
 			procedure append_silk_polygon_top is begin
 				pac_silk_zones.append (
@@ -676,7 +678,9 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_via_restrict_cutouts.append (
 				container	=> module.board.via_restrict.cutouts,
 				new_item	=> (contour with
@@ -722,6 +726,7 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
+		pragma unreferenced (module_name);
 		begin
 			pac_route_restrict_cutouts.append (
 				container	=> module.board.route_restrict.cutouts,
@@ -770,7 +775,7 @@ package body et_module_read_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			use et_stopmask;
+			pragma unreferenced (module_name);
 			use et_keepout;
 			
 			
@@ -850,7 +855,9 @@ package body et_module_read_board_zones is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_cutouts.append (
 				container	=> module.board.conductors_floating.cutouts,
 				new_item	=> (contour with

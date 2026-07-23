@@ -37,7 +37,6 @@
 --
 --   to do:
 
-with ada.text_io;				use ada.text_io;
 
 
 package body et_board_outline is

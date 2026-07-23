@@ -51,6 +51,9 @@ package et_undo_redo is
 
 	use pac_generic_modules;
 
+
+
+
 	-- Puts a fragment of the design on the undo-stacks of
 	-- the current active module.
 	-- The fragment can be nets, silkscreen, board contours, meta info, ...

@@ -42,9 +42,6 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -203,12 +200,14 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_lines;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check line
 			add_line (module.board.stencil, stencil_line, face);
 		end do_it;
@@ -235,12 +234,14 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_arcs;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check arc
 			add_arc (module.board.stencil, stencil_arc, face);
 		end do_it;
@@ -268,12 +269,14 @@ package body et_module_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_circles;
+		pragma unreferenced (log_threshold);
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- CS check circle
 			add_circle (module.board.stencil, stencil_circle, face);
 		end do_it;

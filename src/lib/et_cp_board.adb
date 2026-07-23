@@ -40,17 +40,14 @@
 --   - command to set design rules
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings; 					use ada.strings;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.exceptions;				use ada.exceptions;
+with et_string_processing;		use et_string_processing;
+with ada.exceptions;
 
 with et_runmode;					use et_runmode;
 
 with et_modes;						use et_modes;
 with et_modes.board;				use et_modes.board;
 
-with et_canvas_schematic;
 with et_canvas_board;
 
 with et_cp_board_canvas;			use et_cp_board_canvas;

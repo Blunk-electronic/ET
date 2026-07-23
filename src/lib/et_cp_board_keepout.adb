@@ -40,17 +40,14 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
+with et_string_processing;		use et_string_processing;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_keywords;						use et_keywords;
 
-with et_board_geometry;					use et_board_geometry;
+with et_board_geometry;
 with et_board_ops_keepout;				use et_board_ops_keepout;
-with et_keywords;
 
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
@@ -58,8 +55,7 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_board_keepout is
 
-	use pac_geometry_2;
-	use pac_contours;
+	use et_board_geometry.pac_contours;
 
 	
 
@@ -127,6 +123,7 @@ package body et_cp_board_keepout is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
@@ -186,6 +183,7 @@ package body et_cp_board_keepout is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin

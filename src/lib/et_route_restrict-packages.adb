@@ -45,7 +45,9 @@ package body et_route_restrict.packages is
 	procedure mirror_route_restrict_objects (
 		restrict	: in out type_one_side;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
-	is begin
+	is
+		pragma unreferenced (axis);
+	begin
 		mirror_lines (restrict.lines);
 		mirror_arcs (restrict.arcs);
 		mirror_circles (restrict.circles);

@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.exceptions;				use ada.exceptions;
 
 -- with glib;
 -- with glib.values;
@@ -46,15 +44,14 @@ with ada.exceptions;				use ada.exceptions;
 -- with gdk.event;						use gdk.event;
 -- with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with et_device_property_level;
 
+with et_generic_modules;			use et_generic_modules;
+with et_logging;					use et_logging;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_board_ops_netchangers;		use et_board_ops_netchangers;
-with et_module_names;				use et_module_names;
 with et_canvas_board;				use et_canvas_board;
 with et_modes.board;
-with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
 
@@ -399,7 +396,6 @@ package body et_canvas_board_netchangers is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
-			use et_device_property_level;
 			
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);

@@ -36,13 +36,10 @@
 --   history of changes:
 --
 
-with ada.strings.maps;			use ada.strings.maps;
 
 with et_geometry_2a;
-with et_logging;				use et_logging;
 with et_alignment;				use et_alignment;
 with et_object_status;			use et_object_status;
-with et_text_content;			use et_text_content;
 with et_rotation_docu;			use et_rotation_docu;
 
 
@@ -58,7 +55,6 @@ package et_text is
 	package generic_pac_text is
 		use pac_geometry;
 
-		use pac_geometry_1;
 		-- NOTE: This use clause does not work properly. 
 		-- For some reason the package name must be explicitely provided
 		-- for stuff that stems from pac_geometry_1.

@@ -37,17 +37,25 @@
 --   history of changes:
 --
 
+with et_generic_modules;
+with et_schematic_geometry;			use et_schematic_geometry;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
-with ada.exceptions;				use ada.exceptions;
 
-with ada.calendar;					use ada.calendar;
-with ada.calendar.formatting;		use ada.calendar.formatting;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
+with glib;							use glib;
 
-with ada.containers;
+with et_module;						use et_module;
+with et_sheets;						use et_sheets;
+with et_project;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
+
+
 
 -- with et_pcb_coordinates;
 -- with et_terminals;
@@ -78,11 +86,9 @@ with et_undo_redo;
 with et_schematic_ops_grid;
 
 with et_schematic_ops_groups;
-with et_board_ops_groups;
 
 with et_system_info;
 with et_project_name;
-with et_module_ops;
 with et_module_write;
 with et_module_read;
 with et_canvas_schematic_preliminary_object;
@@ -186,6 +192,7 @@ package body et_canvas_schematic is
 	procedure cb_zoom_to_fit (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		-- debug : boolean := true;
 		debug : boolean := false;
 	begin
@@ -200,6 +207,7 @@ package body et_canvas_schematic is
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
 	is
+		pragma unreferenced (button);
 		use et_modes.schematic;
 		
 		-- debug : boolean := true;
@@ -237,6 +245,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (window);
 		event_handled : boolean := false;
 
 		-- If event_handled is true then
@@ -691,6 +700,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_key)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		use gdk.types;		
@@ -829,6 +839,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -862,6 +873,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_button)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mouse_event : type_mouse_event;
@@ -929,6 +941,7 @@ package body et_canvas_schematic is
 		event	: gdk_event_motion)
 		return boolean
 	is
+		pragma unreferenced (canvas);
 		event_handled : boolean := true;
 
 		mp : type_vector_model;
@@ -1094,7 +1107,6 @@ package body et_canvas_schematic is
 	procedure set_module (
 		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
-		use et_module_ops;
 		use et_module_read;
 		cursor : pac_generic_modules.cursor := find (generic_modules, module);
 	begin
@@ -1137,7 +1149,6 @@ package body et_canvas_schematic is
 		use ada.directories;
 		use et_project_name;
 		use et_cp_schematic;
-		use et_modes;
 		use et_project;
 		use et_domains;
 		
@@ -1230,7 +1241,6 @@ package body et_canvas_schematic is
 		use ada.directories;	
 		use et_project_name;
 		use et_cp_schematic;
-		use et_modes;
 		use et_project;
 		use et_domains;
 		

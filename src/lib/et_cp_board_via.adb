@@ -40,16 +40,14 @@
 -- - propose arguments if command incomplete
 --
 
-with ada.text_io;						use ada.text_io;
+with et_string_processing;		use et_string_processing;
+with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
 with et_exceptions;						use et_exceptions;
 with et_modes.board;					use et_modes.board;
-with et_keywords;						use et_keywords;
 with et_module;							use et_module;
 with et_module_names;					use et_module_names;
-with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_vias;
@@ -61,14 +59,12 @@ with et_drills;
 with et_design_rules_board;
 with et_vias;
 
-with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_via is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_contours;
 
 
 	
@@ -104,7 +100,9 @@ package body et_cp_board_via is
 		procedure deactivate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.drill.active := false;
 		end deactivate_drill;
 
@@ -112,7 +110,9 @@ package body et_cp_board_via is
 		procedure activate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.drill.active := true;
 			module.board.user_settings.vias.drill.size := to_distance (get_field (cmd, 6));
 		end activate_drill;
@@ -121,7 +121,9 @@ package body et_cp_board_via is
 		procedure deactivate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_inner.active := false;
 		end deactivate_inner_restring;
 
@@ -129,7 +131,9 @@ package body et_cp_board_via is
 		procedure activate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_inner.active := true;
 			module.board.user_settings.vias.restring_inner.width := to_distance (get_field (cmd, 7));
 		end activate_inner_restring;
@@ -138,7 +142,9 @@ package body et_cp_board_via is
 		procedure deactivate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_outer.active := false;
 		end deactivate_outer_restring;
 
@@ -146,7 +152,9 @@ package body et_cp_board_via is
 		procedure activate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_outer.active := true;
 			module.board.user_settings.vias.restring_outer.width := to_distance (get_field (cmd, 7));
 		end activate_outer_restring;
@@ -240,7 +248,6 @@ package body et_cp_board_via is
 		use et_drills;
 		use et_vias;
 		use et_design_rules_board;
-		use et_board_ops_vias;
 		
 		
 		-- Contains the number of fields given by the caller of this procedure:

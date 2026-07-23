@@ -40,14 +40,13 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
+with et_string_processing;		use et_string_processing;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
 with et_display;						use et_display;
 with et_display.schematic;				use et_display.schematic;
 
-with et_generic_modules;				use et_generic_modules;
 with et_modes.schematic;				use et_modes.schematic;
 
 

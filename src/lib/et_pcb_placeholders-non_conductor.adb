@@ -38,7 +38,6 @@
 --   to do:
 
 
-with et_board_coordinates;			use et_board_coordinates;
 
 
 package body et_pcb_placeholders.non_conductor is

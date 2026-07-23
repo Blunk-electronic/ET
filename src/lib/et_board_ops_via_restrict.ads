@@ -37,11 +37,10 @@
 --
 --   ToDo: 
 
-with et_board_geometry;					use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
+with et_board_geometry;
+with et_generic_modules;				use et_generic_modules;
 
 with et_module_names;					use et_module_names;
-with et_generic_modules;				use et_generic_modules;
 with et_via_restrict.boards;			use et_via_restrict.boards;
 
 with et_logging;						use et_logging;

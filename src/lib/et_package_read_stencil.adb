@@ -36,16 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
 
-with et_primitive_objects;				use et_primitive_objects;
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
-with et_package_model;					use et_package_model;
+with et_package_model;
 with et_directions;						use et_directions;
 
 with et_stencil;						use et_stencil;
@@ -198,6 +193,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_lines;
 	begin
 		case face is
@@ -221,6 +217,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_arcs;
 	begin
 		-- CS check arc
@@ -247,6 +244,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_stencil_circles;
 	begin
 		case face is
@@ -271,6 +269,7 @@ package body et_package_read_stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.stencil, (contour with null record), face);

@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
+with et_module_names;					use et_module_names;
 with ada.tags;
 with ada.exceptions;				use ada.exceptions;
 
@@ -45,7 +45,6 @@ with et_mirroring;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_nets;
 with et_board_holes;
-with et_board_outline;
 with et_board_ops_outline;
 with et_board_ops_devices;
 with et_board_ops_net_class;
@@ -62,9 +61,7 @@ with et_devices_non_electrical;
 
 with et_board_text;
 with et_conductor_text.boards;
-with et_conductor_segment.boards;
 with et_contour_to_polygon;
-with et_vias;
 with et_route;
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
@@ -72,7 +69,6 @@ with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_terminal_name;				use et_terminal_name;
 with et_assembly_technology;		use et_assembly_technology;
 with et_module;						use et_module;
-with et_exceptions;					use et_exceptions;
 
 with et_modes.board;
 with et_undo_redo;
@@ -442,6 +438,7 @@ package body et_board_ops_fill_zones is
 			module_name		: in pac_module_name.bounded_string;
 			module			: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_polygon_union;
 
 			
@@ -459,7 +456,6 @@ package body et_board_ops_fill_zones is
 				use et_route;
 				route : type_net_route renames element (net_cursor).route;
 
-				use et_conductor_segment.boards;
 
 				
 
@@ -622,7 +618,6 @@ package body et_board_ops_fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
-		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -634,6 +629,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_devices_electrical;
 			
 			-- Temporarily we store the polygons here.
@@ -757,7 +753,6 @@ package body et_board_ops_fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
-		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -769,6 +764,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_devices_non_electrical;
 			use pac_devices_non_electrical;
 
@@ -872,7 +868,6 @@ package body et_board_ops_fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
-		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -884,6 +879,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_devices_electrical;
 			use et_devices_electrical.packages;
 			use pac_devices_electrical;
@@ -987,7 +983,7 @@ package body et_board_ops_fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
-		use pac_polygon_union;
+		pragma unreferenced (zone);
 
 
 		offset : constant type_float_positive := 
@@ -1000,6 +996,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use et_conductor_text.boards;
 			use pac_conductor_texts_board;
 
@@ -1008,8 +1005,7 @@ package body et_board_ops_fill_zones is
 				text : type_conductor_text_board renames element (t);
 				borders : pac_polygon_list.list;
 
-				use et_board_text;
-				use pac_text_board_vectorized;
+				use et_board_text.pac_text_board_vectorized;
 				use pac_polygon_offsetting;
 			begin
 				if text.layer = layer then
@@ -1637,6 +1633,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_net_class;
 			
 			net_cursor : pac_nets.cursor;
@@ -1648,6 +1645,7 @@ package body et_board_ops_fill_zones is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				-- The cursor that points to the zone being filled:
 				use pac_route_solid;
 				zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
@@ -1731,6 +1729,7 @@ package body et_board_ops_fill_zones is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				pragma unreferenced (net_name);
 				use pac_route_hatched;
 				zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 
@@ -1911,6 +1910,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_floating_solid;
 			
 			zone_cursor : pac_floating_solid.cursor := 
@@ -1964,6 +1964,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_floating_hatched;
 			zone_cursor : pac_floating_hatched.cursor := 
 				module.board.conductors_floating.zones.hatched.first;
@@ -2203,6 +2204,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_floating_solid;
 
 			p : type_floating_solid := 
@@ -2220,6 +2222,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_floating_hatched;
 
 			p : type_floating_hatched := 
@@ -2250,6 +2253,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_route_solid;
 
 			p : type_route_solid := 
@@ -2259,7 +2263,9 @@ package body et_board_ops_fill_zones is
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				net.route.zones.solid.append (p);
 			end add_polygon;
 		
@@ -2280,6 +2286,7 @@ package body et_board_ops_fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_route_hatched;
 
 			p : type_route_hatched := 
@@ -2289,7 +2296,9 @@ package body et_board_ops_fill_zones is
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is begin
+			is
+				pragma unreferenced (net_name);
+			begin
 				net.route.zones.hatched.append (p);
 			end add_polygon;
 
@@ -2396,12 +2405,6 @@ package body et_board_ops_fill_zones is
 		-- defined for type_zone. 
 		
 		use et_fill_zones.boards;
-		use pac_geometry_brd;
-		use pac_polygons;
-		use pac_polygon_clipping;
-		use pac_polygon_cropping;
-		use pac_polygon_offsetting;
-		use pac_polygon_union;
 		
 		use pac_net_names;
 
@@ -2419,6 +2422,7 @@ package body et_board_ops_fill_zones is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 				zone_cursor : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 
 				procedure do_it (
@@ -2439,6 +2443,7 @@ package body et_board_ops_fill_zones is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 				zone_cursor : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 
 				procedure do_it (
@@ -2476,6 +2481,7 @@ package body et_board_ops_fill_zones is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
+				pragma unreferenced (module_name);
 				use et_net_class;
 				net_cursor : pac_nets.cursor;
 				net_class : type_net_class;		
@@ -2485,6 +2491,7 @@ package body et_board_ops_fill_zones is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is 
+					pragma unreferenced (net_name);
 					-- The cursor that points to the zone being filled:
 					use pac_route_solid;
 					zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
@@ -2514,6 +2521,7 @@ package body et_board_ops_fill_zones is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is 
+					pragma unreferenced (net_name);
 					use pac_route_hatched;
 					zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 

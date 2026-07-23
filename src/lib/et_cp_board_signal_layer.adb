@@ -40,15 +40,11 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
-with et_directions;						use et_directions;
-with et_primitive_objects;				use et_primitive_objects;
 
-with et_keywords;						use et_keywords;
 
+with et_string_processing;			use et_string_processing;
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
@@ -61,7 +57,6 @@ package body et_cp_board_signal_layer is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_contours;
 
 
 	
