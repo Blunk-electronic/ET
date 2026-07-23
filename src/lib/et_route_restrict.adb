@@ -37,6 +37,7 @@
 --
 --   to do:
 
+-- with ada.text_io;			use ada.text_io;
 with et_contour_to_polygon;		use et_contour_to_polygon;
 
 package body et_route_restrict is

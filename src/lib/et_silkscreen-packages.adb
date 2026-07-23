@@ -38,6 +38,7 @@
 --   to do:
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_silkscreen.packages is
 
 	procedure mirror_silkscreen_objects (

@@ -41,6 +41,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_directions;						use et_directions;
 with et_primitive_objects;				use et_primitive_objects;

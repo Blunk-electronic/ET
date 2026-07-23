@@ -46,6 +46,7 @@
 -- with ada.exceptions;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_conductors_floating_package is
 	
 

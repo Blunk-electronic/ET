@@ -40,6 +40,7 @@
 -- with ada.characters.latin_1;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- 
+-- with ada.text_io;			use ada.text_io;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_keywords;					use et_keywords;
 with et_file_write;					use et_file_write;

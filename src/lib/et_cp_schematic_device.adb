@@ -43,6 +43,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;

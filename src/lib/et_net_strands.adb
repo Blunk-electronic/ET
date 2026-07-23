@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_net_ports;					use et_net_ports;
 with ada.strings;						use ada.strings;
 

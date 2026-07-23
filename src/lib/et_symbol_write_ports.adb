@@ -39,6 +39,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_symbol_ports;				use et_symbol_ports;
 

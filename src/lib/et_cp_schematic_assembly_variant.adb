@@ -42,6 +42,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_assembly_variants;				use et_assembly_variants;

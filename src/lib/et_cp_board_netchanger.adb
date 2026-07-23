@@ -41,6 +41,7 @@
 -- - set exit code if targeted object does not exist
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 

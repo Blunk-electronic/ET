@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_coordinates_abs_rel;
 with et_board_text;
 with et_coordinates_abs_rel;

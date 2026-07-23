@@ -41,6 +41,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_drawing_frame;					use et_drawing_frame;
 with et_board_ops_frame;				use et_board_ops_frame;

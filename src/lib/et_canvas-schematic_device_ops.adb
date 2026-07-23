@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with gtk.tree_model;				use gtk.tree_model;
 with gtk.cell_renderer_text;
 

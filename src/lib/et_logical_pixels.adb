@@ -38,6 +38,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_logical_pixels is
 
 	function to_string (

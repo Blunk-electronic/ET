@@ -44,6 +44,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_keywords;					use et_keywords;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;

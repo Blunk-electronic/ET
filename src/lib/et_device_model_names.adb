@@ -39,6 +39,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_device_model_names is
 
 

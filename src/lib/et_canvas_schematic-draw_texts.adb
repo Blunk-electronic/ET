@@ -38,6 +38,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_schematic_text;					use et_schematic_text;
 
 

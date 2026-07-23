@@ -44,6 +44,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops_outline;				use et_board_ops_outline;

@@ -38,6 +38,7 @@
 -- DESCRIPTION:
 -- 
 
+-- with ada.text_io;			use ada.text_io;
 with et_net_names;						use et_net_names;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;

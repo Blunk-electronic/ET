@@ -40,6 +40,7 @@
 -- - propose arguments if command incomplete
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 with ada.characters.handling;			use ada.characters.handling;

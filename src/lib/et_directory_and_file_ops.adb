@@ -37,6 +37,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 

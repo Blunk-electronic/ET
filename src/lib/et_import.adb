@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;			use ada.directories;
 with et_logging;				use et_logging;

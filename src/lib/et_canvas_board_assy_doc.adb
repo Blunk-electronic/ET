@@ -39,6 +39,7 @@
 -- 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_generic_modules;				use et_generic_modules;
 with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;

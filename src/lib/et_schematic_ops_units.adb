@@ -44,6 +44,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;							use et_module;
 with et_schematic_text;					use et_schematic_text;
 with et_device_model_names;				use et_device_model_names;

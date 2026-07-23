@@ -39,6 +39,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_meta is
 
 	function to_company (company : in string) return pac_company.bounded_string is begin

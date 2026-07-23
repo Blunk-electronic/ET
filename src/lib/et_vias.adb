@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_contour_to_polygon;
 with ada.strings;					use ada.strings;
 

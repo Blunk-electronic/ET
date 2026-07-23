@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
 with et_schematic_ops_meta;					use et_schematic_ops_meta;

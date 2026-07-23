@@ -39,6 +39,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_export is
 
 	procedure dummy is begin null; end;

@@ -37,6 +37,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_canvas_tool;						use et_canvas_tool;
 
 

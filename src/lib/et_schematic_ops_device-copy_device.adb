@@ -44,6 +44,7 @@
 --		  to the new unit.
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_library;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;

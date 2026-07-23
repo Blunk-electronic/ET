@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+-- with ada.text_io;			use ada.text_io;
 with cairo;						use cairo;
 package body et_colors.schematic is
 

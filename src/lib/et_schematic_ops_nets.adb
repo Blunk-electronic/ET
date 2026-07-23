@@ -39,6 +39,7 @@
 --
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;							use et_module;
 with et_net_labels;						use et_net_labels;
 with et_devices_electrical.units;		use et_devices_electrical.units;

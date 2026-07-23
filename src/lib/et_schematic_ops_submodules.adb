@@ -41,6 +41,7 @@
 -- - remove the existence checks of submodules after these
 --   checks have been implemented in the package et_cp_schematic_submodule.
 
+-- with ada.text_io;			use ada.text_io;
 with et_net_ports;						use et_net_ports;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_partcode;				use et_device_partcode;

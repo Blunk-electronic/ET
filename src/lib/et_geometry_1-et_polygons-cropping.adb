@@ -36,6 +36,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 

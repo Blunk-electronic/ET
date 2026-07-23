@@ -38,6 +38,7 @@
 -- DESCRIPTION:
 -- 
 
+-- with ada.text_io;			use ada.text_io;
 with et_board_geometry;
 with et_pcb_sides;						use et_pcb_sides;
 with et_board_layer_category;			use et_board_layer_category;

@@ -38,6 +38,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_assembly_technology;	use et_assembly_technology;
 with et_terminal_hole;			use et_terminal_hole;
 

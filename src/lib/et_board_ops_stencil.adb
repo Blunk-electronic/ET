@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;

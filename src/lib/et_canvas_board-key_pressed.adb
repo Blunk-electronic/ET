@@ -41,6 +41,7 @@
 --
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_canvas_tool;					use et_canvas_tool;
 
 with et_board_ops_fill_zones;

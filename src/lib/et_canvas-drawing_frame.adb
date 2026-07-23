@@ -37,6 +37,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_project_name;
 with et_project;
 with et_generic_modules;			use et_generic_modules;

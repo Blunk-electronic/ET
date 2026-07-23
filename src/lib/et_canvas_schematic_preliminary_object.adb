@@ -40,6 +40,7 @@
 -- 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_canvas_schematic_preliminary_object is
 
 

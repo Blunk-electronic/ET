@@ -40,6 +40,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_cmd_sts is
 
 

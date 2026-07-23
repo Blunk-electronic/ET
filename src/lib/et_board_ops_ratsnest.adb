@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with ada.exceptions;

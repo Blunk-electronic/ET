@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_text;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 

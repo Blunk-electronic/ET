@@ -37,6 +37,7 @@
 --
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
 
+-- with ada.text_io;			use ada.text_io;
 with et_mirroring;
 
 

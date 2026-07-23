@@ -45,6 +45,7 @@
 -- with gdk.types.keysyms;				use gdk.types.keysyms;
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_generic_modules;			use et_generic_modules;
 with et_logging;					use et_logging;
 with et_board_ops_groups;

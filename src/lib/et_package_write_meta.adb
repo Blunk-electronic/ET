@@ -40,6 +40,7 @@
 -- with ada.strings; 				use ada.strings;
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_assembly_technology;			use et_assembly_technology;
 with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_description;			use et_package_description;

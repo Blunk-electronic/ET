@@ -42,6 +42,7 @@
 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_directions;					use et_directions;
 with et_symbol_shapes;				use et_symbol_shapes;

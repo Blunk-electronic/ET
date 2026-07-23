@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 package body et_geometry_2a.path is
 	
 	function to_path (

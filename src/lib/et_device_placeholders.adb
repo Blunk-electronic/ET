@@ -36,6 +36,7 @@
 --
 --   to do:
 
+-- with ada.text_io;			use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 

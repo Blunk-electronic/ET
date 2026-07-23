@@ -38,6 +38,7 @@
 
 -- with ada.exceptions;
 
+-- with ada.text_io;			use ada.text_io;
 with et_domains;
 
 with et_module_names;				use et_module_names;

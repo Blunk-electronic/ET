@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_mirroring;						use et_mirroring;
 with et_primitive_objects;				use et_primitive_objects;
 with et_colors;							use et_colors;

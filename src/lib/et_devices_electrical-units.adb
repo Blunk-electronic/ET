@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_device_model_names;				use et_device_model_names;
 with ada.characters.latin_1;
