@@ -38,7 +38,6 @@
 --   to do:
 
 with et_design_rules_board;		use et_design_rules_board;
-with et_string_processing;		use et_string_processing;
 with et_directions;
 
 

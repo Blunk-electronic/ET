@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings;
 
 
 

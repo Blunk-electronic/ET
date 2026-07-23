@@ -39,7 +39,6 @@
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.strings;
 
 with et_exceptions;				use et_exceptions;
 

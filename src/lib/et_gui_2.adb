@@ -43,7 +43,6 @@ with gtk.window; 				use gtk.window;
 with gtk.main;
 with et_logging;
 with et_project_name;
-with gtk.enums;
 with et_runmode;					use et_runmode;
 
 with et_canvas_schematic;
