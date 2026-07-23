@@ -37,6 +37,10 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+with et_import;
+with et_kicad_packages;
+
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;

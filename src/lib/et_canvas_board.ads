@@ -47,19 +47,16 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gdk.event;						use gdk.event;
-with gdk.types;						use gdk.types;
 
 with gtk;
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
 
-with glib;							use glib;
 with cairo;							use cairo;
 
 -- with et_net_names;					use et_net_names;
 with et_script_names;				use et_script_names;
-with et_logical_pixels;				use et_logical_pixels;
 
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_geometry;				use et_board_geometry;

@@ -38,6 +38,8 @@
 --   To Do:
 --	- distinguish between through, blind and buried vias.
 
+with et_string_processing;		use et_string_processing;
+
 with ada.characters;			use ada.characters;
 with et_package_name;				use et_package_name;
 with et_pcb_sides;					use et_pcb_sides;

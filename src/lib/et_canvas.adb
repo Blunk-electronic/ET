@@ -37,6 +37,7 @@
 --
 
 with et_canvas_tool;
+with et_canvas_messages;		use et_canvas_messages;
 with ada.strings.bounded;
 with ada.strings;
 

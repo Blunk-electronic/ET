@@ -43,7 +43,6 @@
 -- This package is about the type, basic properties and subprograms related
 -- to the packages of real devices.
 
-with et_board_layer_category;			use et_board_layer_category;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 
@@ -72,12 +71,9 @@ with et_device_value;					use et_device_value;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
 with et_device_partcode;				use et_device_partcode;
-with et_package_name;					use et_package_name;
-with et_package_model_name;				use et_package_model_name;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
 with et_conductors_floating_package;	use et_conductors_floating_package;
-with et_object_status;					use et_object_status;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 

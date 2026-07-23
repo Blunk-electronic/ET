@@ -37,6 +37,7 @@
 --   history of changes:
 --
 
+with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 with et_board_coordinates;			use et_board_coordinates;
 with et_project;

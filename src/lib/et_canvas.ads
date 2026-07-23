@@ -50,7 +50,6 @@ with gdk.event;					use gdk.event;
 with gdk.types;					use gdk.types;
 with gdk.types.keysyms;			use gdk.types.keysyms;
 
-with et_cmd_sts;				use et_cmd_sts;
 with et_canvas_tool;			use et_canvas_tool;
 
 with gtk.widget;				use gtk.widget;
@@ -84,7 +83,6 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 with et_window_dimensions;		use et_window_dimensions;
 
-with et_canvas_messages;		use et_canvas_messages;
 with et_logging;				use et_logging;
 
 with et_geometry_1.et_polygons;

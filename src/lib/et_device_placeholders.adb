@@ -36,7 +36,8 @@
 --
 --   to do:
 
-
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
 
 package body et_device_placeholders is
 

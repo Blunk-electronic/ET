@@ -43,6 +43,9 @@
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
+with et_logging;				use et_logging;
+with et_kicad_coordinates;		use et_kicad_coordinates;
+
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
@@ -99,7 +102,7 @@ with et_stopmask;					use et_stopmask;
 with et_stopmask.board;				use et_stopmask.board;
 
 with et_kicad.schematic;
-with et_kicad_libraries;		--use et_kicad_libraries;
+with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 
 

@@ -41,6 +41,9 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
+
+with et_logging;				use et_logging;
+with et_kicad_coordinates;		use et_kicad_coordinates;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
@@ -50,12 +53,10 @@ with ada.containers.vectors;
 with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
 with et_project_name;			use et_project_name;
-with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
 with et_terminal_name;			use et_terminal_name;
 with et_package_name;			use et_package_name;
 with et_kicad_general;			use et_kicad_general;
-with et_import;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_sch;
@@ -63,7 +64,6 @@ use et_schematic_geometry.pac_geometry_2;
 
 with et_board_coordinates;
 with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
@@ -82,7 +82,6 @@ with et_device_placeholders.symbols;
 with et_drawing_frame;
 
 with et_kicad_libraries;		use et_kicad_libraries;
-with et_kicad_packages;			--use et_kicad_packages;
 
 with et_units;					use et_units;
 with et_mirroring;				use et_mirroring;

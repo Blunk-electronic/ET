@@ -48,7 +48,6 @@
 
 
 with et_board_geometry;				use et_board_geometry;
-with et_logging;					use et_logging;
 with et_board_holes;				use et_board_holes;
 
 

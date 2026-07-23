@@ -37,20 +37,10 @@
 --
 --   to do:
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.maps;			use ada.strings.maps;
-
-with et_text;					use et_text;
 with et_schematic_geometry;		use et_schematic_geometry;
-with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_schematic_text;			use et_schematic_text;
 with et_logging;				use et_logging;
+with et_fonts;
 
 with cairo;
 

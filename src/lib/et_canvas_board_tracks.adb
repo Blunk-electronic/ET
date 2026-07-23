@@ -41,8 +41,7 @@
 with et_net_names;						use et_net_names;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
+with et_ratsnest;						use et_ratsnest;
 with ada.strings;						use ada.strings;
 with ada.strings.fixed; 				use ada.strings.fixed;
 
