@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 
 with et_board_geometry;			use et_board_geometry;
 with et_mirroring;				use et_mirroring;
-with et_contour_to_polygon;		use et_contour_to_polygon;
 
 
 package et_route_restrict is

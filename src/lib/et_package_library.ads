@@ -48,7 +48,7 @@ with et_terminal_name;			use et_terminal_name;
 with et_terminals;				use et_terminals;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
-with et_stopmask.packages;				use et_stopmask.packages;
+with et_stopmask;
 with et_stencil;						use et_stencil;
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;

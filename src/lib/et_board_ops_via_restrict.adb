@@ -39,6 +39,7 @@
 
 with et_via_restrict.boards;
 with et_board_geometry;				use et_board_geometry;
+with et_module_names;				use et_module_names;
 with et_generic_modules;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;

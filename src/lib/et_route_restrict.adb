@@ -37,6 +37,7 @@
 --
 --   to do:
 
+with et_contour_to_polygon;		use et_contour_to_polygon;
 
 package body et_route_restrict is
 

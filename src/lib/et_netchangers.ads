@@ -50,7 +50,6 @@ with ada.containers;					use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.doubly_linked_lists;
 
-with et_schematic_coordinates;
 with et_schematic_geometry;
 with et_sheets;
 
