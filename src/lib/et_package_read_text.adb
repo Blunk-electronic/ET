@@ -36,16 +36,12 @@
 --   history of changes:
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
+-- with ada.text_io;			use ada.text_io;
 with et_board_geometry;					use et_board_geometry;
 
 with et_alignment;						use et_alignment;
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
-with et_package_model;					use et_package_model;
 with et_text_content;					use et_text_content;
 with et_device_placeholders;			use et_device_placeholders;
 

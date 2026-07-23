@@ -39,6 +39,12 @@
 --  
 
 
+-- with ada.text_io;			use ada.text_io;
+with et_board_geometry;
+with et_design_rules;				use et_design_rules;
+with et_schematic_geometry;
+with et_module;
+with et_logging;					use et_logging;
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 

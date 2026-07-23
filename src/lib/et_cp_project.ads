@@ -37,11 +37,9 @@
 --
 --   ToDo: 
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 with et_cmd_sts;				use et_cmd_sts;
-with et_script_names;			use et_script_names;
 with et_modes.project;			use et_modes.project;
 
 

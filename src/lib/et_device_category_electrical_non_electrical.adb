@@ -37,6 +37,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_device_category_electrical_non_electrical is
 
 

@@ -38,9 +38,9 @@
 --   to do:
 
 
-with ada.characters.handling;		use ada.characters.handling;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_pcb_placeholders is
 	
 

@@ -47,32 +47,25 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gdk.event;						use gdk.event;
-with gdk.types;						use gdk.types;
-with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
 
-with glib;							use glib;
 with cairo;							use cairo;
 
 -- with et_net_names;					use et_net_names;
 with et_script_names;				use et_script_names;
-with et_logical_pixels;				use et_logical_pixels;
 
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
 
 with et_board_text;
 with et_board_layer_category;			use et_board_layer_category;
 -- with et_vias;						use et_vias;
 -- with et_terminals;					use et_terminals;
 -- with et_conductor_segment;
-with et_project;
-with et_module;						use et_module;
 with et_generic_modules;			use et_generic_modules;
 -- with et_frames;
 
@@ -82,8 +75,6 @@ with et_canvas.text;
 with et_canvas.schematic_device_ops;
 with et_canvas.schematic_net_ops;
 
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
 
 package et_canvas_board is

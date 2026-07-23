@@ -41,7 +41,6 @@
 
 
 with et_schematic_geometry;
-with et_schematic_coordinates;
 with et_schematic_text;
 
 with et_board_geometry;
@@ -68,13 +67,11 @@ with et_drawing_frame.schematic;
 with et_device_renumbering;			use et_device_renumbering;
 
 with et_design_rules;				use et_design_rules;
-with et_design_rules_board;			use et_design_rules_board;
 
 with et_net_classes;				use et_net_classes;
 with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
-with et_logging;					use et_logging;
 
 
 

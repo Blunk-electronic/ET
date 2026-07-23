@@ -42,14 +42,11 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_module_board;				use et_module_board;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_assy_doc;					use et_assy_doc;
@@ -204,7 +201,6 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_lines;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -236,7 +232,6 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_arcs;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -269,7 +264,6 @@ package body et_module_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		use pac_doc_circles;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;

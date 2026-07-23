@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_module;						use et_module;

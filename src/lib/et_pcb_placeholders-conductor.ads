@@ -47,7 +47,6 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 package et_pcb_placeholders.conductor is
 	
-	use pac_text_board;
 	use pac_text_board_vectorized;
 	
 

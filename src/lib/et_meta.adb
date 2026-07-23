@@ -37,11 +37,9 @@
 --
 --   ToDo: 
 
-with ada.directories;
-with et_string_processing;		use et_string_processing;
-with et_directory_and_file_ops;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_meta is
 
 	function to_company (company : in string) return pac_company.bounded_string is begin

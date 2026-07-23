@@ -37,7 +37,7 @@
 --
 
 
-with et_exceptions;				use et_exceptions;
+-- with ada.text_io;			use ada.text_io;
 with ada.exceptions;			use ada.exceptions;
 
 

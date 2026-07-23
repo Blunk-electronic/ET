@@ -37,8 +37,8 @@
 --
 --   to do:
 
-with ada.strings;				use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 package body et_stencil.board is
 
 

@@ -41,12 +41,12 @@
 --
 
 
-with ada.text_io;				use ada.text_io;
-with ada.exceptions;
 
 
 
 
+-- with ada.text_io;			use ada.text_io;
+with et_string_processing;		use et_string_processing;
 package body et_netlists is
 	
 	use pac_net_name;
@@ -382,7 +382,6 @@ package body et_netlists is
 
 		
 		procedure query_submodules (submodule_cursor : in pac_netlist_modules.cursor) is
-			use pac_module_instance_name;
 
 			procedure query_nets (module : in type_netlist_module) is
 			-- Search for a global net named after the given net (via net_cursor).

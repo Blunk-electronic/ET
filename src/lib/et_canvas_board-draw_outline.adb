@@ -49,7 +49,6 @@ separate (et_canvas_board)
 procedure draw_outline is
 	
 	use et_board_geometry.pac_contours;
-	use pac_segments;
 
 	use pac_draw_contours;
 	

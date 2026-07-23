@@ -41,6 +41,7 @@
 --     other.
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_symbol_ports;
 with et_symbol_library;
 with et_device_read;
@@ -380,7 +381,6 @@ is
 				symbol_cursor : pac_symbol_models.cursor;
 				placeholders : type_text_placeholders;
 
-				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
 				log (text => "add_real", level => log_threshold + 3);

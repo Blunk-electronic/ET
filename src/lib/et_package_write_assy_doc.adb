@@ -41,8 +41,8 @@
 
 
 
-with ada.text_io;						use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
+-- with ada.text_io;			use ada.text_io;
 with ada.strings; 						use ada.strings;
 
 with et_keywords;						use et_keywords;
@@ -52,7 +52,6 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_text_content;					use et_text_content;
 with et_assy_doc;						use et_assy_doc;
-with et_assy_doc.packages;				use et_assy_doc.packages;
 
 with et_board_geometry;					use et_board_geometry;
 with et_file_write;						use et_file_write;

@@ -39,19 +39,15 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
-with ada.characters;				use ada.characters;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.strings;					use ada.strings;
 -- with ada.strings.fixed;				use ada.strings.fixed;
 -- with ada.strings.bounded;      		use ada.strings.bounded;
 -- with ada.strings.maps;				use ada.strings.maps;
 
-with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_netchangers.board is
 
 

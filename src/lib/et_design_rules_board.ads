@@ -40,13 +40,11 @@
 -- - clean up
 
 
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 
-with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 

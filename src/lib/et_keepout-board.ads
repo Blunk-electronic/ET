@@ -39,7 +39,6 @@
 --
 
 
-with et_pcb_sides;						use et_pcb_sides;
 
 
 package et_keepout.board is

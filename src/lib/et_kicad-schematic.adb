@@ -37,6 +37,10 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+with et_import;
+with et_kicad_packages;
+
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -63,7 +67,6 @@ with et_package_model_name;		use et_package_model_name;
 with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 
 with et_text_content;
-with et_rotation_docu;
 
 
 
@@ -86,8 +89,6 @@ package body et_kicad.schematic is
 	-- CS: unify with procedure delete_last_module_name_from_path
 	--procedure append_name_of_parent_module_to_path (submodule : in et_schematic_coordinates.type_submodule_name.bounded_string) is
 	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string) is
-		use et_string_processing;
-		use ada.directories;
 		--use type_submodule_name;
 	begin
 		-- CS: limit path length !
@@ -106,7 +107,6 @@ package body et_kicad.schematic is
 
 	procedure module_not_found (module : in type_submodule_name.bounded_string) is
 	-- Returns a message stating that the given module does not exist.
-		use et_string_processing;
 	begin
 		log (SEVERITY_ERROR, " module " & to_string (module) & " not found !");
 		raise constraint_error;
@@ -175,10 +175,8 @@ package body et_kicad.schematic is
 		unit			: in type_units_schematic.cursor;
 		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
 		use et_device_placeholders.symbols;
 		
-		use et_unit_name;
 		use pac_unit_name;
 	begin
 		log_indentation_up;
@@ -273,7 +271,6 @@ package body et_kicad.schematic is
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
-		use et_string_processing;
 		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
@@ -414,7 +411,6 @@ package body et_kicad.schematic is
 		component 		: in type_components_schematic.cursor;
 		log_threshold 	: in type_log_level) 
 	is
-		use et_string_processing;
 	begin
 		-- reference (serves as key in list of components)
 		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
@@ -523,7 +519,6 @@ package body et_kicad.schematic is
 	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use et_string_processing;
 	begin
 		if to_string (prefix) = power_flag_prefix 
 			or to_string (prefix) = power_symbol_prefix then
@@ -977,7 +972,6 @@ package body et_kicad.schematic is
 		(name : in pac_package_name.bounded_string) 
 	is
 		use pac_package_name;
-		use et_string_processing;
 		
 		procedure no_package is
 		begin
@@ -1224,7 +1218,6 @@ package body et_kicad.schematic is
 	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 	-- and must be merged into a single net.
 	procedure link_strands (log_threshold : in type_log_level) is
-		use et_string_processing;
 		use type_strands;
 
 		net_name : pac_net_name.bounded_string;
@@ -1401,7 +1394,6 @@ package body et_kicad.schematic is
 	-- So every hierarchic net is connected with a local or global net at a higher level. 
 	-- The link between a global or local net and a hierarchic net is the gui_submodule (see spec. of type_hierarchic_sheet). 
 	-- IMPORTANT: Gui_submodules and hierarchic nets are virtual components in a graphical GUI. Neither of them exists in reality.
-		use et_string_processing;
 		use type_nets;
 		use type_strands;
 		net : type_nets.cursor;
@@ -1572,7 +1564,6 @@ package body et_kicad.schematic is
 			h_strand : type_strands.cursor := first_strand;
 			use type_strands;
 			use type_path_to_submodule;
-			use type_submodule_name;
 
 			-- This flag goes true once the given net has been found in the submodule.
 			-- It serves to warn the operator about a missing hierarchic net.
@@ -1734,7 +1725,6 @@ package body et_kicad.schematic is
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in out type_module
 				) is
-				use type_nets;
 				--net_cursor : type_nets.cursor;
 
 				procedure append_strands (
@@ -1800,7 +1790,6 @@ package body et_kicad.schematic is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	-- Bases on the element "nets" of the modules. See specification of type_module.
 	procedure write_nets (log_threshold : in type_log_level) is
-		use et_string_processing;
 	
 		procedure query_label (
 			segment : in type_net_segment) is
@@ -2329,7 +2318,6 @@ package body et_kicad.schematic is
 			-- See spec for type_module.
 			-- IMPORTANT AND CS: This procedure currently works under linux only !
 				use ada.environment_variables;
-				use ada.directories;
 
 			    table_path_length_max : constant natural := 200;
 				package type_lib_table_path is new generic_bounded_length (table_path_length_max);
@@ -3473,7 +3461,6 @@ package body et_kicad.schematic is
 	function component_power_flag (cursor : in type_components_library.cursor)
 		return type_power_flag 
 	is
-		use et_string_processing;
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
@@ -3569,7 +3556,6 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
-			use et_string_processing;
 		begin
 			log_indentation_up;
 			log (text => "inserting strand " 
@@ -3642,7 +3628,6 @@ package body et_kicad.schematic is
 		name_after		: in pac_net_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is
-		use et_string_processing;
 
 		count : natural := 0;
 	
@@ -3734,7 +3719,6 @@ package body et_kicad.schematic is
 		-- memory location. So forget this idea.
 		return boolean 
 	is
-		use et_string_processing;
 		
 		sits_on_segment : boolean := false;
 
@@ -3903,7 +3887,6 @@ package body et_kicad.schematic is
 	-- Tests if a power in/out port is connected to a strand and renames the strand if necessary.
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 	procedure update_strand_names (log_threshold : in type_log_level) is
-		use et_string_processing;
 	
 		portlists : type_portlists.map := type_portlists.empty_map;
 
@@ -4032,7 +4015,6 @@ package body et_kicad.schematic is
 	procedure write_strands (log_threshold : in type_log_level) is
 	-- Writes a nice overview of strands, net segments and labels
 	-- CS: output consequtive number for strands and segments (as in procedure write_nets)
-		use et_string_processing;
 
 		procedure query_label (
 			segment : in type_net_segment) is
@@ -4087,7 +4069,6 @@ package body et_kicad.schematic is
 			strand : type_strands.cursor := module.strands.first;
 			use type_strands;
 			use type_path_to_submodule;
-			use ada.directories;
 		begin
 			if log_level >= log_threshold then
 				while strand /= type_strands.no_element loop
@@ -4177,7 +4158,6 @@ package body et_kicad.schematic is
 		procedure reset (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
-			use type_components_schematic;
 		begin
 			cursor := type_components_schematic.first (module.components);
 		end reset;
@@ -4219,7 +4199,6 @@ package body et_kicad.schematic is
 		component_inserted			: boolean;
 		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
 	
-		use type_full_library_names;
 		use et_string_processing;
 
 		-- This component cursor points to the schematic component being processed.
@@ -4287,7 +4266,6 @@ package body et_kicad.schematic is
 							use type_no_connection_flags;
 							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
-							use type_path_to_submodule;
 						begin
 							-- Compare coordinates of no-connection-flags with port_coordinates
 							-- and exit prematurely with "open" set to true.
@@ -4485,7 +4463,6 @@ package body et_kicad.schematic is
 			end ports_of_global_unit;
 
 
-			use et_unit_name;
 			use pac_unit_name;
 			
 			
@@ -4703,7 +4680,6 @@ package body et_kicad.schematic is
 	procedure check_open_ports (log_threshold : in type_log_level) is
 
 		use type_modules;
-		use et_string_processing;
 
 		
 		procedure query_portlists (
@@ -4923,7 +4899,6 @@ package body et_kicad.schematic is
 	
 	-- Warns about not deployed units and open ports thereof.
 	procedure check_non_deployed_units (log_threshold : in type_log_level) is
-		use et_string_processing;
 		use type_modules;
 
 		
@@ -4939,8 +4914,6 @@ package body et_kicad.schematic is
 			component_sch : type_components_schematic.cursor := module.components.first;
 			library_cursor : type_device_libraries.cursor;
 
-			use et_kicad_packages;
-			use type_libraries;
 			
 			
 			procedure query_library_components (
@@ -4970,7 +4943,6 @@ package body et_kicad.schematic is
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
 
-						use et_import;
 						use et_erc;
 
 						
@@ -5178,7 +5150,6 @@ package body et_kicad.schematic is
 		procedure count_junctions (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use type_junctions;
 		begin
 			count := type_junctions.length (module.junctions);
 		end count_junctions;
@@ -5210,7 +5181,6 @@ package body et_kicad.schematic is
 	-- Tests if the given module exists. Raises error if not existent.
 		module_cursor : type_modules.cursor;
 		use type_modules;
-		use et_string_processing;
 	begin
 		if find (modules, module_name) = type_modules.no_element then
 			log (SEVERITY_ERROR, "module " & to_string (module_name)
@@ -5261,7 +5231,6 @@ package body et_kicad.schematic is
 			inserted	: boolean := false;
 			cursor		: type_hierarchic_sheets.cursor;
 
-			use et_string_processing;
 			
 		begin
 			module.hierarchic_sheets.insert (
@@ -5345,7 +5314,6 @@ package body et_kicad.schematic is
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_string_processing;
 		begin
 			module.frames.append (
 				new_item	=> frame);
@@ -5372,7 +5340,6 @@ package body et_kicad.schematic is
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_string_processing;
 		begin
 			module.notes.append (
 				new_item	=> note);
@@ -5405,7 +5372,6 @@ package body et_kicad.schematic is
 			inserted	: boolean := false;
 			cursor		: type_components_schematic.cursor;
 
-			use et_string_processing;
 		begin
 			module.components.insert (
 				key			=> reference,
@@ -5444,7 +5410,6 @@ package body et_kicad.schematic is
 			inserted	: boolean := false;
 			cursor		: type_units_schematic.cursor;
 
-			use et_string_processing;
 			use et_unit_name.pac_unit_name;
 			
 		begin
@@ -5498,7 +5463,6 @@ package body et_kicad.schematic is
 	-- Verifies that junctions are placed where net segments are connected with each other.
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 	-- Warns about orphaned junctions.
-		use et_string_processing;
 		use type_modules;
 
 		procedure query_strands_prim (
@@ -5731,7 +5695,6 @@ package body et_kicad.schematic is
 	procedure check_orphaned_junctions (log_threshold : in type_log_level) is
 	-- Warns about orphaned junctions.
 		use type_modules;
-		use et_string_processing;
 
 		procedure query_junctions (
 		-- Query junctions.
@@ -5849,7 +5812,6 @@ package body et_kicad.schematic is
 	-- - it is placed between two net segments where no port sits
 	-- - it is placed where no segment is (means somewhere in the void)
 		use type_modules;
-		use et_string_processing;
 
 		procedure query_junctions (
 		-- Query junctions and test net segments and ports at the junction coordinates.
@@ -6023,7 +5985,6 @@ package body et_kicad.schematic is
 	
 	procedure check_misplaced_no_connection_flags (log_threshold : in type_log_level) is
 	-- Warns about no_connection_flags placed at nets.
-		use et_string_processing;
 		use type_modules;
 		
 		procedure query_strands (
@@ -6170,7 +6131,6 @@ package body et_kicad.schematic is
 	procedure check_orphaned_no_connection_flags (log_threshold : in type_log_level) is
 
 		use type_modules;
-		use et_string_processing;
 		
 		-- Query junctions. Exits prematurely once a junction is found.
 		procedure query_no_connect_flags (
@@ -6319,7 +6279,6 @@ package body et_kicad.schematic is
 
 	-- Writes the properties of the given net label in the logfile.
 	procedure write_label_properties (label : in type_net_label) is
-		use et_string_processing;
 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
@@ -6433,7 +6392,6 @@ package body et_kicad.schematic is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
 	procedure net_test (log_threshold : in type_log_level) is
-		use et_string_processing;
 		use type_modules;
 
 		procedure query_nets (
@@ -6698,7 +6656,6 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return pac_net_name.bounded_string 
 	is
-		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
@@ -6824,7 +6781,6 @@ package body et_kicad.schematic is
 	-- Detects if a junction is missing where a port is connected with a net.
 	procedure make_netlists (log_threshold : in type_log_level) is
 	
-		use et_string_processing;
 		use type_modules;
 
 		function make_netlist return type_netlist.map is
@@ -7115,7 +7071,6 @@ package body et_kicad.schematic is
 		return natural 
 	is
 		use type_modules;
-		use et_string_processing;
 		
 		terminals : natural; -- to be returned
 
@@ -7152,7 +7107,6 @@ package body et_kicad.schematic is
 					use et_package_library;
 					use pac_package_variants;
 					use pac_package_variant_name;
-					use et_import;
 
 					variant_cursor : pac_package_variants.cursor;
 				begin
@@ -7281,7 +7235,6 @@ package body et_kicad.schematic is
 	-- 6. look up given port name and return terminal/unit name
 
 		use type_modules;
-		use et_string_processing;
 		terminal : et_package_variant.type_terminal; -- to be returned
 
 		
@@ -7457,7 +7410,6 @@ package body et_kicad.schematic is
 		-- Once the port name has been found, this variable is set (see procedure locate_terminal):
 		port : type_port_of_module; 
 
-		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
@@ -7657,7 +7609,6 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set 
 	is
-		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -7770,7 +7721,6 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set 
 	is
-		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -7790,7 +7740,6 @@ package body et_kicad.schematic is
 			port 		: type_port_with_reference;
 			terminal 	: et_package_variant.type_terminal;
 
-			use pac_package_variant_name;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
@@ -8285,9 +8234,7 @@ package body et_kicad.schematic is
 		note 			: in type_text;
 		log_threshold	: in type_log_level := 0) is
 	-- Writes the properties of the given note
-		use et_string_processing;
 		use et_text_content;
-		use et_rotation_docu;
 		use et_alignment;
 	begin
 		log (text => "text note" & to_string (

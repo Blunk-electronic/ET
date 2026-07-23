@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
@@ -45,24 +44,18 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 
-with et_drills;
-with et_terminals;
 with et_package_name;			use et_package_name;
-with et_module_board;
 with et_kicad_general;			use et_kicad_general;
 with et_kicad_coordinates;		use et_kicad_coordinates;
 
-with et_import;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_kicad_packages;			use et_kicad_packages;
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
-with et_text;					use et_text;
+with et_text;
 with et_text_content;			use et_text_content;
 
 with et_port_names;				use et_port_names;

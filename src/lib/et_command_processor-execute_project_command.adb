@@ -42,6 +42,7 @@
 -- to do:
 
 
+-- with ada.text_io;			use ada.text_io;
 separate (et_command_processor)
 
 

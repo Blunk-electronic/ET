@@ -42,9 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
-with et_module_names;				use et_module_names;
+-- with ada.text_io;			use ada.text_io;
 with et_file_sections;				use et_file_sections;
 with et_keywords;					use et_keywords;
 

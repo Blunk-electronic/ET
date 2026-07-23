@@ -36,10 +36,10 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_commit is
 
 	function to_string (stage : in type_commit_stage) return string is begin

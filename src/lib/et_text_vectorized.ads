@@ -39,17 +39,15 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_geometry_1;
 with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
-with et_geometry_1.et_polygons.union;
 
 with et_geometry_2a;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
 with et_alignment;				use et_alignment;
 with et_text_content;			use et_text_content;
-with et_text;					use et_text;
+with et_text;
 
 
 package et_text_vectorized is

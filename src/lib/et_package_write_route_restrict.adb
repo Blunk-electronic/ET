@@ -41,25 +41,22 @@
 
 
 
-with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with ada.strings; 				use ada.strings;
 
-with et_keywords;						use et_keywords;
+-- with ada.text_io;			use ada.text_io;
 with et_file_sections;					use et_file_sections;
 
-with et_board_geometry;					use et_board_geometry;
+with et_board_geometry;
 
 with et_route_restrict;					use et_route_restrict;
-with et_route_restrict.packages;		use et_route_restrict.packages;
 
 with et_file_write;						use et_file_write;
 
 
 package body et_package_write_route_restrict is
 
-	use pac_geometry_2;
-	use pac_file_rw;
+	use et_board_geometry.pac_file_rw;
 	
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;

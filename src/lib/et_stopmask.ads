@@ -39,7 +39,6 @@
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.strings;				use ada.strings;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
@@ -54,7 +53,6 @@ package et_stopmask is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_board;
 	use pac_text_board_vectorized;
 	
 

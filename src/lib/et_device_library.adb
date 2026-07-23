@@ -36,19 +36,12 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with et_string_processing;		use et_string_processing;
-with et_exceptions;				use et_exceptions;
 
 
+
+
+
+-- with ada.text_io;			use ada.text_io;
 package body et_device_library is
 
 
@@ -96,7 +89,6 @@ package body et_device_library is
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
 		use pac_device_models;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);

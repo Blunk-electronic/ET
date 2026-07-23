@@ -41,12 +41,11 @@
 
 
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 -- with ada.exceptions;				use ada.exceptions;
 
-with et_string_processing;			use et_string_processing;
 
+-- with ada.text_io;			use ada.text_io;
+with et_module;						use et_module;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;

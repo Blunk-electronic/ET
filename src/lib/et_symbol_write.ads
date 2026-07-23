@@ -37,7 +37,6 @@
 --
 
 
-with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 with et_symbol_name;					use et_symbol_name;
 with et_symbol_model;					use et_symbol_model;

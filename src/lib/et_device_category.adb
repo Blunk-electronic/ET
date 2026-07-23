@@ -36,11 +36,12 @@
 --   history of changes:
 --
 
-with et_string_processing;					use et_string_processing;
 
 
 
 
+-- with ada.text_io;			use ada.text_io;
+with et_logging;				use et_logging;
 package body et_device_category is
 
 	

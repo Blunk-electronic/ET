@@ -45,12 +45,9 @@ with ada.strings.bounded;			use ada.strings.bounded;
 with ada.containers;				use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_logging;					use et_logging;
 with et_net_names;					use et_net_names;
-with et_text;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-with et_board_coordinates;
 with et_board_geometry;
 with et_schematic_text;				use et_schematic_text;
 with et_module_names;				use et_module_names;
@@ -132,7 +129,6 @@ package et_submodules is
 	
 
 
-	use pac_geometry_sch;
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
 	port_symbol_width	: constant type_distance_positive := 4.0;

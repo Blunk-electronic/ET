@@ -42,17 +42,13 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 
-with et_schematic_geometry;
 with et_board_geometry;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -61,7 +57,6 @@ with et_schematic_coordinates;
 with et_netchangers;				use et_netchangers;
 with et_netchangers.schematic;		use et_netchangers.schematic;
 
-with et_net_names;					use et_net_names;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 with et_file_write;					use et_file_write;
@@ -85,8 +80,6 @@ package body et_module_write_netchangers is
 		is
 			netchanger : type_netchanger renames element (cursor);
 			
-			use et_schematic_geometry;
-			use pac_geometry_2;
 			use et_schematic_coordinates;	
 			
 			-- Convert the netchanger position in the schematic

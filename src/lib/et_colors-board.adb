@@ -38,11 +38,10 @@
 --
 --   ToDo: 
 
-with ada.text_io;					use ada.text_io;
 
+-- with ada.text_io;			use ada.text_io;
 with glib;
 with cairo.pattern;
-with cairo.matrix;
 
 package body et_colors.board is
 
@@ -56,7 +55,6 @@ package body et_colors.board is
 	is
 		use glib;
 		use cairo.pattern;
-		use cairo.matrix;
 
 		zero : constant gdouble := 0.0;
 		

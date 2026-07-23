@@ -40,6 +40,7 @@
 
 -- with et_text;
 
+-- with ada.text_io;			use ada.text_io;
 with et_device_placeholders;
 
 
@@ -64,7 +65,6 @@ is
 	procedure left_button is 
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
-		use et_device_placeholders;
 
 
 		procedure add_device is 
@@ -332,8 +332,6 @@ is
 	-- If right button clicked, then the operator is clarifying:
 	-- CS: Rotate objects (while adding, copying, fetching, ...)
 	procedure right_button is 
-		use et_canvas_schematic_nets;
-		use et_canvas_schematic_units;
 
 		use pac_path_and_bend;
 	begin

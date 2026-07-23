@@ -40,10 +40,9 @@
 -- - set exit code if targeted object does not exist
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
+with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 with et_modes.schematic;
 with et_sheets;							use et_sheets;
@@ -57,7 +56,6 @@ with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_schematic_ops_groups;
-with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_property_level;
 with et_canvas_schematic;

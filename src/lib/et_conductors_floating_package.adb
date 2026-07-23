@@ -40,13 +40,13 @@
 -- - clean up
 
 
-with ada.text_io;				use ada.text_io;
 -- with ada.strings;				use ada.strings;
 -- with ada.strings.fixed; 		use ada.strings.fixed;
 
 -- with ada.exceptions;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_conductors_floating_package is
 	
 

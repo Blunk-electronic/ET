@@ -37,13 +37,12 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.exceptions;			use ada.exceptions;
 with et_exceptions;				use et_exceptions;
 with et_string_processing;		use et_string_processing;
 
@@ -1868,7 +1867,6 @@ package body et_geometry_1.et_polygons is
 		return string
 	is
 		use ada.strings.unbounded;
-		use ada.characters.latin_1;
 		result : unbounded_string := to_unbounded_string (type_location'image (line_end.location));
 	begin
 		-- CS edges

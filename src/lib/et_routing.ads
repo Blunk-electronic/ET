@@ -66,6 +66,8 @@ with et_conductor_text.packages;
 with et_conductor_text.boards;
 
 package et_routing is
+
+	use pac_generic_modules;
 	
 	use pac_geometry_brd;
 	use pac_geometry_2;

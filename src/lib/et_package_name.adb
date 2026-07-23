@@ -38,11 +38,9 @@
 --
 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
 
+-- with ada.text_io;			use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
 with et_logging;				use et_logging;
 with et_string_processing;		use et_string_processing;

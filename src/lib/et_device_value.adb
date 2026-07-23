@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.maps;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

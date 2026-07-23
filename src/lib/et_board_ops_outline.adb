@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
+with et_module_names;					use et_module_names;
 with et_module;						use et_module;
 
 with et_modes.board;
@@ -329,7 +331,6 @@ package body et_board_ops_outline is
 			procedure query_segment (
 				segment	: in out type_segment)
 			is 
-				use et_object_status;
 			begin
 				reset_status (segment);
 			end query_segment;
@@ -1657,7 +1658,6 @@ package body et_board_ops_outline is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
-			use pac_holes;
 		begin
 			null;
 			-- CS
@@ -1724,7 +1724,6 @@ package body et_board_ops_outline is
 		use pac_contours;
 		use pac_segments;
 
-		use pac_holes;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),

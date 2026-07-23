@@ -36,11 +36,8 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters.latin_1;
-with ada.characters.handling;
-with ada.exceptions;
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;			use et_string_processing;
 
 with et_device_library.packages;

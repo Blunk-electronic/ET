@@ -37,10 +37,10 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_project_name;
 with et_project;
 with et_generic_modules;			use et_generic_modules;
-with et_assembly_variants;
 with et_time;
 with et_alignment;
 with et_text_content;				use et_text_content;
@@ -190,7 +190,6 @@ package body et_canvas.drawing_frame is
 			sector_height : constant pac_geometry.type_distance_positive := 
 				(h - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.rows);
 			
-			use et_text;
 
 			
 			procedure draw_index (
@@ -376,13 +375,11 @@ package body et_canvas.drawing_frame is
 		placeholders			: in type_placeholders_common;
 		title_block_position	: in pac_geometry.type_position)
 	is
-		use et_text;
 		use et_alignment;
 		use pac_draw_text;
 		use et_project;
 		use et_project_name;
 		-- use et_project.modules;
-		use et_assembly_variants;
 
 		-- A temporarily storage place for the
 		-- position of a placeholder:
@@ -447,7 +444,6 @@ package body et_canvas.drawing_frame is
 		texts					: in pac_static_texts.list;
 		title_block_position	: in pac_geometry.type_position)
 	is
-		use et_text;
 		use et_alignment;
 		use pac_draw_text;
 		
@@ -489,7 +485,6 @@ package body et_canvas.drawing_frame is
 		title_block_position	: in pac_geometry.type_position)
 	is
 		use et_time;
-		use et_text;
 		use et_alignment;
 		use pac_draw_text;
 		

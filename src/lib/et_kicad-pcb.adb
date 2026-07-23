@@ -38,6 +38,27 @@
 --   To Do:
 --	- distinguish between through, blind and buried vias.
 
+with et_string_processing;		use et_string_processing;
+
+with ada.characters;			use ada.characters;
+with et_package_name;				use et_package_name;
+with et_pcb_sides;					use et_pcb_sides;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_conductor_text;
+with et_conductor_text.boards;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_stopmask.packages;
+with ada.text_io;				use ada.text_io;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.maps;			use ada.strings.maps;
+with et_package_model_name;			use et_package_model_name;
+with et_conductors_floating_board;	use et_conductors_floating_board;
+with et_device_value;					use et_device_value;
+with et_conductor_text.boards;
+with et_conductor_segment;
+with et_stopmask.board;				use et_stopmask.board;
 with ada.directories;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
@@ -47,8 +68,6 @@ with ada.exceptions;
 with et_import;
 with et_vias;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_pcb_stack;
-with et_nets;
 with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
 
@@ -271,7 +290,6 @@ package body et_kicad.pcb is
 	is
 		board : type_board; -- to be returned
 
-		use et_module_board;
 		use et_package_bom_relevance;
 		use pac_lines_of_file;
 
@@ -627,7 +645,6 @@ package body et_kicad.pcb is
 
 		procedure set_stop_and_mask is
 		-- From the SMT terminal face, validates the status of stop mask and solder paste.
-			use et_board_coordinates;
 			
 			procedure invalid is begin
 				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
@@ -3412,9 +3429,6 @@ package body et_kicad.pcb is
 				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
@@ -3471,12 +3485,9 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_circle is 
-				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
@@ -3557,9 +3568,6 @@ package body et_kicad.pcb is
 				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
 			begin
 				-- The board_line is converted back to its anchestor, and
 				-- depending on the layer, extended with specific properties.
@@ -3685,10 +3693,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_arc is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 
 				-- compute end point of arc from center, start point and angle
@@ -3754,10 +3758,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_circle is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 				-- Compute the circle radius from its center and point at circle:
 				set_radius (package_circle, to_distance (
@@ -3845,10 +3845,6 @@ package body et_kicad.pcb is
 			procedure insert_fp_line is 
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_stencil;
-				use et_stopmask;
-				use et_keepout;
-				use et_conductor_segment;
 			begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
@@ -4245,8 +4241,6 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_fp_text is 
-				use et_silkscreen;
-				use et_assy_doc.packages;
 			begin
 				-- Since there is no alignment information provided, use default values:
 				package_text.alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
@@ -4402,8 +4396,6 @@ package body et_kicad.pcb is
 			procedure insert_polygon is
 			-- inserts the current polygon in the list "polygons"
 				--use et_packages;
-				use et_fill_zones.boards;
-				use type_polygon_points;
 			begin
 				board.polygons.append (polygon);
 
@@ -4726,7 +4718,6 @@ package body et_kicad.pcb is
 	is
 		use et_fill_zones;
 		use pac_floating_solid;
-		use et_pcb_stack;
 	begin
 		-- general stuff
 		log (text => "polygon" & 
@@ -4846,7 +4837,6 @@ package body et_kicad.pcb is
 				module   : in out type_module) 
 			is
 				-- The nets of the module are copied here (in their present state):
-				use et_nets.pac_nets;
 				nets 		: et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				
@@ -4956,7 +4946,6 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					use et_board_coordinates;
 				begin
 					log_indentation_up;
 					log (text => "segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", level => log_threshold + 3);
@@ -5153,7 +5142,6 @@ package body et_kicad.pcb is
 				function to_placeholders return type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
-					use et_board_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
 
 					

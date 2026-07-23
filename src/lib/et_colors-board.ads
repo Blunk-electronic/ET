@@ -39,13 +39,16 @@
 
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_pcb_sides;				use et_pcb_sides;
-with et_board_coordinates;		use et_board_coordinates;
 
 with et_canvas_board;
 
 package et_colors.board is
 
 	use et_canvas_board.pac_canvas;
+
+
+
+
 	-- The global variable "context" is now visible
 	-- for all procedures that set the color.
 

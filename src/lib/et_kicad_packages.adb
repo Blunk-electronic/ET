@@ -36,6 +36,18 @@
 --   history of changes:
 --
 
+with et_stopmask;				use et_stopmask;
+with et_keepout;				use et_keepout;
+with et_device_placeholders;			use et_device_placeholders;
+with et_string_processing;		use et_string_processing;
+with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
+with et_stopmask.packages;		use et_stopmask.packages;
+with et_stencil.packages;		use et_stencil.packages;
+with et_keepout.packages;		use et_keepout.packages;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_import;
+with et_logging;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -44,9 +56,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
-with et_conductor_segment;		use et_conductor_segment;
 with et_board_holes;			use et_board_holes;
-with et_conventions;
 with et_pcb_sides;
 with et_axes;							use et_axes;
 with et_directory_and_file_ops;
@@ -149,7 +159,6 @@ package body et_kicad_packages is
 		shape : type_contour; -- to be returned
 		c : type_circle;
 
-		use et_board_geometry.pac_geometry_brd;
 	begin
 		set_center (c, position.place);
 		--c.radius := type_angle (diameter / 2.0);
@@ -171,7 +180,6 @@ package body et_kicad_packages is
 		offset		: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
 
@@ -252,8 +260,6 @@ package body et_kicad_packages is
 		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_board_coordinates;
-		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
 
@@ -354,8 +360,6 @@ package body et_kicad_packages is
 		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return pac_segments.list 
 	is
-		use et_board_coordinates;
-		use pac_geometry_brd;
 
 		use pac_segments;
 		lines : pac_segments.list; -- to be returned
@@ -692,7 +696,6 @@ package body et_kicad_packages is
 		-- stopmask and solder paste:
 		procedure set_stop_and_mask is
 			use et_pcb_sides;
-			use et_board_coordinates;
 			
 			procedure invalid is begin
 				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
@@ -914,7 +917,6 @@ package body et_kicad_packages is
 			use type_argument;
 			use pac_text_content;
 			use et_pcb_sides;
-			use et_board_coordinates;
 			use pac_geometry_brd;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
@@ -1736,7 +1738,6 @@ package body et_kicad_packages is
 		-- Restores the previous section.
 		procedure exec_section is
 			use et_pcb_sides;
-			use et_board_coordinates;
 
 			procedure invalid_layer is begin
 				log (SEVERITY_ERROR, "invalid layer for this object !", console => true);
@@ -2382,7 +2383,6 @@ package body et_kicad_packages is
 		-- CS: validate text sizes and width according to specifications in configuration file
 		procedure check_placeholders is
 			use et_pcb_sides;
-			use et_board_coordinates;
 			use pac_text_placeholders;
 			cursor 		: pac_text_placeholders.cursor;
 			placeholder : type_text_placeholder;

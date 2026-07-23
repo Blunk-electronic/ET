@@ -38,10 +38,9 @@
 --   ToDo: 
 
 
-with ada.text_io;				use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
 with ada.directories;
 
-with et_string_processing;		use et_string_processing;
 with et_directory_and_file_ops;
 
 

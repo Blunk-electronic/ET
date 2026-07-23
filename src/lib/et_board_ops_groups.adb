@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_board_ops_devices;
 with et_board_ops_netchangers;
 with et_board_ops_assy_doc;

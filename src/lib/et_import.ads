@@ -36,18 +36,8 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings;		 		use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.directories;			use ada.directories;
-with ada.strings.bounded; 		use ada.strings.bounded;
-
 with et_project_name;			use et_project_name;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
 
 package et_import is
 

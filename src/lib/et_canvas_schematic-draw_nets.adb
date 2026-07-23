@@ -38,6 +38,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_primitive_objects;			use et_primitive_objects;
 with et_text_content;				use et_text_content;
 with et_alignment;
@@ -54,7 +55,6 @@ with et_net_names;					use et_net_names;
 separate (et_canvas_schematic)
 
 procedure draw_nets is
-	use et_canvas_schematic_nets;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
@@ -411,7 +411,6 @@ procedure draw_nets is
 		use et_colors;
 		use et_colors.schematic;
 
-		use et_modes.schematic;
 
 		-- This cursor points to the current net being drawn:
 		net_cursor : pac_nets.cursor := module.nets.first;

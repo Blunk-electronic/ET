@@ -38,26 +38,13 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
 
-with glib.values;
 
-with gdk.types;							use gdk.types;
-with gdk.event;							use gdk.event;
-with gdk.types.keysyms;					use gdk.types.keysyms;
 
-with gtk.widget;						use gtk.widget;
 
-with gtk.cell_renderer_text;		
-with gtk.cell_layout;        		
-with gtk.list_store;				
-with gtk.tree_model;
 
-with gtk.gentry;						use gtk.gentry;
-with gtk.container;						use gtk.container;
 
+-- with ada.text_io;			use ada.text_io;
 with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops_outline;				use et_board_ops_outline;
@@ -67,11 +54,8 @@ with et_display;						use et_display;
 with et_display.board;					use et_display.board;
 
 with et_logging;						use et_logging;
-with et_string_processing;				use et_string_processing;
-with et_exceptions;						use et_exceptions;
 
 with et_object_status;						use et_object_status;
-with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
 

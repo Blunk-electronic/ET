@@ -42,27 +42,20 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
-with et_exceptions;						use et_exceptions;
+-- with ada.text_io;			use ada.text_io;
+with et_string_processing;		use et_string_processing;
 with et_runmode;						use et_runmode;
 with et_modes.board;					use et_modes.board;
-with et_keywords;						use et_keywords;
-with et_module;							use et_module;
-with et_module_names;					use et_module_names;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 with et_board_ops_groups;
-with et_design_rules_board;
 
 with et_device_name;					use et_device_name;
 with et_unit_name;						use et_unit_name;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_schematic_ops_groups;
 with et_board_ops_devices;				use et_board_ops_devices;
-with et_devices_electrical;				use et_devices_electrical;
 with et_device_property_level;			use et_device_property_level;
 with et_canvas_board;
 with et_device_prefix;					use et_device_prefix;

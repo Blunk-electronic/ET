@@ -49,18 +49,10 @@ with ada.strings; 				use ada.strings;
 with et_string_processing;				use et_string_processing;
 with et_directory_and_file_ops;
 
-with et_alignment;						use et_alignment;
-with et_assembly_technology;			use et_assembly_technology;
-with et_terminals;						use et_terminals;
 
-with et_primitive_objects;				use et_primitive_objects;
-with et_time;							use et_time;
-with et_package_description;			use et_package_description;
-with et_keywords;						use et_keywords;
 with et_file_sections;					use et_file_sections;
 with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
-with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 -- with et_design_rules_board;				use et_design_rules_board;

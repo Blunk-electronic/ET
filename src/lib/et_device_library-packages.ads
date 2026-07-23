@@ -44,7 +44,6 @@
 --
 --
 
-with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;

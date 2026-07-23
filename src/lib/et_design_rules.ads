@@ -38,7 +38,6 @@
 --   ToDo: 
 
 with et_design_rules_board;
-with et_design_rules_schematic;
 
 
 package et_design_rules is

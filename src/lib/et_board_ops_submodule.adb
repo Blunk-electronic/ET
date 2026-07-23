@@ -39,7 +39,8 @@
 -- - clean up, rework
 --
 
-with ada.exceptions;				use ada.exceptions;
+-- with ada.text_io;			use ada.text_io;
+with ada.exceptions;
 
 with et_module;						use et_module;
 with et_submodules;					use et_submodules;

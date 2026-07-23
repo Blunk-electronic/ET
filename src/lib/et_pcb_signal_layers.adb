@@ -36,12 +36,15 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with et_logging;				use et_logging;
+with ada.containers;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.exceptions;
 
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 
 
 package body et_pcb_signal_layers is

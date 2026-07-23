@@ -52,7 +52,6 @@ package et_silkscreen is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_board;
 	use pac_text_board_vectorized;
 	
 

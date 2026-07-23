@@ -37,9 +37,9 @@
 --
 --   to do:
 
-with ada.text_io;				use ada.text_io;
 
-with et_mirroring;				use et_mirroring;
+-- with ada.text_io;			use ada.text_io;
+with et_mirroring;
 
 
 package body et_conductor_text is

@@ -40,18 +40,13 @@
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
-with ada.directories;			use ada.directories;
 
 with et_schematic_geometry;
-with et_schematic_coordinates;
 -- with et_import;
-with et_material;
 with et_device_partcode;		use et_device_partcode;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_package_name;			use et_package_name;
 with et_device_category;		use et_device_category;
@@ -432,7 +427,6 @@ package et_conventions is
 	-- The name of the conventions file may have 100 characters which seems sufficient for now.
  	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max); 
-	use pac_file_name;
 
 	function to_file_name (file : in string) return pac_file_name.bounded_string;
 	function to_string (file : in pac_file_name.bounded_string) return string;

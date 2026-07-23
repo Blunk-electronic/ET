@@ -35,19 +35,9 @@
 --
 --   history of changes:
 
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.text_io;				use ada.text_io;
 
 with ada.calendar;				use ada.calendar;
-with ada.calendar.formatting;	use ada.calendar.formatting;
-with ada.calendar.time_zones;	use ada.calendar.time_zones;
-
-with gnat.calendar;
 
 
 package et_time is

@@ -40,11 +40,12 @@
 --
 
 
-with ada.text_io;						use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
+with et_netchangers;
+with et_generic_modules;
+with et_module_names;					use et_module_names;
 with ada.containers;
 
-with ada.exceptions;					use ada.exceptions;
-with et_string_processing;				use et_string_processing;
 
 with et_module;							use et_module;
 with et_schematic_ops_netchangers;

@@ -41,17 +41,16 @@
 
 
 
-with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with ada.strings; 				use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_keywords;						use et_keywords;
 with et_file_sections;					use et_file_sections;
 
 with et_board_geometry;					use et_board_geometry;
 
 with et_stopmask;						use et_stopmask;
-with et_stopmask.packages;				use et_stopmask.packages;
 
 with et_file_write;						use et_file_write;
 
