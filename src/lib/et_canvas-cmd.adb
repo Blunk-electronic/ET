@@ -383,6 +383,8 @@ package body et_canvas.cmd is
 				case cmd_field_count is
 					when 6 =>  -- move cursor 5 -10
 						move_cursor;
+						-- CS: seems to be an infinite recursion.
+						-- The procedure calls itself keeps stuck.
 
 					when 7 .. type_field_count'last => too_long;
 
