@@ -274,7 +274,9 @@ package body et_devices_electrical.units is
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
-		is begin
+		is
+			pragma unreferenced (device_name, device);
+		begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
 		end query_unit;
@@ -321,6 +323,7 @@ package body et_devices_electrical.units is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
 		is 
+			pragma unreferenced (device_name);
 			unit_cursor : pac_units.cursor;
 		begin
 			-- Locate the given unit in the device.
@@ -361,7 +364,9 @@ package body et_devices_electrical.units is
 		procedure get_positions (
 			device_name : in type_device_name;
 			device		: in type_device_electrical) 
-		is begin
+		is
+			pragma unreferenced (device_name);
+		begin
 			positions := get_unit_positions (device.units);
 		end;
 
@@ -438,6 +443,7 @@ package body et_devices_electrical.units is
 			model_name		: in pac_device_model_file.bounded_string;
 			device_model	: in type_device_model) 
 		is
+			pragma unreferenced (model_name);
 			unit_cursor : pac_units_internal.cursor;			
 		begin
 			-- Locate the given unit in the device model
@@ -456,6 +462,7 @@ package body et_devices_electrical.units is
 			model_name		: in pac_device_model_file.bounded_string;
 			device_model	: in type_device_model) 
 		is
+			pragma unreferenced (model_name);
 			unit_cursor : pac_units_external.cursor;
 		begin
 			-- Locate the given unit in the device model
@@ -588,7 +595,9 @@ package body et_devices_electrical.units is
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
-		is begin
+		is
+			pragma unreferenced (device_name, device);
+		begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
 
@@ -690,6 +699,7 @@ package body et_devices_electrical.units is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			pragma unreferenced (model);
 			use pac_units_internal;			
 			unit_cursor : pac_units_internal.cursor;
 		begin
@@ -726,6 +736,7 @@ package body et_devices_electrical.units is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			pragma unreferenced (model);
 			use et_symbol_library;
 			use et_symbol_name;
 			use pac_units_external;
@@ -736,7 +747,9 @@ package body et_devices_electrical.units is
 			procedure query_symbol (
 				symbol_name	: in pac_symbol_model_name.bounded_string;
 				symbol		: in type_symbol_model) 
-			is begin
+			is
+				pragma unreferenced (symbol_name);
+			begin
 				-- Collect the positions of texts and store them in result.text
 				-- in the same order as they are listed in symbol.texts:
 				iterate (symbol.texts, query_text'access);
@@ -1024,6 +1037,7 @@ package body et_devices_electrical.units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is 
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 			begin
 				-- Iterate through the units and collect properties:
@@ -1100,6 +1114,7 @@ package body et_devices_electrical.units is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model)
 		is
+			pragma unreferenced (model);
 			use pac_package_variants;
 
 			-- Locate the package variant of the given device
@@ -1112,6 +1127,7 @@ package body et_devices_electrical.units is
 				name	: in pac_package_variant_name.bounded_string;
 				variant	: in type_package_variant)
 			is
+				pragma unreferenced (name);
 				use pac_terminal_port_map;
 
 				-- Locate the terminal in the terminal-port-map
@@ -1175,7 +1191,9 @@ package body et_devices_electrical.units is
 		procedure query_unit (
 			unit_name	: in pac_unit_name.bounded_string;
 			unit		: in out type_unit)
-		is begin
+		is
+			pragma unreferenced (unit_name);
+		begin
 			set_selected (unit);
 		end query_unit;
 

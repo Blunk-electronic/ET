@@ -198,6 +198,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_lines;
 	begin
 		case face is
@@ -222,6 +223,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_arcs;
 	begin
 		case face is
@@ -247,6 +249,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_doc_circles;
 	begin
 		-- CS log message
@@ -275,6 +278,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.assy_doc, (contour with null record), face);
@@ -293,6 +297,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
 		-- CS log message
@@ -312,6 +317,7 @@ package body et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use et_device_placeholders.packages;
 	begin
 		-- CS log message

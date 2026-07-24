@@ -141,6 +141,7 @@ package body et_device_write is
 			put_line (comment_mark_default & " device model file end");
 			new_line;
 		end write_footer;
+		pragma unreferenced (write_footer);
 		
 		
 	begin

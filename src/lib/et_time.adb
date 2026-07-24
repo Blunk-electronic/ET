@@ -115,6 +115,7 @@ package body et_time is
 
 	
 	function date_valid (date : in type_date) return boolean is
+	pragma unreferenced (date);
 	begin
 		-- CS
 		-- CS: call a procedure that says something like "date format invalid" or "date in stone age or date in future"

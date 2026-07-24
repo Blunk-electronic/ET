@@ -199,6 +199,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_silk_lines;
 	begin
 		-- CS log message
@@ -225,6 +226,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_silk_arcs;
 	begin
 		-- CS log message
@@ -253,6 +255,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_silk_circles;
 	begin
 		-- CS log message
@@ -280,6 +283,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		-- CS log message
@@ -298,6 +302,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
 		-- CS log message
@@ -316,6 +321,7 @@ package body et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use et_device_placeholders.packages;
 	begin
 		-- CS log message

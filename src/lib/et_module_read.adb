@@ -1958,6 +1958,7 @@ package body et_module_read is
 			-- Copies the submodules in submods.
 				module_name	: pac_module_name.bounded_string;
 				module		: type_generic_module) is
+			pragma unreferenced (module_name);
 			begin
 				submods := module.submods;
 			end;

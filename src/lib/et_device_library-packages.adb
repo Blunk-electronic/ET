@@ -59,6 +59,7 @@ package body et_device_library.packages is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is 
+			pragma unreferenced (device_name);
 			use pac_package_variants;
 			--vc : constant pac_package_variants.cursor := find (device.variants, variant);
 		begin
@@ -92,6 +93,7 @@ package body et_device_library.packages is
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) is
+		pragma unreferenced (device_name);
 		begin
 			if pac_package_variants.contains (device.variants, variant) then
 				result := true;
@@ -155,6 +157,7 @@ package body et_device_library.packages is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is
+			pragma unreferenced (device_name);
 			use et_package_library;
 			use pac_package_variants;
 			variant_cursor : pac_package_variants.cursor;

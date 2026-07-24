@@ -197,6 +197,7 @@ package body et_package_read_conductors is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_conductor_lines;
 	begin
 		case face is
@@ -221,6 +222,7 @@ package body et_package_read_conductors is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_conductor_arcs;
 	begin
 		-- CS check arc
@@ -248,6 +250,7 @@ package body et_package_read_conductors is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is 
+		pragma unreferenced (log_threshold);
 		use pac_conductor_circles;
 	begin
 		case face is

@@ -436,6 +436,7 @@ package body et_conductor_segment.boards is
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean 
 	is
+		pragma unreferenced (point);
 		result : boolean := false; -- to be returned
 	begin
 		if element (arc).layer = layer then

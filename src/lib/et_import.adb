@@ -94,6 +94,7 @@ package body et_import is
 		name		: in pac_project_name.bounded_string;
 		cad_format	: in type_cad_format := UNKNOWN) 
 	is
+	pragma unreferenced (cad_format);
 	-- CS: currently this is just a test, whether the directory "name" exists.
 	-- CS: do a more detailled check depending on cad format (look for project files).
 	begin

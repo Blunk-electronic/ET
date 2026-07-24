@@ -2140,6 +2140,7 @@ package body et_conventions is
 		procedure validate_argument (
 			kw	: in type_partcode_keyword.bounded_string;
 			arg	: in type_partcode_keyword_argument.bounded_string) is
+		pragma unreferenced (arg);
 		begin
 			log (text => "keyword " & to_string (kw) 
 				 & " argument " & to_string (argument => argument), level => log_threshold + 1);

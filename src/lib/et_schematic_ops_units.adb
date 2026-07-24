@@ -143,7 +143,9 @@ package body et_schematic_ops_units is
 		procedure query_units (
 			device_name	: in type_device_name; -- R2
 			device		: in type_device_electrical)
-		is begin
+		is
+			pragma unreferenced (device_name);
+		begin
 			unit_cursor := find (device.units, unit);
 		end query_units;
 	
@@ -197,6 +199,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_unit_name;
 			device_cursor : pac_devices_electrical.cursor;
 
@@ -205,6 +208,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
@@ -273,6 +277,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_unit_name;
 			device_cursor : pac_devices_electrical.cursor;
 
@@ -281,6 +286,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
 				use pac_port_name;
@@ -363,6 +369,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical) 
 			is
+			pragma unreferenced (device_name);
 			begin
 				if contains (device.units, element (c)) then
 					in_use := true;
@@ -389,7 +396,9 @@ package body et_schematic_ops_units is
 		procedure get_device_model (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			-- locate the device in the schematic:
 			device_cursor_sch := find (module.devices, device_name);
 
@@ -462,6 +471,7 @@ package body et_schematic_ops_units is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical) 
 		is
+		pragma unreferenced (device_name);
 		begin
 			if contains (device.units, unit_name) then
 				available := false;
@@ -518,6 +528,7 @@ package body et_schematic_ops_units is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
 		is 
+			pragma unreferenced (device_name);
 			procedure query_unit (c : in pac_units.cursor) is 
 				use pac_unit_name;
 				use pac_unit_names;
@@ -583,6 +594,7 @@ package body et_schematic_ops_units is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
 		is 
+			pragma unreferenced (device_name);
 			unit_cursor : pac_units.cursor;
 		begin
 			-- locate the given unit in the given device
@@ -652,6 +664,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 			
@@ -660,6 +673,7 @@ package body et_schematic_ops_units is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -798,6 +812,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 			
@@ -806,6 +821,7 @@ package body et_schematic_ops_units is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
+				pragma unreferenced (net_name);
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -995,6 +1011,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor_sch	: pac_devices_electrical.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: pac_device_models.cursor;
@@ -1004,6 +1021,7 @@ package body et_schematic_ops_units is
 				model	: in pac_device_model_file.bounded_string;
 				device	: in type_device_model) 
 			is
+				pragma unreferenced (model);
 				variant_cursor : pac_package_variants.cursor;
 
 				
@@ -1011,6 +1029,7 @@ package body et_schematic_ops_units is
 					variant_name	: in pac_package_variant_name.bounded_string;
 					variant			: in type_package_variant) 
 				is
+					pragma unreferenced (variant_name);
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use pac_port_name;
@@ -1116,6 +1135,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- The ports of the unit must be removed from the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet_old : type_sheet;
@@ -1126,6 +1146,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := 
 					locate_unit (device, unit_name);
@@ -1230,6 +1251,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name, module);
 			use pac_device_names;
 
 			
@@ -1398,6 +1420,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -1537,6 +1560,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor_after  : pac_devices_electrical.cursor;
 			inserted : boolean;
 
@@ -1679,6 +1703,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
@@ -1690,12 +1715,15 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				
 				-- Does the actual move of the unit:
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is begin					
+				is
+					pragma unreferenced (unit_name);
+				begin					
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
@@ -1837,16 +1865,19 @@ package body et_schematic_ops_units is
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level)
 	is
+	pragma unreferenced (log_threshold);
 	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
+	pragma unreferenced (module_name);
 	
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 				
 				
@@ -1855,7 +1886,9 @@ package body et_schematic_ops_units is
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin	
+				is
+					pragma unreferenced (unit_name);
+				begin	
 					if get_sheet (unit) = sheet_old then
 						move_unit (unit, offset);
 					end if;
@@ -2063,6 +2096,7 @@ package body et_schematic_ops_units is
 		
 		log_indentation_down;
 	end movable_test;
+	pragma unreferenced (movable_test);
 
 
 
@@ -2086,6 +2120,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor;
 
 			
@@ -2093,6 +2128,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name; -- IC45
 				device		: in type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor;				
 			begin
 				-- If the given unit_name contains something, locate the unit
@@ -2274,6 +2310,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -2427,6 +2464,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- The new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet : type_sheet;
@@ -2439,12 +2477,15 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				
 				-- Moves the the unit:
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is begin					
+				is
+					pragma unreferenced (unit_name);
+				begin					
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
@@ -2602,6 +2643,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
@@ -2614,12 +2656,15 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				
 				-- Does the actual rotation of the unit:
 				procedure rotate_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is begin					
+				is
+					pragma unreferenced (unit_name);
+				begin					
 					case coordinates is
 						when ABSOLUTE =>
 							set_rotation (unit, rotation);
@@ -2774,6 +2819,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
@@ -2785,12 +2831,15 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				
 				-- Does the actual mirroring of the unit:
 				procedure mirror_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is begin	
+				is
+					pragma unreferenced (unit_name);
+				begin	
 					toggle_mirror_status (unit);
 					
 					-- The placeholders are left as they are.
@@ -2958,16 +3007,20 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is	
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is 
+				pragma unreferenced (device_name);
 
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					modify_status (unit, operation);
 					-- log (text => "done", level => log_threshold + 1);
 
@@ -3031,6 +3084,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			procedure query_device (
@@ -3132,6 +3186,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -3210,6 +3265,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -3270,6 +3326,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			proceed : aliased boolean := true;
@@ -3367,6 +3424,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3374,13 +3432,16 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					if on_sheet_and_in_area (unit, sheet, area) then
 						-- CS: log the full name like IC1.C
 						-- log (text =>  to_string (unit_name), level => log_threshold;
@@ -3445,6 +3506,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3546,6 +3608,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3630,6 +3693,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3637,13 +3701,16 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
 						
@@ -3705,6 +3772,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3712,13 +3780,16 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
 						
@@ -3780,6 +3851,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3787,13 +3859,16 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					-- CS log full name like IC1.D
 					clear_moving (unit);
 				end query_unit;
@@ -3861,6 +3936,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
@@ -3868,13 +3944,16 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
+				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
 
@@ -3997,12 +4076,14 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				-- Locate the targeted unit.
 				-- It must exist. Otherwise an exception
 				-- is raised here:
@@ -4012,7 +4093,9 @@ package body et_schematic_ops_units is
 				procedure move_placeholder (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is begin
+				is
+					pragma unreferenced (unit_name);
+				begin
 					move_placeholder (unit, meaning, coordinates, point);
 				end move_placeholder;
 
@@ -4105,12 +4188,14 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
+				pragma unreferenced (device_name);
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- is raised here:
@@ -4120,7 +4205,9 @@ package body et_schematic_ops_units is
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) 
-				is begin
+				is
+					pragma unreferenced (name);
+				begin
 					rotate_placeholder (unit, meaning, toggle, rotation);
 				end rotate_placeholder;
 
@@ -4256,16 +4343,19 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is	
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is 
+				pragma unreferenced (device_name);
 
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
 				is 
+					pragma unreferenced (unit_name);
 					use et_device_placeholders.symbols;
 				begin
 					case get_meaning (placeholder) is
@@ -4327,6 +4417,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			procedure query_device (
@@ -4427,6 +4518,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -4509,6 +4601,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			proceed : aliased boolean := true;
@@ -4751,6 +4844,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 
 			-- This procedure queries the devices and their units
 			-- and collects those which have the given flag set:			
@@ -5199,6 +5293,7 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 

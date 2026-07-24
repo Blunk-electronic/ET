@@ -329,6 +329,7 @@ package body et_module_read_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_pcb_sides;
 		begin
 			case face is
@@ -420,7 +421,9 @@ package body et_module_read_text_board is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			pac_placeholders_conductor.append (
 				container	=> module.board.conductors_floating.placeholders,
 				new_item	=> board_text_conductor_placeholder);
@@ -466,6 +469,7 @@ package body et_module_read_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_silkscreen;
 			use et_assy_doc;
 			use et_stopmask;
@@ -551,6 +555,7 @@ package body et_module_read_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			pragma unreferenced (module_name);
 			use et_conductor_text.boards;
 			use pac_conductor_texts_board;
 			use et_mirroring;

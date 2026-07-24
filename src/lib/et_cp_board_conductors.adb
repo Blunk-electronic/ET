@@ -98,6 +98,7 @@ package body et_cp_board_conductors is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 		
@@ -122,7 +123,9 @@ package body et_cp_board_conductors is
 		procedure set_fill_style (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.fill_style := 
 				to_fill_style (get_field (cmd, 6));
 		end set_fill_style;
@@ -131,7 +134,9 @@ package body et_cp_board_conductors is
 		procedure set_linewidth (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.linewidth := 
 				to_distance (get_field (cmd, 6));
 		end set_linewidth;
@@ -140,7 +145,9 @@ package body et_cp_board_conductors is
 		procedure set_iso (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.isolation := 
 				to_distance (get_field (cmd, 6));
 		end set_iso;
@@ -150,6 +157,7 @@ package body et_cp_board_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use et_fill_zones.boards;
 		begin
 			module.board.user_settings.polygons_conductor.priority_level := 
@@ -160,7 +168,9 @@ package body et_cp_board_conductors is
 		procedure set_easing_style (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.easing.style := 
 				to_easing_style (get_field (cmd, 7));
 		end set_easing_style;
@@ -169,7 +179,9 @@ package body et_cp_board_conductors is
 		procedure set_easing_radius (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.easing.radius := 
 				to_distance (get_field (cmd, 7));
 		end set_easing_radius;	
@@ -178,7 +190,9 @@ package body et_cp_board_conductors is
 		procedure set_connection (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.connection := 
 				to_pad_connection (get_field (cmd, 6));
 		end set_connection;	
@@ -187,7 +201,9 @@ package body et_cp_board_conductors is
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.spacing := 
 				to_distance (get_field (cmd, 6));
 		end set_hatching_spacing;	
@@ -196,7 +212,9 @@ package body et_cp_board_conductors is
 		procedure set_thermal_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.thermal.width_min := 
 				to_distance (get_field (cmd, 7));
 		end set_thermal_width;	
@@ -205,7 +223,9 @@ package body et_cp_board_conductors is
 		procedure set_thermal_gap (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.polygons_conductor.thermal.gap_max := 
 				to_distance (get_field (cmd, 7));
 		end set_thermal_gap;	

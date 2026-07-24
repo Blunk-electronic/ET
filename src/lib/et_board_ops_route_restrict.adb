@@ -69,7 +69,9 @@ package body et_board_ops_route_restrict is
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.lines,
 				new_item	=> line);
@@ -141,7 +143,9 @@ package body et_board_ops_route_restrict is
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.arcs,
 				new_item	=> arc);
@@ -211,7 +215,9 @@ package body et_board_ops_route_restrict is
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container	=> module.board.route_restrict.circles,
 				new_item	=> circle);
@@ -280,6 +286,7 @@ package body et_board_ops_route_restrict is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
@@ -384,7 +391,9 @@ package body et_board_ops_route_restrict is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.route_restrict.contours.append (zone);
 		end;
 

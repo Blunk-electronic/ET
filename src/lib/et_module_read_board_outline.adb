@@ -113,7 +113,9 @@ package body et_module_read_board_outline is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.board_contour.outline := 
 				(contour with null record);
 
@@ -149,7 +151,9 @@ package body et_module_read_board_outline is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			append (
 				container 	=> module.board.board_contour.holes,
 				new_item	=> (contour with null record));

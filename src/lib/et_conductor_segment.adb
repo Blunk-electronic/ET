@@ -190,6 +190,7 @@ package body et_conductor_segment is
 		lines	: in out pac_conductor_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_conductor_lines.list;
 
 		procedure query_line (c : in pac_conductor_lines.cursor) is
@@ -400,6 +401,7 @@ package body et_conductor_segment is
 		arcs	: in out pac_conductor_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_conductor_arcs.list;
 
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is
@@ -587,6 +589,7 @@ package body et_conductor_segment is
 		circles	: in out pac_conductor_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_conductor_circles.list;
 
 		procedure query_circle (c : in pac_conductor_circles.cursor) is

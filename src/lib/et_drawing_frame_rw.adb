@@ -94,6 +94,7 @@ package body et_drawing_frame_rw is
 		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (log_threshold);
 		file_handle : ada.text_io.file_type;
 
 		
@@ -356,6 +357,7 @@ package body et_drawing_frame_rw is
 		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
+		pragma unreferenced (log_threshold);
 		file_handle : ada.text_io.file_type;
 
 		

@@ -333,6 +333,7 @@ package body et_project is
 			create_directory (compose (path, directory_libraries_symbols));
 			create_directory (compose (path, directory_libraries_packages));			
 		end create_library_subdirs;
+		pragma unreferenced (create_library_subdirs);
 
 		
 	begin -- create_project_directory_bare
@@ -369,6 +370,7 @@ package body et_project is
 		project_name	: in pac_project_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
+		pragma unreferenced (log_threshold);
 		use ada.directories;
 	begin
 		if exists (to_string (project_name)) then

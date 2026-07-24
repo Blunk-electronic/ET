@@ -121,6 +121,7 @@ package body et_canvas_board_devices is
 			end if;
 		end if;
 	end show_selected_device;
+	pragma unreferenced (show_selected_device);
 
 
 
@@ -1178,6 +1179,7 @@ package body et_canvas_board_devices is
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_rename_window_destroy");
 		reset;

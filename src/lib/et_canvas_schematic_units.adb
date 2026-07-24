@@ -761,6 +761,7 @@ package body et_canvas_schematic_units is
 	procedure cb_value_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_value_window_destroy");
 		reset;
@@ -937,6 +938,7 @@ package body et_canvas_schematic_units is
 	procedure cb_purpose_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_purpose_window_destroy");
 		reset;
@@ -1112,6 +1114,7 @@ package body et_canvas_schematic_units is
 	procedure cb_partcode_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_partcode_window_destroy");
 		reset;
@@ -1248,7 +1251,9 @@ package body et_canvas_schematic_units is
 
 	procedure cb_package_variant_window_destroy (
 		window : access gtk_widget_record'class)
-	is begin
+	is
+		pragma unreferenced (window);
+	begin
 		log (text => "cb_package_variant_window_destroy", level => log_threshold);
 		reset;
 	end cb_package_variant_window_destroy;
@@ -1261,6 +1266,7 @@ package body et_canvas_schematic_units is
 	procedure cb_package_variant_apply (
 		button : access gtk_button_record'class)
 	is 
+		pragma unreferenced (button);
 
 		-- Sets the package_variant of the selected object:
 		procedure finalize is
@@ -1490,6 +1496,7 @@ package body et_canvas_schematic_units is
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
 	is
+	pragma unreferenced (window);
 	begin
 		put_line ("cb_rename_window_destroy");
 		reset;
@@ -2346,6 +2353,7 @@ package body et_canvas_schematic_units is
 					device_name	: in type_device_name;
 					device		: in type_device_electrical) 
 				is
+					pragma unreferenced (device_name);
 					use pac_units;
 				begin
 					if contains (device.units, element (c)) then
@@ -2489,7 +2497,9 @@ package body et_canvas_schematic_units is
 	
 	procedure cb_fetch_menu_destroy (
 		menu : access gtk.menu_shell.gtk_menu_shell_record'class) 
-	is begin
+	is
+		pragma unreferenced (menu);
+	begin
 		set_status ("cb_fetch_menu_destroy");
 
 		-- Clean up for next unit to be fetched:

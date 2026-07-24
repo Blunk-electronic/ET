@@ -127,6 +127,7 @@ package body et_module_write_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			texts : pac_conductor_texts_board.list 
 				renames module.board.conductors_floating.texts;
 		begin
@@ -260,7 +261,9 @@ package body et_module_write_text_board is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					case layer_cat is
@@ -364,6 +367,7 @@ package body et_module_write_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			texts : pac_placeholders_conductor.list 
 				renames module.board.conductors_floating.placeholders;
 		begin
@@ -437,7 +441,9 @@ package body et_module_write_text_board is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					case layer_cat is

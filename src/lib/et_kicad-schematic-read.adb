@@ -1669,7 +1669,9 @@ is
 		-- add junction to module.junctions
 			module_name : in type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			type_junctions.append (
 				container	=> module.junctions,
 				new_item	=> junction);
@@ -2308,6 +2310,7 @@ is
 				lib_name 	: in pac_device_model_file.bounded_string;
 				components 	: in type_components_library.map) 
 			is
+				pragma unreferenced (lib_name);
 				use type_components_library;
 				component_cursor : type_components_library.cursor := components.first;
 				--use type_component_generic_name;
@@ -2398,6 +2401,7 @@ is
 				lib_name	: in pac_device_model_file.bounded_string;
 				lib			: in type_components_library.map) 
 			is
+				pragma unreferenced (lib_name);
 				use type_components_library;
 			begin
 				if contains (lib, component) then
@@ -3212,6 +3216,7 @@ is
 		procedure append_no_connect_flag (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
+			pragma unreferenced (module_name);
 			use type_no_connection_flags;
 		begin
 			append (

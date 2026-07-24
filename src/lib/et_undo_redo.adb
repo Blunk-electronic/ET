@@ -77,6 +77,7 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_commit_message;
 
 			
@@ -263,6 +264,7 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			use pac_commit_message;
 
 			
@@ -461,6 +463,7 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
+			pragma unreferenced (module_name);
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
 
@@ -761,6 +764,7 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 		
+			pragma unreferenced (module_name);
 			-- Contains the index of the latest commit:
 			commit_index : constant type_commit_index := module.commit_index + 2;
 

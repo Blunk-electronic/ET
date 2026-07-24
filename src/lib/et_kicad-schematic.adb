@@ -251,6 +251,7 @@ package body et_kicad.schematic is
 		procedure locate (
 			name		: in type_device_name;
 			component	: in type_component_schematic) is
+		pragma unreferenced (name);
 		begin
 			-- copy the units of the component to the return value
 			u := component.units;
@@ -288,6 +289,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end check_prefix_characters;
+	pragma unreferenced (check_prefix_characters);
 
 	
 	
@@ -534,6 +536,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
+	pragma unreferenced (validate_prefix);
 
 
 	
@@ -887,6 +890,7 @@ package body et_kicad.schematic is
 	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return type_de_morgan_representation is
+			pragma unreferenced (schematic);
 
 		rep_in : type_alternative_representation;
 		rep_out : type_de_morgan_representation;
@@ -944,6 +948,7 @@ package body et_kicad.schematic is
 
 		-- CS: exception handler
 	end to_degrees;
+	pragma unreferenced (to_degrees);
 
 
 
@@ -987,6 +992,7 @@ package body et_kicad.schematic is
 			no_package;
 		end if;
 	end validate_component_package_name;
+	pragma unreferenced (validate_component_package_name);
 
 
 
@@ -1018,6 +1024,7 @@ package body et_kicad.schematic is
 			library_name	: in pac_device_model_file.bounded_string;
 			components 		: in out type_components_library.map) 
 		is
+			pragma unreferenced (library_name);
 			use type_components_library;
 			component_cursor : type_components_library.cursor; -- points to the generic component
 
@@ -1027,6 +1034,7 @@ package body et_kicad.schematic is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) 
 			is
+				pragma unreferenced (component_name);
 				use et_package_library;
 				use pac_package_name;
 				use pac_package_variants;
@@ -1230,6 +1238,7 @@ package body et_kicad.schematic is
 		-- If the net existed already, then strand is appended to the strands of the net.
 			mod_name : in type_submodule_name.bounded_string;
 			module   : in out et_kicad.pcb.type_module) is
+				pragma unreferenced (mod_name);
 
 			use type_nets;
 			
@@ -1376,6 +1385,7 @@ package body et_kicad.schematic is
 		procedure set_cursor (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+ 		pragma unreferenced (mod_name);
  		begin
 			cursor := module.nets.first;
 		end set_cursor;
@@ -1443,6 +1453,7 @@ package body et_kicad.schematic is
 			procedure query_gui_submodules (
 				mod_name	: in type_submodule_name.bounded_string;
 				module 		: in out type_module) is
+				pragma unreferenced (mod_name);
 				submodule_cursor : type_hierarchic_sheets.cursor := module.hierarchic_sheets.first; -- CS: rename to gui_submodule_cursor
 				use type_hierarchic_sheets;
 
@@ -1461,6 +1472,7 @@ package body et_kicad.schematic is
 					procedure mark_processed (
 						name : in pac_net_name.bounded_string;
 						port : in out type_hierarchic_sheet_port) is
+					pragma unreferenced (name);
 					begin
 						port.processed := true;
 					end mark_processed;
@@ -1664,6 +1676,7 @@ package body et_kicad.schematic is
 			net_name : in pac_net_name.bounded_string; -- the name of the net being examined
 			net      : in type_net -- the net being examined
 			) is
+			pragma unreferenced (net_name);
 			use type_strands;
 			-- The cursor pointing to the strand of the net. Defaults to the first strand.
 			strand : type_strands.cursor := net.strands.first; 
@@ -1719,18 +1732,21 @@ package body et_kicad.schematic is
 			net_cursor	: in type_nets.cursor;
 			strands	 	: in type_strands.list
 			) is
+			pragma unreferenced (strands);
 			use type_modules;
 
 			procedure locate_net (
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in out type_module
 				) is
+				pragma unreferenced (module_name);
 				--net_cursor : type_nets.cursor;
 
 				procedure append_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net
 					) is
+					pragma unreferenced (net_name);
 					use type_strands;
 				begin
 					splice (
@@ -1861,6 +1877,7 @@ package body et_kicad.schematic is
 		procedure query_strand (
 			net_name 	: in pac_net_name.bounded_string;
 			net 		: in type_net) is
+			pragma unreferenced (net_name);
 			
 			strand : type_strands.cursor := net.strands.first;
 			use type_strands;
@@ -1891,6 +1908,7 @@ package body et_kicad.schematic is
 		procedure query_net (
 			mod_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) is
+			pragma unreferenced (mod_name);
 			net : type_nets.cursor := module.nets.first;
 			use type_nets;
 		begin
@@ -3159,6 +3177,7 @@ package body et_kicad.schematic is
 			-- Saves the current tmp_component_libraries in the current module.
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in out et_kicad.pcb.type_module) is
+			pragma unreferenced (module_name);
 			begin
 				module.component_libraries := tmp_component_libraries;
 			end save_components;
@@ -3167,7 +3186,9 @@ package body et_kicad.schematic is
 			procedure save_packages (
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in out et_kicad.pcb.type_module) 
-			is begin
+			is
+				pragma unreferenced (module_name);
+			begin
 				module.footprints := et_kicad_packages.package_libraries;
 			end save_packages;
 			
@@ -3556,6 +3577,7 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+		pragma unreferenced (mod_name);
 		begin
 			log_indentation_up;
 			log (text => "inserting strand " 
@@ -3582,6 +3604,7 @@ package body et_kicad.schematic is
 		procedure set_cursor (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+ 		pragma unreferenced (mod_name);
  		begin
 			cursor := module.strands.first;
 		end set_cursor;
@@ -3604,6 +3627,7 @@ package body et_kicad.schematic is
 		procedure set_cursor (
 			name 	: in type_device_name;
 			ports	: in type_ports.list) is
+		pragma unreferenced (name);
 		begin
 			port_cursor := type_ports.first (ports);
 		end set_cursor;
@@ -3636,6 +3660,7 @@ package body et_kicad.schematic is
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
+			pragma unreferenced (mod_name);
 			use type_strands;
 			
 			cursor : type_strands.cursor := module.strands.first;
@@ -3732,6 +3757,7 @@ package body et_kicad.schematic is
 			-- Query junctions. Exits prematurely once a junction is found.
 				module_name	: in type_submodule_name.bounded_string;
 				module 		: in type_module) is
+				pragma unreferenced (module_name);
 				use type_junctions;
 				junction_cursor : type_junctions.cursor := module.junctions.first;
 			begin -- query_junctions
@@ -3762,6 +3788,7 @@ package body et_kicad.schematic is
 			-- Query net segments. Exits prematurely once a segment is found.
 				module_name	: in type_submodule_name.bounded_string;
 				module 		: in type_module) is
+				pragma unreferenced (module_name);
 				use type_strands;
 				strand_cursor : type_strands.cursor := module.strands.first;
 
@@ -4066,6 +4093,7 @@ package body et_kicad.schematic is
 		procedure query_strands (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+			pragma unreferenced (mod_name);
 			strand : type_strands.cursor := module.strands.first;
 			use type_strands;
 			use type_path_to_submodule;
@@ -4119,6 +4147,7 @@ package body et_kicad.schematic is
 		procedure locate (
 			library 	: in pac_device_model_file.bounded_string;
 			components	: in type_components_library.map) is
+		pragma unreferenced (library);
 		begin
 			-- Generic names in library sometimes start with a tilde. 
 			-- So, first we search for the given component without tilde.
@@ -4158,6 +4187,7 @@ package body et_kicad.schematic is
 		procedure reset (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
+		pragma unreferenced (name);
 		begin
 			cursor := type_components_schematic.first (module.components);
 		end reset;
@@ -4251,6 +4281,7 @@ package body et_kicad.schematic is
 				procedure add (
 					component	: in type_device_name;
 					ports		: in out type_ports.list) is
+					pragma unreferenced (component);
 					use type_modules;
 					
 					port_coordinates : et_kicad_coordinates.type_position;
@@ -4263,6 +4294,7 @@ package body et_kicad.schematic is
 						procedure query_no_connect_flags (
 							module_name	: in type_submodule_name.bounded_string;
 							module 		: in et_kicad.pcb.type_module) is
+							pragma unreferenced (module_name);
 							use type_no_connection_flags;
 							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
@@ -4567,6 +4599,7 @@ package body et_kicad.schematic is
 			procedure save (
 				module_name	: in type_submodule_name.bounded_string;
 				module 		: in out type_module) is
+			pragma unreferenced (module_name);
 			begin
 				module.portlists := portlists;
 			end save;
@@ -4686,6 +4719,7 @@ package body et_kicad.schematic is
 			module_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 			use type_portlists;
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
 
@@ -4694,6 +4728,7 @@ package body et_kicad.schematic is
 				component	: in type_device_name;
 				ports 		: in type_ports.list) 
 			is
+				pragma unreferenced (component);
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
 				use et_import;
@@ -4909,6 +4944,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 
 			use type_components_schematic;
 			component_sch : type_components_schematic.cursor := module.components.first;
@@ -4921,6 +4957,7 @@ package body et_kicad.schematic is
 				library		: in pac_device_model_file.bounded_string;
 				components	: in type_components_library.map) 
 			is
+				pragma unreferenced (library);
 				use type_components_library;
 				component_lib : type_components_library.cursor := components.first;
 
@@ -4929,6 +4966,7 @@ package body et_kicad.schematic is
 					component_name	: in type_component_generic_name.bounded_string;
 					component 		: in type_component_library) 
 				is
+					pragma unreferenced (component_name);
 					use type_units_library;
 					unit : type_units_library.cursor := component.units.first;
 
@@ -4939,6 +4977,7 @@ package body et_kicad.schematic is
 						component_name	: in type_device_name;
 						component 		: in type_component_schematic) 
 					is
+						pragma unreferenced (component_name);
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
@@ -5128,6 +5167,7 @@ package body et_kicad.schematic is
 		procedure count_nets (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+		pragma unreferenced (module_name);
 		begin
 			count := type_netlist.length (module.netlist);
 		end count_nets;
@@ -5150,6 +5190,7 @@ package body et_kicad.schematic is
 		procedure count_junctions (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+		pragma unreferenced (module_name);
 		begin
 			count := type_junctions.length (module.junctions);
 		end count_junctions;
@@ -5162,6 +5203,7 @@ package body et_kicad.schematic is
 
 		return count;
 	end junction_count;
+	pragma unreferenced (junction_count);
 
 
 	
@@ -5227,6 +5269,7 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+			pragma unreferenced (mod_name);
 			
 			inserted	: boolean := false;
 			cursor		: type_hierarchic_sheets.cursor;
@@ -5270,6 +5313,7 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+				pragma unreferenced (mod_name);
 
 			--use et_string_processing;
 
@@ -5313,6 +5357,7 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+				pragma unreferenced (mod_name);
 
 		begin
 			module.frames.append (
@@ -5339,6 +5384,7 @@ package body et_kicad.schematic is
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+				pragma unreferenced (mod_name);
 
 		begin
 			module.notes.append (
@@ -5368,6 +5414,7 @@ package body et_kicad.schematic is
 		procedure add (
 			name	: in type_submodule_name.bounded_string;
 			module	: in out type_module) is
+			pragma unreferenced (name);
 			
 			inserted	: boolean := false;
 			cursor		: type_components_schematic.cursor;
@@ -5437,6 +5484,7 @@ package body et_kicad.schematic is
 			name	: in type_submodule_name.bounded_string;
 			module	: in out type_module) 
 		is
+			pragma unreferenced (name);
 			
 			cursor : type_components_schematic.cursor;
 		begin
@@ -5469,6 +5517,7 @@ package body et_kicad.schematic is
 		-- Query strands of module.
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
+			pragma unreferenced (module_name);
 			use type_strands;
 			strand_cursor_prim : type_strands.cursor := module.strands.first;
 
@@ -5593,6 +5642,7 @@ package body et_kicad.schematic is
 					-- Query junctions. Exits prematurely once a junction is found.
 						module_name : in type_submodule_name.bounded_string;
 						module 		: in type_module) is
+						pragma unreferenced (module_name);
 						use type_junctions;
 						junction_cursor : type_junctions.cursor := module.junctions.first;
 					begin -- query_junctions
@@ -5700,6 +5750,7 @@ package body et_kicad.schematic is
 		-- Query junctions.
 			module_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) is
+			pragma unreferenced (module_name);
 			use type_junctions;
 			junction_cursor : type_junctions.cursor := module.junctions.first;
 
@@ -5712,6 +5763,7 @@ package body et_kicad.schematic is
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
 					module 		: in type_module) is
+					pragma unreferenced (module_name);
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
 
@@ -5817,6 +5869,7 @@ package body et_kicad.schematic is
 		-- Query junctions and test net segments and ports at the junction coordinates.
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
+			pragma unreferenced (module_name);
 			use type_junctions;
 			junction_cursor : type_junctions.cursor := module.junctions.first;
 
@@ -5829,6 +5882,7 @@ package body et_kicad.schematic is
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
 					module 		: in type_module) is
+					pragma unreferenced (module_name);
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
 
@@ -5892,6 +5946,7 @@ package body et_kicad.schematic is
 				-- Query portlists. Exits prematurely once any port was found.
 					module_name : in type_submodule_name.bounded_string;
 					module 		: in type_module) is
+					pragma unreferenced (module_name);
 					use type_portlists;
 					portlist_cursor : type_portlists.cursor := module.portlists.first;
 					
@@ -5899,6 +5954,7 @@ package body et_kicad.schematic is
 					-- Query ports. Exit prematurely once a port was found.
 						component	: in type_device_name;
 						ports 		: in type_ports.list) is
+						pragma unreferenced (component);
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
 					begin
@@ -5991,6 +6047,7 @@ package body et_kicad.schematic is
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) is
+			pragma unreferenced (module_name);
 			use type_strands;
 			strand_cursor : type_strands.cursor := module.strands.first;
 
@@ -6006,6 +6063,7 @@ package body et_kicad.schematic is
 					-- Query junctions. Exits prematurely once a junction is found.
 						module_name : in type_submodule_name.bounded_string;
 						module 		: in type_module) is
+						pragma unreferenced (module_name);
 						use type_no_connection_flags;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 					begin -- query_no_connect_flags
@@ -6137,6 +6195,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 			use type_no_connection_flags;
 			no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
@@ -6146,6 +6205,7 @@ package body et_kicad.schematic is
 				module_name : in type_submodule_name.bounded_string;
 				module 		: in type_module) 
 			is
+				pragma unreferenced (module_name);
 				use type_portlists;
 				portlist_cursor : type_portlists.cursor := module.portlists.first;
 
@@ -6157,6 +6217,7 @@ package body et_kicad.schematic is
 					component 	: in type_device_name;
 					ports 		: in type_ports.list) 
 				is
+					pragma unreferenced (component);
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
 				begin -- query_ports
@@ -6398,6 +6459,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 			use type_netlist;
 			net_cursor : type_netlist.cursor := module.netlist.first;
 
@@ -6406,6 +6468,7 @@ package body et_kicad.schematic is
 				net_name	: in pac_net_name.bounded_string;
 				ports 		: in pac_ports_with_reference.set) 
 			is
+				pragma unreferenced (net_name);
 				use et_erc;
 				use pac_ports_with_reference;
 				port_cursor : pac_ports_with_reference.cursor := ports.first;
@@ -6433,6 +6496,7 @@ package body et_kicad.schematic is
 				function sum_connectives return natural is begin
 					return connector_count + testpoint_count + jumper_count + switch_count;
 				end sum_connectives;
+				pragma unreferenced (sum_connectives);
 
 				function sum_drivers return natural is begin
 					return output_count + bidir_count + weak0_count + weak1_count;
@@ -6800,6 +6864,7 @@ package body et_kicad.schematic is
 			-- net being built (see procedure add_port below).
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in type_module) is
+					pragma unreferenced (module_name);
 
 				use type_nets;
 				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
@@ -6810,6 +6875,7 @@ package body et_kicad.schematic is
 				-- Tests if a strand of the given net is connected to any component port.
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) is
+					pragma unreferenced (net_name);
 					use type_strands;
 					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
 
@@ -6835,11 +6901,13 @@ package body et_kicad.schematic is
 								-- Locates the component within the portlist of the submodule
 									module_name	: in type_submodule_name.bounded_string;
 									module 		: in out type_module) is
+	pragma unreferenced (module_name);
 	
 									procedure locate_port (
 									-- Locates the port of the component
 										component	: in type_device_name;
 										ports		: in out type_ports.list) is
+											pragma unreferenced (component);
 
 										procedure mark_it (port : in out type_port) is
 										begin
@@ -6872,6 +6940,7 @@ package body et_kicad.schematic is
 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
 								net_name	: in pac_net_name.bounded_string;
 								ports		: in out pac_ports_with_reference.set) is
+								pragma unreferenced (net_name);
 								inserted : boolean;
 								cursor : pac_ports_with_reference.cursor;
 							begin -- add_port
@@ -7031,6 +7100,7 @@ package body et_kicad.schematic is
 		procedure add_netlist (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
+		pragma unreferenced (module_name);
 		begin
 			module.netlist := make_netlist;
 		end add_netlist;
@@ -7079,6 +7149,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 			use type_components_schematic;
 		
 			component_cursor: type_components_schematic.cursor;
@@ -7104,6 +7175,7 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
+					pragma unreferenced (name);
 					use et_package_library;
 					use pac_package_variants;
 					use pac_package_variant_name;
@@ -7242,6 +7314,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) 
 		is		
+			pragma unreferenced (module_name);
 			use type_components_schematic;
 			component_cursor: type_components_schematic.cursor;
 			
@@ -7267,6 +7340,7 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
+					pragma unreferenced (name);
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
 
@@ -7277,6 +7351,7 @@ package body et_kicad.schematic is
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in type_package_variant) 
 					is
+						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
 						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -7420,6 +7495,7 @@ package body et_kicad.schematic is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) 
 		is
+			pragma unreferenced (module_name);
 			use type_components_schematic;
 			component_cursor_schematic : type_components_schematic.cursor := module.components.first;
 
@@ -7446,6 +7522,7 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is				
+					pragma unreferenced (name);
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
 
@@ -7455,6 +7532,7 @@ package body et_kicad.schematic is
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in type_package_variant) 
 					is
+						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
 						terminal_cursor : pac_terminal_port_map.cursor;
 					begin

@@ -830,6 +830,7 @@ package body et_geometry_1.et_polygons is
 		polygon	: in out type_polygon;
 		axis	: in type_mirror)
 	is
+		pragma unreferenced (axis);
 		vertices : pac_vectors.list;
 	begin
 		vertices := get_vertices (polygon);
@@ -3084,6 +3085,7 @@ package body et_geometry_1.et_polygons is
 
 		vertices := result;
 	end replace_entering_leaving_by_regular;
+	pragma unreferenced (replace_entering_leaving_by_regular);
 	
 		
 	function get_vertices (

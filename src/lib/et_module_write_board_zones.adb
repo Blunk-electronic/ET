@@ -172,6 +172,7 @@ package body et_module_write_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			zones : type_floating renames module.board.conductors_floating.zones;
 		begin
 			iterate (zones.solid, write_polygon'access);
@@ -221,6 +222,7 @@ package body et_module_write_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 			cutouts : pac_cutouts.list renames module.board.conductors_floating.cutouts;
 		begin
 			iterate (cutouts, write_cutout'access);
@@ -324,6 +326,7 @@ package body et_module_write_board_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is 
+			pragma unreferenced (module_name);
 
 		begin
 			case face is
@@ -412,7 +415,9 @@ package body et_module_write_board_zones is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			case face is
 				when TOP =>
 					case layer_cat is
@@ -504,7 +509,9 @@ package body et_module_write_board_zones is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			iterate (module.board.route_restrict.contours, write_contour'access);
 		end query_module;
 
@@ -553,7 +560,9 @@ package body et_module_write_board_zones is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			iterate (module.board.via_restrict.contours, write_contour'access);
 		end query_module;
 
@@ -601,7 +610,9 @@ package body et_module_write_board_zones is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			iterate (module.board.route_restrict.cutouts, write_cutout'access);
 		end query_module;
 
@@ -647,7 +658,9 @@ package body et_module_write_board_zones is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			iterate (module.board.via_restrict.cutouts, write_cutout'access);
 		end query_module;
 

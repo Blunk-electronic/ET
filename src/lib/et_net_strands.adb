@@ -149,6 +149,7 @@ package body et_net_strands is
 		log_threshold	: in type_log_level)
 		return type_strand_position
 	is		
+		pragma unreferenced (log_threshold);
 		position : type_strand_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
@@ -1613,6 +1614,7 @@ package body et_net_strands is
 		begin
 			strand.segments.delete (c);
 		end;
+		pragma unreferenced (delete_start_segment);
 		
 
 		-- A precheck is required before the actual splitting.

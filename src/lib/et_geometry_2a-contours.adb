@@ -2361,6 +2361,7 @@ package body et_geometry_2a.contours is
 		contours	: in out pac_contour_list.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
+		pragma unreferenced (axis);
 		result : pac_contour_list.list;
 		
 		procedure query_contour (c : in pac_contour_list.cursor) is 

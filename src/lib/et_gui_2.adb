@@ -195,6 +195,7 @@ package body et_gui_2 is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) 
 	is
+		pragma unreferenced (project);
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
 		use et_board_geometry.pac_geometry_2;

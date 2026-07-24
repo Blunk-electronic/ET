@@ -101,7 +101,9 @@ package body et_cp_board_via is
 		procedure deactivate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.drill.active := false;
 		end deactivate_drill;
 
@@ -109,7 +111,9 @@ package body et_cp_board_via is
 		procedure activate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.drill.active := true;
 			module.board.user_settings.vias.drill.size := to_distance (get_field (cmd, 6));
 		end activate_drill;
@@ -118,7 +122,9 @@ package body et_cp_board_via is
 		procedure deactivate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_inner.active := false;
 		end deactivate_inner_restring;
 
@@ -126,7 +132,9 @@ package body et_cp_board_via is
 		procedure activate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_inner.active := true;
 			module.board.user_settings.vias.restring_inner.width := to_distance (get_field (cmd, 7));
 		end activate_inner_restring;
@@ -135,7 +143,9 @@ package body et_cp_board_via is
 		procedure deactivate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_outer.active := false;
 		end deactivate_outer_restring;
 
@@ -143,7 +153,9 @@ package body et_cp_board_via is
 		procedure activate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is
+			pragma unreferenced (module_name);
+		begin
 			module.board.user_settings.vias.restring_outer.active := true;
 			module.board.user_settings.vias.restring_outer.width := to_distance (get_field (cmd, 7));
 		end activate_outer_restring;
