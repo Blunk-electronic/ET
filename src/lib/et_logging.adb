@@ -37,12 +37,14 @@
 
 
 
+with ada.strings.fixed; 		use ada.strings.fixed;
+with et_string_processing;		use et_string_processing;
+with ada.directories;			use ada.directories;
+with ada.characters;
 with ada.strings;				use ada.strings;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
 
 --with ada.exceptions;
 with et_directory_and_file_ops;
-with gnat.source_info;
 with et_time;					use et_time;
 with et_system_info;
 

@@ -36,9 +36,10 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_string_processing;				use et_string_processing;
 with et_text_content;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders;
 with et_module;							use et_module;
 
 with et_modes.board;

@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+-- with ada.text_io;			use ada.text_io;
 with et_schematic_ops_nets;
 with et_schematic_ops_units;
 with et_schematic_ops_netchangers;

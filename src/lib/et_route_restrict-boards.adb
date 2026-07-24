@@ -37,6 +37,7 @@
 --
 --   to do:
 
+-- with ada.text_io;			use ada.text_io;
 with et_directions;					use et_directions;
 
 

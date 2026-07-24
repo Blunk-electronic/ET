@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.ordered_maps;
@@ -54,9 +52,6 @@ use et_board_text.pac_text_board_vectorized;
 
 with et_design_rules_board;		use et_design_rules_board;
 
-with et_stopmask;				use et_stopmask;
-with et_stopmask.packages;		use et_stopmask.packages;
-with et_stencil.packages;		use et_stencil.packages;
 
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.packages;	use et_silkscreen.packages;
@@ -64,26 +59,18 @@ with et_silkscreen.packages;	use et_silkscreen.packages;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;		use et_assy_doc.packages;
 
-with et_keepout;				use et_keepout;
-with et_keepout.packages;		use et_keepout.packages;
 
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 with et_package_model_name;		use et_package_model_name;
 with et_package_name;			use et_package_name;
 with et_package_model;			use et_package_model;
 with et_kicad_general;			use et_kicad_general;
-with et_import;
 
-with et_board_coordinates;		use et_board_coordinates;
 with et_board_geometry;			use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 use et_board_geometry.pac_contours;
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-
 
 
 package et_kicad_packages is

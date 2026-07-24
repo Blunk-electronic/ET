@@ -42,19 +42,16 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 
 with et_module_names;				use et_module_names;
 -- with et_module_instance;			use et_module_instance;
-with et_board_geometry;				use et_board_geometry;
-with et_keywords;					use et_keywords;
+with et_board_geometry;
 
 with et_module_read_board_contour;	use et_module_read_board_contour;
 with et_board_holes;				use et_board_holes;
-with et_board_outline;				use et_board_outline;
 					
 
 
@@ -62,8 +59,8 @@ with et_board_outline;				use et_board_outline;
 package body et_module_read_board_outline is
 	
 	use pac_generic_modules;
-	use pac_geometry_2;
-	use pac_contours;
+	use et_board_geometry.pac_geometry_2;
+	use et_board_geometry.pac_contours;
 		
 		
 

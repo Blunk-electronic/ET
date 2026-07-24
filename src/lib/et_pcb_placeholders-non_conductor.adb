@@ -38,9 +38,9 @@
 --   to do:
 
 
-with et_board_coordinates;			use et_board_coordinates;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_pcb_placeholders.non_conductor is
 	
 

@@ -41,14 +41,14 @@
 --
 
 with et_generic_modules;			use et_generic_modules;
-with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_cmd_sts;					use et_cmd_sts;
-with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 
 
 package et_cp_board_signal_layer is
+
+	use pac_generic_modules;
 
 	-- This procedure parses a command to
 	-- add a new signal layer.

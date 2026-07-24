@@ -40,8 +40,6 @@
 
 with et_file_sections;				use et_file_sections;
 with et_module_names;				use et_module_names;
-with et_project.configuration;
-with et_module_ops;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_keywords;					use et_keywords;
 with et_module_read;
@@ -63,7 +61,6 @@ is
 	procedure read_module_file_pre (
 	module_file_handle : in directory_entry_type) 
 	is 
-		use et_module_ops;
 		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		et_module_read.read_module (file_name, log_threshold + 1);
@@ -347,7 +344,6 @@ is
 						case pac_sections_stack.parent is
 							when SEC_MODULE_INSTANCES =>							
 								declare
-									use et_module_ops;
 									kw : string := f (line, 1);
 									module_cursor : pac_generic_modules.cursor;
 								begin

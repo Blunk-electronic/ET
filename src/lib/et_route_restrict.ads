@@ -37,26 +37,19 @@
 --
 --   to do:
 
-with ada.strings;	 			use ada.strings;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
 with et_board_geometry;			use et_board_geometry;
 with et_mirroring;				use et_mirroring;
-with et_board_text;				use et_board_text;
-with et_contour_to_polygon;		use et_contour_to_polygon;
-with et_pcb_stack;				use et_pcb_stack;
-with et_logging;				use et_logging;
 
 
 package et_route_restrict is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_geometry_brd;
 	use pac_polygons;
-	use pac_text_board;
 	
 
 	

@@ -40,16 +40,12 @@
 -- - propose arguments if command incomplete
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
 
-with et_directions;						use et_directions;
-with et_primitive_objects;				use et_primitive_objects;
+-- with ada.text_io;			use ada.text_io;
+with et_string_processing;		use et_string_processing;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_exceptions;						use et_exceptions;
-with et_keywords;						use et_keywords;
 
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_signal_layers;
@@ -62,8 +58,7 @@ with et_board_ops_stopmask;
 with et_board_ops_conductors;
 
 with et_text_content;					use et_text_content;
-with et_board_text;						use et_board_text;
-with et_board_ops_text;					use et_board_ops_text;
+with et_board_text;
 
 with et_pcb_placeholders;
 with et_pcb_placeholders.conductor;
@@ -78,7 +73,7 @@ package body et_cp_board_text is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	use pac_text_board_vectorized;
+	use et_board_text.pac_text_board_vectorized;
 
 	
 
@@ -249,8 +244,8 @@ package body et_cp_board_text is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		use pac_text_board;
-		use pac_text_board_vectorized;
+		use et_board_text.pac_text_board;
+		use et_board_text.pac_text_board_vectorized;
 		use et_pcb_placeholders;
 		use et_pcb_placeholders.conductor;
 		use et_pcb_placeholders.non_conductor;

@@ -778,7 +778,6 @@ procedure draw_conductors is
 			use et_colors.board;
 			use et_alignment;
 
-			use et_net_names;
 			use pac_net_name;
 			
 			position : type_vector_model := get_center (circle);
@@ -1038,7 +1037,6 @@ procedure draw_conductors is
 		-- brightness and position according to the tool
 		-- being used:
 		procedure set_brightness_and_position is 
-			use et_canvas_tool;
 		begin
 			-- Overwrite the via position (circle.center) if the
 			-- via is selected and being moved:
@@ -1586,7 +1584,6 @@ procedure draw_conductors is
 	-- Computes the bend point (if required) of live_path
 	-- and sets it accordingly:
 	procedure draw_track is
-		use et_canvas_board_tracks;
 
 		-- Computes the path from given start to given end point.
 		-- Takes the bend style into account. Draws the path:
@@ -1651,7 +1648,6 @@ procedure draw_conductors is
 		end compute_and_draw;
 
 
-		use et_canvas_tool;
 		
 	begin
 		-- Draw the path only after the actual editing process has started:

@@ -40,8 +40,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
-with ada.containers;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;
  
 with ada.command_line;			use ada.command_line;
 with gnat.command_line;			use gnat.command_line;
@@ -51,7 +50,6 @@ with ada.directories;			use ada.directories;
 
 with et_system_info;
 with et_runmode;				use et_runmode;
-with et_modes;					use et_modes;
 with et_module_ops;
 with et_generic_modules;		use et_generic_modules;
 with et_module_names;			use et_module_names;
@@ -61,7 +59,6 @@ with et_commandline_switches;	use et_commandline_switches;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_import;
-with et_export;
 with et_conventions;
 with et_kicad.schematic;
 with et_kicad_to_native;
@@ -71,7 +68,6 @@ with et_project;
 with et_script_processor;
 
 with et_package_bom_relevance;
-with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_package_library;
 
@@ -79,7 +75,6 @@ with et_package_read;
 with et_package_write;
 
 with et_symbol_name;
-with et_symbol_model;
 with et_symbol_library;
 with et_symbol_read;
 with et_symbol_write;
@@ -96,10 +91,8 @@ with et_drawing_frame_rw;
 with et_sheets;
 
 with et_schematic_geometry;
-with et_schematic_coordinates;
 
 with et_board_geometry;
-with et_board_coordinates;
 
 with et_gui_2;
 
@@ -522,8 +515,7 @@ procedure et is
 
 	
 	
-	procedure launch_schematic_and_board_editor is 
-		use ada.containers;
+	procedure launch_schematic_and_board_editor is
 		use et_gui_2;
 		use pac_generic_modules;
 		use pac_module_file_name;
@@ -743,8 +735,6 @@ procedure et is
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
 				declare
-					use et_drawing_frame;
-					use et_drawing_frame_rw;
 					-- CS frame : type_frame (frame_domain);
 				begin
 					null;

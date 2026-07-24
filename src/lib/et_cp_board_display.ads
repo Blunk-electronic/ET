@@ -38,7 +38,6 @@
 --   ToDo: 
 -- - propose arguments if command incomplete
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
 

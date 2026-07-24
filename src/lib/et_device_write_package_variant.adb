@@ -41,13 +41,12 @@
 -- - use renames
 --
 
-with ada.text_io;					use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
 with ada.strings; 					use ada.strings;
-with ada.exceptions;
 
 with et_package_library;
 with et_package_variant_name;		use et_package_variant_name;
-with et_package_variant;			use et_package_variant;
+with et_package_variant;
 with et_package_variant_terminal_port_map;
 
 with et_unit_name;
@@ -90,9 +89,8 @@ package body et_device_write_package_variant is
 			
 			procedure write_terminal (
 				terminal_cursor : in pac_terminal_port_map.cursor) 
-			is 
-				use et_unit_name;
-				use pac_unit_name;
+			is
+				use et_unit_name.pac_unit_name;
 				use et_terminal_name;
 			begin
 				write (keyword => keyword_terminal, parameters => 

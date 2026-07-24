@@ -45,14 +45,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.ordered_sets;
 
-with et_module_instance;		use et_module_instance;
-with et_port_names;				use et_port_names;
-with et_net_names;				use et_net_names;
-with et_netlists;
-with et_string_processing;		use et_string_processing;
 
 with et_net_ports_devices;		use et_net_ports_devices;
 with et_net_ports_submodules;	use et_net_ports_submodules;

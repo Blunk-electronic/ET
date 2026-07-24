@@ -39,7 +39,6 @@
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 with et_pcb_stack;						use et_pcb_stack;
-with et_device_placeholders;			use et_device_placeholders;
 with et_package_variant;				use et_package_variant;
 
 package et_device_read_package_variant is

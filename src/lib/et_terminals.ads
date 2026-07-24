@@ -39,7 +39,6 @@
 
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.indefinite_doubly_linked_lists;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -53,7 +52,6 @@ with et_terminal_tht;			use et_terminal_tht;
 with et_terminal_name;			use et_terminal_name;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
-with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_design_rules_board;		use et_design_rules_board;
 

@@ -45,7 +45,6 @@ package et_port_names is
 	port_name_length_max : constant natural := 100;
 	
 	package pac_port_name is new generic_bounded_length (port_name_length_max);
-	use pac_port_name;
 
 
 	function to_string (

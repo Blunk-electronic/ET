@@ -50,6 +50,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_grid is
 
+	use pac_generic_modules;
+
 
 	procedure read_drawing_grid_schematic (
 		line : in type_fields_of_line);

@@ -42,9 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
@@ -53,11 +52,8 @@ with et_file_sections;				use et_file_sections;
 with et_drawing_frame;				use et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_drawing_frame.board;
-with et_text_content;				use et_text_content;
-with et_sheets;						use et_sheets;
 
 with et_file_write;					use et_file_write;
-with et_drawing_frame_rw;			use et_drawing_frame_rw;
 
 
 
@@ -92,7 +88,6 @@ package body et_module_write_frames is
 					procedure query_sheet (
 						s : in pac_schematic_descriptions.cursor) 
 					is
-						use et_sheets;
 					begin
 						section_mark (section_sheet, HEADER);
 						write (

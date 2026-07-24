@@ -38,13 +38,13 @@
 --   ToDo: 
 
 with et_generic_modules;		use et_generic_modules;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
 
 
 
 package et_cp_board_canvas is
+
 
 
 	-- This procedure parses a zoom related command.

@@ -37,12 +37,10 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_design_rules_schematic is
 	
 	procedure dummy is begin null; end;

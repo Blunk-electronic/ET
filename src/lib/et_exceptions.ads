@@ -36,7 +36,6 @@
 --
 --   ToDo: 
 
-with ada.exceptions;			use ada.exceptions;
 
 package et_exceptions is
 

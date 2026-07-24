@@ -44,9 +44,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
-with et_board_text;						use et_board_text;
 with et_board_holes;					use et_board_holes;
 with et_board_outline;					use et_board_outline;
 

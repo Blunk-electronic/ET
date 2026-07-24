@@ -39,8 +39,6 @@
 with ada.containers;			use ada.containers;
 with ada.containers.ordered_sets;
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with et_device_prefix;			use et_device_prefix;
 with et_logging;				use et_logging;
 

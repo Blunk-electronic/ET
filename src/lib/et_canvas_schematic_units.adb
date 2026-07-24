@@ -36,15 +36,14 @@
 --   history of changes:
 --
 
+with et_device_library;
+with et_canvas_messages;
+with et_canvas_tool;
 with ada.text_io;					use ada.text_io;
-with ada.exceptions;				use ada.exceptions;
 
 with glib;
 with glib.values;
 
-with gdk.types;						use gdk.types;
-with gdk.event;						use gdk.event;
-with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk.file_chooser;
 with gtk.file_filter;
@@ -55,17 +54,19 @@ with gtk.cell_renderer_text;
 with gtk.list_store;
 with gtk.tree_model;
 
-with et_sheets;							use et_sheets;
 with et_device_read;
-with et_package_variant;
-with et_symbol_ports;
+with et_generic_modules;				use et_generic_modules;
+with et_package_variant;				use et_package_variant;
+with et_units;							use et_units;
+with et_devices_electrical;			use et_devices_electrical;
+with et_string_processing;			use et_string_processing;
+with et_logging;						use et_logging;
 with et_device_library.units;			use et_device_library.units;
 with et_device_library.packages;		use et_device_library.packages;
-with et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;				use et_device_model_names;
-with et_device_value;					use et_device_value;
+with et_device_value;
 with et_device_property_level;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_electrical.units;		use et_devices_electrical.units;
@@ -77,22 +78,17 @@ with et_schematic_ops_device;		use et_schematic_ops_device;
 
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
 
-with et_material;
 
 with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
 
-with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
 
-with et_net_strands;
-with et_schematic_text;				use et_schematic_text;
 
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
-with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
 
 
 package body et_canvas_schematic_units is

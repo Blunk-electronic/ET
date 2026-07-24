@@ -37,14 +37,10 @@
 --
 
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 
 with ada.containers; 			use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_package_name;			use et_package_name;
-with et_package_model_name;		use et_package_model_name;
 with et_package_variant_name;	use et_package_variant_name;
 with et_package_library;		use et_package_library;
 with et_terminal_name;			use et_terminal_name;

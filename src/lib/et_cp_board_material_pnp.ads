@@ -39,13 +39,14 @@
 -- - propose arguments if command incomplete
 
 with et_generic_modules;		use et_generic_modules;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
 
 
 
 package et_cp_board_material_pnp is
+
+	use pac_generic_modules;
 
 
 	procedure export_pick_and_place (

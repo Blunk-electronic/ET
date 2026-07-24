@@ -38,8 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with et_primitive_objects;				use et_primitive_objects;
-with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 
 with et_canvas_tool;					use et_canvas_tool;

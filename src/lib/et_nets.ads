@@ -42,12 +42,10 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_assembly_variants;		use et_assembly_variants;
-with et_module_instance;		use et_module_instance;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
-with et_net_class;				use et_net_class;
 with et_net_class_name;			use et_net_class_name;
 with et_route;
 with et_commit;
@@ -59,7 +57,6 @@ with et_net_ports_netchangers;	use et_net_ports_netchangers;
 with et_net_segment;			use et_net_segment;
 with et_net_strands;			use et_net_strands;
 with et_net_labels;				use et_net_labels;
-with et_netchangers;			use et_netchangers;
 with et_object_status;			use et_object_status;
 with et_net_scope;				use et_net_scope;
 

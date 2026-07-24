@@ -36,8 +36,8 @@
 --   history of changes:
 --
 
+with et_device_appearance;				use et_device_appearance;
 with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 with ada.exceptions;
 
 with et_system_info;
@@ -46,7 +46,6 @@ with et_string_processing;				use et_string_processing;
 with et_time;
 with et_file_write;						use et_file_write;
 
-with et_device_partcode;
 with et_device_value;
 with et_device_prefix;
 
@@ -72,7 +71,6 @@ package body et_device_write is
 		procedure write_meta is
 			use et_device_prefix;
 			use et_device_value;
-			use et_device_partcode;
 		begin
 			log (text => "write meta", level => log_threshold + 1);
 			log_indentation_up;

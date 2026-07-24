@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
@@ -1978,7 +1979,6 @@ package body et_board_ops_stencil is
 
 		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),

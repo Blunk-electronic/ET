@@ -38,17 +38,11 @@
 --   to do:
 
 
-with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_board_coordinates;		use et_board_coordinates;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_text;				use et_board_text;
-with et_drills;					use et_drills;
 with et_assembly_technology;	use et_assembly_technology;
 with et_terminals;				use et_terminals;
-with et_text;
-with et_design_rules_board;				use et_design_rules_board;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_stopmask.packages;				use et_stopmask.packages;
@@ -60,17 +54,14 @@ with et_keepout;						use et_keepout;
 with et_keepout.packages;				use et_keepout.packages;
 with et_board_holes;					use et_board_holes;
 with et_package_bom_relevance;			use et_package_bom_relevance;
-with et_package_name;					use et_package_name;
 with et_package_description;			use et_package_description;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 
-with et_logging;						use et_logging;
 
 
 package et_package_model is
 	
-	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
 

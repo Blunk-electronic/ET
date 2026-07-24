@@ -36,11 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 -- with ada.exceptions; 			use ada.exceptions;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_symbol_library is
 	
 

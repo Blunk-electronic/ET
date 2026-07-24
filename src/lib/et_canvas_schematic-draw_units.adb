@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with et_mirroring;						use et_mirroring;
 with et_primitive_objects;				use et_primitive_objects;
 with et_colors;							use et_colors;
@@ -51,18 +52,15 @@ with et_symbol_model;					use et_symbol_model;
 with et_port_names;
 with et_port_visibility;
 with et_symbol_library;					use et_symbol_library;
-with et_symbol_name;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
-with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;
 with et_device_model;					use et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
-with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 

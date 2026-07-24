@@ -42,9 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
@@ -54,7 +53,6 @@ with et_fill_zones.boards;
 with et_thermal_relief;
 
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 with et_module_board_user_settings;	use et_module_board_user_settings;
 -- with et_pcb_stack;					use et_pcb_stack;
 

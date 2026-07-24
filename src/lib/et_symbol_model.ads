@@ -42,17 +42,13 @@
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_ordered_maps;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 
-with et_logging;						use et_logging;
 with et_symbol_shapes;					use et_symbol_shapes;
-with et_symbol_name;					use et_symbol_name;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_text;					use et_symbol_text;
 with et_device_appearance;				use et_device_appearance;

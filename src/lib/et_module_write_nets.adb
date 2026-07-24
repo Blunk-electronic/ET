@@ -51,15 +51,11 @@ with et_module_instance;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 
-with et_rotation_docu;				use et_rotation_docu;
 
 with et_schematic_geometry;			use et_schematic_geometry;
-with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
-with et_symbol_ports;
 
-with et_submodules;
 with et_netchangers;
 with et_netchangers.schematic;
 
@@ -67,16 +63,13 @@ with et_net_names;					use et_net_names;
 with et_net_class_name;
 with et_net_segment;				use et_net_segment;
 with et_net_strands;				use et_net_strands;
-with et_net_junction;				use et_net_junction;
 with et_net_connectors;				use et_net_connectors;
 with et_net_labels;					use et_net_labels;
-with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
 with et_net_ports_netchangers;
 with et_nets;						use et_nets;
 with et_net_scope;
-with et_port_names;
 
 with et_module_write_tracks_route;
 
@@ -107,7 +100,6 @@ package body et_module_write_nets is
 				net			: in type_net) 
 			is
 				use pac_strands;
-				use et_schematic_coordinates;
 				use et_schematic_geometry;
 				use et_schematic_geometry.pac_geometry_2;
 				
@@ -115,7 +107,6 @@ package body et_module_write_nets is
 
 				
 				procedure query_segments (strand : in type_strand) is
-					use et_net_ports;
 					use et_net_ports_devices;
 					use et_net_ports_submodules;
 					use et_net_segment;
@@ -224,7 +215,6 @@ package body et_module_write_nets is
 					
 					
 					procedure query_device_ports (segment : in type_net_segment) is
-						use et_port_names;
 						
 						port_cursor : pac_device_ports.cursor;
 						AB_end : type_start_end_point := A;
@@ -257,7 +247,6 @@ package body et_module_write_nets is
 
 					
 					procedure query_submodule_ports (segment : in type_net_segment) is
-						use et_symbol_ports;
 						use et_module_instance;
 						
 						port_cursor : pac_net_submodule_ports.cursor;
@@ -294,7 +283,6 @@ package body et_module_write_nets is
 					procedure query_netchanger_ports (segment : in type_net_segment) is
 						use et_netchangers;
 						use et_netchangers.schematic;
-						use et_symbol_ports;
 
 						port_cursor : pac_netchanger_ports.cursor;
 						AB_end : type_start_end_point := A;

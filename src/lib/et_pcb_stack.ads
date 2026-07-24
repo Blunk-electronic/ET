@@ -40,12 +40,7 @@
 -- 2. rename things
 -- 3. rework
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.vectors;
@@ -53,8 +48,6 @@ with ada.containers.vectors;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
 
-with et_string_processing; 		use et_string_processing;
-with et_logging;				use et_logging;
 
 
 package et_pcb_stack is -- CS rename to et_pcb_layer_stack ?

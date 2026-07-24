@@ -42,24 +42,19 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 
 with et_module_names;				use et_module_names;
 with et_module_instance;
 with et_keywords;					use et_keywords;
 
-with et_rotation_docu;				use et_rotation_docu;
 with et_schematic_text;
 
 with et_schematic_geometry;			use et_schematic_geometry;
-with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_sheets;						use et_sheets;
 
-with et_symbol_ports;
 
 with et_netchangers;
 with et_netchangers.schematic;
@@ -68,7 +63,7 @@ with et_net_names;					use et_net_names;
 with et_net_class_name;
 with et_net_segment;				use et_net_segment;
 with et_net_strands;				use et_net_strands;
-with et_net_junction;				use et_net_junction;
+with et_net_junction;
 with et_net_connectors;				use et_net_connectors;
 with et_net_labels;					use et_net_labels;
 with et_net_ports;
@@ -646,9 +641,7 @@ package body et_module_read_nets is
 		log_threshold	: in type_log_level)
 	is
 		use et_module_instance;
-		use et_symbol_ports;
 		use et_net_ports_devices;
-		use et_net_ports_submodules;
 		use et_netchangers;
 		use et_netchangers.schematic;
 		

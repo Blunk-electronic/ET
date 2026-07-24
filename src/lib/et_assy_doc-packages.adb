@@ -37,9 +37,8 @@
 --
 --   to do:
 
-with ada.strings;				use ada.strings;
-with et_text;					use et_text;
 
+-- with ada.text_io;			use ada.text_io;
 package body et_assy_doc.packages is
 
 	procedure mirror_assy_doc_objects (

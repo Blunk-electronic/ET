@@ -51,6 +51,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_nets is
 
+	use pac_generic_modules;
+
 
 	route : et_route.type_net_route; -- scratch, CS: rework required
 

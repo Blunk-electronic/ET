@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
 
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_sheets;						use et_sheets;

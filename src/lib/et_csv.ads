@@ -34,11 +34,7 @@
 --
 --   history of changes:
 
-with ada.strings.unbounded; 		use ada.strings.unbounded;
-with ada.strings.unbounded.text_io;	use ada.strings.unbounded.text_io;
 with ada.text_io;					use ada.text_io;
-
-with et_logging;					use et_logging;
 
 
 package et_csv is

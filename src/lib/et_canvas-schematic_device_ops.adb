@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
 with gtk.tree_model;				use gtk.tree_model;
 with gtk.cell_renderer_text;
 
@@ -304,9 +305,8 @@ package body et_canvas.schematic_device_ops is
 		index : natural := 0;
 
 		-- Writes the name and index in the storage model:
-		procedure query_variant (c : in pac_package_variants.cursor) is 
-			use et_package_variant_name;
-			use pac_package_variant_name;
+		procedure query_variant (c : in pac_package_variants.cursor) is
+			use et_package_variant_name.pac_package_variant_name;
 			use pac_package_variants;
 		begin
 			store.append (iter);

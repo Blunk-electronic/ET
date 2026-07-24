@@ -43,12 +43,13 @@
 --
 
 with et_generic_modules;		use et_generic_modules;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
 
 package et_module_write_grid is
+
+	use pac_generic_modules;
 
 	-- Writes the drawing grid of schematic and board:
 	procedure write_drawing_grid (

@@ -38,7 +38,11 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;						use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
+with et_net_names;						use et_net_names;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
+with et_ratsnest;						use et_ratsnest;
 with ada.strings;						use ada.strings;
 with ada.strings.fixed; 				use ada.strings.fixed;
 
@@ -57,18 +61,14 @@ with gdk.types.keysyms;					use gdk.types.keysyms;
 with gtk.widget;						use gtk.widget;
 
 with gtk.cell_renderer_text;		
-with gtk.cell_layout;        		
 with gtk.tree_model;
 
 with gtk.gentry;						use gtk.gentry;
-with gtk.container;						use gtk.container;
-with gtk.button;						use gtk.button;
 
 with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops_conductors;			use et_board_ops_conductors;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
-with et_modes.board;
 
 with et_nets;
 with et_net_names;
@@ -78,13 +78,10 @@ with et_display;						use et_display;
 with et_display.board;					use et_display.board;
 
 with et_logging;						use et_logging;
-with et_string_processing;				use et_string_processing;
-with et_exceptions;						use et_exceptions;
 
 with et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
-with et_ripup;
 
 
 
@@ -106,7 +103,6 @@ package body et_canvas_board_tracks is
 
 	procedure net_name_changed (combo : access gtk_combo_box_record'class) is
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -127,7 +123,6 @@ package body et_canvas_board_tracks is
 	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -227,7 +222,6 @@ package body et_canvas_board_tracks is
 
 		use et_nets;
 		use et_schematic_ops_nets;
-		use pac_net_name;
 		use pac_net_names;
 
 		-- Fetch the net names of all nets of the current module:
@@ -261,7 +255,6 @@ package body et_canvas_board_tracks is
 		use et_canvas_board.pac_canvas;
 		
 		use gtk.cell_renderer_text;
-		use gtk.cell_layout;
 		use gtk.tree_model;
 
 

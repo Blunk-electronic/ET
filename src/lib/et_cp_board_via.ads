@@ -40,14 +40,14 @@
 
 
 with et_generic_modules;		use et_generic_modules;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
 
-with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 
 
 package et_cp_board_via is
+
+	use pac_generic_modules;
 
 	-- Parses a command like "board demo set via restring inner/outer 0.2"
 	-- or "board demo set via restring inner 0.2" and sets the value

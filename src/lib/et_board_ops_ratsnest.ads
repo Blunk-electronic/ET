@@ -48,8 +48,6 @@ with et_net_names;					use et_net_names;
 with et_nets;						use et_nets;
 with et_ratsnest;					use et_ratsnest;
 
-with et_module;						use et_module;
-with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
 
 with et_object_status;				use et_object_status;

@@ -37,8 +37,14 @@
 --   history of changes:
 --
 
+-- with ada.text_io;			use ada.text_io;
+with et_string_processing;		use et_string_processing;
+with et_project;				use et_project;
+with gtk.window; 				use gtk.window;
+with gtk.main;
+with et_logging;
+with et_project_name;
 with et_runmode;					use et_runmode;
-with et_modes;						use et_modes;
 
 with et_canvas_schematic;
 with et_schematic_geometry;
@@ -283,7 +289,6 @@ package body et_gui_2 is
 		log_threshold	: in type_log_level) 
 	is
 		use et_sheets;
-		use et_schematic_coordinates;
 	begin
 		log (text => row_separator_single, level => log_threshold);
 		log (text => "starting GUI ...", level => log_threshold);

@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings;				use ada.strings;
-with ada.containers; 			use ada.containers;
 
 with et_string_processing;		use et_string_processing;
 

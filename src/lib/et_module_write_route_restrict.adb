@@ -42,17 +42,13 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_module;						use et_module;
-with et_module_board;				use et_module_board;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_board_geometry;				use et_board_geometry;
-with et_directions;					use et_directions;
+with et_board_geometry;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 
 with et_file_write;					use et_file_write;
@@ -62,9 +58,7 @@ with et_file_sections;				use et_file_sections;
 package body et_module_write_route_restrict is
 
 	use pac_generic_modules;
-	use pac_geometry_2;
-	use pac_file_rw;
-	use pac_signal_layers;
+	use et_board_geometry.pac_file_rw;
 
 	
 	procedure write_route_restrict (

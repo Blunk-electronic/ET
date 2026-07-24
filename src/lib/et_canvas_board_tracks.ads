@@ -38,23 +38,13 @@
 -- DESCRIPTION:
 -- 
 
-with gtk.list_store;					use gtk.list_store;	
+with gtk.list_store;					use gtk.list_store;
 
-with et_canvas;
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board;
 
-with et_primitive_objects;				use et_primitive_objects;
 with et_board_geometry;					use et_board_geometry;
-
-with et_conductor_segment.boards;		use et_conductor_segment.boards;
-
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_net_names;						use et_net_names;
-
-with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
-with et_ratsnest;						use et_ratsnest;
 
 
 -- IMPORTANT:

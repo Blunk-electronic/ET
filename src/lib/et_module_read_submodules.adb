@@ -42,10 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.strings;					use ada.strings;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
@@ -260,7 +258,6 @@ package body et_module_read_submodules is
 			module		: in out type_generic_module) 
 		is
 			inserted : boolean;
-			use et_submodules.pac_submodules;
 			cursor : pac_submodules.cursor;
 		begin
 			log (text => "submodule " & to_string (submodule_name), level => log_threshold + 1);

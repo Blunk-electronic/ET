@@ -38,7 +38,11 @@
 -- DESCRIPTION:
 -- 
 
-with ada.text_io;					use ada.text_io;
+-- with ada.text_io;			use ada.text_io;
+with et_board_geometry;
+with et_pcb_sides;						use et_pcb_sides;
+with et_board_layer_category;			use et_board_layer_category;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 
@@ -48,7 +52,6 @@ with gtk.box;							use gtk.box;
 with gtk.label;							use gtk.label;
 with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
-with gtk.button;						use gtk.button;
 
 
 with gdk.types;							use gdk.types;
@@ -58,12 +61,10 @@ with gdk.types.keysyms;					use gdk.types.keysyms;
 with gtk.widget;						use gtk.widget;
 
 with gtk.cell_renderer_text;		
-with gtk.cell_layout;        		
 with gtk.list_store;				
 with gtk.tree_model;
 
 with gtk.gentry;						use gtk.gentry;
-with gtk.container;						use gtk.container;
 
 with et_generic_modules;				use et_generic_modules;
 
@@ -83,8 +84,6 @@ with et_display;						use et_display;
 with et_display.board;					use et_display.board;
 
 with et_logging;						use et_logging;
-with et_string_processing;				use et_string_processing;
-with et_exceptions;						use et_exceptions;
 
 with et_undo_redo;
 with et_commit;
@@ -118,7 +117,6 @@ package body et_canvas_board_lines is
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -170,7 +168,6 @@ package body et_canvas_board_lines is
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -210,7 +207,6 @@ package body et_canvas_board_lines is
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		use gtk.list_store;
 		
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -299,7 +295,6 @@ package body et_canvas_board_lines is
 		
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
-		use gtk.cell_layout;
 		use gtk.list_store;
 		use gtk.tree_model;
 

@@ -37,11 +37,9 @@
 --
 --   ToDo: 
 
-with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
 with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
-with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
 with et_logging;						use et_logging;
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;

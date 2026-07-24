@@ -45,6 +45,8 @@ with et_logging;				use et_logging;
 
 
 package et_module_write is
+
+	use pac_generic_modules;
 		
 
 	-- Saves the given generic module in the current working directory.

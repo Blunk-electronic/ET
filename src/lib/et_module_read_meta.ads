@@ -51,6 +51,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_meta is
 
+	use pac_generic_modules;
+
 
 	procedure add_meta_schematic;
 

@@ -46,7 +46,6 @@ with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 
 with ada.directories;
-with ada.exceptions;
 
 with et_directory_and_file_ops;
 
@@ -56,7 +55,6 @@ with et_conventions;
 
 with et_device_partcode;			use et_device_partcode;
 with et_device_appearance;			use et_device_appearance;
-with et_device_model;				use et_device_model;
 with et_device_value;
 with et_device_prefix;
 

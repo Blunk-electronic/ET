@@ -36,12 +36,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 
-with ada.exceptions;
 
+-- with ada.text_io;			use ada.text_io;
 with et_assembly_technology;	use et_assembly_technology;
 with et_terminal_hole;			use et_terminal_hole;
 

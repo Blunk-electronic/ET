@@ -36,13 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with ada.exceptions;
 
 
+
+-- with ada.text_io;			use ada.text_io;
+with et_mirroring;				use et_mirroring;
 package body et_package_model is
 	
 

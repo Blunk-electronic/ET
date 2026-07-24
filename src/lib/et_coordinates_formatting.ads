@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 
 package et_coordinates_formatting is

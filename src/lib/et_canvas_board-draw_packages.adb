@@ -47,7 +47,6 @@ with et_mirroring;					use et_mirroring;
 with et_device_name;
 with et_device_library;
 with et_device_library.packages;		use et_device_library.packages;
-with et_device_model_names;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_value;
@@ -55,9 +54,7 @@ with et_device_purpose;
 
 with et_package_model_name;			use et_package_model_name;
 with et_package_model;				use et_package_model;
-with et_package_name;
 with et_package_library;			use et_package_library;
-with et_package_variant;
 with et_terminals;
 
 with et_devices_electrical;				use et_devices_electrical;
@@ -86,16 +83,12 @@ with et_conductor_segment;
 with et_conductor_text.packages;
 
 with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.packages;		use et_fill_zones.packages;
 
 with et_route_restrict;				
-with et_route_restrict.packages;
 
 with et_via_restrict;
-with et_via_restrict.packages;
 
 with et_stopmask;
-with et_stopmask.packages;
 
 with et_stencil;
 with et_silkscreen;
@@ -563,13 +556,9 @@ procedure draw_packages is
 
 		procedure draw_route_restrict is 
 			use et_route_restrict;
-			use et_route_restrict.packages;
 			
 			use pac_route_restrict_lines;
-			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
-			use pac_route_restrict_zones;
-			use pac_route_restrict_cutouts;
 
 
 			procedure query_line (c : in pac_route_restrict_lines.cursor) is
@@ -645,10 +634,8 @@ procedure draw_packages is
 
 		procedure draw_via_restrict is 
 			use et_via_restrict;
-			use et_via_restrict.packages;
 			
 			use pac_via_restrict_zones;
-			use pac_via_restrict_cutouts;
 
 			
 			procedure query_zone (c : in pac_via_restrict_zones.cursor) is

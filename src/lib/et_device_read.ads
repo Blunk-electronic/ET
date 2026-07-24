@@ -39,7 +39,6 @@
 with et_logging;						use et_logging;
 with et_device_model_names;				use et_device_model_names;
 with et_pcb_stack;
-with et_device_placeholders;			use et_device_placeholders;
 
 
 

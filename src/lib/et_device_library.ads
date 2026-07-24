@@ -46,16 +46,13 @@
 --
 
 with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
 with et_logging;				use et_logging;
-with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
-with et_device_name;			use et_device_name;
 with et_device_model;			use et_device_model;
 
 

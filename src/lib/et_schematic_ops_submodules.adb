@@ -41,6 +41,11 @@
 -- - remove the existence checks of submodules after these
 --   checks have been implemented in the package et_cp_schematic_submodule.
 
+-- with ada.text_io;			use ada.text_io;
+with et_net_ports;						use et_net_ports;
+with et_devices_electrical;				use et_devices_electrical;
+with et_device_partcode;				use et_device_partcode;
+with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
@@ -52,18 +57,15 @@ with et_string_processing;			use et_string_processing;
 
 with et_mirroring;					use et_mirroring;
 with et_board_geometry;
-with et_board_coordinates;
 with et_generic_stacks;
-with et_device_appearance;
 with et_device_renumbering;				use et_device_renumbering;
+with et_device_appearance;
 with et_package_name;
 with et_package_model_name;
 with et_net_segment;					use et_net_segment;
 with et_net_strands;					use et_net_strands;
-with et_module_ops;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 
-with et_netlists;
 with et_net_scope;						use et_net_scope;
 
 with et_schematic_ops_nets;
@@ -169,7 +171,6 @@ package body et_schematic_ops_submodules is
 
 				
 				procedure query_segment (segment : in type_net_segment) is 
-					use et_submodules;
 
 					use pac_netchanger_ports;
 					port_cursor : pac_netchanger_ports.cursor;
@@ -261,7 +262,6 @@ package body et_schematic_ops_submodules is
 	is
 		result : boolean := false; -- to be returned
 		
-		use et_string_processing;
 		use et_submodules;
 
 		
@@ -1317,7 +1317,6 @@ package body et_schematic_ops_submodules is
 		use pac_net_submodule_ports;
 		use pac_device_ports;
 
-		use et_netlists;
 		use pac_netchanger_ports;
 
 		use et_schematic_ops_nets;		
@@ -1775,7 +1774,6 @@ package body et_schematic_ops_submodules is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level) 
 	is
-		use et_submodules;
 
 		
 		procedure query_module (
@@ -1809,7 +1807,6 @@ package body et_schematic_ops_submodules is
 
 						
 						procedure change_segment (segment : in out type_net_segment) is
-							use et_netlists;
 						begin
 							-- If port sits on the A or B end of the segment,
 							-- then insert it at this end:
@@ -1942,16 +1939,12 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-		use et_modes.board;
-		use et_undo_redo;
-		use et_commit;
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
 
-		use et_module_ops;
 		use et_submodules;
 
 		
@@ -2166,9 +2159,6 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-		use et_modes.board;
-		use et_undo_redo;
-		use et_commit;
 
 		use et_submodules;
 
@@ -3381,16 +3371,12 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-		use et_modes.board;
-		use et_undo_redo;
-		use et_commit;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
 
-		use et_module_ops;
 		use et_submodules;
 
 		
@@ -3715,7 +3701,6 @@ package body et_schematic_ops_submodules is
 
 								
 								procedure query_ports_netchangers (segment : in type_net_segment) is
-									use et_netlists;
 									
 									procedure query_port (port_cursor : in pac_netchanger_ports.cursor) is begin
 										log (text => "netchanger " & to_string (element (port_cursor).index) &

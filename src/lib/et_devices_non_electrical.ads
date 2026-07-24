@@ -52,14 +52,11 @@ with ada.containers.ordered_maps;
 with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
-with et_board_text;						use et_board_text;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_conductors_floating_package;	use et_conductors_floating_package;
-with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
-with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_device_name;					use et_device_name;
 with et_device_prefix;					use et_device_prefix;
@@ -80,7 +77,6 @@ with et_stopmask;						use et_stopmask;
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_text_content;					use et_text_content;
-with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 

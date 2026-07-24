@@ -42,8 +42,8 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
 
+-- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_file_sections;				use et_file_sections;
@@ -51,7 +51,6 @@ with et_keywords;					use et_keywords;
 
 with et_module_instance;			use et_module_instance;
 with et_device_name;				use et_device_name;
-with et_device_model;
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
@@ -115,7 +114,6 @@ package body et_module_read_assembly_variant is
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_fields_of_line)
 	is
-		use et_device_model;
 		use et_device_purpose;
 		use et_device_value;
 		use et_device_partcode;

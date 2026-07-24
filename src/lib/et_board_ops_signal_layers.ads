@@ -44,12 +44,10 @@
 
 with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
-with et_module;						use et_module;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_pcb_stack;					use et_pcb_stack;
 
-with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 

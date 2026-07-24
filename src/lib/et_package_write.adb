@@ -36,20 +36,14 @@
 --   history of changes:
 --
 
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
 with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
-with et_directory_and_file_ops;
 with et_file_write;						use et_file_write;
 
-with et_design_rules_board;				use et_design_rules_board;
 with et_string_processing;				use et_string_processing;
 with et_time;							use et_time;
 with et_system_info;
-with et_keywords;						use et_keywords;
-with et_file_sections;					use et_file_sections;
 
 with et_package_write_meta;				use et_package_write_meta;
 with et_package_write_silkscreen;		use et_package_write_silkscreen;

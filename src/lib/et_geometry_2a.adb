@@ -36,11 +36,13 @@
 --   history of changes:
 --
 
+with et_object_status;
+with ada.numerics;
+with et_mirroring;
+with et_logging;					use et_logging;
 with ada.text_io;					use ada.text_io;
 
 with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;		use ada.characters.handling;
 
@@ -254,7 +256,6 @@ package body et_geometry_2a is
 	function to_distance (f : in type_float)
 		return type_distance 
 	is
-		use pac_float_numbers_io;
 		
 		d1 : type_distance;
 		d2 : type_float;
@@ -386,7 +387,6 @@ package body et_geometry_2a is
 	function to_rotation (f : in type_float)
 		return type_rotation 
 	is
-		use pac_float_numbers_io;
 
 		d1 : type_rotation := type_rotation (f);
 		d2 : type_float;

@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_generic_modules;		use et_generic_modules;
 with et_cmd_sts;				use et_cmd_sts;
@@ -45,6 +44,8 @@ with et_cmd_sts;				use et_cmd_sts;
 
 
 package et_cp_schematic is
+
+	use pac_generic_modules;
 
 
 	-- Evaluates the exit code of the given 

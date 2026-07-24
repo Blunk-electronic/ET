@@ -43,11 +43,9 @@
 with et_schematic_geometry;				use et_schematic_geometry;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_sheets;							use et_sheets;
 
 with et_generic_modules;				use et_generic_modules;
-with et_object_status;					use et_object_status;
 
 with et_logging;						use et_logging;
 

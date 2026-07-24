@@ -50,7 +50,6 @@ with ada.containers.ordered_sets;
 
 with et_module_instance;		use et_module_instance;
 with et_net_names;				use et_net_names;
-with et_string_processing;		use et_string_processing;
 
 
 package et_net_ports_submodules is
@@ -79,7 +78,6 @@ package et_net_ports_submodules is
 	package pac_net_submodule_ports is new 
 		ordered_sets (type_net_submodule_port);
 
-	use pac_net_submodule_ports;
 
 
 		

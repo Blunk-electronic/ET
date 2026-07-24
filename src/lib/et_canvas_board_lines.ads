@@ -44,16 +44,11 @@
 -- Conductor segments connected with a net are handled in et_canvas_board_tracks.
 
 
-with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board;
-with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 use et_board_geometry.pac_path_and_bend;
-
-with et_board_layer_category;			use et_board_layer_category;
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 
@@ -61,6 +56,8 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 package et_canvas_board_lines is
 
 	use et_canvas_board.pac_canvas;
+
+
 
 
 	-- Lines can be drawn in various layer categories.

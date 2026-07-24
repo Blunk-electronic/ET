@@ -41,6 +41,7 @@
 -- with et_device_library;					use et_device_library;
 
 
+-- with ada.text_io;			use ada.text_io;
 separate (et_canvas_schematic)
 
 procedure mouse_moved (

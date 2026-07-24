@@ -49,12 +49,10 @@ with ada.directories;				use ada.directories;
 with et_directory_and_file_ops;
 
 with et_module_names;				use et_module_names;
-with et_keywords;					use et_keywords;
 with et_pcb_sides;
 
 with et_file_sections;					use et_file_sections;
 
-with et_time;
 
 with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
@@ -65,7 +63,6 @@ with et_board_ops_ratsnest;
 with et_board_layer_category;
 with et_submodules;
 
-with et_object_status;
 with et_string_processing;					use et_string_processing;
 with et_exceptions;							use et_exceptions;
 

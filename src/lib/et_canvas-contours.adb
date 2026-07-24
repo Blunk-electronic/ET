@@ -41,9 +41,9 @@
 -- with ada.strings.fixed;
 -- 
 
+-- with ada.text_io;			use ada.text_io;
 with glib;
 
-with ada.numerics;
 
 
 package body et_canvas.contours is

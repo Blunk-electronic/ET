@@ -47,13 +47,11 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_netchangers;					use et_netchangers;
 with et_netchangers.schematic;			use et_netchangers.schematic;
 
 with et_nets;							use et_nets;
-with et_net_names;						use et_net_names;
 with et_net_ports_netchangers;			use et_net_ports_netchangers;
 with et_object_status;					use et_object_status;
 

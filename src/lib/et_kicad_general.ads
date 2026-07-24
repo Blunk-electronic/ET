@@ -36,13 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_package_name;			use et_package_name;
 
 with et_string_processing;		use et_string_processing;
 
@@ -101,7 +99,6 @@ package et_kicad_general is
 	
 	-- For storing BARE library names like "bel_primitives" we use this bounded string:
 	package type_library_name is new generic_bounded_length (library_name_length_max); 
-	use type_library_name;
 
 	function to_library_name (library_name : in string) return type_library_name.bounded_string;
 	-- converts a string to a type_library_name

@@ -41,7 +41,6 @@
 
 
 with ada.directories;				use ada.directories;
-with ada.containers.ordered_maps;
 with ada.containers.vectors;
 
 with et_sheets;						use et_sheets;

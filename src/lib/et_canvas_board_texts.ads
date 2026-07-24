@@ -40,29 +40,17 @@
 
 with gtk.text_view;
 
-with et_canvas;
-with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_board_coordinates;				use et_board_coordinates;
 with et_board_geometry;					use et_board_geometry;
 
 with et_text_content;					use et_text_content;
-with et_text;							use et_text;
 with et_alignment;						use et_alignment;
 with et_board_text;						use et_board_text;
 use et_board_text.pac_text_board;
 use et_board_text.pac_text_board_vectorized;
 
-with et_board_layer_category;			use et_board_layer_category;
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
-with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
-with et_stopmask;						use et_stopmask;
-with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_mirroring;						use et_mirroring;
 with et_object_status;
 
 

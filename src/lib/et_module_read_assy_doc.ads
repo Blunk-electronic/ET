@@ -57,6 +57,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_assy_doc is
 
+	use pac_generic_modules;
+
 
 	procedure read_doc_line (
 		line	: in type_fields_of_line);

@@ -40,7 +40,6 @@
 
 
 -- with et_board_text;						use et_board_text;
-with et_drills;							use et_drills;
 with et_vias;							use et_vias;
 -- with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_fill_zones.boards;				-- use et_fill_zones.boards;

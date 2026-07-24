@@ -41,7 +41,6 @@ with ada.text_io;				use ada.text_io;
 with et_conductor_segment.boards;
 with et_fill_zones.boards;
 with et_vias;
-with et_module_names;
 
 
 package body et_nets is
@@ -501,7 +500,6 @@ package body et_nets is
 		use et_fill_zones.boards;
 		use pac_route_solid;
 		use pac_route_hatched;
-		use pac_cutouts;
 		
 	begin
 		-- SCHEMATIC

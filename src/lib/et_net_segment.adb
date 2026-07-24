@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_net_segment is
 
 

@@ -36,13 +36,12 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 
 with ada.exceptions; 			use ada.exceptions;
-with gnat.source_info;
 
-with et_exceptions;				use et_exceptions;
 
 
 package body et_geometry_1.et_polygons.cropping is

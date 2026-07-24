@@ -37,29 +37,19 @@
 --
 --   ToDo: 
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+with et_string_processing;		use et_string_processing;
+with ada.strings;
+with ada.strings.bounded;
+with ada.containers;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 with ada.directories;
 with gnat.directory_operations;
 with ada.exceptions;
 
-with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
-with et_exceptions;				use et_exceptions;
 
 
 package body et_material is

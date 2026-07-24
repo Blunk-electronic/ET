@@ -44,11 +44,9 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
-with et_board_geometry;					use et_board_geometry;
+-- with ada.text_io;			use ada.text_io;
+with et_board_geometry;
 
 with et_package_read_contour;			use et_package_read_contour;
 
@@ -56,8 +54,7 @@ with et_package_read_contour;			use et_package_read_contour;
 
 package body et_package_read_hole is
 
-	use pac_geometry_2;
-	use pac_contours;
+	use et_board_geometry.pac_contours;
 
 
 	

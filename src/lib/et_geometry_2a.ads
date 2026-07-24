@@ -45,20 +45,16 @@ with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
-with ada.numerics;
-with ada.numerics.generic_elementary_functions;
 
 with et_axes;						use et_axes;
 with et_primitive_objects;			use et_primitive_objects;
 with et_geometry_1;
 
 with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 with et_object_status;				use et_object_status;
 with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_directions;					use et_directions;
-with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
 
 
 

@@ -57,6 +57,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_stopmask is
 
+	use pac_generic_modules;
+
 
 	procedure read_stop_line (
 		line	: in type_fields_of_line);

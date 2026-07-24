@@ -46,7 +46,6 @@
 --
 --
 
-with et_string_processing;				use et_string_processing;
 with et_package_model;					use et_package_model;
 with et_pcb_sides;						use et_pcb_sides;
 with et_logging;						use et_logging;

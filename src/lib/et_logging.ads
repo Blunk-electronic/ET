@@ -37,15 +37,9 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.directories;			use ada.directories;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings.maps;			use ada.strings.maps;
 
-with et_string_processing;		use et_string_processing;
 
 
 package et_logging is

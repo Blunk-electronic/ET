@@ -59,17 +59,13 @@ with et_board_coordinates;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
-with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
-with et_device_model_names;
 
 with et_device_value;
 with et_device_partcode;
 
 with et_package_variant_name;
-with et_package_variant;
-with et_device_write;
 
 with et_devices_electrical;			use et_devices_electrical;
 
@@ -99,7 +95,6 @@ package body et_module_write_devices_electrical is
 		t : in type_text_basic'class) 
 	is 
 		use pac_text_schematic;
-		use et_schematic_coordinates;
 		use et_schematic_geometry;
 		use pac_geometry_2;
 	begin
@@ -153,7 +148,6 @@ package body et_module_write_devices_electrical is
 			end write_placeholder;
 
 			
-			use et_device_write;
 			use et_device_appearance;
 			use et_unit_name.pac_unit_name;
 
@@ -275,14 +269,11 @@ package body et_module_write_devices_electrical is
 			device : type_device_electrical renames element (d);
 			-- CS use "device" instead of "element (d)"
 			use et_device_appearance;
-			use et_device_model_names;
 			use et_device_purpose;
 			use et_device_value;
 			use et_device_partcode;
-			use et_package_variant;
 
-			use et_package_variant_name;
-			use pac_package_variant_name;
+			use et_package_variant_name.pac_package_variant_name;
 		begin
 			log (text => get_device_name (d), level => log_threshold + 1);
 			

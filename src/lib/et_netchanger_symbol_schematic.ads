@@ -49,7 +49,6 @@
 with et_net_linewidth;				use et_net_linewidth;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_symbol_port_general;		use et_symbol_port_general;
-with et_symbol_port_measures;		use et_symbol_port_measures;
 with et_symbol_shapes;				use et_symbol_shapes;
 with et_directions;					use et_directions;
 

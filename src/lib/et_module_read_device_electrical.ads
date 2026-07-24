@@ -46,6 +46,8 @@ with et_logging;				use et_logging;
 
 
 package et_module_read_device_electrical is
+
+	use pac_generic_modules;
 		
 
 	procedure read_device_electrical (

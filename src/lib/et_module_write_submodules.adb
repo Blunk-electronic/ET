@@ -42,8 +42,7 @@
 --
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
+-- with ada.text_io;			use ada.text_io;
 with ada.strings;					use ada.strings;
 
 with et_module;						use et_module;
@@ -60,7 +59,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 
 with et_netchangers.schematic;
 with et_submodules;					use et_submodules;
-with et_net_names;					use et_net_names;
+with et_net_names;
 
 with et_file_write;					use et_file_write;
 
@@ -80,7 +79,7 @@ package body et_module_write_submodules is
 		use et_schematic_geometry.pac_geometry_2;
 
 		use pac_submodules;
-		use pac_net_name;
+		use et_net_names.pac_net_name;
 
 
 		

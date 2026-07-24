@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 -- with ada.strings.maps;			use ada.strings.maps;
 -- 
 -- with ada.characters.handling;	use ada.characters.handling;
@@ -46,6 +45,7 @@ with ada.text_io;				use ada.text_io;
 
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_schematic_text is
 
 

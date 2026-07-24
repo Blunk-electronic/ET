@@ -51,22 +51,16 @@ with et_sheets;							use et_sheets;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_symbol_model;					use et_symbol_model;
 with et_terminal_name;					use et_terminal_name;
-with et_port_names;						use et_port_names;
 with et_device_model;					use et_device_model;
-with et_device_model_names;				use et_device_model_names;
 with et_device_name;					use et_device_name;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
 with et_device_property_level;			use et_device_property_level;
-with et_commit;
-with et_object_status;					use et_object_status;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_symbol_ports;					use et_symbol_ports;
-with et_terminals;						use et_terminals;
 with et_logging;						use et_logging;
 
 

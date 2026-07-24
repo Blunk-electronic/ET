@@ -51,7 +51,6 @@ with et_directory_and_file_ops;
 with et_string_processing;			use et_string_processing;
 
 with et_export;
-with et_system_info;
 with et_file_write;					use et_file_write;
 
 with et_module_ops;
@@ -131,7 +130,6 @@ package body et_project is
 		log_threshold	: in type_log_level) 
 	is
 		use ada.directories;
-		use pac_project_path;
 
 		-- use modules.pac_generic_modules;
 

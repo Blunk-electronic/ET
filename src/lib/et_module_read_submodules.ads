@@ -50,6 +50,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_submodules is
 
+	use pac_generic_modules;
+
 
 	-- Reads the parameters of a submodule:
 	procedure read_submodule (

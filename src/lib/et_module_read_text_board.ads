@@ -53,6 +53,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_text_board is
 
+	use pac_generic_modules;
+
 	
 	-- This procdure reads a property of a general 
 	-- placeholder in the board drawing (like project name, material code, ...):

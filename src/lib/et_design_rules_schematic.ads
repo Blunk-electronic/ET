@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with ada.strings.bounded;       use ada.strings.bounded;
 
 -- with et_erc;
 

@@ -37,6 +37,7 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
 package body et_schematic.net_query_ops is
 
 

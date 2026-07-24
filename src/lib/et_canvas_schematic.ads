@@ -46,44 +46,30 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
-with ada.strings;					use ada.strings;
---with ada.characters;				use ada.characters;
---with ada.characters.handling;		use ada.characters.handling;
-with ada.strings.fixed; 			use ada.strings.fixed;
-
 with gdk.event;						use gdk.event;
-with gdk.types;						use gdk.types;
-with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
 with gtk.widget;					use gtk.widget;
-with gtk.container;					use gtk.container;
-with gtk.window;					use gtk.window;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
 with gtk.box;						use gtk.box;
 with gtk.label;						use gtk.label;
 with gtk.combo_box_text;			use gtk.combo_box_text;
 
-with glib;							use glib;
 with cairo;							use cairo;
 
-with et_logical_pixels;				use et_logical_pixels;
-
-with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
 
 with et_script_names;				use et_script_names;
-with et_sheets;						use et_sheets;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
+use et_schematic_geometry.pac_geometry_2;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
--- 
+--
 with et_schematic_text;				use et_schematic_text;
 
-with et_project;
 -- with et_symbols;
 -- with et_schematic;
 -- with et_schematic_ops;
@@ -95,9 +81,6 @@ with et_canvas.drawing_frame;
 with et_canvas.text;
 with et_canvas.schematic_device_ops;
 with et_canvas.schematic_net_ops;
-
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
 
 package et_canvas_schematic is
@@ -136,7 +119,6 @@ package et_canvas_schematic is
 		
 	
 	use pac_canvas;
-	use et_schematic_geometry.pac_geometry_2;
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 

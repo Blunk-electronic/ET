@@ -37,16 +37,9 @@
 --
 --   ToDo: 
 
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
-with et_board_layer_category;			use et_board_layer_category;
 
-with et_stopmask;
-with et_silkscreen;
-with et_assy_doc;
 
-with et_board_text;						use et_board_text;
-with et_text;
 with et_text_content;					use et_text_content;
 
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
@@ -56,7 +49,6 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 package et_board_ops_text is
 
 	use pac_generic_modules;
-	use pac_text_board;
 
 	
 	-- Maps from the meaning of a text placeholder

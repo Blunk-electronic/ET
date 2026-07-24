@@ -37,6 +37,8 @@
 --
 
 
+-- with ada.text_io;			use ada.text_io;
+with et_module;							use et_module;
 with et_module_names;					use et_module_names;
 with et_schematic_ops_nets;
 with et_schematic_ops_units;
@@ -52,7 +54,6 @@ with et_commit;
 package body et_schematic_ops_sheets is
 
 
-	use pac_text_schematic;
 
 	
 	procedure sheet_not_found (

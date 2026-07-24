@@ -39,29 +39,19 @@
 -- 
 
 with gtk.widget;					use gtk.widget;
-with gtk.menu_item;					use gtk.menu_item;
-with gtk.menu_shell;
 with gtk.gentry;					use gtk.gentry;
 with gtk.file_chooser_button;		use gtk.file_chooser_button;
-with gtk.box;						use gtk.box;
-with gtk.button;					use gtk.button;
 with gtk.combo_box;					use gtk.combo_box;
 
-with et_canvas;
 with et_canvas_tool;				use et_canvas_tool;
 with et_canvas_messages;			use et_canvas_messages;
 
-with et_pcb_sides;
-with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_module_board;				use et_module_board;
 with et_package_library;			use et_package_library;
-with et_device_model;				use et_device_model;
 with et_device_name;				use et_device_name;
 with et_device_value;				use et_device_value;
-with et_logging;					use et_logging;
 
 
 

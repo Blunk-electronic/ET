@@ -39,7 +39,6 @@
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 
-with et_logging;				use et_logging;
 
 
 package et_text_content is

@@ -41,9 +41,8 @@
 --
 
 
-with ada.text_io;					use ada.text_io;
-with ada.exceptions;
 
+-- with ada.text_io;			use ada.text_io;
 with et_schematic_geometry;			use et_schematic_geometry;
 
 with et_text_content;				use et_text_content;

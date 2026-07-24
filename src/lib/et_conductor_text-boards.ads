@@ -39,6 +39,8 @@
 
 
 
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
+
 package et_conductor_text.boards is
 
 

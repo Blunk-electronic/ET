@@ -50,6 +50,8 @@ with et_logging;				use et_logging;
 
 package et_module_read_net_classes is
 
+	use pac_generic_modules;
+
 	
 	procedure reset_net_class;
 	

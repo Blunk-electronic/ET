@@ -44,13 +44,11 @@
 --
 --
 
-with ada.text_io;						use ada.text_io;
-with ada.strings; 						use ada.strings;
 
-with et_design_rules_board;				use et_design_rules_board;
 
+-- with ada.text_io;			use ada.text_io;
 with et_keywords;						use et_keywords;
-with et_package_model;					use et_package_model;
+with et_package_model;
 
 
 

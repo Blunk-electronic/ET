@@ -38,6 +38,7 @@
 --   to do:
 
 with et_pcb_sides;					use et_pcb_sides;
+with et_mirroring;					use et_mirroring;
 -- with et_conductor_text.packages;
 
 

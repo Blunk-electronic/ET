@@ -43,7 +43,6 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_keepout;						use et_keepout;
 with et_pcb_sides;						use et_pcb_sides;

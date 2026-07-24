@@ -46,18 +46,14 @@
 
 with et_string_processing;				use et_string_processing;
 
-with et_board_text;						use et_board_text;
+with et_board_text;				use et_board_text;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_conductor_text.packages;		use et_conductor_text.packages;
-with et_package_model;					use et_package_model;
 -- with et_pcb_sides;						use et_pcb_sides;
-with et_logging;						use et_logging;
 
 
 package et_package_read_text is
 
 	use pac_text_board_vectorized;
-	use pac_texts_fab_with_content;
 	
 
 

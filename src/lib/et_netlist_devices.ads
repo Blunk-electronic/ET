@@ -41,7 +41,6 @@
 with ada.containers;            use ada.containers;
 with ada.containers.indefinite_ordered_sets;
 
-with et_symbol_model;			use et_symbol_model;
 with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
@@ -73,7 +72,6 @@ package et_netlist_devices is
 		element_type	=> type_device_port_extended);
 
 		
-	use pac_device_ports_extended;
 
 
 	

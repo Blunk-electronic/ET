@@ -41,7 +41,6 @@
 
 
 with et_net_class_description;		use et_net_class_description;
-with et_board_coordinates;			use et_board_coordinates;
 with et_drills;						use et_drills;
 with et_design_rules_board;			use et_design_rules_board;
 

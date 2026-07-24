@@ -38,22 +38,12 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;	            use ada.containers;
-with ada.containers.doubly_linked_lists;
 
 -- with gtk.widget;					use gtk.widget;
 -- with gtk.gentry;					use gtk.gentry;
 
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
 use et_board_geometry.pac_geometry_2;
-
-with et_generic_modules;			use et_generic_modules;
-
-with et_netchangers;				use et_netchangers;
-with et_netchangers.board;			use et_netchangers.board;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
@@ -61,7 +51,6 @@ with et_canvas_tool;				use et_canvas_tool;
 
 package et_canvas_board_netchangers is
 
-	use pac_generic_modules;
 
 
 	

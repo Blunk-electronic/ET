@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
 with et_cmd_sts;				use et_cmd_sts;
 
 

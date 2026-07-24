@@ -47,7 +47,7 @@ use et_board_geometry.pac_geometry_2;
 with et_primitive_objects;				use et_primitive_objects;
 with et_generic_modules;				use et_generic_modules;
 with et_axes;							use et_axes;
-with et_board_text;						use et_board_text;
+with et_board_text;				use et_board_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
@@ -60,7 +60,6 @@ with et_net_names;						use et_net_names;
 with et_nets;							use et_nets;
 
 with et_terminal_name;					use et_terminal_name;
-with et_pcb_sides;						use et_pcb_sides;
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
@@ -71,7 +70,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_board_ops_conductors is
 
 	use pac_generic_modules;
-	use pac_text_board;
 	use pac_text_board_vectorized;
 	use pac_net_name;
 	use pac_grid;

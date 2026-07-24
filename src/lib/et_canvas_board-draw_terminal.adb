@@ -356,7 +356,6 @@ is
 	
 	
 	function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
-		use et_canvas_schematic;
 	begin
 		return get_pcb_design_rules (active_module).stop_mask.expansion_min;
 	end get_stop_mask_expansion;
@@ -382,7 +381,6 @@ is
 
 			-- Builds the stopmask contour from the pad contour:
 			procedure build_contour is
-				use pac_geometry_2;	
 				use et_board_geometry.pac_contours;
 				use et_board_geometry.pac_polygons;
 				use pac_offsetting;
@@ -671,7 +669,6 @@ is
 			
 			-- Builds the stopmask contour from the pad contour:
 			procedure build_contour is
-				use pac_geometry_2;	
 				use et_board_geometry.pac_contours;
 				use et_board_geometry.pac_polygons;
 				use pac_offsetting;
@@ -783,7 +780,6 @@ is
 
 			-- Builds the stencil contour from the pad contour:
 			procedure build_contour is 
-				use pac_geometry_2;	
 				use et_board_geometry.pac_contours;
 				use et_board_geometry.pac_polygons;
 				use pac_offsetting;
