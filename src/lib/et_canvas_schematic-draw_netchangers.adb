@@ -443,9 +443,29 @@ procedure draw_netchangers is
 			
 			-- Get the sheet number where the netchanger is:
 			sheet : type_sheet := get_sheet (netchanger);
+			
+			-- This procedure draws the components of
+			-- the netchanger candidate (body, ports, name):
+			procedure draw_netchanger is begin
+				-- Draw the body of the netchanger:
+				draw_body (position);
+
+				-- Draw the ports of the netchanger:
+				draw_ports (position, get_direction (netchanger));
+						
+				-- Draw the name of the netchanger (like N33):
+				draw_name (index => index, position => position);
+						
+				-- Draw the origin of the netchanger:
+				set_color_origin (brightness);
+				draw_origin ((get_place (position), 0.0));
+				-- NOTE: The origin is never rotated.
+			end draw_netchanger;
+
+			
 		begin
-			-- Draw the netchanger if it is on the current
-			-- active sheet:
+			-- First of all, we draw a netchanger only 
+			-- if it is on the current active sheet:
 			if sheet = active_sheet then
 			
 				-- The default brightness is NORMAL. 
@@ -459,9 +479,9 @@ procedure draw_netchangers is
 
 					brightness := BRIGHT;
 
-					-- Overwrite the position if the netchanger alone
-					-- is being moved or if a whole group is being
-					-- moved:
+					-- Overwrite the position if the netchanger
+					-- 1. alone is being moved or
+					-- 2. if a whole group is being moved:
 					if is_moving (netchanger) then
 
 						-- If the netchanger is member of a group, then
@@ -476,20 +496,7 @@ procedure draw_netchangers is
 					end if;
 				end if;
 
-
-				-- Draw the body of the netchanger:
-				draw_body (position);
-
-				-- Draw the ports of the netchanger:
-				draw_ports (position, get_direction (netchanger));
-						
-				-- Draw the name of the netchanger (like N33):
-				draw_name (index => index, position => position);
-						
-				-- Draw the origin of the netchanger:
-				set_color_origin (brightness);
-				draw_origin ((get_place (position), 0.0));
-				-- NOTE: The origin is never rotated.
+				draw_netchanger;
 			end if;
 		end query_netchanger;
 		
