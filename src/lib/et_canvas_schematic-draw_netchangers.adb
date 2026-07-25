@@ -379,6 +379,46 @@ procedure draw_netchangers is
 	
 	
 	
+	
+	-- This procedure draws the ports of the
+	-- netchanger depending on the direction of the 
+	-- netchanger candidate:
+	procedure draw_ports (
+		position 	: in type_position;
+		direction	: in type_netchanger_direction)
+	is begin			
+		case direction is
+			when FORWARD =>
+				-- Draw the ports of the netchanger:
+				draw_port (
+					name => MASTER, 
+					port => netchanger_symbol_forward.master_port, 
+					netchanger_position => position);
+
+				draw_port (
+					name => SLAVE, 
+					port => netchanger_symbol_forward.slave_port, 
+					netchanger_position => position);
+			
+			when BACKWARD =>
+				-- Draw the ports of the netchanger:
+				draw_port (
+					name => MASTER, 
+					port => netchanger_symbol_backward.master_port, 
+					netchanger_position => position);
+
+				draw_port (
+					name => SLAVE, 
+					port => netchanger_symbol_backward.slave_port, 
+					netchanger_position => position);
+			
+		end case;
+	end draw_ports;
+	
+	
+	
+	
+	
 
 	-- This procedure iterates through all netchangers
 	-- of the active module and draws them:	 
@@ -439,37 +479,10 @@ procedure draw_netchangers is
 
 				-- Draw the body of the netchanger:
 				draw_body (position);
-							
-				-- Now, depending on the direction of the netchanger candidate,
-				-- we draw either the forward-symbol or the backward-symbol:
-				case get_direction (netchanger) is
-					when FORWARD =>
-						-- Draw the ports of the netchanger:
-						draw_port (
-							name => MASTER, 
-							port => netchanger_symbol_forward.master_port, 
-							netchanger_position => position);
 
-						draw_port (
-							name => SLAVE, 
-							port => netchanger_symbol_forward.slave_port, 
-							netchanger_position => position);
-					
-					when BACKWARD =>
-						-- Draw the ports of the netchanger:
-						draw_port (
-							name => MASTER, 
-							port => netchanger_symbol_backward.master_port, 
-							netchanger_position => position);
-
-						draw_port (
-							name => SLAVE, 
-							port => netchanger_symbol_backward.slave_port, 
-							netchanger_position => position);
-					
-				end case;
-				
-				
+				-- Draw the ports of the netchanger:
+				draw_ports (position, get_direction (netchanger));
+						
 				-- Draw the name of the netchanger (like N33):
 				draw_name (index => index, position => position);
 						
@@ -489,6 +502,7 @@ procedure draw_netchangers is
 		end loop;
 	end query_module;
 
+	
 	
 	
 	
