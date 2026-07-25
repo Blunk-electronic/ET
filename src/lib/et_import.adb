@@ -40,7 +40,6 @@
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;			use ada.directories;
 with et_logging;				use et_logging;
-with et_project_name;
 with ada.directories;
 
 

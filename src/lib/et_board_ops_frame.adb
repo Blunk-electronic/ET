@@ -39,7 +39,6 @@
 -- with ada.text_io;			use ada.text_io;
 with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.board;			use et_drawing_frame.board;
-with et_generic_modules;
 with et_module;							use et_module;
 with et_module_names;					use et_module_names;
 

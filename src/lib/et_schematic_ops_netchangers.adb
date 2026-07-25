@@ -42,7 +42,6 @@
 -- with ada.text_io;			use ada.text_io;
 with et_module_names;					use et_module_names;
 with et_net_names;						use et_net_names;
-with ada.containers;
 
 with et_string_processing;				use et_string_processing;
 
@@ -50,7 +49,6 @@ with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
-with et_net_ports_netchangers;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_schematic_ops_sheets;
@@ -61,7 +59,6 @@ with et_board_ops_groups;
 with et_board_ops_ratsnest;
 with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
-with et_netchangers.schematic;
 
 with et_modes.schematic;
 with et_undo_redo;

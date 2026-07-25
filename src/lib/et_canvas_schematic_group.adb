@@ -41,7 +41,6 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with et_canvas_tool;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_generic_modules;			use et_generic_modules;
 with et_logging;					use et_logging;

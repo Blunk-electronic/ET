@@ -37,9 +37,7 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with et_coordinates_abs_rel;
 with et_board_text;
-with et_coordinates_abs_rel;
 with ada.characters.latin_1;
 with ada.strings.unbounded;
 

@@ -40,7 +40,6 @@
 -- with ada.text_io;			use ada.text_io;
 with et_board_geometry;
 
-with et_package_model;
 
 with et_keepout;						use et_keepout;
 with et_keepout.packages;				use et_keepout.packages;

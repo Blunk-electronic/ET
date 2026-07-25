@@ -47,7 +47,6 @@ with et_stencil.packages;		use et_stencil.packages;
 with et_keepout.packages;		use et_keepout.packages;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_import;
-with et_logging;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;

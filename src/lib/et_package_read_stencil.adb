@@ -41,7 +41,6 @@
 with et_board_geometry;					use et_board_geometry;
 
 with et_keywords;						use et_keywords;
-with et_package_model;
 with et_directions;						use et_directions;
 
 with et_stencil;						use et_stencil;
