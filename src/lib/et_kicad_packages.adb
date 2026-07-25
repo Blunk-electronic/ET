@@ -206,11 +206,11 @@ package body et_kicad_packages is
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
-		p11 := type_vector_model (set (x => xn, y => yp));
-		p12 := type_vector_model (set (x => xn, y => yn));
+		p11 := type_vector_model'(set (x => xn, y => yp));
+		p12 := type_vector_model'(set (x => xn, y => yn));
 
-		p21 := type_vector_model (set (x => xp, y => yp));
-		p22 := type_vector_model (set (x => xp, y => yn));
+		p21 := type_vector_model'(set (x => xp, y => yp));
+		p22 := type_vector_model'(set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate_by (p11, angle);
@@ -291,18 +291,18 @@ package body et_kicad_packages is
 
 		-- set supportive points
 		-- upper line
-		p11 := type_vector_model (set (x => x2n, y => y1p));
-		p12 := type_vector_model (set (x => x2p, y => y1p));
+		p11 := type_vector_model'(set (x => x2n, y => y1p));
+		p12 := type_vector_model'(set (x => x2p, y => y1p));
 
 		-- lower line
-		p21 := type_vector_model (set (x => x2n, y => y1n));
-		p22 := type_vector_model (set (x => x2p, y => y1n));
+		p21 := type_vector_model'(set (x => x2n, y => y1n));
+		p22 := type_vector_model'(set (x => x2p, y => y1n));
 
 		-- left arc
-		p41 := type_vector_model (set (x => x2n,  y => zero));
+		p41 := type_vector_model'(set (x => x2n,  y => zero));
 
 		-- right arc
-		p42 := type_vector_model (set (x => x2p,  y => zero));
+		p42 := type_vector_model'(set (x => x2p,  y => zero));
 		
 		-- rotate supportive points 
 		rotate_by (p11, angle);
@@ -384,11 +384,11 @@ package body et_kicad_packages is
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
-		p11 := type_vector_model (set (x => xn, y => yp)); -- top left
-		p12 := type_vector_model (set (x => xn, y => yn)); -- bottom left
+		p11 := type_vector_model'(set (x => xn, y => yp)); -- top left
+		p12 := type_vector_model'(set (x => xn, y => yn)); -- bottom left
 
-		p21 := type_vector_model (set (x => xp, y => yp)); -- top right
-		p22 := type_vector_model (set (x => xp, y => yn)); -- bottom right
+		p21 := type_vector_model'(set (x => xp, y => yp)); -- top right
+		p22 := type_vector_model'(set (x => xp, y => yn)); -- bottom right
 
 		-- rotate supportive points
 		rotate_by (p11, angle);

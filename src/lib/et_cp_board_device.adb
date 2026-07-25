@@ -294,7 +294,7 @@ package body et_cp_board_device is
 			prefix : constant pac_device_prefix.bounded_string := 
 				to_prefix (get_field (cmd, 6));
 
-			xy : constant type_vector_model := type_vector_model (set (
+			xy : constant type_vector_model := type_vector_model'(set (
 					x => to_distance (dd => get_field (cmd, 7)),
 					y => to_distance (dd => get_field (cmd, 8))));
 
@@ -537,7 +537,7 @@ package body et_cp_board_device is
 					module_cursor 	=> module,
 					device_name		=> device_name,
 					coordinates		=> coordinates,
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 										x => to_distance (dd => get_field (cmd, 7)),
 										y => to_distance (dd => get_field (cmd, 8)))),
 

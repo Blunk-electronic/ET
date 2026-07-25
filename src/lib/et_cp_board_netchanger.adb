@@ -235,7 +235,7 @@ package body et_cp_board_netchanger is
 						module_cursor	=> module,
 						index			=> index,
 						coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
-						point			=> type_vector_model (set (
+						point			=> type_vector_model'(set (
 											x => to_distance (get_field (cmd, 7)),
 											y => to_distance (get_field (cmd, 8)))),						
 

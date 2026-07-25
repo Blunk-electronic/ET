@@ -620,7 +620,7 @@ package body et_cp_schematic_unit is
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						coordinates		=> to_coordinates (get_field (cmd, 7)), -- relative/absolute
-						destination		=> type_vector_model (set (
+						destination		=> type_vector_model'(set (
 											x => to_distance (get_field (cmd, 8)),
 											y => to_distance (get_field (cmd, 9)))),
 

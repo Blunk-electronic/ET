@@ -79,7 +79,7 @@ package body et_cp_board_submodule is
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)), -- OSC1
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 										x => to_distance (dd => get_field (cmd, 7)),
 										y => to_distance (dd => get_field (cmd, 8)))),
 

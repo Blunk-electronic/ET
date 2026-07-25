@@ -989,15 +989,15 @@ package body et_geometry_1.et_polygons is
 		procedure query_edge (c : in pac_edges.cursor) is
 			x1, x2, y1, y2 : type_float;
 		begin
-			x1 := type_float (get_x (element (c).A));
-			y1 := type_float (get_y (element (c).A));
+			x1 := type_float'(get_x (element (c).A));
+			y1 := type_float'(get_y (element (c).A));
 
 			if c /= polygon.edges.last then
-				x2 := type_float (get_x (element (next (c)).A));
-				y2 := type_float (get_y (element (next (c)).A));
+				x2 := type_float'(get_x (element (next (c)).A));
+				y2 := type_float'(get_y (element (next (c)).A));
 			else
-				x2 := type_float (get_x (element (polygon.edges.first).A));
-				y2 := type_float (get_y (element (polygon.edges.first).A));
+				x2 := type_float'(get_x (element (polygon.edges.first).A));
+				y2 := type_float'(get_y (element (polygon.edges.first).A));
 			end if;
 
 			-- Sum over the edges, (x2 − x1)(y2 + y1).

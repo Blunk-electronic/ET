@@ -256,7 +256,7 @@ package body et_geometry_1.et_polygons.union is
 				
 					-- Make a polygon from the primary collection of vertices
 					-- and append it to the candidate list of polygons:
-					candidate_polygons.append (type_polygon (to_polygon (vertices_tmp_1)));
+					candidate_polygons.append (type_polygon'(to_polygon (vertices_tmp_1)));
 
 				end query_outside_vertex;
 				
@@ -312,7 +312,7 @@ package body et_geometry_1.et_polygons.union is
 					-- then the resulting polygon is complete:
 					if element (vertice_A_cursor).position = start_point then
 						-- Make a polygon from the primary collection of vertices:
-						result_polygon := type_polygon (to_polygon (vertices_tmp_1));
+						result_polygon := type_polygon'(to_polygon (vertices_tmp_1));
 												
 						exit WALK_METHOD_2; -- Terminate this loop:
 					end if;
@@ -428,7 +428,7 @@ package body et_geometry_1.et_polygons.union is
 				when CONGRUENT =>
 					put_line ("CONGRUENT");
 					-- The result is just polygon A:
-					result_polygon := type_polygon (polygon_A);
+					result_polygon := type_polygon'(polygon_A);
 					
 				when A_DOES_NOT_OVERLAP_B => 
 					-- No union possible.
@@ -437,12 +437,12 @@ package body et_geometry_1.et_polygons.union is
 				when A_INSIDE_B => 
 					-- Polygon A is completely inside B. So the result
 					-- is just polygon B:
-					result_polygon := type_polygon (polygon_B);
+					result_polygon := type_polygon'(polygon_B);
 
 				when B_INSIDE_A =>
 					-- Polygon B is completely inside A. So the result
 					-- is just polygon A:
-					result_polygon := type_polygon (polygon_A);
+					result_polygon := type_polygon'(polygon_A);
 
 				when A_OVERLAPS_B => 
 					-- Do the actual union work:

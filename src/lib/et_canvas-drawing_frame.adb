@@ -236,12 +236,12 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line bottom-up:
 				-- lower end:
-				set_A (l, type_vector_model (set (
+				set_A (l, type_vector_model'(set (
 					x => x,
 					y => zero)));
 
 				-- upper end:
-				set_B (l, type_vector_model (set (
+				set_B (l, type_vector_model'(set (
 					x => x,
 					y => b)));
 
@@ -252,12 +252,12 @@ package body et_canvas.drawing_frame is
 				-- UPPER BORDER
 				-- draw the line bottom-up:
 				-- lower end:
-				set_A (l, type_vector_model (set (
+				set_A (l, type_vector_model'(set (
 					x => x,
 					y => h - b)));
 
 				-- upper end:
-				set_B (l, type_vector_model (set (
+				set_B (l, type_vector_model'(set (
 					x => x,
 					y => h)));
 				
@@ -277,12 +277,12 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line from the left to the right:
 				-- left end:
-				set_A (l, type_vector_model (set (
+				set_A (l, type_vector_model'(set (
 					x => zero,
 					y => y)));
 
 				-- right end:
-				set_B (l, type_vector_model (set (
+				set_B (l, type_vector_model'(set (
 					x => b,
 					y => y)));
 
@@ -291,12 +291,12 @@ package body et_canvas.drawing_frame is
 				-- RIGHT BORDER
 				-- draw the line from the left to the right:
 				-- left end:
-				set_A (l, type_vector_model (set (
+				set_A (l, type_vector_model'(set (
 					x => w - b,
 					y => y)));
 
 				-- right end:
-				set_B (l, type_vector_model (set (
+				set_B (l, type_vector_model'(set (
 					x => w,
 					y => y)));
 				
@@ -321,12 +321,12 @@ package body et_canvas.drawing_frame is
 				-- draw index in lower border
 				draw_index (
 					content	=> to_content (to_string (i)),
-					pos		=> type_vector_model (set (x, y)));
+					pos		=> type_vector_model'(set (x, y)));
 
 				-- draw index in upper border
 				draw_index (
 					content	=> to_content (to_string (i)),
-					pos		=> type_vector_model (set (
+					pos		=> type_vector_model'(set (
 								x => x,
 								y => h - y)));
 				
@@ -347,12 +347,12 @@ package body et_canvas.drawing_frame is
 				-- draw index in left border
 				draw_index (
 					content	=> to_content (to_string (i)),
-					pos		=> type_vector_model (set (x, y)));
+					pos		=> type_vector_model'(set (x, y)));
 
 				-- draw index in right border
 				draw_index (
 					content	=> to_content (to_string (i)),
-					pos		=> type_vector_model (set (
+					pos		=> type_vector_model'(set (
 								x => w - x,
 								y => y)));
 				

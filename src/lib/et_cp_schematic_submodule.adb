@@ -98,7 +98,7 @@ package body et_cp_schematic_submodule is
 					position		=> to_position 
 						(
 						sheet => to_sheet (get_field (cmd, 7)),
-						point => type_vector_model (set 
+						point => type_vector_model'(set 
 									(
 									x => to_distance (get_field (cmd, 8)),
 									y => to_distance (get_field (cmd, 9))
@@ -155,7 +155,7 @@ package body et_cp_schematic_submodule is
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 					sheet			=> to_sheet_relative (get_field (cmd, 7)),
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
 
@@ -202,7 +202,7 @@ package body et_cp_schematic_submodule is
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 								x => to_distance (get_field (cmd, 7)),
 								y => to_distance (get_field (cmd, 8)))),
 
@@ -253,7 +253,7 @@ package body et_cp_schematic_submodule is
 					destination		=> to_position 
 						(
 						sheet => to_sheet (get_field (cmd, 7)),
-						point => type_vector_model (set
+						point => type_vector_model'(set
 									(
 									x => to_distance (get_field (cmd, 8)),
 									y => to_distance (get_field (cmd, 9))
@@ -601,7 +601,7 @@ package body et_cp_schematic_submodule is
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
-					position		=> type_vector_model (set 
+					position		=> type_vector_model'(set 
 								(
 								x => to_distance (get_field (cmd, 7)),
 								y => to_distance (get_field (cmd, 8))
@@ -652,7 +652,7 @@ package body et_cp_schematic_submodule is
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 					coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
 
@@ -745,7 +745,7 @@ package body et_cp_schematic_submodule is
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 					coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute
-					point			=> type_vector_model (set (
+					point			=> type_vector_model'(set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
 

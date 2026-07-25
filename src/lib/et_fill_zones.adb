@@ -174,7 +174,7 @@ package body et_fill_zones is
 
 				-- Round up the number of stripes to the next natural number (like 7)
 				stripe_count_natural := natural (type_float_positive'ceiling (
-						type_float_positive (stripe_count_rational)));
+						type_float_positive'(stripe_count_rational)));
 				
 
 				stripe_spacing := height / type_float_positive (stripe_count_natural);
