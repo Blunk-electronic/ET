@@ -273,7 +273,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_placeholders, HEADER);
 			write_placeholders_common (block.placeholders_common);
 
-			ps := type_title_block_schematic (block).placeholders_additional;
+			ps := block.placeholders_additional;
 			write_placeholders_schematic (ps);
 				
 			section_mark (section_placeholders, FOOTER);
@@ -591,13 +591,13 @@ package body et_drawing_frame_rw is
 			write_placeholders_common (block.placeholders_common);
 
 
-			pp := type_title_block_pcb (block).placeholders_additional;
+			pp := block.placeholders_additional;
 			write_placeholders_pcb (pp);
 
 			section_mark (section_placeholders, FOOTER);
 
 			-- CAM MARKERS
-			write_cam_markers (type_title_block_pcb (block).cam_markers);
+			write_cam_markers (block.cam_markers);
 		end write_title_block;
 
 		

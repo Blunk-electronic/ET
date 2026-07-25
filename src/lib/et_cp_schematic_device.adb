@@ -99,11 +99,11 @@ package body et_cp_schematic_device is
 					destination		=> to_position 
 						(
 						sheet => to_sheet (get_field (cmd, 6)),
-						point => type_vector_model (set 
+						point => set 
 									(
 									x => to_distance (get_field (cmd, 7)),
 									y => to_distance (get_field (cmd, 8))
-									)),
+									),
 						rotation => to_rotation (get_field (cmd, 9))),
 					
 					variant			=> to_variant_name (""),
@@ -122,11 +122,11 @@ package body et_cp_schematic_device is
 					destination		=> to_position 
 						(
 						sheet => to_sheet (get_field (cmd, 6)),
-						point => type_vector_model (set 
+						point => set 
 									(
 									x => to_distance (get_field (cmd, 7)),
 									y => to_distance (get_field (cmd, 8))
-									)),
+									),
 						rotation		=> to_rotation (get_field (cmd, 9))
 						),
 					variant			=> to_variant_name (get_field (cmd, 10)),
@@ -291,10 +291,10 @@ package body et_cp_schematic_device is
 						
 						destination		=> to_position (
 							sheet => to_sheet (get_field (cmd, 6)),
-							point => type_vector_model (set
+							point => set
 										(
 										x => to_distance (get_field (cmd, 7)),
-										y => to_distance (get_field (cmd, 8)))),
+										y => to_distance (get_field (cmd, 8))),
 							rotation		=> to_rotation (get_field (cmd, 9))),
 							
 						-- Depending on the origin of the command,

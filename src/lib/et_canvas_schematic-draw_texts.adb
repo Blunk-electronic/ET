@@ -63,7 +63,7 @@ procedure draw_texts is
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
 				font		=> text_font,
-				anchor		=> type_vector_model (element (cursor).position),
+				anchor		=> element (cursor).position,
 				origin		=> true,
 
 				-- This is documentational text. It is readable from the front or the right.

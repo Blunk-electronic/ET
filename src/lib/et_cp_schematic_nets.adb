@@ -305,9 +305,9 @@ package body et_cp_schematic_nets is
 				place_net_connector (
 					module_cursor	=> module,
 					position		=> to_position (
-						point => type_vector_model (set (
+						point => set (
 							x => to_distance (get_field (cmd, 6)),
-							y => to_distance (get_field (cmd, 7)))),
+							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
 	
 					-- A connector requires specification of signal direction:
@@ -384,9 +384,9 @@ package body et_cp_schematic_nets is
 				place_net_label (
 					module_cursor	=> module,
 					position		=> to_position (
-						point => type_vector_model (set (
+						point => set (
 							x => to_distance (get_field (cmd, 6)),
-							y => to_distance (get_field (cmd, 7)))),
+							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
 
 					-- Depending on the origin of the command,
@@ -433,9 +433,9 @@ package body et_cp_schematic_nets is
 					module_cursor	=> module,
 
 					position		=> to_position (
-						point => type_vector_model (set (
+						point => set (
 							x => to_distance (get_field (cmd, 6)),
-							y => to_distance (get_field (cmd, 7)))),
+							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
 
 					-- Depending on the origin of the command,
