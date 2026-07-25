@@ -37,19 +37,15 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with et_canvas_tool;
 with et_canvas_messages;		use et_canvas_messages;
 with ada.strings.bounded;
 with ada.strings;
 
-with gdk.types;
 with gtk.accel_group;
-with gdk.event;
 with gtk.enums;					use gtk.enums;
 with gtk.main;
 
 
-with et_mirroring;
 with et_runmode;				use et_runmode;
 
 

@@ -36,9 +36,6 @@
 --   history of changes:
 --
 
-with et_device_library;
-with et_canvas_messages;
-with et_canvas_tool;
 with ada.text_io;					use ada.text_io;
 
 with glib;
@@ -66,7 +63,6 @@ with et_device_library.packages;		use et_device_library.packages;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;				use et_device_model_names;
-with et_device_value;
 with et_device_property_level;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_electrical.units;		use et_devices_electrical.units;

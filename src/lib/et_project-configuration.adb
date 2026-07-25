@@ -47,7 +47,6 @@ with ada.directories;
 
 with et_string_processing;			use et_string_processing;
 
-with et_conventions;
 with et_time;						use et_time;
 with et_system_info;
 

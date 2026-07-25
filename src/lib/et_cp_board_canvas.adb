@@ -43,7 +43,6 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
-with et_generic_modules;
 with et_runmode;						use et_runmode;
 with et_modes.board;					use et_modes.board;
 with et_board_ops_grid;

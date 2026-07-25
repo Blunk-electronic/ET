@@ -40,7 +40,6 @@
 -- with ada.text_io;			use ada.text_io;
 with et_board_geometry;
 
-with et_package_model;
 
 with et_package_read_contour;			use et_package_read_contour;
 with et_via_restrict;					use et_via_restrict;

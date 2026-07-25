@@ -46,8 +46,6 @@ with et_nets;
 with et_module;							use et_module;
 with et_module_board;					use et_module_board;
 
-with et_modes.schematic;
-with et_modes.board;
 with et_module_names;					use et_module_names;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;

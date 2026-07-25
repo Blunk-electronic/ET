@@ -46,7 +46,6 @@ with ada.strings; 					use ada.strings;
 
 with et_package_library;
 with et_package_variant_name;		use et_package_variant_name;
-with et_package_variant;
 with et_package_variant_terminal_port_map;
 
 with et_unit_name;

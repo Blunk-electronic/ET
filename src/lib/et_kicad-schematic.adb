@@ -58,7 +58,6 @@ with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
 with et_alignment;				use et_alignment;
 with et_erc;
-with et_unit_name;
 with et_net_class;				use et_net_class;
 with et_net_classes;			use et_net_classes;
 

@@ -48,7 +48,6 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_keywords;						use et_keywords;
-with et_package_model;
 
 
 
