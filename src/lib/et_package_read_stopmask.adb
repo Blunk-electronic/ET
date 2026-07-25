@@ -201,10 +201,10 @@ package body et_package_read_stopmask is
 	begin
 		case face is
 			when TOP => 
-				append (packge.stop_mask.top.lines, stop_line);
+				append (packge.stopmask.top.lines, stop_line);
 
 			when BOTTOM => 
-				append (packge.stop_mask.bottom.lines, stop_line);
+				append (packge.stopmask.bottom.lines, stop_line);
 		end case;
 		-- CS use procedure add_line
 				
@@ -228,10 +228,10 @@ package body et_package_read_stopmask is
 		
 		case face is
 			when TOP => 
-				append (packge.stop_mask.top.arcs, stop_arc);
+				append (packge.stopmask.top.arcs, stop_arc);
 
 			when BOTTOM => 
-				append (packge.stop_mask.bottom.arcs, stop_arc);
+				append (packge.stopmask.bottom.arcs, stop_arc);
 		end case;
 		-- CS use procedure add_arc
 
@@ -254,10 +254,10 @@ package body et_package_read_stopmask is
 	begin
 		case face is
 			when TOP => 
-				append (packge.stop_mask.top.circles, stop_circle);
+				append (packge.stopmask.top.circles, stop_circle);
 
 			when BOTTOM => 
-				append (packge.stop_mask.bottom.circles, stop_circle);
+				append (packge.stopmask.bottom.circles, stop_circle);
 		end case;
 		-- CS use procedure add_circle
 
@@ -280,7 +280,7 @@ package body et_package_read_stopmask is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
-		add_zone (packge.stop_mask, (contour with null record), face);
+		add_zone (packge.stopmask, (contour with null record), face);
 
 		-- clean up for next zone
 		reset_contour (contour);
@@ -298,7 +298,7 @@ package body et_package_read_stopmask is
 		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
-		add_text (packge.stop_mask, (pac_text with null record), face);
+		add_text (packge.stopmask, (pac_text with null record), face);
 
 		-- clean up for next text
 		reset_text (pac_text);

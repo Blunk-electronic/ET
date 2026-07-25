@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1245,20 +1245,20 @@ is
 					packge : type_package_model renames element (package_cursor);
 					
 				begin
-					packge.stop_mask.top.lines.iterate (query_line'access);
-					packge.stop_mask.bottom.lines.iterate (query_line'access);
+					packge.stopmask.top.lines.iterate (query_line'access);
+					packge.stopmask.bottom.lines.iterate (query_line'access);
 
-					packge.stop_mask.top.arcs.iterate (query_arc'access);
-					packge.stop_mask.bottom.arcs.iterate (query_arc'access);
+					packge.stopmask.top.arcs.iterate (query_arc'access);
+					packge.stopmask.bottom.arcs.iterate (query_arc'access);
 
-					packge.stop_mask.top.circles.iterate (query_circle'access);
-					packge.stop_mask.bottom.circles.iterate (query_circle'access);
+					packge.stopmask.top.circles.iterate (query_circle'access);
+					packge.stopmask.bottom.circles.iterate (query_circle'access);
 
-					packge.stop_mask.top.zones.iterate (query_contour'access);
-					packge.stop_mask.bottom.zones.iterate (query_contour'access);
+					packge.stopmask.top.zones.iterate (query_contour'access);
+					packge.stopmask.bottom.zones.iterate (query_contour'access);
 					
-					packge.stop_mask.top.texts.iterate (query_text'access);
-					packge.stop_mask.bottom.texts.iterate (query_text'access);
+					packge.stopmask.top.texts.iterate (query_text'access);
+					packge.stopmask.bottom.texts.iterate (query_text'access);
 
 					-- CS placeholders
 				end process_stopmask;

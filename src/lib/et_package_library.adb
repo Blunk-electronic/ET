@@ -431,8 +431,8 @@ package body et_package_library is
 		packge : type_package_model renames element (package_cursor);
 	begin
 		case face is
-			when TOP	=> return packge.stop_mask.top;
-			when BOTTOM	=> return packge.stop_mask.bottom;
+			when TOP	=> return packge.stopmask.top;
+			when BOTTOM	=> return packge.stopmask.bottom;
 		end case;
 	end get_stopmask_objects;
 	

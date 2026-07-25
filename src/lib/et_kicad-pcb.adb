@@ -3210,7 +3210,7 @@ package body et_kicad.pcb is
 								terminals		=> terminals,
 								conductors		=> package_copper,
 								keepout			=> package_keepout,
-								stop_mask		=> package_stop_mask,
+								stopmask		=> package_stop_mask,
 								stencil			=> package_stencil,
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
@@ -3242,7 +3242,7 @@ package body et_kicad.pcb is
 								terminals		=> terminals,
 								conductors		=> package_copper,
 								keepout			=> package_keepout,
-								stop_mask		=> package_stop_mask,
+								stopmask		=> package_stop_mask,
 								stencil			=> package_stencil,
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict

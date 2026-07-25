@@ -417,26 +417,26 @@ procedure draw_packages is
 			if flip then
 				if stop_mask_enabled (TOP) then
 					set_color_stop_mask (TOP, brightness);
-					packge.stop_mask.bottom.lines.iterate (query_line'access);
+					packge.stopmask.bottom.lines.iterate (query_line'access);
 					-- CS arcs, circles, zones, texts
 
 				end if;
 
 				if stop_mask_enabled (BOTTOM) then
 					set_color_stop_mask (BOTTOM, brightness);
-					packge.stop_mask.top.lines.iterate (query_line'access);
+					packge.stopmask.top.lines.iterate (query_line'access);
 			
 				end if;
 
 			else -- not flipped
 				if stop_mask_enabled (TOP) then
 					set_color_stop_mask (TOP, brightness);
-					packge.stop_mask.top.lines.iterate (query_line'access);
+					packge.stopmask.top.lines.iterate (query_line'access);
 				end if;
 
 				if stop_mask_enabled (BOTTOM) then
 					set_color_stop_mask (BOTTOM, brightness);
-					packge.stop_mask.bottom.lines.iterate (query_line'access);
+					packge.stopmask.bottom.lines.iterate (query_line'access);
 
 				end if;
 

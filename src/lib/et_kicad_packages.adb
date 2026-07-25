@@ -2594,7 +2594,7 @@ package body et_kicad_packages is
 					conductors			=> copper, -- non electric !
 					silk_screen			=> silk_screen,
 					keepout				=> keepout,
-					stop_mask			=> stop_mask,
+					stopmask			=> stop_mask,
 					stencil				=> stencil,
 
 					-- kicad does not know route restrict
@@ -2622,7 +2622,7 @@ package body et_kicad_packages is
 					conductors			=> copper, -- non electric !
 					silk_screen			=> silk_screen,
 					keepout				=> keepout,
-					stop_mask			=> stop_mask,
+					stopmask			=> stop_mask,
 					stencil				=> stencil,
 
 					-- kicad does not know route restrict

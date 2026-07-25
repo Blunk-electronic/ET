@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -117,18 +117,18 @@ package body et_package_write_stopmask is
 
 		-- top
 		section_mark (section_top, HEADER);
-		iterate (packge.stop_mask.top.lines, write_line'access);
-		iterate (packge.stop_mask.top.arcs, write_arc'access);
-		iterate (packge.stop_mask.top.circles, write_circle'access);
-		iterate (packge.stop_mask.top.zones, write_polygon'access);
+		iterate (packge.stopmask.top.lines, write_line'access);
+		iterate (packge.stopmask.top.arcs, write_arc'access);
+		iterate (packge.stopmask.top.circles, write_circle'access);
+		iterate (packge.stopmask.top.zones, write_polygon'access);
 		section_mark (section_top, FOOTER);
 		
 		-- bottom
 		section_mark (section_bottom, HEADER);
-		iterate (packge.stop_mask.bottom.lines, write_line'access);
-		iterate (packge.stop_mask.bottom.arcs, write_arc'access);
-		iterate (packge.stop_mask.bottom.circles, write_circle'access);
-		iterate (packge.stop_mask.bottom.zones, write_polygon'access);			
+		iterate (packge.stopmask.bottom.lines, write_line'access);
+		iterate (packge.stopmask.bottom.arcs, write_arc'access);
+		iterate (packge.stopmask.bottom.circles, write_circle'access);
+		iterate (packge.stopmask.bottom.zones, write_polygon'access);			
 		section_mark (section_bottom, FOOTER);
 
 		section_mark (section_stopmask, FOOTER);			
