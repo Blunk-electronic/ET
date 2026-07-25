@@ -435,10 +435,9 @@ procedure draw_netchangers is
 			index		: in type_netchanger_id;
 			netchanger	: in type_netchanger)
 		is		
-			-- Get the position of the given netchanger.
+			-- Get the original position where the netchanger will be drawn.
 			-- NOTE: A netchanger can only assume a rotation of 0 or 90 degree
-			-- by its specification. This is a conversion from netchanger position
-			-- to a regular position (x/y/rotation):
+			-- by its specification:
 			position : type_position := to_position (netchanger.position_sch);
 			
 			-- Get the sheet number where the netchanger is:
@@ -471,7 +470,8 @@ procedure draw_netchangers is
 				-- The default brightness is NORMAL. 
 				-- If the netchanger is selected, 
 				-- then the brightness will be increased:
-				brightness := NORMAL;
+				brightness := NORMAL;				
+				
 				
 				-- Draw the netchanger candidate highlighted if
 				-- it is selected:
@@ -479,6 +479,30 @@ procedure draw_netchangers is
 
 					brightness := BRIGHT;
 
+					-- If a group is being copied and the
+					-- netchanger is member of the group, then
+					-- we compute the position of the netchanger candidate
+					-- here and call procedure draw_netchanger:					
+					if group_is_being_copied then
+						-- Get the position of the netchanger candidate.
+						-- This is a conversion from netchanger position
+						-- to a regular position (x/y/rotation):
+						position := to_position (netchanger.position_sch);
+						
+						-- Move the netchanger by the current group offset.
+						-- So this is the position where the copy of the
+						-- netchanger wiil be drawn:
+						move_by (position.place, get_group_offset);
+						
+						-- Draw the components of the netchanger copy:
+						draw_netchanger;
+						
+						-- Restore the position of the original netchanger
+						-- because the original will be drawn later:
+						position := to_position (netchanger.position_sch);
+					end if;
+					
+					
 					-- Overwrite the position if the netchanger
 					-- 1. alone is being moved or
 					-- 2. if a whole group is being moved:
