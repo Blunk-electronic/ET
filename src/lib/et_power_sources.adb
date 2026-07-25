@@ -49,9 +49,9 @@ package body et_power_sources is
 	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
 	-- The prefix LEVEL_ is removed.
 	function to_string (level : in type_power_level) return string is
-		level_string : string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
-		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
-		B : positive := level_string'length;
+		level_string : constant string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
+		A : constant positive := index (level_string, "_") + 1; -- the position after the first underscore
+		B : constant positive := level_string'length;
 	begin
 		return level_string (A .. B);
 	end;

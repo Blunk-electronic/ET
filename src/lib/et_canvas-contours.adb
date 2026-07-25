@@ -98,7 +98,7 @@ package body et_canvas.contours is
 			c : in pac_segments.cursor) 
 		is 
 			-- Take a copy of the given segment:
-			segment : type_segment := element (c);
+			segment : constant type_segment := element (c);
 
 			-- In case the segment is being moved
 			-- by the operator, then we store the tool

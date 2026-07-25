@@ -69,7 +69,7 @@ package body et_package_read_conductors is
 	procedure read_conductor_line (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -109,7 +109,7 @@ package body et_package_read_conductors is
 	procedure read_conductor_arc (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -162,7 +162,7 @@ package body et_package_read_conductors is
 	procedure read_conductor_circle (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -305,7 +305,7 @@ package body et_package_read_conductors is
 	procedure read_fill_zone (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_fill_style then -- fill_style solid/hatched

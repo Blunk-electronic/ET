@@ -795,8 +795,8 @@ package body et_geometry_2a is
 	is
 		use pac_float_numbers_functions;
 
-		dx : type_float := abs (type_float (p2.x - p1.x));
-		dy : type_float := abs (type_float (p2.y - p1.y));
+		dx : constant type_float := abs (type_float (p2.x - p1.x));
+		dy : constant type_float := abs (type_float (p2.y - p1.y));
 		d : type_float;
 	begin
 		d := sqrt (dx**2.0 + dy**2.0);
@@ -833,8 +833,8 @@ package body et_geometry_2a is
 	is
 		use pac_float_numbers_functions;
 
-		dx : type_float := type_float (p2.x - p1.x);
-		dy : type_float := type_float (p2.y - p1.y);
+		dx : constant type_float := type_float (p2.x - p1.x);
+		dy : constant type_float := type_float (p2.y - p1.y);
 		a : type_float;
 	begin
 		-- For a tangens operations, dx must not
@@ -1424,7 +1424,7 @@ package body et_geometry_2a is
 	procedure swap_edges (
 		area : in out type_area)
 	is
-		w : type_distance_positive := area.width;
+		w : constant type_distance_positive := area.width;
 	begin
 		area.width  := area.height;
 		area.height := w;
@@ -1470,8 +1470,8 @@ package body et_geometry_2a is
 		return type_distance_positive
 	is 
 		d : type_distance_positive;
-		w : type_float_positive := type_float_positive (area.width);
-		h : type_float_positive := type_float_positive (area.height);
+		w : constant type_float_positive := type_float_positive (area.width);
+		h : constant type_float_positive := type_float_positive (area.height);
 	begin
 		d := type_distance_positive (sqrt (w ** 2.0 + h ** 2.0));		
 		return d;
@@ -1585,14 +1585,14 @@ package body et_geometry_2a is
 		B_lx : type_distance renames B.position.x;
 
 		-- This is the greatest x used by area B
-		B_gx : type_distance := B_lx + B.width;
+		B_gx : constant type_distance := B_lx + B.width;
 
 		
 		-- This is the lowest y used by area B
 		B_ly : type_distance renames B.position.y;
 
 		-- This is the greatest y used by area B
-		B_gy : type_distance := B_ly + B.height;
+		B_gy : constant type_distance := B_ly + B.height;
 
 	begin
 		-- x-axis:
@@ -1629,7 +1629,7 @@ package body et_geometry_2a is
 		area	: in out type_area;
 		valid	: out boolean)
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 	begin
 		if K1.x /= K2.x and K1.y /= K2.y then
 
@@ -1948,7 +1948,7 @@ package body et_geometry_2a is
 	is 
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
-		orientation : type_line_orientation := get_orientation (line);
+		orientation : constant type_line_orientation := get_orientation (line);
 	begin
 		-- Map from west end to A/B-end:
 		AB_end := to_AB_end (line, DIR_WEST);
@@ -1974,7 +1974,7 @@ package body et_geometry_2a is
 	is 
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
-		orientation : type_line_orientation := get_orientation (line);
+		orientation : constant type_line_orientation := get_orientation (line);
 	begin
 		-- Map from east end to A/B-end:
 		AB_end := to_AB_end (line, DIR_EAST);
@@ -2001,7 +2001,7 @@ package body et_geometry_2a is
 	is 
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
-		orientation : type_line_orientation := get_orientation (line);
+		orientation : constant type_line_orientation := get_orientation (line);
 	begin
 		-- Map from north end to A/B-end:
 		AB_end := to_AB_end (line, DIR_NORTH);
@@ -2028,7 +2028,7 @@ package body et_geometry_2a is
 	is 
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
-		orientation : type_line_orientation := get_orientation (line);
+		orientation : constant type_line_orientation := get_orientation (line);
 	begin
 		-- Map from south end to A/B-end:
 		AB_end := to_AB_end (line, DIR_SOUTH);
@@ -2097,7 +2097,7 @@ package body et_geometry_2a is
 		return type_vector_model
 	is 
 		c : type_vector;
-		l : type_line_fine := to_line_fine (line);
+		l : constant type_line_fine := to_line_fine (line);
 	begin
 		c := get_center (l);		
 		return to_vector_model (c);
@@ -2870,7 +2870,7 @@ package body et_geometry_2a is
 		points	: in pac_points.list)
 		return type_split_line
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		fragment_count : natural;
 
@@ -3046,7 +3046,7 @@ package body et_geometry_2a is
 		-- appropiate for this purpose. Since we are dealing with lines
 		-- that do not have linewidth, the width is set to zero:
 		AP : type_area := get_bounding_box (primary,   0.0);
-		AS : type_area := get_bounding_box (secondary, 0.0);
+		AS : constant type_area := get_bounding_box (secondary, 0.0);
 
 	begin
 		-- If any of the given lines is a slope then
@@ -3257,7 +3257,7 @@ package body et_geometry_2a is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
-		A : type_arc_fine := to_arc_fine (arc);
+		A : constant type_arc_fine := to_arc_fine (arc);
 	begin
 		return get_intersection (A, line);
 	end get_intersection;
@@ -3388,7 +3388,7 @@ package body et_geometry_2a is
 	
 	
 	procedure reverse_arc (arc : in out type_arc) is
-		scratch : type_vector_model := arc.A;
+		scratch : constant type_vector_model := arc.A;
 	begin
 		arc.A := arc.B;
 		arc.B := scratch;
@@ -3647,8 +3647,8 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		A : type_arc_fine := to_arc_fine (arc);
-		P : type_vector := to_vector (point);
+		A : constant type_arc_fine := to_arc_fine (arc);
+		P : constant type_vector := to_vector (point);
 	begin
 		return get_shortest_distance (A, P);		
 	end get_shortest_distance;
@@ -3661,7 +3661,7 @@ package body et_geometry_2a is
 		point	: in type_vector)
 		return type_float_positive
 	is
-		A : type_arc_fine := to_arc_fine (arc);
+		A : constant type_arc_fine := to_arc_fine (arc);
 		P : type_vector renames point;
 	begin
 		return get_absolute (get_shortest_distance (A, P));
@@ -3795,7 +3795,7 @@ package body et_geometry_2a is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
-		C : type_circle_fine := to_circle_fine (circle);
+		C : constant type_circle_fine := to_circle_fine (circle);
 	begin
 		return get_intersection (C, line);
 	end get_intersection;
@@ -3964,8 +3964,8 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		C : type_circle_fine := to_circle_fine (circle);
-		P : type_vector := to_vector (point);
+		C : constant type_circle_fine := to_circle_fine (circle);
+		P : constant type_vector := to_vector (point);
 	begin
 		return get_shortest_distance (C, P);
 	end get_shortest_distance;
@@ -3978,7 +3978,7 @@ package body et_geometry_2a is
 		point	: in type_vector)
 		return type_float_positive
 	is
-		C : type_circle_fine := to_circle_fine (circle);
+		C : constant type_circle_fine := to_circle_fine (circle);
 		P : type_vector renames point;
 	begin
 		return get_absolute (get_shortest_distance (C, P));
@@ -4304,7 +4304,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return boolean
 	is
-		d : type_float_positive := get_distance_absolute (zone.center, point);
+		d : constant type_float_positive := get_distance_absolute (zone.center, point);
 	begin
 		if d <= zone.radius then
 			return true;
@@ -4373,7 +4373,7 @@ package body et_geometry_2a is
 		return boolean
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		distance : type_float;
 		distance_polar : type_distance_polar;
@@ -4606,7 +4606,7 @@ package body et_geometry_2a is
 		destination		: in type_vector_model)
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		zone : type_line_zone;
 		offset : type_vector_model;

@@ -678,8 +678,8 @@ package body et_geometry_1.et_polygons is
 		
 		result : boolean := false;
 
-		length_left  : count_type := left.length;
-		length_right : count_type := right.length;
+		length_left  : constant count_type := left.length;
+		length_right : constant count_type := right.length;
 		
 		c_left  : pac_polygon_list.cursor;
 		c_right : pac_polygon_list.cursor;
@@ -1218,7 +1218,7 @@ package body et_geometry_1.et_polygons is
 		-- CS use constant defined in package spec
 		
 		procedure query_edge (c : in pac_edges.cursor) is
-			l : type_float_positive := get_length (element (c));
+			l : constant type_float_positive := get_length (element (c));
 		begin
 			--put_line ("edge length" & to_string (l));
 			
@@ -1868,7 +1868,7 @@ package body et_geometry_1.et_polygons is
 		return string
 	is
 		use ada.strings.unbounded;
-		result : unbounded_string := to_unbounded_string (type_location'image (line_end.location));
+		result : constant unbounded_string := to_unbounded_string (type_location'image (line_end.location));
 	begin
 		-- CS edges
 		return to_string (result);

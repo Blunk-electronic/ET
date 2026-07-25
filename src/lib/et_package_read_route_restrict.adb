@@ -66,7 +66,7 @@ package body et_package_read_route_restrict is
 	procedure read_route_restrict_line (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -101,7 +101,7 @@ package body et_package_read_route_restrict is
 	procedure read_route_restrict_arc (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -148,7 +148,7 @@ package body et_package_read_route_restrict is
 	procedure read_route_restrict_circle (
 		line	: in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);

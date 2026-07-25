@@ -61,7 +61,7 @@ package body et_package_read_meta is
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_bom_relevant then -- bom_relevant yes/no

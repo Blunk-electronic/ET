@@ -71,7 +71,7 @@ package body et_symbol_read_text is
 	procedure read_text (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_position then -- position x 1 y 2
@@ -146,7 +146,7 @@ package body et_symbol_read_text is
 	procedure read_placeholder (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_position then -- position x 1 y 2

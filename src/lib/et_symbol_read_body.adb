@@ -65,7 +65,7 @@ package body et_symbol_read_body is
 	procedure read_body_line (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 1 y 2
@@ -124,7 +124,7 @@ package body et_symbol_read_body is
 	procedure read_body_arc (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 1 y 2
@@ -196,7 +196,7 @@ package body et_symbol_read_body is
 	procedure read_body_circle (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 1 y 2
