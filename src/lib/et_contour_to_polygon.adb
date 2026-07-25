@@ -155,7 +155,7 @@ package body et_contour_to_polygon is
 		result : type_polygon;
 
 		procedure query_segment (c : in pac_segments.cursor) is
-			s : type_segment := element (c);
+			s : constant type_segment := element (c);
 			e_list : pac_edges.list;
 		begin
 			case s.shape is
@@ -263,7 +263,7 @@ package body et_contour_to_polygon is
 		result : type_contour;
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			l :  type_edge := element (c); -- CS use rename
+			l : constant  type_edge := element (c); -- CS use rename
 			use pac_geometry_brd;
 		begin
 			if debug then

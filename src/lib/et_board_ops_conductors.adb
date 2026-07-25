@@ -174,7 +174,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net 
 			-- to be located in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -875,7 +875,7 @@ package body et_board_ops_conductors is
 			is
 				pragma unreferenced (net_name);
 				use pac_conductor_lines;
-				lc : pac_conductor_lines.cursor := net.route.lines.first;
+				lc : constant pac_conductor_lines.cursor := net.route.lines.first;
 
 				procedure query_line (line : in type_conductor_line) is begin
 					if line.layer = layer then
@@ -1843,7 +1843,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -2012,7 +2012,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net to be located in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -2739,7 +2739,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -2940,7 +2940,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module:
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
@@ -3067,7 +3067,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			

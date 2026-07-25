@@ -133,7 +133,7 @@ package body et_canvas_schematic_units is
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : type_object := 
+			selected_object : constant type_object := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -236,7 +236,7 @@ package body et_canvas_schematic_units is
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 						active_module, PROPOSED, log_threshold + 1);
 		begin
 			modify_status (
@@ -690,7 +690,7 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the value of the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize set value", level => log_threshold);
@@ -865,7 +865,7 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the purpose of the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize set purpose", level => log_threshold);
@@ -1041,7 +1041,7 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the partcode of the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize set partcode", level => log_threshold);
@@ -1266,7 +1266,7 @@ package body et_canvas_schematic_units is
 
 		-- Sets the package_variant of the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize set package variant", level => log_threshold);
@@ -2169,7 +2169,7 @@ package body et_canvas_schematic_units is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize copy", level => log_threshold);
@@ -2217,7 +2217,7 @@ package body et_canvas_schematic_units is
 		procedure build_preview is
 
 			-- Get the selected original object:
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 
 		begin
@@ -2633,7 +2633,7 @@ package body et_canvas_schematic_units is
 		procedure finalize is
 			use et_device_property_level;
 			
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize show", level => log_threshold);

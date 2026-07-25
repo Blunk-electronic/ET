@@ -60,7 +60,7 @@ package body et_pcb_placeholders.conductor is
 		placeholder : in type_placeholder_conductor)
 		return string
 	is 
-		tf : type_text_fab := type_text_fab (placeholder);
+		tf : constant type_text_fab := type_text_fab (placeholder);
 	begin
 		return to_string (tf) 
 			& " layer " & to_string (get_layer (placeholder))

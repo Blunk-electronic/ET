@@ -84,7 +84,7 @@ package body et_package_variant is
 			pragma unreferenced (name);
 			-- Locate in the given package variant the given terminal:
 			use pac_terminal_port_map;
-			c : pac_terminal_port_map.cursor := 
+			c : constant pac_terminal_port_map.cursor := 
 				find (variant.terminal_port_map, terminal);
 		begin
 			if c /= pac_terminal_port_map.no_element then -- terminal exists

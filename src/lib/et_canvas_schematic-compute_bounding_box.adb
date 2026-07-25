@@ -66,11 +66,11 @@ procedure compute_bounding_box (
 is
 	pragma unreferenced (abort_on_first_error);
 	-- debug : boolean := false;
-	debug : boolean := true;
+	debug : constant boolean := true;
 
 	-- In order to detect whether the bounding-box has
 	-- changed we take a copy of the current bounding-box:
-	bbox_old : type_area := bounding_box;
+	bbox_old : constant type_area := bounding_box;
 
 	-- This is the temporary bounding-box we are going to build
 	-- in the course of this procedure:
@@ -168,7 +168,7 @@ is
 					segment : type_net_segment renames element (c);
 
 					-- Compute the preliminary bounding-box of the segment:
-					b : type_area := get_bounding_box (segment, net_linewidth);
+					b : constant type_area := get_bounding_box (segment, net_linewidth);
 				begin
 					if debug then
 						put_line (to_string (type_line (segment)));

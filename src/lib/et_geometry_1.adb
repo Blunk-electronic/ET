@@ -73,7 +73,7 @@ package body et_geometry_1 is
 
 
 	function mil_to_distance (mil : in string) return type_float is
-		distance_mil : type_float := type_float'value (mil);
+		distance_mil : constant type_float := type_float'value (mil);
 	begin
 		return distance_mil * (25.4 * 0.001);
 	end mil_to_distance;
@@ -791,7 +791,7 @@ package body et_geometry_1 is
 	is
 		lambda : type_float;
 
-		debug : boolean := false;
+		debug : constant boolean := false;
 	begin
 		if debug then
 			put_line ("divide");
@@ -1465,7 +1465,7 @@ package body et_geometry_1 is
 		result : type_line_vector := (v_start => point, others => <>);
 
 		dir_A : type_vector renames line.v_direction;
-		dir_B : type_vector := (0.0, 0.0, 1.0);
+		dir_B : constant type_vector := (0.0, 0.0, 1.0);
 		N : type_vector;
 	begin
 		N := cross_product (dir_A, dir_B);
@@ -2445,7 +2445,7 @@ package body et_geometry_1 is
 	procedure reverse_arc (
 		arc : in out type_arc_fine) 
 	is
-		scratch : type_vector := arc.A;
+		scratch : constant type_vector := arc.A;
 	begin
 		arc.A := arc.B;
 		arc.B := scratch;
@@ -2503,7 +2503,7 @@ package body et_geometry_1 is
 		return boolean 
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- The angle of the given point relative to the
 		-- center of the given arc:
@@ -2787,7 +2787,7 @@ package body et_geometry_1 is
 	is
 		A : type_angle; -- span to be returned
 
-		N : type_arc_angles := normalize_arc (arc);
+		N : constant type_arc_angles := normalize_arc (arc);
 		
 		S : type_angle_positive renames N.angle_start;
 		E : type_angle_positive renames N.angle_end;
@@ -2962,7 +2962,7 @@ package body et_geometry_1 is
 	is
 		scratch : type_arc_segments := segments;
 
-		b : positive := segments'last + 1;
+		b : constant positive := segments'last + 1;
 	begin
 		-- Loop forward through the elements of the input:
 		for a in segments'first .. segments'last loop
@@ -2989,7 +2989,7 @@ package body et_geometry_1 is
 		point		: in type_vector)
 		return positive
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		result : positive := 1;
 
@@ -3052,13 +3052,13 @@ package body et_geometry_1 is
 		return type_arc_segments
 	is
 		-- debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		subtype type_arcs is type_arc_segments (1 .. count);
 		result : type_arcs;
 
-		radius : type_float_positive := get_radius_start (arc);
-		center : type_vector := arc.center;
+		radius : constant type_float_positive := get_radius_start (arc);
+		center : constant type_vector := arc.center;
 		
 		norm : type_arc_fine;
 		angles : type_arc_angles;
@@ -3277,7 +3277,7 @@ package body et_geometry_1 is
 		return type_intersection_of_line_and_circle
 	is
 		--debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		-- This function bases on the approach by
 		-- Weisstein, Eric W. "Circle-Line Intersection." 
@@ -3448,7 +3448,7 @@ package body et_geometry_1 is
 		return type_intersection_of_line_and_circle
 	is
 		--debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 
 		function do_it return type_intersection_of_line_and_circle is
@@ -3654,7 +3654,7 @@ package body et_geometry_1 is
 		point	: in type_vector)
 		return type_distance_polar
 	is
-		debug : boolean := false;
+		debug : constant boolean := false;
 		-- debug : boolean := true;
 		
 		result : type_distance_polar;
@@ -3919,7 +3919,7 @@ package body et_geometry_1 is
 		result : type_float_positive := 0.0;
 
 		--debug : boolean := true;
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 
 		-- Computes the shortest distance in an
@@ -4022,7 +4022,7 @@ package body et_geometry_1 is
 	is
 		pragma unreferenced (debug);
 		--debug_2 : boolean := true;
-		debug_2 : boolean := false;
+		debug_2 : constant boolean := false;
 
 
 		

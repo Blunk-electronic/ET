@@ -69,7 +69,7 @@ package body et_module_read_freetracks is
 	procedure read_freetrack_line (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 		p : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -109,7 +109,7 @@ package body et_module_read_freetracks is
 	procedure read_freetrack_arc (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -158,7 +158,7 @@ package body et_module_read_freetracks is
 	procedure read_freetrack_circle (
 		line : in type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45

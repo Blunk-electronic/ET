@@ -2399,11 +2399,11 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment	: in out type_net_segment)
 					is 
-						object_segment : type_object_segment := (
+						object_segment : constant type_object_segment := (
 							net_cursor, strand_cursor, segment_cursor);
 							
-						old_A : type_vector_model := get_A (segment);
-						old_B : type_vector_model := get_B (segment);
+						old_A : constant type_vector_model := get_A (segment);
+						old_B : constant type_vector_model := get_B (segment);
 						
 						destination : type_vector_model;
 					begin
@@ -3080,7 +3080,7 @@ package body et_schematic_ops_nets is
 		
 		-- We start processing the sheets with the
 		-- sheet after sheet_delete:
-		sheet_start : type_sheet := sheet_delete + 1;
+		sheet_start : constant type_sheet := sheet_delete + 1;
 		
 		use et_schematic_ops_sheets;
 
@@ -3238,7 +3238,7 @@ package body et_schematic_ops_nets is
 			module		: in type_generic_module) 
 		is
 			pragma unreferenced (module_name);
-			net_cursor : pac_nets.cursor := module.nets.first;
+			net_cursor : constant pac_nets.cursor := module.nets.first;
 
 			
 			procedure query_net (
@@ -4022,7 +4022,7 @@ package body et_schematic_ops_nets is
 				
 				
 				procedure query_strand (strand : in out type_strand) is 
-					old_position : type_strand_position := get_position (strand);
+					old_position : constant type_strand_position := get_position (strand);
 					new_position : type_strand_position;
 				begin
 					log (text => "strand " & get_position (strand), level => log_threshold + 2);
@@ -4900,7 +4900,7 @@ package body et_schematic_ops_nets is
 			is
 				pragma unreferenced (module_name, module);
 				-- Get the cursor to the given net:
-				net_cursor : pac_nets.cursor := locate_net (module_cursor, net_name);
+				net_cursor : constant pac_nets.cursor := locate_net (module_cursor, net_name);
 				-- NOTE: The net cursor provied by net.net_cursor can not be
 				-- used because it may become invalid in case the net
 				-- is deleted later.
@@ -5702,7 +5702,7 @@ package body et_schematic_ops_nets is
 			pragma unreferenced (module_name);
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
-				net : type_net := element (net_cursor);
+				net : constant type_net := element (net_cursor);
 
 				-- Cnce a segment has been found at the given
 				-- place, then this flag is cleared so that
@@ -6523,7 +6523,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_net_scope
 	is
-		result : type_net_scope := type_net_scope'first;
+		result : constant type_net_scope := type_net_scope'first;
 		
 		net_cursor : pac_nets.cursor; -- points to the net
 	begin
@@ -8437,7 +8437,7 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return string
 	is
-		object : type_object := element (object_cursor);
+		object : constant type_object := element (object_cursor);
 	begin
 		case object.cat is
 			when CAT_VOID =>
@@ -8480,9 +8480,9 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_nets.cursor
 	is
-		object : type_object := element (object_cursor);
+		object : constant type_object := element (object_cursor);
 
-		c : pac_nets.cursor := pac_nets.no_element;		
+		c : constant pac_nets.cursor := pac_nets.no_element;		
 	begin
 		case object.cat is
 			when CAT_SEGMENT =>
@@ -8507,7 +8507,7 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_strands.cursor
 	is
-		object : type_object := element (object_cursor);
+		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.strand_cursor;
 	end;
@@ -8519,7 +8519,7 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_net_segments.cursor
 	is
-		object : type_object := element (object_cursor);
+		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.segment_cursor;
 	end;
@@ -9279,7 +9279,7 @@ package body et_schematic_ops_nets is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					-- Get the sheet where the candidate strand is:
-					sheet : type_sheet := get_sheet (strand);
+					sheet : constant type_sheet := get_sheet (strand);
 					
 					-- This procedure and sets start or end points of net 
 					-- segments which are connected with the given segment as "moving":
@@ -9414,7 +9414,7 @@ package body et_schematic_ops_nets is
 						
 						-- Find the zone at which the segment
 						-- is being attacked:
-						zone : type_line_zone := get_zone (seg, point_of_attack);
+						zone : constant type_line_zone := get_zone (seg, point_of_attack);
 					begin
 						log (text => "attack at " & to_string (zone), level => log_threshold + 1);
 						
@@ -9446,7 +9446,7 @@ package body et_schematic_ops_nets is
 						
 						-- Find the zone at which the segment
 						-- is being attacked:
-						zone : type_line_zone := get_zone (seg, point_of_attack);
+						zone : constant type_line_zone := get_zone (seg, point_of_attack);
 					begin
 						log (text => "attack at " & to_string (zone), level => log_threshold + 1);
 						log_indentation_up;

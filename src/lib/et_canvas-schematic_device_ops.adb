@@ -60,7 +60,7 @@ package body et_canvas.schematic_device_ops is
 		column_0 : constant := 0; -- for the prefix name
 		column_1 : constant := 1; -- for the prefix index
 
-		entry_structure : glib.gtype_array := (
+		entry_structure : constant glib.gtype_array := (
 				column_0 => glib.gtype_string,
 				column_1 => glib.gtype_string);
 
@@ -296,7 +296,7 @@ package body et_canvas.schematic_device_ops is
 		column_0 : constant := 0; -- for the variant name
 		column_1 : constant := 1; -- for the variant index
 
-		entry_structure : glib.gtype_array := (
+		entry_structure : constant glib.gtype_array := (
 				column_0 => glib.gtype_string,
 				column_1 => glib.gtype_string);
 
@@ -474,10 +474,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_rename_window_key_pressed");
@@ -524,10 +524,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_value_window_key_pressed");
@@ -575,10 +575,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_purpose_window_key_pressed");
@@ -625,10 +625,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_partcode_window_key_pressed");
@@ -675,10 +675,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_package_variant_window_key_pressed");
@@ -736,10 +736,10 @@ package body et_canvas.schematic_device_ops is
 		return boolean
 	is
 		pragma unreferenced (window);
-		debug : boolean := false;
+		debug : constant boolean := false;
 		
 		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;		
 	begin
 		if debug then
 			put_line ("cb_properties_window_key_pressed");
