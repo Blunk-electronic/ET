@@ -122,15 +122,13 @@ package et_netchanger_symbol_schematic is
 		master_port	: type_netchanger_port := (
 						length		=> 5.0,
 						position	=> position_master_port_default,
-						rotation	=> zero_rotation,
-						others		=> <>);
+						rotation	=> zero_rotation);
 
 		-- The slave port is on the left side of the body:
 		slave_port	: type_netchanger_port := (
 						length		=> 5.0,
 						position	=> position_slave_port_default,						
-						rotation	=> 180.0,
-						others		=> <>);
+						rotation	=> 180.0);
 
 	end record;
 
@@ -148,15 +146,13 @@ package et_netchanger_symbol_schematic is
 		master_port	: type_netchanger_port := (
 						length		=> 5.0,
 						position	=> position_slave_port_default,
-						rotation	=> 180.0,
-						others		=> <>);
+						rotation	=> 180.0);
 
 		-- The slave port is on the right side of the body:
 		slave_port	: type_netchanger_port := (
 						length		=> 5.0,
 						position	=> position_master_port_default,						
-						rotation	=> zero_rotation,
-						others		=> <>);
+						rotation	=> zero_rotation);
 
 	end record;
 

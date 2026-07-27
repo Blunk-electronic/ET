@@ -432,7 +432,7 @@ package body et_module_read_board_zones is
 							fill_style 	=> SOLID,
 							easing		=> board_easing,
 							islands		=> no_islands,
-							properties	=> (signal_layer, contour_priority, others => <>),
+							properties	=> (signal_layer, contour_priority),
 							isolation	=> polygon_isolation,
 							linewidth	=> polygon_width_min));
 
@@ -443,7 +443,7 @@ package body et_module_read_board_zones is
 							fill_style 	=> HATCHED,
 							easing		=> board_easing,
 							islands		=> no_islands,
-							properties	=> (signal_layer, contour_priority, others => <>),
+							properties	=> (signal_layer, contour_priority),
 							isolation	=> polygon_isolation,
 							linewidth	=> polygon_width_min,
 							spacing		=> fill_spacing));

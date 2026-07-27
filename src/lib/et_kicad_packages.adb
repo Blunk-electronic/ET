@@ -2301,23 +2301,23 @@ package body et_kicad_packages is
 						case text.layer is
 							when TOP_SILK => 
 								silk_screen.top.texts.append ((type_text_fab (text) with 
-									content => text.content, others => <>)); -- CS vectorize text
+									content => text.content)); -- CS vectorize text
 								-- CS text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								silk_screen.bottom.texts.append ((type_text_fab (text) with 
-									content => text.content, others => <>)); -- CS vectorize text
+									content => text.content)); -- CS vectorize text
 								-- CS text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 
 								
 							when TOP_ASSY => 
 								assy_doc.top.texts.append ((type_text_fab (text) with 
-									content => text.content, others => <>)); -- CS vectorize text
+									content => text.content)); -- CS vectorize text
 								-- CS text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								assy_doc.bottom.texts.append ((type_text_fab (text) with
-									content => text.content, others => <>)); -- CS vectorize text
+									content => text.content)); -- CS vectorize text
 								-- CS text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
 
 								

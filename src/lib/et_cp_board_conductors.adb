@@ -386,8 +386,7 @@ package body et_cp_board_conductors is
 					relief_properties	=> settings.polygons_conductor.thermal,
 					properties		=> (
 						layer 			=> to_signal_layer (get_field (cmd, 6)),
-						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>),
+						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
 				
@@ -421,8 +420,7 @@ package body et_cp_board_conductors is
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
 						layer 			=> to_signal_layer (get_field (cmd, 6)),
-						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>),
+						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
 				
@@ -457,8 +455,7 @@ package body et_cp_board_conductors is
 					relief_properties	=> settings.polygons_conductor.thermal,
 					properties		=> (
 						layer 			=> to_signal_layer (get_field (cmd, 6)),
-						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>),
+						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
 				
@@ -493,8 +490,7 @@ package body et_cp_board_conductors is
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
 						layer 			=> to_signal_layer (get_field (cmd, 6)),
-						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>),
+						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
 				
@@ -1073,8 +1069,7 @@ package body et_cp_board_conductors is
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 							layer 			=> to_signal_layer (get_field (cmd, 5)),
-							priority_level	=> settings.polygons_conductor.priority_level,
-							others			=> <>),
+							priority_level	=> settings.polygons_conductor.priority_level),
 
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
@@ -1099,8 +1094,7 @@ package body et_cp_board_conductors is
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 							layer 			=> to_signal_layer (get_field (cmd, 5)),
-							priority_level	=> settings.polygons_conductor.priority_level,
-							others			=> <>),
+							priority_level	=> settings.polygons_conductor.priority_level),
 
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);

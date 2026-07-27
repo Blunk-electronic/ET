@@ -3697,10 +3697,7 @@ package body et_kicad_to_native is
 													value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 													purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
 																	meaning	=> PURPOSE,
-																	others 	=> <>)),
-													-- NOTE: Other placeholders (fields in kicad) discarded here.
-												
-												others		=> <>)
+																	others 	=> <>)))
 										));
 
 							when APPEARANCE_VIRTUAL => -- virtual unit
@@ -3721,10 +3718,7 @@ package body et_kicad_to_native is
 											with 
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> APPEARANCE_VIRTUAL,
-												ports		=> et_symbol_ports.pac_symbol_ports.empty_map, -- ports will come later
-												-- NOTE: Other placeholders discarded here.
-												
-												others		=> <>)
+												ports		=> et_symbol_ports.pac_symbol_ports.empty_map) -- ports will come later
 										));
 
 						end case;
