@@ -2429,8 +2429,8 @@ package body et_kicad_to_native is
 			log (text => "width" & to_string (width), level => log_threshold + 2);
 			
 			if width < zero then
-				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, MIRROR_ALONG_X_AXIS));
-				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, MIRROR_ALONG_X_AXIS));
+				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_X_AXIS);
+				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_X_AXIS);
 				width := - width;
 			end if;
 			
@@ -2439,8 +2439,8 @@ package body et_kicad_to_native is
 			log (text => "height" & to_string (height), level => log_threshold + 2);
 			
 			if height < zero then
-				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, MIRROR_ALONG_Y_AXIS));
-				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, MIRROR_ALONG_Y_AXIS));
+				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_Y_AXIS);
+				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_Y_AXIS);
 				height := - height;
 			end if;
 
@@ -2453,16 +2453,16 @@ package body et_kicad_to_native is
 			-- corner_B is the upper right corner of the rectangle
 
 			-- corner_C is the lower right corner:
-			corner_C := type_vector_model (set (
+			corner_C := set (
 				x => get_x (rectangle.corner_A) + width,
 				y => get_y (rectangle.corner_A)
-				));
+				);
 
 			-- corner_D is the upper left corner:
-			corner_D := type_vector_model (set (
+			corner_D := set (
 				x => get_x (rectangle.corner_A),
 				y => get_y (rectangle.corner_A) + height
-				));
+				);
 			
 			-- lower horizontal line
 			set_A (line, rectangle.corner_A);
