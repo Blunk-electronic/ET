@@ -391,12 +391,12 @@ is
 					when AS_PAD =>
 						-- Copy solder pad contours to stopmask without
 						-- any modifications:
-						stopmask_contours := (type_contour (pad_contours) with null record);
+						stopmask_contours := (pad_contours with null record);
 
 						
 					when EXPAND_PAD =>
 						-- Copy solder pad contour to stopmask:
-						stopmask_contours := (type_contour (pad_contours) with null record);
+						stopmask_contours := (pad_contours with null record);
 
 						-- Make a temporary polygon from the stopmask contours:
 						polygon_tmp := to_polygon (stopmask_contours, fill_tolerance, EXPAND);
@@ -679,12 +679,12 @@ is
 					when AS_PAD =>
 						-- Copy pad contours to stopmask without
 						-- any modification:
-						stopmask_contours := (type_contour (pad_contours) with null record);
+						stopmask_contours := (pad_contours with null record);
 
 						
 					when EXPAND_PAD =>
 						-- Copy pad contours to stopmask:
-						stopmask_contours := (type_contour (pad_contours) with null record);
+						stopmask_contours := (pad_contours with null record);
 
 						-- Now the stopmask must be expanded according to the DRU settings.
 
@@ -791,12 +791,12 @@ is
 					when AS_PAD =>
 						-- Copy pad contours to stencil without
 						-- any modification:
-						stencil_contours := (type_contour (pad_contours) with null record);
+						stencil_contours := (pad_contours with null record);
 
 						
 					when SHRINK_PAD =>
 						-- Copy pad contours to stencil:
-						stencil_contours := (type_contour (pad_contours) with null record);
+						stencil_contours := (pad_contours with null record);
 
 						-- Now the stencil must be shrinked according to shrink_factor:
 						

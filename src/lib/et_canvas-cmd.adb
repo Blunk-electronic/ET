@@ -245,9 +245,9 @@ package body et_canvas.cmd is
 				-- Sets the cursor to a certain place
 				-- but leaves the zoom factor unchanged:
 				procedure set is
-					c : constant type_vector_model := type_vector_model (set (
+					c : constant type_vector_model := set (
 						x => to_distance (get_field (5)),
-						y => to_distance (get_field (6))));
+						y => to_distance (get_field (6)));
 
 				begin
 					log (text => "set cursor at " & to_string (c),
@@ -261,9 +261,9 @@ package body et_canvas.cmd is
 				-- Zooms on a given point and places the cursor
 				-- at the given point:
 				procedure zoom_to_point is
-					c : constant type_vector_model := type_vector_model (set (
+					c : constant type_vector_model := set (
 						x => to_distance (get_field (5)),
-						y => to_distance (get_field (6))));
+						y => to_distance (get_field (6)));
 
 					l : constant type_zoom_factor := to_zoom_factor (get_field (7));
 				begin
@@ -366,9 +366,9 @@ package body et_canvas.cmd is
 			procedure move_cursor is
 
 				procedure move is
-					c : constant type_vector_model := type_vector_model (set (
+					c : constant type_vector_model := set (
 						x => to_distance (get_field (5)),
-						y => to_distance (get_field (6))));
+						y => to_distance (get_field (6)));
 
 				begin
 					log (text => "move cursor by " & to_string (c),
