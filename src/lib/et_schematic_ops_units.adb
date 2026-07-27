@@ -2491,7 +2491,7 @@ package body et_schematic_ops_units is
 							-- build the new position while preserving rotation:
 							unit.position := to_position (
 								point		=> destination, 
-								sheet		=> type_sheet (sheet),
+								sheet		=> sheet,
 								rotation	=> get_rotation (unit.position));
 
 						when RELATIVE =>

@@ -271,9 +271,9 @@ package body et_net_strands is
 		--log (text => "set strand position");
 		
 		-- init point_1 as the farest possible point from drawing origin
-		point_1 := type_vector_model (set (
+		point_1 := set (
 					x => type_position_axis'last,
-					y => type_position_axis'last));
+					y => type_position_axis'last);
 
 		-- loop through segments and keep the nearest point to origin
 		iterate (strand.segments, query_strand'access);

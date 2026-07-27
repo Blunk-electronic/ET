@@ -778,15 +778,15 @@ package body et_cp_board_conductors is
 						width_tmp := to_distance (get_field (cmd, 8));
 
 						arc_tmp := type_arc (to_arc (
-							center		=> type_vector_model (set (
+							center		=> set (
 								x => to_distance (dd => get_field (cmd, 9)),
-								y => to_distance (dd => get_field (cmd, 10)))),
-							A	=> type_vector_model (set (
+								y => to_distance (dd => get_field (cmd, 10))),
+							A	=> set (
 								x => to_distance (dd => get_field (cmd, 11)),
-								y => to_distance (dd => get_field (cmd, 12)))),
-							B	=> type_vector_model (set (
+								y => to_distance (dd => get_field (cmd, 12))),
+							B	=> set (
 								x => to_distance (dd => get_field (cmd, 13)),
-								y => to_distance (dd => get_field (cmd, 14)))),
+								y => to_distance (dd => get_field (cmd, 14))),
 							direction	=> to_direction (get_field (cmd, 15))));
 														
 						-- draw a named track

@@ -1412,8 +1412,8 @@ package body et_geometry_1 is
 	is 
 		result : type_line_vector := lv;
 	begin
-		result.v_start.x := result.v_start.x + type_float (offset.x);
-		result.v_start.y := result.v_start.y + type_float (offset.y);
+		result.v_start.x := result.v_start.x + offset.x;
+		result.v_start.y := result.v_start.y + offset.y;
 
 		return result;
 	end move_by;
@@ -1430,8 +1430,8 @@ package body et_geometry_1 is
 
 		--a := to_rotation (arctan (
 		a := arctan (
-				y		=> type_float (line.v_direction.y), 
-				x		=> type_float (line.v_direction.x), 
+				y		=> line.v_direction.y, 
+				x		=> line.v_direction.x, 
 				cycle	=> units_per_cycle);
 
 		-- dz ignored. we are in a 2D world
@@ -3317,11 +3317,11 @@ package body et_geometry_1 is
 			v_end := add (line_moved.v_start, line_moved.v_direction);
 			
 			-- compute start and end point of line:
-			x1 := type_float (get_x (line_moved.v_start));
-			y1 := type_float (get_y (line_moved.v_start));
+			x1 := get_x (line_moved.v_start);
+			y1 := get_y (line_moved.v_start);
 			
-			x2 := type_float (get_x (v_end));
-			y2 := type_float (get_y (v_end));
+			x2 := get_x (v_end);
+			y2 := get_y (v_end);
 			
 			dx := x2 - x1; -- the delta in x
 			dy := y2 - y1; -- the delta in y

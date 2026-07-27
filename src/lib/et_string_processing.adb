@@ -825,7 +825,7 @@ package body et_string_processing is
 		line : in type_fields_of_line) 
 		return positive 
 	is begin
-		return positive (line.number);
+		return line.number;
 	end get_line_number;
 
 

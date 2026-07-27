@@ -194,7 +194,7 @@ package body et_package_write_terminals is
 			millings : in type_contour) 
 		is begin
 			section_mark (section_pad_millings, HEADER);
-			write_polygon_segments (type_contour (millings));
+			write_polygon_segments (millings);
 			section_mark (section_pad_millings, FOOTER);
 		end write_plated_millings;
 
@@ -268,12 +268,12 @@ package body et_package_write_terminals is
 					section_mark (section_pad_contours_tht, HEADER);
 					
 					section_mark (section_top, HEADER);
-					write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_tht.top));
+					write_polygon_segments (element (terminal_cursor).pad_shape_tht.top);
 					section_mark (section_top, FOOTER);
 
 					-- pad contour bottom
 					section_mark (section_bottom, HEADER);
-					write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_tht.bottom));
+					write_polygon_segments (element (terminal_cursor).pad_shape_tht.bottom);
 					section_mark (section_bottom, FOOTER);
 					
 					section_mark (section_pad_contours_tht, FOOTER);
@@ -299,7 +299,7 @@ package body et_package_write_terminals is
 				when SMT =>
 					-- pad contour
 					section_mark (section_pad_contours_smt, HEADER);
-					write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_smt));
+					write_polygon_segments (element (terminal_cursor).pad_shape_smt);
 					section_mark (section_pad_contours_smt, FOOTER);
 					
 					write (keyword => keyword_face, 
