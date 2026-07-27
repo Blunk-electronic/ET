@@ -267,7 +267,7 @@ package body et_net_segment is
 	is 
 		c : type_net_connector;
 	begin
-		c := (active => false, others => <>);
+		c := (active => false);
 
 		case AB_end is
 			when A => segment.connectors.A := c;

@@ -281,7 +281,7 @@ package body et_net_connectors is
 	procedure reset_connector (
 		connector : in out type_net_connector)
 	is begin
-		connector := (active => false, others => <>);
+		connector := (active => false);
 	end;
 
 
