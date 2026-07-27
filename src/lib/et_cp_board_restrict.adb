@@ -240,7 +240,6 @@ package body et_cp_board_restrict is
 						when others => command_incomplete (cmd);
 					end case;
 							
-				when others => null;
 			end case;
 		end if;
 

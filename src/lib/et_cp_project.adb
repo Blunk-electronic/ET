@@ -142,7 +142,6 @@ package body et_cp_project is
 								when others => command_incomplete;
 							end case;							
 							
-						when others => invalid_noun (to_string (noun));
 					end case;
 
 					
@@ -159,7 +158,6 @@ package body et_cp_project is
 									
 								when others => command_incomplete;
 							end case;							
-						when others => invalid_noun (to_string (noun));
 					end case;
 
 					
@@ -177,7 +175,6 @@ package body et_cp_project is
 								when others => command_incomplete;
 							end case;			
 							
-						when others => invalid_noun (to_string (noun));
 					end case;
 
 					
@@ -195,7 +192,6 @@ package body et_cp_project is
 								when others => command_incomplete;
 							end case;			
 							
-						when others => invalid_noun (to_string (noun));
 					end case;
 					
 			end case;

@@ -213,9 +213,6 @@ package body et_symbol_read_text is
 					meaning		=> symbol_placeholder_meaning);
 
 			-- Default meaning causes an error:
-			when others => 
-				log (SEVERITY_ERROR, "meaning of placeholder not specified !");
-				raise constraint_error;
 		end case;
 
 		

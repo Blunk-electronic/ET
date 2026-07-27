@@ -1170,7 +1170,6 @@ package body et_kicad_packages is
 										null;
 									end if;
 									
-								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;
@@ -1525,7 +1524,6 @@ package body et_kicad_packages is
 									set (axis => AXIS_Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									set_rotation (terminal_position, to_rotation (to_string (arg)));
-								when others => too_many_arguments;
 							end case;
 
 						when SEC_FP_TEXT =>
@@ -1540,7 +1538,6 @@ package body et_kicad_packages is
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
 									set_rotation (text.position, to_rotation (to_string (arg)));
-								when others => too_many_arguments;
 							end case;
 							
 						when others => invalid_section;
@@ -1571,7 +1568,6 @@ package body et_kicad_packages is
 										when OVAL => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
 									end case;
 									
-								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;
@@ -1663,7 +1659,6 @@ package body et_kicad_packages is
 										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));
 										when THT => terminal_pad_shape_tht := to_pad_shape_tht (to_string (arg));
 									end case;
-								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;

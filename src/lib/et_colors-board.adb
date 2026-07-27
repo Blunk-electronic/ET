@@ -124,7 +124,6 @@ package body et_colors.board is
 			when STRIPED_90		=> make_gradient_90;
 			when STRIPED_135	=> make_gradient_135;
 				
-			when others => null;
 		end case;
 
 		case style is

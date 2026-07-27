@@ -2481,7 +2481,6 @@ package body et_kicad.pcb is
 								when 2 => board.general.area_y1 := to_distance (to_string (arg));								
 								when 3 => board.general.area_x2 := to_distance (to_string (arg));
 								when 4 => board.general.area_y2 := to_distance (to_string (arg));
-								when others => too_many_arguments;
 							end case;
 
 						when SEC_THICKNESS =>
