@@ -81,9 +81,70 @@ package et_module is
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;
 
+
+
+
+
+	
+	type type_clipboard is tagged record -- CS make private
+
+		-- ALL devices of the module independent of the assembly variant:
+		devices			: pac_devices_electrical.map;
+		
+		net_classes		: pac_net_classes.map;		-- the net classes
+		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
+		
+		netchangers		: pac_netchangers.map;
+
+		-- general notes in schematic, not related to drawing frames !
+		texts       	: et_schematic_text.pac_texts.list; 
+
+		-- The nets of the module (incl. routing information for the board)
+		-- containing:
+		-- - strands
+		-- - net segments
+		-- - ports of devices, netchangers and submodules
+		-- On adding, moving or deleting units the structure in 
+		-- selector "net" must be updated:
+		nets 	    	: et_nets.pac_nets.map;
+		
+		-- The assembly variants of the module:
+		-- - devices that are mounted or not
+		-- - devices which can have a different value, partcode or purpose
+		-- - variants of submodules
+		assembly_variants : type_module_assembly_variants;
+
+		
+		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
+		board			: type_board;
+		
+		-- The tree of submodules is stored here. 
+		-- NOTE: This container is exclusively used if the module is a top module.
+		-- In submodules it is not used (should always be empty):
+		submod_tree		: pac_renumber_modules.tree;
+
+		-- The netlists containing nets of top module and submodule instances:
+		-- Provide information on primary nets and their subordinated secondary nets per 
+		-- assembly variant.
+		netlists		: et_netlists.pac_module_netlists.map; -- variant name and netlist
+
+		-- Devices which do not have a counterpart in the schematic:
+		devices_non_electric	: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
+		
+		-- CS: images
+	end record;
+
+
 	
 	
-	type type_generic_module is record -- CS make private
+	
+		
+	
+	
+	
+	type type_generic_module is new type_clipboard with record -- CS make private
+		board_available	: type_board_available := FALSE;
+		
 		commit_index	: et_commit.type_commit_index_zero_based := 0;
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
@@ -97,66 +158,30 @@ package et_module is
 		
 		grid			: et_schematic_geometry.pac_grid.type_grid; -- the drawing grid of the schematic
 
-		board_available	: type_board_available := FALSE;
-
-		-- ALL devices of the module independent of the assembly variant:
-		devices			: pac_devices_electrical.map;
 		device_commits	: type_devices_undo_redo_stack;
-		-- CS wrap both selectors into a record
-		
-		net_classes		: pac_net_classes.map;		-- the net classes
-		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
-		
-		netchangers			: pac_netchangers.map;
+
 		netchanger_commits	: type_netchangers_undo_redo_stack;
-		-- CS wrap both selectors into a record
 
-		-- general notes in schematic, not related to drawing frames !
-		texts       	: et_schematic_text.pac_texts.list; 
-
-		-- The nets of the module (incl. routing information for the board)
-		-- containing:
-		-- - strands
-		-- - net segments
-		-- - ports of devices, netchangers and submodules
-		-- On adding, moving or deleting units the structure in 
-		-- selector "net" must be updated:
-		nets 	    	: et_nets.pac_nets.map;
 		net_commits		: et_nets.type_nets_undo_redo_stack;
-		-- CS wrap both selectors into a record
-		
-		-- The assembly variants of the module:
-		-- - devices that are mounted or not
-		-- - devices which can have a different value, partcode or purpose
-		-- - variants of submodules
-		assembly_variants : type_module_assembly_variants;
 
-		
-		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
-		board			: type_board;
 		board_commits	: type_board_undo_redo_stack;
-		-- CS wrap both selectors into a record
 		
-		-- The tree of submodules is stored here. 
-		-- NOTE: This container is exclusively used if the module is a top module.
-		-- In submodules it is not used (should always be empty):
-		submod_tree		: pac_renumber_modules.tree;
-
-		-- The netlists containing nets of top module and submodule instances:
-		-- Provide information on primary nets and their subordinated secondary nets per 
-		-- assembly variant.
-		netlists		: et_netlists.pac_module_netlists.map; -- variant name and netlist
-
-		-- Devices which do not have a counterpart in the schematic:
-		devices_non_electric			: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
 		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
-		-- CS wrap both selectors into a record
 		
-		-- CS: images
+		-- CS: image commits
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
 	end record;
 
 
+
+
+	
+	
+
+
+	
+	
+-- CS: Move this stuff to separate packages:
 
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)

@@ -554,6 +554,20 @@ package body et_schematic_ops_groups is
 		end;
 
 
+		procedure copy_to_clipboard is
+			use et_schematic_ops_units;
+		begin
+			log (text => "copy selected objects in clipboard",
+				 level => log_threshold + 1);
+			
+			log_indentation_up;
+			
+			copy_selected_units_to_clipboard (
+				module_cursor, log_threshold + 2);
+
+			log_indentation_down;
+		end copy_to_clipboard;
+
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -563,6 +577,7 @@ package body et_schematic_ops_groups is
 
 				
 		log_indentation_up;
+		
 		
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
@@ -581,6 +596,7 @@ package body et_schematic_ops_groups is
 
 		-- CS texts
 
+		copy_to_clipboard;
 		
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:		

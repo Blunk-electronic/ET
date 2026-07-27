@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               MODULE                                     --
+--                   MODULE CLIPBOARD DEVICES ELECTRICAL                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -43,106 +43,33 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-package body et_module is
 
+
+
+package body et_module_clipboard.devices_electrical is
+
+
+
+	procedure copy_unit_to_clipboard (
+		device_cursor	: in pac_devices_electrical.cursor;
+		unit_cursor		: in pac_units.cursor;
+		log_threshold	: in type_log_level)
+	is 
+
+
+	begin
+		log (text => "copy device and unit to clipboard",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+
+		log_indentation_down;
+	end copy_unit_to_clipboard;
 
 	
-
-	function get_preferred_device_libraries_schematic (
-		module : in type_generic_module)
-		return pac_library_paths_schematic.list
-	is begin
-		return get_device_libraries (module.meta.schematic);
-	end;
 		
-
-	function get_preferred_device_libraries_board (
-		module : in type_generic_module)
-		return pac_library_paths_board.list
-	is begin
-		return get_device_libraries (module.meta.board);
-	end;
-
-
-
-
-	
-	function get_design_rules (
-		module : in type_generic_module)
-		return type_design_rules
-	is begin
-		return module.rules;
-	end;
-
-
-
-	
-	function design_rules_schematic_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return schematic_rules_assigned (module.rules);
-	end;
-
-		
-	function design_rules_board_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return board_rules_assigned (module.rules);
-	end;
-
-
-
-
-	
-
-	function get_grid_schematic (
-		module : in type_generic_module)
-		return et_schematic_geometry.pac_grid.type_grid
-	is begin
-		return module.grid;
-	end;
-
-
-
-	function get_grid_board (
-		module : in type_generic_module)
-		return et_board_geometry.pac_grid.type_grid
-	is begin
-		return module.board.grid;
-	end;
-
-
-
-
-	function variant_exists (
-		module	: in type_generic_module;
-		variant	: in pac_assembly_variant_name.bounded_string)
-		return boolean
-	is begin
-		return variant_exists (module.assembly_variants, variant);
-	end;
-
-
-
-	function get_active_variant (
-		module	: in type_generic_module)
-		return pac_assembly_variant_name.bounded_string
-	is begin
-		return module.assembly_variants.active;
-	end;
-
-
-
-	function get_variant_count (
-		module	: in type_generic_module)
-		return natural
-	is begin
-		return get_count (module.assembly_variants);
-	end;
-	
-end et_module;
+end et_module_clipboard.devices_electrical;
 
 -- Soli Deo Gloria
 

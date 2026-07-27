@@ -656,6 +656,9 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	procedure copy_selected_units_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 		
 		
 		
