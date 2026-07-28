@@ -88,6 +88,8 @@ package et_text_vectorized is
 
 		
 	package generic_pac_text_vectorized is
+		pragma unreferenced (size_min, size_max, size_default);
+
 		use pac_text;
 		use pac_geometry;
 
