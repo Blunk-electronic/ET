@@ -939,6 +939,18 @@ package body et_canvas is
 	
 
 
+
+	procedure set_group_being_pasted is begin
+		group_is_being_pasted := true;
+	end;
+
+
+	procedure set_group_not_being_pasted is begin
+		group_is_being_pasted := false;
+	end;
+
+
+	
 	
 
 	function get_group_offset 

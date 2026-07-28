@@ -964,8 +964,8 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
 				noun := NOUN_GROUP;
-				-- CS
-				-- set_status (et_canvas_schematic_group.status_copy_group);
+
+				set_status (et_canvas_schematic_group.status_paste_group);
 
 				-- When copying groups, we enforce the default grid
 				-- and snap the cursor position to the default grid:
@@ -980,8 +980,9 @@ is
 						-- When copying a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						-- CS et_canvas_schematic_group.copy_group (
-						-- 	KEYBOARD, get_cursor_position);						
+
+						et_canvas_schematic_group.paste_group (
+							KEYBOARD, get_cursor_position);						
 
 
 					when others => null;						

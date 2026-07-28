@@ -604,6 +604,24 @@ package et_canvas is
 	procedure set_group_not_being_copied;
 
 
+
+
+
+
+	group_is_being_pasted : boolean := false;
+	-- CS: It could be reasonable to derive
+	-- a new type like 
+	-- type type_group_begin_pasted_status is new boolean;
+
+	-- This procedure sets the flag group_is_being_pasted:
+	procedure set_group_being_pasted;
+
+	-- This procedure clears the flag group_is_being_pasted:
+	procedure set_group_not_being_pasted;
+
+
+
+
 	
 
 	

@@ -653,6 +653,8 @@ package body et_schematic_ops_groups is
 
 
 		-- CS
+		-- Transfer objects from clipboard to the
+		-- given module:
 		
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:		

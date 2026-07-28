@@ -103,6 +103,23 @@ package et_canvas_schematic_group is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
+
+
+
+-- PASTE:
+	
+	status_paste_group : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to paste the group." 
+		& status_hint_for_abort;
+
+
+	procedure paste_group (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
 	
 end et_canvas_schematic_group;
 

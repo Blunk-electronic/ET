@@ -234,6 +234,22 @@ is
 					when others => null;							
 				end case;
 
+
+				
+			when VERB_PASTE =>
+				case noun is
+					when NOUN_GROUP =>
+						-- When pasting a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						
+						et_canvas_schematic_group.paste_group (
+							MOUSE, get_cursor_position);						
+
+					when others => null;							
+				end case;
+
+				
 				
 			when VERB_PLACE =>
 				case noun is

@@ -655,7 +655,9 @@ package et_schematic_ops_units is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
-
+	
+	-- This procedure copies selected units to 
+	-- the clipboard:
 	procedure copy_selected_units_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

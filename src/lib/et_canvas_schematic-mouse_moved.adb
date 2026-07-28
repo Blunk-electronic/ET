@@ -121,6 +121,17 @@ begin
 				when others => null;
 			end case;
 
+
+		when VERB_PASTE =>
+			case noun is
+				when NOUN_GROUP =>
+					if edit_process_running then
+						redraw;
+					end if;
+
+				when others => null;
+			end case;
+
 			
 		when VERB_FETCH =>
 			case noun is
