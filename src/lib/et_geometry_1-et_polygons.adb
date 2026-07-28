@@ -2893,10 +2893,18 @@ package body et_geometry_1.et_polygons is
 			case intersections.length is
 				when 0 => -- no intersections of edges or vertices
 					
-					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
+					if
+					  all_vertices_of_A_inside_B (
+						polygon_A => polygon_A,
+						polygon_B => polygon_B)
+					then
 						result := A_INSIDE_B;
 						
-					elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
+					elsif
+					  all_vertices_of_A_inside_B (
+						polygon_A => polygon_B,
+						polygon_B => polygon_A)
+					then
 						result := B_INSIDE_A;
 						
 					else
