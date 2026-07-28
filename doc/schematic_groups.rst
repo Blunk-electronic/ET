@@ -39,6 +39,12 @@ Define a Group
 	the group mode is active, further areas can be selected
 	and thus added to an existing group.
 
+	Objects of a group are copied to the clipboard
+	so that they can be pasted multiple times using the
+	paste command (see below).
+
+
+
 
 Clear a Group
 ^^^^^^^^^^^^^
@@ -57,6 +63,8 @@ Clear a Group
 
 
 
+
+
 Delete a Group
 ^^^^^^^^^^^^^^
 
@@ -68,6 +76,8 @@ Delete a Group
 		delete group
 
 	|VNS| del g
+
+
 
 
 
@@ -105,6 +115,21 @@ Copy Group
 	.. code-block::
 	
 		copy group -1  10 20
+
+	|VNS| c g
+
+
+
+
+Paste Group
+^^^^^^^^^^^
+
+	.. code-block::
+	
+		paste group -1  10 20
+
+	|VNS| P g
+
 
 
 
