@@ -856,8 +856,6 @@ package body et_canvas_board_lines is
 			when LAYER_CAT_STOPMASK =>
 				add_to_stopmask;
 
-			when others =>
-				null; -- CS
 		end case;
 
 		-- Commit the new state of the design:

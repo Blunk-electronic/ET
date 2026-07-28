@@ -351,7 +351,6 @@ package body et_canvas.cmd is
 				when NOUN_SCALE =>
 					set_scale;				
 					
-				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_set;
 

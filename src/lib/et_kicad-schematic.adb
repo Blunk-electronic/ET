@@ -2716,7 +2716,6 @@ package body et_kicad.schematic is
 											when 0 => null;
 											when 1 =>
 												lib_name := type_library_name.to_bounded_string (to_string (arg));
-											when others => too_many_arguments;
 										end case;
 
 									when SEC_TYPE =>
@@ -2724,7 +2723,6 @@ package body et_kicad.schematic is
 											when 0 => null;
 											when 1 =>
 												lib_type := type_lib_type'value (to_string (arg));
-											when others => too_many_arguments;
 										end case;
 
 									when SEC_URI =>
@@ -2732,7 +2730,6 @@ package body et_kicad.schematic is
 											when 0 => null;
 											when 1 =>
 												lib_uri := to_file_name (to_string (arg));
-											when others => too_many_arguments;
 										end case;
 
 									when SEC_OPTIONS =>
@@ -2741,7 +2738,6 @@ package body et_kicad.schematic is
 											when 1 =>
 												-- CS lib_options := to_bounded_string (to_string (arg));
 												null;
-											when others => too_many_arguments;
 										end case;
 
 									when SEC_DESCR =>
@@ -2750,7 +2746,6 @@ package body et_kicad.schematic is
 											when 1 =>
 												-- CS lib_description := to_bounded_string (to_string (arg));
 												null;
-											when others => too_many_arguments;
 										end case;
 
 									when others => invalid_section;

@@ -102,9 +102,6 @@ package body et_device_read_unit is
 						appearance	=> APPEARANCE_PCB,
 						others		=> <>);
 
-				when others => 
-					raise constraint_error; -- CS
-
 			end case;
 			
 		elsif kw = keyword_position then -- position x 0.00 y 0.00

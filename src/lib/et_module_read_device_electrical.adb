@@ -785,9 +785,6 @@ package body et_module_read_device_electrical is
 					meaning		=> PURPOSE,
 					position	=> unit_placeholder_position);
 
-			when others =>
-				log (SEVERITY_ERROR, "meaning of placeholder not supported !", console => true);
-				raise constraint_error;
 		end case;
 
 		-- clean up for next placeholder
