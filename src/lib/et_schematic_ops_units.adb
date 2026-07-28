@@ -958,6 +958,7 @@ package body et_schematic_ops_units is
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
+		device_created	: out type_device_name;
 		log_threshold	: in type_log_level) is separate;
 	
 
@@ -3932,6 +3933,16 @@ package body et_schematic_ops_units is
 		device_cursor_old : pac_devices_electrical.cursor;
 		unit_cursor_old : pac_units.cursor;
 
+		-- On copying a unit, a new device is created
+		-- indirectly. Here we store the name of the 
+		-- newly created device:
+		device_created : type_device_name;
+
+		device_before : type_device_name;
+		
+		same_device : boolean := false;
+
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -3962,7 +3973,7 @@ package body et_schematic_ops_units is
 						-- The search must be aborted by setting
 						-- this flag:
 						unit_found := true;
-
+						
 						-- Backup the cursor to the unit
 						-- and to the parent device:
 						device_cursor_old := device_cursor;
@@ -4033,6 +4044,7 @@ package body et_schematic_ops_units is
 				unit_cursor		=> unit_cursor_old,
 				sheet			=> sheet,
 				destination		=> offset,
+				device_created	=> device_created,
 				log_threshold	=> log_threshold + 1);
       
 		

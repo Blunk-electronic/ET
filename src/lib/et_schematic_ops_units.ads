@@ -228,13 +228,16 @@ package et_schematic_ops_units is
 
 	-- Copies a unit and places it relative to the
 	-- original by a given offset.
-	-- Since a unit is copied, a new device is created indirectly:
+	-- Since a unit is copied, a new device is created indirectly.
+	-- Argument device_created outputs the name of the
+	-- device that has been created:
 	procedure copy_unit (
 		module_cursor 	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model; -- CS rename to offset
+		device_created	: out type_device_name;
 		log_threshold	: in type_log_level);
 
 	

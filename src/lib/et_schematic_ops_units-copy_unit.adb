@@ -46,6 +46,7 @@ procedure copy_unit (
 	unit_cursor		: in pac_units.cursor;
 	sheet			: in type_sheet_relative;
 	destination		: in type_vector_model;
+	device_created	: out type_device_name;
 	log_threshold	: in type_log_level)
 is
 
