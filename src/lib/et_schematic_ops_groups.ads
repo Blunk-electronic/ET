@@ -121,7 +121,18 @@ package et_schematic_ops_groups is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-		
+
+	-- This procedure pastes a group of objects
+	-- This affects all objects which are in the clipboard:
+	procedure paste_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria

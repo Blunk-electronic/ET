@@ -89,6 +89,15 @@ package et_cp_schematic_group is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+	-- This procedure parses a command that pastes a group
+	-- of objects by a given offset to a given place.
+	-- example: schematic demo copy group 1 10 -20
+	procedure paste_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_schematic_group;
 

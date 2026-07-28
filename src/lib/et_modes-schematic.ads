@@ -67,7 +67,8 @@ package et_modes.schematic is
 		VERB_MIRROR,
 		VERB_MOVE,
 		VERB_MOUNT,
-		
+
+		VERB_PASTE,
 		VERB_PLACE,
 		
 		VERB_QUIT,

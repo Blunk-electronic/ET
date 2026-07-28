@@ -954,6 +954,46 @@ is
 
 
 
+
+
+
+	
+
+	procedure paste is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				noun := NOUN_GROUP;
+				-- CS
+				-- set_status (et_canvas_schematic_group.status_copy_group);
+
+				-- When copying groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+			
+
+				
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when key_space =>
+				case noun is
+					when NOUN_GROUP =>
+						-- When copying a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						-- CS et_canvas_schematic_group.copy_group (
+						-- 	KEYBOARD, get_cursor_position);						
+
+
+					when others => null;						
+				end case;
+				
+			when others => null;
+		end case;
+	end paste;
+
+
+
+	
 	
 	
 	procedure set is begin
@@ -1164,6 +1204,8 @@ is
 
 	end rename;
 
+
+	
 	
 	
 begin -- key_pressed
@@ -1251,6 +1293,10 @@ begin -- key_pressed
 								verb := VERB_DRAW;
 								status_enter_noun;
 
+							when key_verb_paste =>
+								verb := VERB_PASTE;
+								status_enter_noun;
+								
 							when key_verb_show =>
 								verb := VERB_SHOW;
 								status_enter_noun;
@@ -1308,6 +1354,7 @@ begin -- key_pressed
 							when VERB_FETCH		=> fetch;
 							when VERB_MIRROR	=> mirror;
 							when VERB_MOVE		=> move;
+							when VERB_PASTE		=> paste;
 							when VERB_PLACE		=> place;
 							when VERB_RENAME	=> rename;
 							when VERB_ROTATE	=> rotate;

@@ -158,6 +158,21 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
+
+		procedure copy_to_clipboard is
+			use et_schematic_ops_units;
+		begin
+			log (text => "copy selected objects to clipboard",
+				 level => log_threshold + 1);
+			
+			log_indentation_up;
+			
+			copy_selected_units_to_clipboard (
+				module_cursor, log_threshold + 2);
+
+			log_indentation_down;
+		end copy_to_clipboard;
+
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -174,6 +189,9 @@ package body et_schematic_ops_groups is
 		
 		-- CS texts, 
 		-- Do not group placeholders of units !
+
+		-- Copy selected objects to clipboard:
+		copy_to_clipboard;
 		
 		log_indentation_down;
 	end define_group_rectangular;
@@ -553,21 +571,6 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
-
-		procedure copy_to_clipboard is
-			use et_schematic_ops_units;
-		begin
-			log (text => "copy selected objects in clipboard",
-				 level => log_threshold + 1);
-			
-			log_indentation_up;
-			
-			copy_selected_units_to_clipboard (
-				module_cursor, log_threshold + 2);
-
-			log_indentation_down;
-		end copy_to_clipboard;
-
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -596,7 +599,6 @@ package body et_schematic_ops_groups is
 
 		-- CS texts
 
-		copy_to_clipboard;
 		
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:		
@@ -615,6 +617,58 @@ package body et_schematic_ops_groups is
 	end copy_group;
 	
 
+
+
+
+
+
+
+
+
+	procedure paste_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+				& " paste group by sheet(s) " & relative_to_string (sheet) 
+				& " offset " & to_string (offset),
+			level => log_threshold);
+
+				
+		log_indentation_up;
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		-- CS
+		
+		-- Previously to commiting the design,
+		-- the status of all objects must be reset:		
+		reset_objects (module_cursor, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
+	end paste_group;
 
 	
 end et_schematic_ops_groups;
