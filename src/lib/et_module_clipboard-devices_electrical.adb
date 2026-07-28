@@ -55,7 +55,7 @@ package body et_module_clipboard.devices_electrical is
 		unit_cursor		: in pac_units.cursor;
 		log_threshold	: in type_log_level)
 	is 
-
+		pragma unreferenced (device_cursor, unit_cursor);
 
 	begin
 		log (text => "copy device and unit to clipboard",
