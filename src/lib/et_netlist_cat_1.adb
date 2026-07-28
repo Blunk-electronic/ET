@@ -374,7 +374,7 @@ package body et_netlist_cat_1 is
 
 		
 		exception
-			when event: others =>
+			when others =>
 				if is_open (file_handle) then
 					close (file_handle);
 				end if;

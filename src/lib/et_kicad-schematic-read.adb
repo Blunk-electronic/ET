@@ -3181,7 +3181,7 @@ is
 		log_indentation_down;
 		
 		exception
-			when event:
+			when
 				others =>
 					if line_cursor /= pac_lines_of_file.no_element then
 						error_in_schematic_file (line);

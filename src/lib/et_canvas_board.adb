@@ -1370,7 +1370,7 @@ package body et_canvas_board is
 		log_indentation_down;
 		
 
-	exception when event: others =>
+	exception when others =>
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1459,7 +1459,7 @@ package body et_canvas_board is
 
 		log_indentation_down;
 
-	exception when event: others =>
+	exception when others =>
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

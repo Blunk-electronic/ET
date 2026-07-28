@@ -2624,7 +2624,7 @@ package body et_kicad.schematic is
 						log (text => enter_section (section.name), level => log_threshold + 5);
 
 						exception
-							when event:
+							when
 								others =>
 									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
 									log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 

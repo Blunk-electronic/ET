@@ -1195,7 +1195,7 @@ package body et_geometry_1 is
 		
 		return result;
 
-		exception when event: others =>
+		exception when others =>
 			put_line ("v1:" & to_string (v1));
 			put_line ("v2:" & to_string (v2));
 			raise;

@@ -447,7 +447,7 @@ procedure et is
 		end case;
 		
 		exception
-			when event:
+			when
 				others =>
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;

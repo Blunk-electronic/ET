@@ -297,7 +297,7 @@ package body et_geometry_2a is
 		--end if;
 
 
-		exception when event: others =>
+		exception when others =>
 			put_line ("f: " & to_string (f));
 			raise;
 
@@ -310,7 +310,7 @@ package body et_geometry_2a is
 	is begin
 		return type_distance'value (dd);
 
-		exception when event: others =>
+		exception when others =>
 			raise syntax_error_2 with 
 				"ERROR: Expect a distance instead of " 
 				& enclose_in_quotes (dd) & " !";

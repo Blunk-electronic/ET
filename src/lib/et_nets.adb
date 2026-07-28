@@ -717,7 +717,7 @@ package body et_nets is
 				end if;
 
 				exception
-					when event: others =>
+					when others =>
 						raise constraint_error with to_string (element (device_cursor))
 						--put_line (to_string (element (device_cursor))
 						& " already in set !";

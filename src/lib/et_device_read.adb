@@ -517,7 +517,7 @@ package body et_device_read is
 			end if;
 
 			
-			exception when event: others =>
+			exception when others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & get_affected_line (line) & to_string (line), console => true);
 				raise;
@@ -608,7 +608,7 @@ package body et_device_read is
 		log_indentation_down;
 		log_indentation_down;		
 
-		exception when event: others =>
+		exception when others =>
 			if is_open (file_handle) then 
 				set_input (previous_input);
 				close (file_handle); 
