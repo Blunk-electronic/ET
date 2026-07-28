@@ -67,7 +67,6 @@ with gtk.scrolled_window;		use gtk.scrolled_window;
 with gtk.adjustment;			use gtk.adjustment;
 with gtk.scrollbar;				use gtk.scrollbar;
 
-with gtk.table;					use gtk.table;
 with gtk.grid;					use gtk.grid;
 with gtk.label;					use gtk.label;
 with gtk.button;				use gtk.button;
