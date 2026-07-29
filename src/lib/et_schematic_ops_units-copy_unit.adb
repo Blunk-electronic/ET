@@ -104,6 +104,7 @@ begin
 		unit_name_explicit	=> key (unit_cursor),
 		destination			=> position_new, -- absolute
 		commit_design		=> NO_COMMIT,
+		device_created		=> device_created,
 		log_threshold		=> log_threshold + 1);
 		
 		

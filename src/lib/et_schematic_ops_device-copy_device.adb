@@ -66,6 +66,7 @@ procedure copy_device (
 	unit_name_explicit	: in pac_unit_name.bounded_string; -- D
 	destination			: in type_object_position; -- sheet/x/y
 	commit_design		: in type_commit_design := DO_COMMIT;
+	device_created		: out type_device_name;
 	log_threshold		: in type_log_level)
 is
 	use et_commit;
@@ -498,7 +499,12 @@ begin
 	log (text => "auto generated next device name: " & to_string (next_name),
 		level => log_threshold);
 
+	-- Output the name of the newly created device:
+	device_created := next_name;
 
+
+
+	
 	if commit_design = DO_COMMIT then
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);

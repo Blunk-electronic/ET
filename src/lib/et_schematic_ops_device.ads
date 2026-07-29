@@ -335,12 +335,15 @@ package et_schematic_ops_device is
 	--    unit, then this unit will be placed.	
 	-- 3. It is assumed that the targeted device
 	--    exists in the module. If not, then an exception is raised.
+	-- 4. Argument device_created outputs the name of the
+	--    device that has been created.
 	procedure copy_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- IC45
 		unit_name_explicit	: in pac_unit_name.bounded_string; -- D
 		destination			: in type_object_position; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
+		device_created		: out type_device_name;
 		log_threshold		: in type_log_level);
 
 	-- CS: procedure copy_device that takes a

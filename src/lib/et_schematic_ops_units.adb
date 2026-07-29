@@ -5661,6 +5661,8 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is 
 		object_position : type_object_position;
+
+		device_created : type_device_name;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " copy object",
@@ -5682,6 +5684,7 @@ package body et_schematic_ops_units is
 					-- The copy operation takes place on the
 					-- active sheet only:
 					destination		=> object_position,
+					device_created	=> device_created,
 					log_threshold	=> log_threshold + 1);
 				
 

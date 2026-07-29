@@ -267,8 +267,8 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-		name : type_device_name;
-
+		name, device_created : type_device_name;
+		
 		use et_unit_name;
 	begin
 		log (text => "copy device", level => log_threshold);
@@ -300,6 +300,7 @@ package body et_cp_schematic_device is
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
+						device_created	=> device_created,
 						log_threshold	=> log_threshold + 1);
 
 				else

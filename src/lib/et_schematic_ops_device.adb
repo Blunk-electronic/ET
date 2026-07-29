@@ -1113,6 +1113,7 @@ package body et_schematic_ops_device is
 		unit_name_explicit	: in pac_unit_name.bounded_string; -- D
 		destination			: in type_object_position; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
+		device_created		: out type_device_name;
 		log_threshold		: in type_log_level) is separate;
 
 
