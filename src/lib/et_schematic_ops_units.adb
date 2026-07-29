@@ -4025,8 +4025,8 @@ package body et_schematic_ops_units is
 			log (text => "copy unit in same device", level => log_threshold + 1);
 			log_indentation_up;
 
-			-- Get the position of the unit to be copied
-			-- and move it by the given offset:
+			-- Get the position of the unit (incl. rotation and sheet)
+			-- to be copied and move it by the given offset:
 			position := get_position (unit_cursor_old);
 			move_by (position, offset);
 
@@ -4040,6 +4040,9 @@ package body et_schematic_ops_units is
 				commit_design	=> NO_COMMIT,
 				log_threshold	=> log_threshold + 1);
 
+			-- CS copy mirror status and positions and angles
+			-- of place holders.
+			
 			log_indentation_down;
 		end copy_in_same_device;
 		
