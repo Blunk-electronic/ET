@@ -3935,15 +3935,22 @@ package body et_schematic_ops_units is
 
 		-- On copying a unit, a new device is created
 		-- indirectly. Here we store the name of the 
-		-- newly created device:
+		-- newly created device. It is required in case
+		-- another unit is found that belongs to the
+		-- same device:
 		device_created : type_device_name;
 
-		device_before : type_device_name;
-		
-		same_device : boolean := false;
+		-- Here we store the name of the last device
+		-- for which a unit has been copied:
+		device_last : type_device_name; -- assumes default
+	
 
 		
-		
+		-- This procedure searches for a selected unit.
+		-- The search is aborted if a unit has been found.
+		-- It sets the cursors device_cursor_old and
+		-- unit_cursor_old.
+		-- It sets the flag unit_found:
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -4010,6 +4017,51 @@ package body et_schematic_ops_units is
 		end query_module;
 
 
+
+
+		procedure copy_in_same_device is
+			position : type_object_position;
+		begin
+			log (text => "copy unit in same device", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the position of the unit to be copied
+			-- and move it by the given offset:
+			position := get_position (unit_cursor_old);
+			move_by (position, offset);
+
+			-- Fetch a unit of the same as indicated
+			-- by cursor unit_cursor_old:
+			fetch_unit (
+				module_cursor	=> module_cursor,
+				device_name		=> device_created,
+				unit_name		=> get_unit_name (unit_cursor_old),
+				destination		=> position,
+				commit_design	=> NO_COMMIT,
+				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end copy_in_same_device;
+		
+
+		
+		procedure copy_in_new_device is
+		begin
+			log (text => "copy unit in new device", level => log_threshold + 1);
+			log_indentation_up;
+			
+			copy_unit (
+				module_cursor	=> module_cursor,
+				device_cursor	=> device_cursor_old,
+				unit_cursor		=> unit_cursor_old,
+				sheet			=> sheet,
+				destination		=> offset,
+				device_created	=> device_created,
+				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end copy_in_new_device;
+
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -4037,20 +4089,27 @@ package body et_schematic_ops_units is
 		-- CS: safety measure to avoid forever-loop
 		-- use total unit count of the design ?
 		-- CS: log the nunmber of units copied
-		
-			copy_unit (
-				module_cursor	=> module_cursor,
-				device_cursor	=> device_cursor_old,
-				unit_cursor		=> unit_cursor_old,
-				sheet			=> sheet,
-				destination		=> offset,
-				device_created	=> device_created,
-				log_threshold	=> log_threshold + 1);
-      
+
+			-- If the last processed device is the same
+			-- as the current one, then no new device is
+			-- to be created but just the unit copied:
+			if device_last = get_device_name (device_cursor_old) then
+				copy_in_same_device;
+			else
+				-- If a another device is being processed,
+				-- then copy the current unit in a new
+				-- device:
+				copy_in_new_device;
+			end if;
+			
 		
 			-- Restart the search for a selected unit:
 			unit_found := false;
 
+			-- Backup the name of the last device:
+			device_last := get_device_name (device_cursor_old);
+
+			-- Restart the search for a selected unit:
 			generic_modules.update_element (
 				module_cursor, query_module'access);
 		end loop;

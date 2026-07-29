@@ -651,7 +651,14 @@ package et_schematic_ops_units is
 
 
 	-- This procedure copies selected units.
-	-- For each copy a new device is created:
+	-- 1. For units belonging to the same unit,
+	--    a single new device is created. Fox example, if
+	--    unit A and C of IC1 are copied, then the result is
+	--    an IC2 with units A and C.
+	-- 2. Units belonging to different devices:
+	--    For each unit a new device is created. Example:
+	--    If IC1 unit A and IC4 unit C is to be copied then
+	--    the result is an IC2 with unit A and an IC5 with unit C.
 	procedure copy_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		
