@@ -297,7 +297,7 @@ package body et_board_ops_fill_zones is
 
 				terminal_polygon_expanded : type_polygon;
 
-				terminal_zone_overlap : type_overlap_status;
+				-- terminal_zone_overlap : type_overlap_status;
 				
 				use pac_polygon_offsetting;
 

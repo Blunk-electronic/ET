@@ -97,7 +97,7 @@ package body et_symbol_read_body is
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
 	is		
-		inserted : boolean;
+		-- inserted : boolean;
 	begin
 		log (text => "insert body line", level => log_threshold);
 		log_indentation_up;
@@ -167,7 +167,7 @@ package body et_symbol_read_body is
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
 	is		
-		inserted	: boolean;
+		-- inserted	: boolean;
 	begin
 		log (text => "insert body arc", level => log_threshold);
 		log_indentation_up;
@@ -230,7 +230,7 @@ package body et_symbol_read_body is
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
 	is		
-		inserted : boolean;
+		-- inserted : boolean;
 	begin
 		log (text => "insert body circle", level => log_threshold);
 		log_indentation_up;

@@ -99,7 +99,7 @@ package body et_canvas.schematic_device_ops is
 	procedure build_rename_window is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status	: gtk.label.gtk_label;
+		-- label_status	: gtk.label.gtk_label;
 	begin
 		gtk_new (rename_window);
 
@@ -147,7 +147,7 @@ package body et_canvas.schematic_device_ops is
 	is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status : gtk.label.gtk_label;
+		-- label_status : gtk.label.gtk_label;
 	begin
 		gtk_new (value_window);
 
@@ -196,7 +196,7 @@ package body et_canvas.schematic_device_ops is
 	is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status : gtk.label.gtk_label;
+		-- label_status : gtk.label.gtk_label;
 	begin
 		gtk_new (purpose_window);
 
@@ -245,7 +245,7 @@ package body et_canvas.schematic_device_ops is
 	is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status : gtk.label.gtk_label;
+		-- label_status : gtk.label.gtk_label;
 	begin
 		gtk_new (partcode_window);
 
