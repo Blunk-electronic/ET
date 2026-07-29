@@ -121,9 +121,11 @@ package body et_module_read_assembly_variant is
 		use et_device_partcode;
 		use et_module_instance;
 		
+		type type_device_variant_access is access type_device_variant;
+
 		kw : constant string := f (line, 1);
 		device_name		: type_device_name; -- R1
-		device			: access type_device_variant;
+		device			: type_device_variant_access;
 		device_cursor	: pac_device_variants.cursor;
 		
 		submod_name		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
