@@ -804,7 +804,7 @@ package body et_geometry_1.et_polygons is
 		vectors.iterate (query_vector'access);
 		return to_polygon (v_list, clean_up);
 
-		exception when event: others =>
+		exception when others =>
 			put_line (error_message_too_few_vertices);
 			raise;
 	end to_polygon;

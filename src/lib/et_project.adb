@@ -415,7 +415,7 @@ package body et_project is
 		-- Restore working directory.
 		set_directory (current_working_directory);
 		
-		exception when event:
+		exception when
 			others => 
 				-- Restore working directory.
 				set_directory (current_working_directory);

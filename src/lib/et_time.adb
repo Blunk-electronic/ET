@@ -107,7 +107,7 @@ package body et_time is
 		-- Since date provides only year, month and day, we append hours, minutes and seconds.
 		return value (date & " 00:00:00");
 
-		exception when event:
+		exception when
 			--others => log (ERROR, text => "date invalid !", console => true);
 			others => put_line ("ERROR ! Date invalid !");
 				raise;

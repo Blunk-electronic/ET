@@ -60,7 +60,7 @@ package body et_domains is
 	is begin
 		return type_domain'value (domain_prefix & domain);
 
-		exception when event: others => 
+		exception when others =>
 			log (SEVERITY_ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
 			--put_line ("ERROR domain " & domain & " invalid !");
 			raise;

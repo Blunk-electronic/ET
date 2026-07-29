@@ -429,7 +429,7 @@ is
 				end case;
 			end if;
 
-			exception when event: others =>
+			exception when others =>
 				log (text => "file " & file_name & space & get_affected_line (line) 
 						& to_string (line), console => true);
 				raise;
@@ -485,7 +485,7 @@ is
 		set_input (previous_input);
 		close (file_handle);
 
-		exception when event: others =>
+		exception when others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (previous_input);
 			raise;

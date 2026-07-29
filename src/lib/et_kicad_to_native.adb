@@ -4142,7 +4142,7 @@ package body et_kicad_to_native is
 		log_indentation_down;
 
 		exception
-			when event: others =>
+			when others =>
 
 				-- output the line of code where the exception occured:
 				show_line (file => gnat.source_info.file, line => gnat.source_info.line);

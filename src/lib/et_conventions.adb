@@ -2572,7 +2572,7 @@ package body et_conventions is
 		close (conventions_file_handle);
 
 		exception
-			when event:
+			when
 				others =>
 					set_output (standard_output);
 					log (SEVERITY_ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
