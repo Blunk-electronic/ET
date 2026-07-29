@@ -81,7 +81,7 @@ package body et_module_read_netchangers is
 		kw : constant string := f (line, 1);
 
 		position : type_object_position;
-		rotation : et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
+		-- rotation : et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
 		direction : type_netchanger_direction := FORWARD;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag

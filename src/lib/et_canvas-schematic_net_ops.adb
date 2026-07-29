@@ -48,7 +48,7 @@ package body et_canvas.schematic_net_ops is
 	procedure build_rename_window is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status	: gtk.label.gtk_label;
+		-- label_status	: gtk.label.gtk_label;
 	begin
 		gtk_new (rename_window);
 
