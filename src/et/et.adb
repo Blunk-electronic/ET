@@ -129,7 +129,7 @@ procedure et is
 
 	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
 	frame_name_open			: et_drawing_frame.pac_template_name.bounded_string;
-	frame_name_save_as		: et_drawing_frame.pac_template_name.bounded_string;
+	unused_frame_name_save_as	: et_drawing_frame.pac_template_name.bounded_string;
 	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 	
 	script_name				: pac_script_name.bounded_string;
@@ -304,7 +304,7 @@ procedure et is
 						
 					elsif full_switch = switch_frame_schematic_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_save_as := et_drawing_frame.to_template_name (parameter);
+						unused_frame_name_save_as := et_drawing_frame.to_template_name (parameter);
 
 
 					-- frame pcb
@@ -320,7 +320,7 @@ procedure et is
 						
 					elsif full_switch = switch_frame_pcb_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_save_as := et_drawing_frame.to_template_name (parameter);
+						unused_frame_name_save_as := et_drawing_frame.to_template_name (parameter);
 						
 					-- script
 					elsif full_switch = switch_execute_script then

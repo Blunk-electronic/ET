@@ -67,14 +67,14 @@ package body et_board_ops_frame is
 			module		: in out type_generic_module) 
 		is 
 			pragma unreferenced (module_name);
-			p1 : et_drawing_frame.type_position;
+			unused_p1 : et_drawing_frame.type_position;
 		begin
 			case coordinates is
 				when ABSOLUTE =>
 					set_position (module.board.frame.frame, point);
 
 				when RELATIVE =>
-					p1 := get_position (module.board.frame.frame);
+					unused_p1 := get_position (module.board.frame.frame);
 					-- CS
 					-- move_by (module.board.frame.position, to_distance_relative (point));
 			end case;

@@ -4622,10 +4622,10 @@ package body et_schematic_ops_submodules is
 		-- has been reached:
 		procedure set_offset is 
 			use pac_renumber_modules;
-			module_name 	: pac_module_name.bounded_string; -- motor_driver
-			parent_name 	: pac_module_name.bounded_string; -- water_pump
-			module_range 	: type_index_range;
-			module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+			module_name			: pac_module_name.bounded_string; -- motor_driver
+			unused_parent_name	: pac_module_name.bounded_string; -- water_pump
+			module_range		: type_index_range;
+			module_instance		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
 			
 			-- Assign the device name offset to the current submodule 
@@ -4660,9 +4660,9 @@ package body et_schematic_ops_submodules is
 
 				-- In case we are on the first level, the parent module is the given top module.				
 				if parent (tree_cursor) = root (submod_tree) then
-					parent_name := autoset_device_name_offsets.module_name;
+					unused_parent_name := autoset_device_name_offsets.module_name;
 				else
-					parent_name := element (parent (tree_cursor)).name;
+					unused_parent_name := element (parent (tree_cursor)).name;
 				end if;
 
 				-- assign the offset to the submodule

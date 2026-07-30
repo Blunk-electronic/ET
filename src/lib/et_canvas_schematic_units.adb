@@ -1334,13 +1334,13 @@ package body et_canvas_schematic_units is
 
 		
 		procedure do_it is
-			device	: type_device_name; -- IC1
+			unused_device	: type_device_name; -- IC1
 
 			use pac_package_variant_name;
 			variant	: pac_package_variant_name.bounded_string;
 		begin
 			-- Get the name of the selected device:
-			device := get_device_name (object.unit.device_cursor);
+			unused_device := get_device_name (object.unit.device_cursor);
 
 			-- Get the old variant of the selected device:
 			variant := get_package_variant (object.unit.device_cursor);
@@ -2318,7 +2318,7 @@ package body et_canvas_schematic_units is
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_device_models.cursor;
 
-		units_total : type_unit_count;
+		unused_units_total : type_unit_count;
 
 		use pac_unit_names;
 		unit_names : pac_unit_names.list;
@@ -2452,7 +2452,7 @@ package body et_canvas_schematic_units is
 				-- CS use device_cursor_lib := get_device_model (object.unit.device_cursor);
 				-- instead of the statements above.
 
-				units_total := get_unit_count (device_cursor_lib);
+				unused_units_total := get_unit_count (device_cursor_lib);
 
 				-- collect the names of all units of the selected device:
 				-- put_line ("get all units");

@@ -527,8 +527,8 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 		
 		-- PACKAGES
-		package_name 			: pac_package_name.bounded_string;
-		package_library_name	: et_kicad_general.type_library_name.bounded_string;
+		unused_package_name 			: pac_package_name.bounded_string;
+		unused_package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_board_coordinates.type_package_position;
 		
 		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80
@@ -593,7 +593,7 @@ package body et_kicad.pcb is
 		pad_size_y : type_pad_size;		
 
 		terminal_net_name	: pac_net_name.bounded_string;
-		terminal_net_id		: type_net_id_terminal;
+		unused_terminal_net_id		: type_net_id_terminal;
 	
 -- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
 		terminal_copper_width_inner_layers : constant type_distance_positive := 1.0; -- CS load from DRU ?
@@ -1283,8 +1283,8 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => -- break down something like bel_ic:S_SO14 into package and lib name
-									package_library_name := et_kicad_libraries.library_name (to_string (arg));
-									package_name := et_kicad_libraries.package_name (to_string (arg));
+									unused_package_library_name := et_kicad_libraries.library_name (to_string (arg));
+									unused_package_name := et_kicad_libraries.package_name (to_string (arg));
 									-- CS make sure library and package exist
 								when others => too_many_arguments;
 							end case;
@@ -2030,7 +2030,7 @@ package body et_kicad.pcb is
 						when SEC_NET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => terminal_net_id := to_net_id (to_string (arg));
+								when 1 => unused_terminal_net_id := to_net_id (to_string (arg));
 								when 2 => terminal_net_name := to_net_name (to_string (arg));
 								when others => too_many_arguments;
 							end case;

@@ -384,9 +384,9 @@ package body et_cp_board_restrict is
 
 
 		procedure do_it is
-			catch_zone : type_catch_zone;
+			unused_catch_zone : type_catch_zone;
 		begin
-			catch_zone := set_catch_zone (
+			unused_catch_zone := set_catch_zone (
 				center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
 				radius	=> to_zone_radius (get_field (cmd, 7)));
 

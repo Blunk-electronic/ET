@@ -3304,7 +3304,7 @@ package body et_geometry_1 is
 		-- scratch variables:
 		a, b, c, d	: type_float;
 
-		s : type_intersection_status_of_line_and_circle;
+		unused_s : type_intersection_status_of_line_and_circle;
 		intersection_1, intersection_2 : type_vector;
 
 		
@@ -3364,7 +3364,7 @@ package body et_geometry_1 is
 				put_line (" one intersection -> a tangent");
 			end if;
 			
-			s := ONE_EXISTS; -- tangent
+			unused_s := ONE_EXISTS; -- tangent
 
 			x := (DI * dy) / b;
 			y := (-DI * dx) / b;
@@ -3390,7 +3390,7 @@ package body et_geometry_1 is
 				put_line (" no intersection");
 			end if;
 			
-			s := NONE_EXIST;
+			unused_s := NONE_EXIST;
 			
 			return (status => NONE_EXIST);
 
@@ -3403,7 +3403,7 @@ package body et_geometry_1 is
 				put_line (" two intersections -> a secant");
 			end if;
 			
-			s := TWO_EXIST; -- secant
+			unused_s := TWO_EXIST; -- secant
 
 			-- COMPUTE 1ST INTERSECTION:
 			x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;

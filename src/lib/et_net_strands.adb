@@ -1698,7 +1698,8 @@ package body et_net_strands is
 		
 		ports_A, ports_B : type_net_ports;
 
-		ports_A_count, ports_B_count : natural;
+		unused_ports_A_count : natural;
+		unused_ports_B_count : natural;
 
 
 		procedure get_segments_and_ports is begin
@@ -1715,8 +1716,8 @@ package body et_net_strands is
 			ports_A := get_ports (segment, A);
 			ports_B := get_ports (segment, B);
 
-			ports_A_count := get_port_count (ports_A);
-			ports_B_count := get_port_count (ports_B);
+			unused_ports_A_count := get_port_count (ports_A);
+			unused_ports_B_count := get_port_count (ports_B);
 		end get_segments_and_ports;
 
 

@@ -138,9 +138,9 @@ package body et_cp_board_keepout is
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
-			face : type_face;
+			unused_face : type_face;
 		begin
-			face := to_face (get_field (cmd, 5));
+			unused_face := to_face (get_field (cmd, 5));
 
 			-- CS
 			-- add_zone (

@@ -1092,11 +1092,11 @@ package body et_board_ops_fill_zones is
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
-		parent_net_name : pac_net_name.bounded_string;
+		unused_parent_net_name : pac_net_name.bounded_string;
 
 		procedure set_parent_net_name is begin
 			if parent_net /= pac_nets.no_element then
-				parent_net_name := key (parent_net);
+				unused_parent_net_name := key (parent_net);
 			end if;
 		end set_parent_net_name;
 
@@ -1622,9 +1622,9 @@ package body et_board_ops_fill_zones is
 		relief_properties	: type_relief_properties;
 		terminal_reliefes	: pac_reliefes.list;
 		terminal_connection	: type_pad_connection := pad_connection_default;
-		terminal_technology	: type_pad_technology := pad_technology_default;
+		unused_terminal_technology	: type_pad_technology := pad_technology_default;
 		
-		native_tracks_embedded : type_native_tracks_embedded := false;
+		unused_native_tracks_embedded : type_native_tracks_embedded := false;
 		-- CS currently not used
 
 		
@@ -1668,10 +1668,10 @@ package body et_board_ops_fill_zones is
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
-					native_tracks_embedded := zone.native_tracks_embedded;
+					unused_native_tracks_embedded := zone.native_tracks_embedded;
 
 					if zone.connection = SOLID then
-						terminal_technology	:= zone.technology;
+						unused_terminal_technology	:= zone.technology;
 					end if;
 
 
@@ -1747,10 +1747,10 @@ package body et_board_ops_fill_zones is
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
-					native_tracks_embedded := zone.native_tracks_embedded;
+					unused_native_tracks_embedded := zone.native_tracks_embedded;
 
 					if zone.connection = SOLID then
-						terminal_technology	:= zone.technology;
+						unused_terminal_technology	:= zone.technology;
 					end if;
 					
 					

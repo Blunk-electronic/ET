@@ -1143,13 +1143,13 @@ package body et_canvas_board is
 		pragma unreferenced (canvas);
 		event_handled : constant boolean := true;
 
-		mouse_event : type_mouse_event;
+		unused_mouse_event : type_mouse_event;
 		
 		debug : boolean := false;
 	begin
 		-- put_line ("cb_canvas_button_released (board)");
 		
-		mouse_event := get_mouse_button_released_event (event);
+		unused_mouse_event := get_mouse_button_released_event (event);
 
 		 -- CS button_released (mouse_event);
 		
