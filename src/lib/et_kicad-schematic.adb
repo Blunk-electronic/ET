@@ -7354,7 +7354,7 @@ package body et_kicad.schematic is
 						use pac_terminal_port_map;
 						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
-						terminal_found : boolean := false;
+						unused_terminal_found : boolean := false;
 					begin
 						-- Search in terminal_port_map for the given port name.
 						-- On first match load the terminal which is a composite of
@@ -7365,7 +7365,7 @@ package body et_kicad.schematic is
 								terminal.unit := element (terminal_cursor).unit; -- to be returned
 								terminal.port := element (terminal_cursor).name; -- to be returned
 								
-								terminal_found := true;
+								unused_terminal_found := true;
 								exit;
 							end if;
 

@@ -973,9 +973,9 @@ package body et_schematic_ops_units is
 		return boolean 
 	is
 		use et_device_renumbering;
-		devices : pac_renumber_devices.map;
+		unused_devices : pac_renumber_devices.map;
 	begin
-		devices := sort_by_coordinates_2 (module_cursor, log_threshold);
+		unused_devices := sort_by_coordinates_2 (module_cursor, log_threshold);
 		-- If a unit sits on top of another unit, sort_by_coordinates_2 throws a
 		-- constraint_error which will be catched here.
 

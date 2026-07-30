@@ -6525,7 +6525,7 @@ package body et_schematic_ops_nets is
 	is
 		result : constant type_net_scope := type_net_scope'first;
 		
-		net_cursor : pac_nets.cursor; -- points to the net
+		unused_net_cursor : pac_nets.cursor; -- points to the net
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get scope of net " & to_string (net_name),
@@ -6533,7 +6533,7 @@ package body et_schematic_ops_nets is
 
 
 		-- locate the net
-		net_cursor := locate_net (module_cursor, net_name);
+		unused_net_cursor := locate_net (module_cursor, net_name);
 
 		-- CS
 		-- 	update_element (

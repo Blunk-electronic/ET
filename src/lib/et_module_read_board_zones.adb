@@ -77,7 +77,7 @@ package body et_module_read_board_zones is
 	
 	
 	
-	board_filled : type_filled := filled_default;
+	unused_board_filled : type_filled := filled_default;
 	-- CS rename to zone_filled
 	
 	fill_spacing : type_track_clearance := type_track_clearance'first;
@@ -113,7 +113,7 @@ package body et_module_read_board_zones is
 	
 	procedure reset_scratch is begin
 		fill_spacing		:= type_track_clearance'first;
-		board_filled		:= filled_default;
+		unused_board_filled	:= filled_default;
 		board_fill_style	:= fill_style_default;
 		--board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
@@ -143,7 +143,7 @@ package body et_module_read_board_zones is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_filled then -- filled yes/no
 			expect_field_count (line, 2);													
-			board_filled := to_filled (f (line, 2));
+			unused_board_filled := to_filled (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -301,7 +301,7 @@ package body et_module_read_board_zones is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_filled then -- filled yes/no
 			expect_field_count (line, 2);													
-			board_filled := to_filled (f (line, 2));
+			unused_board_filled := to_filled (f (line, 2));
 
 		elsif kw = keyword_layers then -- layers 1 14 3
 

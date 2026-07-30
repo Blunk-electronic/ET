@@ -56,7 +56,8 @@ package body et_directory_and_file_ops is
 		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
 		separator : constant string := (1 * gnat.directory_operations.dir_separator); -- /\
 		
-		place_prefix, place_separator : natural := 0;
+		place_prefix : natural := 0;
+		unused_place_separator : natural := 0;
 		--use gnat.directory_operations;
 		--use et_string_processing;
 		
@@ -67,7 +68,7 @@ package body et_directory_and_file_ops is
 		
 	begin -- expand
 		place_prefix := index (name_in, prefix);
-		place_separator := index (name_in, separator);
+		unused_place_separator := index (name_in, separator);
 
 		if place_prefix = 0 then -- no environment variable found
 			return name_in; -- return given name as it is

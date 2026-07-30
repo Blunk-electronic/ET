@@ -1532,8 +1532,8 @@ package body et_kicad_libraries is
 				line : in type_fields_of_line) 
 				return type_symbol_polyline 
 			is
-				polyline	: type_symbol_polyline;
-				total		: positive; -- for cross checking 
+				polyline		: type_symbol_polyline;
+				unused_total	: positive; -- for cross checking 
 
 				-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 				-- field meaning:
@@ -1558,7 +1558,7 @@ package body et_kicad_libraries is
 			begin -- to_polyline
 
 				-- read total number of points
-				total := positive'value (f (line, pos));
+				unused_total := positive'value (f (line, pos));
 				
 				-- read line width (field #5)
 				pos := 5;
@@ -2093,9 +2093,9 @@ package body et_kicad_libraries is
 					
 					when VALUE =>
 						declare
-							value : pac_device_value.bounded_string;
+							unused_value : pac_device_value.bounded_string;
 						begin
-							value := to_value_with_check (
+							unused_value := to_value_with_check (
 								value 						=> content (text),
 								error_on_invalid_character	=> false);
 							-- For the operators convenice no error is raised if invalid
@@ -2467,7 +2467,7 @@ package body et_kicad_libraries is
 					key		: in pac_unit_name.bounded_string;
 					unit	: in out type_unit_library) is
 					pragma unreferenced (key);
-					pos		: natural := 0; -- helps to trace the program position where an exception occured
+					unused_pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
 					case element is
 						when polyline =>
@@ -2486,11 +2486,11 @@ package body et_kicad_libraries is
 							unit.symbol.texts.append (tmp_draw_text);
 
 						when port =>
-							pos := 100;
+							unused_pos := 100;
 							-- CS: test if port not used by other units
-							pos := 110;
+							unused_pos := 110;
 							-- CS: test if pin name not used by other units
-							pos := 190;
+							unused_pos := 190;
 							unit.symbol.ports.append (tmp_draw_port);
 
 							pac_terminal_port_map.insert (

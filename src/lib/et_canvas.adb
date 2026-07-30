@@ -984,7 +984,7 @@ package body et_canvas is
 		v_start, v_length, v_end : type_logical_pixels;
 
 		-- The four corners of the visible area:
-		BL, BR, TL, TR : type_vector_model;
+		BL, unused_BR, TL, TR : type_vector_model;
 	begin
 		-- Inquire the allocation of the scrolled window
 		-- inside the main window:
@@ -1022,7 +1022,7 @@ package body et_canvas is
 		-- Compute the corners of the visible area.
 		-- The corners are real model coordinates:
 		BL := canvas_to_real ((h_start, v_end),   S);
-		BR := canvas_to_real ((h_end, v_end),     S);
+		unused_BR := canvas_to_real ((h_end, v_end),     S);
 		TL := canvas_to_real ((h_start, v_start), S);
 		TR := canvas_to_real ((h_end, v_start),   S);
 

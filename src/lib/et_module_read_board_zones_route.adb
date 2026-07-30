@@ -69,7 +69,7 @@ package body et_module_read_board_zones_route is
 
 	
 	
-	fill_spacing : type_track_clearance := type_track_clearance'first;
+	unused_fill_spacing : type_track_clearance := type_track_clearance'first;
 	-- CS rename to zone_fill_spacing
 	
 	board_fill_style : type_fill_style := fill_style_default;	
@@ -104,7 +104,7 @@ package body et_module_read_board_zones_route is
 	
 
 	procedure reset_scratch is begin
-		fill_spacing		:= type_track_clearance'first;
+		unused_fill_spacing		:= type_track_clearance'first;
 		board_fill_style	:= fill_style_default;
 		--board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
@@ -183,7 +183,7 @@ package body et_module_read_board_zones_route is
 
 		elsif kw = keyword_spacing then -- spacing 1
 			expect_field_count (line, 2);
-			fill_spacing := to_distance (f (line, 2));
+			unused_fill_spacing := to_distance (f (line, 2));
 
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);

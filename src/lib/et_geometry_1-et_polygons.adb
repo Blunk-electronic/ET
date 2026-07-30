@@ -119,7 +119,8 @@ package body et_geometry_1.et_polygons is
 
 		-- In case the mode is EXPAND then this is the
 		-- start and end point of a virtual outer arc:
-		p_start_outside, p_end_outside : type_vector;
+		p_start_outside : type_vector;
+		unused_p_end_outside : type_vector;
 
 		
 		procedure make_edges (p_start : in type_vector) is
@@ -241,7 +242,7 @@ package body et_geometry_1.et_polygons is
 			p_start_outside := move_by (arc_origin.A, arc_angles.angle_start, tolerance_dyn);
 
 			-- The end point of the outer arc:
-			p_end_outside   := move_by (arc_origin.B, arc_angles.angle_end, tolerance_dyn);
+			unused_p_end_outside := move_by (arc_origin.B, arc_angles.angle_end, tolerance_dyn);
 
 			--if debug then
 				--put_line ("start outside : " & to_string (p_start_outside));
@@ -1037,14 +1038,14 @@ package body et_geometry_1.et_polygons is
 
 			procedure query_edge (c : in pac_edges.cursor) is 
 				edge_new : type_edge;
-				cursor_new : pac_edges.cursor;
+				unused_cursor_new : pac_edges.cursor;
 			begin
 				edge_new := reverse_line (element (c));
 				
 				if polygon_new.edges.is_empty then
 					polygon_new.edges.append (edge_new);
 				else
-					cursor_new := polygon_new.edges.first;
+					unused_cursor_new := polygon_new.edges.first;
 					polygon_new.edges.prepend (edge_new);
 				end if;
 			end query_edge;
@@ -3389,7 +3390,7 @@ package body et_geometry_1.et_polygons is
 			return ct;
 		end get_until_begin;
 
-		ct_cw : count_type := 0;
+		unused_ct_cw : count_type := 0;
 
 		
 		
@@ -3464,7 +3465,7 @@ package body et_geometry_1.et_polygons is
 				-- restart the search from the end of the list:
 				if v = pac_vertices.no_element then
 					restart_required := true;
-					ct_cw := get_until_begin;
+					unused_ct_cw := get_until_begin;
 					v := vertices.last;
 					do_collect;
 				end if;

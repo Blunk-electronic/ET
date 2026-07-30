@@ -211,7 +211,7 @@ package body et_string_processing is
 		IFS2		: constant character := character'val(9); -- field separator tabulator
 		field_ct	: type_field_count := 0; -- field counter (the first field found gets number 1 assigned)
 		field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
-		inside_field: boolean := true;		 -- true if char_pt points inside a field
+		unused_inside_field: boolean := true;		 -- true if char_pt points inside a field
 		char_current: character;			 -- holds current character being processed
 		char_last	: character := ' ';		 -- holds character processed previous to char_current
 	begin
@@ -220,9 +220,9 @@ package body et_string_processing is
 			--put (char_pt);
 			char_current:= text_in(char_pt); 
 			if char_current = IFS1 or char_current = IFS2 then
-				inside_field := false;
+				unused_inside_field := false;
 			else
-				inside_field := true;
+				unused_inside_field := true;
 			end if;
 
 			-- count fields if character other than IFS found
@@ -377,7 +377,7 @@ package body et_string_processing is
 		subtype type_character_pointer is natural range 0 .. character_count;
 
 		-- Points to character being processed inside the given string:
-		char_pt			: type_character_pointer;		
+		unused_char_pt	: type_character_pointer;		
 
 		-- Field counter (the first field found gets number 1 assigned)
 		field_ct		: type_field_count := 0;	
@@ -395,7 +395,7 @@ package body et_string_processing is
 		--log ("get field from line " & text_in);
 	
 		if character_count > 0 then
-			char_pt := 1;
+			unused_char_pt := 1;
 			for char_pt in 1..character_count loop
 				char_current := text_in(char_pt); 
 				
