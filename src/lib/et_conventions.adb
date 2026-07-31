@@ -3061,8 +3061,8 @@ package body et_conventions is
 						case component_category is
 
 							when BATTERY =>
-								if not valid (VOLT)
-									then result := false;
+								if not valid (VOLT) then
+									result := false;
 								end if;
 								
 							when CAPACITOR =>

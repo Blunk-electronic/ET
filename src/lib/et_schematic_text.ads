@@ -95,7 +95,7 @@ package et_schematic_text is
 	-- These are basic properties a text has got:
 	type type_text_basic is new type_text with record
 		-- CS font : type_font; ?
-        rotation : type_rotation_documentation := type_rotation_documentation'first;
+		rotation : type_rotation_documentation := type_rotation_documentation'first;
 	end record;
 
 

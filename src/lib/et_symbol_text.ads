@@ -65,7 +65,7 @@ package et_symbol_text is
 	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_symbol_text is new type_text_basic with record
 		position	: type_vector_model;		
-        content		: pac_text_content.bounded_string;
+		content		: pac_text_content.bounded_string;
 	end record;
 
 	
