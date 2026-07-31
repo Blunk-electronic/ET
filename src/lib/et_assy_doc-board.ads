@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,8 +53,8 @@ package et_assy_doc.board is
 	end record;
 
 
-	-- Because assembly documentation is about two 
-	-- sides of the board this composite is required:	
+	-- Because assembly documentation is about two
+	-- sides of the board this composite is required:
 	type type_assy_doc_both_sides is record
 		top 	: type_assy_doc_board;
 		bottom	: type_assy_doc_board;
@@ -67,13 +67,13 @@ package et_assy_doc.board is
 		line		: in type_doc_line;
 		face		: in type_face);
 
-		
+
 	procedure add_arc (
 		assy_doc	: in out type_assy_doc_both_sides;
 		arc			: in type_doc_arc;
 		face		: in type_face);
 
-		
+
 	procedure add_circle (
 		assy_doc	: in out type_assy_doc_both_sides;
 		circle		: in type_doc_circle;
@@ -82,13 +82,13 @@ package et_assy_doc.board is
 
 
 	-- CS procedure add_zone, add_text, add_placeholder
-	
-	
+
+
 end et_assy_doc.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

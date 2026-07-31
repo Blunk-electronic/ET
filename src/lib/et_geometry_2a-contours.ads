@@ -43,21 +43,21 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 
 generic
-	
+
 package et_geometry_2a.contours is
 
 
 
 -- SEGMENTS:
-	
+
 	-- A contour is a list of lines, arcs or a single circle that form a path.
-	-- If a contour consist of just a single circle then no other 
+	-- If a contour consist of just a single circle then no other
 	-- segments are allowed.
 	-- On the other hand, a contour may consist of lines and arcs. In that
 	-- case no circle is allowed:
 	type type_segment_shape is (LINE, ARC); -- CS rename to segment_shape_line, segment_shape_arc
 
-	
+
 	type type_segment (shape : type_segment_shape) is record -- CS rename to type_contour_segment
 		case shape is
 			when LINE	=> segment_line : type_line; -- CS rename segment_line to line
@@ -76,14 +76,14 @@ package et_geometry_2a.contours is
 		line : in type_line)
 		return type_segment;
 
-	
+
 
 	-- CS: There should not be a regulation on the winding of a contour path.
 	-- It can be CW or CCW.
 	-- Currently it MUST be CCW !
 	package pac_segments is new indefinite_doubly_linked_lists (type_segment);
 	use pac_segments;
-	
+
 
 	function to_string (
 		segment	: in pac_segments.cursor)
@@ -98,11 +98,11 @@ package et_geometry_2a.contours is
 	function is_proposed (
 		segment : in type_segment)
 		return boolean;
-	
-		
+
+
 	procedure set_proposed (
 		segment : in out type_segment);
-	
+
 
 	procedure clear_proposed (
 		segment : in out type_segment);
@@ -112,7 +112,7 @@ package et_geometry_2a.contours is
 		segment	: in type_segment)
 		return boolean;
 
-	
+
 	function is_selected (
 		segment	: in pac_segments.cursor)
 		return boolean;
@@ -121,7 +121,7 @@ package et_geometry_2a.contours is
 	procedure set_selected (
 		segment : in out type_segment);
 
-	
+
 	procedure clear_selected (
 		segment : in out type_segment);
 
@@ -135,27 +135,27 @@ package et_geometry_2a.contours is
 	procedure set_moving (
 		segment : in out type_segment);
 
-	
+
 	procedure clear_moving (
 		segment : in out type_segment);
 
-	
+
 
 	procedure modify_status (
 		segment 	: in out type_segment;
 		operation	: in type_status_operation);
-	
+
 
 	procedure reset_status (
 		segment 	: in out type_segment);
-							   
+
 
 
 	function get_shape (
 		segment	: in type_segment)
 		return type_segment_shape;
 
-	
+
 	function get_shape (
 		segment	: in pac_segments.cursor)
 		return type_segment_shape;
@@ -168,7 +168,7 @@ package et_geometry_2a.contours is
 		zone	: in type_catch_zone;
 		segment : in type_segment)
 		return boolean;
-	
+
 
 	-- Returns true if the given segment
 	-- is in the given catch zone:
@@ -183,8 +183,8 @@ package et_geometry_2a.contours is
 		segment			: in out type_segment;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);
-	
-	
+
+
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		segments	: in pac_segments.list;
@@ -205,7 +205,7 @@ package et_geometry_2a.contours is
 
 
 
-	
+
 
 -- CONTOUR:
 
@@ -217,7 +217,7 @@ package et_geometry_2a.contours is
 
 	procedure reset_contour (
 		contour : in out type_contour);
-	
+
 
 	-- CS status operations to query and set status
 	-- see similar operations for type_line in et_geometry_2a.
@@ -226,13 +226,13 @@ package et_geometry_2a.contours is
 		contour : in type_contour)
 		return boolean;
 
-	
+
 
 	-- Returns true if the given contour consists of a circle:
 	function is_circular (
 		contour : in type_contour)
 		return boolean;
-	
+
 
 	package pac_proposed_segments is new doubly_linked_lists (pac_segments.cursor);
 
@@ -243,9 +243,9 @@ package et_geometry_2a.contours is
 		return pac_proposed_segments.list;
 
 
-	
 
-	
+
+
 	-- In order to detect start and end points
 	-- of a non-circular contour we need this type:
 	type type_non_circular_vertex (circular : boolean) is record
@@ -255,7 +255,7 @@ package et_geometry_2a.contours is
 		end case;
 	end record;
 
-	
+
 	-- Returns the first vertext (the start point) of
 	-- a non-circular contour.
 	-- If the given contour is circular then the result
@@ -267,7 +267,7 @@ package et_geometry_2a.contours is
 		contour : in type_contour)
 		return type_non_circular_vertex;
 
-	
+
 	-- Returns the last vertext (the end point) of
 	-- a non-circular contour.
 	-- If the given contour is circular then the result
@@ -281,8 +281,8 @@ package et_geometry_2a.contours is
 
 
 
-	
-	
+
+
 
 	-- Reads the segments provided in a row of
 	-- arguments in a form like:
@@ -292,7 +292,7 @@ package et_geometry_2a.contours is
 	-- and builds a contour.
 	-- 1. The end point of a segment must not be specified.
 	--    It is deduced from the start point of the successor segment.
-	-- 2. If the contour consists of lines and/or arcs then 
+	-- 2. If the contour consists of lines and/or arcs then
 	--    the end point of the last segment is where the contour
 	--    has started. This implies that this procedure ALWAYS creates
 	--    a CLOSED contour !
@@ -308,9 +308,9 @@ package et_geometry_2a.contours is
 		return type_contour'class;
 
 
-	
 
-	
+
+
 	-- Reads the segments provided in a row of
 	-- arguments in a form like:
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
@@ -323,13 +323,13 @@ package et_geometry_2a.contours is
 		segments : in string)
 		return type_contour'class;
 
-	
-	
-	
+
+
+
 	-- Returns the segments of a contour in human readable form.
 	-- The segments are output in the same order as the contour
 	-- has been defined by the operator.
-	-- By default outputs the start points 
+	-- By default outputs the start points
 	-- only (for arcs in addition the center).
 	-- Because the end point of a segment is usually the start point of the
 	-- next segment.
@@ -349,7 +349,7 @@ package et_geometry_2a.contours is
 		return pac_segments.cursor;
 
 
-	
+
 	type type_neigboring_segments is record
 		-- The segment before a vertex.
 		-- This segment ENDS on the vertex:
@@ -360,7 +360,7 @@ package et_geometry_2a.contours is
 		segment_2 : pac_segments.cursor;
 	end record;
 
-	
+
 	function get_neigboring_segments (
 		contour	: in type_contour;
 		vertex	: in type_vector_model)
@@ -382,28 +382,28 @@ package et_geometry_2a.contours is
 	procedure load_segments (
 		contour		: in out type_contour;
 		segments	: in type_segments);
-	
-	
+
+
 	procedure delete_segments (
 		contour	: in out type_contour);
 
 
-	
+
 	procedure append_segment (
 		contour	: in out type_contour;
 		segment	: in type_segment);
-	
 
-	
+
+
 	procedure set_circle (
 		contour	: in out type_contour;
 		circle	: in type_circle'class);
-	
-		
+
+
 	function get_segments (
 		contour	: in type_contour)
 		return type_segments;
-	
+
 
 	-- Returns 1 if the contour consist of just a single circle.
 	-- Returns the number of segments if the contour consist of lines
@@ -413,26 +413,26 @@ package et_geometry_2a.contours is
 		return natural;
 
 
-	
+
 
 
 -- MERGING:
 
 	-- When contours are to be merged, then this
-	-- type shall be used to express the result of 
+	-- type shall be used to express the result of
 	-- the merge operation:
 	type type_merge_result is record
 		appended	: boolean := false;
 		prepended	: boolean := false;
 		successful	: boolean := false;
 	end record;
-	
+
 	-- Merges two contours to a single one.
 	-- 1. Tries to append or prepend source to target
 	--    if matching vertices exist.
 	-- 2. Modifies the status according to the result
 	--    of the operation.
-	-- 3. Merges only if both target and source are 
+	-- 3. Merges only if both target and source are
 	--    open contours.
 	-- 4. If target has no segments (empty) and the source does have
 	--    segments, then it just copies the source to the target.
@@ -445,8 +445,8 @@ package et_geometry_2a.contours is
 
 
 
-	
-	
+
+
 
 	-- Transposes a contour in Y direction.
 	-- Each point of each segment gets shifted by
@@ -455,7 +455,7 @@ package et_geometry_2a.contours is
 		contour	: in out type_contour'class;
 		offset	: in type_distance);
 
-	
+
 
 	-- -- Returns the boundaries of the given contour.
 	-- function get_boundaries (
@@ -486,18 +486,18 @@ package et_geometry_2a.contours is
 
 
 
-	
+
 	-- A contour must have a properly closed outline.
 	-- The outline check returns a list of points.
 	-- Each point represents the start of a gap:
-	package pac_contour_gaps is new doubly_linked_lists (type_vector_model); 
+	package pac_contour_gaps is new doubly_linked_lists (type_vector_model);
 
-	
+
 	-- Returns the points where gaps of a contour begin:
 	function to_string (
 		gaps : in pac_contour_gaps.list)
 		return string;
-	
+
 
 	-- The result of an outline check is a parameterized type:
 	type type_contour_status (closed : boolean) is record
@@ -506,7 +506,7 @@ package et_geometry_2a.contours is
 			when FALSE	=> gaps : pac_contour_gaps.list;
 		end case;
 	end record;
-				
+
 	-- Returns true if the given contour is properly closed.
 	-- If there are gaps, a list of points is returned where the gaps are.
 	-- The test iterates the segments of the contour and tests whether
@@ -520,27 +520,27 @@ package et_geometry_2a.contours is
 		return type_contour_status;
 
 
-	-- Returns true if the given contour is 
+	-- Returns true if the given contour is
 	-- open (means: if it is not closed).
 	-- Returns true if the given contour has no segments at all.
 	-- Bases on function is_closed (see above):
 	function is_open (
 		contour	: in type_contour)
 		return boolean;
-	
 
 
-	-- Moves a contour by the given offset. 
+
+	-- Moves a contour by the given offset.
 	procedure move_by ( -- CS rename to move_contour
 		contour	: in out type_contour;
 		offset	: in type_vector_model);
-	
+
 
 	-- Mirrors a contour along the given axis.
 	procedure mirror ( -- CS rename to mirror_contour
 		contour	: in out type_contour;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 
 	-- Rotates a contour about the origin by the given rotation.
 	procedure rotate_by ( -- CS rename to rotate_contour
@@ -552,7 +552,7 @@ package et_geometry_2a.contours is
 	-- In order to get the status of a point relative to
 	-- a contour we need this stuff:
 	-- The general approach is:
-	-- A ray that starts at point and travels in zero degees 
+	-- A ray that starts at point and travels in zero degees
 	-- may intersect the contour edges.
 	-- The result of such a query is the type_vector_model_to_contour_status
 	-- that contains a status flag (inside/outside) and a list
@@ -562,7 +562,7 @@ package et_geometry_2a.contours is
 	-- distance to the start point of the ray. Lowest value first.
 
 	type type_intersected_segment (shape : type_shape := LINE) is record
-		case shape is 
+		case shape is
 			when LINE	=> segment_line : type_line;
 			when ARC	=> segment_arc : type_arc;
 			when CIRCLE	=> segment_circle : type_circle;
@@ -581,7 +581,7 @@ package et_geometry_2a.contours is
 				-- the lowest x and lowest y are)
 		);
 
-	
+
 	-- When the lower left corner is to be found, then
 	-- the result of such a search operation is formed by
 	-- this type:
@@ -590,7 +590,7 @@ package et_geometry_2a.contours is
 		status	: type_lower_left_corner_status := REAL;
 	end record;
 
-	
+
 
 	-- Searches the lower left corner of a contour.
 	-- This function uses the boundaries of the contour.
@@ -606,15 +606,15 @@ package et_geometry_2a.contours is
 		contour	: in type_contour)
 		return type_vector_model;
 
-	
+
 	function is_vertex (
 		contour	: in type_contour;
 		point	: in type_vector_model)
 		return boolean;
 
 
-	
-					   
+
+
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
@@ -627,7 +627,7 @@ package et_geometry_2a.contours is
 		INSIDE,
 		OUTSIDE,
 		ON_VERTEX);
-	
+
 	function to_string (status : in type_location) return string;
 
 
@@ -659,7 +659,7 @@ package et_geometry_2a.contours is
 				-- The shortest distance of the start point (of the probe line)
 				-- to the contour:
 				distance : type_float;
-				
+
 			when ON_EDGE =>
 				edge : pac_segments.cursor;
 
@@ -676,12 +676,12 @@ package et_geometry_2a.contours is
 
 
 	function get_point_to_contour_status (
-		contour		: in type_contour;	
+		contour		: in type_contour;
 		point		: in type_vector_model)
 		return type_point_to_contour_status;
 
 
-	
+
 	package pac_contour_list is new doubly_linked_lists (type_contour);
 	use pac_contour_list; -- CS rename to pac_contours
 
@@ -692,14 +692,14 @@ package et_geometry_2a.contours is
 		process		: not null access procedure (position : in pac_contour_list.cursor);
 		proceed		: not null access boolean);
 
-	
+
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
 		contours	: in out pac_contour_list.list;
 		offset		: in type_vector_model);
 
-	
+
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_contour_list.list;
@@ -717,17 +717,17 @@ package et_geometry_2a.contours is
 	function get_first_open (
 		contours	: in out pac_contour_list.list)
 		return pac_contour_list.cursor;
-	
 
 
 
 
-	
+
+
 end et_geometry_2a.contours;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

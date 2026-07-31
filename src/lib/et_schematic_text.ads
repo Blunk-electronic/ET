@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 --
 
 with et_sheets;							use et_sheets;
@@ -60,13 +60,13 @@ package et_schematic_text is
 	text_size_min : constant type_distance_positive := 1.0;
 	text_size_max : constant type_distance_positive := 50.0;
 	text_size_default : constant type_distance_positive := 1.3;
-	
+
 	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
 	text_line_width_min : constant type_distance_positive := 0.1;
 	text_line_width_max : constant type_distance_positive := 5.0;
-	text_line_width_default : constant type_distance_positive := 0.3; 
+	text_line_width_default : constant type_distance_positive := 0.3;
 
-	
+
 	-- Instantiation of the text package:
 	package pac_text_schematic is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
@@ -78,7 +78,7 @@ package et_schematic_text is
 
 
 	-- The vector-text package is never used, but mandatory for instantiation
-	package pac_text_schematic_vectorized is 
+	package pac_text_schematic_vectorized is
 		new et_text_vectorized.generic_pac_text_vectorized (
 		pac_geometry		=> pac_geometry_2,
 		pac_text			=> pac_text_schematic,
@@ -90,7 +90,7 @@ package et_schematic_text is
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
 		line_width_default	=> text_line_width_default);
-	
+
 
 	-- These are basic properties a text has got:
 	type type_text_basic is new type_text with record
@@ -103,13 +103,13 @@ package et_schematic_text is
 	procedure toggle_rotation (
 		text : in out type_text_basic);
 
-	
+
 
 	-- GUI relevant only: The font of a text/note in the schematic:
 	text_font : constant type_font :=
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
-	
+
 	-- A text/note in the schematic:
 	type type_text is new pac_text_schematic.type_text with record
 		position	: type_vector_model;
@@ -118,10 +118,10 @@ package et_schematic_text is
 		content		: pac_text_content.bounded_string;
 		--font		: et_text.type_font;
 	end record;
-		
+
 	package pac_texts is new doubly_linked_lists (type_text);
 
-	
+
 
 	procedure dummy;
 
@@ -130,7 +130,7 @@ end et_schematic_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

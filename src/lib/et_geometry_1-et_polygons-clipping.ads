@@ -50,12 +50,12 @@
 --   history of changes:
 --
 --	- "to clip" german: kappen, begrenzen.
---    Im Zusammenhang mit zwei Polygonen A und B: 
+--    Im Zusammenhang mit zwei Polygonen A und B:
 --			- "ueberlappende/gemeinsame Bereiche beider Polygone ermitteln"
 --			- "Schnittmenge zweier Polygone ermitteln"
 
 generic
-	
+
 package et_geometry_1.et_polygons.clipping is
 
 	-- The result of a polygon clipping operation is a list
@@ -64,8 +64,8 @@ package et_geometry_1.et_polygons.clipping is
 	--use pac_clipped;
 
 
-	
-	
+
+
 	-- Clips polygon A by polygon B.
 	-- If the two polygons do not overlap, then the return is an empty list.
 	-- If debug is true then a lot of debug messages is output.
@@ -81,12 +81,12 @@ package et_geometry_1.et_polygons.clipping is
 		return pac_polygon_list.list;
 
 
-	
+
 end et_geometry_1.et_polygons.clipping;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

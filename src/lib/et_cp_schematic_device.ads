@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -58,19 +58,19 @@ package et_cp_schematic_device is
 
 	-- This procedure parses a command that renames a device like
 	-- "schematic led_driver rename device IC1 IC2"
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure rename_device (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-	-- This procedure parses a command that deletes a 
+
+
+	-- This procedure parses a command that deletes a
 	-- whole device (with all units) like
 	-- "schematic led_driver delete device IC1":
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure delete_device (
 		module			: in pac_generic_modules.cursor;
@@ -78,22 +78,22 @@ package et_cp_schematic_device is
 		log_threshold	: in type_log_level);
 
 
-		
-	-- This procedure parses a command that copies a 
+
+	-- This procedure parses a command that copies a
 	-- device like
-	-- "schematic led_driver copy device IC1 2 210 100 0":	
-	-- If the targeted device does not exist, then nothing 
+	-- "schematic led_driver copy device IC1 2 210 100 0":
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure copy_device (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
-	
+
+
+
 	-- This procedure parses a command that sets the value of a device like
 	-- "schematic led_driver set value R1 100R"
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_device_value (
 		module			: in pac_generic_modules.cursor;
@@ -101,40 +101,40 @@ package et_cp_schematic_device is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- This procedure parses a command that sets the purpose of a device like
 	-- "schematic led_driver set purpose R1 Temperature"
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_device_purpose (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-		
+
+
+
 	-- This procedure parses a command that sets the partcode of a device like
 	-- "schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R"
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_device_partcode (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 	-- This procedure parses a command that sets the package
 	-- variant of a device.
 	-- Example: "schematic led_driver set variant R1 S_0805"
-	-- If the targeted device does not exist, then nothing 
+	-- If the targeted device does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_device_package_variant (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
+
 
 
 	-- Renumbers devices according to the sheet number.
@@ -144,13 +144,13 @@ package et_cp_schematic_device is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 end et_cp_schematic_device;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

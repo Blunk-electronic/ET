@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -68,10 +68,10 @@ package et_netchangers is
 -- NAMING CONVENTIONS:
 
 	-- Netchangers have names like N1, N2, N45.
-	-- The name consists of a prefix N and 
+	-- The name consists of a prefix N and
 	-- an index like 45.
-	
-	
+
+
 
 -- PREFIX:
 
@@ -80,46 +80,46 @@ package et_netchangers is
 	netchanger_prefix : constant string := "N";
 	-- CS: Instead of N a prefix NC could make things clearer.
 	-- CS consider user defined prefixes. conventions ?
-	
-	
-	
+
+
+
 -- INDEX:
 
-	netchanger_id_max : constant positive := 10000; 
+	netchanger_id_max : constant positive := 10000;
 	-- CS  increase if necessary
-	
+
 	type type_netchanger_id is range 1 .. netchanger_id_max;
 
 
 	-- To collect indexes of netchangers use this
 	-- package:
-	package pac_netchanger_ids is new 
+	package pac_netchanger_ids is new
 		doubly_linked_lists (type_netchanger_id);
-	
-	
+
+
 	function to_netchanger_id (
-		id : in string) 
+		id : in string)
 		return type_netchanger_id;
 
-		
+
 	function to_string (
 		id : in type_netchanger_id)
-		return string;		
+		return string;
 
 
-		
+
 -- NAME:
 
 	-- Returns a full name of a netchanger like N44:
 	function get_netchanger_name (
-		id : in type_netchanger_id) 
+		id : in type_netchanger_id)
 		return string;
-		
 
-		
-	
 
-	
+
+
+
+
 -- DIRECTION:
 
 	-- The direction of a netchanger determines the
@@ -129,14 +129,14 @@ package et_netchangers is
 
 	type type_netchanger_direction is (
 		FORWARD, -- default
-		BACKWARD);						
+		BACKWARD);
 
 
 	-- Toggles between FORWARD and BACKWARD:
 	procedure toggle_direction (
 		direction : in out type_netchanger_direction);
-	
-	
+
+
 	function to_netchanger_direction (
 		direction : in string)
 		return type_netchanger_direction;
@@ -147,10 +147,10 @@ package et_netchangers is
 		return string;
 
 
-		
-		
-	
-	
+
+
+
+
 	-- 1. In the schematic drawing, there is only one hardcoded
 	--    symbol for a netchanger (see package spec et_netchanger_symbol_schematic).
 	--    So there is no link to a netchanger symbol as we are familar
@@ -172,12 +172,12 @@ package et_netchangers is
 		rotation	: et_schematic_geometry.pac_geometry_2.type_rotation_0_90 := 0.0;
 		sheet		: et_sheets.type_sheet := et_sheets.type_sheet'first;
 	end record;
-	
 
-	
-		
+
+
+
 	-- This is the specification of the position
-	-- in the board drawing:	
+	-- in the board drawing:
 	-- We have the x/y coordinates
 	-- and the signal layer where the connection
 	-- of two nets (or their tracks) is made:
@@ -186,16 +186,16 @@ package et_netchangers is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
-	
-	
-	
-	
+
+
+
+
 	type type_netchanger is record -- CS make private
 		position_sch : type_netchanger_position_schematic;
 		status_sch : type_object_status;
-		
+
 		direction : type_netchanger_direction := FORWARD;
-		
+
 		position_brd : type_netchanger_position_board;
 		status_brd : type_object_status;
 	end record;
@@ -205,9 +205,9 @@ package et_netchangers is
 	procedure reset_netchanger (
 		netchanger : in out type_netchanger);
 
-		
 
-	
+
+
 	package pac_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
@@ -215,8 +215,8 @@ package et_netchangers is
 	use pac_netchangers;
 
 
-	
-	
+
+
 	-- Returns the name of the given netchanger.
 	-- The name is just the index like 1,2,3, ...
 	function get_netchanger_name (
@@ -228,8 +228,8 @@ package et_netchangers is
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_id;
 
-	
-	
+
+
 	-- Returns a cursor to the given netchanger.
 	-- If the netchanger is not among the given netchangers,
 	-- then no_element will be returned:
@@ -237,19 +237,19 @@ package et_netchangers is
 		netchangers : in pac_netchangers.map;
 		index		: in type_netchanger_id)
 		return pac_netchangers.cursor;
-		
 
-		
-		
-		
-		
+
+
+
+
+
 -- COMMITS OF NETCHANGERS:
-	
+
 	use et_commit;
-	
+
 	package pac_netchanger_commit is new pac_commit (pac_netchangers.map);
 	use pac_netchanger_commit;
-	
+
 	package pac_netchanger_commits is new doubly_linked_lists (
 		element_type	=> pac_netchanger_commit.type_commit);
 
@@ -258,13 +258,13 @@ package et_netchangers is
 		redos	: pac_netchanger_commits.list;
 	end record;
 
-		
-	
+
+
 end et_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

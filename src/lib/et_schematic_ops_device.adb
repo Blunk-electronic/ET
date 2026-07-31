@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -75,19 +75,19 @@ package body et_schematic_ops_device is
 
 
 	use pac_devices_electrical;
-	
 
 
 
 
-	
+
+
 	function get_device_names (
 		module_cursor 	: in pac_generic_modules.cursor)
 		return pac_device_names.set
 	is
 		result : pac_device_names.set;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -106,19 +106,19 @@ package body et_schematic_ops_device is
 
 
 
-	
 
 
-	
+
+
 
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level) 
-		return pac_renumber_devices.map 
+		log_threshold	: in type_log_level)
+		return pac_renumber_devices.map
 	is
 		devices : pac_renumber_devices.map; -- to be returned
 
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -129,10 +129,10 @@ package body et_schematic_ops_device is
 				use pac_units;
 				device_name : constant type_device_name := pac_devices_electrical.key (device_cursor); -- R1
 
-				
+
 				procedure sort (
-					unit_cursor : in pac_units.cursor) 
-				is 
+					unit_cursor : in pac_units.cursor)
+				is
 					unit_name : constant pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : constant type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
@@ -143,7 +143,7 @@ package body et_schematic_ops_device is
 					log (text => "unit " & to_string (unit_name) &
 						" at " & to_string (position => unit_position),
 						 level => log_threshold + 2);
-					
+
 					pac_renumber_devices.insert (
 						container	=> devices,
 						key			=> unit_position, -- sheet/x/y
@@ -163,43 +163,43 @@ package body et_schematic_ops_device is
 							 " sits on top of another unit !",
 							 console => true);
 						raise constraint_error;
-					end if;							 
+					end if;
 				end sort;
 
-				
-			begin				
+
+			begin
 				log (text => "device " & to_string (device_name), -- R1, IC3
 					 level => log_threshold + 1);
-				
+
 				log_indentation_up;
-				
+
 				pac_units.iterate (
 					container	=> pac_devices_electrical.element (device_cursor).units,
 					process		=> sort'access);
 
 				log_indentation_down;
 			end query_units;
-			
-			
+
+
 		begin -- query_devices
 			pac_devices_electrical.iterate (
 				container	=> module.devices,
 				process		=> query_units'access);
 		end query_devices;
 
-		
+
 	begin
 		log (text => "sorting devices/units by schematic coordinates ...", level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
 
 		log_indentation_down;
-		
+
 		return devices;
 	end sort_by_coordinates_2;
 
@@ -212,13 +212,13 @@ package body et_schematic_ops_device is
 	function electrical_device_exists (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name)
-		return boolean 
+		return boolean
 	is
 		device_found : boolean := false; -- to be returned
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -226,7 +226,7 @@ package body et_schematic_ops_device is
 				device_found := true;
 			end if;
 		end query_devices;
-		
+
 	begin
 		pac_generic_modules.query_element (
 			position	=> module,
@@ -237,19 +237,19 @@ package body et_schematic_ops_device is
 
 
 
-	
 
-	
+
+
 	function get_electrical_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_devices_electrical.cursor 
+		return pac_devices_electrical.cursor
 	is
 		result : pac_devices_electrical.cursor;
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -271,7 +271,7 @@ package body et_schematic_ops_device is
 
 
 
-	
+
 	function get_first_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_devices_electrical.cursor
@@ -280,7 +280,7 @@ package body et_schematic_ops_device is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -299,8 +299,8 @@ package body et_schematic_ops_device is
 
 
 
-	
-	
+
+
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
@@ -327,12 +327,12 @@ package body et_schematic_ops_device is
 
 
 
-	
+
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_device_model_file.bounded_string
-	is 
+	is
 		cursor : pac_devices_electrical.cursor;
 	begin
 		cursor := get_electrical_device (module, device);
@@ -350,7 +350,7 @@ package body et_schematic_ops_device is
 
 
 
-	
+
 
 -- SHOW DEVICE:
 
@@ -362,23 +362,23 @@ package body et_schematic_ops_device is
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
 				-- Independend on the search mode, set the whole device as selected.
-				-- This is relevant for highlighting the package in the board editor. 
+				-- This is relevant for highlighting the package in the board editor.
 				-- If the device is virtual, then this has no meaning because virtual
 				-- devices do not appear in the board drawing:
 				set_selected (device);
@@ -388,38 +388,38 @@ package body et_schematic_ops_device is
 					-- Set all units as selected:
 
 					select_unit (
-						device		=> device, 
-						all_units	=> true, 
+						device		=> device,
+						all_units	=> true,
 						unit_name	=> unit_name_default); -- don't care
 
 				else
 					-- Set the given unit as selected:
 					select_unit (
-						device		=> device, 
-						all_units	=> false, 
+						device		=> device,
+						all_units	=> false,
 						unit_name	=> unit_name);
 
 				end if;
 			end query_device;
-		
-			
+
+
 		begin
 			module.devices.update_element (device_cursor_sch, query_device'access);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " show electrical device " & to_string (device_name),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
 		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception is raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
@@ -429,12 +429,12 @@ package body et_schematic_ops_device is
 		log_indentation_down;
 	end show_device;
 
-	
-	
 
-	
 
-	
+
+
+
+
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -453,19 +453,19 @@ package body et_schematic_ops_device is
 
 		use pac_units;
 		use pac_unit_name;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in type_device_electrical) 
-			is 
+				device		: in type_device_electrical)
+			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor;
 			begin
@@ -488,21 +488,21 @@ package body et_schematic_ops_device is
 
 				end if;
 			end query_device;
-		
-			
+
+
 		begin
 			query_element (device_cursor_sch, query_device'access);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " get properties of electrical device " & to_string (device_name)
 			 & " linebreaks " & boolean'image (linebreaks)
 			 & " inquiry level " & to_string (level),
 			level => log_threshold);
 
-		
+
 		if all_units then
 			log (text => "whole device -> all units",
 				 level => log_threshold);
@@ -513,69 +513,69 @@ package body et_schematic_ops_device is
 		end if;
 
 
-				
+
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		-- If all units of the device are enquired for,
 		-- then the cursor to the device is sufficient
 		-- to query properties:
 		if all_units then
 			result := to_unbounded_string (get_properties (
 				device_cursor	=> device_cursor_sch,
-				linebreaks		=> linebreaks,											  
+				linebreaks		=> linebreaks,
 				level			=> level));
 		else
 			-- If a dedicated unit is enquired for, then
 			-- the cursor to that unit must be set:
 			query_element (module_cursor, query_module'access);
 		end if;
-				
+
 		log_indentation_down;
 
 		return to_string (result);
 	end get_device_properties;
 
-	
-
-	
 
 
 
 
-	
-	
+
+
+
+
+
 -- VALUE, PURPOSE, PARTCODE:
-	
+
 
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
 		commit_design		: in type_commit_design := DO_COMMIT;
-		log_threshold		: in type_log_level) 
-	is	
+		log_threshold		: in type_log_level)
+	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 
 			procedure set_value (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -583,55 +583,55 @@ package body et_schematic_ops_device is
 				device.value := value;
 			end;
 
-			
+
 		begin
-			-- Only real devices have a value. 
+			-- Only real devices have a value.
 			-- For virtual devices is issue a warning:
 			if is_real (device_cursor_sch) then
 
 				-- Check value regarding the device category:
-				if et_conventions.value_valid (value, get_prefix (device_name)) then 
-				
+				if et_conventions.value_valid (value, get_prefix (device_name)) then
+
 					update_element (
 						container	=> module.devices,
 						position	=> device_cursor_sch,
 						process		=> set_value'access);
 
 				else
-					log (SEVERITY_WARNING, "Value " & enclose_in_quotes (to_string (value)) 
+					log (SEVERITY_WARNING, "Value " & enclose_in_quotes (to_string (value))
 						 & " invalid for this kind of device !");
 					-- CS: ERROR instead ?, exception ?
 					-- CS more details ?
-						
+
 				end if;
 
 			else -- virtual device
-		
-				log (SEVERITY_WARNING, " Device " & to_string (device_name) 
+
+				log (SEVERITY_WARNING, " Device " & to_string (device_name)
 					& " is virtual and has no value !");
 			end if;
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " set " & to_string (device_name) 
+		log (text => "module " & to_string (module_cursor)
+			 & " set " & to_string (device_name)
 			 & " value to " & to_string (value),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -643,41 +643,41 @@ package body et_schematic_ops_device is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		log_indentation_down;
 	end set_value;
 
 
 
-	
 
-	
 
-	
+
+
+
 
 	procedure set_purpose (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
 		commit_design		: in type_commit_design := DO_COMMIT;
-		log_threshold		: in type_log_level) 
+		log_threshold		: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
 
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -685,9 +685,9 @@ package body et_schematic_ops_device is
 				-- CS log purpose before and after
 			end;
 
-			
+
 		begin
-			-- Only real devices have a purpose. 
+			-- Only real devices have a purpose.
 			-- Issue a warning if targeted device is virtual.
 			if is_real (device_cursor_sch) then
 
@@ -697,20 +697,20 @@ package body et_schematic_ops_device is
 					process		=> set_purpose'access);
 
 			else
-				log (SEVERITY_WARNING, "device " & to_string (device_name) 
+				log (SEVERITY_WARNING, "device " & to_string (device_name)
 					& " is virtual and has no practical purpose !");
 			end if;
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " set " & to_string (device_name) & " purpose to " 
+		log (text => "module " & to_string (module_cursor)
+			 & " set " & to_string (device_name) & " purpose to "
 			 & enclose_in_quotes (to_string (purpose)),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
@@ -721,7 +721,7 @@ package body et_schematic_ops_device is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -733,51 +733,51 @@ package body et_schematic_ops_device is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end set_purpose;
 
 
 
 
-	
-	
 
 
-	
+
+
+
 	procedure set_partcode (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		commit_design		: in type_commit_design := DO_COMMIT;
-		log_threshold		: in type_log_level) 
+		log_threshold		: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
-		
+
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
 				device.partcode := partcode;
 				-- CS log old and new partcode
 			end;
-			
-			
+
+
 		begin
-			-- Only real devices have a purpose. 
+			-- Only real devices have a purpose.
 			-- Issue warning if targeted device is virtual.
 			if is_real (device_cursor_sch) then
 
@@ -787,20 +787,20 @@ package body et_schematic_ops_device is
 					process		=> set_partcode'access);
 
 			else
-				log (SEVERITY_WARNING, "Device " & to_string (device_name) 
+				log (SEVERITY_WARNING, "Device " & to_string (device_name)
 					& " is virtual and has no partcode !");
 			end if;
 		end query_module;
 
-		
+
 	begin -- set_partcode
-		log (text => "module " & to_string (module_cursor) 
-			 & " set " & to_string (device_name) 
+		log (text => "module " & to_string (module_cursor)
+			 & " set " & to_string (device_name)
 			 & " partcode to " & enclose_in_quotes (to_string (partcode)),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
@@ -811,7 +811,7 @@ package body et_schematic_ops_device is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -823,7 +823,7 @@ package body et_schematic_ops_device is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		log_indentation_down;
 	end set_partcode;
 
@@ -832,10 +832,10 @@ package body et_schematic_ops_device is
 
 
 
-	
 
 
-	
+
+
 
 -- PACKAGE VARIANT:
 
@@ -846,7 +846,7 @@ package body et_schematic_ops_device is
 		return pac_package_variants.map
 	is
 		use et_device_library.packages;
-		cursor_lib : pac_device_models.cursor;	
+		cursor_lib : pac_device_models.cursor;
 	begin
 		cursor_lib := get_device_model (module, device);
 		return get_available_variants (cursor_lib);
@@ -854,8 +854,8 @@ package body et_schematic_ops_device is
 
 
 
-	
-	
+
+
 	function get_package_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
@@ -864,7 +864,7 @@ package body et_schematic_ops_device is
 		cursor_sch : pac_devices_electrical.cursor;
 	begin
 		cursor_sch := get_electrical_device (module, device);
-		
+
 		return get_package_variant (cursor_sch);
 	end get_package_variant;
 
@@ -875,9 +875,9 @@ package body et_schematic_ops_device is
 
 
 
-	
-	
-	
+
+
+
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2
@@ -889,7 +889,7 @@ package body et_schematic_ops_device is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		use pac_generic_modules;
 		device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -898,14 +898,14 @@ package body et_schematic_ops_device is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				pragma unreferenced (device_name);
 				use et_device_library.packages;
 				cursor_lib : pac_device_models.cursor;
@@ -919,8 +919,8 @@ package body et_schematic_ops_device is
 					if is_variant_available (cursor_lib, variant) then
 						device.variant := variant;
 					else
-						log (SEVERITY_WARNING, "Package variant " & to_string (variant) 
-							& " is not defined in device model !"); 
+						log (SEVERITY_WARNING, "Package variant " & to_string (variant)
+							& " is not defined in device model !");
 							-- CS output file name ?
 					end if;
 				else
@@ -928,7 +928,7 @@ package body et_schematic_ops_device is
 				end if;
 			end query_device;
 
-				
+
 		begin
 			update_element (
 				container	=> module.devices,
@@ -936,7 +936,7 @@ package body et_schematic_ops_device is
 				process		=> query_device'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set package variant of " & to_string (device_name)
@@ -944,7 +944,7 @@ package body et_schematic_ops_device is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
@@ -955,7 +955,7 @@ package body et_schematic_ops_device is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -967,17 +967,17 @@ package body et_schematic_ops_device is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end set_package_variant;
 
 
 
 
-	
 
 
-	
+
+
 
 
 	function get_electrical_devices_by_prefix (
@@ -988,10 +988,10 @@ package body et_schematic_ops_device is
 	is
 		result : pac_devices_electrical.map;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1007,19 +1007,19 @@ package body et_schematic_ops_device is
 					result.insert (name, device);
 				end if;
 			end query_device;
-			
+
 		begin
 			-- Iterate the electrical devices:
 			module.devices.iterate (query_device'access);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " get electrical devices with prefix " & to_string (prefix),
 			level => log_threshold);
 
-		log_indentation_up;		
+		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 
 		log (text => "device count " & get_count (result), level => log_threshold);
@@ -1030,12 +1030,12 @@ package body et_schematic_ops_device is
 
 
 
-	
 
 
 
 
-	
+
+
 	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string;
@@ -1052,14 +1052,14 @@ package body et_schematic_ops_device is
 			names_electrical : pac_device_names.set;
 			names_non_electrical : pac_device_names.set;
 			names_all : pac_device_names.set;
-			
+
 		begin
 			-- Get all non-electrical devices having the given prefix:
 			devices_electrical := get_electrical_devices_by_prefix (
 				module_cursor, prefix, log_threshold + 1);
 
 			names_electrical := get_device_names (devices_electrical);
-			
+
 			devices_non_electrical := get_non_electrical_devices_by_prefix (
 				module_cursor, prefix, log_threshold + 1);
 
@@ -1073,28 +1073,28 @@ package body et_schematic_ops_device is
 				level => log_threshold + 2);
 
 		end search_2;
-			
-	
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " search next available device name with prefix " 
+		log (text => "module " & to_string (module_cursor)
+			 & " search next available device name with prefix "
 			 & to_string (prefix),
 			level => log_threshold);
 
 		log_indentation_up;
 		search_2;
 		log_indentation_down;
-		
+
 		return next_name;
 	end get_next_available_device_name;
 
 
 
-		
 
 
 
-	
+
+
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in pac_device_model_file.bounded_string;
@@ -1104,8 +1104,8 @@ package body et_schematic_ops_device is
 		log_threshold	: in type_log_level) is separate;
 
 
-	
-	
+
+
 
 	procedure copy_device (
 		module_cursor		: in pac_generic_modules.cursor;
@@ -1120,45 +1120,45 @@ package body et_schematic_ops_device is
 
 
 
-	
 
 
 
 
-	
+
+
 	-- Renumbers devices according to the sheet number.
 	procedure renumber_devices (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
-		
+
 		use et_device_category;
 		use et_conventions;
 		use pac_unit_name;
-		
+
 
 		-- The list of devices sorted by their coordinates.
 		-- By their order in this list the devices will be renumbered.
 		devices : pac_renumber_devices.map;
 
-		
+
 		-- Renumbers devices of given category. Returns true if all devices
 		-- have been renamed.
 		-- Marks every renamed unit in the device list so that the second
 		-- run of this function does not try to renumber them again.
 		function renumber (
-			cat : in type_device_category) 
-			return boolean 
+			cat : in type_device_category)
+			return boolean
 		is
 			result : constant boolean := true;
-			
+
 			use pac_renumber_devices;
 			cursor : pac_renumber_devices.cursor := devices.first;
 			name_before, name_after : type_device_name; -- R1
@@ -1167,7 +1167,7 @@ package body et_schematic_ops_device is
 			index_on_sheet : type_name_index := type_name_index'first;
 			device_index : type_name_index;
 
-			
+
 			-- Detects when the sheet number changes. In this case
 			-- resets the index_on_sheet so that the indexing starts anew.
 			procedure update_index is begin
@@ -1182,7 +1182,7 @@ package body et_schematic_ops_device is
 			end update_index;
 
 
-			
+
 			-- Sets the "done" flag of all devices with name_before in the device list.
 			procedure mark_units_done is
 
@@ -1199,14 +1199,14 @@ package body et_schematic_ops_device is
 					device.done := true;
 				end;
 
-				
+
 			begin -- mark_units_done
 				log (text => "marking all units done ...", level => log_threshold + 2);
-				
+
 				while cursor_done /= pac_renumber_devices.no_element loop
-					
+
 					if element (cursor_done).name = name_before then -- IC5
-						
+
 						log (text => " unit " & to_string (element (cursor_done).unit),
 							 level => log_threshold + 2);
 
@@ -1214,16 +1214,16 @@ package body et_schematic_ops_device is
 							container	=> devices,
 							position	=> cursor_done,
 							process		=> set_done'access);
-						
+
 					end if;
-					
+
 					next (cursor_done);
 				end loop;
 			end mark_units_done;
 			pragma unreferenced (mark_units_done);
 
 
-			
+
 		begin -- renumber
 			while cursor /= pac_renumber_devices.no_element loop
 
@@ -1236,9 +1236,9 @@ package body et_schematic_ops_device is
 						log (text => "device " & to_string (name_before) &
 							" unit " & to_string (element (cursor).unit), level => log_threshold +1);
 						log_indentation_up;
-						
+
 						update_index;
-						
+
 						-- step width times sheet number: like 100 * 4 = 400
 						device_index := step_width * type_name_index (sheet_now);
 
@@ -1262,41 +1262,41 @@ package body et_schematic_ops_device is
 							-- 	device_name_before	=> name_before, -- R1
 							-- 	device_name_after	=> name_after, -- R407
 							-- 	log_threshold		=> log_threshold + 2) then
-       -- 
+       --
 							-- 	-- Mark all units of the device as done:
 							-- 	mark_units_done;
 							-- else
 							-- 	result := false;
 							-- end if;
-							
+
 						end if;
 
 						log_indentation_down;
 					end if;
 				end if;
-				
+
 				next (cursor);
 			end loop;
 
 			return result;
 
 			exception when event:
-				others => 
+				others =>
 					log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
-			
+
 		end renumber;
 
 
-		
+
 	begin -- renumber_devices
-		log (text => "module " & to_string (module_name) 
-			 & " renumber devices." 
+		log (text => "module " & to_string (module_name)
+			 & " renumber devices."
 			 & " step width per sheet" & to_string (step_width),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -1306,19 +1306,19 @@ package body et_schematic_ops_device is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- Get a list of devices and units where they are sorted by their coordinates.
 		devices := sort_by_coordinates_2 (module_cursor, log_threshold + 2);
 
 		-- Renumber for each device category. If the first run fails, start another
 		-- iteration. If that fails too, issue error and abort.
 		-- Devices of unknown category are exampted from renumbering.
-		for cat in type_device_category'pos (type_device_category'first) .. 
+		for cat in type_device_category'pos (type_device_category'first) ..
 			type_device_category'pos (type_device_category'last) loop
 
 			case type_device_category'val (cat) is
 				when UNKNOWN => null;
-				
+
 				when others =>
 
 					log (text => "category" & to_string (type_device_category'val (cat)),
@@ -1327,16 +1327,16 @@ package body et_schematic_ops_device is
 					log_indentation_up;
 					if renumber (type_device_category'val (cat)) = false then
 						-- first iteration failed. start a second:
-						
+
 						log (text => "another iteration required", level => log_threshold + 2);
 						log_indentation_up;
-						
+
 						if renumber (type_device_category'val (cat)) = false then
 							-- second iteration failed: abort
 							log (SEVERITY_ERROR, "renumbering failed !", console => true);
 							raise constraint_error;
 						end if;
-						
+
 						log_indentation_down;
 					end if;
 
@@ -1349,19 +1349,19 @@ package body et_schematic_ops_device is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end renumber_devices;
 
-	
-	
+
+
 
 end et_schematic_ops_device;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

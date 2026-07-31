@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,38 +53,38 @@ with et_exceptions;				use et_exceptions;
 package body et_schematic_ops_assembly_variant is
 
 
-	
-	
+
+
 	procedure device_not_found (name : in type_device_name) is begin
-		raise semantic_error_1 
+		raise semantic_error_1
 			with "ERROR: Device " & to_string (name) & " not found !";
 	end device_not_found;
 
-	
+
 	procedure device_already_exists (name : in type_device_name) is begin
 		raise semantic_error_1
 			with "ERROR: Device " & to_string (name) & " already exists !";
 	end device_already_exists;
 
-	
 
-	
 
-	
-	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string) is 
+
+
+
+	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string) is
 	begin
 		log (SEVERITY_ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
-	
+
 
 
 
 	function get_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant_name	: in pac_assembly_variant_name.bounded_string)							  
+		variant_name	: in pac_assembly_variant_name.bounded_string)
 		return pac_assembly_variants.cursor
 	is
 		module : type_generic_module renames element (module_cursor);
@@ -92,11 +92,11 @@ package body et_schematic_ops_assembly_variant is
 	begin
 		return find (module.assembly_variants.variants, variant_name);
 	end;
-	
-	
 
-	
-	
+
+
+
+
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_assembly_variant_name.bounded_string
@@ -106,40 +106,40 @@ package body et_schematic_ops_assembly_variant is
 
 
 
-	
+
 
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
 		return et_assembly_variants.pac_assembly_variants.cursor
 	is
-		variant : constant pac_assembly_variant_name.bounded_string := 
+		variant : constant pac_assembly_variant_name.bounded_string :=
 			get_active_assembly_variant (module_cursor);
-			
+
 		use et_assembly_variants;
 		use pac_assembly_variants;
-		
+
 		av : pac_assembly_variants.cursor;
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;					   
+			module_name	: in pac_module_name.bounded_string;
 			module 		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			av := find (module.assembly_variants.variants, variant);
 		end query_module;
-	
+
 	begin
 		if is_default (variant) then
 			av := pac_assembly_variants.no_element;
 		else
 			pac_generic_modules.query_element (module_cursor, query_module'access);
 		end if;
-		
+
 		return av;
 	end get_active_assembly_variant;
 
-	
+
 
 
 
@@ -156,7 +156,7 @@ package body et_schematic_ops_assembly_variant is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 
-		
+
 		procedure create (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
@@ -178,7 +178,7 @@ package body et_schematic_ops_assembly_variant is
 			end if;
 		end create;
 
-		
+
 	begin -- create_assembly_variant
 		log (text => "module " & to_string (module_name) &
 			" creating new assembly variant " & enclose_in_quotes (to_variant (variant_name)),
@@ -191,14 +191,14 @@ package body et_schematic_ops_assembly_variant is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> create'access);
-		
+
 	end create_assembly_variant;
 
 
 
 
 
-	
+
 	procedure delete_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
@@ -208,7 +208,7 @@ package body et_schematic_ops_assembly_variant is
 
 		use et_assembly_variants;
 
-		
+
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
@@ -220,7 +220,7 @@ package body et_schematic_ops_assembly_variant is
 			cursor := find (module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
-				
+
 				delete (
 					container	=> module.assembly_variants.variants,
 					position	=> cursor);
@@ -230,7 +230,7 @@ package body et_schematic_ops_assembly_variant is
 			end if;
 		end delete;
 
-		
+
 	begin -- delete_assembly_variant
 		log (text => "module " & to_string (module_name) &
 			" deleting assembly variant " & enclose_in_quotes (to_variant (variant_name)),
@@ -243,7 +243,7 @@ package body et_schematic_ops_assembly_variant is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
-		
+
 	end delete_assembly_variant;
 
 
@@ -251,14 +251,14 @@ package body et_schematic_ops_assembly_variant is
 
 
 
-	
 
-	
+
+
 	procedure describe_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost											
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -279,7 +279,7 @@ package body et_schematic_ops_assembly_variant is
 				variant.description := description;
 			end assign_description;
 
-			
+
 		begin -- describe
 			-- before describing, the variant must be located
 			cursor := et_assembly_variants.pac_assembly_variants.find (
@@ -298,7 +298,7 @@ package body et_schematic_ops_assembly_variant is
 
 		end describe;
 
-		
+
 	begin -- describe_assembly_variant
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -312,7 +312,7 @@ package body et_schematic_ops_assembly_variant is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> describe'access);
-		
+
 	end describe_assembly_variant;
 
 
@@ -322,29 +322,29 @@ package body et_schematic_ops_assembly_variant is
 
 
 
-	
+
 
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device	: in type_device_name)
-		return boolean 
+		return boolean
 	is
 		result : boolean := false; -- to be returned
 
-		
+
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_assembly_variants;
 			variant_cursor : pac_assembly_variants.cursor;
 
-			
+
 			procedure query_devices (
 				variant_name	: in pac_assembly_variant_name.bounded_string;
-				variant			: in type_assembly_variant) 
+				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
 				use et_assembly_variants;
@@ -363,10 +363,10 @@ package body et_schematic_ops_assembly_variant is
 				-- The device may be NOT listed in the assembly variant. Means it is mounted always.
 					result := true;
 				end if;
-					
+
 			end query_devices;
 
-			
+
 		begin -- query_variants
 			variant_cursor := find (module.assembly_variants.variants, variant);
 
@@ -375,7 +375,7 @@ package body et_schematic_ops_assembly_variant is
 				process		=> query_devices'access);
 		end;
 
-		
+
 	begin
 -- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 -- 			" variant " & enclose_in_quotes (to_variant (variant)) &
@@ -385,7 +385,7 @@ package body et_schematic_ops_assembly_variant is
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_variants'access);
-		
+
 		return result;
 	end device_exists;
 
@@ -398,19 +398,19 @@ package body et_schematic_ops_assembly_variant is
 
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device	: in type_device_name)
-		return pac_device_variants.cursor 
+		return pac_device_variants.cursor
 	is
 
 		cursor : pac_device_variants.cursor; -- to be returned;
-		
+
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) is
 			pragma unreferenced (module_name);
 			use pac_assembly_variants;
-			
+
 			variant_cursor : pac_assembly_variants.cursor;
 
 			procedure query_devices (
@@ -421,7 +421,7 @@ package body et_schematic_ops_assembly_variant is
 			begin
 				cursor := find (variant.devices, device);
 			end query_devices;
-				
+
 		begin -- query_variants
 			variant_cursor := find (module.assembly_variants.variants, variant);
 
@@ -429,12 +429,12 @@ package body et_schematic_ops_assembly_variant is
 				position	=> variant_cursor,
 				process		=> query_devices'access);
 		end;
-		
+
 	begin
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_variants'access);
-		
+
 		return cursor;
 	end get_alternative_device;
 
@@ -453,13 +453,13 @@ package body et_schematic_ops_assembly_variant is
 		value			: in pac_device_value.bounded_string; -- 220R
 		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
 
-		
+
 		function write_purpose return string is
 		begin
 			if get_length (purpose) = 0 then
@@ -469,16 +469,16 @@ package body et_schematic_ops_assembly_variant is
 			end if;
 		end;
 
-		
+
 		procedure mount (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
-			
+
 			procedure insert_device (
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
@@ -495,7 +495,7 @@ package body et_schematic_ops_assembly_variant is
 				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
-					
+
 				insert (
 					container	=> variant.devices,
 					position	=> cursor,
@@ -507,10 +507,10 @@ package body et_schematic_ops_assembly_variant is
 							partcode	=> partcode,	-- R_PAC_S_0805_VAL_220R
 							purpose		=> purpose)		-- set temperature
 				   );
-					
+
 			end insert_device;
-			
-			
+
+
 		begin -- mount
 			-- the variant must exist
 			cursor := et_assembly_variants.pac_assembly_variants.find (
@@ -529,7 +529,7 @@ package body et_schematic_ops_assembly_variant is
 
 		end mount;
 
-		
+
 	begin -- mount_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -544,7 +544,7 @@ package body et_schematic_ops_assembly_variant is
 
 		-- Test whether the given device exists in the module.
 		if electrical_device_exists (module_cursor, device) then
-		
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -558,24 +558,24 @@ package body et_schematic_ops_assembly_variant is
 
 
 
-	
-	
 
-	
+
+
+
 	procedure unmount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
 
-		
+
 		procedure unmount (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
@@ -583,7 +583,7 @@ package body et_schematic_ops_assembly_variant is
 
 			procedure insert_device (
 				name		: in pac_assembly_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_assembly_variant) 
+				variant		: in out et_assembly_variants.type_assembly_variant)
 			is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
@@ -597,7 +597,7 @@ package body et_schematic_ops_assembly_variant is
 				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
-					
+
 				insert (
 					container	=> variant.devices,
 					position	=> cursor,
@@ -606,10 +606,10 @@ package body et_schematic_ops_assembly_variant is
 					new_item	=> (
 							mounted		=> NO)
 				   );
-					
+
 			end insert_device;
 
-			
+
 		begin -- unmount
 			-- the variant must exists
 			cursor := et_assembly_variants.pac_assembly_variants.find (
@@ -627,7 +627,7 @@ package body et_schematic_ops_assembly_variant is
 			end if;
 		end unmount;
 
-		
+
 	begin -- unmount_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -639,7 +639,7 @@ package body et_schematic_ops_assembly_variant is
 
 		-- Test whether the given device exists in the module.
 		if electrical_device_exists (module_cursor, device) then
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -648,39 +648,39 @@ package body et_schematic_ops_assembly_variant is
 		else
 			device_not_found (device);
 		end if;
-			
+
 	end unmount_device;
 
 
 
 
 
-	
-	
+
+
 	procedure remove_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
 
-		
+
 		procedure remove (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
-			
+
 			procedure delete_device (
 				name		: in pac_assembly_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_assembly_variant) 
+				variant		: in out et_assembly_variants.type_assembly_variant)
 			is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
@@ -699,10 +699,10 @@ package body et_schematic_ops_assembly_variant is
 						 console => true);
 					raise constraint_error;
 				end if;
-					
+
 			end delete_device;
 
-			
+
 		begin -- remove
 			-- the variant must exist
 			cursor := et_assembly_variants.pac_assembly_variants.find (
@@ -721,7 +721,7 @@ package body et_schematic_ops_assembly_variant is
 
 		end remove;
 
-		
+
 	begin -- remove_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -733,7 +733,7 @@ package body et_schematic_ops_assembly_variant is
 
 		-- Test whether the given device exists in the module.
 		if electrical_device_exists (module_cursor, device) then
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -742,17 +742,17 @@ package body et_schematic_ops_assembly_variant is
 		else
 			device_not_found (device);
 		end if;
-		
+
 	end remove_device;
 
-	
+
 
 end et_schematic_ops_assembly_variant;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -38,7 +38,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_geometry_2a.path is
-	
+
 	function to_path (
 		A, B	: in type_vector_model;
 		style					: in type_bend_style)
@@ -60,7 +60,7 @@ package body et_geometry_2a.path is
 		-- CS this procedure should be made public as "intersection" or similar
 		-- CS use function get_intersection with S1, R1, S2, R2 as input
 		-- to compute intersection I.
-		procedure compute_bend_point is 
+		procedure compute_bend_point is
 			first_line	: constant type_line := (A, sup_start, others => <>);
 			second_line	: constant type_line := (B, sup_end, others => <>);
 
@@ -111,19 +111,19 @@ package body et_geometry_2a.path is
 
 				I := add (S1, scale (R1, lambda_1));
 			end if;
-			
+
 			bend_point := to_vector_model (I);
 		end compute_bend_point;
-		
-		
+
+
 	begin -- to_path
-		
+
 		-- If start and end point are equally then do nothing
 		-- and return given start and end point as they are:
 		if A = B then
 			bended := NO;
 		else
-		
+
 			-- If start and end point have same x or y position, then we
 			-- have a straight direct line between them.
 			if dx = zero or dy = zero then
@@ -135,7 +135,7 @@ package body et_geometry_2a.path is
 						if abs (dx) = abs (dy) then -- diagonal line from start to end
 							bended := NO;
 						else
-							
+
 							-- compute support point near start point:
 							-- The first line must run straight from start point:
 							--if wider_than_tall then
@@ -168,14 +168,14 @@ package body et_geometry_2a.path is
 							compute_bend_point;
 
 						end if;
-						
+
 					when DIRECT => bended := NO;
 
 					when ANGLED_THEN_STRAIGHT =>
 						if abs (dx) = abs (dy) then -- diagonal line from start to end
 							bended := NO;
 						else
-							
+
 							-- Compute support point near start point:
 							-- The first line must run angled from start point:
 							if dx > zero then -- to the right
@@ -208,7 +208,7 @@ package body et_geometry_2a.path is
 
 							compute_bend_point;
 						end if;
-						
+
 					when VERTICAL_THEN_HORIZONTAL =>
 						-- Compute support point near start point:
 						-- The first line must run vertically from start point:
@@ -220,7 +220,7 @@ package body et_geometry_2a.path is
 						-- horizontally
 
 						compute_bend_point;
-						
+
 					when HORIZONTAL_THEN_VERTICAL =>
 						-- Compute support point near start point:
 						-- The first line must run horizontal from start point:
@@ -233,12 +233,12 @@ package body et_geometry_2a.path is
 						-- vertically
 
 						compute_bend_point;
-						
+
 				end case;
 			end if;
 
 		end if;
-			
+
 		if bended = NO then
 			return (NO, A, B);
 		else
@@ -248,10 +248,10 @@ package body et_geometry_2a.path is
 	end to_path;
 
 
-	
-	
+
+
 	procedure next_bend_style (
-		path : in out type_path_live) 
+		path : in out type_path_live)
 	is
 		i : constant natural := type_bend_style'pos (path.bend_style);
 		-- i points now to the current bend style
@@ -262,18 +262,18 @@ package body et_geometry_2a.path is
 		if i < max then
 			-- jump to next bend style
 			path.bend_style := type_bend_style'succ (type_bend_style'val (i));
-		else 
+		else
 			-- After the last bend style, jump back to the first bend style:
 			path.bend_style := type_bend_style'first;
 		end if;
 	end next_bend_style;
-	
-	
+
+
 end et_geometry_2a.path;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

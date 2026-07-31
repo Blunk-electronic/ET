@@ -50,8 +50,8 @@ package et_schematic.net_query_ops is
 
 	package pac_device_ports is new doubly_linked_lists (type_device_port);
 	use pac_device_ports;
-	
-	
+
+
 	type type_submodule_port is record
 		submodule	: et_submodules.pac_submodules.cursor;
 		port		: pac_nets.cursor;
@@ -59,8 +59,8 @@ package et_schematic.net_query_ops is
 
 	package pac_submodule_ports is new doubly_linked_lists (type_submodule_port);
 	use pac_submodule_ports;
-	
-	
+
+
 	type type_netchanger_port is record
 		netchanger	: et_submodules.pac_netchangers.cursor;
 		port		: et_submodules.type_netchanger_port_name;
@@ -68,8 +68,8 @@ package et_schematic.net_query_ops is
 
 	package pac_netchanger_ports is new doubly_linked_lists (type_netchanger_port);
 	use pac_netchanger_ports;
-	
-	
+
+
 	type type_ports is record
 		devices		: pac_device_ports.list;
 		submodules	: pac_submodule_ports.list;
@@ -88,13 +88,13 @@ package et_schematic.net_query_ops is
 		variant	: in pac_assembly_variants.cursor)
 		return type_ports;
 
-	
-		
+
+
 end et_schematic.net_query_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

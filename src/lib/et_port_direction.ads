@@ -46,7 +46,7 @@ package et_port_direction is
 		INPUT_ANALOG,	-- signal input analog
 		INPUT_DIGITAL,	-- signal input digital
 
-		OUTPUT_ANALOG,	-- signal output analog		
+		OUTPUT_ANALOG,	-- signal output analog
 		OUTPUT_DIGITAL,	-- signal outputs
 
 		BIDIR_DIGITAL,	-- bidirectional ports
@@ -58,27 +58,27 @@ package et_port_direction is
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
-	port_direction_default : constant type_port_direction := OUTPUT_ANALOG; 
+	port_direction_default : constant type_port_direction := OUTPUT_ANALOG;
 	-- CS: should be the one with the most severe implications.
 
 
-	
+
 	function to_string (
-		direction : in type_port_direction) 
+		direction : in type_port_direction)
 		return string;
 
-	
+
 	function to_port_direction (
-		direction : in string) 
+		direction : in string)
 		return type_port_direction;
 
-	
-	
+
+
 end et_port_direction;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

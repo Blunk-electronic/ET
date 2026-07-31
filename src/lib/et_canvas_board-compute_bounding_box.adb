@@ -97,11 +97,11 @@ with et_undo_redo;
 
 separate (et_canvas_board)
 
-	
+
 procedure compute_bounding_box (
 	abort_on_first_error	: in boolean := false;
 	ignore_errors			: in boolean := false;
-	test_only				: in boolean := false)		
+	test_only				: in boolean := false)
 is
 	pragma unreferenced (abort_on_first_error);
 	-- debug : boolean := false;
@@ -114,9 +114,9 @@ is
 	-- This is the temporary bounding-box we are going to build
 	-- in the course of this procedure:
 	bbox_new : type_area;
-	
+
 	-- The first primitie object encountered will be the
-	-- seed for bbox_new. All other objects cause 
+	-- seed for bbox_new. All other objects cause
 	-- this bbox_new to expand. After the first object,
 	-- this flag is cleared:
 	first_object : boolean := true;
@@ -131,28 +131,28 @@ is
 	procedure parse_drawing_frame is
 		use et_drawing_frame;
 		use et_drawing_frame.board;
-		
+
 		b : type_area; -- the bounding-box of the frame
 
 		-- Get the size of the frame:
-		size : constant type_frame_size := 
+		size : constant type_frame_size :=
 			element (active_module).board.frame.frame.size;
 
 		-- Get the position of the frame:
 		p : constant et_drawing_frame.type_position :=
 			get_position (element (active_module).board.frame.frame);
-		
+
 		use pac_drawing_frame;
 	begin
 		-- Set width and height of the bounding-box:
 		b.width  := to_distance (size.x);
 		b.height := to_distance (size.y);
-		
+
 		-- CS: orientation (portrait/landscape) ?
-		
+
 		-- Set the position of the bounding-box:
 		b.position := to_vector (p);
-		
+
 		-- If this is the first primitive object,
 		-- then use its bounding-box as seed to start from:
 		if first_object then
@@ -162,7 +162,7 @@ is
 		-- Otherwise, merge the box b with the box being built:
 			merge_areas (bbox_new, b);
 		end if;
-			
+
 	end parse_drawing_frame;
 
 
@@ -170,7 +170,7 @@ is
 ---------------------------------------------------------------------------------------
 -- BOARD:
 
-	
+
 
 	-- This procedure parses all objects of the board database (or layout drawing).
 	-- All objects are processed regardless whether they are displayed or not:
@@ -180,14 +180,14 @@ is
 		-- or a single contour or a single zone. Once it has been set,
 		-- it will be merged with the global bounding-box bbox_new:
 		b : type_area;
-		
+
 
 		procedure process_silkscreen is
 
 			procedure query_silkscreen (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_silkscreen;
 				use et_silkscreen.board;
@@ -195,11 +195,11 @@ is
 				use pac_silk_arcs;
 				use pac_silk_circles;
 				use pac_silk_zones;
-				-- use pac_silk_texts;				
-				
+				-- use pac_silk_texts;
+
 				silk : type_silkscreen_both_sides renames module.board.silkscreen;
 
-				
+
 				procedure query_line (c : in pac_silk_lines.cursor) is
 					line : type_silk_line renames element (c);
 				begin
@@ -207,7 +207,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_silk_arcs.cursor) is
 					arc : type_silk_arc renames element (c);
 				begin
@@ -231,7 +231,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_zone;
 
-				
+
 			begin
 				silk.top.lines.iterate (query_line'access);
 				silk.bottom.lines.iterate (query_line'access);
@@ -244,27 +244,27 @@ is
 
 				silk.top.zones.iterate (query_zone'access);
 				silk.bottom.zones.iterate (query_zone'access);
-				
+
 				-- CS
 				-- placeholders
 				-- texts
 			end query_silkscreen;
 
-			
+
 		begin
 			query_element (active_module, query_silkscreen'access);
 		end process_silkscreen;
-		
 
 
-		
+
+
 
 		procedure process_assembly_doc is
 
 			procedure query_assy_doc (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_assy_doc;
 				use et_assy_doc.board;
@@ -273,10 +273,10 @@ is
 				use pac_doc_circles;
 				use pac_doc_zones;
 				-- use pac_doc_texts;
-				
+
 				doc : type_assy_doc_both_sides renames module.board.assy_doc;
 
-				
+
 				procedure query_line (c : in pac_doc_lines.cursor) is
 					line : type_doc_line renames element (c);
 				begin
@@ -284,7 +284,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_doc_arcs.cursor) is
 					arc : type_doc_arc renames element (c);
 				begin
@@ -308,7 +308,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_zone;
 
-				
+
 			begin
 				doc.top.lines.iterate (query_line'access);
 				doc.bottom.lines.iterate (query_line'access);
@@ -321,25 +321,25 @@ is
 
 				doc.top.zones.iterate (query_zone'access);
 				doc.bottom.zones.iterate (query_zone'access);
-				
+
 				-- CS
 				-- placeholders
 				-- texts
 			end query_assy_doc;
-			
+
 		begin
 			query_element (active_module, query_assy_doc'access);
 		end process_assembly_doc;
 
 
 
-		
+
 		procedure process_stencil is
 
 			procedure query_stencil (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_stencil;
 				use et_stencil.board;
@@ -347,7 +347,7 @@ is
 				use pac_stencil_arcs;
 				use pac_stencil_circles;
 				use pac_stencil_zones;
-				
+
 				stencil : type_stencil_both_sides renames module.board.stencil;
 
 
@@ -358,7 +358,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_stencil_arcs.cursor) is
 					arc : type_stencil_arc renames element (c);
 				begin
@@ -381,8 +381,8 @@ is
 					b := get_bounding_box (zone, 0.0);
 					merge_areas (bbox_new, b);
 				end query_zone;
-				
-				
+
+
 			begin
 				stencil.top.lines.iterate (query_line'access);
 				stencil.bottom.lines.iterate (query_line'access);
@@ -396,20 +396,20 @@ is
 				stencil.top.zones.iterate (query_zone'access);
 				stencil.bottom.zones.iterate (query_zone'access);
 			end query_stencil;
-			
+
 		begin
 			query_element (active_module, query_stencil'access);
 		end process_stencil;
 
 
-		
+
 
 		procedure process_stopmask is
 
 			procedure query_stopmask (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_stopmask;
 				use et_stopmask.board;
@@ -421,7 +421,7 @@ is
 
 				stop : type_stop_mask_both_sides renames module.board.stopmask;
 
-				
+
 				procedure query_line (c : in pac_stop_lines.cursor) is
 					line : type_stop_line renames element (c);
 				begin
@@ -429,7 +429,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_stop_arcs.cursor) is
 					arc : type_stop_arc renames element (c);
 				begin
@@ -453,7 +453,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_contour;
 
-				
+
 			begin
 				stop.top.lines.iterate (query_line'access);
 				stop.bottom.lines.iterate (query_line'access);
@@ -469,7 +469,7 @@ is
 
 				-- CS texts
 			end query_stopmask;
-			
+
 		begin
 			query_element (active_module, query_stopmask'access);
 		end process_stopmask;
@@ -482,16 +482,16 @@ is
 			procedure query_keepout (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_keepout;
 				use et_keepout.board;
 				use pac_keepout_zones;
 				use pac_keepout_cutouts;
-				
+
 				keepout : type_keepout_both_sides renames module.board.keepout;
 
-				
+
 				procedure query_zone (c : in pac_keepout_zones.cursor) is
 					zone : type_keepout_zone renames element (c);
 				begin
@@ -507,7 +507,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_cutout;
 
-				
+
 			begin
 				keepout.top.zones.iterate (query_zone'access);
 				keepout.bottom.zones.iterate (query_zone'access);
@@ -515,7 +515,7 @@ is
 				keepout.top.cutouts.iterate (query_cutout'access);
 				keepout.bottom.cutouts.iterate (query_cutout'access);
 			end query_keepout;
-			
+
 		begin
 			query_element (active_module, query_keepout'access);
 		end process_keepout;
@@ -528,7 +528,7 @@ is
 			procedure query_route_restrict (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_route_restrict.boards;
 				use pac_route_restrict_lines;
@@ -536,7 +536,7 @@ is
 				use pac_route_restrict_circles;
 				use pac_route_restrict_contours;
 				use pac_route_restrict_cutouts;
-				
+
 				restrict : type_route_restrict renames module.board.route_restrict;
 
 
@@ -547,7 +547,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
 					arc : type_route_restrict_arc renames element (c);
 				begin
@@ -579,7 +579,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_cutout;
 
-				
+
 			begin
 				restrict.lines.iterate (query_line'access);
 				restrict.arcs.iterate (query_arc'access);
@@ -588,7 +588,7 @@ is
 				restrict.cutouts.iterate (query_cutout'access);
 			end query_route_restrict;
 
-			
+
 		begin
 			query_element (active_module, query_route_restrict'access);
 		end process_route_restrict;
@@ -601,12 +601,12 @@ is
 			procedure query_via_restrict (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				use et_via_restrict.boards;
 				use pac_via_restrict_contours;
 				use pac_via_restrict_cutouts;
-				
+
 				restrict : type_via_restrict renames module.board.via_restrict;
 
 				procedure query_zone (c : in pac_via_restrict_contours.cursor) is
@@ -624,13 +624,13 @@ is
 					merge_areas (bbox_new, b);
 				end query_cutout;
 
-				
+
 			begin
 				restrict.contours.iterate (query_zone'access);
 				restrict.cutouts.iterate (query_cutout'access);
 			end query_via_restrict;
 
-			
+
 		begin
 			query_element (active_module, query_via_restrict'access);
 		end process_via_restrict;
@@ -643,7 +643,7 @@ is
 			procedure query_conductors (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
-			is 
+			is
 				pragma unreferenced (module_name);
 				-- use et_conductor_text.packages;
 				-- use pac_conductor_texts;
@@ -655,7 +655,7 @@ is
 
 				conductors : type_conductors_floating renames module.board.conductors_floating;
 
-				
+
 				procedure query_line (c : in pac_conductor_lines.cursor) is
 					line : type_conductor_line renames element (c);
 				begin
@@ -663,7 +663,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_line;
 
-				
+
 				procedure query_arc (c : in pac_conductor_arcs.cursor) is
 					arc : type_conductor_arc renames element (c);
 				begin
@@ -679,12 +679,12 @@ is
 					merge_areas (bbox_new, b);
 				end query_circle;
 
-				
+
 
 				use et_fill_zones.boards;
 				use pac_floating_solid;
 				use pac_floating_hatched;
-				
+
 				procedure query_fill_zone_solid (c : in pac_floating_solid.cursor) is
 					zone : type_floating_solid renames element (c);
 				begin
@@ -692,15 +692,15 @@ is
 					merge_areas (bbox_new, b);
 				end query_fill_zone_solid;
 
-		
-				procedure query_fill_zone_hatched (c : in pac_floating_hatched.cursor) is 
+
+				procedure query_fill_zone_hatched (c : in pac_floating_hatched.cursor) is
 					zone : type_floating_hatched renames element (c);
 				begin
 					b := get_bounding_box (zone, zone.linewidth);
 					merge_areas (bbox_new, b);
 				end query_fill_zone_hatched;
-				
-				
+
+
 			begin
 				conductors.lines.iterate (query_line'access);
 				conductors.arcs.iterate (query_arc'access);
@@ -716,20 +716,20 @@ is
 				-- CS texts
 				-- conductors.placeholders, query_placeholder'access);
 				-- conductors.texts, query_text'access);
-				
+
 			end query_conductors;
 
-			
+
 		begin
 			query_element (active_module, query_conductors'access);
 		end process_conductors;
 
 
 
-		
-		
-		
-		
+
+
+
+
 		-- This procedure parses the outer contour of the board
 		-- and the holes (which can be regarded as inner contour):
 		procedure process_board_outline is
@@ -739,7 +739,7 @@ is
 
 			-- Outer contour:
 			procedure process_outline is
-				
+
 				procedure query_outline (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module)
@@ -753,7 +753,7 @@ is
 					merge_areas (bbox_new, b);
 				end query_outline;
 
-				
+
 			begin
 				if debug then
 					put_line ("processing board outline ...");
@@ -764,43 +764,43 @@ is
 
 
 
-			
+
 
 			-- Inner contour:
 			procedure process_holes is
 				use et_board_holes;
 
-				
+
 				procedure query_holes (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_generic_module) 
+					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
 					use pac_holes;
 
 					contour : type_board_outline renames module.board.board_contour;
-					
-					procedure query_hole (c : in pac_holes.cursor) is 
+
+					procedure query_hole (c : in pac_holes.cursor) is
 						h : type_hole renames element (c);
 					begin
 						b := get_bounding_box (h, zero);
 						merge_areas (bbox_new, b);
 					end query_hole;
-					
+
 				begin
 					iterate (contour.holes, query_hole'access);
 				end query_holes;
 
-				
+
 			begin
 				if debug then
 					put_line ("processing board holes ...");
 				end if;
 
-				query_element (active_module, query_holes'access);				
+				query_element (active_module, query_holes'access);
 			end process_holes;
 
-			
+
 		begin
 			process_outline;
 			process_holes;
@@ -808,11 +808,11 @@ is
 
 
 
-		
+
 ---------------------------------------------------------------------------------------
 -- PACKAGES OF DEVICES:
-		
-		
+
+
 		-- This procedure parses the packages of devices:
 		procedure process_devices is
 			use et_devices_electrical;
@@ -848,9 +848,9 @@ is
 				-- This is the rotation of the package
 				-- on the board)
 				package_rotation : type_rotation;
-				
-				
-			
+
+
+
 
 
 				procedure process_conductors is
@@ -862,8 +862,8 @@ is
 					use et_conductor_text.packages;
 					use pac_conductor_texts;
 
-					
-					
+
+
 					procedure query_line (c : in pac_conductor_lines.cursor) is
 						line : type_conductor_line renames element (c);
 					begin
@@ -874,7 +874,7 @@ is
 							offset_2	=> origin,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -893,7 +893,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_conductor_circles.cursor) is
 						circle : type_conductor_circle renames element (c);
 					begin
@@ -908,19 +908,19 @@ is
 						merge_areas (bbox_new, b);
 					end query_circle;
 
-					
+
 					procedure query_text (c : in pac_conductor_texts.cursor) is
 						text : et_conductor_text.type_conductor_text renames element (c);
 					begin
-						null; -- CS 
+						null; -- CS
 						-- parse segments of text
 						-- include origin of text ?
 						-- merge_areas (bbox_new, b);
 					end query_text;
-					
-					
+
+
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.conductors.top.lines.iterate (query_line'access);
 					packge.conductors.bottom.lines.iterate (query_line'access);
@@ -932,14 +932,14 @@ is
 					packge.conductors.bottom.circles.iterate (query_circle'access);
 
 					packge.conductors.top.texts.iterate (query_text'access);
-					packge.conductors.bottom.texts.iterate (query_text'access);					
+					packge.conductors.bottom.texts.iterate (query_text'access);
 				end process_conductors;
 
 
-				
+
 
 				procedure process_silkscreen is
-					use et_silkscreen;			
+					use et_silkscreen;
 					use pac_silk_lines;
 					use pac_silk_arcs;
 					use pac_silk_circles;
@@ -955,7 +955,7 @@ is
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -973,7 +973,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_silk_circles.cursor) is
 						circle : type_silk_circle renames element (c);
 					begin
@@ -988,7 +988,7 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_silk_zones.cursor) is 
+					procedure query_contour (c : in pac_silk_zones.cursor) is
 						contour : type_silk_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1000,11 +1000,11 @@ is
 						merge_areas (bbox_new, b);
 					end query_contour;
 
-					
+
 					procedure query_text (c : in pac_silk_texts.cursor) is
 						text : type_silk_text renames element (c);
 					begin
-						null; -- CS 
+						null; -- CS
 						-- parse segments of text
 						-- include origin of text ?
 						-- merge_areas (bbox_new, b);
@@ -1012,7 +1012,7 @@ is
 
 
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.silkscreen.top.lines.iterate (query_line'access);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
@@ -1025,18 +1025,18 @@ is
 
 					packge.silkscreen.top.zones.iterate (query_contour'access);
 					packge.silkscreen.bottom.zones.iterate (query_contour'access);
-					
+
 					packge.silkscreen.top.texts.iterate (query_text'access);
 					packge.silkscreen.bottom.texts.iterate (query_text'access);
 
 					-- CS placeholders
 				end process_silkscreen;
-				
+
 
 
 
 				procedure process_assembly_doc is
-					use et_assy_doc;			
+					use et_assy_doc;
 					use pac_doc_lines;
 					use pac_doc_arcs;
 					use pac_doc_circles;
@@ -1052,7 +1052,7 @@ is
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -1070,7 +1070,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_doc_circles.cursor) is
 						circle : type_doc_circle renames element (c);
 					begin
@@ -1085,7 +1085,7 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_doc_zones.cursor) is 
+					procedure query_contour (c : in pac_doc_zones.cursor) is
 						contour : type_doc_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1097,11 +1097,11 @@ is
 						merge_areas (bbox_new, b);
 					end query_contour;
 
-					
+
 					procedure query_text (c : in pac_doc_texts.cursor) is
 						text : type_doc_text renames element (c);
 					begin
-						null; -- CS 
+						null; -- CS
 						-- parse segments of text
 						-- include origin of text ?
 						-- merge_areas (bbox_new, b);
@@ -1109,7 +1109,7 @@ is
 
 
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.assy_doc.top.lines.iterate (query_line'access);
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
@@ -1122,7 +1122,7 @@ is
 
 					packge.assy_doc.top.zones.iterate (query_contour'access);
 					packge.assy_doc.bottom.zones.iterate (query_contour'access);
-					
+
 					packge.assy_doc.top.texts.iterate (query_text'access);
 					packge.assy_doc.bottom.texts.iterate (query_text'access);
 
@@ -1130,14 +1130,14 @@ is
 				end process_assembly_doc;
 
 
-				
+
 
 
 				procedure process_keepout is
 					use et_keepout;
 					use pac_keepout_zones;
 
-					procedure query_zone (c : in pac_keepout_zones.cursor) is 
+					procedure query_zone (c : in pac_keepout_zones.cursor) is
 						zone : type_keepout_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1151,7 +1151,7 @@ is
 
 
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.keepout.top.zones.iterate (query_zone'access);
 					packge.keepout.bottom.zones.iterate (query_zone'access);
@@ -1162,14 +1162,14 @@ is
 					-- packge.keepout.top.cutouts.iterate (query_cutout'access);
 				end process_keepout;
 
-				
+
 
 
 
 
 				procedure process_stopmask is
-					use et_stopmask;			
-					
+					use et_stopmask;
+
 					use pac_stop_lines;
 					use pac_stop_arcs;
 					use pac_stop_circles;
@@ -1186,7 +1186,7 @@ is
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -1204,7 +1204,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_stop_circles.cursor) is
 						circle : type_stop_circle renames element (c);
 					begin
@@ -1219,7 +1219,7 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_stop_zones.cursor) is 
+					procedure query_contour (c : in pac_stop_zones.cursor) is
 						contour : type_stop_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1231,11 +1231,11 @@ is
 						merge_areas (bbox_new, b);
 					end query_contour;
 
-					
+
 					procedure query_text (c : in pac_stop_texts.cursor) is
 						text : type_stop_text renames element (c);
 					begin
-						null; -- CS 
+						null; -- CS
 						-- parse segments of text
 						-- include origin of text ?
 						-- merge_areas (bbox_new, b);
@@ -1243,7 +1243,7 @@ is
 
 
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.stopmask.top.lines.iterate (query_line'access);
 					packge.stopmask.bottom.lines.iterate (query_line'access);
@@ -1256,21 +1256,21 @@ is
 
 					packge.stopmask.top.zones.iterate (query_contour'access);
 					packge.stopmask.bottom.zones.iterate (query_contour'access);
-					
+
 					packge.stopmask.top.texts.iterate (query_text'access);
 					packge.stopmask.bottom.texts.iterate (query_text'access);
 
 					-- CS placeholders
 				end process_stopmask;
 
-				
+
 
 
 
 
 
 				procedure process_stencil is
-					use et_stencil;			
+					use et_stencil;
 					use pac_stencil_lines;
 					use pac_stencil_arcs;
 					use pac_stencil_circles;
@@ -1285,7 +1285,7 @@ is
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -1303,7 +1303,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_stencil_circles.cursor) is
 						circle : type_stencil_circle renames element (c);
 					begin
@@ -1318,7 +1318,7 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_stencil_zones.cursor) is 
+					procedure query_contour (c : in pac_stencil_zones.cursor) is
 						contour : type_stencil_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1332,7 +1332,7 @@ is
 
 
 					packge : type_package_model renames element (package_cursor);
-					
+
 				begin
 					packge.stencil.top.lines.iterate (query_line'access);
 					packge.stencil.bottom.lines.iterate (query_line'access);
@@ -1346,20 +1346,20 @@ is
 					packge.stencil.top.zones.iterate (query_contour'access);
 					packge.stencil.bottom.zones.iterate (query_contour'access);
 				end process_stencil;
-				
+
 
 
 
 
 				procedure process_route_restrict is
 					use et_route_restrict;
-					
+
 					use pac_route_restrict_lines;
 					use pac_route_restrict_arcs;
 					use pac_route_restrict_circles;
 					use pac_route_restrict_zones;
 
-					
+
 					procedure query_line (c : in pac_route_restrict_lines.cursor) is
 						line : type_route_restrict_line renames element (c);
 					begin
@@ -1369,7 +1369,7 @@ is
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> mirror);
-						
+
 						merge_areas (bbox_new, b);
 					end query_line;
 
@@ -1387,7 +1387,7 @@ is
 						merge_areas (bbox_new, b);
 					end query_arc;
 
-					
+
 					procedure query_circle (c : in pac_route_restrict_circles.cursor) is
 						circle : type_route_restrict_circle renames element (c);
 					begin
@@ -1402,7 +1402,7 @@ is
 					end query_circle;
 
 
-					procedure query_zone (c : in pac_route_restrict_zones.cursor) is 
+					procedure query_zone (c : in pac_route_restrict_zones.cursor) is
 						zone : type_route_restrict_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1414,9 +1414,9 @@ is
 						merge_areas (bbox_new, b);
 					end query_zone;
 
-					
+
 					packge : type_package_model renames element (package_cursor);
-				
+
 				begin
 					packge.route_restrict.top.lines.iterate (query_line'access);
 					packge.route_restrict.bottom.lines.iterate (query_line'access);
@@ -1433,10 +1433,10 @@ is
 					-- CS: If the package model is correct, then there is
 					-- no need to parse the cutout areas like:
 					-- packge.route_restrict.top.cutouts.iterate (query_cutout'access);
-					-- packge.route_restrict.bottom.cutouts.iterate (query_cutout'access);					
+					-- packge.route_restrict.bottom.cutouts.iterate (query_cutout'access);
 				end process_route_restrict;
-				
-				
+
+
 
 
 
@@ -1444,11 +1444,11 @@ is
 
 				procedure process_via_restrict is
 					use et_via_restrict;
-					
+
 					use pac_via_restrict_zones;
 
 
-					procedure query_zone (c : in pac_via_restrict_zones.cursor) is 
+					procedure query_zone (c : in pac_via_restrict_zones.cursor) is
 						zone : type_via_restrict_zone renames element (c);
 					begin
 						b := get_bounding_box (
@@ -1460,9 +1460,9 @@ is
 						merge_areas (bbox_new, b);
 					end query_zone;
 
-					
+
 					packge : type_package_model renames element (package_cursor);
-				
+
 				begin
 					packge.via_restrict.top.zones.iterate (query_zone'access);
 					packge.via_restrict.bottom.zones.iterate (query_zone'access);
@@ -1470,7 +1470,7 @@ is
 					-- CS: If the package model is correct, then there is
 					-- no need to parse the cutout areas like:
 					-- packge.via_restrict.top.cutouts.iterate (query_cutout'access);
-					-- packge.via_restrict.bottom.cutouts.iterate (query_cutout'access);					
+					-- packge.via_restrict.bottom.cutouts.iterate (query_cutout'access);
 				end process_via_restrict;
 
 
@@ -1483,7 +1483,7 @@ is
 					use pac_holes;
 
 					procedure query_hole (
-						c : pac_holes.cursor) 
+						c : pac_holes.cursor)
 					is begin
 						b := get_bounding_box (
 							contour		=> element (c),
@@ -1501,19 +1501,19 @@ is
 
 
 
-				
-				
+
+
 				procedure process_terminals is
 					use et_terminals;
 					use et_assembly_technology;
 					use pac_terminals;
-					
-					
+
+
 					procedure query_terminal (
 						c : in pac_terminals.cursor)
-					is 
+					is
 						t : type_terminal renames element (c);
-						use et_board_geometry.pac_contours;						
+						use et_board_geometry.pac_contours;
 					begin
 						case t.technology is
 							when THT =>
@@ -1528,19 +1528,19 @@ is
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);
-			  
+
 								merge_areas (bbox_new, b);
-								
+
 								b := get_bounding_box (
 									contour		=> t.pad_shape_tht.bottom,
 									offset_1	=> t.position.place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);
-			  
+
 								merge_areas (bbox_new, b);
-								
-								
+
+
 							when SMT =>
 								-- CS: Currently we process only the pad shape
 								-- In the future other things like
@@ -1552,23 +1552,23 @@ is
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);
-										
+
 								merge_areas (bbox_new, b);
 
-						end case;								
+						end case;
 					end query_terminal;
 
-					
+
 				begin
 					-- Iterate through the terminals of the package:
 					element (package_cursor).terminals.iterate (query_terminal'access);
 				end process_terminals;
-					
-				
+
+
 			begin
 				-- Depening on the nature of the device, we fetch
 				-- the package model and the position on the board:
-				
+
 				if electric then
 					-- Locate the package model in the package library:
 					package_cursor := get_package_model (device_electric);
@@ -1599,7 +1599,7 @@ is
 					end;
 				end if;
 
-				
+
 				process_conductors;
 				process_keepout;
 				process_stopmask;
@@ -1607,53 +1607,53 @@ is
 				process_route_restrict;
 				process_via_restrict;
 				process_holes;
-				
+
 				process_terminals;
 				process_silkscreen;
-				process_assembly_doc;				
+				process_assembly_doc;
 			end process_package;
 
 
 
-			
+
 			-- This procedure iterates all electrical devices
 			-- and sends the packages to the procedure process_package:
 			procedure process_electrical_devices is
 
 				procedure query_module (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_generic_module) 
+					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
 					use pac_devices_electrical;
 
 					procedure query_device (
-						device_cursor : in pac_devices_electrical.cursor) 
+						device_cursor : in pac_devices_electrical.cursor)
 					is
 						device : type_device_electrical renames element (device_cursor);
 						mirror : type_mirror;
-					begin						
+					begin
 						if is_real (device_cursor) then
 
 							case get_face (device.position) is
 								when TOP	=> mirror := MIRROR_NO;
 								when BOTTOM => mirror := MIRROR_ALONG_Y_AXIS;
 							end case;
-							
+
 							process_package (
 								electric			=> true,
 								device_electric		=> device_cursor,
 								device_non_electric	=> pac_devices_non_electrical.no_element,
 								mirror				=> mirror);
-							
+
 						end if;
 					end query_device;
-					
+
 				begin
 					module.devices.iterate (query_device'access);
 				end query_module;
 
-				
+
 			begin
 				if debug then
 					put_line ("processing electrical devices ...");
@@ -1661,26 +1661,26 @@ is
 
 				query_element (active_module, query_module'access);
 			end process_electrical_devices;
-			
 
 
 
-			
+
+
 			-- This procedure iterates all non-electrical devices
 			-- and sends the packages to the procedure process_package:
 			procedure process_non_electrical_devices is
 
 				procedure query_module (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_generic_module) 
+					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
 					use et_devices_non_electrical;
 					use pac_devices_non_electrical;
 
 					procedure query_device (
-						device_cursor : in pac_devices_non_electrical.cursor) 
-					is 
+						device_cursor : in pac_devices_non_electrical.cursor)
+					is
 						device : type_device_non_electrical renames element (device_cursor);
 						mirror : type_mirror;
 					begin
@@ -1688,14 +1688,14 @@ is
 							when TOP	=> mirror := MIRROR_NO;
 							when bottom	=> mirror := MIRROR_ALONG_Y_AXIS;
 						end case;
-						
+
 						process_package (
 							electric			=> false,
 							device_electric		=> pac_devices_electrical.no_element,
 							device_non_electric	=> device_cursor,
 							mirror				=> mirror);
 					end query_device;
-					
+
 				begin
 					module.devices_non_electric.iterate (query_device'access);
 				end query_module;
@@ -1710,7 +1710,7 @@ is
 
 
 
-			
+
 		begin
 			if debug then
 				put_line ("processing device packages ...");
@@ -1719,7 +1719,7 @@ is
 			process_electrical_devices;
 			process_non_electrical_devices;
 		end process_devices;
-			
+
 
 
 
@@ -1728,7 +1728,7 @@ is
 
 			procedure query_module (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in type_generic_module) 
+				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
 				use et_nets;
@@ -1736,7 +1736,7 @@ is
 				use pac_nets;
 				nets : pac_nets.map renames module.nets;
 
-				
+
 				procedure query_net (c : in pac_nets.cursor) is
 					route : type_net_route renames element (c).route;
 
@@ -1744,7 +1744,7 @@ is
 					use et_conductor_segment.boards;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
-					
+
 					procedure query_line (c : in pac_conductor_lines.cursor) is
 						line : type_conductor_line renames element (c);
 					begin
@@ -1762,14 +1762,14 @@ is
 					-------------------------------
 					use et_vias;
 					use pac_vias;
-					
+
 					procedure query_via (c : in pac_vias.cursor) is
 						via : type_via renames element (c);
 					begin
 						b := get_bounding_box (via);
 						merge_areas (bbox_new, b);
 					end query_via;
-					
+
 					-------------------------------
 					use et_fill_zones.boards;
 					use pac_route_solid;
@@ -1781,7 +1781,7 @@ is
 						b := get_bounding_box (zone, zone.linewidth);
 						merge_areas (bbox_new, b);
 					end query_fill_zone_solid;
-					
+
 					procedure query_fill_zone_hatched (c : in pac_route_hatched.cursor) is
 						zone : type_route_hatched renames element (c);
 					begin
@@ -1802,12 +1802,12 @@ is
 					route.zones.hatched.iterate (query_fill_zone_hatched'access);
 				end query_net;
 
-				
+
 			begin
 				nets.iterate (query_net'access);
 			end query_module;
 
-			
+
 		begin
 			if debug then
 				put_line ("processing nets ...");
@@ -1817,8 +1817,8 @@ is
 		end process_nets;
 
 
-		
-		
+
+
 	begin
 		process_silkscreen;
 		process_assembly_doc;
@@ -1834,8 +1834,8 @@ is
 		process_nets;
 	end parse_board;
 
-	
-		
+
+
 	-- This procedure updates the bounding-box and
 	-- sets the bounding_box_changed flag
 	-- in NON-TEST-MODE (which is default by argument test_only).
@@ -1853,7 +1853,7 @@ is
 			bounding_box_changed := true;
 		end if;
 	end update_global_bounding_box;
-	
+
 
 
 	procedure add_margin is
@@ -1861,36 +1861,36 @@ is
 
 		-- Get the margin between outer border of the frame
 		-- and the edge of the paper:
-		margin : constant et_drawing_frame.type_border_width := 
+		margin : constant et_drawing_frame.type_border_width :=
 			element (active_module).board.frame.frame.border_width;
-		
+
 		-- The offset due to the margin:
 		margin_offset : type_vector_model;
 	begin
 		bbox_new.width  := bbox_new.width  + 2.0 * type_distance_positive (margin);
 		bbox_new.height := bbox_new.height + 2.0 * type_distance_positive (margin);
-		
+
 		-- Since we regard the margin as inside the bounding-box,
 		-- we must move the bounding-box position towards bottom-left
 		-- by the inverted margin_offset:
 		margin_offset := (
 			x => type_distance_positive (margin),
 			y => type_distance_positive (margin));
-		
+
 		move_by (bbox_new.position, invert (margin_offset));
 	end add_margin;
 
-	
+
 begin
 	put_line ("compute_bounding_box (board)");
 
 	-- The drawing frame is regarded as part of the model:
 	parse_drawing_frame;
-	
+
 	parse_board;
 
-	
-	
+
+
 	-- The temporary bounding-box bbox_new in its current
 	-- state is the so called "inner bounding-box" (IB).
 
@@ -1899,8 +1899,8 @@ begin
 	-- as part of the model and thus inside the bounding-box:
 	add_margin;
 	-- Now, bbox_new has become the "outer bounding-box" (OB).
-	
-	-- Compare the new bounding-box with the old 
+
+	-- Compare the new bounding-box with the old
 	-- bounding-box to detect a change:
 	if bbox_new /= bbox_old then
 
@@ -1911,13 +1911,13 @@ begin
 
 			-- output limits and computed box dimensions:
 			put_line ("WARNING: Bounding-box size limit exceeded !");
-			put_line (" max. width : " 
+			put_line (" max. width : "
 				& to_string (bounding_box_width_max));
-			
-			put_line (" max. height: " 
+
+			put_line (" max. height: "
 				& to_string (bounding_box_height_max));
-			
-			put_line (" detected   : " 
+
+			put_line (" detected   : "
 				& to_string (bbox_new));
 
 			-- Set the error flag:
@@ -1926,35 +1926,35 @@ begin
 				width  => bbox_new.width,
 				height => bbox_new.height);
 
-			
+
 			if ignore_errors then
 				put_line (" Errors ignored !");
-				
+
 				-- Override old global bounding-box with
 				-- the faulty box bbox_new:
 				update_global_bounding_box;
-				
+
 			else -- By default errors are NOT ignored.
 				put_line (" Discarded. Global bounding-box NOT changed.");
-				
+
 				-- Clear the global flag bounding_box_changed
-				-- because we discard the new bounding-box (due to 
+				-- because we discard the new bounding-box (due to
 				-- a size error) and
 				-- leave the current global bounding-box untouched:
 				bounding_box_changed := false;
 
 			end if;
 
-			
+
 		else -- size ok, no errors
 			-- Reset error flag:
 			bounding_box_error := (others => <>);
 
 			update_global_bounding_box;
 		end if;
-		
-		
-	else -- No change. 
+
+
+	else -- No change.
 		-- Clear the global flag bounding_box_changed:
 		bounding_box_changed := false;
 
@@ -1962,7 +1962,7 @@ begin
 		bounding_box_error := (others => <>);
 	end if;
 
-	
+
 	if debug then
 		put_line ("bounding-box: " & to_string (bounding_box));
 
@@ -1970,14 +1970,14 @@ begin
 			put_line (" has changed");
 		end if;
 	end if;
-	
+
 end compute_bounding_box;
 
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

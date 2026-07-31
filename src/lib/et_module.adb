@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 -- with et_exceptions;				use et_exceptions;
@@ -46,7 +46,7 @@
 package body et_module is
 
 
-	
+
 
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)
@@ -54,7 +54,7 @@ package body et_module is
 	is begin
 		return get_device_libraries (module.meta.schematic);
 	end;
-		
+
 
 	function get_preferred_device_libraries_board (
 		module : in type_generic_module)
@@ -66,7 +66,7 @@ package body et_module is
 
 
 
-	
+
 	function get_design_rules (
 		module : in type_generic_module)
 		return type_design_rules
@@ -76,7 +76,7 @@ package body et_module is
 
 
 
-	
+
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean
@@ -84,7 +84,7 @@ package body et_module is
 		return schematic_rules_assigned (module.rules);
 	end;
 
-		
+
 	function design_rules_board_assigned (
 		module : in type_generic_module)
 		return boolean
@@ -95,7 +95,7 @@ package body et_module is
 
 
 
-	
+
 
 	function get_grid_schematic (
 		module : in type_generic_module)
@@ -141,12 +141,12 @@ package body et_module is
 	is begin
 		return get_count (module.assembly_variants);
 	end;
-	
+
 end et_module;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

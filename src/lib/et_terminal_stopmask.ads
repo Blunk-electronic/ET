@@ -47,22 +47,22 @@ package et_terminal_stopmask is
 	use pac_geometry_2;
 	use pac_contours;
 
-	
+
 
 	type type_stopmask_expand_mode is (
 		AS_PAD,			-- mask assumes same shape as conductor pad underneath
 		EXPAND_PAD,		-- mask is sligtly greater thatn underlying conductor pad (definded by DRU)
 		USER_SPECIFIC);	-- mask has user specific contours
 
-	stopmask_expand_mode_default : constant 
+	stopmask_expand_mode_default : constant
 		type_stopmask_expand_mode := EXPAND_PAD;
 
 
 	function to_string (
-		shape : in type_stopmask_expand_mode) 
+		shape : in type_stopmask_expand_mode)
 		return string;
 
-		
+
 	function to_shape (
 		shape : in string)
 		return type_stopmask_expand_mode;
@@ -86,13 +86,13 @@ package et_terminal_stopmask is
 			when others => null;
 		end case;
 	end record;
-	
-	
+
+
 end et_terminal_stopmask;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

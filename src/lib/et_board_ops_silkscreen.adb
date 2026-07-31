@@ -48,32 +48,32 @@ with et_commit;
 
 
 package body et_board_ops_silkscreen is
-	
+
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
 	use pac_silk_texts;
-	
 
-	
+
+
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -82,7 +82,7 @@ package body et_board_ops_silkscreen is
 					append (
 						container	=> module.board.silkscreen.top.lines,
 						new_item	=> line);
-					
+
 				when BOTTOM =>
 					append (
 						container	=> module.board.silkscreen.bottom.lines,
@@ -90,34 +90,34 @@ package body et_board_ops_silkscreen is
 			end case;
 		end;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_name) 
-			 & " add silkscreen line face " & to_string (face) 
+		log (text => "module " & to_string (module_name)
+			 & " add silkscreen line face " & to_string (face)
 			 & to_string (line),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_line;
@@ -125,11 +125,11 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
-	
 
-	
+
+
+
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -141,7 +141,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -157,7 +157,7 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_line;
 
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -168,33 +168,33 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "looking up lines in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 
 		return result;
 	end get_lines;
 
-	
-
-	
 
 
 
 
-	
+
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line;
@@ -202,34 +202,34 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_line (
 				line	: in out type_silk_line)
 			is begin
 				modify_status (line, operation);
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			begin
 				top.update_element (line.cursor, query_line'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 			begin
 				bottom.update_element (line.cursor, query_line'access);
 			end query_bottom;
 
-			
+
 		begin
 			case line.face is
 				when TOP =>
@@ -240,16 +240,16 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of "
-			& to_string (element (line.cursor)) -- CS: log top/bottom			
+			& to_string (element (line.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -260,8 +260,8 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
+
+
 
 
 	procedure propose_lines (
@@ -274,7 +274,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_silk_lines.cursor;
@@ -293,8 +293,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			begin
 				if not top.is_empty then
@@ -306,8 +306,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 			begin
 				if not bottom.is_empty then
@@ -319,15 +319,15 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " propose lines in " & to_string (catch_zone)
@@ -346,10 +346,10 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
 
-	
+
+
 
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -358,22 +358,22 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			bottom	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
-			
+
 			procedure query_line (
 				line	: in out type_silk_line)
 			is begin
 				reset_status (line);
 			end query_line;
 
-			
+
 			lc : pac_silk_lines.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -384,7 +384,7 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -395,13 +395,13 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " reset proposed lines",
@@ -418,25 +418,25 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
 
 
-	
 
-	
+
+
+
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_line
 	is
 		result : type_object_line;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -444,7 +444,7 @@ package body et_board_ops_silkscreen is
 			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
-			
+
 			procedure query_line (c : in pac_silk_lines.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -463,9 +463,9 @@ package body et_board_ops_silkscreen is
 						null; -- CS
 				end case;
 			end query_line;
-			
 
-			
+
+
 		begin
 			-- Query the lines in the top layer first:
 			iterate (top_items, query_line'access, proceed'access);
@@ -479,18 +479,18 @@ package body et_board_ops_silkscreen is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -505,9 +505,9 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
-	
+
+
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -522,15 +522,15 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_silk_lines.cursor;
 
-			
+
 			procedure query_line (line : in out type_silk_line) is
 			begin
 				-- case coordinates is
@@ -543,23 +543,23 @@ package body et_board_ops_silkscreen is
 				-- end case;
 			end query_line;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					line_cursor := module.board.silkscreen.top.lines.find (line);
 					module.board.silkscreen.top.lines.update_element (line_cursor, query_line'access);
-					
+
 				when BOTTOM =>
 					line_cursor := module.board.silkscreen.bottom.lines.find (line);
 					module.board.silkscreen.bottom.lines.update_element (line_cursor, query_line'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move silkscreen " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -572,17 +572,17 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_line;
 
@@ -590,7 +590,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 
@@ -605,10 +605,10 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_silk_lines.cursor;
@@ -620,7 +620,7 @@ package body et_board_ops_silkscreen is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_silk_lines.no_element then
-						module.board.silkscreen.top.lines.delete (line_cursor); 
+						module.board.silkscreen.top.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -631,7 +631,7 @@ package body et_board_ops_silkscreen is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_silk_lines.no_element then
-						module.board.silkscreen.bottom.lines.delete (line_cursor); 
+						module.board.silkscreen.bottom.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -641,10 +641,10 @@ package body et_board_ops_silkscreen is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete line in silkscreen" & to_string (line),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 
@@ -653,7 +653,7 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -662,25 +662,25 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_line;
 
 
-	
 
 
 
 
-	
+
+
 
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		arc				: in type_silk_arc;		
+		arc				: in type_silk_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
@@ -688,10 +688,10 @@ package body et_board_ops_silkscreen is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -708,16 +708,16 @@ package body et_board_ops_silkscreen is
 			end case;
 		end;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_name) 
-			 & " draw silkscreen arc face " & to_string (face) 
-			 & to_string (arc) 
+		log (text => "module " & to_string (module_name)
+			 & " draw silkscreen arc face " & to_string (face)
+			 & to_string (arc)
 			 & " width" & to_string (arc.width),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
@@ -725,7 +725,7 @@ package body et_board_ops_silkscreen is
 
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -734,17 +734,17 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_arc;
 
 
-	
 
-	
 
-	
+
+
+
 
 
 	procedure modify_status (
@@ -757,31 +757,31 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_arc (
 				arc	: in out type_silk_arc)
 			is begin
 				modify_status (arc, operation);
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			begin
 				top.update_element (arc.cursor, query_arc'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 			begin
 				bottom.update_element (arc.cursor, query_arc'access);
 			end query_bottom;
 
-			
+
 		begin
 			case arc.face is
 				when TOP =>
@@ -792,16 +792,16 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of "
-			& to_string (element (arc.cursor)) -- CS: log top/bottom			
+			& to_string (element (arc.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -811,10 +811,10 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
 
-	
+
+
+
 
 
 	procedure propose_arcs (
@@ -827,7 +827,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_silk_arcs.cursor;
@@ -846,8 +846,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			begin
 				if not top.is_empty then
@@ -859,8 +859,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 			begin
 				if not bottom.is_empty then
@@ -872,15 +872,15 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " propose arcs in " & to_string (catch_zone)
@@ -902,7 +902,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 	procedure reset_proposed_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -911,22 +911,22 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			bottom	: pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 
-			
+
 			procedure query_arc (
 				arc	: in out type_silk_arc)
 			is begin
 				reset_status (arc);
 			end query_arc;
 
-			
+
 			lc : pac_silk_arcs.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -937,7 +937,7 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -948,13 +948,13 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " reset proposed arcs",
@@ -973,22 +973,22 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
-	
+
+
 
 	function get_first_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_arc
 	is
 		result : type_object_arc;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -996,7 +996,7 @@ package body et_board_ops_silkscreen is
 			top_items 		: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			bottom_items	: pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 
-			
+
 			procedure query_arc (c : in pac_silk_arcs.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -1015,9 +1015,9 @@ package body et_board_ops_silkscreen is
 						null; -- CS
 				end case;
 			end query_arc;
-			
 
-			
+
+
 		begin
 			-- Query the arcs in the top layer first:
 			iterate (top_items, query_arc'access, proceed'access);
@@ -1031,18 +1031,18 @@ package body et_board_ops_silkscreen is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first arc / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1053,12 +1053,12 @@ package body et_board_ops_silkscreen is
 	end get_first_arc;
 
 
-	
 
 
-	
 
-	
+
+
+
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -1073,15 +1073,15 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			arc_cursor : pac_silk_arcs.cursor;
 
-			
+
 			procedure query_arc (arc : in out type_silk_arc) is
 			begin
 				-- case coordinates is
@@ -1094,23 +1094,23 @@ package body et_board_ops_silkscreen is
 				-- end case;
 			end query_arc;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					arc_cursor := module.board.silkscreen.top.arcs.find (arc);
 					module.board.silkscreen.top.arcs.update_element (arc_cursor, query_arc'access);
-					
+
 				when BOTTOM =>
 					arc_cursor := module.board.silkscreen.bottom.arcs.find (arc);
 					module.board.silkscreen.bottom.arcs.update_element (arc_cursor, query_arc'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move silkscreen " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
@@ -1123,8 +1123,8 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -1132,15 +1132,15 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_arc;
 
 
 
 
-	
+
 
 
 
@@ -1156,10 +1156,10 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_silk_arcs;
@@ -1172,7 +1172,7 @@ package body et_board_ops_silkscreen is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_silk_arcs.no_element then
-						module.board.silkscreen.top.arcs.delete (arc_cursor); 
+						module.board.silkscreen.top.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1183,7 +1183,7 @@ package body et_board_ops_silkscreen is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_silk_arcs.no_element then
-						module.board.silkscreen.bottom.arcs.delete (arc_cursor); 
+						module.board.silkscreen.bottom.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1193,10 +1193,10 @@ package body et_board_ops_silkscreen is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete arc in silkscreen" & to_string (arc),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
@@ -1204,7 +1204,7 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1213,37 +1213,37 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_arc;
 
-	
-	
 
 
-	
 
 
-	
+
+
+
+
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_silk_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -1261,48 +1261,48 @@ package body et_board_ops_silkscreen is
 			end case;
 		end;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_name) 
-			 & " draw silkscreen circle face " 
-			 & to_string (face) 
+		log (text => "module " & to_string (module_name)
+			 & " draw silkscreen circle face "
+			 & to_string (face)
 			 & to_string (circle),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end add_circle;
 
 
 
-	
 
 
 
 
-	
+
+
 
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1314,7 +1314,7 @@ package body et_board_ops_silkscreen is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -1323,7 +1323,7 @@ package body et_board_ops_silkscreen is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			use pac_silk_zones;
 			c : pac_silk_zones.cursor;
@@ -1368,7 +1368,7 @@ package body et_board_ops_silkscreen is
 						module.board.silkscreen.top.zones.append (zone);
 					end if;
 
-					
+
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
 					c := module.board.silkscreen.bottom.zones.first;
@@ -1389,38 +1389,38 @@ package body et_board_ops_silkscreen is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & "draw silkscreen zone"			 
+		log (text => "module " & to_string (module_cursor)
+			 & "draw silkscreen zone"
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_zone;
 
 
-	
 
-	
+
+
 
 
 	procedure modify_status (
@@ -1432,21 +1432,21 @@ package body et_board_ops_silkscreen is
 		use pac_contours;
 		use pac_segments;
 		use pac_silk_zones;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
+
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is begin
@@ -1462,28 +1462,28 @@ package body et_board_ops_silkscreen is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
 			-- Search the given segment according to its
 			-- zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.silkscreen.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.silkscreen.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of "
@@ -1493,7 +1493,7 @@ package body et_board_ops_silkscreen is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1507,7 +1507,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 	procedure propose_segments (
@@ -1520,7 +1520,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_silk_zones;
@@ -1529,7 +1529,7 @@ package body et_board_ops_silkscreen is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1541,14 +1541,14 @@ package body et_board_ops_silkscreen is
    			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1565,8 +1565,8 @@ package body et_board_ops_silkscreen is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
@@ -1577,11 +1577,11 @@ package body et_board_ops_silkscreen is
 							container	=> module.board.silkscreen.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
 
-					
+
 				when BOTTOM =>
 					zc := module.board.silkscreen.bottom.zones.first;
 
@@ -1590,13 +1590,13 @@ package body et_board_ops_silkscreen is
 							container	=> module.board.silkscreen.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
-			end case;	
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " propose segments in " & to_string (catch_zone)
@@ -1613,14 +1613,14 @@ package body et_board_ops_silkscreen is
 	end propose_segments;
 
 
-	
 
 
-	
-	
 
-	
-	
+
+
+
+
+
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -1628,7 +1628,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_silk_zones;
@@ -1637,7 +1637,7 @@ package body et_board_ops_silkscreen is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1645,14 +1645,14 @@ package body et_board_ops_silkscreen is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1669,8 +1669,8 @@ package body et_board_ops_silkscreen is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			zc := module.board.silkscreen.top.zones.first;
 
@@ -1679,11 +1679,11 @@ package body et_board_ops_silkscreen is
 					container	=> module.board.silkscreen.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 
-					
+
 			zc := module.board.silkscreen.bottom.zones.first;
 
 			while zc /= pac_silk_zones.no_element loop
@@ -1691,12 +1691,12 @@ package body et_board_ops_silkscreen is
 					container	=> module.board.silkscreen.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " reset proposed segments of zones in silkscreen",
@@ -1716,12 +1716,12 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
@@ -1731,22 +1731,22 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_silk_zones;
-			
+
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
-			
-			
-			procedure query_zone (z : in pac_silk_zones.cursor) is 
+
+
+			procedure query_zone (z : in pac_silk_zones.cursor) is
 
 				procedure query_segment (
-					c : in pac_segments.cursor) 
+					c : in pac_segments.cursor)
 				is begin
 					case flag is
 						when PROPOSED =>
@@ -1773,16 +1773,16 @@ package body et_board_ops_silkscreen is
 							null; -- CS
 					end case;
 				end query_segment;
-				
-				
+
+
 				procedure query_segments (z : in type_silk_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
-						proceed		=> proceed'access);				
+						proceed		=> proceed'access);
 				end query_segments;
 
-				
+
 			begin
 				if is_circular (z) then
 					null; -- CS
@@ -1791,41 +1791,41 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
 				zones	=> module.board.silkscreen.top.zones,
-				process	=> query_zone'access, 
+				process	=> query_zone'access,
 				proceed	=> proceed'access);
 
-			
+
 			-- If nothing found, iterate the bottom layer:
 			if proceed then
 				face := BOTTOM;
-				
+
 				iterate (
 					zones	=> module.board.silkscreen.bottom.zones,
-					process	=> query_zone'access, 
+					process	=> query_zone'access,
 					proceed	=> proceed'access);
 
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -1834,7 +1834,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 	procedure move_segment (
@@ -1849,15 +1849,15 @@ package body et_board_ops_silkscreen is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_silk_zones;
-				
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1866,16 +1866,16 @@ package body et_board_ops_silkscreen is
 				move_segment (s, point_of_attack, destination);
 			end do_it;
 
-			
+
 			procedure query_zone (
 				zone : in out type_silk_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
-					-- Locate the given segment in 
+					-- Locate the given segment in
 					-- the candidate zone:
 					update_element (
 						container	=> zone.contour.segments,
@@ -1884,28 +1884,28 @@ package body et_board_ops_silkscreen is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.silkscreen.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.silkscreen.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-				
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move silkscreen zone segment " & to_string (segment.segment)
@@ -1920,8 +1920,8 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -1931,15 +1931,15 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_segment;
 
 
 
-	
-	
+
+
 
 
 
@@ -1952,56 +1952,56 @@ package body et_board_ops_silkscreen is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_silk_zones;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_zone (
 				zone : in out type_silk_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
-					c := segment.segment;					
+					c := segment.segment;
 					zone.contour.segments.delete (c);
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.silkscreen.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.silkscreen.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.silkscreen.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " delete silkscreen zone segment " 
+			& " delete silkscreen zone segment "
 			& to_string (segment.segment),
 			level => log_threshold);
 
@@ -2012,8 +2012,8 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -2021,17 +2021,17 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_segment;
-	
 
-	
 
-	
 
-	
+
+
+
+
 
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2039,18 +2039,18 @@ package body et_board_ops_silkscreen is
 		text			: in type_text_fab_with_content;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-		begin			
+		begin
 			case face is
 				when TOP =>
 					append (module.board.silkscreen.top.texts, (text with null record));
@@ -2068,23 +2068,23 @@ package body et_board_ops_silkscreen is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_text;
@@ -2093,8 +2093,8 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
+
+
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -2106,13 +2106,13 @@ package body et_board_ops_silkscreen is
 		use pac_silk_texts;
 		result : pac_silk_texts.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_text (c : in pac_silk_texts.cursor) is
 				text : type_silk_text renames element (c);
 			begin
@@ -2120,15 +2120,15 @@ package body et_board_ops_silkscreen is
 					zone	=> catch_zone,
 					point	=> text.position.place)
 				then
-					log (text => to_string (text.position.place) 
+					log (text => to_string (text.position.place)
 						& " content " & enclose_in_quotes (to_string (text.content)),
 						level => log_threshold + 2);
-						
+
 					result.append (text);
 				end if;
 			end query_text;
 
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -2139,22 +2139,22 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " looking up silkscreen texts in" & to_string (catch_zone),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 		return result;
 	end get_texts;
@@ -2163,8 +2163,8 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
+
+
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2178,7 +2178,7 @@ package body et_board_ops_silkscreen is
 		new_position : type_vector_model;
 		offset : type_vector_model;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2189,7 +2189,7 @@ package body et_board_ops_silkscreen is
 			procedure query_text (text : in out type_silk_text) is begin
 				move_text_to (text, offset); -- CS should be move_text_by ?
 			end query_text;
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -2202,7 +2202,7 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -2214,10 +2214,10 @@ package body et_board_ops_silkscreen is
 				offset := point;
 				move_by (new_position, offset);
 		end case;
-		
-		log (text => "module " 
+
+		log (text => "module "
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move silkscreen text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
@@ -2233,7 +2233,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 
@@ -2254,7 +2254,7 @@ package body et_board_ops_silkscreen is
 			procedure query_text (text : in out type_silk_text) is begin
 				modify_status (text, operation);
 			end query_text;
-			
+
 		begin
 			case text.face is
 				when TOP =>
@@ -2267,7 +2267,7 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of text" -- CS log position and content ?
@@ -2280,17 +2280,17 @@ package body et_board_ops_silkscreen is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
-	
-
-	
 
 
-	
-	
+
+
+
+
+
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2302,7 +2302,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			c : pac_silk_texts.cursor;
@@ -2320,8 +2320,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_text;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			begin
 				if not top.is_empty then
@@ -2333,8 +2333,8 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
 			begin
 				if not bottom.is_empty then
@@ -2346,15 +2346,15 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " propose texts in" & to_string (catch_zone)
@@ -2362,7 +2362,7 @@ package body et_board_ops_silkscreen is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2372,12 +2372,12 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
 
-	
 
-	
+
+
+
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
@@ -2389,7 +2389,7 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2400,7 +2400,7 @@ package body et_board_ops_silkscreen is
 				move_text_to (text, destination);
 			end query_text;
 
-			
+
 		begin
 			case text.face is
 				when TOP =>
@@ -2412,11 +2412,11 @@ package body et_board_ops_silkscreen is
 						text.cursor, query_text'access);
 			end case;
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (text.face) 
+			& " face" & to_string (text.face)
 			& " move silkscreen text to "
 			& to_string (destination),
 			level => log_threshold);
@@ -2428,7 +2428,7 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2438,19 +2438,19 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_text;
 
 
 
 
-	
-	
-	
 
-	
+
+
+
+
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2462,13 +2462,13 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_silk_texts.cursor := text.cursor;			
+			c : pac_silk_texts.cursor := text.cursor;
 		begin
 			case text.face is
 				when TOP =>
@@ -2479,10 +2479,10 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (text.face) 
+			& " face" & to_string (text.face)
 			& " delete silkscreen text",
 			level => log_threshold);
 
@@ -2494,18 +2494,18 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_text;
 
@@ -2514,12 +2514,12 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
+
+
 
 	function get_first_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_text
 	is
@@ -2528,17 +2528,17 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_silk_texts;
-			
+
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			bottom_items	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
 
-			
+
 			procedure query_text (c : in pac_silk_texts.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -2557,8 +2557,8 @@ package body et_board_ops_silkscreen is
 						null; -- CS
 				end case;
 			end query_text;
-	
-			
+
+
 		begin
 			-- Query the texts in the top layer first:
 			iterate (top_items, query_text'access, proceed'access);
@@ -2572,24 +2572,24 @@ package body et_board_ops_silkscreen is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -2599,9 +2599,9 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
-	
+
+
 
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2610,13 +2610,13 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			bottom	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
 
-			
+
 			procedure query_text (
 				text	: in out type_silk_text)
 			is begin
@@ -2625,7 +2625,7 @@ package body et_board_ops_silkscreen is
 
 
 			c : pac_silk_texts.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					c := top.first;
@@ -2636,7 +2636,7 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					c := bottom.first;
@@ -2647,13 +2647,13 @@ package body et_board_ops_silkscreen is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " reset proposed texts",
@@ -2673,10 +2673,10 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
 
-	
+
+
+
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_placeholder_non_conductor;
@@ -2693,7 +2693,7 @@ package body et_board_ops_silkscreen is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_placeholders_non_conductor;						
+			use pac_placeholders_non_conductor;
 		begin
 			case face is
 				when TOP =>
@@ -2704,7 +2704,7 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " add text placeholder in silkscreen "
@@ -2719,7 +2719,7 @@ package body et_board_ops_silkscreen is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2729,18 +2729,18 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end add_placeholder;
 
 
 
 
-	
 
 
-	
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
@@ -2754,13 +2754,13 @@ package body et_board_ops_silkscreen is
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
-			
+
 			procedure query_placeholder (
-				ph : in out type_placeholder_non_conductor) 
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				modify_status (ph, operation);
 			end query_placeholder;
-			
+
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2773,7 +2773,7 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of text placeholder" -- CS log position and content ?
@@ -2786,17 +2786,17 @@ package body et_board_ops_silkscreen is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
 
-	
 
 
 
 
-	
+
+
 
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2808,7 +2808,7 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
@@ -2826,13 +2826,13 @@ package body et_board_ops_silkscreen is
 					log (text => to_string (ph), level => log_threshold + 1);
 				end if;
 			end query_placeholder;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
 					c := module.board.silkscreen.top.placeholders.first;
-					
+
 					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.silkscreen.top.placeholders.update_element (c, query_placeholder'access);
 						next (c);
@@ -2841,15 +2841,15 @@ package body et_board_ops_silkscreen is
 
 				when BOTTOM =>
 					c := module.board.silkscreen.bottom.placeholders.first;
-					
+
 					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.silkscreen.bottom.placeholders.update_element (c, query_placeholder'access);
 						next (c);
 					end loop;
-			end case;					
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing text placeholders in" & to_string (catch_zone)
@@ -2857,22 +2857,22 @@ package body et_board_ops_silkscreen is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
 	end propose_placeholders;
-	
 
 
 
 
 
 
-	
-	
+
+
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2885,7 +2885,7 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2893,14 +2893,14 @@ package body et_board_ops_silkscreen is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
 
-			
+
 			procedure query_placeholder (
-				ph : in out type_placeholder_non_conductor) 
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
 
-			
+
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2912,34 +2912,34 @@ package body et_board_ops_silkscreen is
 						placeholder.cursor, query_placeholder'access);
 			end case;
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move text placeholder " 
+			& " move text placeholder "
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_placeholder;
 
@@ -2947,8 +2947,8 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
+
+
 
 
 
@@ -2962,13 +2962,13 @@ package body et_board_ops_silkscreen is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;			
+			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2979,10 +2979,10 @@ package body et_board_ops_silkscreen is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " delete text placeholder in silkscreen" 
+			 & " delete text placeholder in silkscreen"
 			 & to_string (placeholder.cursor),
 			level => log_threshold);
 
@@ -3003,8 +3003,8 @@ package body et_board_ops_silkscreen is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_placeholder;
 
@@ -3012,14 +3012,14 @@ package body et_board_ops_silkscreen is
 
 
 
-	
 
-	
+
+
 
 
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_placeholder
 	is
@@ -3028,19 +3028,19 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
-			
+
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_placeholders_non_conductor.list renames module.board.silkscreen.top.placeholders;
 			bottom_items	: pac_placeholders_non_conductor.list renames module.board.silkscreen.bottom.placeholders;
 
-			
+
 			procedure query_placeholder (
-				c : in pac_placeholders_non_conductor.cursor) 
+				c : in pac_placeholders_non_conductor.cursor)
 			is begin
 				case flag is
 					when PROPOSED =>
@@ -3059,8 +3059,8 @@ package body et_board_ops_silkscreen is
 						null; -- CS
 				end case;
 			end query_placeholder;
-	
-			
+
+
 		begin
 			-- Query the placeholders in the top layer first:
 			iterate (top_items, query_placeholder'access, proceed'access);
@@ -3074,24 +3074,24 @@ package body et_board_ops_silkscreen is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text placeholder / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -3102,7 +3102,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 
 	procedure reset_proposed_placeholders (
@@ -3112,10 +3112,10 @@ package body et_board_ops_silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_placeholder (
 				ph : in out type_placeholder_non_conductor)
 			is begin
@@ -3123,7 +3123,7 @@ package body et_board_ops_silkscreen is
 			end query_placeholder;
 
 			use pac_placeholders_non_conductor;
-			c : pac_placeholders_non_conductor.cursor := 
+			c : pac_placeholders_non_conductor.cursor :=
 				module.board.silkscreen.top.placeholders.first;
 		begin
 			-- Iterate the placeholders at the top:
@@ -3142,7 +3142,7 @@ package body et_board_ops_silkscreen is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed text placeholders",
@@ -3161,7 +3161,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -3169,16 +3169,16 @@ package body et_board_ops_silkscreen is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
 
 
-	
-	
-	
+
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -3203,9 +3203,9 @@ package body et_board_ops_silkscreen is
 
 		log_indentation_up;
 
-		
+
 		-- SEARCH FOR A LINE:
-		
+
 		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
 
@@ -3214,7 +3214,7 @@ package body et_board_ops_silkscreen is
 			log (text => to_string (element (result_line.cursor))
 				 & " face " & to_string (result_line.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_LINE;
 		end if;
 
@@ -3222,9 +3222,9 @@ package body et_board_ops_silkscreen is
 			goto end_of_search;
 		end if;
 
-		
+
 		-- SEARCH FOR AN ARC:
-		
+
 		-- If an arc has been found, then go to the end of this procedure:
 		result_arc := get_first_arc (module_cursor, flag, log_threshold + 1);
 
@@ -3233,7 +3233,7 @@ package body et_board_ops_silkscreen is
 			log (text => to_string (element (result_arc.cursor))
 				 & " face " & to_string (result_arc.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_ARC;
 		end if;
 
@@ -3248,7 +3248,7 @@ package body et_board_ops_silkscreen is
 
 
 		-- SEARCH FOR A SEGMENT OF A ZONE:
-		
+
 		-- If there is one, then go to the end  of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
 
@@ -3257,7 +3257,7 @@ package body et_board_ops_silkscreen is
 			log (text => to_string (result_segment.segment)
 					& " face " & to_string (result_segment.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_ZONE_SEGMENT;
 		end if;
 
@@ -3268,15 +3268,15 @@ package body et_board_ops_silkscreen is
 
 
 		-- SEARCH FOR A TEXT:
-		
+
 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
-		
+
 		if result_text.cursor /= pac_silk_texts.no_element then
 			-- A text has been found.
 			log (text => to_string (result_text.cursor)
 					& " face " & to_string (result_text.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_TEXT;
 		end if;
 
@@ -3285,27 +3285,27 @@ package body et_board_ops_silkscreen is
 			goto end_of_search;
 		end if;
 
-		
+
 		-- SEARCH FOR A PLACEHOLDER:
 
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
-		
+
 		if result_placeholder.cursor /= pac_placeholders_non_conductor.no_element then
 			-- A placeholder has been found.
 			log (text => to_string (result_placeholder.cursor)
 					& " face " & to_string (result_placeholder.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_PLACEHOLDER;
 		end if;
 
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -3317,7 +3317,7 @@ package body et_board_ops_silkscreen is
 
 			when CAT_ARC =>
 				return (CAT_ARC, result_arc);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
@@ -3326,7 +3326,7 @@ package body et_board_ops_silkscreen is
 
 			when CAT_PLACEHOLDER =>
 				return (CAT_PLACEHOLDER, result_placeholder);
-				
+
 		end case;
 	end get_first_object;
 
@@ -3334,9 +3334,9 @@ package body et_board_ops_silkscreen is
 
 
 
-	
-	
-	
+
+
+
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -3346,24 +3346,24 @@ package body et_board_ops_silkscreen is
 		use pac_objects;
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_silk_zones;
 			zone_cursor : pac_silk_zones.cursor;
 			face : type_face := TOP;
-			
+
 			use pac_silk_lines;
 			line_cursor : pac_silk_lines.cursor;
 
 			use pac_silk_arcs;
 			arc_cursor : pac_silk_arcs.cursor;
-			
+
 			-- CS circles
-			
+
 			use pac_silk_texts;
 			text_cursor : pac_silk_texts.cursor;
 
@@ -3371,15 +3371,15 @@ package body et_board_ops_silkscreen is
 			use pac_placeholders_non_conductor;
 			placeholder_cursor : pac_placeholders_non_conductor.cursor;
 
-			
-			
+
+
 			procedure query_zone (zone : in type_silk_zone) is
 				use pac_contours;
 				use pac_segments;
 				-- CS test circular flag !!
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
-				
-				procedure query_segment (segment : in type_segment) is 
+
+				procedure query_segment (segment : in type_segment) is
 
 					procedure collect is begin
 						result.append ((
@@ -3400,21 +3400,21 @@ package body et_board_ops_silkscreen is
 							if is_selected (segment) then
 								collect;
 							end if;
-							
+
 						when others => null; -- CS
 					end case;
 				end query_segment;
-				
+
 			begin
 				while segment_cursor /= pac_segments.no_element loop
 					query_element (segment_cursor, query_segment'access);
 					next (segment_cursor);
 				end loop;
 			end query_zone;
-			
 
-			
-			procedure query_line (line : in type_silk_line) is 
+
+
+			procedure query_line (line : in type_silk_line) is
 
 				procedure collect is begin
 					result.append ((
@@ -3423,7 +3423,7 @@ package body et_board_ops_silkscreen is
 
 					log (text => to_string (line), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3440,10 +3440,10 @@ package body et_board_ops_silkscreen is
 				end case;
 			end query_line;
 
-			
 
-			
-			procedure query_arc (arc : in type_silk_arc) is 
+
+
+			procedure query_arc (arc : in type_silk_arc) is
 
 				procedure collect is begin
 					result.append ((
@@ -3452,7 +3452,7 @@ package body et_board_ops_silkscreen is
 
 					log (text => to_string (arc), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3471,8 +3471,8 @@ package body et_board_ops_silkscreen is
 
 
 
-			
-			procedure query_text (text : in type_silk_text) is 
+
+			procedure query_text (text : in type_silk_text) is
 
 				procedure collect is begin
 					result.append ((
@@ -3481,7 +3481,7 @@ package body et_board_ops_silkscreen is
 
 					log (text => to_string (text), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3499,8 +3499,8 @@ package body et_board_ops_silkscreen is
 			end query_text;
 
 
-			
-			procedure query_placeholder (placeholder : in type_placeholder_non_conductor) is 
+
+			procedure query_placeholder (placeholder : in type_placeholder_non_conductor) is
 
 				procedure collect is begin
 					result.append ((
@@ -3509,7 +3509,7 @@ package body et_board_ops_silkscreen is
 
 					log (text => to_string (placeholder), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3526,12 +3526,12 @@ package body et_board_ops_silkscreen is
 				end case;
 			end query_placeholder;
 
-			
-			
+
+
 		begin
 			log (text => "top zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.silkscreen.top.zones.first;
 			while zone_cursor /= pac_silk_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -3540,10 +3540,10 @@ package body et_board_ops_silkscreen is
 
 			log_indentation_down;
 
-			
+
 			log (text => "top lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.silkscreen.top.lines.first;
 			while line_cursor /= pac_silk_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -3553,10 +3553,10 @@ package body et_board_ops_silkscreen is
 			log_indentation_down;
 
 
-			
+
 			log (text => "top arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.silkscreen.top.arcs.first;
 			while arc_cursor /= pac_silk_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -3565,13 +3565,13 @@ package body et_board_ops_silkscreen is
 
 			log_indentation_down;
 
-			
+
 			-- CS circles
 
 
 			log (text => "top texts", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			text_cursor := module.board.silkscreen.top.texts.first;
 			while text_cursor /= pac_silk_texts.no_element loop
 				query_element (text_cursor, query_text'access);
@@ -3580,11 +3580,11 @@ package body et_board_ops_silkscreen is
 
 			log_indentation_down;
 
-			
+
 
 			log (text => "top text placeholders", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			placeholder_cursor := module.board.silkscreen.top.placeholders.first;
 			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
@@ -3594,12 +3594,12 @@ package body et_board_ops_silkscreen is
 			log_indentation_down;
 
 
-			
+
 			face := BOTTOM;
 
 			log (text => "bottom zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.silkscreen.bottom.zones.first;
 			while zone_cursor /= pac_silk_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -3608,10 +3608,10 @@ package body et_board_ops_silkscreen is
 
 			log_indentation_down;
 
-			
+
 			log (text => "bottom lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.silkscreen.bottom.lines.first;
 			while line_cursor /= pac_silk_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -3623,7 +3623,7 @@ package body et_board_ops_silkscreen is
 
 			log (text => "bottom arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.silkscreen.bottom.arcs.first;
 			while arc_cursor /= pac_silk_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -3632,13 +3632,13 @@ package body et_board_ops_silkscreen is
 
 			log_indentation_down;
 
-			
+
 			-- CS circles
 
-			
+
 			log (text => "bottom texts", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			text_cursor := module.board.silkscreen.bottom.texts.first;
 			while text_cursor /= pac_silk_texts.no_element loop
 				query_element (text_cursor, query_text'access);
@@ -3650,33 +3650,33 @@ package body et_board_ops_silkscreen is
 
 			log (text => "bottom text placeholders", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			placeholder_cursor := module.board.silkscreen.bottom.placeholders.first;
 			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
 				next (placeholder_cursor);
 			end loop;
 
-			log_indentation_down;			
+			log_indentation_down;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element ( -- CS query_module is sufficient
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
-	
+
 
 
 
@@ -3694,14 +3694,14 @@ package body et_board_ops_silkscreen is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_LINE =>
 				modify_status (module_cursor, object.line, operation, log_threshold + 1);
 
 			when CAT_ARC =>
 				modify_status (module_cursor, object.arc, operation, log_threshold + 1);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
@@ -3710,7 +3710,7 @@ package body et_board_ops_silkscreen is
 
 			when CAT_PLACEHOLDER =>
 				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -3718,16 +3718,16 @@ package body et_board_ops_silkscreen is
 		log_indentation_down;
 	end modify_status;
 
-	
 
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -3736,7 +3736,7 @@ package body et_board_ops_silkscreen is
 
 
 
-	
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3747,7 +3747,7 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move silkscreen object " 
+			& " move silkscreen object "
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -3757,19 +3757,19 @@ package body et_board_ops_silkscreen is
 
 		case object.cat is
 			when CAT_LINE =>
-				move_line (module_cursor, object.line.face, 
+				move_line (module_cursor, object.line.face,
 					element (object.line.cursor),
 					point_of_attack, destination,
 					DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
-				move_arc (module_cursor, object.arc.face, 
+				move_arc (module_cursor, object.arc.face,
 					element (object.arc.cursor),
 					point_of_attack, destination,
 					DO_COMMIT,
 					log_threshold + 1);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
@@ -3790,17 +3790,17 @@ package body et_board_ops_silkscreen is
 					destination,
 					DO_COMMIT,
 					log_threshold + 1);
-							
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
-	
 
 
-	
+
+
 
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3815,7 +3815,7 @@ package body et_board_ops_silkscreen is
 		reset_proposed_lines (module_cursor, log_threshold + 1);
 		reset_proposed_arcs (module_cursor, log_threshold + 1);
 		-- CS circles
-		
+
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		reset_proposed_segments (module_cursor, log_threshold + 1);
@@ -3824,8 +3824,8 @@ package body et_board_ops_silkscreen is
 	end reset_proposed_objects;
 
 
-	
-	
+
+
 
 
 	procedure delete_object (
@@ -3843,73 +3843,73 @@ package body et_board_ops_silkscreen is
 		case object.cat is
 			when CAT_LINE =>
 				delete_line (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.line.face,
 					line			=> element (object.line.cursor),
-					log_threshold	=> log_threshold + 1);					
+					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_ARC =>
 				delete_arc (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.arc.face,
 					arc				=> element (object.arc.cursor),
-					log_threshold	=> log_threshold + 1);					
-				
+					log_threshold	=> log_threshold + 1);
+
 			-- CS circles
-				
+
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_TEXT =>
 				delete_text (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					text			=> object.text,
 					log_threshold	=> log_threshold + 1);
 
 
 			when CAT_PLACEHOLDER =>
 				delete_placeholder (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					placeholder		=> object.placeholder,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
 
 
 
 
-	
-	
-	
+
+
+
+
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor   : pac_silk_lines.cursor;
@@ -3927,11 +3927,11 @@ package body et_board_ops_silkscreen is
 				arc_cursor    	:= module.board.silkscreen.bottom.arcs.first;
 				circle_cursor	:= module.board.silkscreen.bottom.circles.first;
 			end if;
-			
+
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_silk_lines.no_element loop
 				if in_catch_zone (
-					zone	=> catch_zone,	
+					zone	=> catch_zone,
 					line	=> element (line_cursor))
 				then
 					if face = TOP then
@@ -3949,7 +3949,7 @@ package body et_board_ops_silkscreen is
 			if not deleted then
 				while arc_cursor /= pac_silk_arcs.no_element loop
 					if in_catch_zone (
-						zone	=> catch_zone,	
+						zone	=> catch_zone,
 						arc		=> element (arc_cursor))
 					then
 						if face = TOP then
@@ -3967,9 +3967,9 @@ package body et_board_ops_silkscreen is
 			-- if no arc found, search among circles
 			if not deleted then
 				while circle_cursor /= pac_silk_circles.no_element loop
-					
+
 					if in_catch_zone (
-						zone	=> catch_zone,	
+						zone	=> catch_zone,
 						circle	=> element (circle_cursor))
 					then
 						if face = TOP then
@@ -3987,13 +3987,13 @@ package body et_board_ops_silkscreen is
 			if not deleted then
 				nothing_found (catch_zone);
 			end if;
-			
+
 		end delete;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_name) 
-			& " delete silkscreen object face" & to_string (face) 
+		log (text => "module " & to_string (module_name)
+			& " delete silkscreen object face" & to_string (face)
 			& " in" & to_string (catch_zone),
 			level => log_threshold);
 
@@ -4001,7 +4001,7 @@ package body et_board_ops_silkscreen is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
@@ -4013,25 +4013,25 @@ package body et_board_ops_silkscreen is
 			position	=> module_cursor,
 			process		=> delete'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_object;
 
 
 
-	
-	
+
+
 end et_board_ops_silkscreen;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

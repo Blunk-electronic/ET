@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about contours in general.
 --
 --
@@ -57,13 +57,13 @@ package et_package_read_contour is
 	use pac_contours;
 
 
-	
+
 	contour_line	: type_line;
 	contour_arc		: type_arc;
 	contour_circle	: type_circle;
 	contour			: type_contour;
-	
-	
+
+
 	procedure read_contour_line (
 		line : in type_fields_of_line);
 
@@ -71,11 +71,11 @@ package et_package_read_contour is
 	procedure read_contour_arc (
 		line : type_fields_of_line);
 
-	
+
 	procedure read_contour_circle (
 		line : type_fields_of_line);
 
-	
+
 
 	procedure insert_contour_line;
 
@@ -84,6 +84,6 @@ package et_package_read_contour is
 	procedure insert_contour_circle;
 
 
-	
-	
+
+
 end et_package_read_contour;

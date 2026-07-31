@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -59,7 +59,7 @@ package body et_submodules is
 
 
 
-	
+
 	function at_edge (
 		point	: in type_vector_model; -- P
 		size	: in type_submodule_size) -- sx, sy
@@ -80,7 +80,7 @@ package body et_submodules is
 			if get_y (point) >= zero and get_y (point) <= size.y then
 				result := true;
 			end if;
-		
+
 		else
 			-- If P is at the lower or upper edge:
 			if get_y (point) = zero or get_y (point) = size.y  then
@@ -90,7 +90,7 @@ package body et_submodules is
 					result := true;
 
 					if get_y (point) = zero then
-						log (SEVERITY_WARNING, "Net connected with port at lower edge of submodule at" & 
+						log (SEVERITY_WARNING, "Net connected with port at lower edge of submodule at" &
 							to_string (point) & " may overlap with texts !");
 					end if;
 				end if;
@@ -101,15 +101,15 @@ package body et_submodules is
 	end at_edge;
 
 
-	
-	
+
+
 	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
 		return pac_submodule_path.to_bounded_string (path);
 	end;
 
 
 
-	
+
 	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
 		return pac_submodule_path.to_string (path);
 	end;
@@ -117,9 +117,9 @@ package body et_submodules is
 
 
 
-	
-	function to_module_name (path : in pac_submodule_path.bounded_string) 
-		return pac_module_name.bounded_string 
+
+	function to_module_name (path : in pac_submodule_path.bounded_string)
+		return pac_module_name.bounded_string
 	is
 		use pac_module_name;
 		name : pac_module_name.bounded_string;
@@ -130,12 +130,12 @@ package body et_submodules is
 
 
 
-	
 
 
 
-	
-	
+
+
+
 	procedure move_ports (
 		ports	: in out pac_submodule_ports.map; -- the portlist
 		offset	: in type_object_position) -- the offset (only x/y matters)
@@ -143,7 +143,7 @@ package body et_submodules is
 
 		procedure move (
 			name	: in pac_net_name.bounded_string;
-			port	: in out type_submodule_port) 
+			port	: in out type_submodule_port)
 		is
 			pragma unreferenced (name);
 		begin
@@ -156,22 +156,22 @@ package body et_submodules is
 				position	=> cursor,
 				process		=> move'access);
 		end;
-			
+
 	begin -- move_ports
 		pac_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
 
 
-	
 
-	
+
+
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return to_lower (type_submodule_view_mode'image (view));
 	end;
 
 
 
-	
+
 	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
 		return type_submodule_view_mode'value (mode);
 	end;
@@ -184,14 +184,14 @@ package body et_submodules is
 	is begin
 		return natural (submodules.length);
 	end;
-	
 
-	
+
+
 end et_submodules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

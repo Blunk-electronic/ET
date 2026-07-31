@@ -65,11 +65,11 @@ package body et_canvas.schematic_device_ops is
 				column_1 => glib.gtype_string);
 
 		use gtk.tree_model;
-		iter : gtk_tree_iter;			
+		iter : gtk_tree_iter;
 		index : natural := 0;
 
 		-- Writes the prefix and index in the storage model:
-		procedure query_prefix (c : in pac_device_prefixes.cursor) is 
+		procedure query_prefix (c : in pac_device_prefixes.cursor) is
 			use pac_device_prefixes;
 			use et_device_prefix;
 		begin
@@ -84,19 +84,19 @@ package body et_canvas.schematic_device_ops is
 		gtk_new (list_store => store, types => (entry_structure));
 
 		-- Insert the available prefixes in the storage model:
-		prefixes.iterate (query_prefix'access);	
+		prefixes.iterate (query_prefix'access);
 
 	end make_store_for_prefixes;
 
 
-	
 
 
 
 
-	
-	
-	procedure build_rename_window is 
+
+
+
+	procedure build_rename_window is
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		-- label_status	: gtk.label.gtk_label;
@@ -110,15 +110,15 @@ package body et_canvas.schematic_device_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		rename_window.on_key_press_event (access_cb_rename_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (rename_window, box);
 
 		-- show the old name:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (rename_old);
 		pack_start (box, rename_old);
 
@@ -133,18 +133,18 @@ package body et_canvas.schematic_device_ops is
 		-- gtk_new (label_status);
 		-- pack_start (box, label_status);
 
-		
+
 	end build_rename_window;
 
 
 
 
 
-		
-	
+
+
 	procedure build_value_window (
 		device_name : in type_device_name)
-	is 
+	is
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		-- label_status : gtk.label.gtk_label;
@@ -158,15 +158,15 @@ package body et_canvas.schematic_device_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		value_window.on_key_press_event (access_cb_value_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (value_window, box);
 
 		-- show the old value:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (value_old);
 		pack_start (box, value_old);
 
@@ -181,19 +181,19 @@ package body et_canvas.schematic_device_ops is
 		-- gtk_new (label_status);
 		-- pack_start (box, label_status);
 
-		
+
 	end build_value_window;
 
 
-	
 
 
 
-	
-	
+
+
+
 	procedure build_purpose_window (
 		device_name : in type_device_name)
-	is 
+	is
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		-- label_status : gtk.label.gtk_label;
@@ -207,15 +207,15 @@ package body et_canvas.schematic_device_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		purpose_window.on_key_press_event (access_cb_purpose_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (purpose_window, box);
 
 		-- show the old purpose:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (purpose_old);
 		pack_start (box, purpose_old);
 
@@ -230,11 +230,11 @@ package body et_canvas.schematic_device_ops is
 		-- gtk_new (label_status);
 		-- pack_start (box, label_status);
 
-		
+
 	end build_purpose_window;
 
 
-	
+
 
 
 
@@ -242,7 +242,7 @@ package body et_canvas.schematic_device_ops is
 
 	procedure build_partcode_window (
 		device_name : in type_device_name)
-	is 
+	is
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		-- label_status : gtk.label.gtk_label;
@@ -256,15 +256,15 @@ package body et_canvas.schematic_device_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		partcode_window.on_key_press_event (access_cb_partcode_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (partcode_window, box);
 
 		-- show the old partcode:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (partcode_old);
 		pack_start (box, partcode_old);
 
@@ -279,12 +279,12 @@ package body et_canvas.schematic_device_ops is
 		-- gtk_new (label_status);
 		-- pack_start (box, label_status);
 
-		
+
 	end build_partcode_window;
 
 
 
-	
+
 
 
 
@@ -301,7 +301,7 @@ package body et_canvas.schematic_device_ops is
 				column_1 => glib.gtype_string);
 
 		use gtk.tree_model;
-		iter : gtk_tree_iter;			
+		iter : gtk_tree_iter;
 		index : natural := 0;
 
 		-- Writes the name and index in the storage model:
@@ -320,29 +320,29 @@ package body et_canvas.schematic_device_ops is
 		gtk_new (list_store => store, types => (entry_structure));
 
 		-- Insert the available net names in the storage model:
-		variants.iterate (query_variant'access);	
+		variants.iterate (query_variant'access);
 	end make_store_for_variants;
 
 
 
-	
+
 
 	procedure build_package_variant_window (
 		device_cursor : in pac_devices_electrical.cursor)
-	is 
+	is
 		-- Get the device name (like IC2):
-		device_name : constant type_device_name := 
+		device_name : constant type_device_name :=
 			get_device_name (device_cursor);
 
 		-- Get the available package variants for the given device:
-		variants : constant pac_package_variants.map := 
+		variants : constant pac_package_variants.map :=
 			get_available_package_variants (device_cursor);
 
 		store : gtk_list_store;
 
 		use gtk.cell_renderer_text;
 		render	: gtk_cell_renderer_text;
-		
+
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 	begin
@@ -355,15 +355,15 @@ package body et_canvas.schematic_device_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		package_variant_window.on_key_press_event (access_cb_package_variant_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (package_variant_window, box);
 
 		-- show the old variant:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (package_variant_old);
 		pack_start (box, package_variant_old);
 
@@ -393,18 +393,18 @@ package body et_canvas.schematic_device_ops is
 		-- Insert the apply-button:
 		gtk_new (package_variant_button_apply, "APPLY");
 		pack_start (box, package_variant_button_apply);
-		
+
 	end build_package_variant_window;
 
 
-	
 
 
-	
+
+
 
 -- PROPERTIES WINDOW:
-	
-	
+
+
 	procedure show_properties_window (
 		device	: in type_device_name;
 		text	: in string)
@@ -417,7 +417,7 @@ package body et_canvas.schematic_device_ops is
 		-- since there can be a lot of text.
 	begin
 		if not properties_window_open then
-			
+
 			gtk_new (properties_window);
 
 			properties_window.set_title ("Properties of Device " & to_string (device));
@@ -427,15 +427,15 @@ package body et_canvas.schematic_device_ops is
 
 			-- Connect the "on_destroy" signal:
 			properties_window.on_destroy (access_cb_properties_window_destroy);
-			
-			-- Connect the "on_key_press_event" signal:		
+
+			-- Connect the "on_key_press_event" signal:
 			properties_window.on_key_press_event (access_cb_properties_window_key_pressed);
-		
+
 			gtk_new_vbox (box);
 			add (properties_window, box);
 
 			gtk_new (text_view);
-			
+
 			gtk_new (buffer);
 			buffer.set_text (text); -- "Hello");
 
@@ -445,7 +445,7 @@ package body et_canvas.schematic_device_ops is
 			pack_start (box, text_view);
 
 			properties_window_open := true;
-			
+
 			properties_window.show_all;
 		end if;
 	end show_properties_window;
@@ -461,13 +461,13 @@ package body et_canvas.schematic_device_ops is
 		partcode_window_open := false;
 		package_variant_window_open := false;
 	end reset_window_open_flags;
-	
 
 
-	
 
-	
-	
+
+
+
+
 	function cb_rename_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
@@ -475,15 +475,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_rename_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -496,28 +496,28 @@ package body et_canvas.schematic_device_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				rename_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_rename_window_key_pressed;
-	
 
 
 
 
 
-	
-	
+
+
+
 	function cb_value_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
@@ -525,15 +525,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_value_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -546,26 +546,26 @@ package body et_canvas.schematic_device_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				value_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_value_window_key_pressed;
 
-	
 
 
 
-	
+
+
 
 
 
@@ -576,15 +576,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_purpose_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -597,18 +597,18 @@ package body et_canvas.schematic_device_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				purpose_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_purpose_window_key_pressed;
 
@@ -626,15 +626,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_partcode_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -647,18 +647,18 @@ package body et_canvas.schematic_device_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				partcode_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_partcode_window_key_pressed;
 
@@ -667,7 +667,7 @@ package body et_canvas.schematic_device_ops is
 
 
 
-	
+
 
 	function cb_package_variant_window_key_pressed (
 		window	: access gtk_widget_record'class;
@@ -676,15 +676,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_package_variant_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -697,22 +697,22 @@ package body et_canvas.schematic_device_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				package_variant_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_package_variant_window_key_pressed;
 
-	
+
 
 
 
@@ -728,7 +728,7 @@ package body et_canvas.schematic_device_ops is
 	end cb_properties_window_destroy;
 
 
-	
+
 
 	function cb_properties_window_key_pressed (
 		window	: access gtk_widget_record'class;
@@ -737,15 +737,15 @@ package body et_canvas.schematic_device_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_properties_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -754,31 +754,31 @@ package body et_canvas.schematic_device_ops is
 
 				-- Emit the "destroy" signal.
 				properties_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_properties_window_key_pressed;
 
 
-	
 
-	
+
+
 end et_canvas.schematic_device_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
 

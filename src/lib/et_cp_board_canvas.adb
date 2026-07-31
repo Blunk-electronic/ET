@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,13 +54,13 @@ with et_canvas_board;					use et_canvas_board;
 
 
 package body et_cp_board_canvas is
-		
+
 
 	package pac_canvas_cmd is new et_canvas_board.pac_canvas.cmd;
 	use pac_canvas_cmd;
 
 
-	
+
 	procedure zoom_all (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
@@ -78,33 +78,33 @@ package body et_cp_board_canvas is
 				case noun is
 					when NOUN_ALL => -- zoom all
 						case cmd_field_count is
-							when 4 => 
+							when 4 =>
 								log (text => "zoom all", level => log_threshold + 1);
 								zoom_to_fit_all;
 
-							when 5 .. type_field_count'last => 
+							when 5 .. type_field_count'last =>
 								command_too_long (cmd, cmd_field_count - 1);
 
 							when others =>
 								command_incomplete (cmd);
-								
+
 						end case;
 
-					when others => 
+					when others =>
 						null;
 
 				end case;
 
-				
+
 			when others =>
 					skipped_in_this_runmode (log_threshold + 1);
-					
+
 		end case;
 
 		log_indentation_down;
 	end zoom_all;
 
-	
+
 
 
 
@@ -116,15 +116,15 @@ package body et_cp_board_canvas is
 		log_indentation_up;
 
 		parse_canvas_command (cmd, VERB_SET, NOUN_ZOOM);
-		
+
 		log_indentation_down;
 	end set_zoom;
 
 
-	
 
-	
-	
+
+
+
 
 	procedure set_grid (
 		module			: in pac_generic_modules.cursor;
@@ -141,7 +141,7 @@ package body et_cp_board_canvas is
 
 		-- The global variable "grid" has now been set
 		-- as requested by the operator.
-		
+
 		-- Assign the grid in the database:
 		set_grid (
 			module_name 	=> pac_generic_modules.key (module),
@@ -153,7 +153,7 @@ package body et_cp_board_canvas is
 
 
 
-	
+
 
 
 	procedure set_scale (
@@ -164,10 +164,10 @@ package body et_cp_board_canvas is
 		log_indentation_up;
 
 		parse_canvas_command (cmd, VERB_SET, NOUN_SCALE);
-		
+
 		-- The global scale variable "M" has now been set
 		-- as requested by the operator.
-		
+
 		-- CS: scale_objects (see demo program)
 
 		-- CS: Assign the scale in the database.
@@ -189,11 +189,11 @@ package body et_cp_board_canvas is
 
 		-- CS parse_canvas_command (cmd, VERB_MOVE, NOUN_CURSOR);
 		-- CS system hangs
-		
+
 		log_indentation_down;
 	end move_cursor;
 
-	
+
 
 
 
@@ -205,7 +205,7 @@ package body et_cp_board_canvas is
 		log_indentation_up;
 
 		parse_canvas_command (cmd, VERB_SET, NOUN_CURSOR);
-		
+
 		log_indentation_down;
 	end set_cursor;
 
@@ -225,16 +225,16 @@ package body et_cp_board_canvas is
 
 		parse_canvas_command (cmd, VERB_SET, NOUN_COLOR);
 		redraw_board;
-		
+
 		log_indentation_down;
 	end set_color;
-	
-		
+
+
 end et_cp_board_canvas;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

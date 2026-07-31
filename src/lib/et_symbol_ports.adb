@@ -55,7 +55,7 @@ package body et_symbol_ports is
 
 
 
-	
+
 	function get_count (
 		ports : in pac_symbol_ports.map)
 		return natural
@@ -65,7 +65,7 @@ package body et_symbol_ports is
 
 
 
-	
+
 	function get_position (
 		port	: in pac_symbol_ports.cursor)
 		return type_vector_model
@@ -89,7 +89,7 @@ package body et_symbol_ports is
 		-- flag "deleted" is set so that the iteration stops:
 		procedure query_port (
 			port_name	: in pac_port_name.bounded_string;
-			port 		: in type_symbol_port) 
+			port 		: in type_symbol_port)
 		is begin
 			if port.position = position then
 				deleted := true;
@@ -97,11 +97,11 @@ package body et_symbol_ports is
 			end if;
 		end;
 
-		
+
 	begin
 		-- Initially we assume that no port has been found:
 		deleted := false;
-		
+
 		-- Iterate though the given ports until a port
 		-- has been found that sits at the given position:
 		while has_element (c) loop
@@ -112,7 +112,7 @@ package body et_symbol_ports is
 			if deleted then
 				exit;
 			end if;
-			
+
 			next (c);
 		end loop;
 
@@ -123,9 +123,9 @@ package body et_symbol_ports is
 		end if;
 	end delete_port;
 
-	
 
-	
+
+
 
 	procedure move_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
@@ -135,7 +135,7 @@ package body et_symbol_ports is
 
 		procedure move (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_symbol_port) 
+			port	: in out type_symbol_port)
 		is
 			pragma unreferenced (name);
 		begin
@@ -149,14 +149,14 @@ package body et_symbol_ports is
 				position	=> cursor,
 				process		=> move'access);
 		end;
-			
+
 	begin -- move_ports
 		iterate (ports, query_port'access);
 	end move_ports;
 
 
-	
-	
+
+
 	procedure rotate_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
 		angle	: in type_rotation_model)  -- 90
@@ -164,7 +164,7 @@ package body et_symbol_ports is
 
 		procedure rotate (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_symbol_port) 
+			port	: in out type_symbol_port)
 		is
 			pragma unreferenced (name);
 		begin
@@ -172,14 +172,14 @@ package body et_symbol_ports is
 			-- CS use primitive operation of et_symbol_port_general
 		end;
 
-		
+
 		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
 				process		=> rotate'access);
 		end;
-			
+
 	begin
 		-- Do nothing if the given angle is zero:
 		if angle /= zero_rotation then
@@ -191,13 +191,13 @@ package body et_symbol_ports is
 
 
 
-	
+
 	procedure mirror_ports (
 		ports	: in out pac_symbol_ports.map)
 	is
 		c : pac_symbol_ports.cursor := ports.first;
 
-		
+
 		procedure query_port (
 			name : in pac_port_name.bounded_string;
 			port : in out type_symbol_port)
@@ -209,7 +209,7 @@ package body et_symbol_ports is
 			-- CS use primitive operation of et_symbol_port_general
 		end query_port;
 
-		
+
 	begin
 		-- Iterate through the ports and mirror
 		-- each one along the y-axis:
@@ -219,13 +219,13 @@ package body et_symbol_ports is
 		end loop;
 	end mirror_ports;
 
-	
-	
+
+
 end et_symbol_ports;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

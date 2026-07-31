@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - propose arguments if command incomplete
 
 with et_generic_modules;		use et_generic_modules;
@@ -67,7 +67,7 @@ package et_cp_board_keepout is
 
 
 
-	-- This procedure parses a command to 
+	-- This procedure parses a command to
 	-- delete an object in keepout:
 	-- Example:
 	-- board led_driver delete keepout top 40 50 1
@@ -76,13 +76,13 @@ package et_cp_board_keepout is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
-		
+
+
 end et_cp_board_keepout;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

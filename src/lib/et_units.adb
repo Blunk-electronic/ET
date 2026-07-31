@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -56,9 +56,9 @@ package body et_units is
 	end;
 
 
-	
-	
-	
+
+
+
 	function get_position (
 		unit	: in type_unit)
 		return type_object_position
@@ -74,7 +74,7 @@ package body et_units is
 	is begin
 		unit.position := position;
 	end set_position;
-	
+
 
 
 
@@ -85,7 +85,7 @@ package body et_units is
 		return unit.mirror_status;
 	end;
 
-	
+
 
 	procedure set_mirror_status (
 		unit	: in out type_unit;
@@ -94,7 +94,7 @@ package body et_units is
 		unit.mirror_status := mirror;
 	end;
 
-	
+
 
 	procedure toggle_mirror_status (
 		unit	: in out type_unit)
@@ -103,7 +103,7 @@ package body et_units is
 	end;
 
 
-	
+
 
 	function get_rotation (
 		unit	: in type_unit)
@@ -112,7 +112,7 @@ package body et_units is
 		return get_rotation (unit.position);
 	end get_rotation;
 
-	
+
 
 	procedure set_rotation (
 		unit		: in out type_unit;
@@ -122,25 +122,25 @@ package body et_units is
 	end set_rotation;
 
 
-	
+
 
 	procedure rotate_by (
 		unit		: in out type_unit;
 		rotation	: in type_rotation_model)
-	is 
+	is
 		-- Get the rotation before:
 		r_actual : type_rotation_model := get_rotation (unit);
 	begin
 		-- Add the given rotation to the actual rotation:
-		add (r_actual, rotation);		
+		add (r_actual, rotation);
 
 		-- Assign the new rotation:
 		set_rotation (unit, r_actual);
 	end;
 
-	
-	
-	
+
+
+
 	function get_sheet (
 		unit	: in type_unit)
 		return type_sheet
@@ -149,14 +149,14 @@ package body et_units is
 	end get_sheet;
 
 
-	
+
 	procedure set_sheet (
 		unit	: in out type_unit;
 		sheet	: in type_sheet)
 	is begin
 		set_sheet (unit.position, sheet);
 	end set_sheet;
-	
+
 
 
 
@@ -169,36 +169,36 @@ package body et_units is
 	end;
 
 
-	
-	
-	
+
+
+
 	function in_catch_zone (
 		unit	: in type_unit;
 		zone	: in type_catch_zone;
 		sheet	: in type_sheet)
 		return boolean
-	is 
+	is
 		result : boolean := false;
 
 		unit_position : constant type_object_position := get_position (unit);
 	begin
 		-- The unit must be on the given sheet and
 		-- in the given catch zone:
-		if 	get_sheet (unit_position) = sheet 
+		if 	get_sheet (unit_position) = sheet
 		and	in_catch_zone (zone, get_place (unit_position)) then
 			result := true;
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end in_catch_zone;
 
-	
 
 
 
-	
+
+
 
 	function on_sheet_and_in_area (
 		unit	: in type_unit;
@@ -221,42 +221,42 @@ package body et_units is
 			else
 				result := false;
 			end if;
-			
+
 		else
 			result := false;
 		end if;
 
 		return result;
 	end on_sheet_and_in_area;
-	
 
 
-	
-	
+
+
+
 
 	procedure unit_not_found (
-		name : in pac_unit_name.bounded_string) 
+		name : in pac_unit_name.bounded_string)
 	is begin
 		raise semantic_error_1 with
 			"ERROR: Unit " & to_string (name) & " not found !";
 	end unit_not_found;
 
-	
-	
+
+
 
 	procedure set_selected (
 		unit : in out type_unit)
 	is begin
 		set_selected (unit.status);
-	end;	
-		
-	
+	end;
+
+
 
 	procedure clear_selected (
 		unit : in out type_unit)
 	is begin
 		clear_selected (unit.status);
-	end;	
+	end;
 
 
 	function is_selected (
@@ -269,23 +269,23 @@ package body et_units is
 			return false;
 		end if;
 	end;
-	
 
-	
+
+
 	procedure set_proposed (
 		unit : in out type_unit)
 	is begin
 		set_proposed (unit.status);
 	end;
 
-	
+
 	procedure clear_proposed (
 		unit : in out type_unit)
 	is begin
 		clear_proposed (unit.status);
 	end;
 
-	
+
 	function is_proposed (
 		unit : in type_unit)
 		return boolean
@@ -299,7 +299,7 @@ package body et_units is
 
 
 
-	
+
 	procedure set_moving (
 		unit : in out type_unit)
 	is begin
@@ -313,7 +313,7 @@ package body et_units is
 		clear_moving (unit.status);
 	end;
 
-	
+
 	function is_moving (
 		unit : in type_unit)
 		return boolean
@@ -325,9 +325,9 @@ package body et_units is
 		end if;
 	end;
 
-	
 
-	
+
+
 	procedure modify_status (
 		unit		: in out type_unit;
 		operation	: in type_status_operation)
@@ -335,7 +335,7 @@ package body et_units is
 		modify_status (unit.status, operation);
 	end modify_status;
 
-	
+
 
 
 	procedure reset_status (
@@ -348,12 +348,12 @@ package body et_units is
 
 
 
-	
+
 
 
 -- PLACEHOLDERS:
-	
-	
+
+
 	function get_placeholders (
 		unit : in type_unit)
 		return type_text_placeholders
@@ -366,15 +366,15 @@ package body et_units is
 	end;
 
 
-	
-	
+
+
 
 	procedure move_placeholder (
 		unit		: in out type_unit;
-		meaning		: in type_placeholder_meaning;					 
+		meaning		: in type_placeholder_meaning;
 		coordinates	: in type_coordinates; -- relative/absolute
 		point		: in type_vector_model) -- x/y
-	is 
+	is
 		-- In case absolute movement is required, calculate the
 		-- new position of the placeholder relative to the unit origin:
 		pos_abs : constant type_vector_model :=
@@ -394,7 +394,7 @@ package body et_units is
 							offset	=> point);
 				end case;
 
-				
+
 			when VALUE =>
 				case coordinates is
 					when ABSOLUTE =>
@@ -406,7 +406,7 @@ package body et_units is
 							offset	=> point);
 				end case;
 
-				
+
 			when PURPOSE =>
 				case coordinates is
 					when ABSOLUTE =>
@@ -422,13 +422,13 @@ package body et_units is
 	end move_placeholder;
 
 
-	
 
-	
-	
+
+
+
 	procedure rotate_placeholder (
 		unit		: in out type_unit;
-		meaning		: in type_placeholder_meaning;					 
+		meaning		: in type_placeholder_meaning;
 		toggle		: in boolean;
 		rotation	: in type_rotation_documentation)
 	is begin
@@ -440,7 +440,7 @@ package body et_units is
 					unit.placeholders.name.rotation := rotation;
 				end if;
 
-				
+
 			when VALUE =>
 				if toggle then
 					toggle_rotation (unit.placeholders.value);
@@ -448,7 +448,7 @@ package body et_units is
 					unit.placeholders.value.rotation := rotation;
 				end if;
 
-				
+
 			when PURPOSE =>
 				if toggle then
 					toggle_rotation (unit.placeholders.purpose);
@@ -459,11 +459,11 @@ package body et_units is
 		end case;
 	end rotate_placeholder;
 
-	
 
 
 
-	
+
+
 
 	function get_position (
 		unit	: in pac_units.cursor)
@@ -481,7 +481,7 @@ package body et_units is
 		return get_rotation (element (unit));
 	end;
 
-	
+
 
 	function get_mirror_status (
 		unit	: in pac_units.cursor)
@@ -491,7 +491,7 @@ package body et_units is
 	end;
 
 
-	
+
 
 	procedure iterate (
 		units	: in pac_units.map;
@@ -507,7 +507,7 @@ package body et_units is
 	end iterate;
 
 
-	
+
 
 	function get_unit_name (
 		unit : in pac_units.cursor)
@@ -518,7 +518,7 @@ package body et_units is
 
 
 
-	
+
 
 	function get_unit_name (
 		unit : in pac_units.cursor)
@@ -528,13 +528,13 @@ package body et_units is
 	end get_unit_name;
 
 
-	
-	
-	
+
+
+
 	function to_string (unit : in pac_units.cursor) return string is
 		use pac_units;
 	begin
-		return get_unit_name (unit) 
+		return get_unit_name (unit)
 			--& to_string (type_vector_model (element (unit).position));
 			& to_string (element (unit).position.place);
 			-- CS output sheet number and rotation ?
@@ -550,7 +550,7 @@ package body et_units is
 	is begin
 		return is_proposed (element (unit));
 	end;
-	
+
 
 	function is_selected (
 		unit : in pac_units.cursor)
@@ -561,8 +561,8 @@ package body et_units is
 
 
 
-	
-	
+
+
 	function is_moving (
 		unit : in pac_units.cursor)
 		return boolean
@@ -572,7 +572,7 @@ package body et_units is
 
 
 
-	
+
 
 	function extract_sheets (
 		positions	: in pac_unit_positions.map)
@@ -580,38 +580,38 @@ package body et_units is
 	is
 		use pac_sheet_numbers;
 		use pac_sheet_sorting;
-		
+
 		result : pac_sheet_numbers.list;
 
-		
+
 		procedure query_position (c : in pac_unit_positions.cursor) is
 			use pac_unit_positions;
 			pos : constant type_object_position := element (c);
 			sheet : type_sheet;
 		begin
 			sheet := get_sheet (pos);
-			
+
 			if not result.contains (sheet) then
 				result.append (sheet);
 			end if;
 		end query_position;
 
-		
+
 	begin
 		positions.iterate (query_position'access);
 
 		-- Sort the sheets in ascending order:
 		sort (result);
-		
+
 		return result;
 	end extract_sheets;
 
-	
 
-	
 
-	
-	
+
+
+
+
 	function get_unit_positions (
 		units : in pac_units.map)
 		return pac_unit_positions.map
@@ -619,17 +619,17 @@ package body et_units is
 		list : pac_unit_positions.map; -- to be returned
 		use pac_units;
 		use pac_unit_positions;
-		
+
 		procedure query_unit (cursor : pac_units.cursor) is begin
 			list.insert (key (cursor), element (cursor).position);
 		end;
-		
+
 	begin
 		iterate (units, query_unit'access);
 		return list;
 	end get_unit_positions;
 
-	
+
 
 
 
@@ -641,56 +641,56 @@ package body et_units is
 	end;
 
 
-	
-	
 
-	function make_drag_list ( 
+
+
+	function make_drag_list (
 		ports_old : in pac_symbol_ports.map;
-		ports_new : in pac_symbol_ports.map) 
-		return pac_dragged_ports.map 
+		ports_new : in pac_symbol_ports.map)
+		return pac_dragged_ports.map
 	is
 		use et_symbol_ports;
 		use pac_dragged_ports;
 		drag_list : pac_dragged_ports.map;
 
-		-- ports_old and ports_new are both equally long and contain 
+		-- ports_old and ports_new are both equally long and contain
 		-- equal keys (the port names). So we use two cursors and advance them
 		-- simultaneously in a loop (see below).
 		use pac_symbol_ports;
-		
+
 		cursor_old : pac_symbol_ports.cursor := ports_old.first;
 		cursor_new : pac_symbol_ports.cursor := ports_new.first;
 
 		drag : type_drag;
 	begin
-		-- Iterate through list ports_old, copy the port name to 
+		-- Iterate through list ports_old, copy the port name to
 		-- the drag list.
-		-- Take the old position from ports_old and 
+		-- Take the old position from ports_old and
 		-- the new position from ports_new:
 		while has_element (cursor_old) loop
 			drag := (before => element (cursor_old).position,
 					after	=> element (cursor_new).position);
-			
+
 			insert (
 				container	=> drag_list,
 				key			=> key (cursor_old), -- the port name
 				new_item	=> drag);
-			
+
 			next (cursor_old);
 			next (cursor_new);
 		end loop;
-		
+
 		return drag_list;
 	end make_drag_list;
 
 
 
-	
+
 end et_units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

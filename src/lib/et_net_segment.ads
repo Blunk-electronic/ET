@@ -71,9 +71,9 @@ package et_net_segment is
 		ports		: type_net_ports_AB;
 	end record;
 
-	
-	
-	
+
+
+
 	-- Resets all components of a segment:
 	procedure reset_net_segment (
 		segment	: in out type_net_segment);
@@ -88,8 +88,8 @@ package et_net_segment is
 		segment_in	: in type_net_segment;
 		segment_out	: out type_net_segment;
 		offset		: in type_vector_model);
-		
-		
+
+
 	-- CS: If we some day try to implement a nice algorithm
 	-- that drags net labels along with the segment being moved,
 	-- then this could be a start.
@@ -103,17 +103,17 @@ package et_net_segment is
 	-- overriding procedure move_start_by (
 	-- 	segment	: in out type_net_segment;
 	-- 	offset	: in type_vector_model);
-		
+
 	-- overriding procedure move_end_by (
 	-- 	segment	: in out type_net_segment;
 	-- 	offset	: in type_vector_model);
 
-	
-	
-		
+
+
+
 	type type_segment_array is array (natural range <>) of type_net_segment;
 
-	-- Creates a bare net segment without labels, 
+	-- Creates a bare net segment without labels,
 	-- junctions and ports:
 	function to_net_segment (
 		A, B : in type_vector_model)
@@ -128,19 +128,19 @@ package et_net_segment is
 		AB_end		: in type_start_end_point;
 		device_old	: in type_device_name;
 		device_new	: in type_device_name);
-	
+
 	-- CS: rename_netchanger_port, rename_submodule_port
 
 
-	
+
 
 	-- Adds a net label to the given segment.
 	-- The label is rejected if it is already
 	-- in the list of net labels:
 	procedure add_label (
 		segment	: in out type_net_segment;
-		label	: in type_net_label);					
-	
+		label	: in type_net_label);
+
 
 	-- Returns true if the given net segment
 	-- has a junction on the A or B end:
@@ -148,14 +148,14 @@ package et_net_segment is
 		segment	: in type_net_segment)
 		return boolean;
 
-	
+
 	-- Activates a junction at the given end:
 	procedure set_junction (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point);
 
-	
-	-- Removes a junction at the given end:	
+
+	-- Removes a junction at the given end:
 	procedure clear_junction (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point);
@@ -167,7 +167,7 @@ package et_net_segment is
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 		return boolean;
-	
+
 
 	-- Returns the status of a junction at the specified
 	-- NSWE end of a segment:
@@ -192,7 +192,7 @@ package et_net_segment is
 		segment	: in type_net_segment)
 		return boolean;
 
-	
+
 	-- Sets a connector on the given end of
 	-- the given segment:
 	procedure set_connector (
@@ -206,8 +206,8 @@ package et_net_segment is
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point);
 
-	
-	
+
+
 	-- Returns the status of a connector at the specified
 	-- NSWE end of a segment:
 	function get_connector_status (
@@ -231,8 +231,8 @@ package et_net_segment is
 		NSWE_end	: in type_direction_NSWE)
 		return type_net_connector;
 
-	
-	
+
+
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:
 	function is_connected (
@@ -257,8 +257,8 @@ package et_net_segment is
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;
 		port	: in type_device_port);
-	
-	
+
+
 	-- Inserts in the given segment at the given
 	-- end the given netchanger port.
 	-- If the port is alrady there then nothing happens:
@@ -268,8 +268,8 @@ package et_net_segment is
 		port	: in type_port_netchanger);
 
 
-	
-	
+
+
 	-- Inserts in the given segment at the given
 	-- end the given submodule port.
 	-- If the port is alrady there then nothing happens:
@@ -284,7 +284,7 @@ package et_net_segment is
 		port	: in type_port_netchanger;
 		deleted : out boolean);
 
-	
+
 	procedure delete_submodule_port (
 		segment	: in out type_net_segment;
 		port	: in type_net_submodule_port;
@@ -296,17 +296,17 @@ package et_net_segment is
 	procedure delete_submodule_ports (
 		segment	: in out type_net_segment;
 		module	: in pac_module_instance_name.bounded_string);
-	
-	
+
+
 	-- Returns true if the net segment
 	-- has any ports (devices, submodules, netchangers)
 	-- on the given end (A or B):
 	function has_ports (
 		segment : in type_net_segment;
-		AB_end	: in type_start_end_point)				   
+		AB_end	: in type_start_end_point)
 		return boolean;
 
-	
+
 	-- Returns true if the net segment
 	-- has any ports (devices, submodules, netchangers):
 	function has_ports (
@@ -318,7 +318,7 @@ package et_net_segment is
 	-- the given end of a segment:
 	function get_ports (
 		segment : in type_net_segment;
-		AB_end	: in type_start_end_point)				   
+		AB_end	: in type_start_end_point)
 		return type_net_ports;
 
 
@@ -326,27 +326,27 @@ package et_net_segment is
 	-- the given NSWE end of a segment:
 	function get_ports (
 		segment 	: in type_net_segment;
-		NSWE_end	: in type_direction_NSWE)				   
+		NSWE_end	: in type_direction_NSWE)
 		return type_net_ports;
 
-	
+
 
 	-- Returns the number of ports connected with
 	-- the given end of a segment:
 	function get_port_count (
 		segment : in type_net_segment;
-		AB_end	: in type_start_end_point)   
+		AB_end	: in type_start_end_point)
 		return natural;
 
-								
+
 	-- Appends to a segment the given ports at the given
 	-- end (A/B):
 	procedure append_ports (
 		segment : in out type_net_segment;
-		ports	: in type_net_ports;						   
+		ports	: in type_net_ports;
 		AB_end	: in type_start_end_point);
 
-	
+
 
 	-- When a segment is to be split in two
 	-- segments, then this type should be used for
@@ -361,22 +361,22 @@ package et_net_segment is
 
 
 	-- This function splits a segment at the given point.
-	-- The result is two new segments which join each 
+	-- The result is two new segments which join each
 	-- other at the given point.
-	-- Since the given point is not required to be on 
-	-- the given segment, the resulting segments may run in 
+	-- Since the given point is not required to be on
+	-- the given segment, the resulting segments may run in
 	-- to different directions.
 	-- If either A or B of the given segment is the same
 	-- as the given split point, then there is nothing
-	-- to do. The result is a single segment, namely the 
-	-- given segment without any change:	
+	-- to do. The result is a single segment, namely the
+	-- given segment without any change:
 	function split_segment (
 		segment	: in type_net_segment;
 		point	: in type_vector_model)
 		return type_split_segment;
 
 
-	
+
 	-- Merges secondary net segment with primary segment.
 	-- 1. Assumes that both segments run into the same direction.
 	-- 2. Assumes that both segments join each other at a common end point (A or B).
@@ -385,36 +385,36 @@ package et_net_segment is
 	-- 4. The ports connected with the open ends of the two segments
 	--    are kept.
 	-- 5. Net labels of both segments are kept.
-	-- 6. The status of the junctions at the open ends of the two 
+	-- 6. The status of the junctions at the open ends of the two
 	--    segments are kept, whereas the junctions at the joint are removed.
 	-- 7. Connectors at the open ends of the two segments are kept,
 	--    whereas connectors at the joint are removed.
 	procedure merge_segments (
 		-- The primary segment and its end to be connected:
 		primary			: in out type_net_segment;
-		primary_end		: in type_start_end_point; 
-		
+		primary_end		: in type_start_end_point;
+
 		-- The secondary segment and its end to be connected:
 		secondary		: in type_net_segment;
 		secondary_end	: in type_start_end_point);
 
 
-	
-	
+
+
 	-- Reset status flags of segment, junctions and labels:
 	overriding procedure reset_status (
 		segment : in out type_net_segment);
-	
-	
 
 
 
-	
+
+
+
 -- CONNECT STATUS OF TWO SEGMENTS:
 
 	type type_connect_status is (CON_STS_A, CON_STS_B, CON_STS_NONE);
 
-	-- Tests whether the given primary segment is 
+	-- Tests whether the given primary segment is
 	-- connected with the given secondary segment.
 	-- Starting at the primary segment and its end (A/B),
 	-- the ends of the secondary segment are tested.
@@ -448,7 +448,7 @@ package et_net_segment is
 		return boolean;
 
 
-	
+
 	-- Merges two overlapping segments to a single one.
 	-- "Overlapping" means that both have same orientation
 	-- and do overlap in some way.
@@ -465,14 +465,14 @@ package et_net_segment is
 	function merge_overlapping_segments (
 		primary, secondary : in type_net_segment)
 		return type_net_segment;
-	
 
 
-	
-	
-	package pac_net_segments is new 
+
+
+
+	package pac_net_segments is new
 		doubly_linked_lists (type_net_segment);
-		
+
 	use pac_net_segments;
 
 
@@ -488,11 +488,11 @@ package et_net_segment is
 	-- the given end of a segment:
 	function get_ports (
 		segment : in pac_net_segments.cursor;
-		AB_end	: in type_start_end_point)				   
+		AB_end	: in type_start_end_point)
 		return type_net_ports;
 
 
-	
+
 
 	-- Returns true if the net segment
 	-- has any ports (devices, submodules, netchangers):
@@ -503,16 +503,16 @@ package et_net_segment is
 
 	function has_ports (
 		segment : in pac_net_segments.cursor;
-		AB_end	: in type_start_end_point)				   
+		AB_end	: in type_start_end_point)
 		return boolean;
-	
-	
+
+
 	function is_selected (
 		segment : in pac_net_segments.cursor)
 		return boolean;
 
-	
-	
+
+
 	function get_A (
 		segment : in pac_net_segments.cursor)
 		return type_vector_model;
@@ -525,31 +525,31 @@ package et_net_segment is
 
 	function get_end_point (
 		segment : in pac_net_segments.cursor;
-		AB_end	: in type_start_end_point)				   
+		AB_end	: in type_start_end_point)
 		return type_vector_model;
-		
+
 
 	function is_moving (
 		segment : in pac_net_segments.cursor)
 		return boolean;
 
-	
-	-- Returns true if the start point of the 
+
+	-- Returns true if the start point of the
 	-- given net segment is set as "moving":
 	function is_A_moving (
 		segment	: in pac_net_segments.cursor)
 		return boolean;
 
 
-	-- Returns true if the end point of the 
+	-- Returns true if the end point of the
 	-- given net segment is set as "moving":
 	function is_B_moving (
 		segment	: in pac_net_segments.cursor)
 		return boolean;
 
-	
-	
-	-- Iterates the net segments. 
+
+
+	-- Iterates the net segments.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		segments	: in pac_net_segments.list;
@@ -557,19 +557,19 @@ package et_net_segment is
 		proceed		: not null access boolean);
 
 
-	
-	-- Returns a string that tells about start 
+
+	-- Returns a string that tells about start
 	-- and end coordinates of the net segment.
 	function to_string (
-		segment : in pac_net_segments.cursor) 
+		segment : in pac_net_segments.cursor)
 		return string;
-		
 
 
-	
-	-- Returns true if given point sits between 
+
+
+	-- Returns true if given point sits between
 	-- start and end point (A/B) of the given segment.
-	-- The catch zone is a means of reducing the accuracy. 
+	-- The catch zone is a means of reducing the accuracy.
 	-- The greater the zone
 	-- the greater can be the distance to the segment:
 	function between_A_and_B (
@@ -578,13 +578,13 @@ package et_net_segment is
 		return boolean;
 
 
-	
-	
-	
-	
+
+
+
+
 	-- Returns the orientation of a net segment.
 	function get_segment_orientation (
-		segment : in pac_net_segments.cursor) 
+		segment : in pac_net_segments.cursor)
 		return type_line_orientation;
 
 
@@ -601,8 +601,8 @@ package et_net_segment is
 		return boolean;
 
 
-	
-	
+
+
 
 	-- Returns true if given center of a zone in on the given segment.
 	-- The catch zone is a means of reducing the accuracy. The greater the zone
@@ -613,7 +613,7 @@ package et_net_segment is
 		return boolean;
 
 
-	-- Returns true if the given point sits on 
+	-- Returns true if the given point sits on
 	-- the given segment:
 	function on_segment (
 		point		: in type_vector_model;
@@ -631,15 +631,15 @@ package et_net_segment is
 
 
 
-	
-	-- Similar to function get_connect_status (see above), 
+
+	-- Similar to function get_connect_status (see above),
 	-- but takes cursors to the primary and secondary segment:
 	function get_connect_status (
 		primary 	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		secondary	: in pac_net_segments.cursor)
 		return type_connect_status;
-	
+
 
 
 	-- Returns all points where the given
@@ -650,14 +650,14 @@ package et_net_segment is
 		segments	: in pac_net_segments.list)
 		return pac_points.list;
 
-	
-		
-		
+
+
+
 end et_net_segment;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

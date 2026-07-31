@@ -51,12 +51,12 @@ package body et_device_purpose is
 	end to_string;
 
 
-	
-	function purpose_length_valid (purpose : in string) return boolean is 
+
+	function purpose_length_valid (purpose : in string) return boolean is
 	begin
 		if purpose'length > purpose_length_max then
-			log (SEVERITY_WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
-				 & positive'image (purpose_length_max) & " characters !", 
+			log (SEVERITY_WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than"
+				 & positive'image (purpose_length_max) & " characters !",
 				console => true);
 			return false;
 		else
@@ -72,14 +72,14 @@ package body et_device_purpose is
 		return natural (length (purpose));
 	end get_length;
 
-	
-	
+
+
 	function purpose_characters_valid (
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 		purpose		: in pac_device_purpose.bounded_string;
-		characters	: in character_set := purpose_characters) 
-		return boolean 
+		characters	: in character_set := purpose_characters)
+		return boolean
 	is
 		use pac_device_purpose;
 		invalid_character_position : natural := 0;
@@ -101,8 +101,8 @@ package body et_device_purpose is
 	end purpose_characters_valid;
 
 
-	
-	procedure purpose_invalid (purpose : in string) is 
+
+	procedure purpose_invalid (purpose : in string) is
 	begin
 		--log (ERROR, "purpose " & enclose_in_quotes (purpose) &
 			 --" invalid !", console => true);
@@ -111,7 +111,7 @@ package body et_device_purpose is
 			"ERROR: Purpose " & enclose_in_quotes (purpose) & " invalid !";
 	end purpose_invalid;
 
-	
+
 
 	function to_purpose (
 	-- Tests the given purpose for length and invalid characters.
@@ -140,28 +140,28 @@ package body et_device_purpose is
 	end to_purpose;
 
 
-	
-	
+
+
 
 	function is_empty (
-		purpose : in pac_device_purpose.bounded_string) 
-		return boolean 
+		purpose : in pac_device_purpose.bounded_string)
+		return boolean
 	is begin
 		if purpose = empty_purpose then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_empty;
 
 
-	
-		
+
+
 end et_device_purpose;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

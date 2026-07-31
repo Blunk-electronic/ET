@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_pcb_placeholders.conductor is
-	
+
 
 	procedure reset_placeholder (
 		placeholder : in out type_placeholder_conductor)
@@ -51,24 +51,24 @@ package body et_pcb_placeholders.conductor is
 		placeholder.meaning := placeholder_meaning_default;
 		placeholder.layer := signal_layer_default;
 	end;
-	
 
 
-	
+
+
 
 	function to_string (
 		placeholder : in type_placeholder_conductor)
 		return string
-	is 
+	is
 		tf : constant type_text_fab := type_text_fab (placeholder);
 	begin
-		return to_string (tf) 
+		return to_string (tf)
 			& " layer " & to_string (get_layer (placeholder))
 			& " meaning " & to_string (get_meaning (placeholder));
 	end to_string;
 
 
-	
+
 
 	function get_meaning (
 		placeholder : in type_placeholder_conductor)
@@ -77,7 +77,7 @@ package body et_pcb_placeholders.conductor is
 		return placeholder.meaning;
 	end get_meaning;
 
-	
+
 
 	function get_layer (
 		placeholder : in type_placeholder_conductor)
@@ -87,10 +87,10 @@ package body et_pcb_placeholders.conductor is
 	end get_layer;
 
 
-	
+
 
 	function to_string (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return string
 	is begin
 		return to_string (element (placeholder));
@@ -113,10 +113,10 @@ package body et_pcb_placeholders.conductor is
 	end iterate;
 
 
-	
-	
+
+
 	function get_layer (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return type_signal_layer
 	is begin
 		return element (placeholder).layer;
@@ -125,7 +125,7 @@ package body et_pcb_placeholders.conductor is
 
 
 	function is_selected (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
 	is begin
 		if is_selected (element (placeholder)) then
@@ -134,11 +134,11 @@ package body et_pcb_placeholders.conductor is
 			return false;
 		end if;
 	end is_selected;
-	
+
 
 
 	function is_proposed (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
 	is begin
 		if is_proposed (element (placeholder)) then
@@ -148,13 +148,13 @@ package body et_pcb_placeholders.conductor is
 		end if;
 	end is_proposed;
 
-	
-	
+
+
 end et_pcb_placeholders.conductor;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -62,44 +62,44 @@ package et_module_read_stencil is
 
 	procedure read_stencil_line (
 		line	: in type_fields_of_line);
-	
+
 
 	procedure read_stencil_arc (
 		line	: in type_fields_of_line);
 
-	
+
 	procedure read_stencil_circle (
 		line	: in type_fields_of_line);
 
-	
-	
+
+
 	procedure insert_stencil_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_stencil_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_stencil_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 end et_module_read_stencil;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

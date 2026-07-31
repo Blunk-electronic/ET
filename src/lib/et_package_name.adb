@@ -57,7 +57,7 @@ package body et_package_name is
 	end to_string;
 
 
-	
+
 	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
 	begin
 		return pac_package_name.to_bounded_string (package_name);
@@ -65,18 +65,18 @@ package body et_package_name is
 
 
 
-	
+
 	procedure check_package_name_length (packge : in string) is
 	begin
 		if packge'length > package_name_length_max then
-			log (SEVERITY_WARNING, "package name too long. Max. length is" 
+			log (SEVERITY_WARNING, "package name too long. Max. length is"
 				 & positive'image (package_name_length_max) & " !");
 		end if;
 	end check_package_name_length;
 
 
 
-	
+
 	procedure check_package_name_characters (
 		packge		: in pac_package_name.bounded_string;
 		characters	: in character_set := package_name_characters)
@@ -96,13 +96,13 @@ package body et_package_name is
 		end if;
 	end check_package_name_characters;
 
-	
-	
+
+
 end et_package_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

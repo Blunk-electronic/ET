@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,17 +55,17 @@ package body et_directory_and_file_ops is
 
 		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
 		separator : constant string := (1 * gnat.directory_operations.dir_separator); -- /\
-		
+
 		place_prefix : natural := 0;
 		unused_place_separator : natural := 0;
 		--use gnat.directory_operations;
 		--use et_string_processing;
-		
+
 -- 		function do_it (path : in string) return string is begin
 -- 			log ("full path is " & path, log_threshold + 1);
 -- 			return path;
 -- 		end;
-		
+
 	begin -- expand
 		place_prefix := index (name_in, prefix);
 		unused_place_separator := index (name_in, separator);
@@ -75,12 +75,12 @@ package body et_directory_and_file_ops is
 		else
 			-- name contains an environment variable
 			--log_indentation_up;
-			
+
 			--log ("expanding " & name_in, log_threshold);
 			-- CS test_vars (name_in); -- test if environment variables exist
-			
+
 			--log_indentation_down;
-			
+
 			--return do_it (gnat.directory_operations.expand_path (name_in));
 			return gnat.directory_operations.expand_path (name_in);
 		end if;
@@ -89,15 +89,15 @@ package body et_directory_and_file_ops is
 
 
 
-	
-	function make_filter_pattern (extension : in string) return string is 
+
+	function make_filter_pattern (extension : in string) return string is
 		use ada.directories;
 	begin
 		return compose (name => "*", extension => extension);
 	end make_filter_pattern;
 
 
-	
+
 
 	function directory_entries (
 		target_directory	: in string;						-- ../lbr
@@ -108,7 +108,7 @@ package body et_directory_and_file_ops is
 		use ada.directories;
 		filter : filter_type;
 		entries : pac_directory_entries.list; -- to be returned
-		
+
 		procedure do_it (item : in directory_entry_type) is
 		-- appends items to the container "entries"
 		begin
@@ -133,17 +133,17 @@ package body et_directory_and_file_ops is
 
 		-- start search
 		search (target_directory, pattern, filter, do_it'access);
-		
+
 		return entries;
 	end directory_entries;
 
-	
-	
+
+
 end et_directory_and_file_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

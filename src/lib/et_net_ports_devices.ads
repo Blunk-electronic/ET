@@ -56,33 +56,33 @@ with et_string_processing;		use et_string_processing;
 
 
 package et_net_ports_devices is
-	
+
 
 -- DEVICE:
-	
-	-- This is the port of a unit as it is connected 
+
+	-- This is the port of a unit as it is connected
 	-- with a net segment:
 	type type_device_port is record -- CS rename to type_net_unit_port
 		device_name	: type_device_name; -- IC4
 		-- CS cursor to the electrical device instead ?
 		-- could improve performance.
-		
+
 		unit_name	: pac_unit_name.bounded_string; -- A
 		-- CS cursor to the unit instead ?
 		-- could improve performance.
-		
+
 		port_name	: pac_port_name.bounded_string; -- IN1
 		-- CS cursor to the port instead ?
 		-- could improve performance.
 	end record;
 
 
-	
+
 	function "<" (
-		left, right : in type_device_port) 
+		left, right : in type_device_port)
 		return boolean;
 
-		
+
 
 	-- Builds a device port:
 	function to_device_port (
@@ -92,7 +92,7 @@ package et_net_ports_devices is
 		return type_device_port;
 
 
-	
+
 	-- Converts a string like "device IC1 unit C port I1"
 	-- to a device port.
 	-- If something is wrong, then the error-flag is set:
@@ -101,15 +101,15 @@ package et_net_ports_devices is
 		error		: out boolean;
 		port		: out type_device_port);
 
-	
-	
+
+
 	-- Many device ports are stored in ordered sets:
-	package pac_device_ports is new 
+	package pac_device_ports is new
 		ordered_sets (type_device_port);
-		
+
 	use pac_device_ports;
 
-	
+
 
 	-- Returns something like "device IC1 unit A port PD4":
 	function to_string (port : in type_device_port) return string;
@@ -125,21 +125,21 @@ package et_net_ports_devices is
 		device_old	: in type_device_name;
 		device_new	: in type_device_name);
 
-	
-	
-	-- Iterates the device ports. 
+
+
+	-- Iterates the device ports.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		ports	: in pac_device_ports.set;
 		process	: not null access procedure (position : in pac_device_ports.cursor);
 		proceed	: not null access boolean);
 
-	
+
 end et_net_ports_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -56,7 +56,7 @@ package et_module_read_nets is
 
 	route : et_route.type_net_route; -- scratch, CS: rework required
 
-	
+
 
 -- NETS:
 
@@ -76,10 +76,10 @@ package et_module_read_nets is
 
 
 
-	
+
 -- STRANDS:
-	
-	
+
+
 	-- Reads a line that describes the position of a strand:
 	procedure read_strand (
 		line			: in type_fields_of_line;
@@ -90,39 +90,39 @@ package et_module_read_nets is
 	procedure assign_net_strand (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-		
-	
+
+
 	-- insert strand collection in net
 	procedure insert_strands;
-	
-	
 
-	
-	
-	
+
+
+
+
+
 -- SEGMENTS:
-	
+
 	procedure read_net_segment (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- Appends the net_segment to the list of net segments:
 	procedure assign_net_segment (
 		log_threshold	: in type_log_level);
-	
-	
+
+
 	-- insert segments in strand
 	procedure insert_net_segments;
-	
-	
 
-	
-	
-	
+
+
+
+
+
 
 -- JUNCTIONS:
-	
+
 	-- Reads a line that describes a net junction
 	-- (like "A/B") that is active on an end
 	-- of a net segment. Once the line is read, the junction
@@ -130,22 +130,22 @@ package et_module_read_nets is
 	procedure read_net_junction (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-		
-		
-		
+
+
+
 	-- Assigns the net_junctions to the net:
 	procedure assign_net_junctions (
 		log_threshold	: in type_log_level);
-	
-	
-	
 
-	
-	
-	
+
+
+
+
+
+
 -- CONNECTORS:
-	
-	-- Reads a line that describes a net connector 
+
+	-- Reads a line that describes a net connector
 	-- (like "A/B direction input/output") that is attached to an end
 	-- of a net segment. Once the line is read, the connector
 	-- is assigned to the variable net_connectors (see above):
@@ -153,36 +153,36 @@ package et_module_read_nets is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 	-- Assigns the net_connectors to the net_segment:
 	procedure assign_net_connectors (
 		log_threshold	: in type_log_level);
 
-	
-	
-	
-	
+
+
+
+
 -- LABELS:
-	
+
 	-- Reads a line that describes a net label:
 	procedure read_label (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 	-- insert label in label collection
 	procedure insert_net_label;
-		
-		
+
+
 	-- Assigns the net_labels to the net segment:
 	procedure assign_net_labels (
 		log_threshold	: in type_log_level);
-		
-		
 
-		
-		
+
+
+
+
 -- PORTS:
 
 	-- Reads a port of a device, submodule or netchanger
@@ -191,38 +191,38 @@ package et_module_read_nets is
 	-- Appends the port to net_segment_ports.
 	-- NOTE: A device, submodule or netchanger port is defined by a
 	-- single line.
-	-- Upon reading the line like "A/B device/submodule/netchanger x port 1" 
-	-- the port is appended to the corresponding port collection 
+	-- Upon reading the line like "A/B device/submodule/netchanger x port 1"
+	-- the port is appended to the corresponding port collection
 	-- net_segment_ports immediately after the line has been read:
 	procedure read_net_port (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Assigns net_segment_ports to the net segment:
 	procedure assign_net_ports (
 		log_threshold	: in type_log_level);
 
-	
-	
-	
-	
+
+
+
+
 -- ROUTE:
 
 	-- Insert route in net:
 	procedure assign_route;
-		
-		
-		
+
+
+
 end et_module_read_nets;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -70,18 +70,18 @@ package body et_board_ops_user_settings is
 		end;
 	begin
 		pac_generic_modules.query_element (module, query_module'access);
-		
+
 		return settings;
 	end get_user_settings;
 
-	
+
 
 end et_board_ops_user_settings;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

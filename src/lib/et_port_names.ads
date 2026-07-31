@@ -41,29 +41,29 @@ with ada.strings.bounded; 				use ada.strings.bounded;
 
 package et_port_names is
 
-	
+
 	port_name_length_max : constant natural := 100;
-	
+
 	package pac_port_name is new generic_bounded_length (port_name_length_max);
 
 
 	function to_string (
-		port : in pac_port_name.bounded_string) 
+		port : in pac_port_name.bounded_string)
 		return string;
 
-	
+
 	function to_port_name (
-		name : in string) 
+		name : in string)
 		return pac_port_name.bounded_string;
 
-	
-	
-	
+
+
+
 end et_port_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

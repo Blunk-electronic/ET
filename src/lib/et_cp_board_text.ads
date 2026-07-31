@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -49,7 +49,7 @@ package et_cp_board_text is
 
 
 	-- Parses a command that places a text.
-	-- Examples: 
+	-- Examples:
 	-- board demo place text conductor 3 0.15 1 20 5 0 "Dummy Text"
 	-- board demo place text silkscreen top 0.15 1 140 100 0 "Dummy Text"
 	procedure place_text (
@@ -65,12 +65,12 @@ package et_cp_board_text is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_cp_board_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

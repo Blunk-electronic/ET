@@ -48,14 +48,14 @@ with et_device_placeholders;			use et_device_placeholders;
 
 package body et_package_read_text is
 
-	use pac_geometry_2;	
-	
-	
+	use pac_geometry_2;
+
+
 
 
 	procedure read_text (
 		line : in type_fields_of_line)
-	is	
+	is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -78,11 +78,11 @@ package body et_package_read_text is
 
 			-- extract alignment starting at field 2
 			pac_text.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_content then -- content "keep clear"
 			expect_field_count (line, 2); -- actual content in quotes !
 			pac_text.content := to_content (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -92,7 +92,7 @@ package body et_package_read_text is
 
 
 
-		
+
 	procedure read_placeholder (
 		line : in type_fields_of_line)
 	is
@@ -118,16 +118,16 @@ package body et_package_read_text is
 
 			-- extract alignment starting at field 2
 			pac_text_placeholder.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_meaning then -- meaning reference, value, purpose
 			expect_field_count (line, 2);
 			pac_text_placeholder.meaning := to_meaning (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_placeholder;
-	
 
-	
+
+
 end et_package_read_text;

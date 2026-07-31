@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with gtk.text_view;
 
@@ -57,14 +57,14 @@ with et_object_status;
 package et_canvas_board_texts is
 
 	use pac_geometry_2;
-	
-	
+
+
 	-- This procedure creates a set of categories:
 	procedure make_affected_layer_categories;
 
-	
-	
-	
+
+
+
 
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
@@ -76,12 +76,12 @@ package et_canvas_board_texts is
 			status		=> et_object_status.get_default_status,
 			alignment	=> text_alignment_default,
 			content		=> empty_text_content);
-		
+
 		-- NOTE: The content will be extracted from selector entry_content.
 		entry_content	: gtk.text_view.gtk_text_view;
 	end record;
 
-	
+
 	-- The place where preliminary information of
 	-- a text is stored as the operator specifies them
 	-- via the GUI (text properties box):
@@ -92,7 +92,7 @@ package et_canvas_board_texts is
 	-- CS currently nothing happens here:
 	procedure reset_preliminary_text;
 
-	
+
 
 	-- Builds the box for the text properties and
 	-- inserts it below the console.
@@ -101,16 +101,16 @@ package et_canvas_board_texts is
 
 
 
-	
-	
+
+
 -- PLACING:
 
 	-- to be output in the status bar:
-	status_place_text : constant string := 
-		status_click_left 
+	status_place_text : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to place text." 
+		& "to place text."
 		& status_hint_for_abort;
 
 
@@ -124,13 +124,13 @@ package et_canvas_board_texts is
 	procedure place_text (
 		point : in type_vector_model);
 
-	
-	
+
+
 end et_canvas_board_texts;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

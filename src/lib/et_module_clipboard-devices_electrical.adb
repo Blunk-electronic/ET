@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 -- with et_exceptions;				use et_exceptions;
@@ -54,7 +54,7 @@ package body et_module_clipboard.devices_electrical is
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (device_cursor, unit_cursor);
 
 	begin
@@ -67,13 +67,13 @@ package body et_module_clipboard.devices_electrical is
 		log_indentation_down;
 	end copy_unit_to_clipboard;
 
-	
-		
+
+
 end et_module_clipboard.devices_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

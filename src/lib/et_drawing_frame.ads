@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ package et_drawing_frame is
 
 -- PAPER SIZES
 	-- CS move to spearate package
-	
+
     type type_paper_size is (A3, A4); -- CS: others ?
     paper_size_default : constant type_paper_size := A4;
 
@@ -65,20 +65,20 @@ package et_drawing_frame is
 	function to_string (orientation : in type_orientation) return string;
 	function to_orientation (orientation : in string) return type_orientation;
 
-	
+
 	template_file_name_length_max : constant positive := 300;
 	template_file_name_dummy : constant string := "dummy_frame";
 
 	-- There are only two linewidths, expressed in mm:
 	linewidth_1 : constant := 0.3;
-	linewidth_2 : constant := 1.0; 
+	linewidth_2 : constant := 1.0;
 
 
 
-	
+
 
 -- COLUMNS AND ROWS:
-	
+
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
 	type type_rows is new positive range 1..26;
@@ -86,27 +86,27 @@ package et_drawing_frame is
 
 	function to_string (rows : in type_rows) return string;
 	function to_rows (rows : in string) return type_rows;
-	
+
 	type type_columns is new positive range 1..26;
 	columns_default : constant type_columns := 10;
 
 	function to_string (columns : in type_columns) return string;
 	function to_columns (columns : in string) return type_columns;
-	
+
 	row_characters : constant character_set := to_set (span => ('A','Z')); -- CS currently not used
-	-- CS row numbers must be mapped to row characters 
-	
+	-- CS row numbers must be mapped to row characters
+
 	type type_sectors is record
-		rows	: type_rows := rows_default; 
+		rows	: type_rows := rows_default;
 		columns	: type_columns := columns_default;
 	end record;
 
 
-	
+
 
 -- DISTANCE AND DIMENSION:
-	
-	-- The unit for all kinds of distances in 
+
+	-- The unit for all kinds of distances in
 	-- a drawing frame is millimeters.
 	-- We use whole numbers as this accurary is sufficient
 	-- for everything related to a drawing frame:
@@ -115,24 +115,24 @@ package et_drawing_frame is
 
 	subtype type_distance_positive is -- CS rename to type_distance_frame_positive ?
 		type_distance range 0 .. type_distance'last;
-	
 
 
-	
+
+
 	-- Converts a distance to a string:
 	function to_string (
-		distance : in type_distance) 
+		distance : in type_distance)
 		return string;
 
-	
+
 	-- Converts a string to a distance:
 	function to_distance (
 		distance : in string)
 		return type_distance;
 
-	
 
-	
+
+
 	-- The dimensions of a frame:
 	type type_frame_size is record
 		x	: type_distance_positive := 280;
@@ -140,26 +140,26 @@ package et_drawing_frame is
 	end record;
 
 
-	
+
 	-- The space between inner and outer border:
 	subtype type_border_width is type_distance_positive range 4 .. 10;
 	border_width_default : constant type_border_width := 5;
 
 
-	
 
-	
+
+
 
 -- PAPER SIZES:
-	
+
 	paper_size_A3_x : constant type_distance_positive := 420;
 	paper_size_A3_y : constant type_distance_positive := 297;
-	
+
 	paper_size_A4_x : constant type_distance_positive := 297;
 	paper_size_A4_y : constant type_distance_positive := 210;
 
-	
-	-- Returns for the given paper size, 
+
+	-- Returns for the given paper size,
 	-- orientation and axis the corresponding size in mm:
 	function paper_dimension (
 		paper_size	: in type_paper_size;
@@ -169,12 +169,12 @@ package et_drawing_frame is
 
 
 
-	
+
 
 -- POSITION:
 
 
-	
+
 	-- A position in the drawing frame domain:
 	type type_position is record
 		x, y : type_distance := 0;
@@ -185,31 +185,31 @@ package et_drawing_frame is
 	function add (
 		right, left : in type_position)
 		return type_position;
-	
 
 
-	
+
+
 	type type_output_format is (
 		FORMAT_1,
 		FORMAT_2,
 		FORMAT_3);
 
-	
+
 	-- Converts a position to a string
 	-- and formatted as follows:
-	-- FORMAT_1 : "x/y 4.5 / 5.6" 
+	-- FORMAT_1 : "x/y 4.5 / 5.6"
 	-- FORMAT_2 : x 4.5 y 5.6
-	-- FORMAT_3 : 4.5 5.6	
+	-- FORMAT_3 : 4.5 5.6
 	function to_string (
 		p 		: in type_position;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
 
-	
-	
+
+
 -- LINES:
-	
+
 	type type_line is record
 		A	: type_position;
 		B	: type_position;
@@ -221,21 +221,21 @@ package et_drawing_frame is
 
 
 
-	
+
 -- TEXT:
-	
+
 	subtype type_text_size is type_distance_positive range 1 .. 50;
-	
+
 	text_size_default : constant type_text_size := 3;
 
 
-	
+
 	type type_placeholder is tagged record
 		size		: type_text_size := text_size_default;
 		position	: type_position;
 	end record;
 
-	
+
 	-- These placeholders are common in both schematic and pcb title blocks:
 	type type_placeholders_common is record
 		project_name			: type_placeholder; -- name of project directory
@@ -243,7 +243,7 @@ package et_drawing_frame is
 		active_assembly_variant	: type_placeholder; -- the active assembly variant
 	end record;
 
-	
+
 	-- Basic placeholders are separately available for schematic and pcb.
 	-- For example the revision in schematic is not necessarily the same as in the layout.
 	-- Another example: The person who has drawn the schematic is not necessarily the
@@ -254,7 +254,7 @@ package et_drawing_frame is
 		partcode		: type_placeholder;
 		drawing_number	: type_placeholder;
 		revision		: type_placeholder;
-		
+
 		drawn_by		: type_placeholder;
 		checked_by		: type_placeholder;
 		approved_by		: type_placeholder;
@@ -268,7 +268,7 @@ package et_drawing_frame is
 	end record;
 
 
-	
+
 	-- Static texts are strings like "drawn" or "sheet".
 	-- They are usually placed left of a placeholder:
 	type type_static_text is new type_placeholder with record
@@ -279,7 +279,7 @@ package et_drawing_frame is
 
 
 
-	
+
 
 	-- The basic title block:
 	type type_title_block is tagged record
@@ -294,14 +294,14 @@ package et_drawing_frame is
 	end record;
 
 
-	
+
 	-- GUI relevant only: The font of placeholders:
 	font_placeholders : constant type_font :=
-		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);	
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	-- GUI relevant only: The font of other texts:
 	font_texts : constant type_font :=
-		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);	
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	-- GUI relevant only: The font of column and row indexes:
 	font_indexes : constant type_font :=
@@ -309,10 +309,10 @@ package et_drawing_frame is
 
 	-- GUI relevant only: The font size of column and row indexes:
 	font_indexes_size : constant type_distance := 3;
-	
 
 
-	
+
+
 
 -- FILE NAMES
 
@@ -321,17 +321,17 @@ package et_drawing_frame is
 	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
 
 
-	
+
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
 
 
-	
-	
 
 
 
-	
+
+
+
 -- GENERAL FRAME:
 
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
@@ -339,7 +339,7 @@ package et_drawing_frame is
 	domain_prefix : constant string := ("DOMAIN_");
 
 
-	
+
 	-- The frame may be used in a schematic drawing or a layout drawing:
 	type type_domain is (DOMAIN_SCHEMATIC, DOMAIN_PCB);
 
@@ -361,7 +361,7 @@ package et_drawing_frame is
 	procedure set_position (
 		frame 		: in out type_frame_general;
 		position	: in type_position);
-	
+
 
 	-- Gets the position of a frame:
 	function get_position (
@@ -369,12 +369,12 @@ package et_drawing_frame is
 		return type_position;
 
 
-	
+
 end et_drawing_frame;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

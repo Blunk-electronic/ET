@@ -57,21 +57,21 @@ package body et_power_sources is
 	end;
 
 
-	
+
 	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
 	-- The prefix LEVEL_ is prepended.
-	function to_power_level (level : in string) return type_power_level is 
+	function to_power_level (level : in string) return type_power_level is
 	begin
 		return type_power_level'value ("LEVEL_" & level);
 	end;
 
-	
-	
+
+
 end et_power_sources;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

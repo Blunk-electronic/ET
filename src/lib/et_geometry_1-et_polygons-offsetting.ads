@@ -38,23 +38,23 @@
 
 
 generic
-	
+
 package et_geometry_1.et_polygons.offsetting is
-	
+
 	-- See:
 	-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
 	-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
 	-- <https://mcmains.me.berkeley.edu/pubs/DAC05OffsetPolygon.pdf>
-	
+
 	-- CS subtype for offset
 
-	
+
 -- STEP 1 related:
 ------------------
 	-- A single edge of a polygon is offset so that a new
 	-- edge is formed. It runs parallel to the original edge but
 	-- is shifted to the left or right (according to the desired offset).
-	-- An intersection of this edge with another "offset edge" is called 
+	-- An intersection of this edge with another "offset edge" is called
 	-- a "direct intersection".
 	-- Furthermore we get an infinite long line (overlapping the edge).
 	-- An intersection of this line with the previous line can be considered
@@ -67,13 +67,13 @@ package et_geometry_1.et_polygons.offsetting is
 		line	: type_line_vector;
 	end record;
 
-	
+
 	function to_string (oe : in type_offset_edge) return string;
 
 
 	type type_mode is private;
 
-	
+
 	-- This procedure computes an "offset edge" from an original edge.
 	-- An "offset edge" is a composite of an edge and an infinite long line.
 	-- See specification of type_offset_edge.
@@ -84,8 +84,8 @@ package et_geometry_1.et_polygons.offsetting is
 		mode	: in type_mode)
 		return type_offset_edge;
 
-	
-	
+
+
 	-- When preprocessing the polygon for each edge an "offset edge" is
 	-- created and stored in a list:
 	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
@@ -97,7 +97,7 @@ package et_geometry_1.et_polygons.offsetting is
 
 -- STEP 2 related:
 ------------------
-	-- For each "offset edge" there is another edge that intersects the 
+	-- For each "offset edge" there is another edge that intersects the
 	-- candidate edge. This composite type has a cursor that points to
 	-- the next "offset edge" that is intersecting the candidate edge.
 	-- It also provides via "place" the exact point of intersection:
@@ -115,9 +115,9 @@ package et_geometry_1.et_polygons.offsetting is
 
 		-- A direct intersection MAY exist:
 		case direct_available is
-			when TRUE => 
+			when TRUE =>
 				direct : type_next_intersection;
-				
+
 			when FALSE => null;
 		end case;
 	end record;
@@ -127,16 +127,16 @@ package et_geometry_1.et_polygons.offsetting is
 	package pac_edge_intersections is new indefinite_doubly_linked_lists (type_edge_intersection);
 
 
-	
+
 -- STEP 3 related:
-------------------	
+------------------
 	-- The result of step 2 is examined and converted to a list of
 	-- final vertices. These vertices in turn are converted to the final polygon.
 	-- See body of procedure offset_polygon for details.
 
-	
-	
-	-- Offsets (the edges of) a polygon. 
+
+
+	-- Offsets (the edges of) a polygon.
 	-- If offset is positive then the edges are moved toward the outside
 	-- of the polygon. The polygon area then becomes greater.
 	-- If offset is negative then the edges are moved inside. The polygon area
@@ -153,7 +153,7 @@ package et_geometry_1.et_polygons.offsetting is
 		return type_polygon;
 
 
-	
+
 	-- Offsets a list of polygons:
 	function offset_polygons (
 		polygons		: in pac_polygon_list.list;
@@ -161,14 +161,14 @@ package et_geometry_1.et_polygons.offsetting is
 		log_threshold	: in type_log_level)
 		return pac_polygon_list.list;
 
-	
+
 	procedure offset_polygons (
 		polygons		: in out pac_polygon_list.list;
 		offset			: in type_float;
 		log_threshold	: in type_log_level);
 
 private
-	
+
 	type type_mode is (
 		EXPAND,		-- polygon area becomes greater
 		SHRINK,		-- polygon area becomes smaller
@@ -182,12 +182,12 @@ private
 		offset : in type_float)
 		return type_mode;
 
-	
+
 end et_geometry_1.et_polygons.offsetting;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

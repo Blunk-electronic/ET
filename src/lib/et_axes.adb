@@ -44,32 +44,32 @@ with ada.characters.handling;	use ada.characters.handling;
 
 
 package body et_axes is
-	
+
 
 	function to_string (
-		axis : in type_axis) 
-		return string 
-	is 
+		axis : in type_axis)
+		return string
+	is
 		s : constant string := to_lower (type_axis'image (axis));
 	begin
 		return s (axis_prefix'length + 1 .. s'last);
 	end;
 
-	
+
 	function to_axis (
-		axis : in string) 
-		return type_axis 
+		axis : in string)
+		return type_axis
 	is begin
 		return type_axis'value (axis_prefix & axis);
 	end;
 
-	
-		
+
+
 end et_axes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

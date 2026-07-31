@@ -46,12 +46,12 @@ with et_logging;				use et_logging;
 
 package et_device_name is
 
-	
-	prefix_default : constant pac_device_prefix.bounded_string := 
+
+	prefix_default : constant pac_device_prefix.bounded_string :=
 		pac_device_prefix.to_bounded_string ("?");
 
-	
-	subtype type_name_index is natural range natural'first .. 99_999; 
+
+	subtype type_name_index is natural range natural'first .. 99_999;
 	-- Index 0 is allowed in very rare and special cases. In general,
 	-- the index is to start with 1.
 
@@ -63,27 +63,27 @@ package et_device_name is
 	-- Index 0 is allowed in very rare and special cases.
 	-- In general we start with 1.
 
-	
+
 
 	name_index_default : constant type_name_index := 0;
 
-	
-	
+
+
 	function to_string (index : in type_name_index) return string;
 
 	function to_index (index : in string) return type_name_index;
 
-	
-	subtype type_index_width is positive range positive'first .. 5; 
+
+	subtype type_index_width is positive range positive'first .. 5;
 	-- see number of digits of type_device_name_index
 
 
 
-	
+
 	type type_device_name is record -- CS: should be private
 		prefix		: pac_device_prefix.bounded_string := prefix_default; -- like "IC"
 		id			: type_name_index := name_index_default; -- like "303"
-		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id. 
+		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id.
 		-- Example: id_width is 3 in case of an id like of 937
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
@@ -92,14 +92,14 @@ package et_device_name is
 
 	-- CS function get_width
 	-- CS procedure set_width
-	
-	
-	
+
+
+
 	-- Returns true if the prefixes of left and right are equal:
 	function same_prefix (left, right : in type_device_name) return boolean;
 
 
-	
+
 	-- Converts a string like "IC303" to a composite type_device_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
@@ -109,45 +109,45 @@ package et_device_name is
 
 
 	-- Returns true if left comes before right.
-	-- If left equals right, the return is false.	
+	-- If left equals right, the return is false.
 	function "<" (left, right : in type_device_name) return boolean;
 
 
-	
+
 	-- Returns true if left equals right.
 	function "=" (left, right : in type_device_name) return boolean;
 
 
 	no_name : constant type_device_name := (others => <>);
-	
 
-	
+
+
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
 	function to_string (name : in type_device_name) return string;
 
-	
-	
-	
+
+
+
 	-- Returns the prefix of the given device name.
 	function get_prefix (
-		name : in type_device_name) 
+		name : in type_device_name)
 		return pac_device_prefix.bounded_string;
 
-		
+
 	-- Sets the prefix of the given device name:
 	procedure set_prefix (
 		name	: in out type_device_name;
 		prefix	: in pac_device_prefix.bounded_string);
-		
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	-- Returns the index of the given device name.
 	function get_index (
-		name : in type_device_name) 
+		name : in type_device_name)
 		return type_name_index;
 
 
@@ -155,13 +155,13 @@ package et_device_name is
 	procedure set_index (
 		name	: in out type_device_name;
 		index	: in type_name_index);
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
@@ -172,8 +172,8 @@ package et_device_name is
 		return type_device_name;
 
 
-	
-	-- Adds to the device index the given offset. 
+
+	-- Adds to the device index the given offset.
 	-- Example: given name is R4, given offset is 100. Result R104.
 	procedure offset_index (
 		name	: in out type_device_name;
@@ -219,27 +219,27 @@ package et_device_name is
 
 
 	-- Logs a message like "WARNING. Device C12 not found."
-	-- The severity decides whether to output the message on 
+	-- The severity decides whether to output the message on
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_device_not_found (
 		severity	: in type_message_severity;
 		name		: in type_device_name);
-				 
+
 	-- Logs a message like "WARNING. Device C12 already exists."
-	-- The severity decides whether to output the message on 
+	-- The severity decides whether to output the message on
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_device_already_exists (
 		severity	: in type_message_severity;
 		name		: in type_device_name);
 
-				 
+
 end et_device_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

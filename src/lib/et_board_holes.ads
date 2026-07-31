@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This package is about the holes in the board (PCB).
 -- Holes may have any shape.
 --
@@ -61,7 +61,7 @@ package et_board_holes is
 	use pac_contours;
 	use pac_polygons;
 
-	
+
 	-- There can be many holes inside the PCB area:
 	-- This is a single hole:
 	type type_hole is new type_contour with null record;
@@ -75,8 +75,8 @@ package et_board_holes is
 
 
 
-	
-	
+
+
 	-- Iterates the holes.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -84,7 +84,7 @@ package et_board_holes is
 		process	: not null access procedure (position : in pac_holes.cursor);
 		proceed	: not null access boolean);
 
-	
+
 
 	-- Mirrors a list of holes along the given axis:
 	procedure mirror_holes (
@@ -103,7 +103,7 @@ package et_board_holes is
 		holes	: in out pac_holes.list;
 		offset	: in type_vector_model);
 
-	
+
 	-- Converts a list of holes to a list of polygons:
 	function to_polygons (
 		holes		: in pac_holes.list;
@@ -127,7 +127,7 @@ end et_board_holes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

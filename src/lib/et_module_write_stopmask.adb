@@ -61,8 +61,8 @@ package body et_module_write_stopmask is
 	use pac_geometry_2;
 	use pac_file_rw;
 
-	
-	
+
+
 	procedure write_stopmask (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -72,18 +72,18 @@ package body et_module_write_stopmask is
 		use pac_stop_arcs;
 		use pac_stop_circles;
 
-		
-		procedure write_line (cursor : in pac_stop_lines.cursor) is 
+
+		procedure write_line (cursor : in pac_stop_lines.cursor) is
 			use pac_stop_lines;
 		begin
 			section_mark (section_line, HEADER);
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_stop_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_stop_arcs.cursor) is
 			use pac_stop_arcs;
 		begin
 			section_mark (section_arc , HEADER);
@@ -92,8 +92,8 @@ package body et_module_write_stopmask is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_stop_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_stop_circles.cursor) is
 			use pac_stop_circles;
 		begin
 			section_mark (section_circle, HEADER);
@@ -102,14 +102,14 @@ package body et_module_write_stopmask is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
-			stopmask : type_stop_mask_both_sides 
+			stopmask : type_stop_mask_both_sides
 				renames module.board.stopmask;
 		begin
 			case face is
@@ -122,10 +122,10 @@ package body et_module_write_stopmask is
 					iterate (stopmask.bottom.lines, write_line'access);
 					iterate (stopmask.bottom.arcs, write_arc'access);
 					iterate (stopmask.bottom.circles, write_circle'access);
-			end case;					
+			end case;
 		end query_module;
-		
-			
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write stopmask lines, arcs and circles",
@@ -137,13 +137,13 @@ package body et_module_write_stopmask is
 	end write_stopmask;
 
 
-	
+
 end et_module_write_stopmask;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -92,13 +92,13 @@ package body et_schematic_ops_units is
 
 	use pac_devices_electrical;
 	use pac_units;
-	
+
 	use pac_unit_name;
 	use pac_text_schematic;
-	
+
 	use pac_net_name;
 
-	
+
 
 	procedure dragging_not_possible (
 		port 		: in string;
@@ -117,9 +117,9 @@ package body et_schematic_ops_units is
 
 
 	procedure relative_rotation_invalid is begin
-		log (SEVERITY_ERROR, "Relative rotation must be in range" & 
+		log (SEVERITY_ERROR, "Relative rotation must be in range" &
 			to_string (rotation_relative_min) &
-			" .." & 
+			" .." &
 			to_string (rotation_relative_max),
 			console => true
 			);
@@ -127,11 +127,11 @@ package body et_schematic_ops_units is
 	end;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	function locate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
@@ -149,7 +149,7 @@ package body et_schematic_ops_units is
 		begin
 			unit_cursor := find (device.units, unit);
 		end query_units;
-	
+
 	begin -- locate_unit
 		device_cursor := get_electrical_device (module_cursor, device);
 
@@ -160,10 +160,10 @@ package body et_schematic_ops_units is
 	end locate_unit;
 
 
-	
 
-	
-	
+
+
+
 
 	function is_deployed (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -184,18 +184,18 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in pac_port_name.bounded_string) -- CE
-		return boolean 
+		return boolean
 	is
 		result : boolean := false; -- to be returned. goes true once the target has been found
 
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -204,10 +204,10 @@ package body et_schematic_ops_units is
 			use pac_unit_name;
 			device_cursor : pac_devices_electrical.cursor;
 
-			
+
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_electrical) 
+				device		: in type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -218,7 +218,7 @@ package body et_schematic_ops_units is
 				while unit_cursor /= pac_units.no_element loop
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
 					--log (text => "port " & pac_port_name.to_string (port_name));
-					
+
 					-- Get the unit ports from the symbol model:
 					ports := get_ports_from_symbol_model (
 						device_cursor, key (unit_cursor));
@@ -229,17 +229,17 @@ package body et_schematic_ops_units is
 						result := true;
 						exit;
 					end if;
-										
+
 					next (unit_cursor);
 				end loop;
 			end query_units;
 
-			
+
 		begin
 			if contains (module.devices, device_name) then -- device found
 
 				device_cursor := find (module.devices, device_name);
-					
+
 				query_element (
 					position	=> device_cursor,
 					process		=> query_units'access);
@@ -247,7 +247,7 @@ package body et_schematic_ops_units is
 			end if;
 		end query_devices;
 
-		
+
 	begin
 		query_element (
 			position	=> module_cursor,
@@ -259,30 +259,30 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
 		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
-		return boolean 
+		return boolean
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found
 
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_unit_name;
 			device_cursor : pac_devices_electrical.cursor;
 
-			
+
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
@@ -302,21 +302,21 @@ package body et_schematic_ops_units is
 						if contains (ports, port_name) then
 							result := true;
 						end if;
-						
+
 					else
 						result := true;
 					end if;
 				end if;
 			end query_units;
 
-			
+
 		begin -- query_devices
 			if contains (module.devices, device_name) then -- device found
 
 				-- If unit name given, search for the unit.
 				if length (unit_name) > 0 then
 					device_cursor := find (module.devices, device_name);
-					
+
 					query_element (
 						position	=> device_cursor,
 						process		=> query_units'access);
@@ -324,11 +324,11 @@ package body et_schematic_ops_units is
 				else
 					result := true;
 				end if;
-				
+
 			end if;
 		end query_devices;
 
-		
+
 	begin
 		query_element (
 			position	=> module_cursor,
@@ -338,13 +338,13 @@ package body et_schematic_ops_units is
 	end device_unit_port_exists;
 
 
-	
 
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	function get_available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -360,15 +360,15 @@ package body et_schematic_ops_units is
 		all_unit_names : pac_unit_names.list;
 		names_of_available_units : pac_unit_names.list;
 
-		
-		procedure query_in_use (c : in pac_unit_names.cursor) is 
+
+		procedure query_in_use (c : in pac_unit_names.cursor) is
 			use pac_unit_name;
 			in_use : boolean := false;
 
 			-- Sets the in_use flag if given unit is already in use:
 			procedure query_in_use (
 				device_name	: in type_device_name;
-				device		: in type_device_electrical) 
+				device		: in type_device_electrical)
 			is
 			pragma unreferenced (device_name);
 			begin
@@ -377,7 +377,7 @@ package body et_schematic_ops_units is
 				end if;
 			end query_in_use;
 
-			
+
 		begin
 			-- Test whether the unit is already in use.
 			query_element (
@@ -388,12 +388,12 @@ package body et_schematic_ops_units is
 			if not in_use then -- unit is available
 				log (text => "unit " & to_string (element (c)) & " available.",
 					 level => log_threshold + 2);
-				
+
 				names_of_available_units.append (element (c));
 			end if;
 		end query_in_use;
 
-		
+
 		procedure get_device_model (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -408,10 +408,10 @@ package body et_schematic_ops_units is
 			log (text => "device model " & to_string (device_model),
 				level => log_threshold + 1);
 		end get_device_model;
-		
-		
+
+
 	begin
-		log (text => "looking up available units of " 
+		log (text => "looking up available units of "
 			 & to_string (device_name) & " ...",
 			 level => log_threshold);
 
@@ -419,12 +419,12 @@ package body et_schematic_ops_units is
 
 		-- get the device model:
 		query_element (module_cursor, get_device_model'access);
-				
+
 		-- locate the device in the library
 		device_cursor_lib := get_device_model (device_model);
 
 		log_indentation_up;
-		
+
 		-- get the names of all units of the device
 		all_unit_names := get_all_units (device_cursor_lib);
 
@@ -433,7 +433,7 @@ package body et_schematic_ops_units is
 
 		log_indentation_down;
 		log_indentation_down;
-		
+
 		return names_of_available_units;
 
 		--exception when event: others =>
@@ -444,13 +444,13 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
-	
 
-	
+
+
+
+
+
+
 	function unit_available (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -460,17 +460,17 @@ package body et_schematic_ops_units is
 		available : boolean := true; -- to be returned
 
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
+
 		device_cursor_lib : pac_device_models.cursor;
-		
+
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
 
-		
+
 		-- Clears the "available" flag if given unit is already in use:
 		procedure query_in_use (
 			device_name	: in type_device_name;
-			device		: in type_device_electrical) 
+			device		: in type_device_electrical)
 		is
 		pragma unreferenced (device_name);
 		begin
@@ -478,8 +478,8 @@ package body et_schematic_ops_units is
 				available := false;
 			end if;
 		end query_in_use;
-		
-		
+
+
 	begin -- unit_available
 		device_cursor_lib := get_device_model (module_cursor, device_name);
 
@@ -488,7 +488,7 @@ package body et_schematic_ops_units is
 
 		-- test whether the given unit is defined in the model:
 		if contains (all_unit_names, unit_name) then
-			
+
 			-- locate the device in the schematic:
 			device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
@@ -497,21 +497,21 @@ package body et_schematic_ops_units is
 			query_element (
 				position	=> device_cursor_sch,
 				process		=> query_in_use'access);
-			
+
 		else
 			raise constraint_error;
 		end if;
-		
+
 		return available;
 	end unit_available;
 
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	function get_units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -524,13 +524,13 @@ package body et_schematic_ops_units is
 
 		names_of_units : pac_unit_names.list;
 
-		
+
 		procedure query_units (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
-		is 
+		is
 			pragma unreferenced (device_name);
-			procedure query_unit (c : in pac_units.cursor) is 
+			procedure query_unit (c : in pac_units.cursor) is
 				use pac_unit_name;
 				use pac_unit_names;
 			begin
@@ -538,20 +538,20 @@ package body et_schematic_ops_units is
 				if get_sheet (element (c).position) = sheet then
 					log (text => "unit " & to_string (key (c)) & " on sheet.",
 						level => log_threshold + 2);
-					
+
 					names_of_units.append (key (c));
 				end if;
 			end query_unit;
 
-			
+
 		begin
 			device.units.iterate (query_unit'access);
 		end query_units;
 
-		
+
 	begin
-		log (text => "look up units of " 
-			 & to_string (device_name) 
+		log (text => "look up units of "
+			 & to_string (device_name)
 			 & " on sheet " & to_string (sheet) & " ...",
 			 level => log_threshold);
 
@@ -568,18 +568,18 @@ package body et_schematic_ops_units is
 
 
 		log_indentation_down;
-		
+
 		return names_of_units;
 	end get_units_on_sheet;
 
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	function get_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
@@ -590,11 +590,11 @@ package body et_schematic_ops_units is
 
 		unit_position : type_object_position;
 
-		
+
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
-		is 
+		is
 			pragma unreferenced (device_name);
 			unit_cursor : pac_units.cursor;
 		begin
@@ -605,7 +605,7 @@ package body et_schematic_ops_units is
 			unit_position := element (unit_cursor).position;
 		end query_unit;
 
-		
+
 	begin
 		-- locate the device in the schematic:
 		device_cursor_sch := get_electrical_device (module_cursor, device);
@@ -620,28 +620,28 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
 
-	
 
-	
+
+
+
+
 	function get_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
 		unit			: in pac_unit_name.bounded_string)
 		return type_sheet
-	is begin		
+	is begin
 		return get_sheet (get_position (module_cursor, device, unit));
 	end get_sheet;
 
-	
 
 
 
 
 
-	
+
+
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -651,7 +651,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is
 		use pac_unit_name;
-		
+
 		-- In the course of this procedure the given list
 		-- of ports is processed. Each processed port will be
 		-- removed from the given ports. For this reason we make
@@ -659,17 +659,17 @@ package body et_schematic_ops_units is
 		ports_tmp : pac_symbol_ports.map := ports;
 
 		-- CS: On the end of this procedure make sure ports_tmp is empty.
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
-			
-			
+
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -678,26 +678,26 @@ package body et_schematic_ops_units is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
-				
+
 				procedure query_strand (
 					strand	: in out type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-					
+
 					procedure query_segment (
 						segment : in out type_net_segment)
 					is
-				
+
 						-- Searches in list ports_tmp for a port that sits on
 						-- the given A/B end of the segment. If a port exists there,
 						-- then:
-						-- 1. the port is removed from list port_tmp 
-						-- 2. the unit name of the port is used to 
+						-- 1. the port is removed from list port_tmp
+						-- 2. the unit name of the port is used to
 						--    build a device port.
 						-- 3. The device port is then deleted on the A/B end of the segment:
-						procedure delete_port (AB_end : in type_start_end_point) is 
+						procedure delete_port (AB_end : in type_start_end_point) is
 							port_name : pac_port_name.bounded_string; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
@@ -714,26 +714,26 @@ package body et_schematic_ops_units is
 							-- If nothing was found, then ports_tmp is unchanged and the
 							-- flag "deleted" is cleared so that nothing else happens here:
 							if deleted then
-								
+
 								-- Build the device port:
 								device_port := to_device_port (device_name, unit_name, port_name);
-								
+
 								log (text => "Delete device port " & to_string (device_port),
 									 level => log_threshold + 1);
 								-- CS log segment and end point
-								
+
 								-- Remove the device port from the segment:
 								delete_device_port (segment, AB_end, device_port);
 							end if;
 						end delete_port;
 
-		
+
 					begin
 						delete_port (A);
 						delete_port (B);
 					end query_segment;
 
-					
+
 				begin
 					-- Iterate through the segments:
 					while has_element (segment_cursor) loop
@@ -742,20 +742,20 @@ package body et_schematic_ops_units is
 					end loop;
 				end query_strand;
 
-				
+
 			begin
 				-- Iterate through the strands on the given sheet:
 				while has_element (strand_cursor) loop
 					if get_sheet (strand_cursor) = sheet then
 						net.strands.update_element (strand_cursor, query_strand'access);
 					end if;
-					
+
 					next (strand_cursor);
 				end loop;
 
-			end query_net;				
+			end query_net;
 
-			
+
 		begin
 			-- Iterate through the nets:
 			while has_element (net_cursor) loop
@@ -763,8 +763,8 @@ package body et_schematic_ops_units is
 				next (net_cursor);
 			end loop;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete ports of device " & to_string (device_name)
@@ -772,9 +772,9 @@ package body et_schematic_ops_units is
 			& " in nets on sheet " & to_string (sheet),
 			level => log_threshold);
 
-		
+
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -786,10 +786,10 @@ package body et_schematic_ops_units is
 
 
 
-	
 
-	
-	
+
+
+
 
 	procedure insert_ports (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -800,7 +800,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is
 		use pac_unit_name;
-		
+
 		-- In the course of this procedure the given list
 		-- of ports is processed. Each processed port will be
 		-- removed from the given ports. For this reason we make
@@ -808,16 +808,16 @@ package body et_schematic_ops_units is
 		ports_tmp : pac_symbol_ports.map := ports;
 
 		-- CS: On the end of this procedure make sure ports_tmp is empty.
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
-			
-			
+
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -826,26 +826,26 @@ package body et_schematic_ops_units is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
-				
+
 				procedure query_strand (
 					strand	: in out type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-					
+
 					procedure query_segment (
 						segment : in out type_net_segment)
 					is
-				
+
 						-- Searches in list ports_tmp for a port that sits on
 						-- the given A/B end of the segment. If a port exists there,
 						-- then:
-						-- 1. the port is removed from list port_tmp 
-						-- 2. the unit name of the port is used to 
+						-- 1. the port is removed from list port_tmp
+						-- 2. the unit name of the port is used to
 						--    build a device port.
 						-- 3. The device port is then added to the A/B end of the segment:
-						procedure add_port (AB_end : in type_start_end_point) is 
+						procedure add_port (AB_end : in type_start_end_point) is
 							port_name : pac_port_name.bounded_string; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
@@ -862,27 +862,27 @@ package body et_schematic_ops_units is
 							-- If nothing was found, then ports_tmp is unchanged and the
 							-- flag "deleted" is cleared so that nothing else happens here:
 							if deleted then
-								
+
 								-- Build the device port:
 								device_port := to_device_port (device_name, unit_name, port_name);
-								
+
 								log (text => "Add device port " & to_string (device_port),
 									 level => log_threshold + 1);
 								-- CS log segment and end point
-								
+
 								-- Add the device port to the targeted end of the segment:
 								insert_device_port (segment, AB_end, device_port);
 							end if;
 						end add_port;
 
-		
+
 					begin
 						-- Add device ports on A and B end:
 						add_port (A);
 						add_port (B);
 					end query_segment;
 
-					
+
 				begin
 					-- Iterate through the segments:
 					while has_element (segment_cursor) loop
@@ -891,20 +891,20 @@ package body et_schematic_ops_units is
 					end loop;
 				end query_strand;
 
-				
+
 			begin
 				-- Iterate through the strands on the given sheet:
 				while has_element (strand_cursor) loop
 					if get_sheet (strand_cursor) = sheet then
 						net.strands.update_element (strand_cursor, query_strand'access);
 					end if;
-					
+
 					next (strand_cursor);
 				end loop;
 
-			end query_net;				
+			end query_net;
 
-			
+
 		begin
 			-- Iterate through the nets:
 			while has_element (net_cursor) loop
@@ -913,14 +913,14 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert ports of device " & to_string (device_name)
-			& " unit " & to_string (unit_name) 
+			& " unit " & to_string (unit_name)
 			& " in nets on sheet " & to_string (sheet),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		update_element (
@@ -930,14 +930,14 @@ package body et_schematic_ops_units is
 
 		log_indentation_down;
 	end insert_ports;
-	
-
-	
 
 
 
-	
-	
+
+
+
+
+
 	procedure fetch_unit (
 		module_cursor 	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -960,17 +960,17 @@ package body et_schematic_ops_units is
 		destination		: in type_vector_model;
 		device_created	: out type_device_name;
 		log_threshold	: in type_log_level) is separate;
-	
 
 
-	
-		
-		
-	
+
+
+
+
+
 	function unit_positions_valid (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return boolean 
+		return boolean
 	is
 		use et_device_renumbering;
 		unused_devices : pac_renumber_devices.map;
@@ -980,18 +980,18 @@ package body et_schematic_ops_units is
 		-- constraint_error which will be catched here.
 
 		return true;
-		
+
 		exception when others =>
 			return false;
-		
+
 	end unit_positions_valid;
-	
 
 
-	
-	
-	
-	
+
+
+
+
+
 
 	function get_port_properties (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -1001,35 +1001,35 @@ package body et_schematic_ops_units is
 		return type_port_properties_access
 	is
 		properties : type_port_properties_access; -- to be returned
-		
+
 		terminal_name : pac_terminal_name.bounded_string;
 
 		use et_port_direction;
 		port_direction : type_port_direction := PASSIVE;
 		port_properties_cursor : pac_symbol_ports.cursor;
 
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor_sch	: pac_devices_electrical.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: pac_device_models.cursor;
 
-			
+
 			procedure query_variants (
 				model	: in pac_device_model_file.bounded_string;
-				device	: in type_device_model) 
+				device	: in type_device_model)
 			is
 				pragma unreferenced (model);
 				variant_cursor : pac_package_variants.cursor;
 
-				
+
 				procedure query_ports (
 					variant_name	: in pac_package_variant_name.bounded_string;
-					variant			: in type_package_variant) 
+					variant			: in type_package_variant)
 				is
 					pragma unreferenced (variant_name);
 					use pac_terminal_port_map;
@@ -1045,29 +1045,29 @@ package body et_schematic_ops_units is
 						end if;
 						next (terminal_cursor);
 					end loop;
-						
+
 				end query_ports;
 
-				
+
 			begin -- query_variants
 				variant_cursor := pac_package_variants.find (device.variants, variant);
 
 				pac_package_variants.query_element (
 					position	=> variant_cursor,
 					process		=> query_ports'access);
-				
+
 			end query_variants;
 
-			
+
 			use pac_symbol_ports;
 
-			
+
 		begin -- query_devices
 			-- locate the device in schematic (default assembly variant):
 			device_cursor_sch := find (module.devices, device_name);
 
 -- 			if device_cursor_sch /= pac_devices_electrical.no_element then
-			
+
 				variant := element (device_cursor_sch).variant;
 
 				-- get the name of the device model (or the generic name)
@@ -1098,33 +1098,33 @@ package body et_schematic_ops_units is
 -- 					 " , but this device does not exist !");
 -- 				raise constraint_error;
 -- 			end if;
-			
+
 		end query_devices;
 
-		
+
 	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
-		
+
 		return properties;
 	end get_port_properties;
 
 
 
-	
 
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -1135,43 +1135,43 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- The ports of the unit must be removed from the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet_old : type_sheet;
 			ports_old : pac_symbol_ports.map;
-			
+
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				-- Locate the targeted unit:
-				unit_cursor : pac_units.cursor := 
+				unit_cursor : pac_units.cursor :=
 					locate_unit (device, unit_name);
 			begin
 				-- Get the sheet where the unit is:
 				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
-				
+
 				-- Get the ports of the unit:
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 
 				-- Delete the unit:
-				device.units.delete (unit_cursor);				
+				device.units.delete (unit_cursor);
 			end query_device;
 
-			
-			
-		begin				
+
+
+		begin
 			update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> query_device'access);
-		
+
 			-- Remove the old ports of the unit from the net segments:
 			delete_ports (
 				module_cursor	=> module_cursor,
@@ -1186,34 +1186,34 @@ package body et_schematic_ops_units is
 			if get_unit_count_deployed (device_cursor_sch) = 0 then
 				log (text => "No more units deployed. Delete device entirely.",
 						level => log_threshold + 1);
-				
+
 				module.devices.delete (device_cursor_sch);
 			end if;
 		end query_module;
 
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			 " delete " & to_string (device_name) & " unit " & 
+			 " delete " & to_string (device_name) & " unit " &
 			 to_string (unit_name),
 			 level => log_threshold);
 
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
 
-		
+
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1225,15 +1225,15 @@ package body et_schematic_ops_units is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end delete_unit;
-	
 
 
-	
+
+
 
 
 
@@ -1247,38 +1247,38 @@ package body et_schematic_ops_units is
 	is
 		-- A list of all device names of the given module:
 		device_names : pac_device_names.set;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
 			use pac_device_names;
 
-			
+
 			procedure query_device_name (
-				c : in pac_device_names.cursor) 
+				c : in pac_device_names.cursor)
 			is
 				device_name : type_device_name renames element (c);
 
 				use pac_unit_names;
 				unit_names : pac_unit_names.list;
 
-				
+
 				procedure query_unit (
-					c : in pac_unit_names.cursor) 
+					c : in pac_unit_names.cursor)
 				is
-					unit_name : pac_unit_name.bounded_string 
+					unit_name : pac_unit_name.bounded_string
 						renames element (c);
-				begin					
-					delete_unit (module_cursor, device_name, 
+				begin
+					delete_unit (module_cursor, device_name,
 						unit_name, NO_COMMIT, log_threshold + 2);
 
 				end query_unit;
 
-				
-			begin				
+
+			begin
 				-- Get the names of all units of the candidate
 				-- device on the given sheet:
 				unit_names := get_units_on_sheet (
@@ -1287,56 +1287,56 @@ package body et_schematic_ops_units is
 				-- Iterate through the units:
 				unit_names.iterate (query_unit'access);
 			end query_device_name;
-				
-				
+
+
 		begin
 			-- Iterate through the device names:
-			device_names.iterate (query_device_name'access);			
+			device_names.iterate (query_device_name'access);
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete all units on sheet " & to_string (sheet),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Get the names of all devices of the module:
 		device_names := get_device_names (module_cursor);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-	
+
 		log_indentation_down;
 	end delete_units;
 
 
 
-	
 
 
 
-	
+
+
 
 
 -- DEVICE DELETE:
-	
+
 
 	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
 
-	
+
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		-- We use list of deployed units here. By iterating the names
@@ -1352,53 +1352,53 @@ package body et_schematic_ops_units is
 			log (text => "Delete unit " & to_string (name), level => log_threshold + 1);
 
 			log_indentation_up;
-			
+
 			delete_unit (module_cursor, device_name, name, NO_COMMIT, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " delete electrical device " & to_string (device_name), 
+			 & " delete electrical device " & to_string (device_name),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		-- Get the names of deployed units:
 		unit_names := get_unit_names_deployed (device_cursor_sch);
 
 		-- Iterate the name list and delete the units one by one:
 		unit_names.iterate (query_unit'access);
-				
-				
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end delete_electrical_device;
 
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure rename_device_ports (
@@ -1406,7 +1406,7 @@ package body et_schematic_ops_units is
 		device_before	: in type_device_name;	-- the device name before like IC1
 		device_after	: in type_device_name;	-- the device name after like IC23
 		unit_positions	: in pac_unit_positions.map; -- the sheet numbers where to look at
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		-- Make a list of affected sheets.
 		-- For each sheet we look at the net segments there
@@ -1416,58 +1416,58 @@ package body et_schematic_ops_units is
 
 		-- Points to the sheet being processed:
 		sheet : type_sheet;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
+
+
 				procedure query_strand (
 					strand : in out type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					
+
 
 						procedure query_segment (
 							segment : in out type_net_segment)
 						is begin
-							log (text => "segment " & to_string (segment), level => log_threshold + 3);	
+							log (text => "segment " & to_string (segment), level => log_threshold + 3);
 
 							rename_device_port (segment, A, device_before, device_after);
 							rename_device_port (segment, B, device_before, device_after);
 						end query_segment;
 
-					
+
 				begin
 					-- Look at strands that are on the sheet being processed:
 					if get_sheet (strand) = sheet then
 
 						log (text => "strand " & get_position (strand), level => log_threshold + 2);
 						log_indentation_up;
-						
+
 						-- Iterate through the segments:
 						while has_element (segment_cursor) loop
-							
+
 							update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,
 								process		=> query_segment'access);
-							
+
 							next (segment_cursor);
 						end loop;
 
@@ -1475,26 +1475,26 @@ package body et_schematic_ops_units is
 					end if;
 				end query_strand;
 
-				
+
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate through the strands:
 				while has_element (strand_cursor) loop
-				
+
 					update_element (
 						container	=> net.strands,
 						position	=> strand_cursor,
-						process		=> query_strand'access);					
-					
+						process		=> query_strand'access);
+
 					next (strand_cursor);
 				end loop;
-				
-				log_indentation_down;
-			end query_net;	
 
-			
+				log_indentation_down;
+			end query_net;
+
+
 		begin
 			-- Iterate though the nets:
 			while has_element (net_cursor) loop
@@ -1504,14 +1504,14 @@ package body et_schematic_ops_units is
 		end query_module;
 
 
-		
-		
+
+
 		procedure query_sheet (c : in pac_sheet_numbers.cursor) is begin
 			sheet := element (c);
-			
+
 			log (text => "sheet " & to_string (sheet), level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -1520,10 +1520,10 @@ package body et_schematic_ops_units is
 			log_indentation_down;
 		end query_sheet;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " rename ports of devices in nets. Device old: " & to_string (device_before) 
+		log (text => "module " & to_string (module_cursor)
+			& " rename ports of devices in nets. Device old: " & to_string (device_before)
 			& " to device new: " & to_string (device_after),
 			level => log_threshold);
 
@@ -1531,7 +1531,7 @@ package body et_schematic_ops_units is
 
 		-- Iterate through the sheets:
 		sheets.iterate (query_sheet'access);
-		
+
 		log_indentation_down;
 	end rename_device_ports;
 
@@ -1539,28 +1539,28 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	procedure rename_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
 		commit_design		: in type_commit_design := DO_COMMIT;
-		log_threshold		: in type_log_level) 
+		log_threshold		: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor_after  : pac_devices_electrical.cursor;
@@ -1574,7 +1574,7 @@ package body et_schematic_ops_units is
 			-- units must be fetched. Their sheet numbers will later assist
 			-- renaming the port names connected with net segments.
 			unit_positions := get_unit_positions (device_cursor_sch);
-			
+
 			-- Copy elements and properties of the old device to a new one.
 			-- This includes deployed units, the position in the board, everything:
 			pac_devices_electrical.insert (
@@ -1584,7 +1584,7 @@ package body et_schematic_ops_units is
 				inserted	=> inserted,
 				position	=> device_cursor_after);
 
-				
+
 			-- Delete the old device:
 			pac_devices_electrical.delete (
 				container	=> module.devices,
@@ -1597,15 +1597,15 @@ package body et_schematic_ops_units is
 				device_after	=> device_name_after,
 				unit_positions	=> unit_positions, -- the sheets to look at
 				log_threshold	=> log_threshold + 1);
-			
+
 		end query_module;
 
-		
 
-		procedure check_names is 
+
+		procedure check_names is
 			use et_board_ops_devices;
 		begin
-				
+
 			-- The old and new name must not be the same:
 			if device_name_after /= device_name_before then
 
@@ -1614,15 +1614,15 @@ package body et_schematic_ops_units is
 				if same_prefix (device_name_after, device_name_before) then
 
 					-- A device having the new name must
-					-- not exist yet. So we must probe the 
+					-- not exist yet. So we must probe the
 					-- electrical and non-electrical devices:
 					if not electrical_device_exists (
-						module_cursor, device_name_after) 
-						
+						module_cursor, device_name_after)
+
 					and not non_electrical_device_exists (
-						module_cursor, device_name_after) 
+						module_cursor, device_name_after)
 					then
-						
+
 						update_element (
 							container	=> generic_modules,
 							position	=> module_cursor,
@@ -1642,48 +1642,48 @@ package body et_schematic_ops_units is
 		end check_names;
 
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " rename device " & to_string (device_name_before) 
+		log (text => "module " & to_string (module_cursor)
+			& " rename device " & to_string (device_name_before)
 			& " to " & to_string (device_name_after),
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (
 			module_cursor, device_name_before);
-			
+
 		check_names;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end rename_electrical_device;
 
-	
 
 
 
 
 
 
-	
 
-	
+
+
+
 	procedure move_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -1692,18 +1692,18 @@ package body et_schematic_ops_units is
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
 
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
@@ -1711,26 +1711,26 @@ package body et_schematic_ops_units is
 			-- For this reason we need some temporarily storage place:
 			sheet_old, sheet_new : type_sheet;
 			ports_old, ports_new : pac_symbol_ports.map;
-			
+
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				
+
 				-- Does the actual move of the unit:
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit) 
+					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
-				begin					
+				begin
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
 							unit.position := to_position (
-								point		=> destination, 
+								point		=> destination,
 								sheet		=> type_sheet (sheet),
 								rotation	=> get_rotation (unit.position));
 
@@ -1739,18 +1739,18 @@ package body et_schematic_ops_units is
 								position	=> unit.position,
 								offset		=> to_position_relative (destination, sheet));
 								-- rotation remains as it is
-					end case;								
+					end case;
 				end move_unit;
 
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
-				
+
 			begin
 				-- Get the sheet where the unit is BEFORE the move operation:
 				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
-				
+
 				-- Get the ports of the unit as they are
 				-- BEFORE the move operation:
 				ports_old := get_ports_from_schematic (
@@ -1769,17 +1769,17 @@ package body et_schematic_ops_units is
 				-- AFTER the move operation:
 				ports_new := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
-				
+
 			end query_device;
 
-			
-			
-		begin				
+
+
+		begin
 			update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> query_device'access);
-		
+
 			-- Remove the old ports of the unit from the net segments:
 			delete_ports (
 				module_cursor	=> module_cursor,
@@ -1800,14 +1800,14 @@ package body et_schematic_ops_units is
 
 		end query_module;
 
-		
-	begin 
+
+	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name)
 					& " unit " & to_string (unit_name)
-					& " to sheet " & to_string (sheet) 
+					& " to sheet " & to_string (sheet)
 					& to_string (destination),
 					level => log_threshold);
 
@@ -1815,51 +1815,51 @@ package body et_schematic_ops_units is
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name)
 					& " unit " & to_string (unit_name)
-					& " by " & relative_to_string (sheet) & " sheet(s) " 
+					& " by " & relative_to_string (sheet) & " sheet(s) "
 					& to_string (destination),
 					level => log_threshold);
 		end case;
 
-		
+
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device is assumed to exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-			
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-			
-			
+
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end move_unit;
 
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure move_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -1868,21 +1868,21 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is
 	pragma unreferenced (log_threshold);
-	
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is 
+			module		: in out type_generic_module)
+		is
 	pragma unreferenced (module_name);
-	
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
-				
-				
+
+
 				-- Moves the unit candidate by the given offset
 				-- if it is on the given sheet_old:
 				procedure query_unit (
@@ -1890,59 +1890,59 @@ package body et_schematic_ops_units is
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
-				begin	
+				begin
 					if get_sheet (unit) = sheet_old then
 						move_unit (unit, offset);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate trough the units of the device candidate:
 				while has_element (unit_cursor) loop
 					device.units.update_element (unit_cursor, query_unit'access);
-				
+
 					next (unit_cursor);
 				end loop;
 			end query_device;
-			
-			
+
+
 		begin
 			module.devices.update_element (device_cursor, query_device'access);
 		end query_module;
-		
-	
-	begin	
+
+
+	begin
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
-	
+
 	end move_units;
 
-	
-	
-	
-	
-	
-	
 
-	
+
+
+
+
+
+
+
 	procedure move_units_on_sheet_delete (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet_delete	: in type_sheet;	
+		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		sheets_total : type_sheet;
-		
+
 		-- We start processing the sheets with the
 		-- sheet after sheet_delete:
 		sheet_start : constant type_sheet := sheet_delete + 1;
-		
+
 		use et_schematic_ops_sheets;
 
-		
-		procedure do_it is 
-			device_cursor : pac_devices_electrical.cursor;		
+
+		procedure do_it is
+			device_cursor : pac_devices_electrical.cursor;
 		begin
 			-- Process the sheets from sheet_start to
 			-- the last sheet:
@@ -1953,50 +1953,50 @@ package body et_schematic_ops_units is
 				-- Iterate through the devices of the module.
 				-- Start with the first device:
 				device_cursor := get_first_electrical_device (module_cursor);
-				
+
 				while has_element (device_cursor) loop
 					log (text => "device " & get_device_name (device_cursor),
 						level => log_threshold + 1);
-						
+
 					log_indentation_up;
-				
+
 					-- Move the units of the candidate device:
 					move_units (
 						module_cursor	=> module_cursor,
-						device_cursor	=> device_cursor, 
+						device_cursor	=> device_cursor,
 						sheet_old		=> i, -- the current sheet
 						offset			=> - 1, -- one sheet down
 						log_threshold	=> log_threshold + 1);
-						
+
 					log_indentation_down;
-					
+
 					next (device_cursor);
 				end loop;
-				
-				
+
+
 				log_indentation_down;
 			end loop;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move all units one sheet downward."
 			& " Sheet to be deleted: " & to_string (sheet_delete),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
-		
+
+
 		-- Get the total number of sheets:
 		sheets_total := get_sheet_count (module_cursor);
-	
-		
+
+
 		-- If the sheet to be deleted is not the last sheet
 		-- of the module, then proceed further. Otherwise
 		-- there is nothing to do:
 		if sheet_delete < sheets_total then
-			do_it;			
+			do_it;
 		elsif sheet_delete = sheets_total then
 			log (text => "The last sheet was given. Nothing to do.",
 				level => log_threshold);
@@ -2007,16 +2007,16 @@ package body et_schematic_ops_units is
 
 		log_indentation_down;
 	end move_units_on_sheet_delete;
-	
 
-	
-	
-	
 
-	
 
-	
-	-- Tests whether the given unit ports at their individual location are movable. 
+
+
+
+
+
+
+	-- Tests whether the given unit ports at their individual location are movable.
 	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
 	-- CS: Becomes obsolete once ports at the same x/y position are prevented.
@@ -2031,7 +2031,7 @@ package body et_schematic_ops_units is
 		use pac_symbol_ports;
 		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
-		
+
 		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
 			ports : type_net_ports;
@@ -2045,18 +2045,18 @@ package body et_schematic_ops_units is
 			point := to_position (
 				point	=> element (port_cursor).position,
 				sheet	=> get_sheet (location));
-			
+
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
 			-- here (except the port-to-be-dragged):
 			if net_segment_at_place (module_cursor, point) then
 
 				-- There are net segments starting or ending at point.
-				-- Make sure at point are no ports of devices, submodules or other 
+				-- Make sure at point are no ports of devices, submodules or other
 				-- netchangers (except the unit port to be dragged):
 
 				port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
-				
+
 				-- Collect all ports of possible other devices, submodules and netchangers
 				-- at given point:
 				ports := get_ports (module_cursor, point, log_threshold + 1);
@@ -2064,29 +2064,29 @@ package body et_schematic_ops_units is
 				-- If no netchanger and no submodule ports here:
 				if is_empty (ports.netchangers) and is_empty (ports.submodules) then
 
-					-- If the ONE and ONLY device/unit port is the 
+					-- If the ONE and ONLY device/unit port is the
 					-- port-to-be-dragged then everything is fine.
 					if length (ports.devices) = 1 then
-						
+
 						if contains (ports.devices, port) then
 							null; -- fine -> movable test passed
 						else
 							-- there is another netchanger port
 							dragging_not_possible (to_string (key (port_cursor)), point);
 						end if;
-					
+
 					else
 						-- there are more submodule ports
 						dragging_not_possible (to_string (key (port_cursor)), point);
 					end if;
-					
+
 				else -- device or netchanger ports here
 					dragging_not_possible (to_string (key (port_cursor)), point);
 				end if;
 			end if;
 		end test_point;
 
-		
+
 	begin -- movable_test
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
@@ -2095,7 +2095,7 @@ package body et_schematic_ops_units is
 			test_point (port_cursor);
 			next (port_cursor);
 		end loop;
-		
+
 		log_indentation_down;
 	end movable_test;
 	pragma unreferenced (movable_test);
@@ -2104,39 +2104,39 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
+
+
+
 
 	function get_unit_position (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string) -- C
-		return type_unit_query 
+		return type_unit_query
 	is
 		exists : boolean := false;
 		pos : type_object_position; -- x/y, rotation, sheet
 
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor;
 
-			
+
 			procedure query_units (
 				device_name	: in type_device_name; -- IC45
-				device		: in type_device_electrical) 
+				device		: in type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				unit_cursor : pac_units.cursor;				
+				unit_cursor : pac_units.cursor;
 			begin
 				-- If the given unit_name contains something, locate the unit
 				-- by its name. If unit_name is empty, locate the first unit.
 				if pac_unit_name.length (unit_name) > 0 then -- locate by name
-					
+
 					unit_cursor := pac_units.find (device.units, unit_name);
 
 					if unit_cursor /= pac_units.no_element then -- unit exists
@@ -2145,7 +2145,7 @@ package body et_schematic_ops_units is
 					else
 						exists := false; -- unit does not exist
 					end if;
-					
+
 				else -- locate the first unit:
 					unit_cursor := pac_units.first (device.units);
 					-- There should be at least one unit. Otherwise raise constraint_error.
@@ -2157,11 +2157,11 @@ package body et_schematic_ops_units is
 						exists := false; -- unit does not exist
 						raise constraint_error; -- CS do something
 					end if;
-					
+
 				end if;
 			end query_units;
-			
-			
+
+
 		begin -- query_devices
 			-- locate the device:
 			device_cursor := pac_devices_electrical.find (module.devices, device_name);
@@ -2171,27 +2171,27 @@ package body et_schematic_ops_units is
 			else
 				exists := false; -- device does not exist
 			end if;
-			
+
 		end query_devices;
-		
-		
+
+
 	begin -- unit_position
 		query_element (module_cursor, query_devices'access);
 
 		if exists then return (exists => true, position => pos);
 		else return (exists => false);
 		end if;
-		
+
 	end get_unit_position;
 
 
 
-	
-	
-	
 
-	
-	
+
+
+
+
+
 	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -2202,11 +2202,11 @@ package body et_schematic_ops_units is
 		return boolean
 	is
 		result : boolean := false;
-		
+
 		use pac_symbol_ports;
 		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
-		
+
 		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
 			ports : type_net_ports;
@@ -2220,18 +2220,18 @@ package body et_schematic_ops_units is
 			point := to_position (
 				point	=> element (port_cursor).position,
 				sheet	=> get_sheet (location));
-			
+
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
 			-- here (except the port-to-be-dragged):
 			if net_segment_at_place (module_cursor, point) then
 
 				-- There are net segments starting or ending at point.
-				-- Make sure at point are no ports of devices, submodules or other 
+				-- Make sure at point are no ports of devices, submodules or other
 				-- netchangers (except the unit port to be dragged):
 
 				port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
-				
+
 				-- Collect all ports of possible other devices, submodules and netchangers
 				-- at given point:
 				ports := get_ports (module_cursor, point, log_threshold + 1);
@@ -2239,29 +2239,29 @@ package body et_schematic_ops_units is
 				-- If no netchanger and no submodule ports here:
 				if is_empty (ports.netchangers) and is_empty (ports.submodules) then
 
-					-- If the ONE and ONLY device/unit port is the 
+					-- If the ONE and ONLY device/unit port is the
 					-- port-to-be-dragged then everything is fine.
 					if length (ports.devices) = 1 then
-						
+
 						if contains (ports.devices, port) then
 							result := true; -- fine -> movable test passed
 						else
 							-- there is another netchanger port
 							result := false;
 						end if;
-					
+
 					else
 						-- there are more submodule ports
 						result := false;
 					end if;
-					
+
 				else -- device or netchanger ports here
 					result := false;
 				end if;
 			end if;
 		end test_point;
 
-		
+
 	begin -- is_movable
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
@@ -2273,10 +2273,10 @@ package body et_schematic_ops_units is
 			if result = false then
 				exit;
 			end if;
-			
+
 			next (port_cursor);
 		end loop;
-		
+
 		log_indentation_down;
 
 		return result;
@@ -2286,37 +2286,37 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
 
-	
+
+
+
 	procedure drag_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		port_drag_list	: in type_port_drag_list;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		-- The given drag list provides port names and their
 		-- positions before and after the drag operation of a single unit.
 		-- For each port, the module is searched for a net segment that starts
 		-- or ends at the old position. Each segment that has been found is
 		-- then moved with its affected end point to the new position.
-		
+
 		use pac_dragged_ports;
 		port_cursor : pac_dragged_ports.cursor := port_drag_list.ports.first;
 		port_name : pac_port_name.bounded_string;
 		port_drag : type_drag;
 		port_sheet : type_sheet renames port_drag_list.sheet;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -2324,29 +2324,29 @@ package body et_schematic_ops_units is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
-				
+
 				procedure query_strand (
 					strand	: in out type_strand)
-				is 
+				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (
 						segment : in out type_net_segment)
-					is 
-						
+					is
+
 						procedure log_segment_before is begin
-							log (text => "segment before: " 
+							log (text => "segment before: "
 								& to_string (segment), level => log_threshold + 3);
 						end;
 
 						procedure log_segment_now is begin
-							log (text => "segment now:    " 
+							log (text => "segment now:    "
 								& to_string (segment), level => log_threshold + 3);
 						end;
 
-						
+
 					begin
 						-- Move the affected end of the segment
 						-- candidate:
@@ -2363,12 +2363,12 @@ package body et_schematic_ops_units is
 						end if;
 					end query_segment;
 
-					
+
 				begin
 					if get_sheet (strand) = port_sheet then
 						log (text => "strand " & get_position (strand),
 							 level => log_threshold + 3);
-						
+
 						log_indentation_up;
 
 						-- Iterate through the segments:
@@ -2376,12 +2376,12 @@ package body et_schematic_ops_units is
 							strand.segments.update_element (segment_cursor, query_segment'access);
 							next (segment_cursor);
 						end loop;
-						
+
 						log_indentation_down;
 					end if;
 				end query_strand;
 
-				
+
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 2);
 				log_indentation_up;
@@ -2395,8 +2395,8 @@ package body et_schematic_ops_units is
 
 				log_indentation_down;
 			end query_net;
-			
-					
+
+
 		begin
 			-- Iterate through the nets of the module:
 			while has_element (net_cursor) loop
@@ -2405,25 +2405,25 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " drag net segments on sheet " & to_string (port_drag_list.sheet),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
-		
+
 		-- Iterate through the ports to be dragged:
 		while has_element (port_cursor) loop
 			port_drag := element (port_cursor);
 			port_name := get_port_name (port_cursor);
-			
+
 			log (text => "port " & to_string (port_name) & " " & to_string (port_drag),
 				level => log_threshold + 1);
-			
+
 			log_indentation_up;
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -2434,7 +2434,7 @@ package body et_schematic_ops_units is
 			log_indentation_down;
 		end loop;
 
-		
+
 		log_indentation_down;
 	end drag_net_segments;
 
@@ -2444,8 +2444,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 	procedure drag_unit (
 		module_cursor 	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -2453,18 +2453,18 @@ package body et_schematic_ops_units is
 		coordinates		: in type_coordinates;
 		destination		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
-		
+
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- The new ports must be inserted in the net segments.
@@ -2473,26 +2473,26 @@ package body et_schematic_ops_units is
 			ports_old, ports_new : pac_symbol_ports.map;
 			drag_list : type_port_drag_list;
 
-			
-			
+
+
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				
+
 				-- Moves the the unit:
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit) 
+					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
-				begin					
+				begin
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
 							unit.position := to_position (
-								point		=> destination, 
+								point		=> destination,
 								sheet		=> sheet,
 								rotation	=> get_rotation (unit.position));
 
@@ -2503,27 +2503,27 @@ package body et_schematic_ops_units is
 								-- The relative sheet change is 0 because
 								-- we only drag the unit across the current sheet.
 								-- The rotation remains as it is.
-					end case;								
+					end case;
 				end move_unit;
-				
+
 
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
-				
+
 			begin
 				-- Get the sheet where the unit is:
 				sheet := get_sheet (device_cursor_sch, unit_cursor);
 
 				-- Save the sheet in the drag list:
 				drag_list.sheet := sheet;
-				
+
 				-- Get the ports of the unit as they are
 				-- BEFORE the drag operation:
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
-				
+
 				update_element (
 					container	=> device.units,
 					position	=> unit_cursor,
@@ -2534,13 +2534,13 @@ package body et_schematic_ops_units is
 				ports_new := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 			end query_device;
-			
-			
+
+
 		begin
 			update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
-				process		=> query_device'access);		
+				process		=> query_device'access);
 
 			-- Make a list of ports and their old and new positions:
 			drag_list.ports := make_drag_list (ports_old, ports_new);
@@ -2550,7 +2550,7 @@ package body et_schematic_ops_units is
 				module_cursor	=> module_cursor,
 				port_drag_list	=> drag_list,
 				log_threshold	=> log_threshold + 1);
-			
+
 			-- Insert the new unit ports in the net segments:
 			insert_ports (
 				module_cursor	=> module_cursor,
@@ -2562,40 +2562,40 @@ package body et_schematic_ops_units is
 
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
 					 & " drag device " & to_string (device_name)
 					 & " unit " & to_string (unit_name)
-					 & " to " & to_string (destination), 
+					 & " to " & to_string (destination),
 					 level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					 & " drag device " & to_string (device_name)
 					 & " unit " & to_string (unit_name)
-					 & " by " & to_string (destination), 
+					 & " by " & to_string (destination),
 					 level => log_threshold);
 		end case;
-		
-		
+
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		-- Locate the targeted device in the given module.
 		-- The specified device must exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor_sch := get_electrical_device (
 			module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2607,23 +2607,23 @@ package body et_schematic_ops_units is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-			
+
 		et_schematic_ops_nets.update_strand_positions (
-			module_cursor, log_threshold + 2);		
-		
+			module_cursor, log_threshold + 2);
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end drag_unit;
 
 
 
 
-	
 
-	
-	
-	
+
+
+
+
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -2631,7 +2631,7 @@ package body et_schematic_ops_units is
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in type_rotation_model; -- 90
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -2639,11 +2639,11 @@ package body et_schematic_ops_units is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
@@ -2652,25 +2652,25 @@ package body et_schematic_ops_units is
 			sheet_old, sheet_new : type_sheet;
 			-- CS: use just "sheet" because it is about only one sheet
 			ports_old, ports_new : pac_symbol_ports.map;
-			
+
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				
+
 				-- Does the actual rotation of the unit:
 				procedure rotate_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit) 
+					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
-				begin					
+				begin
 					case coordinates is
 						when ABSOLUTE =>
 							set_rotation (unit, rotation);
-							
+
 						when RELATIVE =>
 							rotate_by (unit, rotation);
 					end case;
@@ -2681,17 +2681,17 @@ package body et_schematic_ops_units is
 					-- and the rotation about the origin of the unit:
 					rotate_placeholders (unit.placeholders, rotation);
 				end rotate_unit;
-				
+
 
 				-- Locate the targeted unit.
-				-- The unit must exist. Otherwise an exception 
+				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
-				
+
 			begin
 				-- Get the sheet where the unit is BEFORE the rotate operation:
 				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
-				
+
 				-- Get the ports of the unit as they are
 				-- BEFORE the rotate operation:
 				ports_old := get_ports_from_schematic (
@@ -2711,14 +2711,14 @@ package body et_schematic_ops_units is
 				ports_new := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 			end query_device;
-			
-			
-		begin				
+
+
+		begin
 			update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> query_device'access);
-		
+
 			-- Remove the old ports of the unit from the net segments:
 			delete_ports (
 				module_cursor	=> module_cursor,
@@ -2739,7 +2739,7 @@ package body et_schematic_ops_units is
 
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -2754,27 +2754,27 @@ package body et_schematic_ops_units is
 					log (text => "module " & to_string (module_cursor)
 						& " rotating " & to_string (device_name)
 						& " unit " & to_string (unit_name)
-						& " by" & to_string (rotation), 
+						& " by" & to_string (rotation),
 						level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
 		end case;
-		
-		
+
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2786,20 +2786,20 @@ package body et_schematic_ops_units is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-			
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end rotate_unit;
 
 
 
 
-	
-	
 
 
-	
+
+
+
 
 
 	procedure mirror_unit (
@@ -2815,11 +2815,11 @@ package body et_schematic_ops_units is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- The old ports of the unit must be removed from the net segments,
@@ -2827,38 +2827,38 @@ package body et_schematic_ops_units is
 			-- For this reason we need some temporarily storage place:
 			sheet: type_sheet;
 			ports_old, ports_new : pac_symbol_ports.map;
-			
+
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				
+
 				-- Does the actual mirroring of the unit:
 				procedure mirror_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit) 
+					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
-				begin	
+				begin
 					toggle_mirror_status (unit);
-					
+
 					-- The placeholders are left as they are.
 					-- CS: in case this is required indeed, then use
 					-- rotate_placeholders (unit.placeholders, rotation);
 				end mirror_unit;
-				
+
 
 				-- Locate the targeted unit. It must exist.
 				-- Otherwise an exception will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 
-				
+
 			begin
 				-- Get the sheet where the unit is:
 				sheet := get_sheet (device_cursor_sch, unit_cursor);
-				
+
 				-- Get the ports of the unit as they are
 				-- BEFORE the mirror operation:
 				ports_old := get_ports_from_schematic (
@@ -2875,14 +2875,14 @@ package body et_schematic_ops_units is
 				ports_new := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 			end query_device;
-			
-			
+
+
 		begin
 			update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> query_device'access);
-		
+
 			-- Remove the old ports of the unit from the net segments:
 			delete_ports (
 				module_cursor	=> module_cursor,
@@ -2903,50 +2903,50 @@ package body et_schematic_ops_units is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " mirror device " & to_string (device_name)
 			& " unit " & to_string (unit_name),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-			
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-			
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end mirror_unit;
 
 
 
 
 
-	
-	
+
+
 
 
 	function get_device_name (
@@ -2965,7 +2965,7 @@ package body et_schematic_ops_units is
 		return key (object.device_cursor);
 	end;
 
-	
+
 
 	function get_unit_name (
 		object	: in type_object_unit)
@@ -2974,7 +2974,7 @@ package body et_schematic_ops_units is
 		return get_unit_name (object.unit_cursor);
 	end;
 
-	
+
 
 	function get_unit_name (
 		object	: in type_object_unit)
@@ -2984,7 +2984,7 @@ package body et_schematic_ops_units is
 	end;
 
 
-	
+
 
 	function get_object_name (
 		object	: in type_object_unit)
@@ -2993,9 +2993,9 @@ package body et_schematic_ops_units is
 		return get_full_name (object.device_cursor, object.unit_cursor);
 	end get_object_name;
 
-	
 
-	
+
+
 
 
 	procedure modify_status (
@@ -3007,14 +3007,14 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is	
+			module		: in out type_generic_module)
+		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				pragma unreferenced (device_name);
 
 				procedure query_unit (
@@ -3033,19 +3033,19 @@ package body et_schematic_ops_units is
 
 					   object_original_position := get_place (get_position (unit));
 					end if;
-						
+
 				end query_unit;
 
-				
+
 			begin
 				device.units.update_element (unit.unit_cursor, query_unit'access);
 			end query_device;
 
-			
+
 		begin
 			module.devices.update_element (unit.device_cursor, query_device'access);
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -3056,9 +3056,9 @@ package body et_schematic_ops_units is
 
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -3073,7 +3073,7 @@ package body et_schematic_ops_units is
 
 
 
-	
+
 	procedure propose_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -3084,7 +3084,7 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
@@ -3092,7 +3092,7 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
@@ -3104,7 +3104,7 @@ package body et_schematic_ops_units is
 						log_indentation_up;
 						log (text => to_string (unit_name), level => log_threshold + 2);
 						log_indentation_down;
-						
+
 						set_proposed (unit);
 						count := count + 1;
 					end if;
@@ -3123,13 +3123,13 @@ package body et_schematic_ops_units is
 					log_indentation_down;
 				end query_device_2;
 
-				
+
 			begin
 				-- If only real devices are adressed, then
 				-- the appearance of the candidate device must be real:
-				if real_only then 
+				if real_only then
 					if is_real (device) then
-						query_device_2;						
+						query_device_2;
 					end if;
 
 				-- If all devices are addressed, then the appearance
@@ -3139,7 +3139,7 @@ package body et_schematic_ops_units is
 				end if;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3155,16 +3155,16 @@ package body et_schematic_ops_units is
 			end if;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " propose " & get_real & " units in " & to_string (catch_zone),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -3174,26 +3174,26 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure reset_status_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
@@ -3205,7 +3205,7 @@ package body et_schematic_ops_units is
 					reset_status (unit);
 				end query_unit;
 
-										 
+
 			begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
@@ -3220,13 +3220,13 @@ package body et_schematic_ops_units is
 					device.units.update_element (unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_device;
 
-			
+
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3235,14 +3235,14 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " reset proposed units", 
+			& " reset proposed units",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3252,8 +3252,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 
 
@@ -3262,13 +3262,13 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -3279,9 +3279,9 @@ package body et_schematic_ops_units is
 				reset_status (device);
 			end query_device;
 
-			
+
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3290,14 +3290,14 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " reset packaeges of real devices", 
+			& " reset packaeges of real devices",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3310,7 +3310,7 @@ package body et_schematic_ops_units is
 
 
 
-	
+
 
 
 
@@ -3323,10 +3323,10 @@ package body et_schematic_ops_units is
 	is
 		result : type_object_unit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
@@ -3337,9 +3337,9 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in type_device_electrical)
-			is 
+			is
 
-				procedure query_unit (unit_cursor : in pac_units.cursor) is 
+				procedure query_unit (unit_cursor : in pac_units.cursor) is
 
 					procedure set_result is begin
 						log (text => " found " & get_unit_name (unit_cursor), level => log_threshold + 2);
@@ -3348,24 +3348,24 @@ package body et_schematic_ops_units is
 						proceed := false; -- no further probing required
 					end set_result;
 
-				begin					
+				begin
 					log (text => "unit " & get_unit_name (unit_cursor), level => log_threshold + 2);
 					case flag is
 						when PROPOSED =>
 							if is_proposed (unit_cursor) then
 								set_result;
 							end if;
-		
+
 						when SELECTED =>
 							if is_selected (unit_cursor) then
 								set_result;
 							end if;
-		
+
 						when others => null; -- CS
 					end case;
 				end query_unit;
 
-				
+
 			begin
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
@@ -3375,8 +3375,8 @@ package body et_schematic_ops_units is
 
 				log_indentation_down;
 			end query_device;
-			
-			
+
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) and proceed loop
@@ -3389,14 +3389,14 @@ package body et_schematic_ops_units is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up the first unit / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3410,9 +3410,9 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure group_units_in_rectangular_area (
@@ -3420,16 +3420,16 @@ package body et_schematic_ops_units is
 		sheet			: in type_sheet;
 		area			: in type_area;
 		log_threshold	: in type_log_level)
-	is 
+	is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
@@ -3437,7 +3437,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -3450,8 +3450,8 @@ package body et_schematic_ops_units is
 						set_selected (unit);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -3460,7 +3460,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3469,7 +3469,7 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " group units on sheet " & to_string (sheet)
@@ -3477,7 +3477,7 @@ package body et_schematic_ops_units is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
@@ -3485,57 +3485,57 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	procedure delete_units_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		unit_found : boolean := false;
-		
+
 		-- Here we store the device and unit name
 		-- of a selected unit:
 		d_name : type_device_name;
 		u_name : pac_unit_name.bounded_string;
-	
-	
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in type_device_electrical)
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in type_unit)
 				is begin
 					if is_selected (unit) then
-					
+
 						-- Backup the unit and device name:
 						u_name := unit_name;
 						d_name := device_name;
-						
+
 						-- Abort the iterators for
 						-- units and devices:
 						unit_found := true;
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) and not unit_found loop
@@ -3544,60 +3544,60 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
-			while has_element (device_cursor) 
+			while has_element (device_cursor)
 				and not unit_found loop
-				
+
 				query_element (
 					device_cursor, query_device'access);
-					
+
 				next (device_cursor);
 			end loop;
 		end query_module;
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " delete units in group",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Search for the first selected unit in the group:
 		query_element (module_cursor, query_module'access);
 
 		-- If a unit has been found, then the flag "unit_found"
 		-- is set. This starts the following loop where
-		-- the affected unit will be deleted.		
-		
+		-- the affected unit will be deleted.
+
 		-- This loop will be executed as long as selected
 		-- units exist:
 		while unit_found loop
 		-- CS: safety measure to avoid forever-loop
 		-- use total unit count of the design ?
 		-- CS: log the nunmber of deleted units and devices.
-		
+
 			delete_unit (
 				module_cursor, d_name, u_name,
 				NO_COMMIT, log_threshold + 1);
-		
+
 			-- Restart the search for a selected unit:
 			unit_found := false;
 			query_element (module_cursor, query_module'access);
 		end loop;
-		
+
 		log_indentation_down;
 	end delete_units_in_group;
-		
-		
-	
 
 
 
-	
-	
+
+
+
+
+
 
 
 	procedure drag_selected_units (
@@ -3608,28 +3608,28 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
 				is begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
-						
+
 						log_indentation_up;
-						
+
 						drag_unit (
 							module_cursor	=> module_cursor,
 							device_name		=> device_name,
@@ -3642,8 +3642,8 @@ package body et_schematic_ops_units is
 						log_indentation_down;
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -3652,7 +3652,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3667,7 +3667,7 @@ package body et_schematic_ops_units is
 			& " drag selected units by "
 			& to_string (offset),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);
@@ -3677,14 +3677,14 @@ package body et_schematic_ops_units is
 
 
 
-	
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure set_selected_units_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3693,12 +3693,12 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
@@ -3706,7 +3706,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -3715,12 +3715,12 @@ package body et_schematic_ops_units is
 				begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
-						
+
 						set_moving (unit);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -3729,7 +3729,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3738,12 +3738,12 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set selected units as moving",
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);
@@ -3751,7 +3751,7 @@ package body et_schematic_ops_units is
 		-- Set segments which are connected with selected
 		-- units as "moving":
 		set_segments_moving (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end set_selected_units_as_moving;
 
@@ -3760,7 +3760,7 @@ package body et_schematic_ops_units is
 
 
 
-	
+
 
 
 
@@ -3772,12 +3772,12 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
@@ -3785,7 +3785,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -3794,12 +3794,12 @@ package body et_schematic_ops_units is
 				begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
-						
+
 						clear_moving (unit);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -3808,7 +3808,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3817,12 +3817,12 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set selected units as NOT moving",
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);
@@ -3831,17 +3831,17 @@ package body et_schematic_ops_units is
 		-- Set segments which are connected with selected
 		-- units as "moving":
 		-- set_segments_moving (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end set_selected_units_as_not_moving;
 
 
-	
 
 
 
 
-	
+
+
 
 
 	procedure set_all_units_as_not_moving (
@@ -3851,12 +3851,12 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
@@ -3864,7 +3864,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -3874,8 +3874,8 @@ package body et_schematic_ops_units is
 					-- CS log full name like IC1.D
 					clear_moving (unit);
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -3884,7 +3884,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3893,16 +3893,16 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set all units as NOT moving",
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);
-		
+
 		log_indentation_down;
 	end set_all_units_as_not_moving;
 
@@ -3910,14 +3910,14 @@ package body et_schematic_ops_units is
 
 
 
-	
+
 
 
 
 
 	procedure copy_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;		
+		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
@@ -3934,7 +3934,7 @@ package body et_schematic_ops_units is
 		unit_cursor_old : pac_units.cursor;
 
 		-- On copying a unit, a new device is created
-		-- indirectly. Here we store the name of the 
+		-- indirectly. Here we store the name of the
 		-- newly created device. It is required in case
 		-- another unit is found that belongs to the
 		-- same device:
@@ -3943,9 +3943,9 @@ package body et_schematic_ops_units is
 		-- Here we store the name of the last device
 		-- for which a unit has been copied:
 		device_last : type_device_name; -- assumes default
-	
 
-		
+
+
 		-- This procedure searches for a selected unit.
 		-- The search is aborted if a unit has been found.
 		-- It sets the cursors device_cursor_old and
@@ -3953,12 +3953,12 @@ package body et_schematic_ops_units is
 		-- It sets the flag unit_found:
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in out type_device_electrical)
@@ -3966,7 +3966,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -3980,36 +3980,36 @@ package body et_schematic_ops_units is
 						-- The search must be aborted by setting
 						-- this flag:
 						unit_found := true;
-						
+
 						-- Backup the cursor to the unit
 						-- and to the parent device:
 						device_cursor_old := device_cursor;
 						unit_cursor_old := unit_cursor;
-						
+
 						-- Deselect the original unit.
 						-- This has the important effect, that the
 						-- same unit is not found over and over
 						-- again (which would cause a forever-loop):
-						clear_selected (unit);					
+						clear_selected (unit);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units and abort
 				-- as soon as a selected unit has been found:
-				while has_element (unit_cursor) 
+				while has_element (unit_cursor)
 				and not unit_found loop
 					device.units.update_element (unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices and abort
 			-- as soon as a selected unit has been found:
-			while has_element (device_cursor) 
+			while has_element (device_cursor)
 			and not unit_found loop
 				module.devices.update_element (device_cursor, query_device'access);
 				next (device_cursor);
@@ -4042,17 +4042,17 @@ package body et_schematic_ops_units is
 
 			-- CS copy mirror status and positions and angles
 			-- of place holders.
-			
+
 			log_indentation_down;
 		end copy_in_same_device;
-		
 
-		
+
+
 		procedure copy_in_new_device is
 		begin
 			log (text => "copy unit in new device", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			copy_unit (
 				module_cursor	=> module_cursor,
 				device_cursor	=> device_cursor_old,
@@ -4065,27 +4065,27 @@ package body et_schematic_ops_units is
 			log_indentation_down;
 		end copy_in_new_device;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-				& " copy selected units by " 
+				& " copy selected units by "
 				& " sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (offset),
 			level => log_threshold);
 
-		
+
 		log_indentation_up;
-		
+
 		-- Search for the first selected unit in the group.
 		-- Each unit that has been found, will be deselected:
 		generic_modules.update_element (
 			module_cursor, query_module'access);
 
-		-- If a unit has been found, then the 
+		-- If a unit has been found, then the
 		-- flag "unit_found" is set.
 		-- This starts the following loop where
-		-- the affected unit will be copied.		
-		
+		-- the affected unit will be copied.
+
 		-- This loop will be executed as long as selected
 		-- units exist:
 		while unit_found loop
@@ -4104,8 +4104,8 @@ package body et_schematic_ops_units is
 				-- device:
 				copy_in_new_device;
 			end if;
-			
-		
+
+
 			-- Restart the search for a selected unit:
 			unit_found := false;
 
@@ -4116,16 +4116,16 @@ package body et_schematic_ops_units is
 			generic_modules.update_element (
 				module_cursor, query_module'access);
 		end loop;
-		
+
 		log_indentation_down;
 	end copy_selected_units;
 
 
-	
 
 
 
-	
+
+
 
 
 
@@ -4134,15 +4134,15 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in type_device_electrical)
@@ -4150,7 +4150,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in type_unit)
@@ -4162,13 +4162,13 @@ package body et_schematic_ops_units is
 						-- CS log full name like IC1.D
 
 						-- We have a selected unit.
-						
+
 						copy_unit_to_clipboard (
 							device_cursor, unit_cursor, log_threshold + 1);
 					end if;
 				end query_unit;
-				
-				
+
+
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
@@ -4177,7 +4177,7 @@ package body et_schematic_ops_units is
 				end loop;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -4187,28 +4187,28 @@ package body et_schematic_ops_units is
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " copy selected units to clipboard ",
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_module'access);
-		
+
 		log_indentation_down;
 	end copy_selected_units_to_clipboard;
 
-	
 
 
 
 
-	
-	
 
-	
+
+
+
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4226,17 +4226,17 @@ package body et_schematic_ops_units is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
-			
+
+
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				-- Locate the targeted unit.
@@ -4254,72 +4254,72 @@ package body et_schematic_ops_units is
 					move_placeholder (unit, meaning, coordinates, point);
 				end move_placeholder;
 
-				
+
 			begin
 				device.units.update_element (unit_cursor, move_placeholder'access);
 			end query_device;
 
-			
+
 		begin
 			module.devices.update_element (device_cursor_sch, query_device'access);
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
+					& " move " & to_string (device_name)
+					& " unit " & to_string (unit_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " to " & to_string (point),
 					level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
+					& " move " & to_string (device_name)
+					& " unit " & to_string (unit_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " by " & to_string (point),
 					level => log_threshold);
 		end case;
 
-		
+
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-			
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-			
-		log_indentation_down;		
+
+		log_indentation_down;
 	end move_placeholder;
 
 
 
 
-	
-	
 
-	
+
+
+
 
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4327,9 +4327,9 @@ package body et_schematic_ops_units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_documentation := HORIZONTAL;
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -4337,18 +4337,18 @@ package body et_schematic_ops_units is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				-- Locate the targeted unit.
@@ -4356,71 +4356,71 @@ package body et_schematic_ops_units is
 				-- is raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
 
-				
+
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) 
+					unit	: in out type_unit)
 				is
 					pragma unreferenced (name);
 				begin
 					rotate_placeholder (unit, meaning, toggle, rotation);
 				end rotate_placeholder;
 
-				
+
 			begin
 				device.units.update_element (unit_cursor, rotate_placeholder'access);
 			end query_device;
 
-			
+
 		begin
 			module.devices.update_element (device_cursor_sch, query_device'access);
 		end query_module;
-		
-		
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " rotate " & to_string (device_name) 
-			 & " unit " & to_string (unit_name) 
-			 & " placeholder " & to_string (meaning) 
+		log (text => "module " & to_string (module_cursor)
+			 & " rotate " & to_string (device_name)
+			 & " unit " & to_string (unit_name)
+			 & " placeholder " & to_string (meaning)
 			 & " to " & to_string (rotation),
 			 level => log_threshold);
 
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-	
-		
+
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-			
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-			
+
 		log_indentation_down;
 	end rotate_placeholder;
 
 
-	
 
-	
 
-	
-	
+
+
+
+
 
 	function get_device_name (
 		object : in type_object_placeholder)
@@ -4428,7 +4428,7 @@ package body et_schematic_ops_units is
 	is begin
 		return key (object.device_cursor);
 	end;
-	
+
 
 	function get_unit_name (
 		object : in type_object_placeholder)
@@ -4439,7 +4439,7 @@ package body et_schematic_ops_units is
 
 
 
-	
+
 	function get_object_name (
 		object	: in type_object_placeholder)
 		return string
@@ -4447,7 +4447,7 @@ package body et_schematic_ops_units is
 		return get_full_name (object.device_cursor, object.unit_cursor);
 	end;
 
-	
+
 
 	function get_meaning (
 		object : in type_object_placeholder)
@@ -4465,7 +4465,7 @@ package body et_schematic_ops_units is
 	is begin
 		return get_device_name (object.device_cursor);
 	end;
-	
+
 
 	function get_unit_name (
 		object : in type_object_placeholder)
@@ -4484,8 +4484,8 @@ package body et_schematic_ops_units is
 	end;
 
 
-	
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4496,20 +4496,20 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is	
+			module		: in out type_generic_module)
+		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				pragma unreferenced (device_name);
 
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is 
+				is
 					pragma unreferenced (unit_name);
 					use et_device_placeholders.symbols;
 				begin
@@ -4519,24 +4519,24 @@ package body et_schematic_ops_units is
 
 						when VALUE =>
 							modify_status (unit.placeholders.value, operation);
-							
+
 						when PURPOSE =>
 							modify_status (unit.placeholders.purpose, operation);
-							
+
 					end case;
 				end query_unit;
 
-				
+
 			begin
 				device.units.update_element (placeholder.unit_cursor, query_unit'access);
 			end query_device;
 
-			
+
 		begin
 			module.devices.update_element (placeholder.device_cursor, query_device'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of device " & get_device_name (placeholder)
@@ -4545,9 +4545,9 @@ package body et_schematic_ops_units is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -4555,12 +4555,12 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -4570,7 +4570,7 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
@@ -4578,22 +4578,22 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is 
+				is
 					unit_position : constant type_vector_model := get_place (unit.position);
-					
+
 					use et_device_placeholders.symbols;
 				begin
 					if get_sheet (unit) = active_sheet then
 						log (text => to_string (unit_name), level => log_threshold + 2);
 						log_indentation_up;
-						
+
 						if in_catch_zone (unit.placeholders.name, unit_position, catch_zone) then
 							log (text => to_string (NAME), level => log_threshold + 3);
 							set_proposed (unit.placeholders.name);
@@ -4616,7 +4616,7 @@ package body et_schematic_ops_units is
 					end if;
 				end query_unit;
 
-				
+
 			begin
 				if is_real (device) then
 					log (text => to_string (device_name), level => log_threshold + 1);
@@ -4631,7 +4631,7 @@ package body et_schematic_ops_units is
 				end if;
 			end query_device;
 
-			
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -4640,29 +4640,29 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " propose placeholders in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
 	end propose_placeholders;
-								
-
-	
 
 
 
-	
-	
-	
+
+
+
+
+
+
 
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4671,28 +4671,28 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is 
+				is
 					use et_device_placeholders.symbols;
 				begin
 					log (text => to_string (unit_name), level => log_threshold + 2);
 					reset_status (unit.placeholders);
 				end query_unit;
 
-										 
+
 			begin
 				if is_real (device) then
 					log (text => to_string (device_name), level => log_threshold + 1);
@@ -4703,15 +4703,15 @@ package body et_schematic_ops_units is
 						device.units.update_element (unit_cursor, query_unit'access);
 						next (unit_cursor);
 					end loop;
-					
+
 					log_indentation_down;
 				end if;
 			end query_device;
 
-			
+
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
-			
-			
+
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -4719,15 +4719,15 @@ package body et_schematic_ops_units is
 				next (device_cursor);
 			end loop;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " reset proposed placeholders", 
+			& " reset proposed placeholders",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -4736,12 +4736,12 @@ package body et_schematic_ops_units is
 	end reset_status_placeholders;
 
 
-	
 
 
-	
 
-	
+
+
+
 
 
 	function get_first_placeholder (
@@ -4754,7 +4754,7 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
@@ -4765,10 +4765,10 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device 		: in type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				
+
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in type_unit)
@@ -4781,10 +4781,10 @@ package body et_schematic_ops_units is
 					end set_result;
 
 					use et_device_placeholders.symbols;
-				begin					
+				begin
 					log (text => "unit " & to_string (unit_name), level => log_threshold + 2);
 					log_indentation_up;
-					
+
 					case flag is
 						when PROPOSED =>
 							if is_proposed (unit.placeholders.name) then
@@ -4802,7 +4802,7 @@ package body et_schematic_ops_units is
 								set_result;
 							end if;
 
-							
+
 						when SELECTED =>
 							if is_selected (unit.placeholders.name) then
 								result.meaning := NAME;
@@ -4819,16 +4819,16 @@ package body et_schematic_ops_units is
 								set_result;
 							end if;
 
-							
+
 						when others =>
 							null;
 							-- CS
 					end case;
-							
+
 					log_indentation_down;
 				end query_unit;
 
-				
+
 			begin
 				if is_real (device) then
 					log (text => "device " & to_string (device_name), level => log_threshold + 1);
@@ -4837,19 +4837,19 @@ package body et_schematic_ops_units is
 					-- Iterate through the units:
 					while has_element (unit_cursor) loop
 						query_element (unit_cursor, query_unit'access);
-						
+
 						if not proceed then
 							exit;
 						end if;
-						
+
 						next (unit_cursor);
 					end loop;
-					
+
 					log_indentation_down;
 				end if;
 			end query_device;
-			
-			
+
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) and proceed loop
@@ -4862,14 +4862,14 @@ package body et_schematic_ops_units is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up the first placeholder / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -4879,13 +4879,13 @@ package body et_schematic_ops_units is
 		return result;
 	end get_first_placeholder;
 
-	
 
-	
+
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -4893,14 +4893,14 @@ package body et_schematic_ops_units is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
-	
 
-	
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -4915,9 +4915,9 @@ package body et_schematic_ops_units is
 
 		log_indentation_up;
 
-		
+
 		-- SEARCH FOR A UNIT:
-		
+
 		-- If a unit has been found, then go to the end of this procedure:
 		result_unit := get_first_unit (module_cursor, flag, log_threshold + 1);
 
@@ -4925,10 +4925,10 @@ package body et_schematic_ops_units is
 			-- A unit has been found.
 			log (text => get_object_name (result_unit),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_UNIT;
 		end if;
-		
+
 		-- If nothing has been found then the category is CAT_VOID.
 		if result_category /= CAT_VOID then
 			goto end_of_search;
@@ -4936,10 +4936,10 @@ package body et_schematic_ops_units is
 
 
 
-		
+
 
 		-- SEARCH FOR A PLACEHOLDER:
-		
+
 		-- If a placeholder has been found, then go to the end of this procedure:
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
 
@@ -4947,19 +4947,19 @@ package body et_schematic_ops_units is
 			-- A placeholder has been found.
 			log (text => get_unit_name (result_placeholder) & " " & get_meaning (result_placeholder),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_PLACEHOLDER;
 		end if;
 
 
 
 	<<end_of_search>>
-		
+
 		-- If nothing has been found then the category is CAT_VOID.
 		log_indentation_down;
 
-		
-		
+
+
 		case result_category is
 			when CAT_VOID =>
 				return (cat => CAT_VOID);
@@ -4970,7 +4970,7 @@ package body et_schematic_ops_units is
 			when CAT_PLACEHOLDER =>
 				return (CAT_PLACEHOLDER, result_placeholder);
 
-				
+
 		end case;
 	end get_first_object;
 
@@ -4980,8 +4980,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4994,40 +4994,40 @@ package body et_schematic_ops_units is
 		-- Here the objects are collected:
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			-- This procedure queries the devices and their units
-			-- and collects those which have the given flag set:			
+			-- and collects those which have the given flag set:
 			procedure query_devices is
 				device_cursor : pac_devices_electrical.cursor := module.devices.first;
-				
+
 
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_electrical) 
-				is 
+					device	: in type_device_electrical)
+				is
 
 					-- Queries a unit for its status flag
 					-- and appends it to the result:
-					procedure query_unit (c : in pac_units.cursor) is 
+					procedure query_unit (c : in pac_units.cursor) is
 
 						-- This procedure appends the matching
 						-- device and unit cursor to the result:
 						procedure collect is begin
 							log (text => get_unit_name (c), level => log_threshold + 4);
-							
+
 							result.append ((
 								cat		=> CAT_UNIT,
 								unit	=> (device_cursor, c)));
 
 						end collect;
 
-						
+
 					begin
 						case flag is
 							when PROPOSED =>
@@ -5041,14 +5041,14 @@ package body et_schematic_ops_units is
 								end if;
 
 							when others => null; -- CS
-						end case;					
+						end case;
 					end query_unit;
-			
-					
+
+
 				begin
 					log (text => to_string (name), level => log_threshold + 2);
 					log_indentation_up;
-					
+
 					log (text => "units", level => log_threshold + 3);
 					log_indentation_up;
 					device.units.iterate (query_unit'access);
@@ -5057,11 +5057,11 @@ package body et_schematic_ops_units is
 					log_indentation_down;
 				end query_device;
 
-				
+
 			begin
 				log (text => "query_devices", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				-- Iterate the devices of the module:
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
@@ -5071,39 +5071,39 @@ package body et_schematic_ops_units is
 				log_indentation_down;
 			end query_devices;
 
-			
+
 
 			-- This procedure queries the devices, their units and their placeholders
 			-- and collects those which have the given flag set:
 			procedure query_placeholders is
 				device_cursor : pac_devices_electrical.cursor := module.devices.first;
-				
+
 
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_electrical) 
-				is 
+					device	: in type_device_electrical)
+				is
 					unit_cursor : pac_units.cursor := device.units.first;
 
-					
+
 					procedure query_unit (
 						name	: in pac_unit_name.bounded_string;
 						unit	: in type_unit)
 					is
 						use et_device_placeholders.symbols;
-						
+
 						-- This procedure appends the matching
 						-- placeholder to result:
 						procedure collect (meaning : type_placeholder_meaning) is begin
 							log (text => to_string (meaning), level => log_threshold + 6);
-							
+
 							result.append ((
 								cat			=> CAT_PLACEHOLDER,
 								placeholder	=> (device_cursor, unit_cursor, meaning)));
 
 						end collect;
 
-						
+
 					begin
 						log (text => to_string (name), level => log_threshold + 5);
 						log_indentation_up;
@@ -5122,7 +5122,7 @@ package body et_schematic_ops_units is
 									collect (et_device_placeholders.PURPOSE);
 								end if;
 
-								
+
 							when SELECTED =>
 								if is_selected (unit.placeholders.name) then
 									collect (et_device_placeholders.NAME);
@@ -5136,14 +5136,14 @@ package body et_schematic_ops_units is
 									collect (et_device_placeholders.PURPOSE);
 								end if;
 
-								
+
 							when others => null; -- CS
-						end case;					
+						end case;
 
 						log_indentation_down;
 					end query_unit;
 
-					
+
 				begin
 					if is_real (device) then -- Only real devices have placeholders.
 						log (text => to_string (name), level => log_threshold + 3);
@@ -5162,7 +5162,7 @@ package body et_schematic_ops_units is
 						log_indentation_down;
 					end if;
 				end query_device;
-				
+
 
 			begin
 				log (text => "query_placeholders", level => log_threshold + 1);
@@ -5170,35 +5170,35 @@ package body et_schematic_ops_units is
 
 				log (text => "query devices", level => log_threshold + 2);
 				log_indentation_up;
-				
+
 				-- Iterate the devices of the module:
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
 					next (device_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 				log_indentation_down;
 			end query_placeholders;
-			
-			
+
+
 		begin
 			query_devices;
-			query_placeholders;			
+			query_placeholders;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
@@ -5207,8 +5207,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 
 	procedure modify_status (
@@ -5224,16 +5224,16 @@ package body et_schematic_ops_units is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_UNIT =>
 				modify_status (module_cursor, object.unit, operation, log_threshold + 1);
 
 			when CAT_PLACEHOLDER =>
 				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
-				
+
 			-- CS CAT_NANE, ...
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -5242,7 +5242,7 @@ package body et_schematic_ops_units is
 	end modify_status;
 
 
-	
+
 
 
 
@@ -5252,24 +5252,24 @@ package body et_schematic_ops_units is
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
 		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
 
-	
 
 
 
-	
-	
+
+
+
 
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 
 
 		procedure reset_devices is begin
@@ -5278,25 +5278,25 @@ package body et_schematic_ops_units is
 			reset_status_placeholders (module_cursor, log_threshold + 1);
 		end;
 
-	
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " reset objects",
 			level => log_threshold);
 
 		log_indentation_up;
 
 		reset_devices;
-		
+
 		log_indentation_down;
 	end reset_status_objects;
 
 
 
-	
 
 
-	
+
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5305,7 +5305,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move object " 
+			& " move object "
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -5323,10 +5323,10 @@ package body et_schematic_ops_units is
 					sheet			=> active_sheet,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-				
+
 
 			when CAT_PLACEHOLDER =>
-				
+
 				move_placeholder (
 					module_cursor 	=> module_cursor,
 					device_name		=> get_device_name (object.placeholder),
@@ -5336,22 +5336,22 @@ package body et_schematic_ops_units is
 					meaning			=> get_meaning (object.placeholder),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			-- CS CAT_NANE, ...
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
 
 
 
 
-	
-	
-	
+
+
+
 
 	procedure rotate_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5359,7 +5359,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " rotate object " 
+			& " rotate object "
 			-- CS & to_string (object)
 			& " by 90 degrees",
 			level => log_threshold);
@@ -5375,7 +5375,7 @@ package body et_schematic_ops_units is
 					coordinates		=> relative, -- in order to rotate by 90 degrees
 					rotation		=> 90.0,
 					log_threshold	=> log_threshold + 1);
-				
+
 
 			when CAT_PLACEHOLDER =>
 				rotate_placeholder (
@@ -5387,19 +5387,19 @@ package body et_schematic_ops_units is
 					log_threshold	=> log_threshold + 1);
 				null;
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end rotate_object;
 
 
 
 
-	
-	
+
+
 
 	procedure mirror_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5407,7 +5407,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " mirror object " 
+			& " mirror object "
 			-- CS & to_string (object)
 			& " by 90 degrees",
 			level => log_threshold);
@@ -5423,21 +5423,21 @@ package body et_schematic_ops_units is
 					unit_name		=> get_unit_name (object.unit),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when others =>
 				null; -- nothing to do
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end mirror_object;
 
 
 
-	
 
-	
 
-	
+
+
+
 
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5446,17 +5446,17 @@ package body et_schematic_ops_units is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
-			is 
+			is
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is
 					-- Get the sheet where the candidate unit is:
@@ -5477,11 +5477,11 @@ package body et_schematic_ops_units is
 						et_schematic_ops_nets.set_segments_moving (module_cursor, position, log_threshold + 3);
 					end query_position;
 
-					
-					-- This list contains all points where a port of 
+
+					-- This list contains all points where a port of
 					-- the candidate unit is:
 					port_positions : pac_points.list;
-					
+
 				begin
 					if is_selected (unit_cursor) then
 						log (text => "unit " & get_unit_name (unit_cursor),
@@ -5495,18 +5495,18 @@ package body et_schematic_ops_units is
 					end if;
 				end query_unit;
 
-										 
+
 			begin
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate through the units:
 				device.units.iterate (query_unit'access);
-				
+
 				log_indentation_down;
 			end query_device;
-			
-			
+
+
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -5515,7 +5515,7 @@ package body et_schematic_ops_units is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set net segments (connected with selected units) moving.",
@@ -5533,10 +5533,10 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5545,7 +5545,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " drag object " 
+			& " drag object "
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -5562,18 +5562,18 @@ package body et_schematic_ops_units is
 					coordinates		=> absolute,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-				
-				
+
+
 			when CAT_PLACEHOLDER =>
 				null; -- nothing to do
 
-				
+
 			-- CS CAT_NANE, ...
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end drag_object;
 
@@ -5581,9 +5581,9 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
-	
+
+
+
 
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5606,41 +5606,41 @@ package body et_schematic_ops_units is
 				-- If the unit cursor is no_element then
 				-- the whole device must be deleted:
 				if has_element (object.unit.unit_cursor) then
-					
+
 					delete_unit (
 						module_cursor	=> module_cursor,
 						device_name		=> get_device_name (object.unit),
 						unit_name		=> get_unit_name (object.unit),
 						log_threshold	=> log_threshold + 1);
-					
+
 				else
 					delete_electrical_device (
 						module_cursor	=> module_cursor,
 						device_name		=> get_device_name (object.unit),
 						log_threshold	=> log_threshold + 1);
-					
+
 				end if;
 
-				
+
 			when CAT_PLACEHOLDER =>
 				null; -- CS clear content ? or do nothing ?
 
-				
+
 			-- CS CAT_NANE, ...
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
 
 
 
-	
 
 
-	
+
+
 
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5664,24 +5664,24 @@ package body et_schematic_ops_units is
 					unit_name		=> get_unit_name (object.unit),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_PLACEHOLDER =>
 				null; -- CS clear content ? or do nothing ?
 
-								
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end show_object;
 
-	
-	
 
 
 
-	
+
+
+
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -5702,26 +5702,26 @@ package body et_schematic_ops_units is
 					device_name_before	=> get_device_name (object.unit),
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
-				
+
 			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end rename_object;
 
 
-	
-	
 
 
-	
+
+
+
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;		
+		destination		: in type_position;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		object_position : type_object_position;
 
 		device_created : type_device_name;
@@ -5737,33 +5737,33 @@ package body et_schematic_ops_units is
 			when CAT_UNIT =>
 				object_position := to_position (destination, active_sheet);
 
-				
+
 				copy_device (
 					module_cursor		=> module_cursor,
 					device_name			=> get_device_name (object.unit.device_cursor),
 					unit_name_explicit	=> unit_name_default,
-					
+
 					-- The copy operation takes place on the
 					-- active sheet only:
 					destination		=> object_position,
 					device_created	=> device_created,
 					log_threshold	=> log_threshold + 1);
-				
 
-				
+
+
 			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end copy_object;
 
 
-	
 
 
 
-	
+
+
 
 	procedure set_value (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5787,18 +5787,18 @@ package body et_schematic_ops_units is
 					value			=> new_value,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end set_value;
 
-	
 
 
-	
+
+
 
 
 	procedure set_purpose (
@@ -5823,19 +5823,19 @@ package body et_schematic_ops_units is
 					purpose			=> new_purpose,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end set_purpose;
 
 
-	
 
 
-	
+
+
 
 
 	procedure set_partcode (
@@ -5860,18 +5860,18 @@ package body et_schematic_ops_units is
 					partcode		=> new_partcode,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end set_partcode;
 
 
 
 
-	
+
 
 
 
@@ -5897,21 +5897,21 @@ package body et_schematic_ops_units is
 					variant			=> new_variant,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end set_package_variant;
 
-	
-	
+
+
 end et_schematic_ops_units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

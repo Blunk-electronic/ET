@@ -66,33 +66,33 @@ package body et_package_write_silkscreen is
 	use pac_geometry_2;
 	use pac_file_rw;
 	use pac_contours;
-	
+
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
 	use pac_silk_zones;
 	use pac_silk_texts;
 
-	use pac_text_placeholders;		
+	use pac_text_placeholders;
 
-	
+
 
 	procedure write_silkscreen (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
-		procedure write_line (cursor : in pac_silk_lines.cursor) is 
+		procedure write_line (cursor : in pac_silk_lines.cursor) is
 			use pac_silk_lines;
 		begin
 			section_mark (section_line, HEADER);
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_silk_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_silk_arcs.cursor) is
 			use pac_silk_arcs;
 		begin
 			section_mark (section_arc , HEADER);
@@ -101,8 +101,8 @@ package body et_package_write_silkscreen is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_silk_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_silk_circles.cursor) is
 			use pac_silk_circles;
 		begin
 			section_mark (section_circle, HEADER);
@@ -111,53 +111,53 @@ package body et_package_write_silkscreen is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
-		procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+
+		procedure write_polygon (cursor : in pac_silk_zones.cursor) is
 		-- CS rename to write_zone
 			use pac_silk_zones;
 		begin
 			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (type_contour (element (cursor)));
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
-		
-		procedure write_text (cursor : in pac_silk_texts.cursor) is 
+
+		procedure write_text (cursor : in pac_silk_texts.cursor) is
 			t : type_silk_text renames element (cursor);
 		begin
 			section_mark (section_text, HEADER);
-			
+
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
 			----
 			-- CS rework:
-			
-			write (keyword => keyword_position, 
+
+			write (keyword => keyword_position,
 				parameters => to_string (get_position (t), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (t.size)); -- size 1.000
-			
+
 			write (keyword => keyword_linewidth,
 				parameters => to_string (t.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (t.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 			----
-			
+
 			section_mark (section_text, FOOTER);
 		end write_text;
 
 
-		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is 
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder renames element (cursor);
 		begin
 			section_mark (section_placeholder, HEADER);
@@ -165,30 +165,30 @@ package body et_package_write_silkscreen is
 
 			----
 			-- CS rework:
-			
-			write (keyword => keyword_position, 
+
+			write (keyword => keyword_position,
 				parameters => to_string (get_position (ph), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (ph.size)); -- size 1.000
-			
+
 			write (keyword => keyword_linewidth,
 				parameters => to_string (ph.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (ph.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 			----
-			
+
 			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 
-		
+
 	begin
 		log (text => "write silkscreen", level => log_threshold);
 
@@ -203,7 +203,7 @@ package body et_package_write_silkscreen is
 		iterate (packge.silkscreen.top.texts, write_text'access);
 		iterate (packge.silkscreen.top.placeholders, write_placeholder'access);
 		section_mark (section_top, FOOTER);
-		
+
 		-- bottom
 		section_mark (section_bottom, HEADER);
 		iterate (packge.silkscreen.bottom.lines, write_line'access);
@@ -214,8 +214,8 @@ package body et_package_write_silkscreen is
 		iterate (packge.silkscreen.bottom.placeholders, write_placeholder'access);
 		section_mark (section_bottom, FOOTER);
 
-		section_mark (section_silkscreen, FOOTER);			
+		section_mark (section_silkscreen, FOOTER);
 	end write_silkscreen;
 
-	
+
 end et_package_write_silkscreen;

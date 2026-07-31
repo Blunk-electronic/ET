@@ -52,23 +52,23 @@ with et_geometry_2_file_rw;
 
 
 package et_board_geometry is
-	
+
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 
 	distance_digits_left  : constant :=  5;
 	--distance_digits_right : constant := 10; -- 0.1pm
 	distance_digits_right : constant := 4; -- 1um
-	
+
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
-	
-	type type_distance_model is delta distance_smallest 
+
+	type type_distance_model is delta distance_smallest
 		digits distance_digits_left + distance_digits_right
-		range - 0.1 * (10 ** distance_digits_left) .. 
+		range - 0.1 * (10 ** distance_digits_left) ..
 			  + 0.1 * (10 ** distance_digits_left);
 
-	
-		
+
+
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
@@ -77,21 +77,21 @@ package et_board_geometry is
 	rotation_digits_right : constant := 7;
 
 	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation_model is delta rotation_smallest 
+	type type_rotation_model is delta rotation_smallest
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
-		
+
 
 
 	type type_float_model is digits 18;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
 
-	
-	-- instantiation of the geometry 1 package:	
+
+	-- instantiation of the geometry 1 package:
 	package pac_geometry_brd is new et_geometry_1 (
 		type_float	=> type_float_model,
- 
+
 		-- For assumed greatest numbers of 9999.999..
 		-- we have 4 digits left and 14 digits right of comma.
 		-- This leads to an accuracy of:
@@ -103,11 +103,11 @@ package et_board_geometry is
 	use pac_geometry_brd;
 
 
-	
+
 
 	package pac_polygons is new pac_geometry_brd.et_polygons;
 	-- use pac_polygons;
-	
+
 	package pac_polygon_clipping is new pac_polygons.clipping;
 	package pac_polygon_cropping is new pac_polygons.cropping;
 	package pac_polygon_union is new pac_polygons.union;
@@ -115,9 +115,9 @@ package et_board_geometry is
 
 
 
-	
-	
-	
+
+
+
 
 	-- instantiation of the geometry_2 package:
 	package pac_geometry_2 is new et_geometry_2a (
@@ -127,12 +127,12 @@ package et_board_geometry is
 		axis_min				=> -1_000.0,
 		type_rotation			=> type_rotation_model
 		);
-	
+
 	use pac_geometry_2;
 
 
-	
-	
+
+
 -- FAB RELEVANT
 
 	--fab_tolerance : constant type_distance_positive := 0.001;
@@ -140,15 +140,15 @@ package et_board_geometry is
 	--fill_tolerance : constant type_distance_positive := 0.05;
 	fill_tolerance : constant type_distance_positive := 0.01;
 
-	
 
-	
+
+
 
 	-- In headless mode this accuracy should be used
 	-- when locating objects inside a particual zone:
-	accuracy_default : constant type_zone_radius := 2.0; 
+	accuracy_default : constant type_zone_radius := 2.0;
 	-- CS: should be a general setting for board and package editor in the future
-	
+
 
 
 	package pac_contours is new pac_geometry_2.contours;
@@ -163,13 +163,13 @@ package et_board_geometry is
 		pac_geometry 	=> pac_geometry_2,
 		pac_contours	=> pac_contours);
 	-- CS use it when saving symbols in a file
-	
-		
+
+
 end et_board_geometry;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -52,7 +52,7 @@ package body et_package_read_keepout is
 	use et_board_geometry.pac_contours;
 
 
-	
+
 	procedure insert_keepout_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
@@ -61,7 +61,7 @@ package body et_package_read_keepout is
 		pragma unreferenced (log_threshold);
 	begin
 		add_zone (packge.keepout, (contour with null record), face);
-		
+
 		-- clean up for next contour
 		reset_contour (contour);
 	end;
@@ -77,11 +77,11 @@ package body et_package_read_keepout is
 		pragma unreferenced (log_threshold);
 	begin
 		add_cutout (packge.keepout, (contour with null record), face);
-		
+
 		-- clean up for next contour
 		reset_contour (contour);
 	end;
 
-	
-	
+
+
 end et_package_read_keepout;

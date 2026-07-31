@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2023                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,8 +45,8 @@ package body et_commit is
 	function to_string (stage : in type_commit_stage) return string is begin
 		return type_commit_stage'image (stage);
 	end to_string;
-		
-	
+
+
 
 	procedure increment (
 		index	: in out type_commit_index_zero_based;
@@ -68,7 +68,7 @@ package body et_commit is
 	end decrement;
 
 
-	
+
 
 	package body pac_commit is
 
@@ -84,10 +84,10 @@ package body et_commit is
 		end "=";
 
 
-		
+
 		function make_commit (
 			index	: in type_commit_index;
-			stage	: in type_commit_stage;					 
+			stage	: in type_commit_stage;
 			item	: in type_item;
 			message	: in pac_commit_message.bounded_string;
 			domain	: in type_domain)
@@ -97,7 +97,7 @@ package body et_commit is
 		begin
 			result := ((
 				index		=> index,
-				stage		=> stage,		   
+				stage		=> stage,
 				item		=> item,
 				timestamp	=> ada.calendar.clock, -- the time of the commit
 				message		=> message,
@@ -107,15 +107,15 @@ package body et_commit is
 		end make_commit;
 
 
-		-- function get_item 
+		-- function get_item
 	end pac_commit;
 
-	
+
 end et_commit;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

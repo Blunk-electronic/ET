@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,14 +46,14 @@ with et_logging;						use et_logging;
 
 package et_package_write is
 
-	
-	-- Saves the given package model in a file specified by file_name.							   
+
+	-- Saves the given package model in a file specified by file_name.
 	procedure write_package (
 		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in type_package_model; -- the actual device model
 		log_threshold	: in type_log_level);
 	-- CS rename to save_package_model
 
-	
-	
+
+
 end et_package_write;

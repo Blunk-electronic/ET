@@ -63,33 +63,33 @@ with et_netlist_cat_1;
 package body et_schematic_ops_netlists_2 is
 
 
-	
-	
-	
+
+
+
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
-		return pac_device_ports_extended.set 
+		return pac_device_ports_extended.set
 	is
 		ports_extended : pac_device_ports_extended.set; -- to be returned
 
 		use pac_device_ports;
 
-		
+
 		procedure query_ports (
-			port_cursor : in pac_device_ports.cursor) 
+			port_cursor : in pac_device_ports.cursor)
 		is
 			port_sch		: constant type_device_port := element (port_cursor);
-			
+
 			use et_device_library.units;
 			more_properties	: type_port_properties_access;
-			
+
 			use et_devices_electrical;
 			device_cursor	: pac_devices_electrical.cursor;
 
 			use et_schematic_ops_device;
 			use et_schematic_ops_units;
-			
+
 		begin
 			device_cursor := get_electrical_device (
 				module_cursor, element (port_cursor).device_name);
@@ -97,13 +97,13 @@ package body et_schematic_ops_netlists_2 is
 			-- Get further properties of the current port if the device
 			-- is real (appears in PCB):
 			if is_real (device_cursor) then
-				
+
 				more_properties := get_port_properties (
-					module_cursor	=> module_cursor, 
-					device_name		=> port_sch.device_name, 
+					module_cursor	=> module_cursor,
+					device_name		=> port_sch.device_name,
 					unit_name		=> port_sch.unit_name,
 					port_name		=> port_sch.port_name);
-				
+
 				pac_device_ports_extended.insert (
 					container	=> ports_extended,
 					new_item	=> (
@@ -115,32 +115,32 @@ package body et_schematic_ops_netlists_2 is
 			end if;
 		end query_ports;
 
-		
+
 	begin
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set 
+		return pac_submodule_ports_extended.set
 	is
 		pragma unreferenced (module_cursor);
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
 		use pac_net_submodule_ports;
 
-		
+
 		procedure query_ports (
-			port_cursor : in pac_net_submodule_ports.cursor) 
+			port_cursor : in pac_net_submodule_ports.cursor)
 		is
 			port : type_net_submodule_port renames element (port_cursor);
 			-- direction : type_netchanger_port_name; -- master/slave
@@ -155,30 +155,30 @@ package body et_schematic_ops_netlists_2 is
 					submodule	=> port.module_name, -- OSC1
 					port		=> port.port_name)); -- clock_out
 					-- CS direction, characteristics ?
-			
+
 		end query_ports;
 
-		
+
 	begin
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
-	
-	
-	
-	
-	
-	
 
-	 
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
 	procedure make_netlist_cat_1 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_module;
 		use et_module_names;
@@ -187,24 +187,24 @@ package body et_schematic_ops_netlists_2 is
 
 		use et_assembly_variants;
 		variant_cursor : pac_assembly_variants.cursor;
-		
+
 		-- The netlist to be generated:
 		netlist : pac_netlist_cat_1.map;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_nets;
 			use pac_nets;
-			
+
 			use et_net_names;
 			use pac_net_name;
 			net_cursor : pac_nets.cursor := module.nets.first;
-			
-			
+
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
@@ -212,17 +212,17 @@ package body et_schematic_ops_netlists_2 is
 				pragma unreferenced (net);
 				use et_net_ports;
 				all_ports : type_net_ports;
-				
+
 				use et_netlist_devices;
 				device_ports_extended : pac_device_ports_extended.set;
-				
+
 				use et_netlist_submodules;
 				submodule_ports_extended : pac_submodule_ports_extended.set;
-				
+
 			begin
 				log (text => "net " & to_string (net_name),
 					level => log_threshold + 1);
-					
+
 				log_indentation_up;
 
 				-- Get all device, netchanger and submodule ports of this net
@@ -232,7 +232,7 @@ package body et_schematic_ops_netlists_2 is
 				-- Extend the submodule ports with more properties:
 				submodule_ports_extended := extend_ports (
 					module_cursor, all_ports.submodules);
-				
+
 				-- Extend the device ports with more properties:
 				device_ports_extended := extend_ports (
 					module_cursor, all_ports.devices);
@@ -241,53 +241,53 @@ package body et_schematic_ops_netlists_2 is
 				-- be generated:
 				add_net_to_netlist (
 					netlist		=> netlist,
-					name		=> net_name, 
+					name		=> net_name,
 					devices		=> device_ports_extended,
 					submodules	=> submodule_ports_extended,
 					netchangers	=> all_ports.netchangers);
-				
+
 				log_indentation_down;
 			end query_net;
-			
-			
+
+
 		begin
 			-- Iterate through the nets of the module:
-			while has_element (net_cursor) loop		
+			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
 		end query_module;
-		
-			
-			
+
+
+
 		use et_schematic_ops_assembly_variant;
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " assembly variant " & to_variant (variant)
 			& " generate " & to_string (NETLIST_CAT_1),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		variant_cursor := get_assembly_variant (
 			module_cursor, variant);
-				
+
 		query_element (module_cursor, query_module'access);
-		
+
 		write_netlist (module_cursor, variant, netlist, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end make_netlist_cat_1;
 
 
-	
+
 end et_schematic_ops_netlists_2;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -68,9 +68,9 @@ package body et_module_write_submodules is
 
 	use pac_generic_modules;
 
-	
 
-	
+
+
 
 	procedure write_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -82,9 +82,9 @@ package body et_module_write_submodules is
 		use et_net_names.pac_net_name;
 
 
-		
+
 		procedure query_ports (
-			port_cursor : in pac_submodule_ports.cursor) 
+			port_cursor : in pac_submodule_ports.cursor)
 		is
 			-- CS use renames
 			use pac_submodule_ports;
@@ -92,29 +92,29 @@ package body et_module_write_submodules is
 		begin
 			section_mark (section_port, HEADER);
 			write (
-				keyword => keyword_name, 
-				parameters => to_string (key (port_cursor))); 
+				keyword => keyword_name,
+				parameters => to_string (key (port_cursor)));
 				-- name clk_out
 
 			write (
-				keyword => keyword_position, 
-				parameters => to_string (element (port_cursor).position, FORMAT_2)); 
+				keyword => keyword_position,
+				parameters => to_string (element (port_cursor).position, FORMAT_2));
 				-- position x 0 y 10
-			
+
 			write (
-				keyword => keyword_direction, 
-				parameters => to_string (element (port_cursor).direction)); 
+				keyword => keyword_direction,
+				parameters => to_string (element (port_cursor).direction));
 				-- direction master/slave
-				
+
 			section_mark (section_port, FOOTER);
 		end;
 
 
-		
-		
+
+
 		procedure write (
-			submodule_cursor : in pac_submodules.cursor) 
-		is 
+			submodule_cursor : in pac_submodules.cursor)
+		is
 			-- CS use renames
 			use et_schematic_coordinates;
 			use et_schematic_geometry.pac_geometry_2;
@@ -123,13 +123,13 @@ package body et_module_write_submodules is
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
-			write (keyword => keyword_position, 
+			write (keyword => keyword_position,
 				parameters => to_string (element (submodule_cursor).position, FORMAT_2));
-			
-			write (keyword => keyword_size, parameters => 
+
+			write (keyword => keyword_size, parameters =>
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
-			
+
 			write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
 				et_board_geometry.pac_geometry_2.to_string (element (submodule_cursor).position_in_board));
 
@@ -138,15 +138,15 @@ package body et_module_write_submodules is
 			section_mark (section_ports, HEADER);
 			et_submodules.pac_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
 			section_mark (section_ports, FOOTER);
-			
-			section_mark (section_submodule, FOOTER);				
+
+			section_mark (section_submodule, FOOTER);
 		end write;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -154,29 +154,29 @@ package body et_module_write_submodules is
 			iterate (module.submods, write'access);
 			section_mark (section_submodules, FOOTER);
 		end query_module;
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " write submodules",
 		level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_module'access);
-		log_indentation_down;		
+		log_indentation_down;
 	end write_submodules;
-	
-	
-		
-	
-	
+
+
+
+
+
 end et_module_write_submodules;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -43,8 +43,8 @@ with ada.characters.handling;	use ada.characters.handling;
 
 
 package body et_port_visibility is
-	
-	
+
+
 	function to_string (visible : in type_port_name_visible) return string is begin
 		return to_lower (type_port_name_visible'image (visible));
 	end;
@@ -64,13 +64,13 @@ package body et_port_visibility is
 		return type_terminal_name_visible'value (visible);
 	end;
 
-		
-	
+
+
 end et_port_visibility;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

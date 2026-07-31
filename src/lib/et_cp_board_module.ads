@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - propose arguments if command incomplete
 
 
@@ -56,7 +56,7 @@ package et_cp_board_module is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- This procedure extracts from the command the
 	-- name of the generic module and optionally the
 	-- sheet number.
@@ -68,14 +68,14 @@ package et_cp_board_module is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-		
+
+
+
 end et_cp_board_module;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

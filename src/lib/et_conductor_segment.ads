@@ -52,14 +52,14 @@ package et_conductor_segment is
 
 	use pac_geometry_brd;
 	use pac_polygons;
-	
+
 	use pac_geometry_2;
 
 	linewidth_default : constant type_track_width := 0.3;
 
 
-	
-	
+
+
 -- LINES
 
 	-- The center of a conductor line segment.
@@ -72,9 +72,9 @@ package et_conductor_segment is
 	procedure reset_line (
 		line : in out type_conductor_line);
 
-	
+
 	-- CS procedure to set linewidth
-		
+
 
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
@@ -84,8 +84,8 @@ package et_conductor_segment is
 		return type_polygon;
 
 
-	
-	
+
+
 	-- Computes the shortest distance from a point to
 	-- a conductor line segment. If the return is negative,
 	-- then the point is inside the segment.
@@ -95,11 +95,11 @@ package et_conductor_segment is
 		--point	: in type_point;
 		--segment	: in type_conductor_line_segment)
 		--return type_distance_model;
-	
+
 
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
-	
+
 
 	function get_A (
 		line : in pac_conductor_lines.cursor)
@@ -111,7 +111,7 @@ package et_conductor_segment is
 
 
 
-	
+
 	-- Iterates the lines.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -120,13 +120,13 @@ package et_conductor_segment is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_conductor_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
+
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
 		lines	: in out pac_conductor_lines.list;
@@ -144,8 +144,8 @@ package et_conductor_segment is
 		lines		: in pac_conductor_lines.list;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
-							 
-	
+
+
 	-- Logs the properties of the given line:
 	procedure line_conductor_properties (
 		face			: in type_face;
@@ -153,9 +153,9 @@ package et_conductor_segment is
 		log_threshold 	: in type_log_level);
 
 
-	
 
-	
+
+
 -- ARCS:
 
 	-- The center of a conductor arc segment.
@@ -167,15 +167,15 @@ package et_conductor_segment is
 
 	procedure reset_arc (
 		arc : in out type_conductor_arc);
-	
+
 	-- CS function get_width
-	
-	
+
+
 	function to_polygon (
 		arc 		: in type_conductor_arc;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon;
-	
+
 
 	-- Computes the shortest distance from a point to
 	-- a conductor arc segment. If the return is negative,
@@ -185,7 +185,7 @@ package et_conductor_segment is
 		--segment	: in type_conductor_arc_segment)
 		--return type_distance_model;
 
-	
+
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
 
@@ -194,13 +194,13 @@ package et_conductor_segment is
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model;
 
-	
+
 	function get_B (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model;
 
 
-	
+
 
 	-- Iterates the arcs.
 	-- Aborts the process when the proceed-flag goes false:
@@ -210,13 +210,13 @@ package et_conductor_segment is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_conductor_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
+
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
 		arcs	: in out pac_conductor_arcs.list;
@@ -235,7 +235,7 @@ package et_conductor_segment is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
-	
+
 	-- Logs the properties of the given arc:
 	procedure arc_conductor_properties (
 		face			: in type_face;
@@ -244,7 +244,7 @@ package et_conductor_segment is
 
 
 
-	
+
 -- CIRCLES:
 
 	type type_conductor_circle is new type_circle with record
@@ -255,22 +255,22 @@ package et_conductor_segment is
 	procedure reset_circle (
 		circle : in out type_conductor_circle);
 
-	
-	-- Converts the outer edge of a conductor circle to a polygon:	
+
+	-- Converts the outer edge of a conductor circle to a polygon:
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
-	
-	-- Converts the inner edge of a conductor circle to a polygon:	
+
+	-- Converts the inner edge of a conductor circle to a polygon:
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
 
-	
+
 	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
 
@@ -283,13 +283,13 @@ package et_conductor_segment is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
+
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
 		circles	: in out pac_conductor_circles.list;
@@ -315,7 +315,7 @@ package et_conductor_segment is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
-	
+
 	-- Logs the properties of the given circle:
 	procedure circle_conductor_properties (
 		face			: in type_face;
@@ -323,12 +323,12 @@ package et_conductor_segment is
 		log_threshold 	: in type_log_level);
 
 
-	
+
 end et_conductor_segment;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

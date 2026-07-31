@@ -62,44 +62,44 @@ package et_module_read_silkscreen is
 
 	procedure read_silk_line (
 		line	: in type_fields_of_line);
-	
+
 
 	procedure read_silk_arc (
 		line	: in type_fields_of_line);
 
-	
+
 	procedure read_silk_circle (
 		line	: in type_fields_of_line);
 
-	
-	
+
+
 	procedure insert_silk_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_silk_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_silk_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-		
+
 end et_module_read_silkscreen;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

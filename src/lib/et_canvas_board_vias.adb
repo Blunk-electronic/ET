@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 -- with ada.text_io;			use ada.text_io;
 with ada.strings;					use ada.strings;
@@ -59,7 +59,7 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 with gtk.widget;					use gtk.widget;
 
 
-with gtk.cell_renderer_text;		
+with gtk.cell_renderer_text;
 with gtk.list_store;				use gtk.list_store;
 with gtk.tree_model;				use gtk.tree_model;
 
@@ -97,11 +97,11 @@ with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
 package body et_canvas_board_vias is
 
 	use et_canvas_board.pac_canvas;
-	
 
-	
+
+
 -- CATEGORY
-	
+
 	procedure category_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -116,13 +116,13 @@ package body et_canvas_board_vias is
 		--put_line ("cat " & to_string (text_place.category));
 
 		et_canvas_board.redraw_board;
-		
+
 	end category_changed;
 
 
 
-	
-	
+
+
 -- DESTINATION LAYER (FOR BLIND VIAS ONLY)
 
 	procedure destination_changed (combo : access gtk_combo_box_record'class) is
@@ -140,14 +140,14 @@ package body et_canvas_board_vias is
 
 		-- Auto-enable the affected conductor layer:
 		enable_conductor (preliminary_via.destination_blind);
-		
+
 		et_canvas_board.redraw_board;
 	end destination_changed;
 
 
-	
 
-	
+
+
 -- BURIED VIA
 
 	procedure upper_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -164,13 +164,13 @@ package body et_canvas_board_vias is
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
 		-- CS Auto-enable the affected conductor layer
-		
-		et_canvas_board.redraw_board;		
+
+		et_canvas_board.redraw_board;
 	end upper_layer_changed;
-	
 
 
-	
+
+
 	procedure lower_layer_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -185,13 +185,13 @@ package body et_canvas_board_vias is
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
 		-- CS Auto-enable the affected conductor layer
-		
-		et_canvas_board.redraw_board;		
+
+		et_canvas_board.redraw_board;
 	end lower_layer_changed;
 
-	
 
-	
+
+
 -- DRILL SIZE
 
 	procedure apply_drill_size (text : in string) is
@@ -204,14 +204,14 @@ package body et_canvas_board_vias is
 
 		et_canvas_board.redraw_board;
 	end apply_drill_size;
-	
 
 
-	
+
+
 	function drill_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
 		key		: constant gdk_key_type := event.keyval;
@@ -221,20 +221,20 @@ package body et_canvas_board_vias is
 		case key is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
-			
-			when GDK_TAB => 
+
+			when GDK_TAB =>
 				--put_line ("size via tab " & text);
 				apply_drill_size (text);
-				
+
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end drill_key_pressed;
 
 
-	
-	procedure drill_entered (combo_entry : access gtk_entry_record'class) is 
+
+	procedure drill_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("size " & text);
@@ -242,8 +242,8 @@ package body et_canvas_board_vias is
 	end drill_entered;
 
 
-	
-	
+
+
 -- RESTRING INNER
 
 	procedure apply_restring_inner (text : in string) is
@@ -256,14 +256,14 @@ package body et_canvas_board_vias is
 
 		et_canvas_board.redraw_board;
 	end apply_restring_inner;
-	
 
 
-	
+
+
 	function restring_inner_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
 		key		: constant gdk_key_type := event.keyval;
@@ -274,20 +274,20 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
 
-			when GDK_TAB => 
+			when GDK_TAB =>
 				--put_line ("line width via tab " & text);
 				apply_restring_inner (text);
 
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end restring_inner_key_pressed;
 
 
-	
-	
-	procedure restring_inner_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+	procedure restring_inner_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("restring width " & text);
@@ -295,8 +295,8 @@ package body et_canvas_board_vias is
 	end restring_inner_entered;
 
 
-	
-	
+
+
 -- RESTRING OUTER
 
 	procedure apply_restring_outer (text : in string) is
@@ -311,12 +311,12 @@ package body et_canvas_board_vias is
 	end apply_restring_outer;
 
 
-	
-	
+
+
 	function restring_outer_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
 		key		: constant gdk_key_type := event.keyval;
@@ -324,24 +324,24 @@ package body et_canvas_board_vias is
 		text	: constant string := get_text (gentry);
 	begin
 		-- put_line ("restring_outer_key_pressed");
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
 
-			when GDK_TAB => 
+			when GDK_TAB =>
 				--put_line ("line width via tab " & text);
 				apply_restring_outer (text);
 
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end restring_outer_key_pressed;
 
-	
-	
-	procedure restring_outer_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+	procedure restring_outer_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("restring width " & text);
@@ -349,8 +349,8 @@ package body et_canvas_board_vias is
 	end restring_outer_entered;
 
 
-	
-	
+
+
 -- NET NAME
 
 	procedure net_name_changed (combo : access gtk_combo_box_record'class) is
@@ -363,12 +363,12 @@ package body et_canvas_board_vias is
 		-- Get the net name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
 		object_net_name := to_net_name (glib.values.get_string (name));
-		
+
 		-- CS Auto-enable the affected conductor layer ?
 	end net_name_changed;
 
 
-	
+
 
 	procedure init_preliminary_via is
 		use et_module_board_user_settings;
@@ -377,7 +377,7 @@ package body et_canvas_board_vias is
 
 		-- get the user specific settings of the board
 		settings : constant type_user_settings := get_user_settings (active_module);
-		
+
 	begin
 		-- Set the drill size and restring according to user specific values:
 		-- If user has not specified defaults, use values given in DRU data set:
@@ -396,7 +396,7 @@ package body et_canvas_board_vias is
 			preliminary_via.restring_outer	:= auto_set_restring (
 				OUTER, preliminary_via.drill.diameter);
 		end if;
-		
+
 		-- set inner restring:
 		if settings.vias.restring_inner.active then
 			preliminary_via.restring_inner	:= settings.vias.restring_inner.width;
@@ -404,26 +404,26 @@ package body et_canvas_board_vias is
 			preliminary_via.restring_inner	:= auto_set_restring (
 				INNER, preliminary_via.drill.diameter, rules.sizes.restring.delta_size);
 		end if;
-		
+
 	end init_preliminary_via;
 
 
 
-	
+
 
 	procedure show_via_properties is
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
-		
+
 
 		box_net_name,
-		box_category, box_destination_blind, 
+		box_category, box_destination_blind,
 		box_buried_upper, box_buried_lower, box_drill,
 		box_restring_inner, box_restring_outer : gtk_vbox;
 
 		label_net_name,
-		label_category, label_destination_blind, 
-		
+		label_category, label_destination_blind,
+
 		label_buried_upper, label_buried_lower, label_drill,
 		label_restring_inner, label_restring_outer : gtk_label;
 
@@ -431,60 +431,60 @@ package body et_canvas_board_vias is
 		cbox_category, cbox_destination_blind,
 		cbox_buried_upper, cbox_buried_lower : gtk_combo_box;
 		-- Operator can choose between fixed menu entries.
-		
+
 		cbox_drill, cbox_restring_inner, cbox_restring_outer : gtk_combo_box_text;
 		-- Operator may enter an additional value in the menu.
 
 		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
+		-- characters that can be entered in the fields for
 		-- drill size and restring width:
-		
+
 		drill_size_length_min : constant gint := 1;
-		drill_size_length_max : constant gint := 4; 
+		drill_size_length_max : constant gint := 4;
 		-- CS: adjust if necessary. see parameters of type_drill_size.
-		
+
 		restring_size_length_min : constant gint := 1;
 		restring_size_length_max : constant gint := 5;
 		--CS: adjust if necessary. see parameters of type_restring_width.
-		
 
-		
+
+
 		-- NET NAME
 		procedure make_combo_net is
 			use et_canvas_board_tracks;
 			use et_schematic_ops_nets;
 			use pac_net_name;
-			
-			store : gtk_list_store;			
-			render	: gtk_cell_renderer_text;			
-		begin			
+
+			store : gtk_list_store;
+			render	: gtk_cell_renderer_text;
+		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_v4, box_net_name, padding => box_properties_spacing);
 
 			gtk_new (label_net_name, "NET");
 			pack_start (box_net_name, label_net_name, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			make_store_for_net_names (store);
-			
+
 			-- Create the combo box:
 			gtk_new_with_model (
 				combo_box	=> cbox_net_name,
 				model		=> +store); -- ?
 
 			-- Initially, on the first call of this procedure, there is no net name
-			-- specified in preliminary_via. In this case the first net of the 
+			-- specified in preliminary_via. In this case the first net of the
 			-- module is assumed and the net index set accordingly.
 			-- NOTE: The net index is numbered from 0 .. N.
 			if object_net_name = no_name then
 				object_net_name := get_first_net (active_module);
 			end if;
-			
+
 			-- Set the acive net (in the box) via its index:
 			cbox_net_name.set_active (gint (
 				get_net_index (active_module, object_net_name, log_threshold + 1)));
-			
+
 
 			pack_start (box_net_name, cbox_net_name, padding => box_properties_spacing);
 			cbox_net_name.on_changed (net_name_changed'access);
@@ -496,7 +496,7 @@ package body et_canvas_board_vias is
 			add_attribute (cbox_net_name, render, "markup", 0); -- column 0
 		end make_combo_net;
 
-		
+
 		-- CATEGORY
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
@@ -507,7 +507,7 @@ package body et_canvas_board_vias is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_category, homogeneous => false);
@@ -516,7 +516,7 @@ package body et_canvas_board_vias is
 			gtk_new (label_category, "VIA CAT");
 			pack_start (box_category, label_category, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -547,7 +547,7 @@ package body et_canvas_board_vias is
 		end make_combo_category;
 
 
-		
+
 		-- BLIND
 		procedure make_combo_destination is -- for BLIND vias !
 			storage_model : gtk_list_store;
@@ -558,27 +558,27 @@ package body et_canvas_board_vias is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_destination_blind, homogeneous => false);
 			pack_start (box_v4, box_destination_blind, padding => box_properties_spacing);
-			
+
 			gtk_new (label_destination_blind, "BL DST");
 			pack_start (box_destination_blind, label_destination_blind, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available destination layers in the storage model:
-			for choice in 
+			for choice in
 				-- The topmost layer is number 2 because this is about BLIND vias:
-				type_via_layer'first .. 
+				type_via_layer'first ..
 
 				-- The deepest available layer depends on the stack configuration.
-				-- The bottom layer must not be the destination because this 
-				-- is about BLIND vias:	
+				-- The bottom layer must not be the destination because this
+				-- is about BLIND vias:
 				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
@@ -608,7 +608,7 @@ package body et_canvas_board_vias is
 		end make_combo_destination;
 
 
-		
+
 		-- BURIED
 		procedure make_combo_buried_upper is
 			storage_model : gtk_list_store;
@@ -619,27 +619,27 @@ package body et_canvas_board_vias is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_buried_upper, homogeneous => false);
 			pack_start (box_v4, box_buried_upper, padding => box_properties_spacing);
-			
+
 			gtk_new (label_buried_upper, "BUR UPPER");
 			pack_start (box_buried_upper, label_buried_upper, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available destination layers in the storage model:
-			for choice in 
+			for choice in
 				-- The topmost layer is number 2 because this is about BURIED vias:
-				type_via_layer'first .. 
+				type_via_layer'first ..
 
 				-- The deepest available layer depends on the stack configuration.
-				-- The bottom layer must not be the destination because this 
-				-- is about BURIED vias:	
+				-- The bottom layer must not be the destination because this
+				-- is about BURIED vias:
 				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
@@ -669,7 +669,7 @@ package body et_canvas_board_vias is
 		end make_combo_buried_upper;
 
 
-		
+
 		procedure make_combo_buried_lower is
 			storage_model : gtk_list_store;
 
@@ -679,27 +679,27 @@ package body et_canvas_board_vias is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_buried_lower, homogeneous => false);
 			pack_start (box_v4, box_buried_lower, padding => box_properties_spacing);
-			
+
 			gtk_new (label_buried_lower, "BUR LOWER");
 			pack_start (box_buried_lower, label_buried_lower, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available destination layers in the storage model:
-			for choice in 
+			for choice in
 				-- The topmost layer is number 2 because this is about BURIED vias:
-				type_via_layer'first .. 
+				type_via_layer'first ..
 
 				-- The deepest available layer depends on the stack configuration.
-				-- The bottom layer must not be the destination because this 
-				-- is about BURIED vias:	
+				-- The bottom layer must not be the destination because this
+				-- is about BURIED vias:
 				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
@@ -712,7 +712,7 @@ package body et_canvas_board_vias is
 				combo_box	=> cbox_buried_lower,
 				model		=> +storage_model); -- ?
 
-			
+
 			-- Set the signal layer used last:
 			cbox_buried_lower.set_active (gint (preliminary_via.layers_buried.lower) - 2);
 			-- NOTE: The entries are numbered from 0 .. N.
@@ -729,12 +729,12 @@ package body et_canvas_board_vias is
 
 		end make_combo_buried_lower;
 
-		
-		
+
+
 		procedure make_combo_drill is begin
 			gtk_new_vbox (box_drill, homogeneous => false);
 			pack_start (box_v4, box_drill, padding => box_properties_spacing);
-			
+
 			gtk_new (label_drill, "DRL SIZE");
 			pack_start (box_drill, label_drill, padding => box_properties_spacing);
 
@@ -745,18 +745,18 @@ package body et_canvas_board_vias is
 
 			-- Set the text size according to the value used last:
 			gtk_entry (cbox_drill.get_child).set_text (trim (to_string (preliminary_via.drill.diameter), left));
-			
+
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_drill.get_child).on_key_press_event (drill_key_pressed'access);
 			gtk_entry (cbox_drill.get_child).on_activate (drill_entered'access);
 		end make_combo_drill;
 
 
-		
+
 		procedure make_combo_restring_inner is begin
 			gtk_new_vbox (box_restring_inner, homogeneous => false);
 			pack_start (box_v4, box_restring_inner, padding => box_properties_spacing);
-			
+
 			gtk_new (label_restring_inner, "RESTR IN");
 			pack_start (box_restring_inner, label_restring_inner, padding => box_properties_spacing);
 
@@ -767,17 +767,17 @@ package body et_canvas_board_vias is
 
 			-- Set the restring width according to the value used last:
 			gtk_entry (cbox_restring_inner.get_child).set_text (trim (to_string (preliminary_via.restring_inner), left));
-			
+
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_restring_inner.get_child).on_key_press_event (restring_inner_key_pressed'access);
 			gtk_entry (cbox_restring_inner.get_child).on_activate (restring_inner_entered'access);
 		end make_combo_restring_inner;
 
-		
+
 		procedure make_combo_restring_outer is begin
 			gtk_new_vbox (box_restring_outer, homogeneous => false);
 			pack_start (box_v4, box_restring_outer, padding => box_properties_spacing);
-			
+
 			gtk_new (label_restring_outer, "RESTR OUT");
 			pack_start (box_restring_outer, label_restring_outer, padding => box_properties_spacing);
 
@@ -788,7 +788,7 @@ package body et_canvas_board_vias is
 
 			-- Set the restring width according to the value used last:
 			gtk_entry (cbox_restring_outer.get_child).set_text (trim (to_string (preliminary_via.restring_outer), left));
-			
+
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_restring_outer.get_child).on_key_press_event (restring_outer_key_pressed'access);
 			gtk_entry (cbox_restring_outer.get_child).on_activate (restring_outer_entered'access);
@@ -800,7 +800,7 @@ package body et_canvas_board_vias is
 
 		-- Show the properties bar if there are nets in the module:
 		if et_schematic_ops_nets.get_net_count (active_module) > 0 then
-			
+
 			-- Output adivse in status bar:
 			set_status (status_place_via);
 
@@ -808,17 +808,17 @@ package body et_canvas_board_vias is
 			-- must be cleared:
 			clear_out_properties_box;
 
-			init_preliminary_via; 
+			init_preliminary_via;
 			-- CS should be skipped after placing the first via
 			-- so that the last settings remain.
-				
+
 
 			-- Build the elements of the properties bar:
 			make_combo_category;
 			make_combo_net;
 			make_combo_destination;
 			make_combo_buried_upper;
-			make_combo_buried_lower;			
+			make_combo_buried_lower;
 			make_combo_drill;
 			make_combo_restring_inner;
 			make_combo_restring_outer;
@@ -834,42 +834,42 @@ package body et_canvas_board_vias is
 
 
 
-	
-	
-	
-	
 
 
-	
+
+
+
+
+
 -- PLACE:
 
 	procedure place_via (
-		point	: in type_vector_model) 
+		point	: in type_vector_model)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-					
+
 		via : type_via (category => preliminary_via.category);
 	begin
 		via.position := preliminary_via.drill.position;
 		via.diameter := preliminary_via.drill.diameter;
-		
+
 		via.restring_inner := preliminary_via.restring_inner;
-		
+
 		move_to (via.position, point);
 
 		case preliminary_via.category is
 			when THROUGH =>
 				via.restring_outer := preliminary_via.restring_outer;
-								
+
 			when BURIED =>
 				via.layers := preliminary_via.layers_buried;
-										
+
 			when BLIND_DRILLED_FROM_TOP =>
 				via.restring_top := preliminary_via.restring_outer;
 				via.lower := preliminary_via.destination_blind;
-				
+
 			when BLIND_DRILLED_FROM_BOTTOM =>
 				via.restring_bottom := preliminary_via.restring_outer;
 				via.upper := preliminary_via.destination_blind;
@@ -879,7 +879,7 @@ package body et_canvas_board_vias is
 
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold + 1);
-		
+
 		place_via (
 			module_cursor	=> active_module,
 			net_name		=> object_net_name,
@@ -888,107 +888,107 @@ package body et_canvas_board_vias is
 
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold + 1);
-		
+
 	end place_via;
 
-	
 
 
 
-	
+
+
 
 -- OBJECTS:
 
 	procedure show_selected_object (
 		selected : in type_object_via)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 	begin
-		set_status (praeamble 
+		set_status (praeamble
 			& "net " & et_nets.get_net_name (selected.net_cursor)
-			& " " & to_string (selected.via_cursor) & ". " 
+			& " " & to_string (selected.via_cursor) & ". "
 			& status_next_object_clarification);
 	end show_selected_object;
 
-	
-	
 
 
-	procedure clarify_object is 
+
+
+	procedure clarify_object is
 
 		procedure do_it is
 			use pac_objects;
-			
+
 			-- Gather all proposed objects:
-			proposed_objects : constant pac_objects.list := 
+			proposed_objects : constant pac_objects.list :=
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : constant type_object_via := 
+			selected_object : constant type_object_via :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
-			log (text => "proposed objects total " 
+			log (text => "proposed objects total "
 				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
-			
+
 			-- Locate the selected object among the proposed objects:
 			proposed_object := proposed_objects.find (selected_object);
 
 			-- Deselect the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (CLEAR, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
-			-- If end of list reached, then proceed at 
+			-- If end of list reached, then proceed at
 			-- the begin of the list:
 			if proposed_object = pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
-			
+
 			-- Select the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (SET, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "clarify_object", level => log_threshold + 1);
 
 		log_indentation_up;
-		
+
 		do_it;
-		
+
 		log_indentation_down;
 	end clarify_object;
-	
 
 
 
-	
-	
+
+
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		
+
 		procedure do_it is
 			-- Get the first selected object:
-			selected_object : constant type_object_via := 
+			selected_object : constant type_object_via :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 			-- Gather all selected objects:
@@ -1000,11 +1000,11 @@ package body et_canvas_board_vias is
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
-			
+
 			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
 		log_indentation_up;
@@ -1014,18 +1014,18 @@ package body et_canvas_board_vias is
 
 
 
-	
+
 
 
 	procedure find_objects (
 		point : in type_vector_model)
-	is 
+	is
 		use et_modes.board;
-		
+
 		-- The number of proposed objects:
 		count_total : natural := 0;
 
-		
+
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
@@ -1046,17 +1046,17 @@ package body et_canvas_board_vias is
 		procedure propose_objects is begin
 
 			-- CS test whether vias are displayed
-			
+
 			propose_vias (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 				count			=> count_total,
 				log_threshold	=> log_threshold + 1);
-			
+
 		end propose_objects;
 
-		
-	begin		
+
+	begin
 		log (text => "proposing vias ...", level => log_threshold);
 		log_indentation_up;
 
@@ -1065,42 +1065,42 @@ package body et_canvas_board_vias is
 		log (text => "proposed vias total" & natural'image (count_total),
 			 level => log_threshold + 1);
 
-		
+
 		-- evaluate the number of vias found here:
 		case count_total is
 			when 0 =>
 				null; -- nothing to do
-				
+
 			when 1 =>
 				set_edit_process_running;
 				select_first_proposed;
-				
+
 				if verb = VERB_MOVE then
 					set_first_selected_object_moving;
 				end if;
-				
+
 				reset_request_clarification;
-				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;
 		end case;
-		
+
 		log_indentation_down;
 	end find_objects;
 
 
 
-	
-	
-	
+
+
+
 -- MOVE:
 
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
+	is
 
 		procedure finalize is
 			use et_modes.board;
@@ -1119,27 +1119,27 @@ package body et_canvas_board_vias is
 			if has_element (object.via_cursor) then
 
 				reset_proposed_vias (active_module, log_threshold + 1);
-				
+
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-				
+
 				move_object (
 					module_cursor	=> active_module,
 					object			=> object,
 					coordinates		=> ABSOLUTE,
 					destination		=> point,
 					log_threshold	=> log_threshold);
-				
+
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-			
-			log_indentation_down;			
-			
-			set_status (status_move_via);			
+
+			log_indentation_down;
+
+			set_status (status_move_via);
 			-- CS clear ?
 
 			reset_editing_process; -- prepare for a new editing process
@@ -1152,11 +1152,11 @@ package body et_canvas_board_vias is
 
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all vias in the vicinity of the given point:
 				find_objects (point);
-				
+
 				-- NOTE: If many vias have been found, then
 				-- clarification is now pending.
 
@@ -1173,29 +1173,29 @@ package body et_canvas_board_vias is
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
-				
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
-			
+
 		else
 			finalize;
 		end if;
 	end move_object;
-	
 
 
-	
+
+
 
 -- DELETE:
 
 	procedure delete_via (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
+	is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
-		procedure finalize is 
+		procedure finalize is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
@@ -1210,15 +1210,15 @@ package body et_canvas_board_vias is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if has_element (object.via_cursor) then
-			
+
 				reset_proposed_vias (active_module, log_threshold + 1);
-				
+
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-				
+
 				delete_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
@@ -1227,15 +1227,15 @@ package body et_canvas_board_vias is
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			set_status (status_delete_via);
 			-- CS clear ?
 
-			reset_editing_process; -- prepare for a new editing process			
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
+
 
 	begin
 		-- Set the tool being used:
@@ -1254,22 +1254,22 @@ package body et_canvas_board_vias is
 			if edit_process_running then
 				finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
-			-- A via has been selected 
+			-- A via has been selected
 			-- via procedure clarify_object.
-			
+
 			finalize;
 		end if;
 	end delete_via;
-	
-	
+
+
 end et_canvas_board_vias;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

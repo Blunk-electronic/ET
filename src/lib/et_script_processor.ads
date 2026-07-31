@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with et_logging;				use et_logging;
@@ -45,10 +45,10 @@ with et_script_names;			use et_script_names;
 
 package et_script_processor is
 
-	
+
 	comment_mark : constant string := ("#");
 
-	
+
 	-- This is the exit code after a script
 	-- has been executed:
 	type type_exit_code_script is (
@@ -57,11 +57,11 @@ package et_script_processor is
 		ERROR
 		);
 
-	
 
 
 
-	-- Reads a given script file that must exist 
+
+	-- Reads a given script file that must exist
 	-- in the current working directory.
 	-- The caller must care for changing into the proper
 	-- directory before.
@@ -74,7 +74,7 @@ package et_script_processor is
 		return type_exit_code_script;
 
 
-	
+
 	-- Used when executing a script from inside a script
 	-- or
 	-- when executing a script from inside the GUI.
@@ -87,8 +87,8 @@ package et_script_processor is
 		log_threshold	: in type_log_level)
 		return type_exit_code_script;
 
-	
-	
+
+
 	-- Executes the given script file like "dummy_module/my_script.scr"
 	-- in headless mode.
 	-- Changes into the directory where the script lives and starts
@@ -104,12 +104,12 @@ package et_script_processor is
 		return type_exit_code_script;
 
 
-	
+
 end et_script_processor;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
@@ -43,8 +43,8 @@ package et_mirroring is
 
 	mirror_prefix : constant string := ("MIRROR_");
 	-- CS: the prefix is probably not required ?
-	
-	
+
+
 	-- Objects can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (
 		MIRROR_NO, -- CS: rename to NO_MIRROR ?
@@ -56,36 +56,36 @@ package et_mirroring is
 	function to_string (
 		mirror	: in type_mirror)
 		return string;
-	
-	
+
+
 	-- returns the given mirror style as string
 	function to_string (
 		mirror	: in type_mirror;
 		verbose	: in boolean)
 		return string;
 
-	
+
 	function to_mirror_style (
-		style : in string) 
+		style : in string)
 		return type_mirror;
-	
+
 
 
 	-- Toggles the mirror status along the y-axis:
 	procedure toggle_along_y (
 		status : in out type_mirror);
-				
+
 
 	-- Toggles the mirror status along the x-axis:
 	procedure toggle_along_x (
 		status : in out type_mirror);
 
-	
+
 end et_mirroring;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

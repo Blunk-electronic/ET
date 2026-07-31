@@ -77,14 +77,14 @@ package et_kicad_packages is
 
 	-- NOTE: this is not a real file extension but just a part of a directory name:
 	package_library_directory_extension	: constant string := ".pretty";
-	
+
 	package_file_extension				: constant string := "kicad_mod";
 
 	-- These constants are required for directory entry searches:
 	package_library_pattern	: constant string := "*" & package_library_directory_extension;
 	package_pattern 		: constant string := "*." & package_file_extension;
 
-	-- For the package import we need a special set of layers. 
+	-- For the package import we need a special set of layers.
 	type type_layer_abbrevation is (
 		EDGE_CUTS,	-- the board outline or contour
 		TOP_COPPER, BOT_COPPER,
@@ -95,11 +95,11 @@ package et_kicad_packages is
 		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 		-- CS TOP_GLUE, BOT_GLUE
 		);
-	
+
 	layer_top_copper			: constant string := "F.Cu";
 	layer_bot_copper			: constant string := "B.Cu";
 	layer_all_copper			: constant string := "*.Cu";
-	
+
 	layer_top_silk_screen		: constant string := "F.SilkS";
 	layer_bot_silk_screen		: constant string := "B.SilkS";
 
@@ -112,15 +112,15 @@ package et_kicad_packages is
 	layer_top_stop_mask			: constant string := "F.Mask";
 	layer_bot_stop_mask			: constant string := "B.Mask";
 	layer_all_stop_mask			: constant string := "*.Mask";
-	
+
 	layer_top_solder_paste		: constant string := "F.Paste";
 	layer_bot_solder_paste		: constant string := "B.Paste";
-	
+
 	keyword_fp_text_reference	: constant string := "reference";
 	keyword_fp_text_value		: constant string := "value";
 	keyword_fp_text_user		: constant string := "user";
 	keyword_fp_text_hide		: constant string := "hide";
-	
+
 	placeholder_reference		: constant string := "REF**";
 
 	attribute_technology_smd		: constant string := "smd";
@@ -130,9 +130,9 @@ package et_kicad_packages is
 
 
 	-- LINES, ARCS, CIRCLES
-	-- Temporarily we need special types for lines, arcs and circles for the import. 
+	-- Temporarily we need special types for lines, arcs and circles for the import.
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
-	-- Their additional components (width, layer, angle, ...) are later 
+	-- Their additional components (width, layer, angle, ...) are later
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
 	type type_line is new pac_geometry_2.type_line with record
 		width	: type_text_line_width;
@@ -151,8 +151,8 @@ package et_kicad_packages is
 		layer	: type_layer_abbrevation;
 	end record;
 
-	
-	
+
+
 	-- This is the base type of a package:
 	type type_package is new et_package_model.type_package_base with record
 		time_stamp : type_timestamp;
@@ -164,7 +164,7 @@ package et_kicad_packages is
 		terminals				: et_terminals.pac_terminals.map;
 	end record;
 
-	
+
 	package_tags_length_max : constant positive := 200;
 	package type_package_tags is new generic_bounded_length (package_tags_length_max);
 
@@ -172,30 +172,30 @@ package et_kicad_packages is
 
 	function to_package_tags (tags : in string) return type_package_tags.bounded_string;
 
-	
+
 	function to_assembly_technology (
-		tech : in string) 
+		tech : in string)
 		return type_assembly_technology;
-	
+
 	type type_pad_shape_tht is (
-		CIRCULAR, 
+		CIRCULAR,
 		OVAL,
 		RECTANGULAR
 		-- CS others ?
 		);
 
-	
+
 	function to_string (shape : in type_pad_shape_tht) return string;
 	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht;
-	
+
 	type type_pad_shape_smt is (
-		CIRCULAR, 
+		CIRCULAR,
 		OVAL,
 		RECTANGULAR
 		-- CS others ?
 		);
-	
-	function to_string (shape : in type_pad_shape_smt) return string;	
+
+	function to_string (shape : in type_pad_shape_smt) return string;
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt;
 
 
@@ -203,12 +203,12 @@ package et_kicad_packages is
 	pad_size_min : constant type_track_width := 0.05;
 	pad_size_max : constant type_track_width := 10.0;
 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
-	
+
 	-- Checks whether given pad size is in range of type_pad_size
 	procedure validate_pad_size (size : in type_distance_model);
 
 
-	
+
 	-- Converts the given position and dimensions of a circular pad
 	-- to a list containing just one circle.
 	function to_pad_shape_circle (
@@ -217,7 +217,7 @@ package et_kicad_packages is
 		offset		: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour;
 
-	
+
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
@@ -228,7 +228,7 @@ package et_kicad_packages is
 		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour;
 
-	
+
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
 	function to_pad_shape_oval (
@@ -238,8 +238,8 @@ package et_kicad_packages is
 		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour;
 
-	
-	-- slotted holes	
+
+	-- slotted holes
 	tht_hole_shape_oval	: constant string := "oval";
 	pad_drill_offset	: constant string := "offset";
 	type type_tht_hole_shape is (CIRCULAR, OVAL);
@@ -249,7 +249,7 @@ package et_kicad_packages is
 	subtype type_pad_milling_size is type_distance_positive
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
 
-	
+
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
 	function to_pad_milling_contour (
@@ -259,8 +259,8 @@ package et_kicad_packages is
 		offset	: in type_vector_model) -- the offset of the pad from the center
 		return pac_segments.list;
 
-	
-	-- For packages, temporarily this type is required to handle texts in 
+
+	-- For packages, temporarily this type is required to handle texts in
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
 	--type type_text_package is new et_packages.type_text with record
@@ -270,7 +270,7 @@ package et_kicad_packages is
 		meaning	: type_fp_text_meaning;
 	end record;
 
-	
+
 	directory_name_length_max : constant positive := 200;
 	package pac_directory_name is new generic_bounded_length (directory_name_length_max);
 
@@ -280,26 +280,26 @@ package et_kicad_packages is
 -- 	function to_directory (directory_name : in string) return pac_directory_name.bounded_string;
 -- 	-- Converts a string to a pac_directory_name.
 
-	
+
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level)
 		return type_package_library;
-	
+
 	procedure read_libraries ( -- CS rename to read_package_libraries
 	-- Reads package libraries.
-	-- Create the libraries in container package_libraries. 
+	-- Create the libraries in container package_libraries.
 	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty
 		log_threshold 	: in type_log_level);
-	
+
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
 		key_type 		=> pac_package_name.bounded_string, -- S_SO14, T_0207
 		"<"				=> pac_package_name."<",
 		element_type 	=> type_package_library);
-	
+
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
 		key_type		=> pac_package_model_file.bounded_string, -- projects/lbr/smd_packages.pretty
 		element_type	=> type_packages_library.map,
@@ -307,22 +307,22 @@ package et_kicad_packages is
 		"<"				=> pac_package_model_file."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
-	
 
-	-- V4: 
+
+	-- V4:
 	--	- All package models found in the project libraries are collected here.
-	-- V5: 
+	-- V5:
 	--	- After reading the sym-lib-tables and fp-lib-tables empty libraries are created here.
 	--	- Procedure read_libraries in turn fills the libraries with content.
 	package_libraries : type_libraries.map;
 
-	
-	
+
+
 end et_kicad_packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

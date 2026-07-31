@@ -50,9 +50,9 @@ with et_directions;					use et_directions;
 
 
 package body et_module_read_board_contour is
-	
-	
-	
+
+
+
 	procedure read_contour_line (
 		line : type_fields_of_line)
 	is
@@ -66,14 +66,14 @@ package body et_module_read_board_contour is
 			-- extract the start position starting at field 2 of line
 			vm := to_vector_model (line, 2);
 			set_A (contour_line, vm);
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			vm := to_vector_model (line, 2);
 			set_B (contour_line, vm);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -82,9 +82,9 @@ package body et_module_read_board_contour is
 
 
 
-	
+
 	procedure read_contour_arc (
-		line : type_fields_of_line) 
+		line : type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 	begin
@@ -99,7 +99,7 @@ package body et_module_read_board_contour is
 
 			-- extract the end position starting at field 2 of line
 			set_B (contour_arc, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -110,7 +110,7 @@ package body et_module_read_board_contour is
 			expect_field_count (line, 2);
 
 			set_direction (contour_arc, to_direction (f (line, 2)));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -119,8 +119,8 @@ package body et_module_read_board_contour is
 
 
 
-	
-	
+
+
 	procedure read_contour_circle (
 		line : type_fields_of_line)
 	is
@@ -132,40 +132,40 @@ package body et_module_read_board_contour is
 
 			-- extract the center position starting at field 2 of line
 			set_center (contour_circle, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
-			
+
 			set_radius (contour_circle, to_radius (f (line, 2)));
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	procedure insert_contour_line is begin
 		append_segment (contour, (LINE, contour_line));
 		reset_line (contour_line);
 	end;
 
-	
+
 
 
 	procedure insert_contour_arc is begin
 		-- CS board_check_arc (log_threshold + 1);
-		
+
 		append_segment (contour, (ARC, contour_arc));
 		reset_arc (contour_arc);
 	end;
 
 
 
-	
+
 	procedure insert_contour_circle is begin
 		-- The global contour variable "mutates" so that the contours
 		-- consist of a single circle:
@@ -175,42 +175,42 @@ package body et_module_read_board_contour is
 
 		-- From now on the contour consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
-		
+
 		-- Assign the circle to the contour:
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
 	end;
 
 
-	
+
 
 	procedure check_contour (
 		log_threshold : in type_log_level)
-	is 
+	is
 		status : constant type_contour_status := is_closed (contour);
-	begin		
+	begin
 		log (text => "check outline", level => log_threshold);
 		log_indentation_up;
-		
+
 		if status.closed then
 			null;
 		else
-			log (SEVERITY_WARNING, "Contour not properly closed at: " 
+			log (SEVERITY_WARNING, "Contour not properly closed at: "
 				& to_string (status.gaps));
 			-- CS: write implications and dangers !
 		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end;
 
-	
-	
+
+
 end et_module_read_board_contour;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

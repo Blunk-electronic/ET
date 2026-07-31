@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -68,10 +68,10 @@ package et_board_ops_assy_doc is
 
 
 
-	
+
 -- LINES:
 
-	
+
 	-- Adds a line:
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -90,7 +90,7 @@ package et_board_ops_assy_doc is
 		return pac_doc_lines.list;
 
 
-	
+
 
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are searched for:
@@ -100,12 +100,12 @@ package et_board_ops_assy_doc is
 	end record;
 
 
-	
+
 	-- CS same for circles
 
 
-	
-	
+
+
 	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -114,7 +114,7 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of lines that have been found:
@@ -126,20 +126,20 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Clears the status flags of all lines:
 	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns the first line according to the given flag.
-	-- If no line has been found, then the return is 
+	-- If no line has been found, then the return is
 	-- TOP and no_element:
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_line;
 
@@ -156,9 +156,9 @@ package et_board_ops_assy_doc is
 		line			: in out type_object_line;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
-	
 
-	
+
+
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -169,7 +169,7 @@ package et_board_ops_assy_doc is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Deletes the given line in the given module:
 	procedure delete_line (
@@ -183,11 +183,11 @@ package et_board_ops_assy_doc is
 
 
 
-	
-	
+
+
 -- ARCS:
-	
-	
+
+
 	-- Adds an arc to the assembly documentation.
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -212,7 +212,7 @@ package et_board_ops_assy_doc is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the proposed-flag of all arcs which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of arcs that have been found:
@@ -232,11 +232,11 @@ package et_board_ops_assy_doc is
 
 
 	-- Returns the first arc according to the given flag.
-	-- If no arc has been found, then the return is 
+	-- If no arc has been found, then the return is
 	-- TOP and no_element:
 	function get_first_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_arc;
 
@@ -263,24 +263,24 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 
 -- CIRCLES:
-	
+
 	-- Adds a circle to the assembly documentation.
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;	
+		face			: in type_face;
 		circle			: in type_doc_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 -- ZONES:
-	
+
 	-- Adds a zone to the assembly documentation layer.
 	-- The given zone can consist of a single segment or a
 	-- fragment of a zone contour.
@@ -288,7 +288,7 @@ package et_board_ops_assy_doc is
 	--    then the procedure serches for already existing zones
 	--    which are incomplete (or open) and tries to append or prepend
 	--    the given zone to one of the existing open zones.
-	-- 2. If this attempt fails, then the given zone is regarded as 
+	-- 2. If this attempt fails, then the given zone is regarded as
 	--    a new zone.
 	-- 3. If all existing zones are already closed, then the given zone
 	--    is regarded a a new zone and added to the existing zones.
@@ -300,7 +300,7 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- This composite type helps to identify a
 	-- segment of a zone by its zone and face:
 	type type_object_segment is record
@@ -310,16 +310,16 @@ package et_board_ops_assy_doc is
 	end record;
 
 
-	
+
 	-- Modifies the status flag of a zone segment (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-	
 
-	-- Sets the proposed-flag of all line and arc segments 
+
+	-- Sets the proposed-flag of all line and arc segments
 	-- of a zone which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
@@ -336,17 +336,17 @@ package et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns the first line or arc segment according to the given flag.
 	-- If no segment has been found, then the return is no_element:
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment;
 
-	
+
 
 	-- Advances to the next proposed line or arc segment, starting at
 	-- the given segment. Traverses through the segments
@@ -354,7 +354,7 @@ package et_board_ops_assy_doc is
 	-- proposed segments, then segment assumes default value (no_element).
 	-- If there is only one proposed segment, then segment is unchanged.
 	-- CS last_item indicates that the last segment has been reached.
-	-- CS Currently this procedure is not used. 
+	-- CS Currently this procedure is not used.
 	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in out type_object_segment;
@@ -362,7 +362,7 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Moves a line or arc segment of the border
 	-- of a fill zone:
 	-- CS currently it moves only a single segment.
@@ -387,7 +387,7 @@ package et_board_ops_assy_doc is
 
 
 
-	
+
 
 -- TEXTS:
 
@@ -402,7 +402,7 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -422,7 +422,7 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- This composite type helps to identify a
 	-- text by its face:
 	type type_object_text is record
@@ -449,7 +449,7 @@ package et_board_ops_assy_doc is
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -458,7 +458,7 @@ package et_board_ops_assy_doc is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
@@ -468,7 +468,7 @@ package et_board_ops_assy_doc is
 
 	function get_first_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_text;
 
@@ -480,15 +480,15 @@ package et_board_ops_assy_doc is
 
 
 
-	
+
 -- TEXT PLACEHOLDERS:
 
-	-- THIS IS ABOUT GENERAL PLACEHOLDERS RELEVANT FOR THE 
-	-- WHOLE BOARD ! 
+	-- THIS IS ABOUT GENERAL PLACEHOLDERS RELEVANT FOR THE
+	-- WHOLE BOARD !
 	--
 	-- THIS IS NOT ABOUT PLACEHOLDERS OF PACKAGES !
-	
-	
+
+
 	-- Places a text placeholder.
 	-- The caller must take care for mirroring the placeholder
 	-- in case its at the bottom of the board:
@@ -499,10 +499,10 @@ package et_board_ops_assy_doc is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- CS
 	-- move_placeholder via commandline
-	
+
 	-- This composite type helps to identify a
 	-- placeholder by its face:
 	type type_object_placeholder is record
@@ -510,7 +510,7 @@ package et_board_ops_assy_doc is
 		cursor	: pac_placeholders_non_conductor.cursor := pac_placeholders_non_conductor.no_element;
 	end record;
 
-	
+
 	-- This procedure sets the status flag of the
 	-- given placeholder object:
 	procedure modify_status (
@@ -519,7 +519,7 @@ package et_board_ops_assy_doc is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the proposed-flag of all placeholders which have their
 	-- origin (or anchor point) in the given zone around the given place.
 	-- Adds to count the number of placeholders that have been found:
@@ -529,7 +529,7 @@ package et_board_ops_assy_doc is
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -538,20 +538,20 @@ package et_board_ops_assy_doc is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_placeholder;
- 
+
 
 	-- Resets the status flags of all placeholders:
 	procedure reset_status_placeholders (
@@ -560,9 +560,9 @@ package et_board_ops_assy_doc is
 
 
 
-	
+
 -- OBJECTS:
-	
+
 
 	-- When objects are handled then we need these
 	-- categories in order to store them in indefinite_doubly_linked_lists:
@@ -577,25 +577,25 @@ package et_board_ops_assy_doc is
 	-- CS CAT_CIRCLE
 
 
-	
-	-- This type wraps segments of zones, lines, arcs, circles, 
+
+	-- This type wraps segments of zones, lines, arcs, circles,
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_ZONE_SEGMENT =>
 				segment		: type_object_segment;
-				
-			when CAT_LINE => 
+
+			when CAT_LINE =>
 				line 		: type_object_line;
 
-			when CAT_ARC => 
+			when CAT_ARC =>
 				arc 		: type_object_arc;
-				
+
 			when CAT_TEXT =>
 				text		: type_object_text;
-				
+
 			when CAT_PLACEHOLDER =>
 				placeholder	: type_object_placeholder;
 		end case;
@@ -609,16 +609,16 @@ package et_board_ops_assy_doc is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
 
-	
+
+
 
 	-- Returns the first object (line, arc, circle, zone segment, text,
 	-- placeholder) according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
@@ -627,10 +627,10 @@ package et_board_ops_assy_doc is
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
-									  
+
 
 	-- Modifies the status flag of an object:
 	procedure modify_status (
@@ -639,7 +639,7 @@ package et_board_ops_assy_doc is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -660,7 +660,7 @@ package et_board_ops_assy_doc is
 
 
 	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
+	-- the proposed-flag and the selected-flag
 	-- of texts, lines, arcs, circles and zone segments:
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -673,8 +673,8 @@ package et_board_ops_assy_doc is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Deletes the object that is in the vicinity of the given point.
 	-- CS currently deletes the object found. Leaves other objects untouched.
 	-- CS a parameter like "all" to delete all objects in the vicinity of point.
@@ -687,12 +687,12 @@ package et_board_ops_assy_doc is
 
 
 
-										 
+
 end et_board_ops_assy_doc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

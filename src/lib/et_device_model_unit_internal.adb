@@ -60,7 +60,7 @@ package body et_device_model_unit_internal is
 	function get_placeholders (
 		unit	: in pac_units_internal.cursor)
 		return type_text_placeholders
-	is 
+	is
 		u : type_unit_internal renames element (unit);
 	begin
 		return get_placeholders (u);
@@ -85,11 +85,11 @@ package body et_device_model_unit_internal is
 
 		-- rotate the positions of placeholders according to rotation given by caller:
 		rotate_placeholders (r, get_rotation (destination));
-		
+
 		return r;
 	end get_default_placeholders;
 
-	
+
 
 
 	function get_symbol (
@@ -101,10 +101,10 @@ package body et_device_model_unit_internal is
 		return u.symbol;
 	end;
 
-	
-		
-	
-	
+
+
+
+
 
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
@@ -114,7 +114,7 @@ package body et_device_model_unit_internal is
 	end;
 
 
-	
+
 
 	function get_port_positions (
 		unit	: in pac_units_internal.cursor)
@@ -124,21 +124,21 @@ package body et_device_model_unit_internal is
 	begin
 		-- If the given cursor points to a unit, then
 		-- extract the port positions. Otherwise return
-		-- an empty list:		
+		-- an empty list:
 		if has_element (unit) then
 			result := get_port_positions (element (unit).symbol);
 		end if;
-		
+
 		return result;
 	end get_port_positions;
 
-	
-	
+
+
 end et_device_model_unit_internal;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

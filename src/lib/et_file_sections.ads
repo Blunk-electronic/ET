@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,7 @@ package et_file_sections is
 	-- and package names:
 	section_prefix : constant string := ("SEC_");
 
-	
+
 	type type_file_section is (
 		SEC_ACTIVE_ASSEMBLY_VARIANT,
 		SEC_APPROVED_DATE,
@@ -58,11 +58,11 @@ package et_file_sections is
 		SEC_ASSEMBLY_VARIANT,
 		SEC_ASSEMBLY_VARIANTS,
 		SEC_ASSY_DOC,
-		
+
 		SEC_BOARD,
 		SEC_BOARD_LAYER_STACK,
 		SEC_BOTTOM,
-		
+
 		SEC_CAM_MARKERS,
 		SEC_CHECKED_BY,
 		SEC_CHECKED_DATE,
@@ -75,7 +75,7 @@ package et_file_sections is
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUSTOMER,
 		SEC_CUTOUT_ZONE,
-		
+
 		SEC_DEVICE,
 		SEC_DEVICES,
 		SEC_DEVICES_NON_ELECTRIC,
@@ -87,7 +87,7 @@ package et_file_sections is
 		SEC_DRAWING_NUMBER,
 
 		SEC_ENVIRONMENT_VARIABLES, -- CS not used currently
-		
+
 		SEC_FACE,
 		SEC_FILL_ZONES_CONDUCTOR,
 		--SEC_FILL_ZONES_NON_CONDUCTOR, -- CS
@@ -98,22 +98,22 @@ package et_file_sections is
 		-- CS SEC_HOLES_PLATED ?
 
 		SEC_JUNCTIONS,
-		
+
 		SEC_KEEPOUT,
-		
+
 		SEC_LABEL,
 		SEC_LABELS,
 		-- CS SEC_LAST_OPENED
 		SEC_LINE,
 		SEC_LINES,
-		
+
 		SEC_META,
 		SEC_MILLINGS,
 		SEC_MODULE,
 		SEC_MODULE_CONNECTIONS,
 		SEC_MODULE_FILE_NAME,
 		SEC_MODULE_INSTANCES,
-		
+
 		SEC_NET,
 		SEC_NETCHANGER,
 		SEC_NETCHANGERS,
@@ -138,13 +138,13 @@ package et_file_sections is
 		SEC_PORTS,
 		SEC_PREFERRED_LIBRARIES,
 		SEC_PROJECT_NAME,
-		
+
 		SEC_REVISION,
 		SEC_RESTRING,
 		SEC_ROUTE,
 		SEC_ROUTE_RESTRICT,
 		SEC_RULES,
-		
+
 		SEC_SCHEMATIC,
 		SEC_SEGMENT,
 		SEC_SEGMENTS,
@@ -168,7 +168,7 @@ package et_file_sections is
 		SEC_SUBMODULE,
 		SEC_SUBMODULES,
 		SEC_SYMBOL,
-	
+
 		SEC_TERMINAL,
 		SEC_TERMINALS,
 		SEC_TERMINAL_PORT_MAP,
@@ -176,28 +176,28 @@ package et_file_sections is
 		SEC_TEXTS,
 		SEC_TITLE_BLOCK,
 		SEC_TOP,
-		
+
 		SEC_UNIT,
 		SEC_UNITS,
 		SEC_UNITS_EXTERNAL,
 		SEC_UNITS_INTERNAL,
 		SEC_USER_SETTINGS,
-		
+
 		SEC_VARIANT,
-		SEC_VARIANTS,		
+		SEC_VARIANTS,
 		SEC_VIA,
 		SEC_VIAS,
 		SEC_VIA_RESTRICT,
-		
+
 		SEC_ZONE
 		);
-	
-	
+
+
 	-- Converts a section like SEC_KEEPOUT to a string "keepout".
 	function to_string (
-		section : in type_file_section) 
+		section : in type_file_section)
 		return string;
-	
+
 
 	-- CS use image of type_file_section to compose the
 	-- strings below:
@@ -205,7 +205,7 @@ package et_file_sections is
 -------------------
 -- SECTION HEADERS:
 
-	section_begin					: constant string := "BEGIN]";	
+	section_begin					: constant string := "BEGIN]";
 	section_end						: constant string := "END]";
 
 	------------------
@@ -216,14 +216,14 @@ package et_file_sections is
 	section_approved_date			: constant string := "[APPROVED_DATE";
 	section_assembly_doc			: constant string := "[ASSEMBLY_DOCUMENTATION"; -- CS remove
 	section_assy_doc				: constant string := "[ASSY_DOC";
-	section_assembly_variant		: constant string := "[VARIANT";	
+	section_assembly_variant		: constant string := "[VARIANT";
 	section_assembly_variants		: constant string := "[ASSEMBLY_VARIANTS";
 
 	section_board					: constant string := "[BOARD";
 	section_board_layer_stack		: constant string := "[BOARD_LAYER_STACK";
 	section_bottom					: constant string := "[BOTTOM";
 
-	
+
 	section_cam_markers				: constant string := "[CAM_MARKERS";
 	section_checked_by				: constant string := "[CHECKED_BY";
 	section_checked_date			: constant string := "[CHECKED_DATE";
@@ -237,7 +237,7 @@ package et_file_sections is
 	section_customer				: constant string := "[CUSTOMER";
 	section_cutout_zone				: constant string := "[CUTOUT_ZONE";
 
-	
+
 	section_device					: constant string := "[DEVICE";
 	section_devices					: constant string := "[DEVICES";
 	section_devices_non_electric	: constant string := "[DEVICES_NON_ELECTRIC";
@@ -249,29 +249,29 @@ package et_file_sections is
 	section_drawn_date				: constant string := "[DRAWN_DATE";
 
 	section_environment_variables	: constant string := "[ENVIRONMENT_VARIABLES";
-	
+
 	section_face					: constant string := "[FACE";
 	section_fill_zones_conductor	: constant string := "[FILL_ZONES_CONDUCTOR";
-	
+
 	section_hole					: constant string := "[HOLE";
 
 	section_junctions				: constant string := "[JUNCTIONS";
-	
+
 	section_keepout					: constant string := "[KEEPOUT";
 
 	section_label					: constant string := "[LABEL";
 	section_labels					: constant string := "[LABELS";
 	section_line					: constant string := "[LINE";
 	section_lines					: constant string := "[LINES";
-	
-	section_meta					: constant string := "[META";	
+
+	section_meta					: constant string := "[META";
 	section_pad_millings			: constant string := "[MILLINGS";
 	section_module					: constant string := "[MODULE";
 	section_module_connections		: constant string := "[MODULE_CONNECTIONS";
 	section_module_instances		: constant string := "[MODULE_INSTANCES";
-	
+
 	section_plated_millings			: constant string := "[PLATED_MILLINGS";
-	
+
 	section_net						: constant string := "[NET";
 	section_netchanger				: constant string := "[NETCHANGER";
 	section_netchangers				: constant string := "[NETCHANGERS";
@@ -279,13 +279,13 @@ package et_file_sections is
 	section_net_class				: constant string := "[NET_CLASS";
 	section_net_classes				: constant string := "[NET_CLASSES";
 
-	section_module_file_name		: constant string := "[MODULE_FILE_NAME";		
-	
+	section_module_file_name		: constant string := "[MODULE_FILE_NAME";
+
 	section_outline					: constant string := "[OUTLINE";
 	-- CS rename to OUTER_CONTOUR
 
-	
-	section_package					: constant string := "[PACKAGE";	
+
+	section_package					: constant string := "[PACKAGE";
 	section_pac_3d_contours			: constant string := "[PACKAGE_3D_CONTOURS";
 	section_partcode				: constant string := "[PARTCODE";
 	section_pcb_contours			: constant string := "[PCB_CONTOURS_NON_PLATED";
@@ -293,22 +293,22 @@ package et_file_sections is
 	section_pcb_outline				: constant string := "[PCB_OUTLINE";
 
 	section_placeholder				: constant string := "[PLACEHOLDER";
-	section_placeholders			: constant string := "[PLACEHOLDERS";	
-	
-	--section_pcb_contours_plated	: constant string := "[PCB_CONTOURS_PLATED"; 
+	section_placeholders			: constant string := "[PLACEHOLDERS";
+
+	--section_pcb_contours_plated	: constant string := "[PCB_CONTOURS_PLATED";
 	section_pad_contours_smt		: constant string := "[PAD_CONTOURS_SMT";
-	section_pad_contours_tht		: constant string := "[PAD_CONTOURS_THT";	
+	section_pad_contours_tht		: constant string := "[PAD_CONTOURS_THT";
 	section_port					: constant string := "[PORT";
 	section_ports					: constant string := "[PORTS";
 	section_preferred_libraries		: constant string := "[PREFERRED_LIBRARIES";
 	section_project_name			: constant string := "[PROJECT_NAME";
-	
+
 	section_restring				: constant string := "[RESTRING";
 	section_revision				: constant string := "[REVISION";
-	section_route					: constant string := "[ROUTE";	
+	section_route					: constant string := "[ROUTE";
 	section_route_restrict			: constant string := "[ROUTE_RESTRICT";
 	section_rules					: constant string := "[RULES";
-	
+
 	section_schematic				: constant string := "[SCHEMATIC";
 	section_segment					: constant string := "[SEGMENT";
 	section_segments				: constant string := "[SEGMENTS";
@@ -332,7 +332,7 @@ package et_file_sections is
 	section_submodule				: constant string := "[SUBMODULE";
 	section_submodules				: constant string := "[SUBMODULES";
 	section_symbol					: constant string := "[SYMBOL";
-	
+
 	section_terminal				: constant string := "[TERMINAL";
 	section_terminals				: constant string := "[TERMINALS";
 	section_terminal_port_map		: constant string := "[TERMINAL_PORT_MAP";
@@ -346,7 +346,7 @@ package et_file_sections is
 	section_units_internal			: constant string := "[UNITS_INTERNAL";
 	section_units_external			: constant string := "[UNITS_EXTERNAL";
 	section_user_settings			: constant string := "[USER_SETTINGS";
-	
+
 	section_variant					: constant string := "[VARIANT";
 	section_variants				: constant string := "[VARIANTS";
 	section_via						: constant string := "[VIA";
@@ -361,33 +361,33 @@ package et_file_sections is
 
 
 
-	
+
 
 -------------------
-	
+
 	function write_top_level_reached return string;
 	function write_enter_section return string;
 	function write_return_to_section return string;
 	function write_missing_begin_end return string;
 	function write_section_stack_not_empty return string;
-	
+
 	procedure invalid_section;
 
 
-	
+
 
 	-- This is a LIFO-stack template.
 	-- It is instantiated in packages that
 	-- read symbols, packages, devices and modules.
-	-- Here we track the sections. On entering a section, 
-	-- the section name is pushed onto the stack. When 
+	-- Here we track the sections. On entering a section,
+	-- the section name is pushed onto the stack. When
 	-- leaving a section the latest section name is fetched
 	-- from the stack.
 
 	generic
 		max : positive;
 		type item is private;
-		
+
 	package gen_pac_sections_stack is
 		procedure push (x : in item);
 		procedure pop;
@@ -397,8 +397,8 @@ package et_file_sections is
 		function empty return boolean;
 		function current return item;
 		function parent (degree : in natural := 1) return item;
-		
+
 	end gen_pac_sections_stack;
 
-	
+
 end et_file_sections;

@@ -56,35 +56,35 @@ package et_module_read_submodules is
 	-- Reads the parameters of a submodule:
 	procedure read_submodule (
 		line : in type_fields_of_line);
-		
-		
-		
+
+
+
 	procedure read_submodule_port (
 		line : in type_fields_of_line);
 
-		
-		
+
+
 	procedure insert_submodule_port (
 		line : in type_fields_of_line);
-		
+
 
 	procedure assign_submodule_ports;
-	
-	
+
+
 	procedure insert_submodule (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_module_read_submodules;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

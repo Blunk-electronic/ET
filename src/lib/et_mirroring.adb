@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -43,7 +43,7 @@ with ada.characters.handling;			use ada.characters.handling;
 
 
 package body et_mirroring is
-		
+
 
 	function to_string (
 		mirror	: in type_mirror)
@@ -55,11 +55,11 @@ package body et_mirroring is
 	end to_string;
 
 
-	
+
 	function to_string (
 		mirror	: in type_mirror;
 		verbose : in boolean)
-		return string 
+		return string
 	is begin
 		if verbose then
 			return "mirrored " & to_string (mirror);
@@ -70,10 +70,10 @@ package body et_mirroring is
 
 
 
-	
+
 	function to_mirror_style (
-		style : in string) 
-		return type_mirror 
+		style : in string)
+		return type_mirror
 	is begin
 		return type_mirror'value (mirror_prefix & style);
 	end to_mirror_style;
@@ -87,19 +87,19 @@ package body et_mirroring is
 		case status is
 			when MIRROR_NO =>
 				status := MIRROR_ALONG_Y_AXIS;
-				
+
 			when MIRROR_ALONG_Y_AXIS =>
 				status := MIRROR_NO;
 
 			-- CS: This case should never happen:
-			when MIRROR_ALONG_X_AXIS => 
+			when MIRROR_ALONG_X_AXIS =>
 				status := MIRROR_NO;
 		end case;
 	end;
-		
-		
-		
-		
+
+
+
+
 
 	procedure toggle_along_x (
 		status : in out type_mirror)
@@ -107,23 +107,23 @@ package body et_mirroring is
 		case status is
 			when MIRROR_NO =>
 				status := MIRROR_ALONG_X_AXIS;
-				
+
 			when MIRROR_ALONG_X_AXIS =>
 				status := MIRROR_NO;
 
 			-- CS: This case should never happen:
-			when MIRROR_ALONG_Y_AXIS => 
+			when MIRROR_ALONG_Y_AXIS =>
 				status := MIRROR_NO;
 		end case;
 	end;
 
-	
-	
+
+
 end et_mirroring;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

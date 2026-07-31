@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,12 +54,12 @@ is
 	-- It is an absolute position:
 	position_new : type_object_position;
 
-	
+
 	procedure compute_final_position is begin
 		-- First we copy the coordinates
 		-- from the original unit:
 		position_new := get_position (unit_cursor);
-						
+
 		-- In the following, the rotatation remains unchanged
 		-- because we copy the rotation along with other
 		-- properties of the unit.
@@ -79,11 +79,11 @@ is
 		-- can be assigned to the new unit.
 	end compute_final_position;
 
-	
-	
+
+
 begin
-	log (text => "module " & to_string (module_cursor) 
-		& " device " & get_device_name (device_cursor) 
+	log (text => "module " & to_string (module_cursor)
+		& " device " & get_device_name (device_cursor)
 		& " copy unit " & get_unit_name (unit_cursor)
 		& " by sheet(s) " & relative_to_string (sheet)
 		& " offset " & to_string (destination),
@@ -92,7 +92,7 @@ begin
 
 	log_indentation_up;
 
-	
+
 	-- Now we compute the new position
 	-- of the new unit.
 	compute_final_position;
@@ -106,16 +106,16 @@ begin
 		commit_design		=> NO_COMMIT,
 		device_created		=> device_created,
 		log_threshold		=> log_threshold + 1);
-		
-		
-	log_indentation_down;	
+
+
+	log_indentation_down;
 end copy_unit;
 
 
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

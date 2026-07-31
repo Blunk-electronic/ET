@@ -59,7 +59,7 @@ package body et_symbol_read_body is
 	symbol_line 	: type_symbol_line;
 	symbol_arc		: type_symbol_arc;
 	symbol_circle	: type_symbol_circle;
-	
+
 
 
 	procedure read_body_line (
@@ -73,7 +73,7 @@ package body et_symbol_read_body is
 
 			-- extract the start position starting at field 2
 			set_A (symbol_line, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_end then -- end x 0.00 y 0.00
 			expect_field_count (line, 5);
 
@@ -83,20 +83,20 @@ package body et_symbol_read_body is
 		elsif kw = keyword_width then
 			expect_field_count (line, 2);
 			symbol_line.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_body_line;
-	
-				
-		
-		
-		
+
+
+
+
+
 	procedure insert_body_line (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		-- inserted : boolean;
 	begin
 		log (text => "insert body line", level => log_threshold);
@@ -109,16 +109,16 @@ package body et_symbol_read_body is
 
 		-- clean up for next line
 		reset_line (symbol_line);
-		
+
 		log_indentation_down;
 	end insert_body_line;
-	
 
 
 
 
 
-	
+
+
 
 
 	procedure read_body_arc (
@@ -138,7 +138,7 @@ package body et_symbol_read_body is
 
 			-- extract the start position starting at field 2
 			set_A (symbol_arc, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_end then -- end x 0.00 y 0.00
 			expect_field_count (line, 5);
 
@@ -149,7 +149,7 @@ package body et_symbol_read_body is
 			expect_field_count (line, 2);
 
 			set_direction (symbol_arc, to_direction (f (line, 2)));
-			
+
 		elsif kw = keyword_width then
 			expect_field_count (line, 2);
 			symbol_arc.width := to_distance (f (line, 2));
@@ -158,15 +158,15 @@ package body et_symbol_read_body is
 			invalid_keyword (kw);
 		end if;
 	end read_body_arc;
-	
-				
-		
-		
-		
+
+
+
+
+
 	procedure insert_body_arc (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		-- inserted	: boolean;
 	begin
 		log (text => "insert body arc", level => log_threshold);
@@ -179,18 +179,18 @@ package body et_symbol_read_body is
 
 		-- clean up for next arc
 		reset_arc (symbol_arc);
-		
+
 		log_indentation_down;
 	end insert_body_arc;
 
-	
 
 
 
 
 
 
-	
+
+
 
 
 	procedure read_body_circle (
@@ -216,20 +216,20 @@ package body et_symbol_read_body is
 		elsif kw = keyword_filled then -- filled yes/no
 			expect_field_count (line, 2);
 			symbol_circle.filled := to_circle_filled (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_body_circle;
-	
-				
-		
-		
-		
+
+
+
+
+
 	procedure insert_body_circle (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		-- inserted : boolean;
 	begin
 		log (text => "insert body circle", level => log_threshold);
@@ -242,17 +242,17 @@ package body et_symbol_read_body is
 
 		-- clean up for next circle
 		reset_circle (symbol_circle);
-		
+
 		log_indentation_down;
 	end insert_body_circle;
 
-	
+
 end et_symbol_read_body;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

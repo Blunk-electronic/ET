@@ -54,7 +54,7 @@ package et_device_placeholders.symbols is
 	-- It does not have content yet, but a meaning.
 	-- The position is just x/y relative to the symbol origin.
 	type type_text_placeholder (
-		meaning : type_placeholder_meaning) 
+		meaning : type_placeholder_meaning)
 	is new type_text_basic with record
 		position : type_vector_model;
 	end record;
@@ -67,21 +67,21 @@ package et_device_placeholders.symbols is
 	-- also required for this test:
 	function in_catch_zone (
 		placeholder		: in type_text_placeholder;
-		unit_position	: in type_vector_model;					   
+		unit_position	: in type_vector_model;
 		zone			: in type_catch_zone)
 		return boolean;
 
-	
+
 
 	type type_text_placeholders is record
 		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 	end record;
-	
 
 
-	-- Clears the proposed-flag and the selected-flag of the placeholders:	
+
+	-- Clears the proposed-flag and the selected-flag of the placeholders:
 	procedure reset_status (
 		placeholders : in out type_text_placeholders);
 
@@ -105,11 +105,11 @@ package et_device_placeholders.symbols is
 		return type_text_placeholders;
 
 
-	
-	
 
-	
-	
+
+
+
+
 	-- Writes the properties of the given placeholder.
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;
@@ -118,7 +118,7 @@ package et_device_placeholders.symbols is
 
 
 
-	
+
 
 	-- GUI relevant only:
 	name_font : constant type_font := (
@@ -135,14 +135,14 @@ package et_device_placeholders.symbols is
 		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-	
 
-	
+
+
 end et_device_placeholders.symbols;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

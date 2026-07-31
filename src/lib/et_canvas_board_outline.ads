@@ -37,13 +37,13 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- IMPORTANT:
 -- This is about drawing zones in layers like assy doc, silkscreen, stopmask,
 -- stencil, keepout.
--- This is NOT about zones in conductor layers. 
+-- This is NOT about zones in conductor layers.
 -- See package et_canvas_board_zone_conductor.
--- 
+--
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
@@ -64,7 +64,7 @@ package et_canvas_board_outline is
 
 
 
-	
+
 
 
 
@@ -88,45 +88,45 @@ package et_canvas_board_outline is
 
 
 
-	
+
 
 -- MOVE:
 
-	status_move_object : constant string := 
-		status_click_left 
+	status_move_object : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to move object in board outline." 
+		& "to move object in board outline."
 		& status_hint_for_abort;
 
-	
+
 	procedure move_object (
 		tool	: in type_tool;
-		point	: in type_vector_model);				   
+		point	: in type_vector_model);
 
 
 
 -- DELETE:
 
-	status_delete_object : constant string := 
-		status_click_left 
+	status_delete_object : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete object in board outline." 
+		& "to delete object in board outline."
 		& status_hint_for_abort;
 
-	
+
 	procedure delete_object (
-		point	: in type_vector_model);				   
+		point	: in type_vector_model);
 
 
-	
-	
+
+
 end et_canvas_board_outline;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

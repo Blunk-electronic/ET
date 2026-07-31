@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
@@ -52,7 +52,7 @@ package et_schematic_ops_meta is
 	use pac_generic_modules;
 
 
-	
+
 
 	-- Fetches the basic meta information of the schematic:
 	function get_basic_meta_information (
@@ -60,33 +60,33 @@ package et_schematic_ops_meta is
 		return type_meta_basic;
 
 
-	
+
 	-- Returns the list of preferred schematic libraries:
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
 		return pac_library_paths_schematic.list;
 
 
-		
+
 	-- Adds a library path to the schematic editor:
 	procedure add_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
 		path			: in pac_library_path_schematic.bounded_string;
 		log_threshold	: in type_log_level);
-		
-	
+
+
 	-- Removes a library path from the schematic editor:
 	procedure remove_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
 		path			: in pac_library_path_schematic.bounded_string;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_schematic_ops_meta;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

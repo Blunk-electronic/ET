@@ -57,7 +57,7 @@ with et_file_sections;				use et_file_sections;
 
 package body et_project.configuration is
 
-	
+
 
 	function conventions_specified return boolean is begin
 		if et_conventions.pac_file_name.length (project.rules.conventions) > 0 then
@@ -67,16 +67,16 @@ package body et_project.configuration is
 		end if;
 	end conventions_specified;
 
-	
-	
+
+
 	procedure read_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 		is separate;
 
 
-		
-	procedure write_configuration_header is 
+
+	procedure write_configuration_header is
 		use et_system_info;
 		use et_string_processing;
 	begin
@@ -87,7 +87,7 @@ package body et_project.configuration is
 		new_line;
 	end;
 
-	
+
 
 	procedure write_configuration_footer is
 		use et_string_processing;
@@ -101,18 +101,18 @@ package body et_project.configuration is
 	end;
 
 
-	
+
 	procedure save_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 		is separate;
 
-		
+
 end et_project.configuration;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

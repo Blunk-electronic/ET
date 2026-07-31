@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about general meta data of a package.
 --
 --   do do:
@@ -80,7 +80,7 @@ package body et_package_read_meta is
 								appearance	=> BOM_RELEVANT_NO,
 								others		=> <>);
 			end case;
-					
+
 		elsif kw = keyword_description then -- description "blabla"
 			expect_field_count (line, 2);
 			pac_description := to_package_description (f (line,2));
@@ -88,13 +88,13 @@ package body et_package_read_meta is
 		elsif kw = keyword_assembly_technology then -- technology SMT/THT
 			expect_field_count (line, 2);
 			pac_technology := to_assembly_technology (f (line,2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
-	
+
 
 
 	procedure assign_meta (
@@ -107,6 +107,6 @@ package body et_package_read_meta is
 		packge.technology := pac_technology;
 	end assign_meta;
 
-	
-	
+
+
 end et_package_read_meta;

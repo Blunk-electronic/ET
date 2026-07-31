@@ -54,7 +54,7 @@ package et_stencil is
 
 
 -- LINES
-	
+
 	type type_stencil_line is new
 		et_conductor_segment.type_conductor_line with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -63,7 +63,7 @@ package et_stencil is
 
 	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
 	use pac_stencil_lines;
-	
+
 
 	-- Iterates the lines.
 	-- Aborts the process when the proceed-flag goes false:
@@ -79,7 +79,7 @@ package et_stencil is
 		line_cursor	: in pac_stencil_lines.cursor)
 		return boolean;
 
-	
+
 	-- Returns true if the "selected-flag" of the given line is set:
 	function is_selected (
 		line_cursor	: in pac_stencil_lines.cursor)
@@ -87,29 +87,29 @@ package et_stencil is
 
 
 
-	
+
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
+
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
 		lines	: in out pac_stencil_lines.list;
 		angle	: in type_rotation_model);
 
-	
+
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_stencil_lines.list;
 		offset	: in type_vector_model);
 
 
-	
+
 
 -- ARCS
-	
+
 	type type_stencil_arc is new
 		et_conductor_segment.type_conductor_arc with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -118,7 +118,7 @@ package et_stencil is
 
 	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 	use pac_stencil_arcs;
-	
+
 
 
 	-- Iterates the arcs.
@@ -129,47 +129,47 @@ package et_stencil is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_stencil_arcs.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given arc is set:
 	function is_selected (
 		arc_cursor	: in pac_stencil_arcs.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
+
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		angle	: in type_rotation_model);
 
-	
+
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		offset	: in type_vector_model);
 
 
-	
-	
+
+
 -- CIRCLES
-	
-	type type_stencil_circle is new 
+
+	type type_stencil_circle is new
 		et_conductor_segment.type_conductor_circle with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
 
 	package pac_stencil_circles is new doubly_linked_lists (type_stencil_circle);
-	use pac_stencil_circles;	
+	use pac_stencil_circles;
 
 
 	-- Iterates the circles.
@@ -179,25 +179,25 @@ package et_stencil is
 		process	: not null access procedure (position : in pac_stencil_circles.cursor);
 		proceed	: not null access boolean);
 
-	
-	
+
+
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
 		circle_cursor	: in pac_stencil_circles.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given circle is set:
 	function is_selected (
 		circle_cursor	: in pac_stencil_circles.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
 		circles	: in out pac_stencil_circles.list;
@@ -208,13 +208,13 @@ package et_stencil is
 		circles	: in out pac_stencil_circles.list;
 		offset	: in type_vector_model);
 
-	
+
 
 
 -- ZONES:
-	
+
 	type type_stencil_zone is new type_contour with null record;
-	
+
 	package pac_stencil_zones is new doubly_linked_lists (type_stencil_zone);
 	use pac_stencil_zones;
 
@@ -225,7 +225,7 @@ package et_stencil is
 		return boolean;
 
 
-	
+
 	-- Iterates the contours. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		zones	: in pac_stencil_zones.list;
@@ -240,8 +240,8 @@ package et_stencil is
 		return pac_stencil_zones.cursor;
 
 
-	
-	package pac_stencil_zone_cursors is 
+
+	package pac_stencil_zone_cursors is
 		new doubly_linked_lists (pac_stencil_zones.cursor);
 
 	-- Returns the cursors to all zones which have an open contour:
@@ -250,13 +250,13 @@ package et_stencil is
 		return pac_stencil_zone_cursors.list;
 
 
-	
-	
+
+
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_stencil_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of contours by the given angle about the origin:
 	procedure rotate_contours (
 		contours	: in out pac_stencil_zones.list;
@@ -268,7 +268,7 @@ package et_stencil is
 		offset		: in type_vector_model);
 
 
-	
+
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
 		lines 	: pac_stencil_lines.list;
@@ -279,14 +279,14 @@ package et_stencil is
 
 
 
-	
-	
+
+
 
 	-- Mirrors the given objects along the given axis:
 	procedure mirror_stencil_objects (
 		stencil	: in out type_stencil;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates the given objects by the given angle
 	-- about the origin:
 	procedure rotate_stencil_objects (
@@ -298,7 +298,7 @@ package et_stencil is
 		stencil	: in out type_stencil;
 		offset	: in type_vector_model);
 
-	
+
 
 	-- Logs the properties of the given arc of stencil
 	procedure arc_stencil_properties (
@@ -318,13 +318,13 @@ package et_stencil is
 		cursor			: in pac_stencil_lines.cursor;
 		log_threshold 	: in type_log_level);
 
-	
-	
+
+
 end et_stencil;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

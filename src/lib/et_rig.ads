@@ -51,7 +51,7 @@ with et_rig_name;					use et_rig_name;
 
 
 package et_rig is
-	
+
 
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_module_connection is record
@@ -61,30 +61,30 @@ package et_rig is
 		purpose_B	: pac_device_purpose.bounded_string; -- pwr_out
 
 		-- CS
-		-- net_comparator : on/off 
-		-- warn_only : on/off 
+		-- net_comparator : on/off
+		-- warn_only : on/off
 		-- cable model ?
 	end record;
 
-	
+
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
 	function compare_connectors (left, right : in type_module_connection) return boolean;
 
 
-	
+
 	package pac_module_connections is new ordered_sets (
 		element_type	=> type_module_connection,
 		"<"				=> compare_connectors);
 
-	
-	
+
+
 	-- A rig consists of a list of module instances
 	-- and a list of module-to-module connectors (or board-to-board connectors).
 	-- Conventions apply for the whole rig.
 
-	
-	-- A single rig is modelled by this type and stored in a 
+
+	-- A single rig is modelled by this type and stored in a
 	-- similar structured rig configuration file:
 	type type_rig is record
 		module_instances	: pac_module_instances.map;
@@ -96,7 +96,7 @@ package et_rig is
 
 	use et_rig_name.pac_file_name;
 
-	
+
 	-- Lots of rigs are stored in a map:
 	package pac_rigs is new ordered_maps (
 		key_type		=> et_rig_name.pac_file_name.bounded_string, -- CS dedicated type_rig_name ?
@@ -109,9 +109,9 @@ package et_rig is
 
 
 
-	
 
-	
+
+
 	procedure write_rig_configuration_header;
 	procedure write_rig_configuration_footer;
 
@@ -124,7 +124,7 @@ package et_rig is
 
 
 	-- Assumes the current working directory is a project.
-	-- Searches for rig configuration files (*.rig), reads them and 
+	-- Searches for rig configuration files (*.rig), reads them and
 	-- stores them in et_project.rigs.rigs.
 	-- Searches for module files (*.mod) in the current directory,
 	-- reads them and stores then
@@ -135,13 +135,13 @@ package et_rig is
 
 
 
-	
-	
+
+
 end et_rig;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

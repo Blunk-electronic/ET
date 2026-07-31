@@ -59,20 +59,20 @@ package body et_package_write_stencil is
 
 	use pac_geometry_2;
 	use pac_file_rw;
-	
+
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
 	use pac_stencil_zones;
 
-	
+
 
 	procedure write_stencil (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
-		procedure write_line (cursor : in pac_stencil_lines.cursor) is 
+		procedure write_line (cursor : in pac_stencil_lines.cursor) is
 			use pac_stencil_lines;
 		begin
 			section_mark (section_line, HEADER);
@@ -81,8 +81,8 @@ package body et_package_write_stencil is
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_stencil_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_stencil_arcs.cursor) is
 			use pac_stencil_arcs;
 		begin
 			section_mark (section_arc , HEADER);
@@ -91,8 +91,8 @@ package body et_package_write_stencil is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_stencil_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_stencil_circles.cursor) is
 			use pac_stencil_circles;
 		begin
 			section_mark (section_circle, HEADER);
@@ -101,8 +101,8 @@ package body et_package_write_stencil is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
-		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
+
+		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is
 			use pac_stencil_zones;
 		begin
 			section_mark (section_zone, HEADER);
@@ -111,8 +111,8 @@ package body et_package_write_stencil is
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
-		
-		
+
+
 	begin
 		log (text => "write stencil", level => log_threshold);
 
@@ -125,7 +125,7 @@ package body et_package_write_stencil is
 		iterate (packge.stencil.top.circles, write_circle'access);
 		iterate (packge.stencil.top.zones, write_polygon'access);
 		section_mark (section_top, FOOTER);
-		
+
 		-- bottom
 		section_mark (section_bottom, HEADER);
 		iterate (packge.stencil.bottom.lines, write_line'access);
@@ -134,9 +134,9 @@ package body et_package_write_stencil is
 		iterate (packge.stencil.bottom.zones, write_polygon'access);
 		section_mark (section_bottom, FOOTER);
 
-		section_mark (section_stencil, FOOTER);	
-		
+		section_mark (section_stencil, FOOTER);
+
 	end write_stencil;
 
-	
+
 end et_package_write_stencil;

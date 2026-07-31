@@ -63,8 +63,8 @@ package et_cmd_origin_to_commit is
 	function to_commit_design (
 		cmd : in type_single_cmd)
 		return type_commit_design;
-		
 
-	
+
+
 end et_cmd_origin_to_commit;
 

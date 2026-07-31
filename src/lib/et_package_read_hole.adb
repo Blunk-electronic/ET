@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -57,7 +57,7 @@ package body et_package_read_hole is
 	use et_board_geometry.pac_contours;
 
 
-	
+
 	procedure insert_hole (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
@@ -69,5 +69,5 @@ package body et_package_read_hole is
 		reset_contour (contour);
 	end;
 
-		
+
 end et_package_read_hole;

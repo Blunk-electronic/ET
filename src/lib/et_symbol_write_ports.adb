@@ -59,20 +59,20 @@ with et_keywords;					use et_keywords;
 
 
 package body et_symbol_write_ports is
-	
+
 	use pac_geometry_2;
 
 
-	
-	
-	procedure write_ports ( 
+
+
+	procedure write_ports (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
 	is
 		use pac_symbol_ports;
-		
-		
-		procedure write_port (cursor : in pac_symbol_ports.cursor) is 
+
+
+		procedure write_port (cursor : in pac_symbol_ports.cursor) is
 			use et_port_names;
 			use et_port_direction;
 			use et_port_visibility;
@@ -85,7 +85,7 @@ package body et_symbol_write_ports is
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
-			
+
 			case element (cursor).direction is
 				when INPUT_DIGITAL =>
 					write (keyword => keyword_sensitivity_edge, parameters => to_string (element (cursor).sensitivity_edge));
@@ -94,12 +94,12 @@ package body et_symbol_write_ports is
 				when OUTPUT_ANALOG =>
 					write (keyword => keyword_tristate, parameters => to_string (element (cursor).output_analog_tristate));
 					write (keyword => keyword_weakness, parameters => to_string (element (cursor).output_analog_weakness));
-					
+
 				when OUTPUT_DIGITAL =>
 					write (keyword => keyword_inverted, parameters => to_string (element (cursor).output_digital_inverted));
 					write (keyword => keyword_tristate, parameters => to_string (element (cursor).output_digital_tristate));
 					write (keyword => keyword_weakness, parameters => to_string (element (cursor).output_digital_weakness));
-					
+
 				when BIDIR_DIGITAL =>
 					write (keyword => keyword_output_inverted, parameters => to_string (element (cursor).output_inverted));
 					write (keyword => keyword_output_tristate, parameters => to_string (element (cursor).output_tristate));
@@ -110,21 +110,21 @@ package body et_symbol_write_ports is
 
 				when POWER_OUT | POWER_IN =>
 					write (keyword => keyword_level, parameters => to_string (element (cursor).level));
-					
+
 				when others => null; -- PASSIVE, INPUT_ANALOG, NOT_CONNECTED
 			end case;
-			
+
 			write (keyword => keyword_length, parameters => to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => to_string (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
 			write (keyword => keyword_port_name_size, parameters => to_string (element (cursor).port_name_size));
 			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_name_visible));
 			write (keyword => keyword_terminal_name_size, parameters => to_string (element (cursor).terminal_name_size));
-			section_mark (section_port, FOOTER);			
+			section_mark (section_port, FOOTER);
 		end write_port;
 
 
-		
+
 	begin
 		log (text => "write ports", level => log_threshold);
 		log_indentation_up;
@@ -132,19 +132,19 @@ package body et_symbol_write_ports is
 		section_mark (section_ports, HEADER);
 		iterate (symbol.ports, write_port'access);
 		section_mark (section_ports, FOOTER);
-		
+
 		log_indentation_down;
 	end write_ports;
 
-	
-	
-		
+
+
+
 end et_symbol_write_ports;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

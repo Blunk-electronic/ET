@@ -78,7 +78,7 @@ with et_file_sections;				use et_file_sections;
 package body et_module_read_text_board is
 
 	use pac_generic_modules;
-	use pac_geometry_2;	
+	use pac_geometry_2;
 	use et_board_text.pac_text_board_vectorized;
 
 
@@ -113,11 +113,11 @@ package body et_module_read_text_board is
 
 			-- extract alignment starting at field 2
 			board_text_placeholder.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_meaning then -- meaning project_name
 			expect_field_count (line, 2);
 			board_text_placeholder.meaning := to_meaning (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -148,17 +148,17 @@ package body et_module_read_text_board is
 			board_text.line_width := to_distance (f (line, 2));
 
 			-- CS validate against dru settings
-			
+
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
 			board_text.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 			expect_field_count (line, 2); -- actual content in quotes !
 			board_text.content := to_content (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -166,16 +166,16 @@ package body et_module_read_text_board is
 	end read_board_text_non_conductor;
 
 
-	
 
-	
-	
+
+
+
 	-- This variable is used for vector texts in conductor layers
 	-- and restrict layers:
 	board_text_conductor : et_conductor_text.boards.type_conductor_text_board;
 
-	
-	
+
+
 	procedure read_board_text_conductor (
 		line : in type_fields_of_line)
 	is
@@ -197,13 +197,13 @@ package body et_module_read_text_board is
 			board_text_conductor.line_width := to_distance (f (line, 2));
 
 			-- CS validate against dru settings
-			
+
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
 			board_text_conductor.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 			expect_field_count (line, 2); -- actual content in quotes !
 			board_text_conductor.content := to_content (f (line, 2));
@@ -212,22 +212,22 @@ package body et_module_read_text_board is
 			expect_field_count (line, 2);
 			board_text_conductor.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (board_text_conductor.layer);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_board_text_conductor;
 
 
-	
 
-	
-	
+
+
+
 	-- This variable is used for text placeholders in conductor layers:
 	board_text_conductor_placeholder : type_placeholder_conductor;
 
-	
-	
+
+
 	procedure read_board_text_conductor_placeholder (
 		line : in type_fields_of_line)
 	is
@@ -253,7 +253,7 @@ package body et_module_read_text_board is
 
 			-- extract alignment starting at field 2
 			board_text_conductor_placeholder.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_meaning then -- meaning revision/project_name/...
 			expect_field_count (line, 2);
 			board_text_conductor_placeholder.meaning := to_meaning (f (line, 2));
@@ -262,18 +262,18 @@ package body et_module_read_text_board is
 			expect_field_count (line, 2);
 			board_text_conductor_placeholder.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (board_text_conductor_placeholder.layer);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_board_text_conductor_placeholder;
 
-	
-	
-	
-	
-	
-		
+
+
+
+
+
+
 	procedure read_board_text_contours (
 		line : in type_fields_of_line)
 	is
@@ -299,35 +299,35 @@ package body et_module_read_text_board is
 
 			-- extract alignment starting at field 2
 			board_text.alignment := to_alignment (line, 2);
-			
+
 		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 			expect_field_count (line, 2); -- actual content in quotes !
 			board_text.content := to_content (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_board_text_contours;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-	-- The board_text_placeholder has been a general thing until now. 
+	-- The board_text_placeholder has been a general thing until now.
 	-- Depending on the layer and the side of the board (face) the board_text_placeholder
 	-- is now assigned to the board where it belongs to.
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_pcb_sides;
@@ -358,7 +358,7 @@ package body et_module_read_text_board is
 
 						when others => invalid_section;
 					end case;
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
@@ -370,7 +370,7 @@ package body et_module_read_text_board is
 							pac_placeholders_non_conductor.append (
 								container	=> module.board.assy_doc.bottom.placeholders,
 								new_item	=> board_text_placeholder);
-							
+
 						when LAYER_CAT_STOPMASK =>
 							pac_placeholders_non_conductor.append (
 								container	=> module.board.stopmask.bottom.placeholders,
@@ -384,43 +384,43 @@ package body et_module_read_text_board is
 
 						when others => invalid_section;
 					end case;
-					
+
 			end case;
 		end do_it;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& "insert placeholder",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 
 		-- clean up for next board placeholder
-		reset_placeholder (board_text_placeholder);		
-		
+		reset_placeholder (board_text_placeholder);
+
 		log_indentation_down;
 	end insert_placeholder;
-				
-		
-		
-		
-		
-		
+
+
+
+
+
+
 	procedure insert_board_text_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
-		
+
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -429,14 +429,14 @@ package body et_module_read_text_board is
 				new_item	=> board_text_conductor_placeholder);
 		end do_it;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert_board_text_placeholder",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -444,30 +444,30 @@ package body et_module_read_text_board is
 
 		-- clean up for next placeholder in conductor layer
 		reset_placeholder (board_text_conductor_placeholder);
-		
+
 		log_indentation_down;
 	end insert_board_text_placeholder;
 
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 	procedure build_non_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
 		face 			: in et_pcb_sides.type_face;
 		log_threshold	: in type_log_level)
 	is
-	-- The board_text has been a general thing until now. 
+	-- The board_text has been a general thing until now.
 	-- Depending on the layer category and the side of the board (face) the board_text
 	-- is now assigned to the board where it belongs to.
-		
-		
+
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_silkscreen;
@@ -495,7 +495,7 @@ package body et_module_read_text_board is
 
 						when others => invalid_section;
 					end case;
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
@@ -515,53 +515,53 @@ package body et_module_read_text_board is
 
 						when others => invalid_section;
 					end case;
-					
+
 			end case;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " build non-conductor text",
 			level => log_threshold);
-			
+
 		log_indentation_up;
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
 		-- clean up for next board text
 		reset_text (board_text);
-		
+
 		log_indentation_down;
 	end build_non_conductor_text;
 
-		
-		
-		
-		
-		
 
-		
+
+
+
+
+
+
 	procedure build_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)		
+		log_threshold	: in type_log_level)
 	is
-		
-		
+
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_conductor_text.boards;
 			use pac_conductor_texts_board;
 			use et_mirroring;
-			
+
 			mirror : type_mirror;
-			
+
 		begin
 			mirror := signal_layer_to_mirror (board_text_conductor.layer, get_deepest_conductor_layer (module_cursor));
 
@@ -576,7 +576,7 @@ package body et_module_read_text_board is
 				make_border		=> true,
 				log_threshold	=> log_threshold + 2
 				-- CS alignment
-				); 
+				);
 
 			append (
 				container	=> module.board.conductors_floating.texts,
@@ -584,14 +584,14 @@ package body et_module_read_text_board is
 
 		end do_it;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& "build conductor text",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -599,18 +599,18 @@ package body et_module_read_text_board is
 
 		-- clean up for next text in conductor layer
 		et_conductor_text.boards.reset_text (board_text_conductor);
-		
+
 		log_indentation_down;
 	end build_conductor_text;
 
-				
-				
+
+
 end et_module_read_text_board;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

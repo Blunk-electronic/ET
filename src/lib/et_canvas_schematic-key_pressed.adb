@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -64,38 +64,38 @@ is
 	point : type_vector_model renames get_cursor_position;
 
 	-- CS global variable for the tool KEYBOARD
-	
-	
-	procedure clear is 
+
+
+	procedure clear is
 		use et_schematic_ops_groups;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;					
+				noun := NOUN_GROUP;
 				-- CS set_status
 				reset_objects (active_module, log_threshold + 1);
 
-			when others => null;							
+			when others => null;
 		end case;
 	end clear;
 
-	
-	
+
+
 	procedure delete is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;					
+				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_delete_device);
 
 			when key_noun_group =>
-				noun := NOUN_GROUP;					
+				noun := NOUN_GROUP;
 				-- CS set_status
 				et_schematic_ops_groups.delete_group (
-					module_cursor	=> active_module, 
+					module_cursor	=> active_module,
 					log_threshold	=> log_threshold + 1);
-				
+
 			when key_noun_connector =>
 				noun := NOUN_NET_CONNECTOR;
 				set_status (et_canvas_schematic_nets.status_delete_connector);
@@ -103,56 +103,56 @@ is
 			when key_noun_label =>
 				noun := NOUN_NET_LABEL;
 				set_status (et_canvas_schematic_nets.status_delete_label);
-				
+
 			when key_noun_unit =>
-				noun := NOUN_UNIT;					
+				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_delete_unit);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;					
+				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_delete_netchanger);
-				
+
 			when key_noun_net_all_sheets =>
 				noun := NOUN_NET;
 				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_net =>
-				noun := NOUN_NET;					
+				noun := NOUN_NET;
 				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_delete);
-				
+
 			when key_noun_strand =>
-				noun := NOUN_STRAND;					
+				noun := NOUN_STRAND;
 				set_status (et_canvas_schematic_nets.status_delete);
-				
+
 			when key_noun_segment =>
-				noun := NOUN_SEGMENT;				
+				noun := NOUN_SEGMENT;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 
-				
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
-					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT =>
 						et_canvas_schematic_nets.delete_object (point);
-						
+
 					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (point);
 
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.delete_object (point);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -167,19 +167,19 @@ is
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end delete;
 
-	
-	
-	
-	
-	procedure define is	
+
+
+
+
+	procedure define is
 		-- This procedure is called each time the operator presses
 		-- the space-key. How often the key is pressed is counted
 		-- in variable group_area_keyboard.key_counter. After the
@@ -192,39 +192,39 @@ is
 		begin
 			-- Evaluate the cursor position (twice) and
 			-- store it in group_area_keyboard.
-			set_select_area_keyboard (point, group_area_keyboard, 
+			set_select_area_keyboard (point, group_area_keyboard,
 				ready, log_threshold + 1);
-				
+
 			-- If a useful area is the result, then the ready-flag
 			-- is set so that the group area can be passed on
 			-- to further operations down the chain:
 			if ready then
 				define_group_rectangular (
-					module_cursor	=> active_module, 
-					sheet			=> active_sheet, 
+					module_cursor	=> active_module,
+					sheet			=> active_sheet,
 					area			=> group_area_keyboard.area,
 					log_threshold	=> log_threshold + 1);
-					
-			end if;		
+
+			end if;
 		end define_group_keyboard;
-		
-		
+
+
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;					
+				noun := NOUN_GROUP;
 				-- CS set_status (hints on how to define the group
 				-- via mouse or keyboard)
-				
+
 				-- This signals the subprograms
 				-- that handle mouse-button-press/release
 				-- events that a group is being defined:
 				group_area_mouse.active := true;
 
-				
-			-- If space pressed, then the operator wishes 
-			-- to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes
+			-- to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
@@ -241,39 +241,39 @@ is
 						-- canvas. The visualizing mechanism can be
 						-- found in the generic package et_canvas
 						-- procedures move_cursor and draw_group_area.
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
-			when others => null;							
+
+			when others => null;
 		end case;
 	end define;
-		
 
 
 
-	
-		
+
+
+
 	procedure dissolve is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;					
+				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_dissolve_netchanger);
-				
-			
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.dissolve_object (point);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -282,12 +282,12 @@ is
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
-					when others => null;						
+					when others => null;
 				end case;
 
 			-- CS test key to rename net on current sheet
 			-- or everywhere ?
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end dissolve;
@@ -295,10 +295,10 @@ is
 
 
 
-	
-	
-	
-	procedure drag is 
+
+
+
+	procedure drag is
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -319,7 +319,7 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				
+
 			when key_noun_unit =>
 				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_drag);
@@ -337,23 +337,23 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				
+
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when key_space =>	
+			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
 						-- When dragging a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_group.drag_group (
-							KEYBOARD, get_cursor_position);						
+							KEYBOARD, get_cursor_position);
 
 					when NOUN_SEGMENT =>
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						et_canvas_schematic_nets.drag_object (KEYBOARD, get_cursor_position);						
+						et_canvas_schematic_nets.drag_object (KEYBOARD, get_cursor_position);
 
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
@@ -367,10 +367,10 @@ is
 						reset_grid_and_cursor;
 						et_canvas_schematic_netchangers.drag_object (KEYBOARD, get_cursor_position);
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -389,10 +389,10 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end drag;
@@ -401,17 +401,17 @@ is
 
 
 
-	
-	
-	
-	procedure draw is 
+
+
+
+	procedure draw is
 		use pac_path_and_bend;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_net =>
 				noun := NOUN_NET;
-				
+
 				set_status (status_draw_net);
 
 				-- we start a new route:
@@ -421,7 +421,7 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				
+
 			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
@@ -430,23 +430,23 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 
-						make_path (KEYBOARD, get_cursor_position);	
-						
+						make_path (KEYBOARD, get_cursor_position);
+
 					when others => null;
 				end case;
 
-				
+
 			-- If B pressed, then a bend style is being selected.
 			-- this affects only certain modes and is ignored otherwise:
 			when key_bend_style =>
 				case noun is
 					when NOUN_NET =>
 						next_bend_style (live_path);
-						
+
 					when others => null;
-						
+
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end draw;
@@ -455,7 +455,7 @@ is
 
 
 
-	
+
 
 	procedure mirror is begin
 		case key is
@@ -464,10 +464,10 @@ is
 				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_mirror);
 
-				
+
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when key_space =>	
+			when key_space =>
 				case noun is
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.mirror_object (point);
@@ -475,7 +475,7 @@ is
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -483,10 +483,10 @@ is
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
-						
+
 					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end mirror;
@@ -494,8 +494,8 @@ is
 
 
 
-	
-	
+
+
 	procedure move is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -504,7 +504,7 @@ is
 				set_status (et_canvas_schematic_nets.status_move_label);
 
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;					
+				noun := NOUN_PLACEHOLDER;
 				set_status (et_canvas_schematic_units.status_move_placeholder);
 
 			when key_noun_unit =>
@@ -515,7 +515,7 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				
+
 			when key_noun_netchanger =>
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_move_netchanger);
@@ -525,17 +525,17 @@ is
 				reset_grid_and_cursor;
 
 
-				
+
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when key_space =>	
+			when key_space =>
 				case noun is
 					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (KEYBOARD, get_cursor_position);
-						
+
 					when NOUN_PLACEHOLDER =>
 						et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
-						
+
 					when NOUN_UNIT =>
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
@@ -551,16 +551,16 @@ is
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_NET_LABEL => 
+					when NOUN_NET_LABEL =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
-					
-					when NOUN_PLACEHOLDER => 
+
+					when NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
@@ -574,10 +574,10 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
+
 					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end move;
@@ -585,8 +585,8 @@ is
 
 
 
-	
-	
+
+
 	procedure place is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -596,12 +596,12 @@ is
 
 				-- For placing simple net labels, the fine grid is required:
 				-- CS self.set_grid (FINE);
-				
+
 			when key_noun_connector =>
 				noun := NOUN_NET_CONNECTOR;
 				set_status (et_canvas_schematic_nets.status_place_connector);
 
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_NET_LABEL =>
@@ -609,21 +609,21 @@ is
 
 					when NOUN_NET_CONNECTOR =>
 						place_net_connector (KEYBOARD, get_cursor_position);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
 
-					when NOUN_NET_LABEL | NOUN_NET_CONNECTOR => 
+					when NOUN_NET_LABEL | NOUN_NET_CONNECTOR =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;
-						
+
 				end case;
 
 			when GDK_LC_r =>
@@ -637,9 +637,9 @@ is
 						-- end if;
 
 					when others => null;
-						
+
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end place;
@@ -648,24 +648,24 @@ is
 
 
 
-	
+
 	procedure rotate is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;					
+				noun := NOUN_PLACEHOLDER;
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 			when key_noun_unit =>
-				noun := NOUN_UNIT;					
+				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_rotate);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;					
+				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_rotate_netchanger);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_PURPOSE => -- CS remove
@@ -673,18 +673,18 @@ is
 
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (point);
-						
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.rotate_object (point);
 
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_PLACEHOLDER => 
+					when NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
@@ -698,51 +698,51 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
+
 					when others => null;
-						
+
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end rotate;
 
 
 
-	
 
-	
+
+
 	procedure add is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;					
+				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_add);
 
 				-- When adding units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
-				
+
 				-- open device model selection
-				show_device_model_selection; 
+				show_device_model_selection;
 
 
-				
+
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;					
+				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_add_netchanger);
 
 				-- In the preview set the name of the
 				-- netchanger:
 				set_name_netchanger_add;
-				
+
 				-- When adding a netchanger, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
-				
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -752,27 +752,27 @@ is
 							reset_grid_and_cursor;
 
 							-- If a device model has been selected, then
-							-- an unit will be dropped at the current 
+							-- an unit will be dropped at the current
 							-- cursor position. The properties of the new device
 							-- are taken from the preliminary unit_add:
 							add_electrical_device (get_cursor_position);
 						end if;
 
-						
+
 					when NOUN_NETCHANGER =>
 						-- When adding netchangers, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 
-						-- Drop the netchanger at the current 
+						-- Drop the netchanger at the current
 						-- cursor position. The properties of the new
 						-- netchanger are taken from the preliminary netchanger_add:
 						add_netchanger (get_cursor_position);
 
-						
-					when others => null;						
+
+					when others => null;
 				end case;
-				
+
 
 			when key_verb_rotate =>
 				case noun is
@@ -786,14 +786,14 @@ is
 						-- If the operator wants to rotate the netchanger
 						-- being added, then toggle between 0 add 90 degrees:
 						toggle_rotation_netchanger_add;
-						
-					when others => null;						
+
+					when others => null;
 				end case;
 
 
 			-- CS key_verb_mirror =>
 			-- mirror unit_add ?
-				
+
 			when key_verb_direction =>
 				case noun is
 					when NOUN_NETCHANGER =>
@@ -802,20 +802,20 @@ is
 						-- being added, then toggle between
 						-- FORWARD and BACKWARD:
 						toggle_direction_netchanger_add;
-						
-					when others => null;						
+
+					when others => null;
 				end case;
 
-				
+
 			when others => null;
 		end case;
 	end add;
 
 
 
-	
 
-	
+
+
 	procedure copy is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -827,26 +827,26 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-			
+
 			when key_noun_device =>
-				noun := NOUN_DEVICE;					
+				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_copy);
 
 				-- When copying units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
-				
+
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;					
+				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_copy_netchanger);
 
 				-- When copying netchangers, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
@@ -854,15 +854,15 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_group.copy_group (
-							KEYBOARD, get_cursor_position);						
-					
+							KEYBOARD, get_cursor_position);
+
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (KEYBOARD, point);
-						
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.copy_object (KEYBOARD, point);
 
-					when others => null;						
+					when others => null;
 				end case;
 
 
@@ -879,10 +879,10 @@ is
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			-- If the operator wants to rotate the unit
 			-- being added, then add 90 degrees to the
 			-- temporily unit:
@@ -891,51 +891,51 @@ is
 					when NOUN_DEVICE =>
 						rotate_unit_add;
 
-					when others => null;						
+					when others => null;
 				end case;
 
 			-- CS key_verb_mirror =>
 			-- mirror unit_add ?
-				
+
 			when others => null;
 		end case;
 	end copy;
 
 
 
-	
-	
-	
+
+
+
 	procedure fetch is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_unit =>
-				noun := NOUN_UNIT;					
+				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_fetch);
-				
 
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.fetch_unit (KEYBOARD, point);
-						
-					when others => null;						
+
+					when others => null;
 				end case;
-				
+
 
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_UNIT => 
+					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			-- If the operator wants to rotate the unit
 			-- being fetched, then add 90 degrees to the
 			-- temporily unit:
@@ -944,10 +944,10 @@ is
 					when NOUN_UNIT =>
 						rotate_unit_fetch;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-						
+
 			when others => null;
 		end case;
 	end fetch;
@@ -957,7 +957,7 @@ is
 
 
 
-	
+
 
 	procedure paste is begin
 		case key is
@@ -970,10 +970,10 @@ is
 				-- When copying groups, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
-			
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
@@ -982,21 +982,21 @@ is
 						reset_grid_and_cursor;
 
 						et_canvas_schematic_group.paste_group (
-							KEYBOARD, get_cursor_position);						
+							KEYBOARD, get_cursor_position);
 
 
-					when others => null;						
+					when others => null;
 				end case;
-				
+
 			when others => null;
 		end case;
 	end paste;
 
 
 
-	
-	
-	
+
+
+
 	procedure set is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -1007,9 +1007,9 @@ is
 			when key_noun_purpose =>
 				noun := NOUN_PURPOSE;
 				set_status (et_canvas_schematic_units.status_set_purpose);
-			
+
 			when key_noun_value =>
-				noun := NOUN_VALUE;					
+				noun := NOUN_VALUE;
 				set_status (et_canvas_schematic_units.status_set_value);
 
 			when key_noun_package_variant =>
@@ -1020,8 +1020,8 @@ is
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_set_netchanger);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_VALUE =>
@@ -1032,17 +1032,17 @@ is
 
 					when NOUN_PARTCODE =>
 						et_canvas_schematic_units.set_partcode (point);
-						
+
 					when NOUN_VARIANT =>
 						et_canvas_schematic_units.set_package_variant (point);
 
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.set_netchanger_direction (point);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -1055,19 +1055,19 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
-		
+
 	end set;
 
 
 
-	
-	
+
+
 	procedure show is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -1078,7 +1078,7 @@ is
 			when key_noun_netchanger =>
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_show_netchanger);
-				
+
 			when key_noun_net =>
 				noun := NOUN_NET;
 				set_status (et_canvas_schematic_nets.status_show_net);
@@ -1087,45 +1087,45 @@ is
 				noun := NOUN_NET_LABEL;
 				-- CS set_status (et_canvas_schematic_nets.status_show_label);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.show_object (get_cursor_position);
-						
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.show_object (get_cursor_position);
 
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						et_canvas_schematic_nets.show_object (get_cursor_position);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_DEVICE => 
+					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when NOUN_NETCHANGER => 
+					when NOUN_NETCHANGER =>
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
+
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;
-						
+
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end show;
@@ -1133,9 +1133,9 @@ is
 
 
 
-	
-	
-	procedure rename is 
+
+
+	procedure rename is
 		use et_schematic_ops_nets;
 	begin
 		case key is
@@ -1147,23 +1147,23 @@ is
 			when key_noun_netchanger =>
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_schematic_netchangers.status_rename_netchanger);
-				
+
 			when key_noun_strand => -- rename strand
 				noun := NOUN_STRAND;
 				set_status (et_canvas_schematic_nets.status_rename_net_strand);
-				
+
 			when key_noun_net => -- rename all strands on current sheet
 				noun := NOUN_NET;
 				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
-				
+
 			when key_noun_net_all_sheets => -- rename everywhere: all strands on all sheets
 				noun := NOUN_NET;
 				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -1174,11 +1174,11 @@ is
 
 					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (point);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -1191,24 +1191,24 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
+
 					when NOUN_STRAND | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 
 	end rename;
 
 
-	
-	
-	
+
+
+
 begin -- key_pressed
 	log (text => "key pressed (schematic): " & to_string (key),
 		 level => log_threshold);
@@ -1217,35 +1217,35 @@ begin -- key_pressed
 		-- put_line (gdk_key_type'image (key));
 
 	case key is
-			
+
 		when others =>
 
-			-- CS: The following block seems not relevant any more and 
+			-- CS: The following block seems not relevant any more and
 			-- thus has been put in comments for the time being:
-			
+
 			-- If an imcomplete command has been entered via console then it starts
 			-- waiting for finalization. This can be done by pressing the SPACE key.
 			-- Then we call the corresponding subprogram for the actual job right away here:
-			
+
 			--if single_cmd.finalization_pending and primary_tool = KEYBOARD then
 -- 			if finalization_is_pending (cmd) then
--- 			
+--
 -- 				if key = key_space then
--- 						
+--
 -- 					case verb is
 -- 						when VERB_DELETE	=> delete;
 -- 						when VERB_DRAG		=> drag;
 -- 						when VERB_DRAW		=> draw;
 -- 						when VERB_FETCH		=> fetch;
 -- 						when VERB_MOVE		=> move;
--- 						when VERB_PLACE		=> place;							
+-- 						when VERB_PLACE		=> place;
 -- 						when others			=> null;
 -- 					end case;
--- 
+--
 -- 				end if;
 -- 			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
-				
+
 				case expect_entry is
 					when EXP_VERB =>
 						--put_line ("VERB entered");
@@ -1281,15 +1281,15 @@ begin -- key_pressed
 							when key_verb_define =>
 								verb := VERB_DEFINE;
 								status_enter_noun;
-								
+
 							when key_verb_dissolve =>
 								verb := VERB_DISSOLVE;
 								status_enter_noun;
-								
+
 							when key_verb_drag =>
 								verb := VERB_DRAG;
 								status_enter_noun;
-								
+
 							when key_verb_draw =>
 								verb := VERB_DRAW;
 								status_enter_noun;
@@ -1297,11 +1297,11 @@ begin -- key_pressed
 							when key_verb_paste =>
 								verb := VERB_PASTE;
 								status_enter_noun;
-								
+
 							when key_verb_show =>
 								verb := VERB_SHOW;
 								status_enter_noun;
-								
+
 							when key_verb_fetch =>
 								verb := VERB_FETCH;
 								status_enter_noun;
@@ -1309,7 +1309,7 @@ begin -- key_pressed
 							when key_verb_mirror =>
 								verb := VERB_MIRROR;
 								status_enter_noun;
-								
+
 							when key_verb_move =>
 								verb := VERB_MOVE;
 								status_enter_noun;
@@ -1317,11 +1317,11 @@ begin -- key_pressed
 							when key_verb_rename =>
 								verb := VERB_RENAME;
 								status_enter_noun;
-								
+
 							when key_verb_place =>
 								verb := VERB_PLACE;
 								status_enter_noun;
-								
+
 							when key_verb_rotate =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
@@ -1329,10 +1329,10 @@ begin -- key_pressed
 							when key_verb_set =>
 								verb := VERB_SET;
 								status_enter_noun;
-								
+
 							when others =>
 								--put_line ("other key pressed " & gdk_key_type'image (key));
-								
+
 								-- If invalid verb entered, overwrite expect_entry by EXP_VERB
 								-- and show error in status bar:
 								expect_entry := EXP_VERB;
@@ -1363,16 +1363,16 @@ begin -- key_pressed
 							when VERB_SHOW		=> show;
 							when others => null; -- CS
 						end case;
-						
+
 				end case;
 
-			-- end if;		
+			-- end if;
 	end case;
 
 	redraw;
 	-- CS use redraw_schematic if only schematic affected
 	-- CS redraw after "enter" pressed
-	
+
 	update_mode_display;
 
 
@@ -1382,13 +1382,13 @@ begin -- key_pressed
 	-- 	reset_selections;
 	-- 	redraw;
 	-- 	update_mode_display;
-	
+
 end key_pressed;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

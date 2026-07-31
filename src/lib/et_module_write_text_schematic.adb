@@ -66,33 +66,33 @@ package body et_module_write_text_schematic is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	
-	
-	
+
+
+
 	procedure write_schematic_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		use pac_text_schematic;
 		use pac_texts;
-		
-		
-		procedure write (text_cursor : in pac_texts.cursor) is 
+
+
+		procedure write (text_cursor : in pac_texts.cursor) is
 		begin
 			section_mark (section_text, HEADER);
 			write
 				(
 				keyword		=> keyword_position,
-				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet) 
+				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet)
 								& space & to_string (element (text_cursor).position, FORMAT_2)
 				); -- position sheet 1 x 30 y 180
-			
-			write (keyword => keyword_rotation, 
+
+			write (keyword => keyword_rotation,
 					parameters => to_string (to_rotation (element (text_cursor).rotation)));
-			
+
 			write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (text_cursor).content));
-			
+
 			write (keyword => keyword_size, parameters => to_string (element (text_cursor).size));
 			write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (element (text_cursor).alignment.horizontal)
@@ -100,15 +100,15 @@ package body et_module_write_text_schematic is
 				& to_string (element (text_cursor).alignment.vertical));
 
 			-- CS font
-			
+
 			section_mark (section_text, FOOTER);
 		end write;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -117,26 +117,26 @@ package body et_module_write_text_schematic is
 			section_mark (section_texts, FOOTER);
 		end query_module;
 
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " write schematic texts",
 			level => log_threshold);
-			
-		log_indentation_up;		
-		query_element (module_cursor, query_module'access);						
-		log_indentation_down;
-	end write_schematic_texts;	
-	
 
-	
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_schematic_texts;
+
+
+
 end et_module_write_text_schematic;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

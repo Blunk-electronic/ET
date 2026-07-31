@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 with gtk.widget;					use gtk.widget;
@@ -60,78 +60,78 @@ package et_canvas_schematic_netchangers is
 
 
 	-- to be output in the status bar:
-	status_add_netchanger : constant string := 
-		status_click_left 
+	status_add_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to add netchanger." 
+		& "to add netchanger."
 		& status_hint_for_abort;
 
 
-	status_dissolve_netchanger : constant string := 
-		status_click_left 
+	status_dissolve_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to dissolve netchanger." 
+		& "to dissolve netchanger."
 		& status_hint_for_abort;
 
-	
+
 	-- to be output in the status bar:
-	status_delete_netchanger : constant string := 
-		status_click_left 
+	status_delete_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete netchanger." 
+		& "to delete netchanger."
 		& status_hint_for_abort;
 
-	
-	status_rename_netchanger : constant string := 
-		status_click_left 
+
+	status_rename_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rename netchanger." 
+		& "to rename netchanger."
 		& status_hint_for_abort;
-	
+
 	-- to be output in the status bar:
-	status_move_netchanger : constant string := 
-		status_click_left 
+	status_move_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
 		& "to move netchanger."
 		& status_hint_for_abort;
 
 	-- to be output in the status bar:
-	status_drag_netchanger : constant string := 
-		status_click_left 
+	status_drag_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to drag netchanger." 
+		& "to drag netchanger."
 		& status_hint_for_abort;
 
 	-- to be output in the status bar:
-	status_rotate_netchanger : constant string := 
-		status_click_left 
+	status_rotate_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rotate netchanger." 
+		& "to rotate netchanger."
 		& status_hint_for_abort;
-	
-	status_set_netchanger : constant string := 
-		status_click_left 
+
+	status_set_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to change netchanger direction." 
+		& "to change netchanger direction."
 		& status_hint_for_abort;
 
 
-	
+
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On each call of this procedure we advance from one
 	-- proposed object to the next in a circular manner
 	-- and set it as "selected":
 	procedure clarify_object;
-	
+
 
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
@@ -156,7 +156,7 @@ package et_canvas_schematic_netchangers is
 	procedure dissolve_object (
 		point	: in type_vector_model);
 
-	
+
 	procedure delete_object (
 		point	: in type_vector_model);
 
@@ -169,55 +169,55 @@ package et_canvas_schematic_netchangers is
 
 
 -- RENAME:
-	
+
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new name in the rename window:
 	procedure cb_rename_new_name_entered (
 		self : access gtk_entry_record'class);
-	
 
-	-- This procedure is called when the signal "destroy" 
+
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the rename window.
 	-- This is usually the case when:
-	--  1. the operator terminates the rename window by 
+	--  1. the operator terminates the rename window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the rename window:
 	-- The procedure also calls procedure "reset":
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class);
 
-	
+
 	-- This procedure shows the window where the
 	-- operator sees the old name of the targeted object
 	-- and where he can enter the new name of the object:
 	procedure show_rename_window;
-	
 
 
-	
+
+
 	procedure rename_object (
 		point	: in type_vector_model);
 
-	
 
 
 
-	
+
+
 	procedure drag_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
-
-	
-	
 
 
-	
+
+
+
+
+
 	-- When a unit is being added this type is required:
 	type type_netchanger_being_added is record
-		-- The prospective name (like 4, 5, 6, ...) once the 
+		-- The prospective name (like 4, 5, 6, ...) once the
 		-- add operation is complete.
 		-- This is relevant for the preview only:
 		name_pre	: type_netchanger_id := 1;
@@ -230,8 +230,8 @@ package et_canvas_schematic_netchangers is
 
 		-- For copy operations this flag indicates
 		-- that the data above is valid.
-		-- This flag is used to draw the preview 
-		-- when the netchanger is being copied and 
+		-- This flag is used to draw the preview
+		-- when the netchanger is being copied and
 		-- still sticking to the tool:
 		valid : boolean := false;
 	end record;
@@ -243,25 +243,25 @@ package et_canvas_schematic_netchangers is
 
 
 	procedure set_name_netchanger_add;
-	
 
-	-- Toggles the rotation of netchanger_add 
-	-- between 0 and 90 degrees:	
+
+	-- Toggles the rotation of netchanger_add
+	-- between 0 and 90 degrees:
 	procedure toggle_rotation_netchanger_add;
 
 
 	-- Toggles the direction of the netchanger
 	-- being added between FORWARD and BACKWARD:
 	procedure toggle_direction_netchanger_add;
-	
-	
+
+
 	-- Resets netchanger_add to its default values:
 	procedure reset_netchanger_add;
 
 
 
-	
-	
+
+
 
 
 	-- This procedure adds a new netchanger
@@ -274,13 +274,13 @@ package et_canvas_schematic_netchangers is
 
 
 
-	
+
 	-- to be output in the status bar:
-	status_copy_netchanger : constant string := 
-		status_click_left 
+	status_copy_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to copy a netchanger." 
+		& "to copy a netchanger."
 		& status_hint_for_abort;
 
 
@@ -289,26 +289,26 @@ package et_canvas_schematic_netchangers is
 		point	: in type_vector_model);
 
 
-	
-	
+
+
 
 	procedure show_object (
 		position : in type_vector_model);
 
-	
-	status_show_netchanger : constant string := 
-		status_click_left 
+
+	status_show_netchanger : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to select netchanger." 
+		& "to select netchanger."
 		& status_hint_for_abort;
 
-	
+
 end et_canvas_schematic_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

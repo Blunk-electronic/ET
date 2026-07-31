@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - synchronize keys with those in the board domain
 -- - use a package for common keys (used in schematic and board)
 -- - update handbook accordingly
@@ -71,8 +71,8 @@ package et_schematic_verb_noun_keys is
 	key_verb_dissolve	: constant gdk_key_type := GDK_LC_v;
 
 
-	
--- NOUNS:	
+
+-- NOUNS:
 
 	key_noun_connector	: constant gdk_key_type := GDK_LC_c;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
@@ -95,9 +95,9 @@ package et_schematic_verb_noun_keys is
 
 
 
-	
+
 -- MISCELLANEOUS:
-	
+
 	key_space			: constant gdk_key_type := GDK_Space;
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
@@ -108,7 +108,7 @@ end et_schematic_verb_noun_keys;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

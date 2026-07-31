@@ -46,7 +46,7 @@ package et_device_write_package_variant is
 	procedure write_package_variant (
 		variants		: in pac_package_variants.map;
 		log_threshold	: in type_log_level);
-		
-		
-	
+
+
+
 end et_device_write_package_variant;

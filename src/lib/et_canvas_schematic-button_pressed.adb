@@ -47,10 +47,10 @@ with et_device_placeholders;
 separate (et_canvas_schematic)
 
 procedure button_pressed (
-	event : in type_mouse_event) 
+	event : in type_mouse_event)
 is
 	use et_modes.schematic;
-	
+
 
 	-- The exact place of the pointer:
 	click_point : constant type_vector_model := event.point;
@@ -59,15 +59,15 @@ is
 	snap_point : constant type_vector_model := snap_to_grid (event.point);
 
 
-	
+
 	-- CS global variable for the tool MOUSE
-	
-	procedure left_button is 
+
+	procedure left_button is
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 
 
-		procedure add_device is 
+		procedure add_device is
 			use et_canvas_schematic_units;
 		begin
 			-- If the operator is done with the device model
@@ -78,7 +78,7 @@ is
 				reset_grid_and_cursor;
 
 				-- If a device model has been selected, then
-				-- an unit will be dropped at the current 
+				-- an unit will be dropped at the current
 				-- cursor position. The properties of the new device
 				-- are taken from the preliminary unit_add:
 				add_electrical_device (snap_point);
@@ -93,13 +93,13 @@ is
 			-- and snap the cursor position to the default grid:
 			reset_grid_and_cursor;
 
-			-- Drop the netchanger at the current 
+			-- Drop the netchanger at the current
 			-- cursor position. The properties of the new
 			-- netchanger are taken from the preliminary netchanger_add:
 			add_netchanger (snap_point);
 		end add_netchanger;
 
-		
+
 	begin
 		case verb is
 			when VERB_ADD =>
@@ -110,8 +110,8 @@ is
 					when NOUN_NETCHANGER =>
 						add_netchanger;
 
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
 
@@ -122,26 +122,26 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_group.copy_group (
-							MOUSE, get_cursor_position);						
-					
+							MOUSE, get_cursor_position);
+
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (MOUSE, snap_point);
-							
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.copy_object (MOUSE, snap_point);
 
-					when others => null;							
+					when others => null;
 				end case;
 
-				
+
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT =>
 						et_canvas_schematic_nets.delete_object (snap_point);
-						
+
 					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (snap_point);
-						
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.delete_object (snap_point);
 
@@ -157,7 +157,7 @@ is
 					when others => null;
 				end case;
 
-				
+
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_GROUP =>
@@ -165,8 +165,8 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_group.drag_group (
-							MOUSE, get_cursor_position);						
-					
+							MOUSE, get_cursor_position);
+
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
@@ -178,17 +178,17 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_netchangers.drag_object (MOUSE, snap_point);
-						
-					when NOUN_SEGMENT => 
+
+					when NOUN_SEGMENT =>
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_nets.drag_object (MOUSE, snap_point);
-		
+
 					when others => null;
 				end case;
-				
-				
+
+
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
@@ -197,28 +197,28 @@ is
 						reset_grid_and_cursor;
 
 						make_path (MOUSE, snap_point);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
 						fetch_unit (MOUSE, snap_point);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (MOUSE, snap_point);
-						
+
 					when NOUN_PLACEHOLDER =>
 						et_canvas_schematic_units.move_object (MOUSE, snap_point);
-				
+
 					when NOUN_UNIT =>
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
@@ -230,27 +230,27 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_netchangers.move_object (MOUSE, snap_point);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
 
-				
+
 			when VERB_PASTE =>
 				case noun is
 					when NOUN_GROUP =>
 						-- When pasting a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						
-						et_canvas_schematic_group.paste_group (
-							MOUSE, get_cursor_position);						
 
-					when others => null;							
+						et_canvas_schematic_group.paste_group (
+							MOUSE, get_cursor_position);
+
+					when others => null;
 				end case;
 
-				
-				
+
+
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_NET_CONNECTOR =>
@@ -259,46 +259,46 @@ is
 					when NOUN_NET_LABEL =>
 						place_net_label (MOUSE, snap_point);
 
-						
+
 					when others => null;
 				end case;
 
-				
+
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.rename_object (snap_point);
-							
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.rename_object (snap_point);
 
 					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (snap_point);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_PLACEHOLDER =>
 						et_canvas_schematic_units.rotate_object (snap_point);
-						
+
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (snap_point);
-						
+
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.rotate_object (snap_point);
 
 					when others => null;
 				end case;
-				
+
 
 			when VERB_MIRROR =>
 				case noun is
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.mirror_object (snap_point);
-						
+
 					when others => null;
 				end case;
 
@@ -313,7 +313,7 @@ is
 
 					when NOUN_PARTCODE =>
 						et_canvas_schematic_units.set_partcode (snap_point);
-						
+
 					when NOUN_VARIANT =>
 						et_canvas_schematic_units.set_package_variant (snap_point);
 
@@ -323,7 +323,7 @@ is
 					when others => null;
 				end case;
 
-				
+
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -331,23 +331,23 @@ is
 
 					when NOUN_NETCHANGER =>
 						et_canvas_schematic_netchangers.show_object (snap_point);
-						
+
 					when NOUN_NET | NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.show_object (snap_point);
-						
+
 					when others => null;
 				end case;
-				
+
 			when others => null; -- CS
-		end case;		
+		end case;
 	end left_button;
 
-	
 
-	
+
+
 	-- If right button clicked, then the operator is clarifying:
 	-- CS: Rotate objects (while adding, copying, fetching, ...)
-	procedure right_button is 
+	procedure right_button is
 
 		use pac_path_and_bend;
 	begin
@@ -363,14 +363,14 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -384,8 +384,8 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
 
@@ -395,11 +395,11 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
@@ -412,43 +412,43 @@ is
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
-					when NOUN_SEGMENT => 
+					when NOUN_SEGMENT =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when others => null;							
+					when others => null;
 				end case;
 
-				
+
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
 						next_bend_style (live_path);
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_FETCH =>
 				case noun is
-					when NOUN_UNIT => 
+					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
-						
-					when others => null;						
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_MOVE =>
 				case noun is
-					when NOUN_NET_LABEL => 
+					when NOUN_NET_LABEL =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
-					
-					when NOUN_PLACEHOLDER => 
+
+					when NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
@@ -457,26 +457,26 @@ is
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
-						
+
 					when NOUN_NETCHANGER =>
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-					when others => null;							
-				end case;
-
-				
-			when VERB_PLACE =>
-				case noun is					
-					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL => 
-						if clarification_pending then
-							et_canvas_schematic_nets.clarify_object;
-						end if;
-						
 					when others => null;
 				end case;
 
-				
+
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL =>
+						if clarification_pending then
+							et_canvas_schematic_nets.clarify_object;
+						end if;
+
+					when others => null;
+				end case;
+
+
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -494,13 +494,13 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when others => null;							
+					when others => null;
 				end case;
 
-				
+
 			when VERB_ROTATE =>
 				case noun is
-					when NOUN_PLACEHOLDER => 
+					when NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
@@ -510,7 +510,7 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when others => null;							
+					when others => null;
 				end case;
 
 
@@ -521,10 +521,10 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when others => null;							
+					when others => null;
 				end case;
 
-				
+
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
@@ -536,11 +536,11 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -552,28 +552,28 @@ is
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;
 						end if;
-						
+
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when others => null; -- CS
 		end case;
 
 	end right_button;
 
-	
-	
+
+
 begin -- button_pressed
 	log (text => "button_pressed (schematic) "  -- CS which button ?
 		 & to_string (event), level => log_threshold);
 
-	
+
 	case event.button is
 		when 1 => left_button;
 		when 3 => right_button;
@@ -589,13 +589,13 @@ begin -- button_pressed
 	-- 	set_status (exception_message (event));
 	--  reset_selections;
 	--  redraw;
-	
+
 end button_pressed;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

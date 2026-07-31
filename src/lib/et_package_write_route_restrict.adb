@@ -57,42 +57,42 @@ with et_file_write;						use et_file_write;
 package body et_package_write_route_restrict is
 
 	use et_board_geometry.pac_file_rw;
-	
+
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
 	use pac_route_restrict_zones;
 	use pac_route_restrict_cutouts;
 
-	
+
 
 	procedure write_route_restrict (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
-		procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
+		procedure write_line (cursor : in pac_route_restrict_lines.cursor) is
 		begin
 			section_mark (section_line, HEADER);
 			write_line (element (cursor));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is 
+		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is
 		begin
 			section_mark (section_arc , HEADER);
 			write_arc (element (cursor));
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is 
+		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (element (cursor));
 			section_mark (section_circle, FOOTER);
 		end write_circle;
-		
-		procedure write_zone (cursor : in pac_route_restrict_zones.cursor) is 
+
+		procedure write_zone (cursor : in pac_route_restrict_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -101,7 +101,7 @@ package body et_package_write_route_restrict is
 			section_mark (section_zone, FOOTER);
 		end write_zone;
 
-		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
+		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is
 		begin
 			section_mark (section_cutout_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -109,8 +109,8 @@ package body et_package_write_route_restrict is
 			section_mark (section_contours, FOOTER);
 			section_mark (section_cutout_zone, FOOTER);
 		end write_cutout;
-		
-		
+
+
 	begin
 		log (text => "write route restrict", level => log_threshold);
 
@@ -133,10 +133,10 @@ package body et_package_write_route_restrict is
 		iterate (packge.route_restrict.bottom.zones, write_zone'access);
 		iterate (packge.route_restrict.bottom.cutouts, write_cutout'access);
 		section_mark (section_bottom, FOOTER);
-		
-		section_mark (section_route_restrict, FOOTER);			
-		
+
+		section_mark (section_route_restrict, FOOTER);
+
 	end write_route_restrict;
 
-	
+
 end et_package_write_route_restrict;

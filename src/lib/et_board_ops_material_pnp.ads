@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- 	  - rework procedures so that a module cursor
 --		is used instead the module_name.
 --
@@ -58,7 +58,7 @@ package et_board_ops_material_pnp is
 	use pac_generic_modules;
 
 
-	
+
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 	--     See comment in procedure query_submodules.
@@ -66,14 +66,14 @@ package et_board_ops_material_pnp is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
-		
 
-	
+
+
 end et_board_ops_material_pnp;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

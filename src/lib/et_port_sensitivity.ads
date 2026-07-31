@@ -46,7 +46,7 @@ package et_port_sensitivity is
 		FALLING,	-- digital
 		ANY			-- digtial
 		);
-	
+
 	sensitivity_edge_default : constant type_sensitivity_edge := NONE;
 	function to_string (sensitivity : in type_sensitivity_edge) return string;
 	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
@@ -64,13 +64,13 @@ package et_port_sensitivity is
 	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
 
 
-	
-	
+
+
 end et_port_sensitivity;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

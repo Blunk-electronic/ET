@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
@@ -65,7 +65,7 @@ package et_canvas_board_devices is
 	-- proposed object to the next in a circular manner
 	-- and set it as "selected":
 	procedure clarify_object;
-	
+
 
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
@@ -77,17 +77,17 @@ package et_canvas_board_devices is
 	procedure find_objects (
 		point : in type_vector_model);
 
-	
+
 
 
 -- COPY DEVICE:
-	
+
 	-- to be output in the status bar:
-	status_copy : constant string := 
-		status_click_left 
+	status_copy : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to copy a device." 
+		& "to copy a device."
 		& status_hint_for_abort;
 
 
@@ -98,15 +98,15 @@ package et_canvas_board_devices is
 		packge		: pac_package_models.cursor;
 
 		value		: pac_device_value.bounded_string; -- 100k
-		
-		-- The prospective device name (like FD4) once the 
+
+		-- The prospective device name (like FD4) once the
 		-- add operation is complete.
 		-- This is relevant for the preview only:
 		device_pre	: type_device_name := (others => <>);
 
 		-- The rotation of the device:
 		rotation	: type_rotation_model := 0.0;
-		
+
 		-- Indicates that the information above is valid
 		-- and a device has been selected by the operator:
 		valid		: boolean := false;
@@ -124,11 +124,11 @@ package et_canvas_board_devices is
 
 
 	-- Rotates the device_add by 90 degrees counter-clockwise
-	-- if it is valid:	
+	-- if it is valid:
 	procedure rotate_device_add;
 
 
-	
+
 
 -- ADD:
 
@@ -140,12 +140,12 @@ package et_canvas_board_devices is
 
 
 	-- This procedure is called when the operator
-	-- has selected a library directory from inside 
+	-- has selected a library directory from inside
 	-- the properties box:
 	procedure cb_model_directory_selected (
 		button : access gtk_file_chooser_button_record'class);
 
-	
+
 
 	-- This procedure is called when the operator
 	-- has selected a package model file from inside
@@ -163,9 +163,9 @@ package et_canvas_board_devices is
 	procedure cb_package_prefix_selected (
 		combo : access gtk_combo_box_record'class);
 
-	
-	
-	-- When the operator wants to add a non-electrical 
+
+
+	-- When the operator wants to add a non-electrical
 	-- device to the drawing then this procedure should be called first.
 	-- It builds the widgets for the package model selection
 	-- in the properties box so that the operator can
@@ -179,51 +179,51 @@ package et_canvas_board_devices is
 	-- in device_add:
 	procedure add_non_electrical_device (
 		place : in type_vector_model);
-	
-	
-	
+
+
+
 -- COPY:
 
 
 	status_add_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to add device." 
+		& "to add device."
 		& status_hint_for_abort;
 
 
-	
-	
+
+
 	procedure copy_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
 
-	
 
-	
-	
--- MOVE:	
+
+
+
+-- MOVE:
 
 	status_move_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to move device." 
+		& "to move device."
 		& status_hint_for_abort;
 
-	
+
 
 	status_move_placeholder : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to move placeholder." 
+		& "to move placeholder."
 		& status_hint_for_abort;
 
 
-	
+
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
@@ -236,63 +236,63 @@ package et_canvas_board_devices is
 
 	procedure cb_rename_new_name_entered (
 		self : access gtk_entry_record'class);
-	
+
 
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class);
 
-	
+
 
 	procedure show_rename_window;
 
-	
-	
+
+
 	procedure rename_object (
 		point : in type_vector_model);
 
-	
-	
+
+
 	status_rename_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rename device." 
+		& "to rename device."
 		& status_hint_for_abort;
 
 
 
 
 
-	
-	
+
+
 -- ROTATE:
 
 	procedure rotate_object (
 		position : in type_vector_model);
 
-	
-	
+
+
 	status_rotate_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rotate device." 
+		& "to rotate device."
 		& status_hint_for_abort;
 
-	
+
 
 	status_rotate_placeholder : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rotate placeholder." 
+		& "to rotate placeholder."
 		& status_hint_for_abort;
 
 
 
 
-	
-	
+
+
 
 -- FLIP / MIRROR:
 
@@ -300,60 +300,60 @@ package et_canvas_board_devices is
 		position : in type_vector_model);
 
 
-	
+
 	-- to be output in the status bar:
 	status_flip_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to flip device." 
+		& "to flip device."
 		& status_hint_for_abort;
-	
 
-	
 
-	
+
+
+
 -- DELETE:
 
 	status_delete_device : constant string :=
-		status_click_left 
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete device." 
+		& "to delete device."
 		& status_hint_for_abort;
 
 
 
-	
+
 	-- NOTE: Electrical devices must be deleted in the schematic !
 	-- For this reason there is no procedure here to delete an electrical device.
 
 	procedure delete_object (
 		position : in type_vector_model);
 
-	
+
 
 
 -- SHOW DEVICE:
-	
+
 	procedure show_object (
 		position : in type_vector_model);
 
-	
-	status_show_device : constant string := 
-		status_click_left 
+
+	status_show_device : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to select device." 
+		& "to select device."
 		& status_hint_for_abort;
 
-	
-	
+
+
 end et_canvas_board_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -41,11 +41,11 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_assembly_variant_name is
-	
+
 
 	function is_default (
 		variant : in pac_assembly_variant_name.bounded_string)
-		return boolean 
+		return boolean
 	is begin
 		if variant = default_assembly_variant then
 			return true;
@@ -55,31 +55,31 @@ package body et_assembly_variant_name is
 	end;
 
 
-	
+
 	function to_variant (
-		variant : in pac_assembly_variant_name.bounded_string) 
-		return string 
+		variant : in pac_assembly_variant_name.bounded_string)
+		return string
 	is begin
 		return pac_assembly_variant_name.to_string (variant);
 	end;
 
 
-	
+
 	function to_variant (
-		variant : in string) 
-		return pac_assembly_variant_name.bounded_string 
+		variant : in string)
+		return pac_assembly_variant_name.bounded_string
 	is begin
 		-- CS lenght and character check
 		return pac_assembly_variant_name.to_bounded_string (variant);
 	end;
 
-	
-	
+
+
 end et_assembly_variant_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

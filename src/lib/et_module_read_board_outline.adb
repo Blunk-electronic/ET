@@ -52,36 +52,36 @@ with et_board_geometry;
 
 with et_module_read_board_contour;	use et_module_read_board_contour;
 with et_board_holes;				use et_board_holes;
-					
+
 
 
 
 package body et_module_read_board_outline is
-	
+
 	use pac_generic_modules;
 	use et_board_geometry.pac_geometry_2;
 	use et_board_geometry.pac_contours;
-		
-		
+
+
 
 	procedure insert_outline_line is begin
 		append_segment (contour, (LINE, contour_line));
 		reset_line (contour_line);
 	end;
 
-	
+
 
 
 	procedure insert_outline_arc is begin
 		-- CS board_check_arc (log_threshold + 1);
-		
+
 		append_segment (contour, (ARC, contour_arc));
 		reset_arc (contour_arc);
 	end;
 
 
 
-	
+
 	procedure insert_outline_circle is begin
 		-- The global contour variable "mutates" so that the contours
 		-- consist of a single circle:
@@ -91,42 +91,42 @@ package body et_module_read_board_outline is
 
 		-- From now on the contour consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
-		
+
 		-- NOTE: There should not be another circle for the outline,
 		-- because only a single circle is allowed.
-		
+
 		-- Assign the circle to the contour:
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
 	end;
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure set_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.board_contour.outline := 
+			module.board.board_contour.outline :=
 				(contour with null record);
 
 		end do_it;
 
-	
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set outline",
 			level => log_threshold);
-					
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -134,39 +134,39 @@ package body et_module_read_board_outline is
 
 		reset_contour (contour);
 	end;
-	
-		
-		
-		
-		
-		
+
+
+
+
+
+
 
 	procedure add_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_holes;
-		
-		
+
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			append (
 				container 	=> module.board.board_contour.holes,
 				new_item	=> (contour with null record));
-				
+
 			-- CS procedure add_hole
 		end do_it;
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " add hole",
 			level => log_threshold);
-					
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -175,15 +175,15 @@ package body et_module_read_board_outline is
 		reset_contour (contour);
 	end;
 
-	
-	
-	
+
+
+
 end et_module_read_board_outline;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

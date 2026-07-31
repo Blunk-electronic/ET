@@ -55,27 +55,27 @@ package body et_string_processing is
 	end metric_system;
 
 
-	
+
 	function angles_in_degrees return string is
 	begin
 		return "CAUTION: All angles are given in degrees (1/360) !";
-	end angles_in_degrees;	
-	
+	end angles_in_degrees;
 
 
-	
+
+
 -- 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
--- 	-- Checks whether updated is later or equal commissioned.		
+-- 	-- Checks whether updated is later or equal commissioned.
 -- 	begin
 -- 		if updated < commissioned then -- if updated before commissioned
 -- 			write_message (
 -- 				file_handle => current_output,
 -- 				text => message_error & "The time of update is before the time of commission !"
--- 					& latin_1.lf 
+-- 					& latin_1.lf
 -- 					& "commissioned : " & string(commissioned) & latin_1.lf
 -- 					& "updated      : " & string(updated),
 -- 					console => true);
--- 			
+--
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end check_updated_vs_commissioned;
@@ -91,52 +91,52 @@ package body et_string_processing is
 	end strip_directory_separator;
 
 
-	
+
 	function ht_to_space (c : in character) return character is
-	begin 
+	begin
 		case c is
 			when latin_1.ht => return latin_1.space;
 			when others => return c;
 		end case;
-	end ht_to_space;		
+	end ht_to_space;
 
 
-	
+
 	function tilde_to_space (c : in character) return character is
 	begin
 		case c is
 			when '~' => return latin_1.space;
 			when others => return c;
 		end case;
-	end tilde_to_space;						
-	
+	end tilde_to_space;
 
-	
+
+
 	function wildcard_match (
-		text_with_wildcards : in string; 
-		text_exact 			: in string) 
-		return boolean 
+		text_with_wildcards : in string;
+		text_exact 			: in string)
+		return boolean
 	is
 		count_asterisk		: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
 		count_question_mark	: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.question);
 		pos_asterisk		: constant natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
 		pos_question_mark	: natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.question); -- first question mark
-		
+
 		length_text_with_wildcards	: constant natural := text_with_wildcards'length;
-		length_text_exact			: constant natural := text_exact'length;		
-		
+		length_text_exact			: constant natural := text_exact'length;
+
 		match				: boolean := false;
 	begin
 		-- CS: zero-string length causes a no-match
 		if length_text_exact = 0 or length_text_with_wildcards = 0 then
 			return false;
 		end if;
-		
+
 		-- CS: currently a question mark results in a no-match
 		if count_question_mark > 0 then
 			return false;
 		end if;
-		
+
 		case count_asterisk is
 			-- If no asterisks, texts must be equal in order to return a match:
 			when 0 =>
@@ -156,7 +156,7 @@ package body et_string_processing is
 				elsif
 				-- If text_exact and text_with_wildcards match from first character to pos_asterisk-1 we have a match.
 				-- Example 1: text_exact is R415 and text_with_wildcards is R4*
-					text_with_wildcards(text_with_wildcards'first .. text_with_wildcards'first - 1 + pos_asterisk - 1) = 
+					text_with_wildcards(text_with_wildcards'first .. text_with_wildcards'first - 1 + pos_asterisk - 1) =
 					text_exact         (text_exact'first          .. text_exact'first          - 1 + pos_asterisk - 1) then
 					match := true;
 -- 					put_line(standard_output,"match");
@@ -166,11 +166,11 @@ package body et_string_processing is
 			when others =>
 				match := false;
 		end case;
-		
+
 		return match;
 	end wildcard_match;
 
-	
+
 
 	function remove_comment_from_line (
 		text_in 		: in string;			-- the input string
@@ -187,8 +187,8 @@ package body et_string_processing is
 				when 0 => -- no comment found -> return line as it is
 					return text_in;
 				when 1 => return ""; -- comment at beginning of line -> return empty string
-				when others => -- comment somewhere in the line 
-				
+				when others => -- comment somewhere in the line
+
 					if test_whole_line then --> delete comment
 						return delete (text_in, position_of_comment, text_in'length); -- remove comment
 					else
@@ -200,10 +200,10 @@ package body et_string_processing is
 	end remove_comment_from_line;
 
 
-	
+
 	function get_field_count (
-		text_in : string) 
-		return type_field_count 
+		text_in : string)
+		return type_field_count
 	is
 		line_length	: constant natural := text_in'last;	-- length of given text
 		char_pt		: natural := 1;				-- charcter pointer (points to character being processed inside the given line)
@@ -218,7 +218,7 @@ package body et_string_processing is
 		while char_pt <= line_length
 		loop
 			--put (char_pt);
-			char_current:= text_in(char_pt); 
+			char_current:= text_in(char_pt);
 			if char_current = IFS1 or char_current = IFS2 then
 				unused_inside_field := false;
 			else
@@ -234,7 +234,7 @@ package body et_string_processing is
 			char_last:=char_current;
 
 			-- advance character pointer by one
-			char_pt:=char_pt+1; 
+			char_pt:=char_pt+1;
 			--put (char_current); put (" --"); new_line;
 		end loop;
 		return field_ct;
@@ -242,17 +242,17 @@ package body et_string_processing is
 
 
 
-	
+
 	function strip_quotes (
-		text_in : in string) 
-		return string 
+		text_in : in string)
+		return string
 	is
 		quote : constant character := latin_1.quotation;
 	begin
 		-- if quote is first and last character
 		if text_in (text_in'first) = quote and text_in (text_in'last) = quote then
 			return text_in (text_in'first + 1 .. text_in'last - 1);
-	
+
 		-- if quote is first character
 		elsif text_in (text_in'first) = quote then
 			return text_in (text_in'first + 1 .. text_in'last);
@@ -267,39 +267,39 @@ package body et_string_processing is
 	end strip_quotes;
 
 
-	
+
 	function enclose_in_quotes (
 		text_in	: in string;
-		quote	: in character := latin_1.apostrophe) 
+		quote	: in character := latin_1.apostrophe)
 		return string is
 	begin
 		return quote & text_in & quote;
 	end enclose_in_quotes;
 
 
-	
+
 	function enclose_in_quotes (
 		charcter_in	: in character;
-		quote		: in character := latin_1.apostrophe) 
+		quote		: in character := latin_1.apostrophe)
 		return string is
 	begin
 		return quote & charcter_in & quote;
 	end enclose_in_quotes;
 
-	
-	
+
+
 	function trim_spaces (
-		text_in : in string) 
-		return string 
+		text_in : in string)
+		return string
 	is
 		text_scratch : constant string (1..text_in'length) := text_in;
 
 		universal_string_length_max	: constant natural := 1000;
 		package type_universal_string is new generic_bounded_length(universal_string_length_max);
 		use type_universal_string;
-		
+
 		s : type_universal_string.bounded_string; -- CS: might be not sufficient ! use type_long_string instead
-		
+
 		l : constant natural := text_scratch'length;
 		sc : natural := natural'first;
 	begin
@@ -319,11 +319,11 @@ package body et_string_processing is
 	end trim_spaces;
 
 
-	
-	
+
+
 	function remove_trailing_directory_separator (
-		path_in : in string) 
-		return string 
+		path_in : in string)
+		return string
 	is begin
 		if 	path_in (path_in'last) = '/' or -- on linux
 			path_in (path_in'last) = '\' then -- on windows
@@ -334,11 +334,11 @@ package body et_string_processing is
 		end if;
 	end remove_trailing_directory_separator;
 
-		
+
 
 	function is_number (
-		text : in string) 
-		return boolean 
+		text : in string)
+		return boolean
 	is
 		-- CS: This test is very crude currently as it tests only the first character.
 		first_character : constant character := text(text'first);
@@ -351,20 +351,20 @@ package body et_string_processing is
 	end;
 
 
-	
-	function get_field_from_line ( 
+
+	function get_field_from_line (
 		text_in 	: in string;
 		position 	: in type_field_count_positive;
 		ifs 		: in character := latin_1.space;
 		trailer 	: in boolean := false;
-		trailer_to 	: in character := latin_1.semicolon) 
-		return string 
+		trailer_to 	: in character := latin_1.semicolon)
+		return string
 	is
 		length_max : constant natural := 1000; -- CS: increase if nessecary
-		
-		package pac_extended_string is new 
+
+		package pac_extended_string is new
 			generic_bounded_length (length_max);
-		
+
 		use pac_extended_string;
 
 		-- The field content to be returned.
@@ -373,14 +373,14 @@ package body et_string_processing is
 
 		-- The number of characters in given string
 		character_count	: constant natural := text_in'length;
-		
+
 		subtype type_character_pointer is natural range 0 .. character_count;
 
 		-- Points to character being processed inside the given string:
-		unused_char_pt	: type_character_pointer;		
+		unused_char_pt	: type_character_pointer;
 
 		-- Field counter (the first field found gets number 1 assigned)
-		field_ct		: type_field_count := 0;	
+		field_ct		: type_field_count := 0;
 
 		-- True if char_pt points inside a field:
 		inside_field	: boolean := true;
@@ -390,15 +390,15 @@ package body et_string_processing is
 
 		-- Holds character processed previous to char_current:
 		char_last		: character := ifs;
-		
+
 	begin
 		--log ("get field from line " & text_in);
-	
+
 		if character_count > 0 then
 			unused_char_pt := 1;
 			for char_pt in 1..character_count loop
-				char_current := text_in(char_pt); 
-				
+				char_current := text_in(char_pt);
+
 -- 				if char_current = ifs then
 -- 					inside_field := false;
 -- 				else
@@ -407,7 +407,7 @@ package body et_string_processing is
 
 				-- CS: if ifs is space and fields are separated by a single ht, they are currently
 				-- not split up. fix it !
-				
+
 
 				-- if ifs is space, then horizontal tabs must be threated equally
 				if ifs = latin_1.space then
@@ -418,7 +418,7 @@ package body et_string_processing is
 					end if;
 
 					-- count fields if ifs is followed by a non-ifs character
-					if (char_last = ifs or char_last = latin_1.ht) 
+					if (char_last = ifs or char_last = latin_1.ht)
 					and (char_current /= ifs and char_current /= latin_1.ht) then
 						field_ct := field_ct + 1;
 					end if;
@@ -434,7 +434,7 @@ package body et_string_processing is
 						field_ct := field_ct + 1;
 					end if;
 				end if;
-				
+
 
 -- 				-- count fields if ifs is followed by a non-ifs character
 -- 				if (char_last = ifs and char_current /= ifs) then
@@ -451,7 +451,7 @@ package body et_string_processing is
 							end if;
 						else
 							-- if next field reached, abort and return field content
-							if field_ct > position then 
+							if field_ct > position then
 									exit;
 							end if;
 						end if;
@@ -473,14 +473,14 @@ package body et_string_processing is
 		else
 			null;
 		end if;
-		
+
 		return to_string (field);
 	end get_field_from_line;
 
 
-	
-	
-	function read_line ( 
+
+
+	function read_line (
 		line			: in string;
 		number			: in positive := positive'first;
 		comment_mark	: in string := comment_mark_default;
@@ -488,18 +488,18 @@ package body et_string_processing is
 		ifs				: in character := latin_1.space;
 		delimiter_wrap	: in boolean := false;
 		delimiter		: in character := latin_1.quotation)
-		return type_fields_of_line 
+		return type_fields_of_line
 	is
 		-- The list where we collect the fields contents.
 		-- It MUST be a vector, because this allows do pick out arbitrary fields
 		-- by their indexes.
 		list : pac_list_of_strings.vector;
 
-		
+
 		-- Breaks down the given line into smaller strings separated by ifs.
 		-- Adds those smaller strings in container "list".
 		procedure read_fields (
-			line : in string) 
+			line : in string)
 		is
 			field_start : positive := 1; -- temporarily storage of the position where a field starts
 			field_entered : boolean := false; -- goes true once the first character of a field was found
@@ -517,11 +517,11 @@ package body et_string_processing is
 			-- The flag wrap_started goes true once a delimited field was found. It goes
 			-- false when the delimited field ends.
 			subtype type_offset is natural range 0..1;
-			offset : type_offset := type_offset'first; 
-			wrap_started : boolean := false; 
+			offset : type_offset := type_offset'first;
+			wrap_started : boolean := false;
 
 			-- CS: replace ht in given line by space
-			
+
 			procedure append (text_a : in string) is
 			-- The given string text_a has a lower bound greater than zero.
 			-- Convert the given string text_a to a string that has the lower bound of 1.
@@ -551,7 +551,7 @@ package body et_string_processing is
 				end if;
 			end ifs_found;
 
-			
+
 		begin -- read_fields
 			-- If the given string "line" does not contain anything, there is nothing to do.
 			-- Otherwise test each character in the line whether it is an ifs or field content.
@@ -611,7 +611,7 @@ package body et_string_processing is
 								-- If a delimiter was found, signal that a wrapped field
 								-- has started. Save the start position of the field content.
 								-- The content starts right after the delimiter.
-								-- If other charcter found, a regular field has started 
+								-- If other charcter found, a regular field has started
 								-- where place is pointing at.
 								-- In both cases a field has been entered.
 								if char = delimiter then
@@ -620,23 +620,23 @@ package body et_string_processing is
 								else
 									field_start := place; -- regular field started
 								end if;
-	
+
 								field_entered := true;
 							end if;
 						else
-							-- We are inside a field. 
+							-- We are inside a field.
 							-- If an ifs is detected and a wrapped field has started, the ifs is skipped
 							-- because it is part of the wrapped field.
 							-- If an ifs is detected and a regular field has started, then the regular
 							-- field is appended to the list. The field started at field_start and ends
-							-- at place - 1. Offset in this case is zero. 
-							-- If a delimiter is detected, the wrapped field ends. Offset assumes 1 so 
+							-- at place - 1. Offset in this case is zero.
+							-- If a delimiter is detected, the wrapped field ends. Offset assumes 1 so
 							-- that on passing the ifs (right after delimiter) the last character position
 							-- of the wrapped field can be computed.
 							if ifs_found then
 								if wrap_started then
 									null; -- skip ifs
-								else 
+								else
 									field_entered := false;
 									append (line (field_start..place - 1 - offset));
 									offset := 0; -- reset offset for next wrapped field
@@ -663,22 +663,22 @@ package body et_string_processing is
 								--log (ERROR, "missing delimiter " & delimiter & " at end of line !", console => true);
 								--log (text => "line: " & line, console => true);
 								--raise constraint_error;
-								raise constraint_error with 
+								raise constraint_error with
 									"ERROR ! Missing delimiter '" & delimiter & "' at end of line " & line & " !";
 							end if;
-							
+
 							exit;
 						end if;
-						
+
 					end loop;
 
 				end if;
 			end if;
 		end read_fields;
 
-		
+
 	begin
-		-- If comment_mark is an empty string ("") no comments 
+		-- If comment_mark is an empty string ("") no comments
 		-- are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
@@ -698,8 +698,8 @@ package body et_string_processing is
 
 
 
-	
-	
+
+
 	procedure append_field (
 		line	: in out type_fields_of_line;
 		field	: in string)
@@ -709,12 +709,12 @@ package body et_string_processing is
 	end append_field;
 
 
-	
+
 	function append_field (
 		left	: in type_fields_of_line;
 		right	: in type_fields_of_line)
-		return type_fields_of_line 
-	is		
+		return type_fields_of_line
+	is
 		line : type_fields_of_line;
 		use pac_list_of_strings;
 	begin
@@ -731,8 +731,8 @@ package body et_string_processing is
 
 
 
-	
-	
+
+
 	function remove_field (
 		line	: in type_fields_of_line;
 		first	: in type_field_count_positive;
@@ -751,12 +751,12 @@ package body et_string_processing is
 				result.field_count := result.field_count + 1;
 			end if;
 		end loop;
-		
+
 		return result;
 	end remove_field;
 
 
-	
+
 	procedure set_field (
 		line		: in out type_fields_of_line;
 		position	: in type_field_count_positive;
@@ -770,19 +770,19 @@ package body et_string_processing is
 
 
 	procedure invalid_keyword (word : in string) is begin
-		raise constraint_error with 
+		raise constraint_error with
 			"invalid keyword '" & word & "' !";
 		-- raise constraint_error;
 	end;
 
 
-	
-	
-	
+
+
+
 	function get_field (
 		line		: in type_fields_of_line;
 		position	: in type_field_count_positive)
-		return string 
+		return string
 	is
 		use pac_list_of_strings;
 	begin
@@ -796,9 +796,9 @@ package body et_string_processing is
 
 
 
-	
-	
-	-- CS: comments	
+
+
+	-- CS: comments
 	function to_string (line : in type_fields_of_line) return string is
 		s : unbounded_string;
 		ifs : constant character := latin_1.space;
@@ -819,11 +819,11 @@ package body et_string_processing is
 
 
 
-	
-	
+
+
 	function get_line_number (
-		line : in type_fields_of_line) 
-		return positive 
+		line : in type_fields_of_line)
+		return positive
 	is begin
 		return line.number;
 	end get_line_number;
@@ -831,11 +831,11 @@ package body et_string_processing is
 
 
 
-	
-	
+
+
 	function get_affected_line (
-		line : in type_fields_of_line ) 
-		return string 
+		line : in type_fields_of_line )
+		return string
 	is begin
 		return ("line" & positive'image (line.number) & ": ");
 	end get_affected_line;
@@ -844,19 +844,19 @@ package body et_string_processing is
 
 
 
-	
+
 	function get_field_count (
-		line : in type_fields_of_line) 
-		return type_field_count 
+		line : in type_fields_of_line)
+		return type_field_count
 	is begin
 		return line.field_count;
 	end get_field_count;
 
-	
 
 
 
-	
+
+
 	function lines_equally (left, right : in type_fields_of_line) return boolean is
 		use pac_list_of_strings;
 	begin
@@ -874,31 +874,31 @@ package body et_string_processing is
 		if left.fields /= right.fields then
 			return false;
 		end if;
-		
+
 		return true;
 	end lines_equally;
 
 
 
-	
+
 
 
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in type_field_count;		-- the min. number of fields to expect
 		warn			: in boolean := true) 		-- warn if too many fields
-	is 
+	is
 		count_found : constant type_field_count := get_field_count (line);
 
 		f1 : constant string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin
 		if count_found = count_expected then null; -- fine, field count as expected
-		
+
 		elsif count_found < count_expected then -- less fields than expected
 			-- log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
 			raise constraint_error with
 				"missing parameter for '" & f1 & "' !";
-			
+
 		elsif count_found > count_expected then -- more fields than expeced
 			if warn then
 				null; -- CS
@@ -906,15 +906,15 @@ package body et_string_processing is
 					-- f (line, count_expected) & "' ignored !");
 			end if;
 		end if;
-		
+
 	end expect_field_count;
 
-	
+
 end et_string_processing;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -44,13 +44,13 @@ with et_alignment;				use et_alignment;
 
 package body et_symbol_text is
 
-	
+
 	procedure write_text_properies (
 		text 			: in type_symbol_text;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is begin
 		log_indentation_up;
-		
+
 		-- content
 		if pac_text_content.length (text.content) > 0 then
 			log (text => "content '" & to_string (text.content) & "'",
@@ -61,7 +61,7 @@ package body et_symbol_text is
 
 		-- position
 		log (text => to_string (text.position), level => log_threshold + 1);
-		
+
 		-- size
 		log (text => "size" & to_string (text.size), level => log_threshold + 1);
 
@@ -79,7 +79,7 @@ package body et_symbol_text is
 		-- alignment
 		log (text => to_string (text.alignment),
 			level => log_threshold + 1);
-				
+
 -- 		log_indentation_down;
 		log_indentation_down;
 	end write_text_properies;
@@ -87,7 +87,7 @@ package body et_symbol_text is
 
 
 
-	
+
 	function content (text : in type_symbol_text) return string is
 	-- Returns the content of the given text as string.
 		c : pac_text_content.bounded_string;
@@ -95,13 +95,13 @@ package body et_symbol_text is
 		c := text.content;
 		return to_string (c);
 	end;
-	
-	
+
+
 end et_symbol_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

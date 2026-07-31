@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -52,9 +52,9 @@ package et_device_partcode is
 
 
 	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/"); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/");
 	partcode_length_max : constant positive := 100;
-	
+
 	package pac_device_partcode is new generic_bounded_length (partcode_length_max);
 	use pac_device_partcode;
 
@@ -63,15 +63,15 @@ package et_device_partcode is
 		partcode : in pac_device_partcode.bounded_string)
 		return natural;
 
-	
-		
+
+
 	partcode_default : constant string := "N/A"; -- means not assigned
-	
+
 	function to_string (partcode : in pac_device_partcode.bounded_string) return string;
 
 	function partcode_length_valid (partcode : in string) return boolean;
 	-- Returns true if length of given partcode is ok. Issues warning if not.
-	
+
 	function partcode_characters_valid (
 		partcode	: in pac_device_partcode.bounded_string;
 		characters	: in character_set := partcode_characters) return boolean;
@@ -82,21 +82,21 @@ package et_device_partcode is
 	-- Issues error message and raises constraint error.
 
 	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean;
-	
+
 	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
+	-- Tests the given value for length and invalid characters.
 		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
+		error_on_invalid_character	: in boolean := true)
 		return pac_device_partcode.bounded_string;
 
 
 
-	
+
 end et_device_partcode;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

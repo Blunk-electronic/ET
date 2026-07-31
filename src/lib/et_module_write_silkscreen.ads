@@ -64,17 +64,17 @@ package et_module_write_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-	
-		
+
+
 end et_module_write_silkscreen;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -47,15 +47,15 @@ separate (et_canvas_schematic)
 procedure draw_texts is
 
 	use pac_texts;
-	
+
 	use et_colors;
 	use et_colors.schematic;
 
 
-	
-	procedure query_text (cursor : in pac_texts.cursor) is 
+
+	procedure query_text (cursor : in pac_texts.cursor) is
 		use pac_draw_text;
-	begin		
+	begin
 		-- We want to draw only those texts which are on the active sheet:
 		if element (cursor).sheet = active_sheet then
 
@@ -68,25 +68,25 @@ procedure draw_texts is
 
 				-- This is documentational text. It is readable from the front or the right.
 				rotation	=> pac_text.to_rotation (element (cursor).rotation),
-				
+
 				alignment	=> element (cursor).alignment);
 
 		end if;
 	end query_text;
-		
+
 begin
 	--put_line ("draw texts ...");
-	
+
 	set_color_texts;
 
 	iterate (element (active_module).texts, query_text'access);
-	
+
 end draw_texts;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

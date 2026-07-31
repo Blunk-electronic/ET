@@ -46,7 +46,7 @@
 -- with ada.text_io;			use ada.text_io;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
--- 
+--
 -- with et_board_ops;
 with et_fill_zones;
 with et_fill_zones.boards;
@@ -68,11 +68,11 @@ package body et_module_read_board_user_settings is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	
+
 	user_settings_board : type_user_settings;
 
-	
-	
+
+
 	procedure read_user_settings_vias (
 		line : in type_fields_of_line)
 	is
@@ -81,7 +81,7 @@ package body et_module_read_board_user_settings is
 		-- via drill
 		if kw = keyword_via_drill then
 			expect_field_count (line, 2);
-			
+
 			if f (line, 2) = keyword_dru then -- drill dru
 				user_settings_board.vias.drill.active := false;
 			else -- drill 0.6
@@ -100,7 +100,7 @@ package body et_module_read_board_user_settings is
 			else -- restring_inner 0.22
 				user_settings_board.vias.restring_inner.active := true;
 				user_settings_board.vias.restring_inner.width := to_distance (f (line, 2));
-				
+
 				-- CS validate against dru settings
 			end if;
 
@@ -116,7 +116,7 @@ package body et_module_read_board_user_settings is
 
 				-- CS validate against dru settings
 			end if;
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -124,12 +124,12 @@ package body et_module_read_board_user_settings is
 
 
 
-	
+
 	procedure read_user_settings_fill_zones_conductor (
 		line : in type_fields_of_line)
 	is
 		use et_fill_zones;
-		use et_fill_zones.boards;		
+		use et_fill_zones.boards;
 		use et_thermal_relief;
 		use et_primitive_objects;
 		kw : constant string := f (line, 1);
@@ -177,7 +177,7 @@ package body et_module_read_board_user_settings is
 		elsif kw = keyword_easing_radius then -- easing_radius 1.0
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.easing.radius := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -185,45 +185,45 @@ package body et_module_read_board_user_settings is
 		-- CS plausibility check ?
 	end read_user_settings_fill_zones_conductor;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure assign_user_settings_board (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			module.board.user_settings := user_settings_board;
 		end do_it;
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " assign user settings board",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		update_element (generic_modules, module_cursor, do_it'access);
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end assign_user_settings_board;
 
 
-				
+
 end et_module_read_board_user_settings;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

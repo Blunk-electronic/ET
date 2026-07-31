@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;				use et_generic_modules;
 
@@ -52,13 +52,13 @@ package et_board_ops_frame is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	-- Moves the lower-left corner (which is the origin)
 	-- of the drawing frame to the given point:
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_drawing_frame.type_position; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -68,9 +68,9 @@ package et_board_ops_frame is
 	-- of the drawing frame:
 	function get_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)								
+		log_threshold	: in type_log_level)
 		return et_drawing_frame.type_position;
-	
+
 
 	-- Sets the position of the lower-left corner
 	-- of the drawing frame:
@@ -82,12 +82,12 @@ package et_board_ops_frame is
 
 	-- CS subprograms to get and set the title block position ?
 	-- currently this is defined in the frame template file *.frb
-	
+
 end et_board_ops_frame;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

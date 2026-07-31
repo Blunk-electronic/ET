@@ -38,7 +38,7 @@
 -- -----------
 -- Canvas commands are of general nature. They affect things
 -- like grid, zoom, cursor, color.
--- These commands are independend of the domain like schematic, 
+-- These commands are independend of the domain like schematic,
 -- baord, symbol or package editor.
 --
 --
@@ -57,23 +57,23 @@ package et_canvas.cmd is
 		VERB_SET);
 
 	-- verb : type_canvas_verb := type_canvas_verb'first;
-	
+
 
 	type type_canvas_noun is (
 		NOUN_CURSOR,
 		NOUN_COLOR,
-		
+
 		NOUN_GRID,
-		
+
 		NOUN_SCALE,
-		
+
 		NOUN_ZOOM
 		);
 
 
 	-- noun : type_canvas_noun := type_canvas_noun'first;
 
-	
+
 
 
 
@@ -89,6 +89,6 @@ package et_canvas.cmd is
 
 
 
-	
+
 end et_canvas.cmd;
 

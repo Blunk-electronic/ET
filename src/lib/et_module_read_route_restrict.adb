@@ -59,11 +59,11 @@ package body et_module_read_route_restrict is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	
+
 	restrict_line : type_route_restrict_line;
 	restrict_arc : type_route_restrict_arc;
 	restrict_circle : type_route_restrict_circle;
-	
+
 
 
 
@@ -83,7 +83,7 @@ package body et_module_read_route_restrict is
 			p := to_vector_model (line, 2);
 			set_A (restrict_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -91,25 +91,25 @@ package body et_module_read_route_restrict is
 			p := to_vector_model (line, 2);
 			set_B (restrict_line, p);
 
-		
+
 		elsif kw = keyword_layers then -- layers 1 14 3
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
 			restrict_line.layers := to_layers (line);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_restrict_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_restrict_arc (
 		line	: in type_fields_of_line)
 	is
@@ -124,22 +124,22 @@ package body et_module_read_route_restrict is
 			p := to_vector_model (line, 2);
 			set_A (restrict_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (restrict_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (restrict_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -152,19 +152,19 @@ package body et_module_read_route_restrict is
 			expect_field_count (line => line, count_expected => 2, warn => false);
 			restrict_arc.layers := to_layers (line);
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_restrict_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_restrict_circle (
 		line	: in type_fields_of_line)
 	is
@@ -176,7 +176,7 @@ package body et_module_read_route_restrict is
 			-- extract the center position starting at field 2 of line
 			set_center (restrict_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -189,28 +189,28 @@ package body et_module_read_route_restrict is
 			expect_field_count (line => line, count_expected => 2, warn => false);
 			restrict_circle.layers := to_layers (line);
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_restrict_circle;
-	
-	
 
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_restrict_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_lines;
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -219,7 +219,7 @@ package body et_module_read_route_restrict is
 				new_item	=> restrict_line);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -231,21 +231,21 @@ package body et_module_read_route_restrict is
 	end insert_restrict_line;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure insert_restrict_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_arcs;
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -254,7 +254,7 @@ package body et_module_read_route_restrict is
 				new_item	=> restrict_arc);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -266,23 +266,23 @@ package body et_module_read_route_restrict is
 		reset_arc (restrict_arc);
 	end insert_restrict_arc;
 
-	
-	
-	
-	
-	
 
-		
+
+
+
+
+
+
 	procedure insert_restrict_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_circles;
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -291,26 +291,26 @@ package body et_module_read_route_restrict is
 				new_item	=> restrict_circle);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
 		reset_circle (restrict_circle);
-		
+
 	end insert_restrict_circle;
-	
-	
-	
+
+
+
 end et_module_read_route_restrict;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

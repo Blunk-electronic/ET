@@ -35,22 +35,22 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 package et_modes.schematic is
 
 	type type_verb is (
 		VERB_NONE, -- means no verb entered
-						  
+
 		VERB_ADD,
-		
+
 		VERB_BUILD,
-		
+
 		VERB_CHECK,
 		VERB_CLEAR,
 		VERB_COPY,
 		VERB_CREATE,
-		
+
 		VERB_DELETE,
 		VERB_DESCRIBE,
 		VERB_DEFINE,
@@ -58,11 +58,11 @@ package et_modes.schematic is
 		VERB_DISSOLVE,
 		VERB_DRAG,
 		VERB_DRAW,
-		
+
 		VERB_EXECUTE,
 		VERB_EXIT,
 		VERB_FETCH,
-		
+
 		VERB_MAKE,
 		VERB_MIRROR,
 		VERB_MOVE,
@@ -70,43 +70,43 @@ package et_modes.schematic is
 
 		VERB_PASTE,
 		VERB_PLACE,
-		
+
 		VERB_QUIT,
-		
+
 		VERB_REMOVE,
 		VERB_RENAME,
 		VERB_RENUMBER,
 		VERB_ROTATE,
-		
+
 		VERB_SAVE,
 		VERB_SET,
 		VERB_SHOW,
-		
+
 		VERB_UNMOUNT,
-		
+
 		VERB_WRITE,
-		
-		VERB_ZOOM		
+
+		VERB_ZOOM
 		);
 
 	verb_default : constant type_verb := VERB_NONE;
-	
+
 	verb : type_verb := verb_default;
-	
+
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
 
 
 	type type_noun is (
 		NOUN_NONE, -- means no noun entered
-						
+
 		NOUN_ALL,
-		
+
 		NOUN_CENTER,
 		NOUN_COLOR,
 		NOUN_CURSOR,
 		NOUN_CLASS,
-		
+
 		NOUN_DEVICE,
 		NOUN_DEVICES,
 		--DEVICE_PARTCODE,
@@ -115,15 +115,15 @@ package et_modes.schematic is
 
 		NOUN_GRID,
 		NOUN_GROUP,
-		
+
 		NOUN_INTEGRITY,
-		
+
 		NOUN_NET_LABEL,
 		NOUN_NET_CONNECTOR,
-		
+
 		NOUN_LEVEL,
 		NOUN_LIBRARY,
-		
+
 		NOUN_MODULE,
 
 		NOUN_NAME,
@@ -139,7 +139,7 @@ package et_modes.schematic is
 		NOUN_PORT, -- of a submodule instance
 		NOUN_PORTS,
 		NOUN_PURPOSE,
-		NOUN_PURPOSES,		
+		NOUN_PURPOSES,
 
 		NOUN_SCALE,
 		NOUN_SCOPE,
@@ -148,7 +148,7 @@ package et_modes.schematic is
 		NOUN_SHEET,
 		NOUN_STRAND,
 		NOUN_SUBMODULE,
-		NOUN_SUBMODULE_FILE,		
+		NOUN_SUBMODULE_FILE,
 		NOUN_SUBMODULES_TREE,
 
 		NOUN_TEXT,
@@ -169,25 +169,25 @@ package et_modes.schematic is
 		);
 
 	noun_default : constant type_noun := NOUN_NONE;
-	
+
 	noun : type_noun := noun_default;
-	
+
 	function to_string (noun : in type_noun) return string;
 	function to_noun (noun : in string) return type_noun;
 
 
 	-- Resets verb and noun to default values:
 	procedure reset_verb_and_noun;
-	
+
 
 	expect_entry : type_expect_entry := expect_entry_default;
-	
-	
+
+
 end et_modes.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

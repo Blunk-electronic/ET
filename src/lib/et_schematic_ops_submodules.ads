@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 -- - clean up, rework
 -- - rework procedures so that a module cursor is taken
@@ -79,39 +79,39 @@ package et_schematic_ops_submodules is
 
 	use pac_generic_modules;
 	use pac_net_name;
-	
 
 
-	
+
+
 	procedure submodule_not_found (
-		name : in pac_module_instance_name.bounded_string);	
+		name : in pac_module_instance_name.bounded_string);
 
 
 	procedure port_not_at_edge (
 		name : in pac_net_name.bounded_string);
 
-	
-	
-	-- Returns true if the given net provides a netchanger 
+
+
+	-- Returns true if the given net provides a netchanger
 	-- that may serve as port to a parent module:
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_nets.pac_nets.cursor;
-		direction	: in type_netchanger_port_name) -- master/slave 		
+		direction	: in type_netchanger_port_name) -- master/slave
 		return boolean;
 
 
 	-- Returns true if the given module provides the given port.
-	-- The module being searched in must be in the rig already.						
+	-- The module being searched in must be in the rig already.
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string;
-		direction		: in type_netchanger_port_name) -- master/slave		
+		direction		: in type_netchanger_port_name) -- master/slave
 		return boolean;
 
 
 
-	-- Returns true if given submodule with the given port exists 
+	-- Returns true if given submodule with the given port exists
 	-- in module indicated by module_cursor:
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -120,7 +120,7 @@ package et_schematic_ops_submodules is
 		return boolean;
 
 
-	
+
 
 	-- Returns the sheet/x/y position of the given submodule port.
 	function get_submodule_port_position (
@@ -130,7 +130,7 @@ package et_schematic_ops_submodules is
 		log_threshold	: in type_log_level)
 		return type_object_position;
 
-	
+
 
 
 	-- Inserts the given submodule port in the net segments.
@@ -147,7 +147,7 @@ package et_schematic_ops_submodules is
 		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Adds a port to a submodule instance (the box in the parent sheet).
 	procedure add_port (
@@ -156,8 +156,8 @@ package et_schematic_ops_submodules is
 		port_name		: in pac_net_name.bounded_string; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 
-		direction		: in type_netchanger_port_name; -- master/slave. 
-		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
+		direction		: in type_netchanger_port_name; -- master/slave.
+		-- NOTE: has nothing to do with direction of energy flow. It is relevant when
 		-- a netlist is exported. See specification et_submodules.type_net_submodule_port.
 
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -173,7 +173,7 @@ package et_schematic_ops_submodules is
 		position		: in type_object_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 	procedure delete_port (
@@ -184,10 +184,10 @@ package et_schematic_ops_submodules is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Moves the given submodule port. Disconnects the port from
-	-- start or end points of net segments BEFORE the move. 
+	-- start or end points of net segments BEFORE the move.
 	-- Connects submodule port with segment end or start points AFTER the move.
 	procedure move_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -231,8 +231,8 @@ package et_schematic_ops_submodules is
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 
 
 
@@ -241,7 +241,7 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		position		: in type_object_position; -- sheet, lower left corner x/y 
+		position		: in type_object_position; -- sheet, lower left corner x/y
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -255,7 +255,7 @@ package et_schematic_ops_submodules is
 		position		: in type_object_position; -- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Removes a submodule instance from the schematic.
 	procedure delete_submodule (
@@ -264,9 +264,9 @@ package et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Moves the given submodule instance (the box). Disconnects the ports from
-	-- start or end points of net segments BEFORE the move. 
+	-- start or end points of net segments BEFORE the move.
 	-- Connects submodule ports with segment end or start points AFTER the move.
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -277,7 +277,7 @@ package et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Drags the given submodule instance (the box) within the schematic.
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
@@ -291,7 +291,7 @@ package et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Copies a submodule instance.
 	procedure copy_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -301,7 +301,7 @@ package et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Renames a submodule instance.
 	procedure rename_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -316,18 +316,18 @@ package et_schematic_ops_submodules is
 	-- will be overwritten without warning.
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
+		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 	procedure remove_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								   
+		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -335,7 +335,7 @@ package et_schematic_ops_submodules is
 
 
 	-- Returns true if the given module provides the given submodule instance.
-	-- The module being searched in must be in the rig already.						
+	-- The module being searched in must be in the rig already.
 	function submodule_instance_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in pac_module_instance_name.bounded_string) -- OSC1
@@ -346,17 +346,17 @@ package et_schematic_ops_submodules is
 	-- Returns true if the given submodule instance provides the
 	-- given assembly variant. The submodule instance is searched for
 	-- in the parent module indicated by cursor "module".
-	-- The module being searched in must be in the rig already.						
+	-- The module being searched in must be in the rig already.
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
+		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;
-	
+
 
 	-- Returns a cursor to the alternative submodule variant in the given module
 	-- and given assembly variant.
-	-- Assumptions: 
+	-- Assumptions:
 	-- - The module being searched in must be in the rig already.
 	-- - The assembly variant must exist in the module.
 	-- - The suubmodule must have been instantiated in the module.
@@ -372,7 +372,7 @@ package et_schematic_ops_submodules is
 
 
 
-	
+
 	-- Sets the file name of a submodule instance.
 	procedure set_submodule_file (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -393,7 +393,7 @@ package et_schematic_ops_submodules is
 	-- 6.1 CS: unconnected inputs
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
-	-- 9. CS: check partcode (conventions.validate_partcode)								  
+	-- 9. CS: check partcode (conventions.validate_partcode)
 	-- 10. units sitting on to of each other (same origin position)
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 	procedure check_integrity (
@@ -408,10 +408,10 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Re(builds) the submodule tree of the given parent module
 	-- according to the current design structure.
-	-- For each submodule that has been found, it searches 
+	-- For each submodule that has been found, it searches
 	-- for other submodules inside that submodule and so on:
 	procedure build_submodules_tree (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -431,19 +431,19 @@ package et_schematic_ops_submodules is
 	-- Calculates the device index ranges of the given top module
 	-- and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
-	-- Assumes that all devices of the modules are 
+	-- Assumes that all devices of the modules are
 	-- mounted -> assembly variants ignored.
 	procedure autoset_device_name_offsets (
 		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 end et_schematic_ops_submodules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

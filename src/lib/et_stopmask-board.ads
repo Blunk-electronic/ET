@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,11 +45,11 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 
 package et_stopmask.board is
-	
 
-	
+
+
 	-- Stopmask in board may contain placeholders:
-	type type_stopmask_board is new et_stopmask.type_stopmask with 
+	type type_stopmask_board is new et_stopmask.type_stopmask with
 	record
 		-- for texts in conductor layers to be exposed
 		placeholders : pac_placeholders_non_conductor.list;
@@ -68,7 +68,7 @@ package et_stopmask.board is
 		stopmask	: in out type_stop_mask_both_sides;
 		line		: in type_stop_line;
 		face		: in type_face);
-	
+
 
 
 	procedure add_arc (
@@ -83,17 +83,17 @@ package et_stopmask.board is
 		circle		: in type_stop_circle;
 		face		: in type_face);
 
-		
+
 
 	-- CS procedure add_zone, add_text
 
-	
+
 end et_stopmask.board;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

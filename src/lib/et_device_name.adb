@@ -52,10 +52,10 @@ with et_exceptions;				use et_exceptions;
 package body et_device_name is
 
 	use pac_device_prefix;
-	
 
-	function to_string (index : in type_name_index) 
-		return string 
+
+	function to_string (index : in type_name_index)
+		return string
 	is begin
 		return latin_1.space & trim (type_name_index'image (index), left);
 	end;
@@ -67,11 +67,11 @@ package body et_device_name is
 	end;
 
 
-	
+
 	function same_prefix (
-		left, right : in type_device_name) 
-		return boolean 
-	is 
+		left, right : in type_device_name)
+		return boolean
+	is
 		use pac_device_prefix;
 	begin
 		if get_prefix (left) = get_prefix (right) then
@@ -81,28 +81,28 @@ package body et_device_name is
 		end if;
 	end same_prefix;
 
-	
-	
+
+
 	function to_device_name (text_in : in string) return type_device_name is
 
 		-- justify given text_in on the left
 		text_in_justified : constant string (1 .. text_in'length) := to_upper (text_in);
-	
+
 		r : type_device_name := (
 				prefix		=> pac_device_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
-	
+
 		c : character;
 		p : pac_device_prefix.bounded_string;
-	
+
 		procedure invalid_device_name is
 		begin
-			--log (SEVERITY_ERROR, latin_1.lf & "invalid device name '" 
+			--log (SEVERITY_ERROR, latin_1.lf & "invalid device name '"
 				 --& text_in_justified & "'", console => true);
 
 			-- CS show position of affected character ?
-			raise syntax_error_1 with 
+			raise syntax_error_1 with
 				"ERROR: Device name " & enclose_in_quotes (text_in_justified) & " invalid !";
 
 		end invalid_device_name;
@@ -112,21 +112,21 @@ package body et_device_name is
 
 		use pac_device_prefix;
 
-		
+
 	begin -- to_device_name
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
 			c := text_in_justified (i);
-			
-			case i is 
+
+			case i is
 				-- The first character MUST be a valid prefix character.
-				when 1 => 
+				when 1 =>
 					if is_in (c, prefix_characters) then
 						r.prefix := r.prefix & c;
-					else 
+					else
 						invalid_device_name;
 					end if;
-					
+
 				-- Further characters are appended to prefix if they are valid prefix characters.
 				-- If anything else is found, the prefix is assumed as complete.
 				when others =>
@@ -147,7 +147,7 @@ package body et_device_name is
 		-- The significance of the digit is increased after each pass.
 		for i in reverse d .. text_in_justified'last loop
 			c := text_in_justified (i);
-			
+
 			if is_digit (c) then
 				r.id := r.id + 10**digit * natural'value (1 * c);
 			else
@@ -156,11 +156,11 @@ package body et_device_name is
 
 			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
 		end loop;
-		
+
 		-- There must be at least one digit. If no digit found, then the given
 		-- device name has no index.
 		if digit > 0 then
-		
+
 			-- Set the id width.
 			-- It is the number of digits processed when the id was assembled (see above).
 			-- Example: if the given string was IC002 then digit is 3.
@@ -168,13 +168,13 @@ package body et_device_name is
 		else
 			raise syntax_error_1 with "ERROR: Device name invalid. Missing index !";
 		end if;
-		
+
 		return r;
 	end to_device_name;
 
-	
 
-	
+
+
 	function "<" (left, right : in type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
@@ -202,11 +202,11 @@ package body et_device_name is
 
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
-	end;	
+	end;
 
 
 
-	
+
 	function "=" (left, right : in type_device_name) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
@@ -222,36 +222,36 @@ package body et_device_name is
 			else -- like 5 and 6
 				result := false;
 			end if;
-			
+
 		else -- like R and IC
-			result := false; 
+			result := false;
 		end if;
 
 		return result;
 	end;
 
 
-	
+
 	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
 		id_width_wanted	: constant natural := name.id_width;
-	
+
 		-- The width of the given id is obtained by converting the id to a string
 		-- and then by measuring its length:
 		id_width_given	: constant natural := trim (natural'image (name.id),left)'length;
 
-		-- Finally the number of zeros to prepend is the difference of wanted 
+		-- Finally the number of zeros to prepend is the difference of wanted
 		-- and given digits:
 		lz : constant natural := id_width_wanted - id_width_given;
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return pac_device_prefix.to_string (name.prefix) 
+				return pac_device_prefix.to_string (name.prefix)
 					& trim (natural'image (name.id),left);
-				
+
 			when others => -- leading zeros required
-				return pac_device_prefix.to_string (name.prefix) 
+				return pac_device_prefix.to_string (name.prefix)
 					& lz * '0' & trim (natural'image (name.id),left);
 		end case;
 	end to_string;
@@ -262,11 +262,11 @@ package body et_device_name is
 
 
 
-	
-	
+
+
 	function get_prefix (
-		name : in type_device_name) 
-		return pac_device_prefix.bounded_string 
+		name : in type_device_name)
+		return pac_device_prefix.bounded_string
 	is begin
 		return name.prefix;
 	end;
@@ -282,14 +282,14 @@ package body et_device_name is
 
 
 
-	
 
 
-	
-	
+
+
+
 	function get_index (
-		name : in type_device_name) 
-		return type_name_index 
+		name : in type_device_name)
+		return type_name_index
 	is begin
 		return name.id;
 	end;
@@ -314,14 +314,14 @@ package body et_device_name is
 
 
 
-	
-	
-	
+
+
+
 	function to_device_name (
 		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
-		return type_device_name 
+		return type_device_name
 	is
 		device_name : type_device_name; -- to be returned
 	begin
@@ -335,8 +335,8 @@ package body et_device_name is
 		device_name.id_width := trim (natural'image (index), left)'length;
 		-- CS: Do something more elegant to determine the
 		-- number of digits of the index.
-		
-		-- If width IS provided AND if it is wider than the 
+
+		-- If width IS provided AND if it is wider than the
 		-- just calculated width,
 		-- then the calculated width is overwritten.
 		if width /= type_index_width'first then
@@ -345,11 +345,11 @@ package body et_device_name is
 			-- Otherwise width is set according to the provided width:
 			if width <= device_name.id_width then
 				null;
-			else			
+			else
 				device_name.id_width := width;
 			end if;
 		end if;
-		
+
 		return device_name;
 	end;
 
@@ -357,11 +357,11 @@ package body et_device_name is
 
 
 
-	
-	
+
+
 	procedure offset_index (
 		name	: in out type_device_name;
-		offset	: in type_name_index) 
+		offset	: in type_name_index)
 	is begin
 		name := to_device_name (
 			prefix	=> get_prefix (name),
@@ -372,11 +372,11 @@ package body et_device_name is
 
 
 
-	
+
 	procedure apply_offset (
 		device_name		: in out type_device_name; -- IC3
 		offset			: in type_name_index; -- 100
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		device_name_instance : type_device_name;
 	begin
@@ -384,7 +384,7 @@ package body et_device_name is
 		-- are dealing with the top module.
 		if offset > 0 then
 			device_name_instance := device_name; -- take copy of original name
-			
+
 			-- apply device name offset
 			offset_index (device_name_instance, offset);
 
@@ -400,7 +400,7 @@ package body et_device_name is
 				level => log_threshold);
 		end if;
 	end;
-	
+
 
 
 
@@ -412,7 +412,7 @@ package body et_device_name is
 	is begin
 		return union (left, right);
 	end;
-	
+
 
 
 
@@ -428,14 +428,14 @@ package body et_device_name is
 		-- not very efficient because the given list of device names
 		-- is tested for the existence of each proposed device name
 		-- over and over.
-		
+
 		result : type_device_name;
 
 		-- We start the search with the lowest possible
 		-- index 1 (Index 0 is allowed by definition, but not
 		-- automatically choosen):
 		idx : type_name_index := device_name_index_first_default;
-		
+
 	begin
 		-- Assemble the first name to be searched for (like C1):
 		set_prefix (result, prefix);
@@ -460,25 +460,25 @@ package body et_device_name is
 	end get_first_available_name;
 
 
-	
 
 
-	
+
+
 
 
 	procedure message_device_not_found (
 		severity	: in type_message_severity;
 		name		: in type_device_name)
-	is 
+	is
 
 		function get_message_text (
-			name : in type_device_name) 
+			name : in type_device_name)
 			return string
 		is begin
 			return "Device " & to_string (name) & " not found !";
 		end;
 
-		
+
 	begin
 		case severity is
 			when SEVERITY_ERROR =>
@@ -495,29 +495,29 @@ package body et_device_name is
 		end case;
 	end message_device_not_found;
 
-	
 
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure message_device_already_exists (
 		severity	: in type_message_severity;
 		name		: in type_device_name)
-	is 
+	is
 
 		function get_message_text (
-			name : in type_device_name) 
+			name : in type_device_name)
 			return string
 		is begin
 			return "Device " & to_string (name) & " already exists !";
 		end;
 
-		
+
 	begin
 		case severity is
 			when SEVERITY_ERROR =>
@@ -534,13 +534,13 @@ package body et_device_name is
 		end case;
 	end message_device_already_exists;
 
-	
+
 end et_device_name;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

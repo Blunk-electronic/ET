@@ -52,7 +52,7 @@ package body et_conductor_text.boards is
 	end;
 
 
-	
+
 
 	function get_layer (
 		text : in type_conductor_text_board)
@@ -62,11 +62,11 @@ package body et_conductor_text.boards is
 	end get_layer;
 
 
-	
+
 	function to_string (
 		text	: in pac_conductor_texts_board.cursor)
 		return string
-	is 
+	is
 		t : constant type_conductor_text_board := element (text);
 	begin
 		return to_string (t) & " layer " & to_string (get_layer (t));
@@ -77,7 +77,7 @@ package body et_conductor_text.boards is
 	function is_selected (
 		text : in pac_conductor_texts_board.cursor)
 		return boolean
-	is 
+	is
 		t : constant type_conductor_text_board := element (text);
 	begin
 		if is_selected (t) then
@@ -86,13 +86,13 @@ package body et_conductor_text.boards is
 			return false;
 		end if;
 	end is_selected;
-	
+
 
 
 	function is_proposed (
 		text : in pac_conductor_texts_board.cursor)
 		return boolean
-	is 
+	is
 		t : constant type_conductor_text_board := element (text);
 	begin
 		if is_proposed (t) then
@@ -111,10 +111,10 @@ package body et_conductor_text.boards is
 		return element (text).layer;
 	end get_layer;
 
-	
 
-	
-	
+
+
+
 	procedure iterate (
 		texts	: in pac_conductor_texts_board.list;
 		process	: not null access procedure (position : in pac_conductor_texts_board.cursor);
@@ -127,13 +127,13 @@ package body et_conductor_text.boards is
 			next (c);
 		end loop;
 	end iterate;
-		
 
 
-	
+
+
 	-- procedure text_conductor_properties (
 	-- 	cursor			: in pac_conductor_texts_board.cursor;
-	-- 	log_threshold 	: in type_log_level) 
+	-- 	log_threshold 	: in type_log_level)
 	-- is
 	-- 	text : type_conductor_text_board;
 	-- begin
@@ -141,18 +141,18 @@ package body et_conductor_text.boards is
 	-- 	log (text => "conductor text signal layer" & to_string (text.layer) & " "
 	-- 		& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
 	-- 		);
- -- 
+ --
 	-- 	log_indentation_up;
 	-- 	log (text => text_properties (type_text (text)), level => log_threshold + 1);
 	-- 	log_indentation_down;
 	-- end text_conductor_properties;
-	
-	
+
+
 end et_conductor_text.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

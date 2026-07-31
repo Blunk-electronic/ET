@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -53,7 +53,7 @@ with et_unit_name;				use et_unit_name;
 
 package et_device_renumbering is
 
-	
+
 	type type_renumber_device is record
 		name	: type_device_name; -- R56, IC4
 		unit	: pac_unit_name.bounded_string; -- 1, A, B, ...
@@ -65,29 +65,29 @@ package et_device_renumbering is
 		key_type		=> type_object_position, -- sheet/x/y
 		element_type	=> type_renumber_device);
 
-	
+
 	type type_index_range is record
 		lowest	: type_name_index := type_name_index'last; -- "last" is not a bug
-		highest	: type_name_index := type_name_index'first; -- "first" is not a bug	
+		highest	: type_name_index := type_name_index'first; -- "first" is not a bug
 	end record;
-	
+
 
 	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
 	function to_index_range (
 		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string;
 
-	
+
 	-- Returns true if left index range is below right index range.
 	function below (left, right : in type_index_range) return boolean;
 	-- CS: rename to "<"
 
-	
-	-- Returns true if left index range is above right index range.		
+
+	-- Returns true if left index range is above right index range.
 	function above (left, right : in type_index_range) return boolean;
 	-- CS: rename to ">"
-	
-	
+
+
 	type type_renumber_module is record
 	-- CS rename to type_submodule_instance ?
 		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
@@ -98,42 +98,42 @@ package et_device_renumbering is
 	end record;
 
 
-	
+
 	function "<" (left, right : in type_renumber_module) return boolean;
 
 
-	package pac_renumber_modules is new 
+	package pac_renumber_modules is new
 		multiway_trees (type_renumber_module);
-		
+
 	use pac_renumber_modules;
-	
-	
-	
-	-- Returns the cursor to the first child of 
+
+
+
+	-- Returns the cursor to the first child of
 	-- submodules in the given tree of submodules:
 	function get_first_child_submodule (
 		submodules	: in pac_renumber_modules.tree)
 		return pac_renumber_modules.cursor;
-		
-		
-	
+
+
+
 	-- Returns the total number of modules that
 	-- the given tree contains:
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
 		return count_type;
-		
+
 
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
 		return string;
 
-	
+
 end et_device_renumbering;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

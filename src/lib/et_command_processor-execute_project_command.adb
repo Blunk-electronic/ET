@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,30 +58,30 @@ is
 	cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-	-- This procedure is a shortcut. 
+	-- This procedure is a shortcut.
 	-- Call it in case the given command is too long:
 	procedure too_long is begin
 		command_too_long (cmd, cmd_field_count - 1);
 	end;
 
 
-	-- This procedure is a shortcut. 
+	-- This procedure is a shortcut.
 	-- Call it in case the given command is incomplete:
 	procedure command_incomplete is begin
 		command_incomplete (cmd);
 	end;
 
-	
+
 	-- This function is a shortcut to get a single field
 	-- from the given command:
-	function get_field (place : in type_field_count) 
-		return string 
+	function get_field (place : in type_field_count)
+		return string
 	is begin
 		return get_field (cmd, place);
 	end;
-	
 
-	
+
+
 	-- Parses the given command and dispatches to
 	-- further subroutines:
 	procedure parse is begin
@@ -100,14 +100,14 @@ is
 									log_threshold	=> log_threshold + 1);
 
 							when 5 .. type_field_count'last => too_long;
-								
+
 							when others => command_incomplete;
-						end case;							
-						
+						end case;
+
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-				
+
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_MODULE =>
@@ -116,15 +116,15 @@ is
 								create_module (
 									module_name		=> to_module_name (get_field (4)),
 									log_threshold	=> log_threshold + 1);
-						
+
 							when 5 .. type_field_count'last => too_long;
-								
+
 							when others => command_incomplete;
-						end case;							
+						end case;
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-				
+
 			when VERB_SAVE =>
 				case noun is
 					when NOUN_MODULE =>
@@ -135,14 +135,14 @@ is
 									log_threshold	=> log_threshold + 1);
 
 							when 5 .. type_field_count'last => too_long;
-								
+
 							when others => command_incomplete;
-						end case;			
-						
+						end case;
+
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-				
+
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_MODULE =>
@@ -153,39 +153,39 @@ is
 									log_threshold	=> log_threshold + 1);
 
 							when 5 .. type_field_count'last => too_long;
-								
+
 							when others => command_incomplete;
-						end case;			
-						
+						end case;
+
 					when others => invalid_noun (to_string (noun));
 				end case;
-				
+
 		end case;
 	end parse;
 
 
-	
+
 begin
 	log (text => "execute project command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
 	log (text => "command origin: " & get_origin (cmd), level => log_threshold);
-	
-	
+
+
 	-- parse the command:
 	parse;
-	
-	
+
+
 	-- CS propose_arguments;
 
 	evaluate_command_exit_code (cmd, log_threshold);
 
-	
+
 end execute_project_command;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

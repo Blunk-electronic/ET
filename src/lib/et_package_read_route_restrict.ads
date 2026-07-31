@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about lines, arcs and circles in route restrict.
 --
 --
@@ -58,15 +58,15 @@ package et_package_read_route_restrict is
 
 	procedure read_route_restrict_line (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_route_restrict_arc (
 		line : in type_fields_of_line);
 
 
 	procedure read_route_restrict_circle (
 		line : in type_fields_of_line);
-	
+
 
 
 	procedure insert_route_restrict_line (
@@ -85,14 +85,14 @@ package et_package_read_route_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
-	
+
 
 
 	procedure insert_route_restrict_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
- 
+
 
 	procedure insert_route_restrict_zone_cutout (
 		packge			: in type_package_model_access;
@@ -100,5 +100,5 @@ package et_package_read_route_restrict is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_package_read_route_restrict;

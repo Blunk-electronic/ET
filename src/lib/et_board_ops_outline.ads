@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---   ToDo: 
---   
+--   ToDo:
+--
 
 with ada.containers;					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -58,7 +58,7 @@ package et_board_ops_outline is
 
 	use pac_generic_modules;
 	use pac_contours;
-	
+
 
 
 -- OUTER CONTOUR:
@@ -104,8 +104,8 @@ package et_board_ops_outline is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
@@ -114,8 +114,8 @@ package et_board_ops_outline is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Sets the proposed-flag of all line and arc segments 
+
+	-- Sets the proposed-flag of all line and arc segments
 	-- of the outer contour which are
 	-- in the given catch zone.
 	-- Adds to count the number of segments that have been found:
@@ -126,7 +126,7 @@ package et_board_ops_outline is
 		log_threshold	: in type_log_level);
 
 
-	-- Clears the proposed-flag and the selected-flag 
+	-- Clears the proposed-flag and the selected-flag
 	-- of all segments of the outer contour:
 	procedure reset_proposed_outer_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -137,7 +137,7 @@ package et_board_ops_outline is
 	-- If no line has been found, then the return is no_element:
 	function get_first_segment ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_segments.cursor;
 
@@ -147,11 +147,11 @@ package et_board_ops_outline is
 	-- If no line has been found, then the return is no_element:
 	function get_first_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_outer_contour_segment;
 
-	
+
 
 	-- Advances to the next proposed line or arc segment, starting at
 	-- the given segment. Traverses through the segments
@@ -165,8 +165,8 @@ package et_board_ops_outline is
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Moves a segment of the outer contour:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
@@ -191,19 +191,19 @@ package et_board_ops_outline is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns the outer contour of the board:
 	function get_outer_contour (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_outer_contour;
 
-	
+
 	function get_outer_contour (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return type_outer_contour;
-	
+
 
 	-- Deletes the segment of the outer contour that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
@@ -225,15 +225,15 @@ package et_board_ops_outline is
 
 
 	-- Deletes the given segment of the outer contour:
-	procedure delete_outer_segment ( 
+	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_outer_contour_segment;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
 
 
-	
+
+
 -- HOLES:
 
 	-- This composite type helps to identify a
@@ -262,7 +262,7 @@ package et_board_ops_outline is
 		log_threshold	: in type_log_level);
 
 
-	-- Clears the proposed-flag and the selected-flag 
+	-- Clears the proposed-flag and the selected-flag
 	-- of all hole segments:
 	procedure reset_proposed_hole_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -274,11 +274,11 @@ package et_board_ops_outline is
 	-- If no segment has been found, then the return is no_element:
 	function get_first_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_hole_segment;
 
-	
+
 
 	-- Moves a segment of a hole:
 	-- CS currently it moves only a single segment.
@@ -301,9 +301,9 @@ package et_board_ops_outline is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 	-- Adds a hole to the already existing holes.
 	-- It just adds the given hole without trying to
 	-- append the given hole structure to any existing hole:
@@ -325,21 +325,21 @@ package et_board_ops_outline is
 	-- 2. If this attempt fails, means if the given hole contour
 	--    could not be attached somewhere, then the given hole
 	--    is added as a new hole.
-	-- 3. If the given contour touches or crosses an already existing 
-	--    contour, then the given contour is rejected.	
+	-- 3. If the given contour touches or crosses an already existing
+	--    contour, then the given contour is rejected.
 	procedure add_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		hole			: in type_hole;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns the holes of the given module:
 	function get_holes (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_holes.list;
 
-	
+
 	-- Deletes the segment of a hole that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
@@ -352,10 +352,10 @@ package et_board_ops_outline is
 
 
 
-	
+
 
 -- OBJECTS:
-	
+
 
 	-- When objects are handled then we need these
 	-- categories in order to store them in indefinite_doubly_linked_lists:
@@ -365,18 +365,18 @@ package et_board_ops_outline is
 		CAT_HOLE_SEGMENT
 		);
 
-	
+
 	-- This type wraps segments of outer contour and holes into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_OUTER_CONTOUR_SEGMENT =>
 				outer_segment	: type_object_outer_contour_segment;
-				
-			when CAT_HOLE_SEGMENT => 
+
+			when CAT_HOLE_SEGMENT =>
 				hole_segment	: type_object_hole_segment;
-				
+
 		end case;
 	end record;
 
@@ -388,16 +388,16 @@ package et_board_ops_outline is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
 
-	
+
+
 
 	-- Returns the first object (line, arc, circle, zone segment, text,
 	-- placeholder) according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
@@ -406,10 +406,10 @@ package et_board_ops_outline is
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
-									  
+
 
 	-- Modifies the status flag of an object:
 	procedure modify_status (
@@ -418,7 +418,7 @@ package et_board_ops_outline is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -439,28 +439,28 @@ package et_board_ops_outline is
 
 
 	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
+	-- the proposed-flag and the selected-flag
 	-- of texts, lines, arcs, circles and zone segments:
 	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
 
-	
-	
-	
+
+
+
 end et_board_ops_outline;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

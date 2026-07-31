@@ -47,11 +47,11 @@ with ada.characters.handling;	use ada.characters.handling;
 
 package body et_assembly_variants is
 
-	
+
 	function to_mounted (mounted : in string) return type_mounted is begin
 		return type_mounted'value (mounted);
 	end;
-		
+
 	function to_mounted (mounted : in type_mounted) return string is begin
 		return space & to_lower (type_mounted'image (mounted));
 	end;
@@ -65,29 +65,29 @@ package body et_assembly_variants is
 		return natural (length (variants));
 	end;
 
-	
-	
+
+
 	function is_mounted (
 		device	: in type_device_name; -- IC1
 		variant	: in pac_assembly_variants.cursor)
-		return boolean 
-	is		
+		return boolean
+	is
 		cursor : pac_device_variants.cursor;
-		
+
 		procedure query_devices (
 			variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-			variant			: in type_assembly_variant) 
+			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
 		begin
 			cursor := find (variant.devices, device);
 		end query_devices;
-		
+
 	begin -- is_mounted
 		if variant = pac_assembly_variants.no_element then -- assume default variant
 			return true; -- device is to be mounted
 		else
-			
+
 			query_element (
 				position	=> variant,
 				process		=> query_devices'access);
@@ -104,21 +104,21 @@ package body et_assembly_variants is
 				else
 					return false;
 				end if;
-				
+
 			end if;
 
 		end if;
-		
+
 -- 		exception
 -- 			when event: others =>
 -- 				log_indentation_reset;
 -- 				log (text => "B " & ada.exceptions.exception_information (event), console => true);
 -- 				raise;
-		
+
 	end is_mounted;
 
 
-	
+
 
 	function get_count (
 		variants : in type_module_assembly_variants)
@@ -138,12 +138,12 @@ package body et_assembly_variants is
 	end;
 
 
-	
+
 end et_assembly_variants;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

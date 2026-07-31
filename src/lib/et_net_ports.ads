@@ -53,9 +53,9 @@ with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
 
 package et_net_ports is
-			
-		
-		
+
+
+
 -- AGGREGATION OF DEVICE, SUBMODULE AND NETCHANGER PORTS:
 
 	type type_net_ports is record
@@ -76,8 +76,8 @@ package et_net_ports is
 	-- Merges the given source ports in the target ports:
 	procedure merge_ports (
 		target	: in out type_net_ports;
-		source	: in type_net_ports);					  
-	
+		source	: in type_net_ports);
+
 
 	-- Returns true if the given netchanger port
 	-- is among the given ports:
@@ -85,7 +85,7 @@ package et_net_ports is
 		ports	: in type_net_ports;
 		port	: in type_port_netchanger)
 		return boolean;
-	
+
 
 	-- Returns true if the given submodule port
 	-- is among the given ports:
@@ -94,11 +94,11 @@ package et_net_ports is
 		port	: in type_net_submodule_port)
 		return boolean;
 
-	
-	
+
+
 	-- Returns true if the given record of ports is completely emtpty.
 	function no_ports (
-		ports : in type_net_ports) 
+		ports : in type_net_ports)
 		return boolean;
 
 
@@ -118,28 +118,28 @@ package et_net_ports is
 		ports : in type_net_ports)
 		return natural;
 
-	
+
 	function get_port_count_netchangers (
 		ports : in type_net_ports)
 		return natural;
 
-	
-	
+
+
 	-- These are the ports which may exist
 	-- at the A or B end of a net segment.
 	-- This type models the tag labels of a net segment:
 	type type_net_ports_AB is record
 		A, B : type_net_ports;
 	end record;
-	
 
-	
-	
+
+
+
 end et_net_ports;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

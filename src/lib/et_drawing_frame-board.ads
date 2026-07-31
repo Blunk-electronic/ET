@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,7 +46,7 @@ package et_drawing_frame.board is
 	template_pcb_extension : constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
 
 
-	template_pcb_default : constant pac_template_name.bounded_string := 
+	template_pcb_default : constant pac_template_name.bounded_string :=
 		pac_template_name.to_bounded_string (
 			compose (
 				name		=> template_file_name_dummy,
@@ -57,14 +57,14 @@ package et_drawing_frame.board is
 
 
 -- TEXT PLACEHOLDERS AND TITLE BLOCK
-	
 
-	
+
+
 	-- CAM markers are required for CAM output and visualization.
 	-- They are texts in the title block that indicate what it is about.
 	-- Depending on the structures being displayed or exported, they are displayed or not.
 	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
-	-- The content specified in the frame file overrides the default content. 
+	-- The content specified in the frame file overrides the default content.
 	-- If they are not specified by the frame file, default position, size and content is used (see below).
 	type type_cam_marker is new type_static_text with null record;
 
@@ -73,24 +73,24 @@ package et_drawing_frame.board is
 		silk_screen		: type_cam_marker := (content => to_content ("SILKSCREEN"), others => <>);
 		assy_doc		: type_cam_marker := (content => to_content ("ASSEMBLY"), others => <>);
 		keepout			: type_cam_marker := (content => to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_cam_marker := (content => to_content ("PLTD_MILLGS"), others => <>); 
+		plated_millings	: type_cam_marker := (content => to_content ("PLTD_MILLGS"), others => <>);
 		pcb_outline 	: type_cam_marker := (content => to_content ("OUTLINE"), others => <>);
 		route_restrict	: type_cam_marker := (content => to_content ("ROUTE_RESTRICT"), others => <>);
-		via_restrict	: type_cam_marker := (content => to_content ("VIA_RESTRICT"), others => <>);		
+		via_restrict	: type_cam_marker := (content => to_content ("VIA_RESTRICT"), others => <>);
 		signal_layer	: type_cam_marker := (content => to_content ("SGNL_LYR:"), others => <>);
-		stencil			: type_cam_marker := (content => to_content ("STENCIL"), others => <>);		
+		stencil			: type_cam_marker := (content => to_content ("STENCIL"), others => <>);
 		stop_mask		: type_cam_marker := (content => to_content ("STOP_MASK"), others => <>);
 	end record;
 
 
-	
+
 	type type_placeholders_pcb is new type_placeholders_basic with record
 		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
 		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, 8..16
 	end record;
 
 
-	
+
 	type type_title_block_pcb is new type_title_block with record
 		placeholders_additional	: type_placeholders_pcb;
 		cam_markers				: type_cam_markers;
@@ -98,29 +98,29 @@ package et_drawing_frame.board is
 
 
 
-	
+
 	type type_frame_pcb_pre is new type_frame_general with record
 		title_block_pcb : type_title_block_pcb;
 	end record;
 	-- CS: find a more reasonable type name.
 
 
-	
+
 	procedure apply_defaults_board (frame : in out type_frame_pcb_pre);
 
-	
-	
+
+
 	-- Generates a default frame for the given domain:
-	-- function make_default_frame (domain : in type_domain) 
+	-- function make_default_frame (domain : in type_domain)
 	-- 	return type_frame;
 
 	function make_default_frame_pcb
 		return type_frame_pcb_pre;
 
-	
-	
+
+
 -- THE FINAL FRAME
-	
+
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame_pcb is record
 		template	: pac_template_name.bounded_string := template_pcb_default;
@@ -130,12 +130,12 @@ package et_drawing_frame.board is
 		frame		: type_frame_pcb_pre := make_default_frame_pcb;
 	end record;
 
-	
+
 end et_drawing_frame.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

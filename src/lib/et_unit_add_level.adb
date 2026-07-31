@@ -57,13 +57,13 @@ package body et_unit_add_level is
 	end;
 
 
-	
-		
+
+
 end et_unit_add_level;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

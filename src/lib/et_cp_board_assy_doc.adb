@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,9 +61,9 @@ package body et_cp_board_assy_doc is
 	use pac_geometry_2;
 	use pac_contours;
 
-	
 
-	
+
+
 	procedure draw_assy_doc (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -76,16 +76,16 @@ package body et_cp_board_assy_doc is
 		-- Extract from the given command the zone arguments (everything after "zone"):
 		-- example command: board demo draw assy top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
-			arguments : constant type_fields_of_line := 
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 6);
-			
+
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
 			face : type_face;
 		begin
 			face := to_face (get_field (cmd, 5));
-			
+
 			add_zone (
 				module_cursor	=> module,
 				zone			=> (c with null record),
@@ -98,12 +98,12 @@ package body et_cp_board_assy_doc is
 
 		end build_zone;
 
-		
+
 		shape : type_shape;
 
-		
+
 		-- Draws a line, arc or circle:
-		procedure draw_shape is 
+		procedure draw_shape is
 			arc_tmp		: type_arc;
 			circle_tmp	: type_circle;
 			line_tmp	: type_line;
@@ -114,11 +114,11 @@ package body et_cp_board_assy_doc is
 					case cmd_field_count is
 						when 11 =>
 							width_tmp := to_distance (get_field (cmd, 7));
-							
+
 							line_tmp := type_line (to_line (
 								A => to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
 								B => to_vector_model (get_field (cmd, 10), get_field (cmd, 11))));
-							
+
 							add_line (
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
@@ -131,23 +131,23 @@ package body et_cp_board_assy_doc is
 
 						when 12 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
-							
+
 						when others =>
 							command_incomplete (cmd);
 					end case;
 
-					
+
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
 							width_tmp := to_distance (get_field (cmd, 7));
-							
+
 							arc_tmp := type_arc (to_arc (
 								center		=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
 								A			=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
 								B			=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)),
 								direction	=> to_direction (get_field (cmd, 14))));
-							
+
 							add_arc (
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
@@ -160,21 +160,21 @@ package body et_cp_board_assy_doc is
 
 						when 15 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
-							
+
 						when others =>
 							command_incomplete (cmd);
 					end case;
 
-					
+
 				when CIRCLE =>
-					case cmd_field_count is						
+					case cmd_field_count is
 						when 10 =>
 							width_tmp := to_distance (get_field (cmd, 7));
-							
+
 							circle_tmp := type_circle (to_circle (
 								center		=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
 								radius		=> to_radius (get_field (cmd, 10))));
-													
+
 							add_circle (
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
@@ -184,14 +184,14 @@ package body et_cp_board_assy_doc is
 								-- the design state is to be commited or not:
 								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
-							
+
 						when 11 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
-							
+
 						when others =>
 							command_incomplete (cmd);
 					end case;
-							
+
 				when others => null;
 			end case;
 		end draw_shape;
@@ -206,7 +206,7 @@ package body et_cp_board_assy_doc is
 		else
 			shape := to_shape (get_field (cmd, 6));
 			draw_shape;
-		end if;	
+		end if;
 
 		log_indentation_down;
 	end draw_assy_doc;
@@ -217,9 +217,9 @@ package body et_cp_board_assy_doc is
 
 
 
-	
 
-	
+
+
 
 
 	procedure delete_assy_doc (
@@ -230,14 +230,14 @@ package body et_cp_board_assy_doc is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-	
+
 		procedure do_it is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
 				center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
 				radius	=> to_zone_radius (get_field (cmd, 8)));
-				
+
 			delete_object (
 				module_name 	=> key (module),
 				face			=> to_face (get_field (cmd, 5)),
@@ -247,20 +247,20 @@ package body et_cp_board_assy_doc is
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
-			
+
 		end do_it;
-					
+
 	begin
 		log (text => "delete assy doc", level => log_threshold);
 		log_indentation_up;
 
-		
-		case cmd_field_count is			
+
+		case cmd_field_count is
 			when 8 => do_it;
-			
-			when 9 .. type_field_count'last => 
-				command_too_long (cmd, cmd_field_count - 1);				
-				
+
+			when 9 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -268,13 +268,13 @@ package body et_cp_board_assy_doc is
 		log_indentation_down;
 	end delete_assy_doc;
 
-	
-	
+
+
 end et_cp_board_assy_doc;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

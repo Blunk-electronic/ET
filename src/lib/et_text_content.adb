@@ -52,16 +52,16 @@ package body et_text_content is
 		return pac_text_content.to_string (text_content);
 	end to_string;
 
-	
-	
+
+
 	function to_content (content : in string) return pac_text_content.bounded_string is begin
 		return pac_text_content.to_bounded_string (content);
 	end to_content;
 
 
 
-	
-	
+
+
 	function is_empty (content : in pac_text_content.bounded_string) return boolean is begin
 		if pac_text_content.length (content) > 0 then -- contains something -> not empty
 			return false;
@@ -69,24 +69,24 @@ package body et_text_content is
 			return true; -- contains nothing -> is empty
 		end if;
 	end is_empty;
-	
 
 
-	
+
+
 	procedure clear_content (
 		content : in out pac_text_content.bounded_string)
 	is begin
 		content := empty_text_content;
 	end;
 
-	
 
-	
-	
+
+
+
 	function characters_valid (
 		content		: in pac_text_content.bounded_string;
-		characters	: in character_set := valid_characters) 		
-		return boolean 
+		characters	: in character_set := valid_characters)
+		return boolean
 	is
 		use pac_text_content;
 		invalid_character_position : natural := 0;
@@ -110,8 +110,8 @@ package body et_text_content is
 
 
 
-	
-	
+
+
 	procedure replace_invalid_characters (
 		content		: in out pac_text_content.bounded_string;
 		replace_by	: in character := replace_by_default;
@@ -125,16 +125,16 @@ package body et_text_content is
 		if characters_valid (content) then
 			null;
 		else
-			log (SEVERITY_WARNING, "Replacing invalid characters in text " 
+			log (SEVERITY_WARNING, "Replacing invalid characters in text "
 				& enclose_in_quotes (to_string (content))
 				& " by " & enclose_in_quotes (replace_by) & " !");
 
 			-- To prevent an infintive loop, we test for invalid characters
 			-- no more often than the length of the given content:
 			l_max := length (content);
-			
+
 			for p in 0 .. l_max loop
-				
+
 				invalid_character_position := index (
 					source	=> content,
 					set 	=> characters,
@@ -148,19 +148,19 @@ package body et_text_content is
 				else
 					exit;
 				end if;
-				
+
 			end loop;
 		end if;
 	end replace_invalid_characters;
 
 
-	
 
-	
+
+
 	procedure check_text_content_length (content : in string) is
 	begin
 		if content'length > text_length_max then
-			log (SEVERITY_ERROR, "max. number of characters for a text field is" 
+			log (SEVERITY_ERROR, "max. number of characters for a text field is"
 				 & positive'image (text_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -175,7 +175,7 @@ end et_text_content;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

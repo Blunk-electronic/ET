@@ -59,10 +59,10 @@ with et_device_model;			use et_device_model;
 
 package et_device_library is
 
-	
+
 	-- CS: experimental stuff in order to improve
 	-- preformance of the device library using a hashed map:
-	
+
 	--function hash_device_model (
 		--model	: in pac_device_model_file.bounded_string)
 		--return hash_type;
@@ -72,7 +72,7 @@ package et_device_library is
 		--return boolean;
 
 	--subtype type_t is type_device_model (PCB);
-	
+
 	--package pac_devices_lib2 is new hashed_maps (
 		--key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		--element_type	=> type_t,
@@ -85,14 +85,14 @@ package et_device_library is
 
 
 
-	
-	
+
+
 
 	-- Device models are are stored in files ending with *.dev.
 	-- At the same time a
 	-- device name (like "libraries/devices/7400.dev")
 	-- is also the key to the device library:
-	
+
 	package pac_device_models is new indefinite_ordered_maps (
 		key_type 		=> pac_device_model_file.bounded_string,
 		"<"				=> pac_device_model_file."<",
@@ -101,15 +101,15 @@ package et_device_library is
 	use pac_device_models;
 
 
-	
+
 
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_device_models.cursor)
 		return pac_device_prefix.bounded_string;
 
-		
-	-- Returns the name of the device model for 
+
+	-- Returns the name of the device model for
 	-- a given device cursor:
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
@@ -117,17 +117,17 @@ package et_device_library is
 	-- CS remove. see function get_device_model_name below
 	-- which does the same
 
-	
+
 
 	-- THIS IS THE RIG WIDE LIBRARY OF ELECTRICAL DEVICES:
-	
+
 	device_library : pac_device_models.map;
 
-	
 
 
 
-	
+
+
 	-- Creates a device and stores it in device library:
 	procedure create_device (
 		device_name		: in pac_device_model_file.bounded_string;
@@ -135,7 +135,7 @@ package et_device_library is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Returns for a given device model file name
 	-- (like ../libraries/devices/transistor/pnp.dev)
@@ -149,26 +149,26 @@ package et_device_library is
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return pac_device_model_file.bounded_string;
- 
- 
+
+
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return string;
 
 
-	
-	
-	-- Returns true if the given device has a physical counterpart in 
+
+
+	-- Returns true if the given device has a physical counterpart in
 	-- the layout, means if it is not virtual:
 	function is_real (
 		device_cursor : in pac_device_models.cursor)
 		return boolean;
 
-	
 
 
 
-	-- Returns the default value as it is 
+
+	-- Returns the default value as it is
 	-- specified in the device model.
 	-- If the device is virtual (like a GND symbol) or if
 	-- no value is predifined in the model, then an empty
@@ -178,12 +178,12 @@ package et_device_library is
 		return pac_device_value.bounded_string;
 
 
-	
+
 end et_device_library;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

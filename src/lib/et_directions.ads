@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,14 +39,14 @@
 
 package et_directions is
 
-	
+
 	-- The directions into which the an object can be moved
 	-- for example by means of the cursor keys (arrow keys):
 	type type_direction_RLUD is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
 
-	
+
 	type type_direction_NSWE is (DIR_NORTH, DIR_SOUTH, DIR_WEST, DIR_EAST);
-	
+
 
 	type type_direction_of_rotation is (
 		CW,		-- clockwise
@@ -59,18 +59,18 @@ package et_directions is
 	function to_direction (direction : in string) return type_direction_of_rotation;
 
 
-	
+
 	-- Changes CCW to CW and vice versa.
 	function reverse_direction (direction : in type_direction_of_rotation)
 		return type_direction_of_rotation;
 
-	
-		
+
+
 end et_directions;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -76,21 +76,21 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 package body et_module_write_text_board is
 
 	use pac_generic_modules;
-	use pac_geometry_2;	
+	use pac_geometry_2;
 	-- use pac_text_board_vectorized;
 
 
-	
+
 	procedure write_texts_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		use et_conductor_text.boards;
 		use pac_conductor_texts_board;
-		
 
-		procedure write_text (c : in pac_conductor_texts_board.cursor) is 
-			text : et_conductor_text.boards.type_conductor_text_board 
+
+		procedure write_text (c : in pac_conductor_texts_board.cursor) is
+			text : et_conductor_text.boards.type_conductor_text_board
 				renames element (c);
 		begin
 			section_mark (section_text, HEADER);
@@ -98,43 +98,43 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (text.content));
 
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (text), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (text.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (text.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (text.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 
-			write (keyword => keyword_layer, 
+			write (keyword => keyword_layer,
 				parameters => to_string (text.layer));
 
 			section_mark (section_text, FOOTER);
 		end write_text;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
-			texts : pac_conductor_texts_board.list 
+			texts : pac_conductor_texts_board.list
 				renames module.board.conductors_floating.texts;
 		begin
 			iterate (texts, write_text'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write texts in conductor layers",
@@ -146,10 +146,10 @@ package body et_module_write_text_board is
 	end write_texts_conductor;
 
 
-	
-		
 
-	
+
+
+
 
 
 	procedure write_texts_non_conductor (
@@ -160,15 +160,15 @@ package body et_module_write_text_board is
 	is
 		use et_silkscreen;
 		use pac_silk_texts;
-		
+
 		use et_assy_doc;
 		use pac_doc_texts;
-		
+
 		use et_stopmask;
 		use pac_stop_texts;
 
-		
-		procedure write_text (cursor : in pac_silk_texts.cursor) is 
+
+		procedure write_text (cursor : in pac_silk_texts.cursor) is
 			text : type_silk_text renames element (cursor);
 		begin
 			section_mark (section_text, HEADER);
@@ -176,29 +176,29 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (text), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (text.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (text.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (text.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 
 			section_mark (section_text, FOOTER);
 		end write_text;
 
-		
-		
-		procedure write_text (cursor : in pac_doc_texts.cursor) is 
+
+
+		procedure write_text (cursor : in pac_doc_texts.cursor) is
 			text : type_doc_text renames element (cursor);
 		begin
 			section_mark (section_text, HEADER);
@@ -206,29 +206,29 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (text), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (text.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (text.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (text.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 
 			section_mark (section_text, FOOTER);
 		end write_text;
-				
-				
-		
-		procedure write_text (cursor : in pac_stop_texts.cursor) is 
+
+
+
+		procedure write_text (cursor : in pac_stop_texts.cursor) is
 			text : type_stop_text renames element (cursor);
 		begin
 			section_mark (section_text, HEADER);
@@ -236,28 +236,28 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (text), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (text.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (text.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (text.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 
 			section_mark (section_text, FOOTER);
 		end write_text;
 
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -278,11 +278,11 @@ package body et_module_write_text_board is
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.top.texts,
 								write_text'access);
-							
+
 						when others => invalid_section;
 					end case;
 
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
@@ -296,13 +296,13 @@ package body et_module_write_text_board is
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.bottom.texts,
 								write_text'access);
-							
+
 						when others => invalid_section;
-					end case;					
+					end case;
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write texts in non-conductor layers",
@@ -315,9 +315,9 @@ package body et_module_write_text_board is
 
 
 
-	
 
-	
+
+
 
 
 	procedure write_placeholders_conductor (
@@ -325,56 +325,56 @@ package body et_module_write_text_board is
 		log_threshold	: in type_log_level)
 	is
 		use pac_placeholders_conductor;
-		
+
 
 		procedure write_placeholder (
-			cursor : in pac_placeholders_conductor.cursor) 
-		is 
+			cursor : in pac_placeholders_conductor.cursor)
+		is
 			ph : type_placeholder_conductor renames element (cursor);
 		begin
 			section_mark (section_placeholder, HEADER);
-			
-			write (keyword => keyword_meaning, 
+
+			write (keyword => keyword_meaning,
 				parameters => to_string (ph.meaning));
-			
+
 			---
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (ph), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (ph.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (ph.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (ph.alignment.vertical));
 
-			-- CS use et_alignment.to_string 			
+			-- CS use et_alignment.to_string
 			---
-			
-			write (keyword => keyword_layer, 
+
+			write (keyword => keyword_layer,
 				parameters => to_string (ph.layer));
 			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
-			texts : pac_placeholders_conductor.list 
+			texts : pac_placeholders_conductor.list
 				renames module.board.conductors_floating.placeholders;
 		begin
 			iterate (texts, write_placeholder'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write placeholders in conductor layers",
@@ -385,14 +385,14 @@ package body et_module_write_text_board is
 		log_indentation_down;
 	end write_placeholders_conductor;
 
-	
 
 
 
 
 
 
-	
+
+
 	procedure write_placeholders_non_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
@@ -403,40 +403,40 @@ package body et_module_write_text_board is
 		use et_pcb_placeholders.non_conductor;
 		use pac_placeholders_non_conductor;
 
-		
+
 		procedure write_placeholder (
-			cursor : in pac_placeholders_non_conductor.cursor) 
+			cursor : in pac_placeholders_non_conductor.cursor)
 		is
 			ph : type_placeholder_non_conductor renames element (cursor);
 		begin
 			section_mark (section_placeholder, HEADER);
-			
-			write (keyword => keyword_meaning, 
+
+			write (keyword => keyword_meaning,
 				parameters => to_string (ph.meaning));
-			
+
 			---
-			write (keyword => keyword_position, parameters => 
+			write (keyword => keyword_position, parameters =>
 				to_string (get_position (ph), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (ph.size)); -- size 1.000
-			
-			write (keyword => keyword_linewidth, 
+
+			write (keyword => keyword_linewidth,
 				parameters => to_string (ph.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (ph.alignment.vertical));
 
-			-- CS use et_alignment.to_string 			
+			-- CS use et_alignment.to_string
 			---
-			
+
 			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -458,11 +458,11 @@ package body et_module_write_text_board is
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.top.placeholders,
 								write_placeholder'access);
-							
+
 						when others => invalid_section;
 					end case;
 
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
@@ -476,13 +476,13 @@ package body et_module_write_text_board is
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.bottom.placeholders,
 								write_placeholder'access);
-							
+
 						when others => invalid_section;
-					end case;					
+					end case;
 			end case;
 		end query_module;
 
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -496,15 +496,15 @@ package body et_module_write_text_board is
 
 
 
-	
 
-	
+
+
 end et_module_write_text_board;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

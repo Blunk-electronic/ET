@@ -68,9 +68,9 @@ package body et_symbol_write_text is
 	use pac_geometry_2;
 
 
-	
+
 	procedure write_text_properties (
-		t : in type_text_basic'class) 
+		t : in type_text_basic'class)
 	is begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
@@ -82,8 +82,8 @@ package body et_symbol_write_text is
 	end write_text_properties;
 
 
-	
-	
+
+
 
 	procedure write_texts (
 		symbol			: in type_symbol_model;
@@ -96,12 +96,12 @@ package body et_symbol_write_text is
 		is begin
 			section_mark (section_text, HEADER);
 			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
-			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
+			write (keyword => keyword_content , parameters => to_string (element (cursor).content));
 			write_text_properties (element (cursor));
 			section_mark (section_text, FOOTER);
 		end write_text;
 
-		
+
 	begin
 		log (text => "write texts", level => log_threshold);
 		log_indentation_up;
@@ -111,25 +111,25 @@ package body et_symbol_write_text is
 		iterate (symbol.texts, write_text'access);
 
 		section_mark (section_texts, FOOTER);
-		
+
 		log_indentation_down;
 	end write_texts;
-	
-		
-
-		
-		
 
 
-		
+
+
+
+
+
+
 	procedure write_placeholders (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
-	is 
-	
+	is
+
 		procedure do_it is begin
 			section_mark (section_placeholders, HEADER);
-			
+
 			section_mark (section_placeholder, HEADER);
 			write (keyword => keyword_meaning, parameters => to_string (symbol.placeholders.name.meaning));
 			write (keyword => keyword_position, parameters => to_string (symbol.placeholders.name.position, FORMAT_2));
@@ -148,31 +148,31 @@ package body et_symbol_write_text is
 			write_text_properties (symbol.placeholders.purpose);
 			section_mark (section_placeholder, FOOTER);
 
-			section_mark (section_placeholders, FOOTER);		
+			section_mark (section_placeholders, FOOTER);
 		end do_it;
-	
-	
+
+
 	begin
 		case symbol.appearance is
 			when APPEARANCE_PCB =>
 				log (text => "write text placeholders", level => log_threshold);
 				log_indentation_up;
-				do_it;				
+				do_it;
 				log_indentation_down;
-				
+
 			when others => null;
-		end case;		
+		end case;
 	end write_placeholders;
 
-		
-		
-	
+
+
+
 end et_symbol_write_text;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -62,10 +62,10 @@ package body et_module_read_freetracks is
 	track_line : type_conductor_line;
 	track_arc : type_conductor_arc;
 	track_circle : type_conductor_circle;
-	
 
-	
-	
+
+
+
 	procedure read_freetrack_line (
 		line : in type_fields_of_line)
 	is
@@ -79,7 +79,7 @@ package body et_module_read_freetracks is
 			-- extract the start position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_A (track_line, p);
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -87,7 +87,7 @@ package body et_module_read_freetracks is
 			p := to_vector_model (line, 2);
 			set_B (track_line, p);
 
-		
+
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_line.layer := to_signal_layer (f (line, 2));
@@ -96,7 +96,7 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_line.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -104,8 +104,8 @@ package body et_module_read_freetracks is
 
 
 
-	
-	
+
+
 	procedure read_freetrack_arc (
 		line : in type_fields_of_line)
 	is
@@ -123,7 +123,7 @@ package body et_module_read_freetracks is
 
 			-- extract the end position starting at field 2 of line
 			set_B (track_arc, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -135,7 +135,7 @@ package body et_module_read_freetracks is
 
 			set_direction (track_arc, to_direction (f (line, 2)));
 
-			
+
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_arc.layer := to_signal_layer (f (line, 2));
@@ -144,17 +144,17 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_arc.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_freetrack_arc;
 
-	
 
-	
-	
-	
+
+
+
+
 	procedure read_freetrack_circle (
 		line : in type_fields_of_line)
 	is
@@ -166,12 +166,12 @@ package body et_module_read_freetracks is
 
 			-- extract the center position starting at field 2 of line
 			set_center (track_circle, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
-			
+
 			set_radius (track_circle, to_radius (f (line, 2)));
-			
+
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_circle.layer := to_signal_layer (f (line, 2));
@@ -180,144 +180,144 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_circle.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_freetrack_circle;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_freetrack_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			pac_conductor_lines.append (
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> track_line);
-				
+
 			-- CS use procedure add_line to add a line
 			-- to the floating conductors
 		end;
-		
-		
+
+
 	begin
 		-- CS log messages
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
 		-- Reset line for next line:
 		reset_line (track_line);
-	
+
 	end insert_freetrack_line;
 
-	
-	
-	
-		
-		
+
+
+
+
+
 	procedure insert_freetrack_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			pac_conductor_arcs.append (
 				container	=> module.board.conductors_floating.arcs,
 				new_item	=> track_arc);
-				
+
 			-- CS use procedure add_arc to add an arc
 			-- to the floating conductors
 		end;
-		
-		
+
+
 	begin
 		-- CS log messages
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
 		-- Reset arc for next arc:
 		reset_arc (track_arc);
-	
+
 	end insert_freetrack_arc;
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure insert_freetrack_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			pac_conductor_circles.append (
 				container	=> module.board.conductors_floating.circles,
 				new_item	=> track_circle);
-				
+
 			-- CS use procedure add_circle to add a circle
 			-- to the floating conductors of the module
 		end;
-		
-		
+
+
 	begin
 		-- CS log messages
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
 		reset_circle (track_circle);
-	
+
 	end insert_freetrack_circle;
 
-	
-	
+
+
 
 end et_module_read_freetracks;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

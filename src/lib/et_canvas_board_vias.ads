@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 with et_canvas_tool;					use et_canvas_tool;
@@ -50,10 +50,10 @@ with et_design_rules_board;				use et_design_rules_board;
 
 
 package et_canvas_board_vias is
-	
+
 	use pac_geometry_2;
 
-	
+
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 
@@ -75,7 +75,7 @@ package et_canvas_board_vias is
 	-- The place where preliminary information is stored:
 	preliminary_via : type_preliminary_via;
 
-	
+
 
 	-- This procedure initializes the preliminary_via
 	-- so that the via properties bar shows the user specific settings
@@ -87,9 +87,9 @@ package et_canvas_board_vias is
 	-- inserts it below the console.
 	-- If the box is already on display, nothing happens.
 	procedure show_via_properties;
-	
 
-	
+
+
 
 
 
@@ -111,21 +111,21 @@ package et_canvas_board_vias is
 	procedure find_objects (
 		point : in type_vector_model);
 
-	
+
 
 
 
 -- PLACE:
 
 	-- to be output in the status bar:
-	status_place_via : constant string := 
-		status_click_left 
+	status_place_via : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to place via." 
+		& "to place via."
 		& status_hint_for_abort;
 
-	
+
 	-- Builds the final via-to-be-placed from the information
 	-- provided by preliminary_via.
 	-- Places the via at the given point:
@@ -133,41 +133,41 @@ package et_canvas_board_vias is
 		point	: in type_vector_model);
 
 
-	
+
 -- MOVE:
 
-	status_move_via : constant string := 
-		status_click_left 
+	status_move_via : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to move via." 
+		& "to move via."
 		& status_hint_for_abort;
 
-	
+
 	-- Locates vias in the vicinity of the given point.
 	-- Depending on how many vias have been found, the behaviour is:
-	-- - If only one via found, then it is selected and 
+	-- - If only one via found, then it is selected and
 	--   the flag preliminary_via.ready will be set.
 	--   This causes the selected via to be drawn at the tool position.
 	-- - If more than one via found, then clarification is requested.
 	--   No via will be moved.
 	--   The next call of this procedure sets preliminary_via.ready
 	--   so that the selected via will be drawn at the tool position.
-	--   The next call of this procedure assigns the final position 
+	--   The next call of this procedure assigns the final position
 	--   to the selected_via:
 	procedure move_object (
 		tool	: in type_tool;
-		point	: in type_vector_model);				   
+		point	: in type_vector_model);
 
 
-	
+
 -- DELETE:
 
-	status_delete_via : constant string := 
-		status_click_left 
+	status_delete_via : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete via." 
+		& "to delete via."
 		& status_hint_for_abort;
 
 
@@ -180,15 +180,15 @@ package et_canvas_board_vias is
 	--   by the cursor selected_via:
 	procedure delete_via (
 		tool	: in type_tool;
-		point	: in type_vector_model);				   
+		point	: in type_vector_model);
 
-	
-	
+
+
 end et_canvas_board_vias;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

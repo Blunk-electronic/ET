@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -50,10 +50,10 @@ with et_device_name;			use et_device_name;
 
 package et_pick_and_place is
 
-	
+
 	-- Whenever we deal with pick & place files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
-	package pac_pnp_file_name is new generic_bounded_length (file_name_length_max); 
+	package pac_pnp_file_name is new generic_bounded_length (file_name_length_max);
 
 	extension_pnp : constant string := "pnp";
 
@@ -74,24 +74,24 @@ package et_pick_and_place is
 		EAGLE,
 		KICAD
 		-- CS others ?
-		);		
-	
+		);
+
 	procedure write_pnp (
 	-- Creates the P&P file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container pnp in the file.
 	-- - The P&P file will be named after the module name and the assembly variant.
 	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in pac_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);
-	
+
 end et_pick_and_place;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -70,10 +70,10 @@ package et_module_board is
 
 
 	procedure dummy;
-	
 
 
-	
+
+
 	-- This is non-electical board stuff:
 	type type_board is tagged record
 		frame			: et_drawing_frame.board.type_frame_pcb; -- incl. template name
@@ -90,7 +90,7 @@ package et_module_board is
 		-- non-electric floating stuff:
 		-- (lines, arcs, circles, text, text placeholders, zones):
 		conductors_floating	: type_conductors_floating;
-		
+
 		board_contour	: type_board_outline; -- outer and inner edges
 
 		user_settings	: type_user_settings;
@@ -99,10 +99,10 @@ package et_module_board is
 
 	-- BOARD COMMITS (required for undo/redo operations via the GUI):
 	use et_commit;
-	
+
 	package pac_board_commit is new pac_commit (type_board);
 	use pac_board_commit;
-	
+
 	package pac_board_commits is new doubly_linked_lists (
 		element_type	=> pac_board_commit.type_commit);
 
@@ -111,12 +111,12 @@ package et_module_board is
 		redos	: pac_board_commits.list;
 	end record;
 
-	
+
 end et_module_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -61,9 +61,9 @@ package et_device_model_unit_internal is
 
 	use pac_geometry_2;
 	use pac_unit_name;
-	
-	
-	
+
+
+
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_appearance) is record
@@ -76,16 +76,16 @@ package et_device_model_unit_internal is
 
 	-- Returns the placeholders of an internal unit.
 	-- If the units is part of a virtual device,
-	-- then default placeholders are returned:	
+	-- then default placeholders are returned:
 	function get_placeholders (
 		unit	: in type_unit_internal)
 		return type_text_placeholders;
 
 
-	
 
 
-	
+
+
 	-- Internal units are collected in a map:
 	package pac_units_internal is new indefinite_ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
@@ -96,7 +96,7 @@ package et_device_model_unit_internal is
 
 	-- Returns the placeholders of an internal unit.
 	-- If the units is part of a virtual device,
-	-- then default placeholders are returned:	
+	-- then default placeholders are returned:
 	function get_placeholders (
 		unit	: in pac_units_internal.cursor)
 		return type_text_placeholders;
@@ -116,34 +116,34 @@ package et_device_model_unit_internal is
 		return type_text_placeholders;
 
 
-	
+
 	function get_symbol (
 		unit	: in pac_units_internal.cursor)
 		return type_symbol_model;
 
-	
-	
+
+
 	-- Returns the ports of the given internal unit:
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
 		return pac_symbol_ports.map;
 
-	
-						   
-	-- Returns the default x/y-positions of the 
+
+
+	-- Returns the default x/y-positions of the
 	-- given internal unit. If the given
 	-- cursor of the unit is no_element then the
 	-- return is an empty list:
 	function get_port_positions (
 		unit	: in pac_units_internal.cursor)
 		return pac_points.list;
-								   
-	
+
+
 end et_device_model_unit_internal;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

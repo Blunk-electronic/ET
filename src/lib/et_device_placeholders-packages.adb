@@ -60,7 +60,7 @@ package body et_device_placeholders.packages is
 	end;
 
 
-	
+
 
 	procedure set_anchor_mode (
 		placeholder		: in out type_text_placeholder;
@@ -68,8 +68,8 @@ package body et_device_placeholders.packages is
 	is begin
 		placeholder.anchor_mode := mode;
 	end;
-	
-		
+
+
 
 	function get_anchor_mode (
 		placeholder		: in type_text_placeholder)
@@ -87,7 +87,7 @@ package body et_device_placeholders.packages is
 		return to_string (placeholder.anchor_mode);
 	end;
 
-	
+
 
 
 
@@ -95,53 +95,53 @@ package body et_device_placeholders.packages is
 		placeholder			: in type_text_placeholder;
 		package_position	: in type_package_position)
 		return type_vector_model
-	is 
-		result : type_vector_model;		
+	is
+		result : type_vector_model;
 	begin
 		-- Get the position of the placeholder.
 		-- Currently we do not know whether pos is relative
 		-- or absolute. The anchor mode of the placeholder
 		-- provides the required information:
 		result := get_place (placeholder);
-		
+
 		case get_anchor_mode (placeholder) is
 			when RELATIVE =>
 				-- "result" contains the position relative to
 				-- the package. It assumes that the package is
 				-- not rotated (as defined in the package model).
 				-- So the actual position of the placeholder candidate
-				-- must be calculated using the package position. The 
+				-- must be calculated using the package position. The
 				-- package position includes x/y, rotation and face.
-			
+
 				-- Rotate and move the position by the package position
 				-- to get the absolute position of the placeholder.
 				-- If the package is flipped to the bottom side of
 				-- the board, then the result must be mirrored along
 				-- the Y-axis:
-			
+
 				rotate_by (result, get_rotation (package_position));
-				
+
 				if is_flipped (package_position) then
 					mirror_point (result, MIRROR_ALONG_Y_AXIS);
 				end if;
-				
+
 				move_by (result, get_place (package_position));
 
-				
+
 			when ABSOLUTE =>
 				null;
 				-- "result" contains already the absolute
 				-- position of the placeholder. Nothing else to do.
 		end case;
-		
+
 		return result;
 	end get_absolute_position;
 
-	
-	
 
-	
-	
+
+
+
+
 	function get_relative_position (
 		placeholder			: in type_text_placeholder;
 		package_position	: in type_package_position)
@@ -152,11 +152,11 @@ package body et_device_placeholders.packages is
 		case get_anchor_mode (placeholder) is
 			when RELATIVE =>
 				-- If the given placeholder
-				-- is already positioned relative to the 
+				-- is already positioned relative to the
 				-- package position its position
 				-- can be copied as it is:
 				result := get_place (placeholder);
-				
+
 			when ABSOLUTE =>
 				-- If the given placeholder is positioned
 				-- absolute, then the distance from package position
@@ -164,24 +164,24 @@ package body et_device_placeholders.packages is
 				result := get_distance_relative (
 					get_place (package_position),
 					get_place (placeholder));
-					
+
 				-- If the package is on the bottom side, then
 				-- "result" must be mirrored back to top side:
 				if is_flipped (package_position) then
 					mirror_point (result, MIRROR_ALONG_Y_AXIS);
 				end if;
-					
+
 				-- Rotate back by the package position:
 				rotate_by (result, - get_rotation (package_position));
 		end case;
 
 		return result;
 	end get_relative_position;
-	
 
-	
-	
-	
+
+
+
+
 
 	function get_meaning (
 		placeholder : in type_text_placeholder)
@@ -191,8 +191,8 @@ package body et_device_placeholders.packages is
 	end;
 
 
-	
-	
+
+
 	function to_string (
 		placeholder : in type_text_placeholder)
 		return string
@@ -201,7 +201,7 @@ package body et_device_placeholders.packages is
 			& " place " & to_string (get_place (placeholder))
 			& " rotation " & to_string (get_rotation (placeholder));
 	end;
-	
+
 
 
 	function to_placeholder_index (
@@ -212,10 +212,10 @@ package body et_device_placeholders.packages is
 	end;
 
 
-	
 
-	
-	
+
+
+
 	procedure iterate (
 		placeholders	: in pac_text_placeholders.vector;
 		process			: not null access procedure (position : in pac_text_placeholders.cursor);
@@ -229,11 +229,11 @@ package body et_device_placeholders.packages is
 		end loop;
 	end iterate;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	function get_meaning (
 		placeholder : in pac_text_placeholders.cursor)
 		return type_placeholder_meaning
@@ -242,9 +242,9 @@ package body et_device_placeholders.packages is
 	end;
 
 
-	
-	
-	
+
+
+
 	function locate_placeholder (
 		placeholders	: in pac_text_placeholders.vector;
 		meaning			: in type_placeholder_meaning;
@@ -252,50 +252,50 @@ package body et_device_placeholders.packages is
 		return pac_text_placeholders.cursor
 	is
 		cursor : pac_text_placeholders.cursor;
-		
+
 		-- This counter increments each time a placeholder
 		-- with the given meaning has been found:
 		n : natural := 0;
-		
+
 	begin
-		-- put_line ("locate_placeholder " & to_string (meaning) & " " 
+		-- put_line ("locate_placeholder " & to_string (meaning) & " "
 			-- & type_placeholder_index'image (index));
-		
+
 		if not is_empty (placeholders) then
 			cursor := placeholders.first;
 		end if;
-		
-	
+
+
 		-- Iterate though the given placeholders:
 		while has_element (cursor) loop
-		
+
 			-- Test the meaning of the candidate placeholder:
 			if element (cursor).meaning = meaning then
 				n := n + 1;
 				-- put_line ("n: " & natural'image (n));
-		
+
 				-- Abort the iteration once the placeholder
 				-- given by index has been found:
 				if type_placeholder_index (n) = index then
 					-- put_line ("found");
 					exit;
 				end if;
-				
+
 			end if;
-		
+
 			next (cursor);
 		end loop;
-	
+
 		-- If nothing found, then cursor points to no_element.
-		
+
 		return cursor;
 	end locate_placeholder;
-	
-	
 
-	
 
-	
+
+
+
+
 	procedure mirror_placeholders (
 		placeholders	: in out pac_text_placeholders.vector;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -308,13 +308,13 @@ package body et_device_placeholders.packages is
 			mirror_text (ph, axis);
 			result.append (ph);
 		end query_placeholder;
-		
+
 	begin
 		placeholders.iterate (query_placeholder'access);
 		placeholders := result;
 	end mirror_placeholders;
-	
-	
+
+
 
 	procedure rotate_placeholders (
 		placeholders	: in out pac_text_placeholders.vector;
@@ -354,20 +354,20 @@ package body et_device_placeholders.packages is
 		placeholders := result;
 	end move_placeholders;
 
-	
+
 
 
 	procedure placeholder_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_text_placeholders;
 		placeholder : type_text_placeholder renames element (cursor);
 	begin
 		log (text => "placeholder face" & to_string (face)
 			 & " for " & to_string (placeholder.meaning), level => log_threshold);
-		
+
 		log_indentation_up;
 		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
 		log_indentation_down;
@@ -376,30 +376,30 @@ package body et_device_placeholders.packages is
 
 
 
-	
+
 
 	function to_string (
 		layer : in type_placeholder_layer)
-		return string 
+		return string
 	is begin
 		return to_lower (type_placeholder_layer'image (layer));
 	end;
 
-	
+
 	function to_placeholder_layer (
-		layer : in string) 
-		return type_placeholder_layer 
+		layer : in string)
+		return type_placeholder_layer
 	is begin
 		return type_placeholder_layer'value (layer);
 	end;
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	function to_string (
 		placeholders : in type_text_placeholders)
 		return string
@@ -407,14 +407,14 @@ package body et_device_placeholders.packages is
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
-		
+
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
 		begin
 			result := result & to_string (p);
 		end query_placeholder;
-		
-		 
+
+
 	begin
 		result := result & " silkscreen top: ";
 		placeholders.silkscreen.top.iterate (query_placeholder'access);
@@ -427,21 +427,21 @@ package body et_device_placeholders.packages is
 
 		result := result & " assy_doc bottom: ";
 		placeholders.assy_doc.bottom.iterate (query_placeholder'access);
-		
+
 		return to_string (result);
 	end to_string;
-	
 
-	
 
-	
-	
 
-	
+
+
+
+
+
 
 	procedure move_placeholder (
 		placeholders		: in out type_text_placeholders;
-		meaning				: in type_placeholder_meaning;					 
+		meaning				: in type_placeholder_meaning;
 		layer				: in type_placeholder_layer; -- silkscreen, assy doc
 		face				: in type_face;
 		index				: in type_placeholder_index; -- 1, 2, 3, ...
@@ -455,11 +455,11 @@ package body et_device_placeholders.packages is
 		-- will be pointing to it:
 		cursor : pac_text_placeholders.cursor;
 
-		
+
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
-		is 
-			
+		is
+
 
 			-- This procedure switches the anchor mode
 			-- and assigns the given relative position to
@@ -474,7 +474,7 @@ package body et_device_placeholders.packages is
 
 				set_anchor_mode (p, RELATIVE);
 				set_place (p, point);
-				
+
 -- 				CS: This is experimental stuff. It moves the placeholder
 --				independend of the rotation of the package to the
 --				given relative position. If this stuff is not required
@@ -484,55 +484,55 @@ package body et_device_placeholders.packages is
 -- 				-- Get the current absolute position:
 -- 				tp_1 := get_absolute_position (p, package_position);
 -- 				-- put_line ("tp1 " & to_string (tp_1));
--- 				
+--
 -- 				tp_2 := tp_1;
 -- 				move_by (tp_2, offset);
 -- 				-- put_line ("tp2 " & to_string (tp_2));
--- 				
+--
 -- 				rotate_by (tp_2, -a, tp_1);
 -- 				-- put_line ("tp2 " & to_string (tp_2));
--- 				
+--
 -- 				-- Get the new relative position:
 -- 				move_by (tp_2, invert (pp));
 -- 				-- put_line ("tp2 " & to_string (tp_2));
 -- 				set_place (p, tp_2);
-				
+
 				-- put_line ("new " & to_string (get_place (p)));
 			end move_relative;
-			
 
-			
+
+
 			-- This procedure switches the anchor mode
 			-- and assigns the given absolute position to
 			-- the given placeholder:
 			procedure move_absolute is begin
 				-- put_line ("move absolute");
-				
+
 				set_anchor_mode (p, ABSOLUTE);
 				set_place (p, point);
-				
+
 				-- put_line ("new " & to_string (get_place (p)));
 			end move_absolute;
-			
-			
-		begin		
+
+
+		begin
 			case coordinates is
 				when RELATIVE =>
 					move_relative (point);
-					
+
 				when ABSOLUTE =>
 					move_absolute;
 
 			end case;
 		end query_placeholder;
-		
-		
-		
+
+
+
 		procedure do_silkscreen is begin
 			-- put_line ("do_silkscreen");
-			
+
 			case face is
-				when TOP => 
+				when TOP =>
 					cursor := locate_placeholder (placeholders.silkscreen.top, meaning, index);
 
 					-- If the specified placeholder exists, then do the actual move:
@@ -541,7 +541,7 @@ package body et_device_placeholders.packages is
 						placeholders.silkscreen.top.update_element (cursor, query_placeholder'access);
 					end if;
 
-					
+
 				when BOTTOM	=>
 					cursor := locate_placeholder (placeholders.silkscreen.bottom, meaning, index);
 
@@ -549,26 +549,26 @@ package body et_device_placeholders.packages is
 					if has_element (cursor) then
 						placeholders.silkscreen.bottom.update_element (cursor, query_placeholder'access);
 					end if;
-				
+
 			end case;
 		end do_silkscreen;
-		
-		
-		
+
+
+
 		procedure do_assy_doc is begin
 			-- put_line ("do_assy_doc");
-		
+
 			case face is
-				when TOP => 
+				when TOP =>
 					cursor := locate_placeholder (placeholders.assy_doc.top, meaning, index);
-		
+
 					-- If the specified placeholder exists, then do the actual move:
 					if has_element (cursor) then
 						placeholders.assy_doc.top.update_element (cursor, query_placeholder'access);
 					end if;
 
-		
-				when BOTTOM	=> 
+
+				when BOTTOM	=>
 					cursor := locate_placeholder (placeholders.assy_doc.bottom, meaning, index);
 
 					-- If the specified placeholder exists, then do the actual move:
@@ -576,35 +576,35 @@ package body et_device_placeholders.packages is
 						placeholders.assy_doc.bottom.update_element (cursor, query_placeholder'access);
 					end if;
 
-			end case;		
+			end case;
 		end do_assy_doc;
-		
-		
-		
+
+
+
 	begin
 		-- put_line ("move_placeholder");
-		
+
 		case layer is
 			when SILKSCREEN =>
 				do_silkscreen;
-					
+
 			when ASSY_DOC =>
 				do_assy_doc;
-		end case;		
-		
+		end case;
+
 		-- put_line (to_string (placeholders));
 	end move_placeholder;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	procedure rotate_placeholder (
 		placeholders	: in out type_text_placeholders;
-		meaning			: in type_placeholder_meaning;					 
+		meaning			: in type_placeholder_meaning;
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
@@ -616,26 +616,26 @@ package body et_device_placeholders.packages is
 		-- will be pointing to it:
 		cursor : pac_text_placeholders.cursor;
 
-		
+
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
 		is begin
 			case coordinates is
 				when ABSOLUTE =>
 					rotate_text_to (p, rotation);
-					
+
 				when RELATIVE =>
 					rotate_text_by_2 (p, rotation);
 			end case;
 		end query_placeholder;
-		
-		
-		
+
+
+
 		procedure do_silkscreen is begin
 			-- put_line ("do_silkscreen");
-			
+
 			case face is
-				when TOP => 
+				when TOP =>
 					cursor := locate_placeholder (placeholders.silkscreen.top, meaning, index);
 
 					-- If the specified placeholder exists, then do the actual rotation:
@@ -644,7 +644,7 @@ package body et_device_placeholders.packages is
 						placeholders.silkscreen.top.update_element (cursor, query_placeholder'access);
 					end if;
 
-					
+
 				when BOTTOM	=>
 					cursor := locate_placeholder (placeholders.silkscreen.bottom, meaning, index);
 
@@ -652,26 +652,26 @@ package body et_device_placeholders.packages is
 					if has_element (cursor) then
 						placeholders.silkscreen.bottom.update_element (cursor, query_placeholder'access);
 					end if;
-				
+
 			end case;
 		end do_silkscreen;
-		
-		
-		
+
+
+
 		procedure do_assy_doc is begin
 			-- put_line ("do_assy_doc");
-		
+
 			case face is
-				when TOP => 
+				when TOP =>
 					cursor := locate_placeholder (placeholders.assy_doc.top, meaning, index);
-		
+
 					-- If the specified placeholder exists, then do the actual rotation:
 					if has_element (cursor) then
 						placeholders.assy_doc.top.update_element (cursor, query_placeholder'access);
 					end if;
 
-		
-				when BOTTOM	=> 
+
+				when BOTTOM	=>
 					cursor := locate_placeholder (placeholders.assy_doc.bottom, meaning, index);
 
 					-- If the specified placeholder exists, then do the actual rotation:
@@ -679,31 +679,31 @@ package body et_device_placeholders.packages is
 						placeholders.assy_doc.bottom.update_element (cursor, query_placeholder'access);
 					end if;
 
-			end case;		
+			end case;
 		end do_assy_doc;
-		
-		
-		
+
+
+
 	begin
 		-- put_line ("rotate_placeholder");
-		
+
 		case layer is
 			when SILKSCREEN =>
 				do_silkscreen;
-					
+
 			when ASSY_DOC =>
 				do_assy_doc;
-		end case;		
-		
+		end case;
+
 		-- put_line (to_string (placeholders));
 	end rotate_placeholder;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure propose_placeholders (
 		placeholders		: in out type_text_placeholders;
 		package_position	: in type_package_position;
@@ -712,50 +712,50 @@ package body et_device_placeholders.packages is
 		log_threshold		: in type_log_level)
 	is
 		use et_display.board;
-		
-		-- This flag indicates that the package is on 
+
+		-- This flag indicates that the package is on
 		-- the back side of the board.
-		-- Depening on this flag, either the placeholders 
+		-- Depening on this flag, either the placeholders
 		-- on the top or bottom side of the package are searched:
 		flip : constant boolean := is_flipped (package_position);
-		
-		
-		-- This cursor points to the placeholder being probed:		
+
+
+		-- This cursor points to the placeholder being probed:
 		cursor : pac_text_placeholders.cursor;
 
-		
+
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
-		is 
+		is
 			-- Get the position of the placeholder.
-			pos : constant type_vector_model := 
+			pos : constant type_vector_model :=
 				get_absolute_position (p, package_position);
 		begin
 			log_indentation_up;
-			
+
 			-- log (text => "placeholder " & to_string (pos), level => log_threshold + 2);
-			
-			-- Test whether the placeholder is in the 
-			-- given catch zone:			
+
+			-- Test whether the placeholder is in the
+			-- given catch zone:
 		 	if in_catch_zone (
 				zone	=> catch_zone,
 				point	=> pos)
 			then
 				log (text => "in catch zone", level => log_threshold + 2);
-				
+
 				-- Set the proposed flag:
 				set_proposed (p);
-				count := count + 1;				
+				count := count + 1;
 			end if;
-			
+
 			log_indentation_down;
 		end query_placeholder;
-		
-		
-		
+
+
+
 		procedure do_silkscreen_top is begin
 			log (text => "do_silkscreen_top", level => log_threshold + 1);
-			
+
 			if silkscreen_enabled (top) then
 				if not flip then
 					-- Search among the placeholders of the TOP side
@@ -764,7 +764,7 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.silkscreen.top.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
 					end loop;
 				else
@@ -774,17 +774,17 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.silkscreen.bottom.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
 					end loop;
 				end if;
 			end if;
 		end;
-		 
+
 
 		procedure do_silkscreen_bottom is begin
 			log (text => "do_silkscreen_bottom", level => log_threshold + 1);
-			
+
 			if silkscreen_enabled (bottom) then
 				if not flip then
 					-- Search among the placeholders of the BOTTOM side
@@ -793,7 +793,7 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.silkscreen.bottom.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
 					end loop;
 				else
@@ -803,7 +803,7 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.silkscreen.top.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
 					end loop;
 				end if;
@@ -811,10 +811,10 @@ package body et_device_placeholders.packages is
 		end;
 
 
-		
-		procedure do_assy_doc_top is begin		
-			log (text => "do_assy_doc_top", level => log_threshold + 1);		
-			
+
+		procedure do_assy_doc_top is begin
+			log (text => "do_assy_doc_top", level => log_threshold + 1);
+
 			if assy_doc_enabled (top) then
 				if not flip then
 					-- Search among the placeholders of the TOP side
@@ -823,9 +823,9 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.assy_doc.top.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
-					end loop;		
+					end loop;
 				else
 					-- Search among the placeholders of the BOTTOM side
 					-- of the package:
@@ -833,17 +833,17 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.assy_doc.bottom.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
-					end loop;		
+					end loop;
 				end if;
 			end if;
 		end;
-		 
+
 
 		procedure do_assy_doc_bottom is begin
 			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
-			
+
 			if assy_doc_enabled (bottom) then
 				if not flip then
 					-- Search among the placeholders of the BOTTOM side
@@ -852,9 +852,9 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.assy_doc.bottom.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
-					end loop;		
+					end loop;
 				else
 					-- Search among the placeholders of the TOP side
 					-- of the package:
@@ -862,62 +862,62 @@ package body et_device_placeholders.packages is
 					while has_element (cursor) loop
 						placeholders.assy_doc.top.update_element (
 							cursor, query_placeholder'access);
-							
+
 						next (cursor);
 					end loop;
 				end if;
 			end if;
 		end;
 
-		
+
 	begin
 		log (text => "propose_placeholders", level => log_threshold);
 		log_indentation_up;
-		
+
 		do_silkscreen_top;
 		do_silkscreen_bottom;
-		
+
 		do_assy_doc_top;
 		do_assy_doc_bottom;
-		
+
 		log_indentation_down;
 	end propose_placeholders;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure modify_status (
 		placeholders		: in out type_text_placeholders;
 		layer				: in type_placeholder_layer;
 		face				: in type_face;
 		placeholder_cursor	: in pac_text_placeholders.cursor;
 		operation			: in type_status_operation)
-	is 
-	
+	is
+
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
-		is 
+		is
 		begin
 			modify_status (p, operation);
 		end;
-	
-	
-	
+
+
+
 		procedure do_silkscreen is begin
 			case face is
 				when TOP =>
 					placeholders.silkscreen.top.update_element (
 						placeholder_cursor, query_placeholder'access);
 
-				when BOTTOM => 
+				when BOTTOM =>
 					placeholders.silkscreen.bottom.update_element (
 						placeholder_cursor, query_placeholder'access);
 			end case;
 		end;
-		
+
 
 		procedure do_assy_doc is begin
 			case face is
@@ -925,14 +925,14 @@ package body et_device_placeholders.packages is
 					placeholders.assy_doc.top.update_element (
 						placeholder_cursor, query_placeholder'access);
 
-				when BOTTOM => 
+				when BOTTOM =>
 					placeholders.assy_doc.bottom.update_element (
 						placeholder_cursor, query_placeholder'access);
 			end case;
 		end;
 
-		
-		 
+
+
 	begin
 		case layer is
 			when SILKSCREEN => do_silkscreen;
@@ -940,24 +940,24 @@ package body et_device_placeholders.packages is
 		end case;
 	end modify_status;
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	procedure reset_status (
 		placeholders		: in out type_text_placeholders)
-	is 
-	
+	is
+
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
 		is begin
 			reset_status (p);
 		end;
-		
-	
+
+
 		procedure do_silkscreen_top is
 			c : pac_text_placeholders.cursor;
 		begin
@@ -965,12 +965,12 @@ package body et_device_placeholders.packages is
 			while has_element (c) loop
 				placeholders.silkscreen.top.update_element (
 					c, query_placeholder'access);
-					
+
 				next (c);
 			end loop;
 		end;
 
-		
+
 		procedure do_silkscreen_bottom is
 			c : pac_text_placeholders.cursor;
 		begin
@@ -978,11 +978,11 @@ package body et_device_placeholders.packages is
 			while has_element (c) loop
 				placeholders.silkscreen.bottom.update_element (
 					c, query_placeholder'access);
-					
+
 				next (c);
 			end loop;
 		end;
-		
+
 
 		procedure do_assy_doc_top is
 			c : pac_text_placeholders.cursor;
@@ -991,12 +991,12 @@ package body et_device_placeholders.packages is
 			while has_element (c) loop
 				placeholders.assy_doc.top.update_element (
 					c, query_placeholder'access);
-					
+
 				next (c);
 			end loop;
 		end;
 
-		
+
 		procedure do_assy_doc_bottom is
 			c : pac_text_placeholders.cursor;
 		begin
@@ -1004,12 +1004,12 @@ package body et_device_placeholders.packages is
 			while has_element (c) loop
 				placeholders.assy_doc.bottom.update_element (
 					c, query_placeholder'access);
-					
+
 				next (c);
 			end loop;
 		end;
 
-		
+
 	begin
 		do_silkscreen_top;
 		do_silkscreen_bottom;
@@ -1017,13 +1017,13 @@ package body et_device_placeholders.packages is
 		do_assy_doc_bottom;
 	end reset_status;
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	procedure get_first_placeholder (
 		placeholders		: in type_text_placeholders;
 		flag				: in type_flag;
@@ -1035,13 +1035,13 @@ package body et_device_placeholders.packages is
 	is
 		-- The search must be conducted for each layer,
 		-- for each face and for each meaning.
-		
+
 		-- This flag is used in order to abort a search.
 		proceed : aliased boolean := true;
-		
+
 		meaning : type_placeholder_meaning;
-				
-		
+
+
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
 		begin
@@ -1056,7 +1056,7 @@ package body et_device_placeholders.packages is
 					when PROPOSED =>
 						if is_proposed (p) then
 							placeholder_cursor := c;
-							proceed := false; -- abort 
+							proceed := false; -- abort
 						end if;
 
 					when SELECTED =>
@@ -1068,65 +1068,65 @@ package body et_device_placeholders.packages is
 					when others => null; -- CS
 				end case;
 
-				-- For each matching meaning, the index 
+				-- For each matching meaning, the index
 				-- must be incremented for the next placeholder:
 				if proceed then
 					index := index + 1;
 				end if;
 			end if;
 		end query_placeholder;
-		
 
-		
+
+
 		procedure do_silkscreen_top is begin
 			log (text => "do_silkscreen_top", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			layer := SILKSCREEN;
 			face := TOP;
-			
+
 			-- Iterate for each available meaning:
 			meaning := type_placeholder_meaning'first;
 			while meaning /= type_placeholder_meaning'last loop
 				index := 1; -- restart index
 				iterate (placeholders.silkscreen.top, query_placeholder'access, proceed'access);
-				
+
 				-- Exit the loop once a placeholder has been found:
 				if not proceed then exit; end if;
-				
+
 				-- Advance to next available meaning:
 				meaning := type_placeholder_meaning'succ (meaning);
 			end loop;
-			
+
 			log_indentation_down;
 		end;
 
-		
-		procedure do_silkscreen_bottom is begin			
+
+		procedure do_silkscreen_bottom is begin
 			log (text => "do_silkscreen_bottom", level => log_threshold + 1);
 			log_indentation_up;
-		
+
 			if proceed then
 				face := BOTTOM;
-				
+
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
 					index := 1; -- restart index
 					iterate (placeholders.silkscreen.bottom, query_placeholder'access, proceed'access);
-					
+
 					-- Exit the loop once a placeholder has been found:
 					if not proceed then exit; end if;
-					
+
 					-- Advance to next available meaning:
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
-			
+
 			log_indentation_down;
 		end do_silkscreen_bottom;
 
-		
+
 		procedure do_assy_doc_top is begin
 			log (text => "do_assy_doc_top", level => log_threshold + 1);
 			log_indentation_up;
@@ -1134,68 +1134,68 @@ package body et_device_placeholders.packages is
 			if proceed then
 				layer := ASSY_DOC;
 				face := TOP;
-			
+
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
 					index := 1; -- restart index
 					iterate (placeholders.assy_doc.top, query_placeholder'access, proceed'access);
-					
+
 					-- Exit the loop once a placeholder has been found:
 					if not proceed then exit; end if;
-					
+
 					-- Advance to next available meaning:
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
-			
+
 			log_indentation_down;
 		end;
-		
 
-		procedure do_assy_doc_bottom is begin			
+
+		procedure do_assy_doc_bottom is begin
 			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
 			log_indentation_up;
-		
+
 			if proceed then
 				face := BOTTOM;
-				
+
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
 					index := 1; -- restart index
 					iterate (placeholders.assy_doc.bottom, query_placeholder'access, proceed'access);
-					
+
 					-- Exit the loop once a placeholder has been found:
 					if not proceed then exit; end if;
-					
+
 					-- Advance to next available meaning:
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
-			
+
 			log_indentation_down;
 		end do_assy_doc_bottom;
-		
-		
+
+
 	begin
 		log (text => "get_first_placeholder", level => log_threshold);
 		log_indentation_up;
-		
+
 		do_silkscreen_top;
 		do_silkscreen_bottom;
 		do_assy_doc_top;
 		do_assy_doc_bottom;
-		
+
 		log_indentation_down;
 	end get_first_placeholder;
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	function get_placeholder_cursors (
 		placeholders	: in type_text_placeholders;
 		flag			: in type_flag;
@@ -1203,34 +1203,34 @@ package body et_device_placeholders.packages is
 		return type_placeholder_cursors
 	is
 		result : type_placeholder_cursors;
-		
+
 		layer	: type_placeholder_layer;
 		face	: type_face;
 		index	: type_placeholder_index := 1;
 		meaning	: type_placeholder_meaning;
-		
-		
+
+
 		-- This procedure queries a given candidate placeholder,
 		-- tests it s status flag and appends the cursor of
 		-- the placeholder to the result:
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
-			
-			
-			procedure collect is 
+
+
+			procedure collect is
 				pc : type_placeholder_cursor;
 			begin
 				pc.cursor := c;
 				pc.index := index;
 				index := index + 1; -- prepare for next placeholder
-				
+
 				case layer is
 					when SILKSCREEN =>
 						case face is
 							when TOP	=> result.silkscreen.top.append (pc);
 							when BOTTOM	=> result.silkscreen.bottom.append (pc);
 						end case;
-						
+
 					when ASSY_DOC =>
 						case face is
 							when TOP	=> result.assy_doc.top.append (pc);
@@ -1239,7 +1239,7 @@ package body et_device_placeholders.packages is
 				end case;
 			end collect;
 
-			
+
 		begin
 			if p.meaning = meaning then
 				case flag is
@@ -1257,25 +1257,25 @@ package body et_device_placeholders.packages is
 				end case;
 			end if;
 		end query_placeholder;
-		
-		
+
+
 	begin
 		log (text => "get_placeholder_cursors", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		-- Iterate the placeholders in silkscreen top and bottom:
 		layer := SILKSCREEN;
 		face := TOP;
 		index := 1;
-		
+
 		-- Iterate for each available meaning:
 		meaning := type_placeholder_meaning'first;
 		while meaning /= type_placeholder_meaning'last loop
 			placeholders.silkscreen.top.iterate (query_placeholder'access);
 			meaning := type_placeholder_meaning'succ (meaning);
 		end loop;
-		
+
 		face := BOTTOM;
 		index := 1;
 
@@ -1285,10 +1285,10 @@ package body et_device_placeholders.packages is
 			placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 			meaning := type_placeholder_meaning'succ (meaning);
 		end loop;
-		
-		
-		
-		
+
+
+
+
 		-- Iterate the placeholders in assy_doc top and bottom:
 		layer := ASSY_DOC;
 		face := TOP;
@@ -1300,7 +1300,7 @@ package body et_device_placeholders.packages is
 			placeholders.assy_doc.top.iterate (query_placeholder'access);
 			meaning := type_placeholder_meaning'succ (meaning);
 		end loop;
-		
+
 		face := BOTTOM;
 		index := 1;
 
@@ -1311,20 +1311,20 @@ package body et_device_placeholders.packages is
 			meaning := type_placeholder_meaning'succ (meaning);
 		end loop;
 
-		
+
 		log_indentation_down;
-		
+
 		return result;
 	end get_placeholder_cursors;
-	
 
-	
-	
+
+
+
 end et_device_placeholders.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

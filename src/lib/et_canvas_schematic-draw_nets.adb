@@ -60,8 +60,8 @@ procedure draw_nets is
 	use pac_net_segments;
 	use pac_net_labels;
 
-	
-	
+
+
 
 	-- This procedure draws a single net segment.
 	-- The segment itself is just a line with a
@@ -77,9 +77,9 @@ procedure draw_nets is
 
 
 
-	
 
-	-- This procedure draws the junctions of the segment. 
+
+	-- This procedure draws the junctions of the segment.
 	-- Note: A junction can be at the start or the end (A/B)
 	-- of the segment, but never somewhere between.
 	procedure draw_junctions (
@@ -94,7 +94,7 @@ procedure draw_nets is
 				width	=> zero,
 				stroke	=> DO_STROKE);
 		end draw;
-		
+
 	begin
 		-- Probe start point of segment:
 		if segment.junctions.A then
@@ -110,32 +110,32 @@ procedure draw_nets is
 	end draw_junctions;
 
 
-	
 
 
-	
+
+
 
 	-- This procedure draws the net connectors that
 	-- are attached to the A or B end of a net segment:
 	procedure draw_net_connectors (
 		net_name	: in pac_net_name.bounded_string;
 		segment		: in type_net_segment)
-	is 
+	is
 		use et_colors;
 		use et_colors.schematic;
 
-		
+
 		-- The place at which the label is to be drawn.
 		-- It will be taken from the A or B end of the segment,
 		-- depending on which end has a connector:
 		position : type_vector_model;
-		
+
 		-- The rotation of the connector must be deduced
 		-- from the orientation and affected A/B end
 		-- of the net segment:
 		rotation : type_rotation := 0.0;
-		
-		
+
+
 		-- This procedure draws a net connector:
 		procedure draw_connector (label : in type_net_connector) is
 			use pac_draw_text;
@@ -143,13 +143,13 @@ procedure draw_nets is
 			use pac_net_name;
 
 			box : type_area;
-			
-			content : constant pac_text_content.bounded_string := 
+
+			content : constant pac_text_content.bounded_string :=
 				to_content (to_string (net_name));
 			-- CS: append to content the position of the net
 			-- on the next sheet (strand position) using the quadrant bars.
 
-			
+
 			procedure make_box is begin
 				-- Form a box that wraps around the net name:
 				box := to_area (get_text_extents (content, label.size, net_label_font));
@@ -159,26 +159,26 @@ procedure draw_nets is
 				box.height := box.height * net_connector_height_to_size_ratio;
 				box.width  := box.width  * net_connector_height_to_size_ratio;
 			end make_box;
-			
-			
+
+
 			-- The text rotation must be either 0 or 90 degree
 			-- (documentational text !) and is thus
 			-- to be calculated according to the rotation of the label:
 			text_rotation : type_rotation;
 
-			-- The alignment is assigned as if the text 
+			-- The alignment is assigned as if the text
 			-- were drawn at zero rotation.
-			-- The vertical alignment is always CENTER. Horizontal alignment 
+			-- The vertical alignment is always CENTER. Horizontal alignment
 			-- changes depending on the rotation of the label:
-			text_alignment : type_text_alignment := 
+			text_alignment : type_text_alignment :=
 				(vertical => ALIGN_CENTER, horizontal => <>);
 
-			-- The text position is not the same as the 
-			-- label position, thus it must be calculated according to 
+			-- The text position is not the same as the
+			-- label position, thus it must be calculated according to
 			-- the label rotation and net_connector_text_offset:
 			text_position : type_vector_model;
 
-			
+
 		begin
 			make_box;
 
@@ -186,21 +186,21 @@ procedure draw_nets is
 			-- is drawn either vertically or horizontally.
 			-- Moreover the position, alignment and rotation of the text
 			-- inside the box depends on the rotation:
-			
+
 			if rotation = zero_rotation then
-		
+
 				box.position := set (
-					get_x (position), 
+					get_x (position),
 					get_y (position) - box.height * 0.5);
 
 				text_rotation := zero_rotation;
-				text_position := set (get_x (position) + net_connector_text_offset, 
+				text_position := set (get_x (position) + net_connector_text_offset,
 										get_y (position));
-				
+
 				text_alignment.horizontal := ALIGN_LEFT;
 			end if;
 
-			
+
 			if rotation = 90.0 then
 
 				box.position := set (
@@ -210,13 +210,13 @@ procedure draw_nets is
 				swap_edges (box);
 
 				text_rotation := 90.0;
-				text_position := set (get_x (position), 
+				text_position := set (get_x (position),
 										get_y (position) + net_connector_text_offset);
-				
+
 				text_alignment.horizontal := ALIGN_LEFT;
 			end if;
 
-			
+
 			if rotation = 180.0 then
 
 				box.position := set (
@@ -224,25 +224,25 @@ procedure draw_nets is
 					get_y (position) - box.height * 0.5);
 
 				text_rotation := zero_rotation;
-				text_position := set (get_x (position) - net_connector_text_offset, 
+				text_position := set (get_x (position) - net_connector_text_offset,
 										get_y (position));
-				
+
 				text_alignment.horizontal := ALIGN_RIGHT;
 			end if;
 
-			
+
 			if rotation = 270.0 then
 
 				box.position := set (
 					get_x (position) - box.height * 0.5,
 					get_y (position) - box.width);
-				
+
 				swap_edges (box);
 
 				text_rotation := 90.0;
-				text_position := set (get_x (position), 
+				text_position := set (get_x (position),
 										get_y (position) - net_connector_text_offset);
-				
+
 				text_alignment.horizontal := ALIGN_RIGHT;
 			end if;
 
@@ -250,12 +250,12 @@ procedure draw_nets is
 			-- If the label is selected then draw it highlighted:
 			if is_selected (label) then
 				set_color_nets (BRIGHT);
-			end if;				
+			end if;
 
-			
+
 			-- Draw the box enshrouding the net name:
 			draw_rectangle (
-				rectangle	=> box, 
+				rectangle	=> box,
 				width		=> net_connector_box_linewidth);
 
 			-- Draw the actual net name:
@@ -265,22 +265,22 @@ procedure draw_nets is
 				font		=> net_connector_font,
 				anchor		=> text_position,
 				origin		=> false, -- no origin for net names required
-				
+
 				-- Text rotation about its anchor point. This is documentational text.
 				-- It is readable from the front or the right.
 				rotation	=> text_rotation,
 				alignment	=> text_alignment);
 
-			
+
 			if is_selected (label) then
 				set_color_nets (NORMAL);
 			end if;
 		end draw_connector;
 
-		
+
 	begin
 		-- put_line ("draw net connectors");
-		
+
 		-- Draw the label on the A end (if it is active):
 		if is_active (segment.connectors.A) then
 			--put_line ("A is active");
@@ -289,18 +289,18 @@ procedure draw_nets is
 			-- Deduce the rotation of the label from
 			-- the segment and the affected A end:
 			rotation := to_rotation (segment, A);
-			
+
 			-- If the parent segment is moving
 			-- with its A end, then move the label accordingly
 			-- by the current object_displacement:
 			if is_A_moving (segment) then
 				move_by (position, object_displacement);
 			end if;
-			
+
 			draw_connector (segment.connectors.A);
 		end if;
 
-		
+
 		-- Draw the label on the B end (if it is active):
 		if is_active (segment.connectors.B) then
 			--put_line ("B is active");
@@ -318,15 +318,15 @@ procedure draw_nets is
 			end if;
 
 			draw_connector (segment.connectors.B);
-		end if;					
+		end if;
 	end draw_net_connectors;
 
 
-	
 
 
-	
-	
+
+
+
 	-- This procedure draws the net labels that
 	-- are attached to a net segment:
 	procedure draw_labels (
@@ -335,7 +335,7 @@ procedure draw_nets is
 	is
 		use et_colors;
 		use et_colors.schematic;
-	
+
 		label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 
@@ -358,37 +358,37 @@ procedure draw_nets is
 					position := get_object_tool_position;
 					--put_line ("label pos" & to_string (position));
 				end if;
-				
+
 				draw_text (
 					content		=> to_content (to_string (net_name)),
 					size		=> label.size,
 					font		=> net_label_font,
 					anchor		=> position,
 					origin		=> true,
-					
+
 					-- Text rotation about its anchor point.
 					-- This is documentational text.
 					-- It is readable from the front or the right.
 					rotation	=> pac_text.to_rotation (label.rotation),
-					alignment	=> net_label_alignment);					
+					alignment	=> net_label_alignment);
 			end draw_label;
 
-			
+
 		begin
 			-- If the candidate label is selected, then
 			-- draw it highlighted:
 			if is_selected (label) then
 				set_color_nets (BRIGHT);
 			end if;
-			
+
 			draw_label;
 
 			if is_selected (label) then
 				set_color_nets (NORMAL);
 			end if;
 		end query_label;
-	
-	
+
+
 	begin
 		-- Iterate through the net labels:
 		while has_element (label_cursor) loop
@@ -396,17 +396,17 @@ procedure draw_nets is
 			next (label_cursor);
 		end loop;
 	end draw_labels;
-	
-	
-	
-	
-	
 
-	
-	
+
+
+
+
+
+
+
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
+		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
 		use et_colors;
@@ -416,13 +416,13 @@ procedure draw_nets is
 		-- This cursor points to the current net being drawn:
 		net_cursor : pac_nets.cursor := module.nets.first;
 
-		
+
 		-- Draws the strands of the given net in "normal" mode.
 		-- "Normal" mode means, the whole net is not to be drawn highlighted.
 		-- This is the case when the verb VERB_SHOW is not active.
 		procedure query_net (
 			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net) 
+			net			: in type_net)
 		is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -430,14 +430,14 @@ procedure draw_nets is
 			-- This procedure draws a single net segment,
 			-- its net labels and net connectors:
 			procedure query_segment (
-				segment : in type_net_segment) 
-			is 
+				segment : in type_net_segment)
+			is
 				-- This flag indicates that the net
 				-- segment candidate is selected, either
 				-- as a whole, its A end or its B end:
 				segment_is_selected : boolean := false;
-				
-				
+
+
 				procedure draw_segment_being_copied is
 					segment_copy : type_net_segment := segment;
 				begin
@@ -448,27 +448,27 @@ procedure draw_nets is
 					if segment_is_selected and group_is_being_copied then
 						copy_net_segment (segment, segment_copy, get_group_offset);
 						-- put_line ("segment copy: " & to_string (segment_copy));
-						
-						draw_segment (segment_copy);					
+
+						draw_segment (segment_copy);
 						draw_labels (net_name, segment_copy);
 						draw_junctions (segment_copy);
 						draw_net_connectors (net_name, segment_copy);
 					end if;
 				end draw_segment_being_copied;
 
-				
-			begin			
+
+			begin
 				-- Increase brightness if segment is selected::
-				if is_selected (segment) 
+				if is_selected (segment)
 				or is_A_selected (segment)
 				or is_B_selected (segment) then
 					segment_is_selected := true;
 					set_color_nets (BRIGHT);
-				end if;				
+				end if;
 
 				-- Draw the segment, its labels, junctions
 				-- and connectors:
-				draw_segment (segment);				
+				draw_segment (segment);
 				draw_labels (net_name, segment);
 				draw_junctions (segment);
 				draw_net_connectors (net_name, segment);
@@ -485,8 +485,8 @@ procedure draw_nets is
 				end if;
 			end query_segment;
 
-			
-			
+
+
 			procedure query_strand (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
@@ -506,24 +506,24 @@ procedure draw_nets is
 
 					if is_selected (strand) then
 						set_color_nets (NORMAL);
-					end if;					
+					end if;
 				end if;
 			end query_strand;
-			
-			
+
+
 		begin
 			-- Increase brightness if net is selected:
 			if is_selected (net) then
 				set_color_nets (BRIGHT);
 			end if;
-				
+
 			-- Iterate through the strands of the candidate net:
 			while strand_cursor /= pac_strands.no_element loop
-			
+
 				query_element (
 					position	=> strand_cursor,
 					process		=> query_strand'access);
-				
+
 				next (strand_cursor);
 			end loop;
 
@@ -533,7 +533,7 @@ procedure draw_nets is
 		end query_net;
 
 
-		
+
 	begin -- query_module
 		set_color_nets;
 
@@ -543,27 +543,27 @@ procedure draw_nets is
 			pac_nets.query_element (
 				position	=> net_cursor,
 				process		=> query_net'access);
-			
+
 			next (net_cursor); -- advance to next net
 		end loop;
 	end query_module;
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure draw_path is
 		use pac_path_and_bend;
 		use et_colors.schematic;
 		use et_modes.schematic;
-		
+
 		line : pac_geometry_2.type_line;
 
-		
-		procedure compute_route (s, e : in type_vector_model) is 
+
+		procedure compute_route (s, e : in type_vector_model) is
 
 			-- Do the actual route calculation.
 			r : constant type_path := to_path (s, e, live_path.bend_style);
@@ -572,12 +572,12 @@ procedure draw_nets is
 				-- draw the net segment:
 				draw_line (
 					line	=> line,
-					pos		=> origin_zero_rotation,		  
+					pos		=> origin_zero_rotation,
 					width	=> net_linewidth,
 					stroke	=> DO_STROKE);
 			end draw;
 
-			
+
 		begin -- compute_route
 
 			-- The calculated route may required a bend point.
@@ -590,7 +590,7 @@ procedure draw_nets is
 			-- If the route does not require a bend point, draw a single line
 			-- from start to end point:
 			if r.bended = NO then
-				
+
 				set_A (line, r.A);
 				set_B (line, r.B);
 
@@ -604,18 +604,18 @@ procedure draw_nets is
 
 				set_A (line, r.A);
 				set_B (line, r.bend_point);
-				
+
 				draw;
 
 				set_A (line, r.bend_point);
 				set_B (line, r.B);
-				
+
 				draw;
-				
+
 			end if;
 		end compute_route;
 
-		
+
 	begin -- draw_path
 		if verb = VERB_DRAW and noun = NOUN_NET and edit_process_running = true then
 
@@ -624,27 +624,27 @@ procedure draw_nets is
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
 
-			case object_tool is				
-				when MOUSE => 
+			case object_tool is
+				when MOUSE =>
 					compute_route (
 						s	=> live_path.A,	-- start of route
 						e	=> snap_to_grid (get_mouse_position));	-- end of route
-					
+
 				when KEYBOARD =>
 					compute_route (
 						s	=> live_path.A,	-- start of route
 						e	=> get_cursor_position);	-- end of route
-					
-			end case;			
+
+			end case;
 		end if;
 	end draw_path;
 
-	
-	
+
+
 begin
 -- 	put_line ("draw nets ...");
 -- 	put_line (to_string (in_area));
-	
+
 	-- draw the nets
 	pac_generic_modules.query_element (
 		position	=> active_module,
@@ -655,13 +655,13 @@ begin
 	-- then nothing happens here:
 	draw_path;
 
-	
+
 end draw_nets;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -67,41 +67,41 @@ package body et_module_read_board_zones_route is
 	use pac_contours;
 	use pac_signal_layers;
 
-	
-	
+
+
 	unused_fill_spacing : type_track_clearance := type_track_clearance'first;
 	-- CS rename to zone_fill_spacing
-	
-	board_fill_style : type_fill_style := fill_style_default;	
+
+	board_fill_style : type_fill_style := fill_style_default;
 	-- CS rename to zone_fill_style
-	
+
 	board_easing : type_easing;
 	-- CS rename to zone_easing
-	
+
 	signal_layer : type_signal_layer;
 	-- CS rename to zone_signal_layer
-	
+
 	contour_priority : type_priority := type_priority'first;
 	-- CS rename to zone_priority
-	
+
 	polygon_width_min : type_track_width := type_track_width'first;
 	-- CS rename to zone_width_min
-	
-	polygon_isolation : type_track_clearance := type_track_clearance'first; 
+
+	polygon_isolation : type_track_clearance := type_track_clearance'first;
 	-- CS rename to zone_isolation
 	-- applies to conductor zones only
-		
+
 	signal_layers : pac_signal_layers.set;
 	-- CS rename to zone_signal_layers
-	
+
 	relief_properties : type_relief_properties;
 
-	pad_connection : type_pad_connection := type_pad_connection'first;	
+	pad_connection : type_pad_connection := type_pad_connection'first;
 
-	
 
-	
-	
+
+
+
 
 	procedure reset_scratch is begin
 		unused_fill_spacing		:= type_track_clearance'first;
@@ -109,8 +109,8 @@ package body et_module_read_board_zones_route is
 		--board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		relief_properties	:= (others => <>);
-		pad_connection 		:= type_pad_connection'first;	
-		
+		pad_connection 		:= type_pad_connection'first;
+
 		contour_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
@@ -122,11 +122,11 @@ package body et_module_read_board_zones_route is
 	end;
 
 
-	
 
 
-	
-	
+
+
+
 	procedure read_cutout_route (
 		line : in type_fields_of_line)
 	is
@@ -168,7 +168,7 @@ package body et_module_read_board_zones_route is
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
 			polygon_isolation := to_distance (f (line, 2));
-			
+
 		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);
 			board_easing.style := to_easing_style (f (line, 2));
@@ -188,7 +188,7 @@ package body et_module_read_board_zones_route is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			signal_layer := to_signal_layer (f (line, 2));
-			
+
 		elsif kw = keyword_width then -- width 0.3
 			expect_field_count (line, 2);
 			polygon_width_min := to_distance (f (line, 2));
@@ -200,7 +200,7 @@ package body et_module_read_board_zones_route is
 		elsif kw = keyword_connection then -- connection thermal/solid
 			expect_field_count (line, 2);
 			pad_connection := to_pad_connection (f (line, 2));
-			
+
 		elsif kw = keyword_relief_width_min then -- relief_width_min 0.3
 			expect_field_count (line, 2);
 			relief_properties.width_min := to_distance (f (line, 2));
@@ -217,31 +217,31 @@ package body et_module_read_board_zones_route is
 
 
 
-	
+
 
 
 
 	procedure build_route_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)									  
+		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module_cursor, log_threshold);
 		use et_thermal_relief;
 		use et_module_read_nets;
-		
-		
+
+
 		procedure solid_polygon is
 
 			procedure connection_thermal is
 				p : type_route_solid (connection => THERMAL);
 			begin
 				load_segments (p, get_segments (contour));
-				
+
 				p.easing := board_easing;
-				
+
 				p.linewidth	:= polygon_width_min;
 				p.isolation	:= polygon_isolation;
-				
+
 				p.properties.layer			:= signal_layer;
 				p.properties.priority_level	:= contour_priority;
 				p.relief_properties			:= relief_properties;
@@ -251,17 +251,17 @@ package body et_module_read_board_zones_route is
 					new_item	=> p);
 			end;
 
-			
+
 			procedure connection_solid is
 				p : type_route_solid (connection => SOLID);
 			begin
 				load_segments (p, get_segments (contour));
-				
+
 				p.easing := board_easing;
-				
+
 				p.linewidth	:= polygon_width_min;
 				p.isolation	:= polygon_isolation;
-				
+
 				p.properties.layer			:= signal_layer;
 				p.properties.priority_level	:= contour_priority;
 				p.technology				:= relief_properties.technology;
@@ -271,7 +271,7 @@ package body et_module_read_board_zones_route is
 					new_item	=> p);
 			end;
 
-			
+
 		begin -- solid_polygon
 			case pad_connection is
 				when THERMAL	=> connection_thermal;
@@ -280,8 +280,8 @@ package body et_module_read_board_zones_route is
 		end solid_polygon;
 
 
-		
-		
+
+
 		procedure hatched_polygon is
 
 
@@ -289,43 +289,43 @@ package body et_module_read_board_zones_route is
 				p : type_route_hatched (connection => THERMAL);
 			begin
 				load_segments (p, get_segments (contour));
-				
+
 				p.easing := board_easing;
-				
+
 				p.linewidth	:= polygon_width_min;
 				p.isolation	:= polygon_isolation;
-				
+
 				p.properties.layer			:= signal_layer;
 				p.properties.priority_level	:= contour_priority;
 				p.relief_properties			:= relief_properties;
-				
+
 				pac_route_hatched.append (
 					container	=> route.zones.hatched,
 					new_item	=> p);
 			end;
 
-			
+
 			procedure connection_solid is
 				p : type_route_hatched (connection => SOLID);
 			begin
 				load_segments (p, get_segments (contour));
-				
+
 				p.easing := board_easing;
-				
+
 				p.linewidth	:= polygon_width_min;
 				p.isolation	:= polygon_isolation;
-				
+
 				p.properties.layer			:= signal_layer;
 				p.properties.priority_level	:= contour_priority;
-				
+
 				p.technology := relief_properties.technology;
-				
+
 				pac_route_hatched.append (
 					container	=> route.zones.hatched,
 					new_item	=> p);
 			end;
 
-			
+
 		begin
 			case pad_connection is
 				when THERMAL	=> connection_thermal;
@@ -333,11 +333,11 @@ package body et_module_read_board_zones_route is
 			end case;
 		end hatched_polygon;
 
-		
+
 	begin -- build_route_polygon
 		-- CS log messages
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		case board_fill_style is
 			when SOLID		=> solid_polygon;
 			when HATCHED	=> hatched_polygon;
@@ -347,15 +347,15 @@ package body et_module_read_board_zones_route is
 	end build_route_polygon;
 
 
-	
+
 
 
 end et_module_read_board_zones_route;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

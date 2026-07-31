@@ -52,19 +52,19 @@ package et_coordinates_abs_rel is
 	type type_coordinates is (RELATIVE, ABSOLUTE);
 	-- CS rename to type_abs_rel ?
 
-	
+
 	function to_string (
 		coordinates : in type_coordinates)
 		return string;
 
-	
+
 	function to_coordinates (
 		coordinates : in string)
 		return type_coordinates;
 
-	
 
 
-	
+
+
 end et_coordinates_abs_rel;
 

@@ -42,7 +42,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_net_labels is
-	
+
 
 	procedure set_proposed (
 		label : in out type_net_label_base)
@@ -50,13 +50,13 @@ package body et_net_labels is
 		set_proposed (label.status);
 	end;
 
-	
+
 	procedure clear_proposed (
 		label : in out type_net_label_base)
 	is begin
 		clear_proposed (label.status);
 	end;
-		
+
 
 	function is_proposed (
 		label : in type_net_label_base)
@@ -78,13 +78,13 @@ package body et_net_labels is
 		set_selected (label.status);
 	end;
 
-	
+
 	procedure clear_selected (
 		label : in out type_net_label_base)
 	is begin
 		clear_selected (label.status);
 	end;
-		
+
 
 	function is_selected (
 		label : in type_net_label_base)
@@ -106,7 +106,7 @@ package body et_net_labels is
 		modify_status (label.status, operation);
 	end;
 
-	
+
 
 	procedure reset_status (
 		label : in out type_net_label_base)
@@ -132,7 +132,7 @@ package body et_net_labels is
 		return to_string (label.rotation);
 	end;
 
-	
+
 
 	procedure set_rotation (
 		label		: in out type_net_label;
@@ -141,9 +141,9 @@ package body et_net_labels is
 		label.rotation := rotation;
 	end;
 
-	
-	
-	
+
+
+
 
 	function get_position (
 		label : in type_net_label)
@@ -153,7 +153,7 @@ package body et_net_labels is
 	end;
 
 
-	
+
 	procedure set_position (
 		label		: in out type_net_label;
 		position	: in type_vector_model)
@@ -163,7 +163,7 @@ package body et_net_labels is
 
 
 
-	
+
 	function get_position (
 		label : in type_net_label)
 		return string
@@ -171,8 +171,8 @@ package body et_net_labels is
 		return to_string (label.position);
 	end;
 
-	
-	
+
+
 
 	procedure move_by (
 		label	: in out type_net_label;
@@ -182,7 +182,7 @@ package body et_net_labels is
 	end;
 
 
-	
+
 
 
 	procedure set_moving (
@@ -191,13 +191,13 @@ package body et_net_labels is
 		set_moving (label.status);
 	end;
 
-	
+
 	procedure clear_moving (
 		label : in out type_net_label)
 	is begin
 		clear_moving (label.status);
 	end;
-		
+
 
 	function is_moving (
 		label : in type_net_label)
@@ -212,7 +212,7 @@ package body et_net_labels is
 
 
 
-	
+
 
 	function get_position (
 		label : in pac_net_labels.cursor)
@@ -245,8 +245,8 @@ package body et_net_labels is
 		return get_rotation (element (label));
 	end;
 
-	
-		
+
+
 
 	function is_proposed (
 		label : in pac_net_labels.cursor)
@@ -271,12 +271,12 @@ package body et_net_labels is
 		return is_moving (element (label));
 	end;
 
-	
+
 
 	procedure merge_labels (
 		primary		: in out pac_net_labels.list;
 		secondary	: in out pac_net_labels.list)
-	is 
+	is
 		pos : pac_net_labels.cursor;
 	begin
 		-- Add the secondary list at the end of the primary list:
@@ -296,11 +296,11 @@ package body et_net_labels is
 		-- offset:
 		procedure query_label (
 			label : in out type_net_label)
-		is begin		
+		is begin
 			move_by (label, offset);
 		end query_label;
 
-		
+
 	begin
 		-- Iterate through the given list of net labels:
 		while has_element (cursor) loop
@@ -308,13 +308,13 @@ package body et_net_labels is
 			next (cursor);
 		end loop;
 	end;
-	
-	
+
+
 end et_net_labels;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

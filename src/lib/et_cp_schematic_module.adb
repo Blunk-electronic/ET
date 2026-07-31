@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,51 +66,51 @@ package body et_cp_schematic_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		procedure do_it (
-			module_name : in pac_module_name.bounded_string) 
+			module_name : in pac_module_name.bounded_string)
 		is begin
 			create_module (
 				module_name		=> module_name, -- led_driver_test
 				log_threshold	=> log_threshold + 1);
 
 			-- Show the module in schematic and board editor:
-			
+
 			active_module := locate_module (module_name);
 			active_sheet := 1;
 
 			-- Update module name in the schematic window title bar:
 			-- CS set_title_bar (active_module);
-			
+
 			-- CS update_sheet_number_display;
-			
+
 			-- Update the board window title bar:
 			-- CS et_canvas_board.set_title_bar (active_module);
 		end do_it;
 
-		
-		
+
+
 	begin
 		log (text => "create module", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 5 => do_it (to_module_name (get_field (cmd, 5)));
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end create_module;
 
-	
+
 
 
 
@@ -124,20 +124,20 @@ package body et_cp_schematic_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		module : pac_module_name.bounded_string;
 
 		use et_sheets;
 		sheet : type_sheet := 1;
 
-		
+
 		-- Sets the active module and first sheet.
 		procedure module_and_first_sheet is begin
 			module := to_module_name (get_field (cmd, 5));
 			set_module (module);
 			active_sheet := sheet;
-			
+
 			update_schematic_editor;
 			et_canvas_board.update_board_editor;
 		end module_and_first_sheet;
@@ -149,30 +149,30 @@ package body et_cp_schematic_module is
 			module := to_module_name (get_field (cmd, 5));
 			set_module (module);
 
-			log (text => "sheet " & to_string (sheet), 
+			log (text => "sheet " & to_string (sheet),
 				level => log_threshold + 1);
-			
+
 			sheet := to_sheet (get_field (cmd, 6));
 			active_sheet := sheet;
 
 			update_schematic_editor;
 			et_canvas_board.update_board_editor;
 		end module_and_random_sheet;
-		
-		
+
+
 	begin
-		log (text => "show module (via schematic editor) " 
+		log (text => "show module (via schematic editor) "
 			& enclose_in_quotes (to_string (module)),
 			level => log_threshold);
 
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
-			
+
 			when 6 => module_and_random_sheet; -- show module LED-driver 2
-			
-			when 7 .. type_field_count'last => 
+
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end show_module;
@@ -182,7 +182,7 @@ package body et_cp_schematic_module is
 
 
 
-	
+
 
 	procedure delete_module (
 		module			: in pac_generic_modules.cursor;
@@ -190,19 +190,19 @@ package body et_cp_schematic_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		use ada.containers;
 
-		
+
 		-- Delete the current module:
 		procedure delete_active is begin
 			delete_module (
 				module_name		=> key (module),
 				log_threshold	=> log_threshold + 1);
 
-			-- As long as there are other modules, open the 
+			-- As long as there are other modules, open the
 			-- first of the generic modules.
 			-- If no modules available any more, close the schematic
 			-- and board editor:
@@ -210,19 +210,19 @@ package body et_cp_schematic_module is
 			-- CS Set the previous module active instead ?
 			if length (generic_modules) > 0 then
 			-- CS use function that returns the number of generic modules
-				
+
 				active_module := generic_modules.first;
 				active_sheet := 1;
 
-				log (text => "set module " 
-					& enclose_in_quotes (get_active_module), 
+				log (text => "set module "
+					& enclose_in_quotes (get_active_module),
 					level => log_threshold + 1);
 
 				-- Update module name in the schematic window title bar:
 				set_title_bar (active_module);
-				
+
 				update_sheet_number_display;
-				
+
 				-- Update the board window title bar:
 				et_canvas_board.set_title_bar (active_module);
 			else
@@ -233,36 +233,36 @@ package body et_cp_schematic_module is
 		end delete_active;
 
 
-		
+
 		-- Deletes an explicitly given module:
 		procedure delete_explicit (
-			module_name : in pac_module_name.bounded_string) 
+			module_name : in pac_module_name.bounded_string)
 		is begin
 			delete_module (
 				module_name		=> module_name, -- pwr_supply
 				log_threshold	=> log_threshold + 1);
 
-			-- As long as there are other modules, open the 
+			-- As long as there are other modules, open the
 			-- first of the generic modules.
 			-- If no modules available any more, close the schematic
 			-- and board editor:
-			
+
 			-- CS Set the previous module active instead ?
 			if length (generic_modules) > 0 then
 			-- CS use function that returns the number of generic modules
-			
+
 				active_module := generic_modules.first;
 				active_sheet := 1;
 
-				log (text => "set module " 
-					& enclose_in_quotes (get_active_module), 
+				log (text => "set module "
+					& enclose_in_quotes (get_active_module),
 					level => log_threshold + 1);
 
 				-- Update module name in the schematic window title bar:
 				set_title_bar (active_module);
-				
+
 				update_sheet_number_display;
-				
+
 				-- Update the board window title bar:
 				et_canvas_board.set_title_bar (active_module);
 			else
@@ -272,22 +272,22 @@ package body et_cp_schematic_module is
 			end if;
 		end delete_explicit;
 
-		
+
 	begin
 		log (text => "delete module", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 4 => delete_active;
 			-- schematic demo delete module
-			
+
 			when 5 => delete_explicit (to_module_name (get_field (cmd, 5)));
 			-- schematic demo delete module pwr_supply
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -299,7 +299,7 @@ package body et_cp_schematic_module is
 
 
 
-	
+
 
 
 
@@ -309,14 +309,14 @@ package body et_cp_schematic_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "save module", level => log_threshold);
 		log_indentation_up;
 
 		-- Since we are already in the project directory,
 		-- we can call the write_module procedures right away.
-		
+
 		case cmd_field_count is
 			when 4 =>
 				-- Save the module with its own name:
@@ -331,25 +331,25 @@ package body et_cp_schematic_module is
 					save_as_name	=> to_module_name (get_field (cmd, 5)), -- pwr_supply
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;	
+		end case;
 
 		log_indentation_down;
 	end save_module;
 
-	
-		
+
+
 end et_cp_schematic_module;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

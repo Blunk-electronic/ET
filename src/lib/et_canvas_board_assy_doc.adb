@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -57,21 +57,21 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 package body et_canvas_board_assy_doc is
 
 	use et_canvas_board.pac_canvas;
-	
+
 	use pac_doc_lines;
 	use pac_doc_arcs;
 
-	
-	
-	
+
+
+
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
 		selected : in type_object_line)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 	begin
 		set_status (praeamble & to_string (element (selected.cursor))
-			& " face" & to_string (selected.face) & ". " 
+			& " face" & to_string (selected.face) & ". "
 			& status_next_object_clarification);
 	end show_selected_line;
 
@@ -80,27 +80,27 @@ package body et_canvas_board_assy_doc is
 	-- Outputs the selected arc in the status bar:
 	procedure show_selected_arc (
 		selected : in type_object_arc)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 	begin
 		set_status (praeamble & to_string (element (selected.cursor))
-			& " face" & to_string (selected.face) & ". " 
+			& " face" & to_string (selected.face) & ". "
 			& status_next_object_clarification);
 	end show_selected_arc;
 
-	
 
-	
+
+
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
 		selected : in type_object_segment)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 
 		use et_board_geometry.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
-			& " face" & to_string (selected.face) & ". " 
+			& " face" & to_string (selected.face) & ". "
 			& status_next_object_clarification);
 	end show_selected_segment;
 
@@ -110,7 +110,7 @@ package body et_canvas_board_assy_doc is
 	-- Outputs the selected text in the status bar:
 	procedure show_selected_text (
 		selected : in type_object_text)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 	begin
 		set_status (praeamble & to_string (selected.cursor)
@@ -118,12 +118,12 @@ package body et_canvas_board_assy_doc is
 	end show_selected_text;
 
 
-	
+
 
 	-- Outputs the selected placeholder in the status bar:
 	procedure show_selected_placeholder (
 		selected : in type_object_placeholder)
-	is 
+	is
 		praeamble : constant string := "selected: ";
 		use et_pcb_placeholders;
 	begin
@@ -131,7 +131,7 @@ package body et_canvas_board_assy_doc is
 			& status_next_object_clarification);
 	end show_selected_placeholder;
 
-	
+
 
 
 	procedure show_selected_object (
@@ -143,7 +143,7 @@ package body et_canvas_board_assy_doc is
 
 			when CAT_ARC =>
 				show_selected_arc (selected.arc);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);
 
@@ -152,91 +152,91 @@ package body et_canvas_board_assy_doc is
 
 			when CAT_PLACEHOLDER =>
 				show_selected_placeholder (selected.placeholder);
-				
+
 			when CAT_VOID =>
 				null; -- CS
-		end case;	
+		end case;
 	end show_selected_object;
 
-	
 
-	
-	
-	
-	procedure clarify_object is 
+
+
+
+
+	procedure clarify_object is
 
 		procedure do_it is
 			use pac_objects;
-			
+
 			-- Gather all proposed objects:
-			proposed_objects : constant pac_objects.list := 
+			proposed_objects : constant pac_objects.list :=
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
-			log (text => "proposed objects total " 
+			log (text => "proposed objects total "
 				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
-			
+
 			-- Locate the selected object among the proposed objects:
 			proposed_object := proposed_objects.find (selected_object);
 
 			-- Deselect the the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (CLEAR, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
-			-- If end of list reached, then proceed at 
+			-- If end of list reached, then proceed at
 			-- the begin of the list:
 			if proposed_object = pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
-			
+
 			-- Select the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (SET, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "clarify_object", level => log_threshold + 1);
 
 		log_indentation_up;
-		
+
 		do_it;
-		
+
 		log_indentation_down;
 	end clarify_object;
 
 
 
 
-	
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		
+
 		procedure do_it is
 			-- Get the first selected object:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 			-- Gather all selected objects:
@@ -248,11 +248,11 @@ package body et_canvas_board_assy_doc is
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
-			
+
 			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
 		log_indentation_up;
@@ -261,14 +261,14 @@ package body et_canvas_board_assy_doc is
 	end set_first_selected_object_moving;
 
 
-	
 
 
-	
-	
+
+
+
 	procedure find_objects (
 	   point : in type_vector_model)
-	is 
+	is
 		use et_modes.board;
 
 		-- The number of proposed objects:
@@ -292,57 +292,57 @@ package body et_canvas_board_assy_doc is
 
 
 
-		-- This procedure proposes objects on the given 
+		-- This procedure proposes objects on the given
 		-- face of the board:
-		procedure propose_objects (face : in type_face) is 
+		procedure propose_objects (face : in type_face) is
 			use et_display.board;
 			catch_zone : type_catch_zone;
 		begin
 			if assy_doc_enabled (face) then
 
 				catch_zone := set_catch_zone (point, get_catch_zone (catch_zone_radius_default));
-				
+
 				propose_lines (
-					module_cursor	=> active_module, 
-					catch_zone		=> catch_zone, 
+					module_cursor	=> active_module,
+					catch_zone		=> catch_zone,
 					face			=> face,
-					count			=> count_total, 
+					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
 
 				propose_arcs (
-					module_cursor	=> active_module, 
-					catch_zone		=> catch_zone, 
+					module_cursor	=> active_module,
+					catch_zone		=> catch_zone,
 					face			=> face,
-					count			=> count_total, 
+					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
-				
+
 				-- CS circles
 
 				propose_segments (
-					module_cursor	=> active_module, 
+					module_cursor	=> active_module,
 					catch_zone		=> catch_zone,
 					face			=> face,
 					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
 
 				propose_texts (
-					module_cursor	=> active_module, 
-					catch_zone		=> catch_zone, 
+					module_cursor	=> active_module,
+					catch_zone		=> catch_zone,
 					face			=> face,
-					count			=> count_total, 
+					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
 
 				propose_placeholders (
-					module_cursor	=> active_module, 
-					catch_zone		=> catch_zone, 
+					module_cursor	=> active_module,
+					catch_zone		=> catch_zone,
 					face			=> face,
-					count			=> count_total, 
+					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
-				
+
 			end if;
 		end propose_objects;
-		
-			
+
+
 	begin
 		log (text => "proposing objects ...", level => log_threshold);
 		log_indentation_up;
@@ -350,16 +350,16 @@ package body et_canvas_board_assy_doc is
 		-- Propose objects in the vicinity of the given point:
 		propose_objects (TOP);
 		propose_objects (BOTTOM);
-		
+
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
 
-		
+
 		-- evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				null; -- nothing to do
-				
+
 			when 1 =>
 				set_edit_process_running;
 				select_first_proposed;
@@ -367,30 +367,30 @@ package body et_canvas_board_assy_doc is
 				if verb = VERB_MOVE then
 					set_first_selected_object_moving;
 				end if;
-				
+
 				reset_request_clarification;
-				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;
 		end case;
-		
+
 		log_indentation_down;
 	end find_objects;
 
-	
-	
 
 
 
 
 
-	
-	
+
+
+
+
 
 -- MOVE:
-	
+
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -410,10 +410,10 @@ package body et_canvas_board_assy_doc is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				move_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					point_of_attack	=> object_point_of_attack,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
@@ -421,15 +421,15 @@ package body et_canvas_board_assy_doc is
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-			
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
@@ -438,11 +438,11 @@ package body et_canvas_board_assy_doc is
 			object_tool := tool;
 
 			object_point_of_attack := point;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
-				
+
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
@@ -454,38 +454,38 @@ package body et_canvas_board_assy_doc is
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to object_point_of_attack and 
+				-- will be drawn according to object_point_of_attack and
 				-- the tool position.
 				set_first_selected_object_moving;
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
-				
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
-			
+
 		else
 			finalize;
 		end if;
 	end move_object;
 
-	
-	
 
 
 
 
-	
-	
+
+
+
+
 -- DELETE:
-	
+
 	procedure delete_object (
 		point	: in type_vector_model)
 	is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
-		procedure finalize is 
+		procedure finalize is
 			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -497,29 +497,29 @@ package body et_canvas_board_assy_doc is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				delete_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
-			
+
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (point);
-			
+
 			-- NOTE: If many segments have been found, then
 			-- clarification is now pending.
 
@@ -538,12 +538,12 @@ package body et_canvas_board_assy_doc is
 		end if;
 	end delete_object;
 
-	
+
 end et_canvas_board_assy_doc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

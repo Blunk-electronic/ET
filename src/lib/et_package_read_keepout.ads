@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about zones and cutout areas in keepout.
 --
 --
@@ -58,13 +58,13 @@ package et_package_read_keepout is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
- 
+
 
 	procedure insert_keepout_zone_cutout (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 end et_package_read_keepout;

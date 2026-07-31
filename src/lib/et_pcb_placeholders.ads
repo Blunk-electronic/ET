@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,10 +41,10 @@
 
 package et_pcb_placeholders is
 
-	
+
 	-- Placeholders of this kind exist in non-conductor
 	-- and conductor layers:
-	
+
 	type type_placeholder_meaning is (
 		COMPANY,
 		CUSTOMER,
@@ -61,23 +61,23 @@ package et_pcb_placeholders is
 
 	placeholder_meaning_default : constant type_placeholder_meaning := COMPANY;
 
-	
+
 	function to_string (
-		meaning : in type_placeholder_meaning) 
+		meaning : in type_placeholder_meaning)
 		return string;
 
-	
+
 	function to_meaning (
-		meaning : in string) 
+		meaning : in string)
 		return type_placeholder_meaning;
 
-	
-	
+
+
 end et_pcb_placeholders;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

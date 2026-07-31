@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -91,7 +91,7 @@ package body et_cp_board_conductors is
 	use pac_grid;
 	use pac_generic_modules;
 
-	
+
 
 	procedure set_fill_zone_properties (
 		module			: in pac_generic_modules.cursor;
@@ -101,13 +101,13 @@ package body et_cp_board_conductors is
 		pragma unreferenced (log_threshold);
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
 
-		
-		procedure expect_keywords is 
+
+
+		procedure expect_keywords is
 			comma : constant character := ',';
 		begin
-			raise syntax_error_1 with 
+			raise syntax_error_1 with
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (keyword_linewidth) & comma
 				& enclose_in_quotes (keyword_connection) & comma
@@ -126,117 +126,117 @@ package body et_cp_board_conductors is
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.fill_style := 
+			module.board.user_settings.polygons_conductor.fill_style :=
 				to_fill_style (get_field (cmd, 6));
 		end set_fill_style;
 
-		
+
 		procedure set_linewidth (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.linewidth := 
+			module.board.user_settings.polygons_conductor.linewidth :=
 				to_distance (get_field (cmd, 6));
 		end set_linewidth;
 
-		
+
 		procedure set_iso (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.isolation := 
+			module.board.user_settings.polygons_conductor.isolation :=
 				to_distance (get_field (cmd, 6));
 		end set_iso;
 
-		
+
 		procedure set_priority (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			use et_fill_zones.boards;
 		begin
-			module.board.user_settings.polygons_conductor.priority_level := 
+			module.board.user_settings.polygons_conductor.priority_level :=
 				to_priority (get_field (cmd, 6));
 		end set_priority;
 
-		
+
 		procedure set_easing_style (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.easing.style := 
+			module.board.user_settings.polygons_conductor.easing.style :=
 				to_easing_style (get_field (cmd, 7));
 		end set_easing_style;
 
-		
+
 		procedure set_easing_radius (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.easing.radius := 
+			module.board.user_settings.polygons_conductor.easing.radius :=
 				to_distance (get_field (cmd, 7));
-		end set_easing_radius;	
+		end set_easing_radius;
 
-		
+
 		procedure set_connection (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.connection := 
+			module.board.user_settings.polygons_conductor.connection :=
 				to_pad_connection (get_field (cmd, 6));
-		end set_connection;	
+		end set_connection;
 
-		
+
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.spacing := 
+			module.board.user_settings.polygons_conductor.spacing :=
 				to_distance (get_field (cmd, 6));
-		end set_hatching_spacing;	
+		end set_hatching_spacing;
 
-		
+
 		procedure set_thermal_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.thermal.width_min := 
+			module.board.user_settings.polygons_conductor.thermal.width_min :=
 				to_distance (get_field (cmd, 7));
-		end set_thermal_width;	
+		end set_thermal_width;
 
-		
+
 		procedure set_thermal_gap (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			module.board.user_settings.polygons_conductor.thermal.gap_max := 
+			module.board.user_settings.polygons_conductor.thermal.gap_max :=
 				to_distance (get_field (cmd, 7));
-		end set_thermal_gap;	
+		end set_thermal_gap;
 
-		
+
 	begin -- set_fill_zone_properties
 		-- CS log message
 
-		
+
 		case cmd_field_count is
-			when 6 => 
+			when 6 =>
 				-- board demo set zone fill solid/hatched
 				if get_field (cmd, 5) = keyword_fill then
 					update_element (generic_modules, module, set_fill_style'access);
@@ -248,11 +248,11 @@ package body et_cp_board_conductors is
 				-- board demo set zone spacing 0.3
 				elsif get_field (cmd, 5) = keyword_spacing then
 					update_element (generic_modules, module, set_hatching_spacing'access);
-					
+
 				-- board demo set zone isolaton 0.4
 				elsif get_field (cmd, 5) = keyword_isolation then
 					update_element (generic_modules, module, set_iso'access);
-					
+
 				-- board demo set zone priority 2
 				elsif get_field (cmd, 5) = keyword_priority then
 					update_element (generic_modules, module, set_priority'access);
@@ -265,7 +265,7 @@ package body et_cp_board_conductors is
 					expect_keywords;
 				end if;
 
-				
+
 			when 7 =>
 				-- board demo set zone easing style none/chamfer/fillet
 				if get_field (cmd, 5) = keyword_easing then
@@ -278,9 +278,9 @@ package body et_cp_board_conductors is
 
 					else
 						raise syntax_error_1 with
-							"ERROR: Expect keywords " 
+							"ERROR: Expect keywords "
 							& enclose_in_quotes (keyword_style) & " or "
-							& enclose_in_quotes (keyword_radius) 
+							& enclose_in_quotes (keyword_radius)
 							& " after keyword " & enclose_in_quotes (keyword_easing) & " !";
 					end if;
 
@@ -294,39 +294,39 @@ package body et_cp_board_conductors is
 					elsif get_field (cmd, 6) = keyword_gap_max then
 						update_element (generic_modules, module, set_thermal_gap'access);
 
-					-- CS technology ?	
-						
+					-- CS technology ?
+
 					else
 						raise syntax_error_1 with
-						"ERROR: Expect keywords " 
+						"ERROR: Expect keywords "
 							& enclose_in_quotes (keyword_width_min) & " or "
-							& enclose_in_quotes (keyword_gap_max) 
+							& enclose_in_quotes (keyword_gap_max)
 							& " after keyword " & enclose_in_quotes (keyword_relief) & " !";
 					end if;
 
-					
+
 				else
 					expect_keywords;
 				end if;
-				
-			when 8 .. type_field_count'last => 
+
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 
 			when others => command_incomplete (cmd);
-				
+
 		end case;
 	end set_fill_zone_properties;
 
 
-	
+
 
 
 
 	type type_track_shape is (LINE, ARC, ZONE);
 	-- CS circular tracks are currently not supported
 
-		
-	
+
+
 
 
 	procedure route_net (
@@ -344,40 +344,40 @@ package body et_cp_board_conductors is
 		use et_device_name;
 		use et_axes;
 		use et_directions;
-		
-		
-		shape : constant type_track_shape := 
+
+
+		shape : constant type_track_shape :=
 			type_track_shape'value (get_field (cmd, 7));
 
 		-- get the user specific settings of the board
-		settings : constant et_module_board_user_settings.type_user_settings := 
+		settings : constant et_module_board_user_settings.type_user_settings :=
 			get_user_settings (module);
 
 
-		
+
 		procedure make_fill_zone is
 			use et_board_ops_fill_zones;
 			use et_schematic_ops_nets;
 
 			net_name : pac_net_name.bounded_string;
-			
-			
+
+
 			-- Extract from the given command the polygon arguments (everything after "zone"):
-			arguments : constant type_fields_of_line := 
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 7);
 
 			-- Build a basic polygon from the arguments:
 			p0 : constant type_contour := type_contour (to_contour (arguments));
 
-			
+
 			procedure make_solid_thermal is
 				p1 : type_zone_solid;
 				p2 : type_route_solid (connection => THERMAL);
 			begin
-				p1 := (p0 with 
+				p1 := (p0 with
 					fill_style	=> SOLID,
 					linewidth	=> settings.polygons_conductor.linewidth,
-					isolation	=> settings.polygons_conductor.isolation,					
+					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
 
@@ -389,7 +389,7 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
-				
+
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
@@ -399,16 +399,16 @@ package body et_cp_board_conductors is
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
-				
+
 			end make_solid_thermal;
 
 
-			
-			procedure make_solid_solid is 
+
+			procedure make_solid_solid is
 				p1 : type_zone_solid;
 				p2 : type_route_solid (connection => SOLID);
 			begin
-				p1 := (p0 with 
+				p1 := (p0 with
 					fill_style	=> SOLID,
 					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,
@@ -423,7 +423,7 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
-				
+
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
@@ -437,17 +437,17 @@ package body et_cp_board_conductors is
 			end make_solid_solid;
 
 
-			
+
 			procedure make_hatched_thermal is
 				p1 : type_zone_hatched;
 				p2 : type_route_hatched (connection => THERMAL);
 			begin
-				p1 := (p0 with 
+				p1 := (p0 with
 					fill_style	=> HATCHED,
 					spacing		=> settings.polygons_conductor.spacing,
 					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,
-					islands		=> no_islands,			
+					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -458,7 +458,7 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
-				
+
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
@@ -468,16 +468,16 @@ package body et_cp_board_conductors is
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
-				
+
 			end make_hatched_thermal;
 
-			
-			
+
+
 			procedure make_hatched_solid is
 				p1 : type_zone_hatched;
 				p2 : type_route_hatched (connection => SOLID);
 			begin
-				p1 := (p0 with 
+				p1 := (p0 with
 					fill_style	=> HATCHED,
 					spacing		=> settings.polygons_conductor.spacing,
 					linewidth	=> settings.polygons_conductor.linewidth,
@@ -493,7 +493,7 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level),
 					others				=> <>);
 
-				
+
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
@@ -503,36 +503,36 @@ package body et_cp_board_conductors is
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
-				
+
 			end make_hatched_solid;
 
-			
+
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
 
-			
+
 			-- Proceed if net exists:
 			if net_exists (module, net_name) then
-			
+
 				case settings.polygons_conductor.fill_style is
 					when SOLID =>
 						case settings.polygons_conductor.connection is
 							when THERMAL	=> make_solid_thermal;
 							when SOLID		=> make_solid_solid;
 						end case;
-						
+
 					when HATCHED =>
 						case settings.polygons_conductor.connection is
 							when THERMAL	=> make_hatched_thermal;
 							when SOLID		=> make_hatched_solid;
 						end case;
-						
+
 				end case;
 
 			else
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
-			
+
 		end make_fill_zone;
 
 
@@ -556,15 +556,15 @@ package body et_cp_board_conductors is
 
 					-- Proceed if net exists:
 					if net_exists (module, net_name) then
-					
+
 						layer_tmp := to_signal_layer (get_field (cmd, 6));
 						width_tmp := to_distance (get_field (cmd, 8));
-						
+
 						line_tmp := type_line (to_line (
 							A => to_vector_model (get_field (cmd, 9), get_field (cmd, 10)),
 							B => to_vector_model (get_field (cmd, 11), get_field (cmd, 12))));
 
-						
+
 						add_line (
 							module_cursor 	=> module,
 							net_name		=> net_name,
@@ -578,17 +578,17 @@ package body et_cp_board_conductors is
 					else
 						message_net_not_found (SEVERITY_ERROR, net_name);
 					end if;
-					
-				
+
+
 				when 13 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-					
+
 				when others => command_incomplete (cmd);
 			end case;
 		end line_starts_at_point;
-		
 
-		
+
+
 		-- board motor_driver route net GND 1 line 2  R1 1  50 20
 		-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 		procedure line_starts_at_terminal is
@@ -607,14 +607,14 @@ package body et_cp_board_conductors is
 				layer_tmp := to_signal_layer (get_field (cmd, 6));
 				width_tmp := to_distance (get_field (cmd, 8));
 
-				
+
 				if get_field (cmd, 11) = keyword_to then
 					-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 					-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
-					
+
 					if is_number (get_field (cmd, 12)) then
 						-- THE TRACK ENDS AT A DEDICATED POINT X/Y
-						
+
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 						case cmd_field_count is
 							when 13 =>
@@ -631,21 +631,21 @@ package body et_cp_board_conductors is
 									-- the design state is to be commited or not:
 									commit_design	=> to_commit_design (cmd),
 									log_threshold	=> log_threshold + 1);
-								
+
 							when 14 .. type_field_count'last =>
 								command_too_long (cmd, cmd_field_count - 1);
-								
+
 							when others =>
 								command_incomplete (cmd);
 						end case;
-								
+
 					else
 						-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
-						
+
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
-						if get_field (cmd, 12) = to_string (AXIS_X) 
+						if get_field (cmd, 12) = to_string (AXIS_X)
 						or get_field (cmd, 12) = to_string (AXIS_Y) then
-							
+
 							case cmd_field_count is
 								when 13 =>
 									add_line_start_at_terminal_with_notches_along_axis_2 (
@@ -662,28 +662,28 @@ package body et_cp_board_conductors is
 										-- the design state is to be commited or not:
 										commit_design	=> to_commit_design (cmd),
 										log_threshold	=> log_threshold + 1);
-									
+
 								when 14 .. type_field_count'last =>
 									command_too_long (cmd, cmd_field_count - 1);
-									
+
 								when others =>
 									command_incomplete (cmd);
 							end case;
-							
+
 						else
 							invalid_keyword (12);
 						end if;
 					end if;
-					
-					
+
+
 				elsif get_field (cmd, 11) = keyword_direction then
 					-- THE TRACK RUNS INTO GIVEN DIRECTION SPECIFIED BY AN ANGLE
-					
+
 					if is_number (get_field (cmd, 13)) then
 						-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
-						
+
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
-						
+
 						case cmd_field_count is
 							when 13 =>
 								add_line_start_at_terminal_with_length (
@@ -703,18 +703,18 @@ package body et_cp_board_conductors is
 
 							when 14 .. type_field_count'last =>
 								command_too_long (cmd, cmd_field_count - 1);
-								
+
 							when others =>
 								command_incomplete (cmd);
 						end case;
 
 					else
 						-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
-						
+
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
-						if get_field (cmd, 13) = to_string (AXIS_X) 
+						if get_field (cmd, 13) = to_string (AXIS_X)
 						or get_field (cmd, 13) = to_string (AXIS_Y) then
-							
+
 							case cmd_field_count is
 								when 14 =>
 									add_line_start_at_terminal_with_notches_along_axis (
@@ -735,11 +735,11 @@ package body et_cp_board_conductors is
 
 								when 15 .. type_field_count'last =>
 									command_too_long (cmd, cmd_field_count - 1);
-									
-								when others => 
+
+								when others =>
 									command_incomplete (cmd);
 							end case;
-							
+
 						else
 							invalid_keyword (13);
 						end if;
@@ -753,11 +753,11 @@ package body et_cp_board_conductors is
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
 		end line_starts_at_terminal;
-		
 
-		
 
-		
+
+
+
 		-- board motor_driver route net GND 1 arc 0.25 50 50 50 0 50 100 ccw
 		procedure draw_arc is
 			width_tmp : type_distance_positive;
@@ -788,7 +788,7 @@ package body et_cp_board_conductors is
 								x => to_distance (dd => get_field (cmd, 13)),
 								y => to_distance (dd => get_field (cmd, 14))),
 							direction	=> to_direction (get_field (cmd, 15))));
-														
+
 						-- draw a named track
 						add_arc (
 							module_cursor => module,
@@ -806,45 +806,45 @@ package body et_cp_board_conductors is
 						message_net_not_found (SEVERITY_ERROR, net_name);
 					end if;
 
-					
-				when 16 .. type_field_count'last => 
+
+				when 16 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-					
+
 				when others =>
 					command_incomplete (cmd);
 			end case;
 		end draw_arc;
-		
-		
+
+
 	begin -- route_net
 		log (text => "route net", level => log_threshold);
 		log_indentation_up;
-		
+
 		case shape is
 			when LINE =>
 				if is_number (get_field (cmd, 9)) then -- 33.4 or IC4
-					
+
 					-- THE TRACK STARTS AT A DEDICATED POINT AT X/Y:
 					line_starts_at_point;
-					
+
 				else
 					-- THE TRACK STARTS AT A TERMINAL:
 					line_starts_at_terminal;
 				end if;
 
-				
+
 			when ARC =>
 				draw_arc;
 
-				
+
 			when ZONE =>
 				case cmd_field_count is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
 					--  board led_driver route net RESET_N 1 zone /
 					--  line 0 0 100 0 /
-					--  line 100 0 100 100 / 
-					--  arc 50 100 100 100 0 100 ccw / 
+					--  line 100 0 100 100 /
+					--  arc 50 100 100 100 0 100 ccw /
 					--  line 0 100 0 0
 					when 6 .. type_field_count'last =>
 						make_fill_zone;
@@ -852,7 +852,7 @@ package body et_cp_board_conductors is
 					when others =>
 						command_incomplete (cmd);
 				end case;
-				
+
 		end case;
 
 		log_indentation_down;
@@ -863,8 +863,8 @@ package body et_cp_board_conductors is
 
 
 
-	
-	
+
+
 
 
 	procedure show_net (
@@ -873,10 +873,10 @@ package body et_cp_board_conductors is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
-		
+
+
 		procedure do_it is
 			net_name : pac_net_name.bounded_string;
 			use et_schematic_ops_nets;
@@ -894,64 +894,64 @@ package body et_cp_board_conductors is
 			end if;
 		end do_it;
 
-		
-		
-		
+
+
+
 		procedure preprocess_command is begin
 			case cmd_field_count is
-				when 5 => 
+				when 5 =>
 					do_it;
-				
+
 				when 6 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-				
+
 				when others => command_incomplete (cmd);
-			end case;		
+			end case;
 		end preprocess_command;
-		
-		
+
+
 	begin
 		log (text => "show net", level => log_threshold);
-		log_indentation_up;		
-		
-		
+		log_indentation_up;
+
+
 		-- Show operations are only useful and possible in graphical
 		-- runmode. So we start preprocessing the given command
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-			
+
 				-- Deselect all objects in the schematic
 				-- and board drawing. This is required in case
-				-- the specified net does not exist. 
+				-- the specified net does not exist.
 				-- It is redundant in case the specified net
 				-- does exist. The reset would be executed twice,
 				-- the first time here and the second time
 				-- by procedure show_net in package et_schematic_ops_nets:
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
-					
+
 				et_board_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
 				preprocess_command;
 
-				
+
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
-					
-		end case;			
 
-		
+		end case;
+
+
 		log_indentation_down;
 	end show_net;
 
-	
 
 
 
 
-	
+
+
 
 
 
@@ -964,7 +964,7 @@ package body et_cp_board_conductors is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		procedure do_it is 
+		procedure do_it is
 			use et_net_names;
 			use et_pcb_signal_layers;
 			use et_board_ops_conductors;
@@ -977,16 +977,16 @@ package body et_cp_board_conductors is
 
 			-- Proceed if net exists:
 			if net_exists (module, net_name) then
-			
+
 				catch_zone := set_catch_zone (
 					center	=> to_vector_model (get_field (cmd, 7), get_field (cmd, 8)),
 					radius	=> to_zone_radius (get_field (cmd, 9)));
-			
+
 				delete_track (
 					module_cursor 	=> module,
 					net_name		=> net_name,
 					layer			=> to_signal_layer (get_field (cmd, 6)),
-					catch_zone		=> catch_zone,				
+					catch_zone		=> catch_zone,
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
@@ -998,32 +998,32 @@ package body et_cp_board_conductors is
 			end if;
 		end do_it;
 
-		
+
 	begin
 		log (text => "delete net segment", level => log_threshold);
-		log_indentation_up;		
+		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 9 => do_it;
-			when 10 .. type_field_count'last => 
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end delete_net_segment;
 
 
 
-	
 
 
 
-	
-	
+
+
+
 	procedure route_freetrack (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -1036,24 +1036,24 @@ package body et_cp_board_conductors is
 		use et_pcb_signal_layers;
 		use et_net_names;
 		use et_directions;
-		
+
 		shape : constant type_track_shape := type_track_shape'value (get_field (cmd, 6));
 
 		-- get the user specific settings of the board
-		settings : constant et_module_board_user_settings.type_user_settings := 
+		settings : constant et_module_board_user_settings.type_user_settings :=
 			get_user_settings (module);
-		
 
-		-- Extract from the given command the zone 
+
+		-- Extract from the given command the zone
 		-- arguments (everything after "zone"):
 		procedure make_fill_zone is
 			use et_fill_zones;
 			use et_fill_zones.boards;
 			use et_board_ops_fill_zones;
-			
-			arguments : constant type_fields_of_line := 
+
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 6);
-			
+
 			ps : type_floating_solid;
 			ph : type_floating_hatched;
 
@@ -1062,8 +1062,8 @@ package body et_cp_board_conductors is
 		begin
 			case settings.polygons_conductor.fill_style is
 				when SOLID =>
-			
-					ps := (p with 
+
+					ps := (p with
 						fill_style	=> SOLID,
 						linewidth	=> settings.polygons_conductor.linewidth,
 						isolation	=> settings.polygons_conductor.isolation,
@@ -1074,20 +1074,20 @@ package body et_cp_board_conductors is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					
+
 					add_zone (
-						module_cursor 	=> module, 
-						zone			=> ps, 
-						
+						module_cursor 	=> module,
+						zone			=> ps,
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
-					
+
 				when HATCHED =>
 
-					ph := (p with 
+					ph := (p with
 						fill_style	=> HATCHED,
 						spacing		=> settings.polygons_conductor.spacing,
 						linewidth	=> settings.polygons_conductor.linewidth,
@@ -1099,17 +1099,17 @@ package body et_cp_board_conductors is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					
+
 					add_zone (
-						module_cursor 	=> module, 
-						zone			=> ph, 
-						
+						module_cursor 	=> module,
+						zone			=> ph,
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
-					
+
 			end case;
 		end make_fill_zone;
 
@@ -1119,12 +1119,12 @@ package body et_cp_board_conductors is
 		width_tmp	: type_distance_positive;
 		layer_tmp	: type_signal_layer;
 
-		
+
 	begin -- route_freetrack
 		log (text => "route freetrack", level => log_threshold);
-		log_indentation_up;		
+		log_indentation_up;
 
-		
+
 		case shape is
 			when LINE =>
 				case cmd_field_count is
@@ -1136,7 +1136,7 @@ package body et_cp_board_conductors is
 						line_tmp := type_line (to_line (
 							A => to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
 							B => to_vector_model (get_field (cmd, 10), get_field (cmd, 11))));
-														
+
 						add_line (
 							module_cursor 	=> module,
 							net_name		=> to_net_name (""),
@@ -1147,15 +1147,15 @@ package body et_cp_board_conductors is
 							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
 
-						
+
 					when 12 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-						
+
 					when others =>
 						command_incomplete (cmd);
 				end case;
 
-				
+
 			when ARC =>
 				case cmd_field_count is
 					when 14 =>
@@ -1167,7 +1167,7 @@ package body et_cp_board_conductors is
 							A			=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
 							B			=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)),
 							direction	=> to_direction (get_field (cmd, 14))));
-														
+
 						-- draw a freetrack
 						add_arc (
 							module_cursor 	=> module,
@@ -1179,15 +1179,15 @@ package body et_cp_board_conductors is
 							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
 
-						
+
 					when 15 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-						
+
 					when others =>
 						command_incomplete (cmd);
 				end case;
 
-				
+
 			when ZONE =>
 				case cmd_field_count is
 					when 5 .. type_field_count'last =>
@@ -1198,14 +1198,14 @@ package body et_cp_board_conductors is
 				end case;
 		end case;
 
-		
+
 		log_indentation_down;
 	end route_freetrack;
 
 
 
 
-	
+
 
 
 
@@ -1218,8 +1218,8 @@ package body et_cp_board_conductors is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
-		procedure do_it is 
+
+		procedure do_it is
 			use et_net_names;
 			use et_pcb_signal_layers;
 			use et_board_ops_conductors;
@@ -1228,7 +1228,7 @@ package body et_cp_board_conductors is
 			catch_zone := set_catch_zone (
 				center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
 				radius	=> to_zone_radius (get_field (cmd, 8)));
-				
+
 			delete_track (
 				module_cursor 	=> module,
 				net_name		=> to_net_name (""),
@@ -1242,18 +1242,18 @@ package body et_cp_board_conductors is
 
 		end do_it;
 
-		
+
 	begin
 		log (text => "delete freetrack segment", level => log_threshold);
-		log_indentation_up;		
+		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 8 => do_it;
-			
+
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -1282,21 +1282,21 @@ package body et_cp_board_conductors is
 
 	begin
 		log (text => "fill zones", level => log_threshold);
-		log_indentation_up;		
+		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 4 => -- fill all zones
-				
+
 				-- command: board demo fill zone
 				fill_zones (module, log_threshold + 1);
 
-				
-			when others => 
+
+			when others =>
 				-- like: board demo fill zone GND P3V3 AGND
 
 				-- CS: existence checks for all nets
-				
+
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
 					nets.append (to_net_name (get_field (cmd, place)));
@@ -1304,7 +1304,7 @@ package body et_cp_board_conductors is
 
 				fill_zones (module, log_threshold + 1, nets);
 		end case;
-				
+
 		if runmode /= MODE_HEADLESS then
 			set_status ("conductor zones filled");
 		end if;
@@ -1312,7 +1312,7 @@ package body et_cp_board_conductors is
 
 		log_indentation_down;
 	end fill_zones;
-		
+
 
 
 
@@ -1334,21 +1334,21 @@ package body et_cp_board_conductors is
 		nets : pac_net_names.list;
 	begin
 		log (text => "clear zones", level => log_threshold);
-		log_indentation_up;		
+		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 4 => -- clear all zones
-				
+
 				-- command: board demo clear zone
 				clear_zones (module, log_threshold + 1);
 
-				
-			when others => 
+
+			when others =>
 				-- like: board demo clear zone GND P3V3 AGND
 
 				-- CS: existence check for all nets
-				
+
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
 					nets.append (to_net_name (get_field (cmd, place)));
@@ -1356,7 +1356,7 @@ package body et_cp_board_conductors is
 
 				clear_zones (module, log_threshold + 1, nets);
 		end case;
-					
+
 		if runmode /= MODE_HEADLESS then
 			set_status ("conductor zone(s) cleared");
 		end if;
@@ -1369,8 +1369,8 @@ package body et_cp_board_conductors is
 
 
 
-	
-	
+
+
 
 	procedure update_ratsnest (
 		module			: in pac_generic_modules.cursor;
@@ -1385,18 +1385,18 @@ package body et_cp_board_conductors is
 		use et_board_ops_ratsnest;
 	begin
 		log (text => "update ratsnest", level => log_threshold);
-		log_indentation_up;		
-		
-		
+		log_indentation_up;
+
+
 		case cmd_field_count is
-				
-			when 4 => 
+
+			when 4 =>
 				update_ratsnest (module, log_threshold + 1);
 				set_status (status_ratsnest_updated);
-			
-			when 5 .. type_field_count'last => 
+
+			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -1404,13 +1404,13 @@ package body et_cp_board_conductors is
 		log_indentation_down;
 	end update_ratsnest;
 
-	
-		
+
+
 end et_cp_board_conductors;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

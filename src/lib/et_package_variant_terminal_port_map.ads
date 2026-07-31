@@ -55,7 +55,7 @@ package et_package_variant_terminal_port_map is
 
 
 
-	
+
 	package pac_terminal_port_map is new ordered_maps (
 		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
 		"<"				=> pac_terminal_name."<",
@@ -64,12 +64,12 @@ package et_package_variant_terminal_port_map is
 
 
 	procedure dummy;
-	
+
 end et_package_variant_terminal_port_map;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

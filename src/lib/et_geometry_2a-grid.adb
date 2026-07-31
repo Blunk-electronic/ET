@@ -49,12 +49,12 @@ package body et_geometry_2a.grid is
 	function to_string (
 		on_off : in type_grid_on_off)
 		return string
-	is 
+	is
 		use ada.characters.handling;
 	begin
 		return to_lower (type_grid_on_off'image (on_off));
 	end;
-	
+
 
 	function to_on_off (
 		on_off : in string)
@@ -62,13 +62,13 @@ package body et_geometry_2a.grid is
 	is begin
 		return type_grid_on_off'value (on_off);
 	end to_on_off;
-	
-	
+
+
 
 	function to_string (
 		style : in type_grid_style)
 		return string
-	is 
+	is
 		use ada.characters.handling;
 	begin
 		return to_lower (type_grid_style'image (style));
@@ -84,11 +84,11 @@ package body et_geometry_2a.grid is
 
 
 
-	
+
 	function to_grid_spacing (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
-		return type_vector_model 
+		return type_vector_model
 	is
 		spacing : type_vector_model; -- to be returned
 
@@ -111,18 +111,18 @@ package body et_geometry_2a.grid is
 				-- CS invalid_keyword (get_field (line, place));
 				raise constraint_error; -- CS
 			end if;
-					
+
 			place := place + 2;
 		end loop;
-		
+
 		return spacing;
 	end to_grid_spacing;
 
 
 
-	
-	
-	
+
+
+
 	procedure next_grid_density (
 		grid 		: in out type_grid;
 		direction	: in type_grid_direction)
@@ -136,7 +136,7 @@ package body et_geometry_2a.grid is
 
 				limit_to_maximum (grid.spacing.x, grid_spacing_max);
 				limit_to_maximum (grid.spacing.y, grid_spacing_max);
-		
+
 			when GRID_DOWN =>
 				grid.spacing.x := grid.spacing.x / density_multiplier;
 				grid.spacing.y := grid.spacing.y / density_multiplier;
@@ -147,37 +147,37 @@ package body et_geometry_2a.grid is
 		end case;
 	end next_grid_density;
 
-	
-	
+
+
 	procedure reset_grid_density (
 		grid : in out type_grid)
 	is begin
 		put_line ("reset_grid_density");
-		
+
 		grid.spacing.x := grid_spacing_default;
 		grid.spacing.y := grid_spacing_default;
 	end reset_grid_density;
 
 
 
-	
+
 	function to_notches (
-		notches : in string) 
-		return type_grid_notches 
+		notches : in string)
+		return type_grid_notches
 	is begin
 		return type_grid_notches'value (notches);
 	end;
 
-	
+
 	function to_string (
-		notches : in type_grid_notches) 
-		return string 
+		notches : in type_grid_notches)
+		return string
 	is begin
 		return type_grid_notches'image (notches);
 	end;
 
-	
 
-	
+
+
 end et_geometry_2a.grid;
 

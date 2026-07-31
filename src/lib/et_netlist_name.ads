@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
@@ -44,11 +44,11 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 package et_netlist_name is
 
-	
+
 	-- Whenever we deal with netlist files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
 
-	package pac_netlist_file_name is new generic_bounded_length (file_name_length_max); 
+	package pac_netlist_file_name is new generic_bounded_length (file_name_length_max);
 
 	extension_netlist : constant string := "net";
 
@@ -56,12 +56,12 @@ package et_netlist_name is
 
 	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string;
 
-	
+
 end et_netlist_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -51,30 +51,30 @@ package body et_unit_name is
 
 
 
-	
+
 	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
 	-- 	return pac_unit_name.to_string (unit_name);
 	-- end;
 
 
-	
+
 	function to_unit_name (
-		unit_name : in string) 
-		return pac_unit_name.bounded_string 
+		unit_name : in string)
+		return pac_unit_name.bounded_string
 	is begin
 		-- CS do character and length checks
 		return pac_unit_name.to_bounded_string (to_upper (unit_name));
 	end;
 
 
-	
-	
+
+
 
 
 	procedure message_unit_not_found (
 		severity	: in type_message_severity;
 		name		: in pac_unit_name.bounded_string)
-	is 
+	is
 
 		function get_message_text (
 			name : in pac_unit_name.bounded_string)
@@ -83,7 +83,7 @@ package body et_unit_name is
 			return "Unit " & to_string (name) & " not found !";
 		end;
 
-		
+
 	begin
 		case severity is
 			when SEVERITY_ERROR =>
@@ -101,13 +101,13 @@ package body et_unit_name is
 	end message_unit_not_found;
 
 
-	
-	
+
+
 end et_unit_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

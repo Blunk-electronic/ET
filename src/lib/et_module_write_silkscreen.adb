@@ -61,7 +61,7 @@ package body et_module_write_silkscreen is
 	use pac_geometry_2;
 	use pac_file_rw;
 
-	
+
 
 	procedure write_silkscreen (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -72,18 +72,18 @@ package body et_module_write_silkscreen is
 		use pac_silk_arcs;
 		use pac_silk_circles;
 
-		
-		procedure write_line (cursor : in pac_silk_lines.cursor) is 
+
+		procedure write_line (cursor : in pac_silk_lines.cursor) is
 			use pac_silk_lines;
 		begin
 			section_mark (section_line, HEADER);
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_silk_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_silk_arcs.cursor) is
 			use pac_silk_arcs;
 		begin
 			section_mark (section_arc , HEADER);
@@ -92,8 +92,8 @@ package body et_module_write_silkscreen is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_silk_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_silk_circles.cursor) is
 			use pac_silk_circles;
 		begin
 			section_mark (section_circle, HEADER);
@@ -102,14 +102,14 @@ package body et_module_write_silkscreen is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
-			silkscreen : type_silkscreen_both_sides 
+			silkscreen : type_silkscreen_both_sides
 				renames module.board.silkscreen;
 		begin
 			case face is
@@ -122,10 +122,10 @@ package body et_module_write_silkscreen is
 					iterate (silkscreen.bottom.lines, write_line'access);
 					iterate (silkscreen.bottom.arcs, write_arc'access);
 					iterate (silkscreen.bottom.circles, write_circle'access);
-			end case;					
+			end case;
 		end query_module;
-		
-			
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write silkscreen lines, arcs and circles",
@@ -136,14 +136,14 @@ package body et_module_write_silkscreen is
 		log_indentation_down;
 	end write_silkscreen;
 
-	
-	
+
+
 end et_module_write_silkscreen;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

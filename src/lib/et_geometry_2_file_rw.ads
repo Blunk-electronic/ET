@@ -45,13 +45,13 @@ with et_geometry_2a.contours;
 generic
 	with package pac_geometry is new et_geometry_2a (<>);
 	with package pac_contours is new pac_geometry.contours;
-	
+
 package et_geometry_2_file_rw is
 
 	use pac_geometry;
 	use pac_contours;
-	
-	
+
+
 
 	-- writes start and end point of a line
 	procedure write_line (line : in type_line'class);
@@ -59,7 +59,7 @@ package et_geometry_2_file_rw is
 	-- writes center, start and end point of an arc
 	procedure write_arc (arc : in type_arc'class);
 
-	
+
 	-- writes center and radius of a circle
 	procedure write_circle (circle : in type_circle'class);
 
@@ -69,12 +69,12 @@ package et_geometry_2_file_rw is
 		polygon : in type_contour'class);
 
 
-	
+
 end et_geometry_2_file_rw;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

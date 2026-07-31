@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,20 +44,20 @@ with et_board_text;						use et_board_text;
 
 
 package et_pcb_placeholders.non_conductor is
-	
-	use pac_text_board_vectorized;
-	
 
-	
+	use pac_text_board_vectorized;
+
+
+
 	-- Placeholders of this kind exist in non-conductor layers only.
 	-- For this reason we declare a subtype:
-	
+
 	subtype type_placeholder_meaning_non_conductor is type_placeholder_meaning
 		range COMPANY .. REVISION;
 
-	
+
 	type type_placeholder_non_conductor is new
-		type_text_fab with 
+		type_text_fab with
 	record
 		meaning : type_placeholder_meaning_non_conductor := placeholder_meaning_default;
 		-- CS face ?
@@ -71,11 +71,11 @@ package et_pcb_placeholders.non_conductor is
 		placeholder : in out type_placeholder_non_conductor);
 
 
-	
+
 	-- CS procedure set_meaning
 
-	
-	
+
+
 	overriding function to_string (
 		placeholder : in type_placeholder_non_conductor)
 		return string;
@@ -85,16 +85,16 @@ package et_pcb_placeholders.non_conductor is
 		placeholder : in type_placeholder_non_conductor)
 		return type_placeholder_meaning_non_conductor;
 
-	
-	
-	
+
+
+
 	package pac_placeholders_non_conductor is new
 		doubly_linked_lists (type_placeholder_non_conductor);
 
 	use pac_placeholders_non_conductor;
 
 
-	-- Iterates the placeholders. 
+	-- Iterates the placeholders.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		placeholders	: in pac_placeholders_non_conductor.list;
@@ -103,32 +103,32 @@ package et_pcb_placeholders.non_conductor is
 		proceed			: not null access boolean);
 
 
-	
+
 
 	function to_string (
 		placeholder : in pac_placeholders_non_conductor.cursor)
 		return string;
 
-	
-	
-	
+
+
+
 	function is_selected (
-		placeholder : in pac_placeholders_non_conductor.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean;
 
 
 
 	function is_proposed (
-		placeholder : in pac_placeholders_non_conductor.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean;
 
-	
-	
+
+
 end et_pcb_placeholders.non_conductor;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

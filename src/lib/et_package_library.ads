@@ -64,26 +64,26 @@ with et_logging;						use et_logging;
 
 
 package et_package_library is
-	
+
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
 	use pac_contours;
 
-	
 
-	
+
+
 -- PLACEHOLDERS FOR TEXTS
 	--type type_text_meaning_package is (NAME, VALUE, PURPOSE);
 
 	--function to_string (text_meaning : in type_text_meaning_package) return string;
 	--function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
-	
+
 	--type type_text_placeholder is new type_text_fab with record
 		--meaning : type_text_meaning_package := NAME;
 	--end record;
 
-	---- There can be lots of placeholders of this kind. So they are stored in a list:	
+	---- There can be lots of placeholders of this kind. So they are stored in a list:
 	--package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	---- Placeholders for device name and value can be placed in
@@ -91,11 +91,11 @@ package et_package_library is
 	--type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
 	--function to_string (layer : in type_placeholder_package_layer) return string;
 	--function to_layer (layer : in string) return type_placeholder_package_layer;
-	
-	---- A collection of text placeholders in silk screen and assembly documentation 
-	---- modelled by this type. The user is free to change them in the 
+
+	---- A collection of text placeholders in silk screen and assembly documentation
+	---- modelled by this type. The user is free to change them in the
 	---- layout (position, text size, rotation, line width ...).
-	---- Initally, when a device is added to the schematic, these placeholders are 
+	---- Initally, when a device is added to the schematic, these placeholders are
 	---- copies of the placeholders defined in the package model.
 	--type type_text_placeholders_silk_screen is record
 		--top		: pac_text_placeholders.list;
@@ -112,31 +112,31 @@ package et_package_library is
 		--assy_doc	: type_text_placeholders_assembly_documentation;
 	--end record;
 
-	
 
 
 
-		
 
-	
+
+
+
 	---- Silkscreen objects include placeholders for device name,
 	---- value, purpose:
 	--type type_silkscreen_package is new type_silkscreen with record
 		--placeholders : pac_text_placeholders.list;
 	--end record;
 
-	
+
 	---- Silkscreen is about two sides of the board:
 	--type type_silkscreen_both_sides is record
 		--top		: type_silkscreen_package;
 		--bottom	: type_silkscreen_package;
 	--end record;
 
-	
+
 
 	-- Assembly documentation includes placeholders:
-	--type type_assembly_documentation 
-		--is new et_assy_doc.packages.type_assembly_documentation with 
+	--type type_assembly_documentation
+		--is new et_assy_doc.packages.type_assembly_documentation with
 	--record
 		--placeholders: pac_text_placeholders.list;
 	--end record;
@@ -152,12 +152,12 @@ package et_package_library is
 
 	use pac_package_model_file;
 
-	
+
 	-- Package (or footprint) models are are stored in files ending with *.pac.
 	-- At the same time a
 	-- package name (like "libraries/packages/smd/SO14.pac")
 	-- is also the key to the package library:
-	
+
 	-- CS: this should be a hashed map:
 	package pac_package_models is new indefinite_ordered_maps ( -- CS ordered_maps ?
 		key_type		=> pac_package_model_file.bounded_string,
@@ -166,7 +166,7 @@ package et_package_library is
 	use pac_package_models;
 
 
-	-- Returns the name of the package model for 
+	-- Returns the name of the package model for
 	-- a given package cursor:
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
@@ -174,23 +174,23 @@ package et_package_library is
 	-- CS rename to get_package_model_name
 
 
-	-- Returns the name of the package model for 
+	-- Returns the name of the package model for
 	-- a given package cursor:
 	function get_package_model_name (
 		model_cursor : in pac_package_models.cursor)
 		return string;
 
-	
-	
-	
+
+
+
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
-	
+
 	package_library	 : pac_package_models.map;
 
 
 
 
-	
+
 
 	-- Creates a package and stores it in the package library:
 	procedure create_package (
@@ -200,7 +200,7 @@ package et_package_library is
 
 
 
-	
+
 	-- Returns for a given package model file name
 	-- (like "../lbr/smd/SO15.pac")
 	-- the package model in the package library:
@@ -209,25 +209,25 @@ package et_package_library is
 		return pac_package_models.cursor;
 
 
-	
-	
+
+
 	-- Returns true if the given package is
-	-- a real package with a height, means if it is relevant 
+	-- a real package with a height, means if it is relevant
 	-- for creating bill of materials (BOM):
 	function is_bom_relevant (
 		package_cursor : in pac_package_models.cursor)
 		return boolean;
 
-	
-	
+
+
 	-- Returns true if the given package model (via the model file name)
 	-- is relevant for creating bill of materials (BOM):
 	function is_bom_relevant (
-		package_model : in pac_package_model_file.bounded_string) 
+		package_model : in pac_package_model_file.bounded_string)
 		return boolean;
 
-	
-	-- Returns a cursor to the requested terminal (with all its properties) 
+
+	-- Returns a cursor to the requested terminal (with all its properties)
 	-- within the given package model:
 	function get_terminal (
 		cursor		: in pac_package_models.cursor;
@@ -236,7 +236,7 @@ package et_package_library is
 
 
 
-	
+
 
 	-- Returns the contours of the terminals of a package.
 	-- Adresses only those terminals which are affected by
@@ -278,7 +278,7 @@ package et_package_library is
 		-- CS layer_category	: in type_signal_layer_category_outer) ?
 		return et_via_restrict.packages.type_one_side;
 
-	
+
 	-- Returns the contours of pcb holes of the given package:
 	function get_hole_contours (
 		package_cursor	: in pac_package_models.cursor)
@@ -292,7 +292,7 @@ package et_package_library is
 		face			: in type_face)
 		return type_keepout;
 
-	
+
 	-- Returns the contours of stencil objects of the given package.
 	-- Adresses only those objects affected by the given face:
 	function get_stencil_objects (
@@ -309,7 +309,7 @@ package et_package_library is
 		return et_stopmask.type_stopmask;
 
 
-	-- Returns the contours of silkscreen objects (incl. plaaceholders) 
+	-- Returns the contours of silkscreen objects (incl. plaaceholders)
 	-- of the given package model.
 	-- Adresses only those objects affected by the given face:
 	function get_silkscreen_objects (
@@ -318,14 +318,14 @@ package et_package_library is
 		return type_silkscreen_package;
 
 
-	-- Returns the contours of assembly documentation 
+	-- Returns the contours of assembly documentation
 	-- objects (incl. plaaceholders) of the given package model.
 	-- Adresses only those objects affected by the given face:
 	function get_assy_doc_objects (
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
 		return type_assy_doc_package;
-	
+
 
 
 	-- Returns the default placeholders of the package
@@ -334,8 +334,8 @@ package et_package_library is
 		package_cursor : in pac_package_models.cursor)
 		return type_text_placeholders;
 
-	
-	
+
+
 
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	--procedure line_pcb_contour_properties (
@@ -353,14 +353,14 @@ package et_package_library is
 		--cursor			: in pac_pcb_contour_circles.cursor;
 		--log_threshold 	: in type_log_level);
 
-	
 
-	
+
+
 end et_package_library;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -46,19 +46,19 @@ with et_package_library;
 
 package body et_device_library.packages is
 
-	
+
 
 	function get_package_variant (
 		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
 		return pac_package_variants.cursor
-	is 
+	is
 		result : pac_package_variants.cursor;
 
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) 
-		is 
+			device		: in type_device_model)
+		is
 			pragma unreferenced (device_name);
 			use pac_package_variants;
 			--vc : constant pac_package_variants.cursor := find (device.variants, variant);
@@ -67,29 +67,29 @@ package body et_device_library.packages is
 			--if vc /= pac_package_variants.no_element then
 				--result := vc;
 			--else
-				--raise semantic_error_1 with "Package variant " 
+				--raise semantic_error_1 with "Package variant "
 					--& enclose_in_quotes (to_string (variant)) &
-					--" not defined."; 
+					--" not defined.";
 					---- CS output model name. Mind max. string length of error message.
 			--end if;
 		end query_variants;
-		
+
 	begin
 		query_element (device_cursor, query_variants'access);
 		return result;
 	end get_package_variant;
 
 
-	
-	
-	
+
+
+
 	function is_variant_available (
 		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean is
-		
+
 		result : boolean := false; -- to be returned
-		
+
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) is
@@ -99,17 +99,17 @@ package body et_device_library.packages is
 				result := true;
 			end if;
 		end;
-		
+
 	begin
 		pac_device_models.query_element (
 			position	=> device_cursor,
 			process		=> query_variants'access);
-		
+
 		return result;
 	end is_variant_available;
 
 
-	
+
 
 	function get_available_variants (
 		device_cursor	: in pac_device_models.cursor)
@@ -121,13 +121,13 @@ package body et_device_library.packages is
 			when APPEARANCE_PCB		=> result := element (device_cursor).variants;
 			when APPEARANCE_VIRTUAL	=> null;
 		end case;
-		
+
 		return result;
 	end get_available_variants;
 
 
 
-	
+
 
 
 	function get_first_package_variant (
@@ -144,18 +144,18 @@ package body et_device_library.packages is
 
 
 
-	
-	
+
+
 	function get_package_model (
 		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
-		return pac_package_model_file.bounded_string 
+		return pac_package_model_file.bounded_string
 	is
 		package_model : pac_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
-		
+
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) 
+			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
 			use et_package_library;
@@ -165,7 +165,7 @@ package body et_device_library.packages is
 			variant_cursor := pac_package_variants.find (device.variants, variant);
 			package_model := get_package_model_file (element (variant_cursor).model_cursor);
 		end;
-		
+
 	begin
 		pac_device_models.query_element (
 			position	=> device_cursor,
@@ -175,7 +175,7 @@ package body et_device_library.packages is
 	end get_package_model;
 
 
-	
+
 
 
 
@@ -192,7 +192,7 @@ package body et_device_library.packages is
 		use et_package_library;
 		package_cursor : pac_package_models.cursor;
 	begin
-		-- Get the package model name:		
+		-- Get the package model name:
 		package_model := get_package_model (device, variant);
 
 		-- Locate the package model in the package library:
@@ -201,13 +201,13 @@ package body et_device_library.packages is
 		return get_default_placeholders (package_cursor);
 	end get_default_placeholders;
 
-	
-		
+
+
 end et_device_library.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -38,14 +38,14 @@
 -- DESCRIPTION:
 --
 --	This package provides general things required to set up a canvas. A canvas
---  is also referred to as "view". 
+--  is also referred to as "view".
 --  Since the canvas is used in various drawings like schematic, pcb-layout, ...
 --  it must be instantiated with the package that provides the respective
 --  measurement system.
 
 
 package et_canvas_messages is
-	
+
 	status_hint_for_abort	: constant string := " Hit ESC to abort.";
 	status_click_left		: constant string := "LEFT click ";
 	status_click_right		: constant string := "RIGHT click ";
@@ -55,7 +55,7 @@ package et_canvas_messages is
 	status_set_B			: constant string := "to set end point.";
 	status_set_A			: constant string := "to set start point.";
 
-	status_next_object_clarification : constant string := 
+	status_next_object_clarification : constant string :=
 		"For next object click RIGHT or press page-down.";
 		--& " Confirm selection with LEFT click or SPACE key.";
 
@@ -64,10 +64,10 @@ package et_canvas_messages is
 
 end et_canvas_messages;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

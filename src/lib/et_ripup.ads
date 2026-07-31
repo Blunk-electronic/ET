@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 
@@ -52,20 +52,20 @@ package et_ripup is
 	function to_string (
 		mode : in type_ripup_mode)
 		return string;
-	
-		
+
+
 	ripup_mode : type_ripup_mode := SINGLE_SEGMENT;
 
 	procedure reset_ripup_mode;
-	
+
 	procedure next_ripup_mode;
-	
-	
+
+
 end et_ripup;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with et_canvas_schematic;
@@ -50,22 +50,22 @@ package et_colors.schematic is
 	-- The global context is now visible
 	-- for all procedures that set the color.
 
-	
+
 	cursor			: type_color := white;
 	background 		: type_color := black;
 	frame			: type_color := white;
-	grid 			: type_color := gray;	
+	grid 			: type_color := gray;
 	nets 			: type_color := green;
-	origin			: type_color := gray;	
+	origin			: type_color := gray;
 	placeholders	: type_color := white;
-	ports			: type_color := green;	
+	ports			: type_color := green;
 	submodules		: type_color := mangenta;
 	symbols			: type_color := red;
 	texts			: type_color := turquise;
 
-	
-	procedure set_color_cursor;	
-	
+
+	procedure set_color_cursor;
+
 	procedure set_color_background;
 
 
@@ -76,36 +76,36 @@ package et_colors.schematic is
 		opacity		: in type_opacity := default_opacity);
 
 
-	
+
 	procedure set_color_frame (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_nets (
 
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_origin (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_placeholders (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_ports (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_submodules (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_symbols (
 		brightness	: in type_brightness := brightness_default);
 
-	
+
 	procedure set_color_texts (
 		brightness	: in type_brightness := brightness_default);
 
@@ -113,7 +113,7 @@ end et_colors.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

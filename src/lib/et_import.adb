@@ -53,25 +53,25 @@ package body et_import is
 			null;
 		else
 			log (SEVERITY_ERROR, "CAD format '"
-					& format & "' invalid !" 
+					& format & "' invalid !"
 					& " Supported formats: "
 					& type_cad_format'image (kicad_v4) -- CS: use a loop to offer formats
 					& " !",
 				console => true);
-			
+
 			raise constraint_error;
 		end if;
 	end validate_cad_format;
 
 
-	
+
 	function to_cad_format (format : in string) return type_cad_format is
 	begin
 		return type_cad_format'value (format);
 	end to_cad_format;
 
 
-	
+
 	function to_string (format : in type_cad_format) return string is
 	-- Converts the given cad format to a string.
 	begin
@@ -79,7 +79,7 @@ package body et_import is
 	end to_string;
 
 
-	
+
 	function invalid_cad_format (format : in type_cad_format) return string is
 	-- Returns a message that the given format is not supported.
 	begin
@@ -88,10 +88,10 @@ package body et_import is
 
 
 
-	
+
 	procedure validate_project (
 		name		: in pac_project_name.bounded_string;
-		cad_format	: in type_cad_format := UNKNOWN) 
+		cad_format	: in type_cad_format := UNKNOWN)
 	is
 	pragma unreferenced (cad_format);
 	-- CS: currently this is just a test, whether the directory "name" exists.
@@ -100,18 +100,18 @@ package body et_import is
 		if exists (pac_project_name.to_string (name)) then
 			null; -- fine
 		else
-			log (SEVERITY_ERROR, "project '" & to_string (name) 
+			log (SEVERITY_ERROR, "project '" & to_string (name)
 				& "' not found ! Working directory correct ?",
 				console => true);
 			raise constraint_error;
 		end if;
 	end validate_project;
-	
+
 end et_import;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

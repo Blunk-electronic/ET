@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about general meta data of a package.
 --
 --   do do:
@@ -58,31 +58,31 @@ package et_package_read_meta is
 
 	pac_appearance	: type_bom_relevant := bom_relevant_default;
 
-	-- The description and technology will be assigned 
+	-- The description and technology will be assigned
 	-- once the complete model has been read:
-	pac_description	: pac_package_description.bounded_string; 
+	pac_description	: pac_package_description.bounded_string;
 	pac_technology	: type_assembly_technology := assembly_technology_default;
 
 
-	
-	-- Once the appearance has been read, a new package will be created where this 
+
+	-- Once the appearance has been read, a new package will be created where this
 	-- pointer is pointing at:
 	packge : type_package_model_access; -- CS rename to package_model
-		
 
-	
-	
+
+
+
 
 	procedure read_meta (
 		line 			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-	
 
 
-	
+
+
 	procedure assign_meta (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_package_read_meta;

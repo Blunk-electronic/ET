@@ -60,7 +60,7 @@ package body et_board_ops_net_class is
 	is
 		result : type_net_class;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -71,25 +71,25 @@ package body et_board_ops_net_class is
 		begin
 			if class = net_class_name_default then
 				null;
-				-- CS load result with DRU settings (min track clearance, min track width, 
+				-- CS load result with DRU settings (min track clearance, min track width,
 				-- min via drill size)
 			else
 				result := element (find (module.net_classes, class));
 			end if;
 		end query_module;
 
-		
+
 	begin
 		query_element (module, query_module'access);
-		
+
 		return result;
 	end get_net_class;
 
 
 
-	
 
-	
+
+
 
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
@@ -99,7 +99,7 @@ package body et_board_ops_net_class is
 
 		result : type_net_class;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -111,12 +111,12 @@ package body et_board_ops_net_class is
 		begin
 			if net = et_nets.pac_nets.no_element then -- freetrack
 				null;
-				-- CS load result with DRU settings (min track clearance, min track width, 
+				-- CS load result with DRU settings (min track clearance, min track width,
 				-- min via drill size)
 			else
 				if element (net).class = net_class_name_default then
 					null;
-					-- CS load result with DRU settings (min track clearance, min track width, 
+					-- CS load result with DRU settings (min track clearance, min track width,
 					-- min via drill size)
 				else
 					result := element (find (module.net_classes, element (net).class));
@@ -124,7 +124,7 @@ package body et_board_ops_net_class is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		query_element (module, query_module'access);
 		return result;
@@ -134,7 +134,7 @@ package body et_board_ops_net_class is
 
 
 
-	
+
 
 
 
@@ -144,8 +144,8 @@ package body et_board_ops_net_class is
 		return pac_net_class_name.bounded_string
 	is
 		result : pac_net_class_name.bounded_string;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -161,24 +161,24 @@ package body et_board_ops_net_class is
 			begin
 				result := get_class_name (net);
 			end;
-			
+
 		begin
 			query_element (net_cursor, query_net'access);
 		end query_module;
-		
-		
+
+
 	begin
 		query_element (module_cursor, query_module'access);
 		return result;
 	end get_class_name;
 
 
-	
-
-	
 
 
-	
+
+
+
+
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
@@ -190,41 +190,41 @@ package body et_board_ops_net_class is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		use pac_nets;
-		
-		
+
+
 		procedure query_module (
 			name	: in pac_module_name.bounded_string;
 			module	: in out type_generic_module)
 		is
 			pragma unreferenced (name);
 
-			
+
 			procedure set_class (
 				name	: in pac_net_name.bounded_string;
 				net		: in out type_net)
-			is 
+			is
 				pragma unreferenced (name);
 				use pac_net_class_name;
 			begin
 				if net.class = net_class then
-					log (text => "Net already in class " 
+					log (text => "Net already in class "
 							& enclose_in_quotes (et_net_class_name.to_string (net_class)),
 						level => log_threshold + 1);
 				else
 					log (text => "Changing net class from "
-						 & enclose_in_quotes (et_net_class_name.to_string (net.class)) 
+						 & enclose_in_quotes (et_net_class_name.to_string (net.class))
 						 & " to " & enclose_in_quotes (et_net_class_name.to_string (net_class)),
 						level => log_threshold + 1);
 
 					net.class := net_class;
 				end if;
 			end set_class;
-			
-			
+
+
 		begin
 			pac_nets.update_element (
 				container	=> module.nets,
@@ -233,10 +233,10 @@ package body et_board_ops_net_class is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " set class of net " & net_name_to_string (net_name) 
+			& " set class of net " & net_name_to_string (net_name)
 			& " to " & enclose_in_quotes (to_string (net_class)),
 			level => log_threshold);
 
@@ -251,32 +251,32 @@ package body et_board_ops_net_class is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		log_indentation_down;
 	end set_net_class;
 
-	
-	
+
+
 
 end et_board_ops_net_class;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

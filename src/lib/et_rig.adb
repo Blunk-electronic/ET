@@ -49,11 +49,11 @@ with et_time;					use et_time;
 
 
 package body et_rig is
-	
 
 
 
-	
+
+
 	function compare_connectors (left, right : in type_module_connection) return boolean is
 		use pac_device_purpose;
 		use pac_module_instance_name;
@@ -85,7 +85,7 @@ package body et_rig is
 						r := true;
 					elsif left.purpose_B < right.purpose_B then
 						r := false;
-					else 
+					else
 						-- left purpose_B equals right purpose_B
 						-- means: connectors are equal
 						r := false;
@@ -93,13 +93,13 @@ package body et_rig is
 				end if;
 			end if;
 		end if;
-		
+
 		return r;
 	end compare_connectors;
 
 
 
-	procedure write_rig_configuration_header is 
+	procedure write_rig_configuration_header is
 		use et_system_info;
 		use et_string_processing;
 		use et_conventions;
@@ -111,7 +111,7 @@ package body et_rig is
 		new_line;
 	end;
 
-	
+
 	procedure write_rig_configuration_footer is
 		use et_string_processing;
 		use et_conventions;
@@ -127,26 +127,26 @@ package body et_rig is
 
 
 
-	
+
 	procedure save_rig (
 		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 		is separate;
 
 
-		
+
 	procedure read_rigs (
 		log_threshold 	: in type_log_level)
 		is separate;
 
 
 
-	
+
 end et_rig;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,8 +45,8 @@ with et_thermal_relief;			use et_thermal_relief;
 
 
 package et_fill_zones.boards is
-	
-	
+
+
 	-- priority: 0 is weakest
 	zone_priority_max : constant natural := 100;
 
@@ -55,8 +55,8 @@ package et_fill_zones.boards is
 	function to_string (priority_level : in type_priority) return string;
 	function to_priority (priority_level : in string) return type_priority;
 
-	
-	
+
+
 
 	type type_user_settings is record
 
@@ -65,7 +65,7 @@ package et_fill_zones.boards is
 
 		-- relevant if connection is thermal
 		thermal			: type_relief_properties;
-		
+
 		fill_style		: type_fill_style := fill_style_default;
 
 		-- relevant if fill style is HATCHED:
@@ -73,7 +73,7 @@ package et_fill_zones.boards is
 
 		-- linewidth of borders and fill stripes:
 		linewidth		: type_track_width := type_track_width'first;
-		
+
 		isolation		: type_track_clearance := type_track_clearance'first;
 		priority_level	: type_priority := type_priority'first;
 		easing			: type_easing;
@@ -81,17 +81,17 @@ package et_fill_zones.boards is
 
 
 
-	
 
-	
-	
+
+
+
 	-- All fill zones in conductor layers have these common properties:
 	type type_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_priority := type_priority'first;
 	end record;
 
-	
+
 	function to_string (
 		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
@@ -118,24 +118,24 @@ package et_fill_zones.boards is
 
 
 
-	
-	
-	
+
+
+
 -- FLOATING FILL ZONES (not connected to any net):
-	
+
 	type type_floating_solid is new  -- CS make private ?
 		type_zone (fill_style => SOLID)
 	with record
 		properties	: type_properties;
 	end record;
 
-	package pac_floating_solid is new 
+	package pac_floating_solid is new
 		indefinite_doubly_linked_lists (type_floating_solid);
 
-		
-		
+
+
 	type type_floating_hatched is new  -- CS make private ?
-		type_zone (fill_style => HATCHED) 
+		type_zone (fill_style => HATCHED)
 	with record
 		properties	: type_properties;
 	end record;
@@ -143,31 +143,31 @@ package et_fill_zones.boards is
 	package pac_floating_hatched is new
 		indefinite_doubly_linked_lists (type_floating_hatched);
 
-		
+
 	type type_floating is record -- CS rename to type_fill_zone_floating ?
 		solid	: pac_floating_solid.list;
 		hatched	: pac_floating_hatched.list;
 	end record;
 
 
-	
 
 
-	
+
+
 -- FILL ZONES CONNECTED WITH A NET (part of a route)
 
-	-- Tracks that are not connected with a fill zone cause 
+	-- Tracks that are not connected with a fill zone cause
 	-- cutout areas inside the zone. These tracks are foreign to the
 	-- zone.
 	-- In contrast, a track of a native net - connected with the zone - usually
 	-- does not cause a cutout area. So the track gets embedded in the zone.
-	-- After filling the zone, the track gets overpainted and becomes 
+	-- After filling the zone, the track gets overpainted and becomes
 	-- invisible. It becomes visible again if the fill of the zone is cleared.
 	-- However, if the user insists on not-embedding then we need
 	-- a simple boolean type to express this requirement:
 	type type_native_tracks_embedded is new boolean;
-	
-	
+
+
 	type type_route_solid (connection : type_pad_connection)  -- CS make private ?
 		is new type_zone_solid
 	with record
@@ -186,21 +186,21 @@ package et_fill_zones.boards is
 				-- Reliefes are always generated automatically
 				-- depending on the terminal geometry, user specific settings, etc ...
 				reliefes			: pac_reliefes.list;
-				
+
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
 				technology	: type_pad_technology;
 				-- no need for any kind of thermal parameters
-		end case;				
+		end case;
 	end record;
 
 
 
-	
-	
+
+
 	type type_route_hatched (connection : type_pad_connection)  -- CS make private ?
-		is new type_zone_hatched 
+		is new type_zone_hatched
 	with record
 		properties	: type_properties;
 
@@ -208,7 +208,7 @@ package et_fill_zones.boards is
 		-- If the connection is SOLID, then this property is ignored,
 		-- means: Everything will be embedded in the zone:
 		native_tracks_embedded : type_native_tracks_embedded := false;
-	
+
 		case connection is
 			when THERMAL =>
 				relief_properties	: type_relief_properties;
@@ -218,7 +218,7 @@ package et_fill_zones.boards is
 				-- depending on the terminal geometry, user specific settings, etc ...
 				reliefes			: pac_reliefes.list;
 
-				
+
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
 				technology	: type_pad_technology;
@@ -227,15 +227,15 @@ package et_fill_zones.boards is
 	end record;
 
 
-	
+
 	package pac_route_solid is new
 		indefinite_doubly_linked_lists (type_route_solid);
-	
+
 	package pac_route_hatched is new
-		indefinite_doubly_linked_lists (type_route_hatched);	
+		indefinite_doubly_linked_lists (type_route_hatched);
 
 
-		
+
 	type type_route is record -- CS rename to type_fill_zone_tied ?
 		solid	: pac_route_solid.list;
 		hatched	: pac_route_hatched.list;
@@ -245,11 +245,11 @@ package et_fill_zones.boards is
 
 
 
-	
+
 
 -- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled).
--- These zones apply to all fill zones. 	
-	
+-- These zones apply to all fill zones.
+
 	type type_cutout is new type_contour with record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
@@ -257,13 +257,13 @@ package et_fill_zones.boards is
 
 	package pac_cutouts is new doubly_linked_lists (type_cutout);
 	-- CS rename to pac_fill_zone_cutouts ?
-	
-	
+
+
 end et_fill_zones.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

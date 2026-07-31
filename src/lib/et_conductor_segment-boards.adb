@@ -56,7 +56,7 @@ package body et_conductor_segment.boards is
 	end;
 
 
-	
+
 
 	function get_layer (
 		line : in type_conductor_line)
@@ -67,12 +67,12 @@ package body et_conductor_segment.boards is
 
 
 
-	
+
 	function to_string (
 		line	: in type_conductor_line;
 		width	: in boolean)
 		return string
-	is 
+	is
 		l : type_conductor_line renames line;
 
 		text : constant string := to_string (pac_geometry_2.type_line (l))
@@ -87,10 +87,10 @@ package body et_conductor_segment.boards is
 
 
 
-	
+
 	function are_connected (
 		line_1, line_2	: in type_conductor_line;
-		observe_layer	: in boolean := true)					   
+		observe_layer	: in boolean := true)
 		return boolean
 	is
 		result : boolean := false;
@@ -115,15 +115,15 @@ package body et_conductor_segment.boards is
 
 		-- test start/end points between start/end points:
 		if result = false then
-			if line_1.on_line (to_vector (get_A (line_2))) 
-			or line_1.on_line (to_vector (get_B (line_2))) 
-			or line_2.on_line (to_vector (get_A (line_1))) 
-			or line_2.on_line (to_vector (get_B (line_1))) 
+			if line_1.on_line (to_vector (get_A (line_2)))
+			or line_1.on_line (to_vector (get_B (line_2)))
+			or line_2.on_line (to_vector (get_A (line_1)))
+			or line_2.on_line (to_vector (get_B (line_1)))
 			then
 				result := true;
 			end if;
 		end if;
-		
+
 		return result;
 	end are_connected;
 
@@ -145,9 +145,9 @@ package body et_conductor_segment.boards is
 		return get_B (element (line));
 	end;
 
-	
-	
-	
+
+
+
 	function to_string (
 		line	: in pac_conductor_lines.cursor;
 		width	: in boolean)
@@ -167,9 +167,9 @@ package body et_conductor_segment.boards is
 	end get_layer;
 
 
-	
-	
-	
+
+
+
 	function is_proposed (
 		line : in pac_conductor_lines.cursor)
 		return boolean
@@ -196,8 +196,8 @@ package body et_conductor_segment.boards is
 	end is_selected;
 
 
-	
-	
+
+
 	function get_length (
 		lines	: in pac_conductor_lines.list)
 		return string
@@ -209,8 +209,8 @@ package body et_conductor_segment.boards is
 	end get_length;
 
 
-	
-	
+
+
 	function get_lines_by_layer (
 		lines	: in pac_conductor_lines.list;
 		layer	: in type_signal_layer)
@@ -225,14 +225,14 @@ package body et_conductor_segment.boards is
 				result.append (line);
 			end if;
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		return result;
 	end get_lines_by_layer;
 
 
-	
+
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
 		process	: not null access procedure (position : in pac_conductor_lines.cursor);
@@ -245,23 +245,23 @@ package body et_conductor_segment.boards is
 			next (c);
 		end loop;
 	end iterate;
-		
-	
-	
+
+
+
 	function on_segment (
 		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor)
-		return boolean 
+		return boolean
 	is
 		result : boolean := false; -- to be returned
 	begin
 		if element (line).layer = layer then
 			if element (line).on_line (to_vector (point)) then
-				-- CS use 
+				-- CS use
 				--segment_line := to_line_segment (line);
 				--distance := get_shortest_distance (point, segment_line);
-							
+
 				result := true;
 			else
 				result := false;
@@ -269,7 +269,7 @@ package body et_conductor_segment.boards is
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end on_segment;
 
@@ -302,13 +302,13 @@ package body et_conductor_segment.boards is
 		return arc.layer;
 	end;
 
-	
-	
+
+
 	function to_string (
 		arc		: in type_conductor_arc;
 		width	: in boolean)
 		return string
-	is 
+	is
 		a : type_conductor_arc renames arc;
 
 		text : constant string := to_string (pac_geometry_2.type_arc (a))
@@ -330,7 +330,7 @@ package body et_conductor_segment.boards is
 		return get_A (element (arc));
 	end;
 
-	
+
 	function get_B (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
@@ -340,7 +340,7 @@ package body et_conductor_segment.boards is
 
 
 
-	
+
 
 	function to_string (
 		arc		: in pac_conductor_arcs.cursor;
@@ -351,7 +351,7 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
-	
+
 
 	function get_layer (
 		arc : in pac_conductor_arcs.cursor)
@@ -360,7 +360,7 @@ package body et_conductor_segment.boards is
 		return element (arc).layer;
 	end get_layer;
 
-	
+
 
 	function is_proposed (
 		arc : in pac_conductor_arcs.cursor)
@@ -389,8 +389,8 @@ package body et_conductor_segment.boards is
 
 
 
-	
-	
+
+
 	function get_arcs_by_layer (
 		arcs	: in pac_conductor_arcs.list;
 		layer	: in type_signal_layer)
@@ -405,16 +405,16 @@ package body et_conductor_segment.boards is
 				result.append (arc);
 			end if;
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		return result;
 	end get_arcs_by_layer;
-	
 
 
 
-	
+
+
 	procedure iterate (
 		arcs	: in pac_conductor_arcs.list;
 		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
@@ -427,20 +427,20 @@ package body et_conductor_segment.boards is
 			next (c);
 		end loop;
 	end iterate;
-		
 
-	
+
+
 	function on_segment (
 		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		arc			: in pac_conductor_arcs.cursor)
-		return boolean 
+		return boolean
 	is
 		pragma unreferenced (point);
 		result : boolean := false; -- to be returned
 	begin
 		if element (arc).layer = layer then
-			-- CS use 
+			-- CS use
 			--segment_arc := to_arc_segment (arc);
 			--distance := get_shortest_distance (point, segment_arc);
 
@@ -454,7 +454,7 @@ package body et_conductor_segment.boards is
 
 
 
-	
+
 
 -- CIRCLES:
 
@@ -466,12 +466,12 @@ package body et_conductor_segment.boards is
 	end;
 
 
-	
+
 	function to_string (
 		circle	: in type_conductor_circle;
 		width	: in boolean)
 		return string
-	is 
+	is
 		c : type_conductor_circle renames circle;
 
 		text : constant string := to_string (pac_geometry_2.type_circle (c))
@@ -485,7 +485,7 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
-	
+
 
 	procedure iterate (
 		circles	: in pac_conductor_circles.list;
@@ -501,7 +501,7 @@ package body et_conductor_segment.boards is
 	end iterate;
 
 
-	
+
 	function get_layer (
 		circle : in pac_conductor_circles.cursor)
 		return type_signal_layer
@@ -536,13 +536,13 @@ package body et_conductor_segment.boards is
 		end if;
 	end is_selected;
 
-	
-	
+
+
 end et_conductor_segment.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

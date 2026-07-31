@@ -44,7 +44,7 @@ package et_window_dimensions is
 	-- subtype type_device_pixels_positive is type_device_pixels
 	-- 	range 0 .. 1_000_000; -- CS use a reasonable limit
 
-	
+
 	type type_window_size is record
 		width, height : positive := 1; -- CS subtype for reasonable limits
 	end record;
@@ -54,6 +54,6 @@ package et_window_dimensions is
 		size : in type_window_size)
 		return string;
 
-	
+
 end et_window_dimensions;
 

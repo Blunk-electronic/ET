@@ -55,19 +55,19 @@ package et_terminal_tht is
 		millings 		: in type_contour;
 		log_threshold	: in type_log_level);
 
-	
+
 	plated_millings_default : type_contour;
 	-- CS this variable should never be changed.
 	-- Find a way to make it a constant.
 
 
 
-		
+
 	-- The shape on the top side
 	-- is not nessecarily the same as on the bottom side.
 	type type_pad_outline_tht is record
-		top		: type_contour; 
-		bottom	: type_contour; 
+		top		: type_contour;
+		bottom	: type_contour;
 	end record;
 
 
@@ -83,14 +83,14 @@ package et_terminal_tht is
 		bottom	: type_stopmask_shape;
 	end record;
 
-	
-	
-	
+
+
+
 end et_terminal_tht;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

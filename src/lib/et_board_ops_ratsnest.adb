@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 -- with ada.text_io;			use ada.text_io;
 with et_module;						use et_module;
@@ -52,7 +52,7 @@ with et_board_ops_netchangers;
 
 package body et_board_ops_ratsnest is
 
-	
+
 	use pac_nets;
 
 
@@ -71,7 +71,7 @@ package body et_board_ops_ratsnest is
 			append (result, get_B (l));
 		end query_line;
 
-		
+
 		use pac_conductor_arcs;
 		procedure query_arc (a : in pac_conductor_arcs.cursor) is
 		begin
@@ -79,7 +79,7 @@ package body et_board_ops_ratsnest is
 			append (result, get_B (a));
 		end query_arc;
 
-		
+
 	begin
 		-- Query lines and arc segments:
 		iterate (element (net_cursor).route.lines, query_line'access);
@@ -88,14 +88,14 @@ package body et_board_ops_ratsnest is
 		-- The ends of segments frequently overlap with those of other
 		-- segments. This causes redundant points which must be removed:
 		remove_redundant_points (result);
-		
+
 		return result;
 	end get_track_ends;
 
 
 
 
-	
+
 
 
 	function get_netchanger_positions (
@@ -104,36 +104,36 @@ package body et_board_ops_ratsnest is
 		return pac_points.list
 	is
 		-- 1. In this procedure we first get a list
-		-- of netchangers and their ports. In this list we 
+		-- of netchangers and their ports. In this list we
 		-- are only interested in the netchanger indexes.
 		-- 2. Then we iterate the netchangers and look up
 		-- for each of them the x/y position in the module.
 		-- 3. The position is then appended to the resulting
 		-- list of points.
-		
+
 		use et_net_ports_netchangers;
 		use pac_netchanger_ports;
 		netchangers : pac_netchanger_ports.set; -- the list of netchangers
 
 		result : pac_points.list;
-		
-		
+
+
 		procedure query_netchanger (
 			c : in pac_netchanger_ports.cursor)
 		is
 			port : type_port_netchanger renames element (c);
 			position : type_vector_model;
-			
+
 			use et_board_ops_netchangers;
 		begin
 			position := get_netchanger_position (
 				module_cursor, port.index);
-				
+
 			result.append (position);
 		end query_netchanger;
-		
-		
-		
+
+
+
 	begin
 		-- Get the netchangers that are connected
 		-- with the given net:
@@ -141,36 +141,36 @@ package body et_board_ops_ratsnest is
 
 		-- Iterate the netchangers:
 		netchangers.iterate (query_netchanger'access);
-				
+
 		return result;
 	end get_netchanger_positions;
 
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure update_ratsnest (
 		module_cursor	: in pac_generic_modules.cursor;
 		lth				: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is				
+			is
 				-- The computation of airwires bases on floating
 				-- point numbers. An airwire may start or end
 				-- on a node. The node is a location vector that
@@ -178,7 +178,7 @@ package body et_board_ops_ratsnest is
 				use pac_geometry_brd;
 				use pac_vectors;
 				nodes : pac_vectors.list;
-			
+
 				-- The fragments are lines and arcs that have
 				-- been laid out already. Airwires may also start
 				-- or end at those fragments:
@@ -190,59 +190,59 @@ package body et_board_ops_ratsnest is
 				use pac_airwires;
 				airwires : pac_airwires.list;
 
-				
+
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);
 				log_indentation_up;
-				
+
 				-- get x/y positions of all terminals:
 				nodes := get_terminal_positions (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					net_cursor		=> net_cursor,
 					log_threshold	=> lth + 2);
 
 
-				
+
 				-- VIAS:
 				log (text => "get via positions", level => lth + 2);
-				
+
 				-- Get x/y of all vias and append their positions to nodes.
 				-- The via positions must be converted to location vectors:
 				splice_vectors (nodes, to_vectors (get_via_positions (net_cursor)));
 
 
-				
+
 				-- TRACK SEGMENTS:
 				log (text => "get track ends", level => lth + 2);
-				
+
 				-- Get x/y of track segments (start and end points)
 				-- and append their positions to nodes.
 				-- The end points of the tracks must be converted to location vectors:
 				splice_vectors (nodes, to_vectors (get_track_ends (net_cursor)));
 
-				
+
 
 				-- NETCHANGERS:
 				log (text => "get netchanger positions", level => lth + 2);
-				
+
 				-- Get x/y of netchangers and append their positions to nodes.
-				-- The positions of the netchangers must be converted 
+				-- The positions of the netchangers must be converted
 				-- to location vectors:
 				splice_vectors (nodes, to_vectors (
 					get_netchanger_positions (module_cursor, net_cursor)));
 
 
-				
+
 				-- CS submodules ?
 
 
-				
+
 				-- remove redundant/overlapping nodes
 				remove_redundant_vectors (nodes);
-				
-					
+
+
 				-- COMPUTE THE RATSNEST / AIRWIRES
-				
+
 				-- Compute the isolated fragments formed by lines and arcs.
 				-- NOTE: Vias and THT-terminals are not required here, because
 				-- solely the start/end points of lines and arcs matter to obtain
@@ -252,28 +252,28 @@ package body et_board_ops_ratsnest is
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs);
 
-				
+
 				-- Make airwires from the list of nodes:
 				-- The container "nodes" contains ALL nodes of both
 				-- unrouted and routed stuff.
 				-- "fragments" contains nodes which are already
 				-- directly connected via tracks, vias and tht-terminals (not via ariwires):
 				airwires := make_airwires (nodes, fragments);
-				
+
 				net.route.airwires.lines := airwires;
 
 				log_indentation_down;
 			end query_net;
 
-			
+
 		begin
 			while net_cursor /= pac_nets.no_element loop
 				module.nets.update_element (net_cursor, query_net'access);
 				next (net_cursor);
-			end loop;				
+			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " update ratsnest",
@@ -285,21 +285,21 @@ package body et_board_ops_ratsnest is
 
 		log_indentation_down;
 
-		
+
 		exception
 			when event: others =>
 				log (text => ada.exceptions.exception_information (event), console => true);
 				--log (text => ada.exceptions.exception_information (event));
 
-		
+
 	end update_ratsnest;
 
 
-	
 
 
 
-	
+
+
 	procedure propose_airwires (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -309,7 +309,7 @@ package body et_board_ops_ratsnest is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -318,10 +318,10 @@ package body et_board_ops_ratsnest is
 				net			: in out type_net)
 			is
 				use pac_airwires;
-				
+
 				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
 
-				
+
 				procedure query_airwire (wire : in out type_airwire) is
 					w_tmp : type_line := type_line (to_line_coarse (wire));
 					use pac_geometry_brd;
@@ -333,7 +333,7 @@ package body et_board_ops_ratsnest is
 					end if;
 				end query_airwire;
 
-				
+
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
 				log_indentation_up;
@@ -358,14 +358,14 @@ package body et_board_ops_ratsnest is
 				next (net_cursor);
 			end loop;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "propose airwires in " & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -384,7 +384,7 @@ package body et_board_ops_ratsnest is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -393,10 +393,10 @@ package body et_board_ops_ratsnest is
 				net			: in out type_net)
 			is
 				use pac_airwires;
-				
+
 				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
 
-				
+
 				procedure query_airwire (wire : in out type_airwire) is
 					w_tmp : type_line := type_line (to_line_coarse (wire));
 					use pac_geometry_brd;
@@ -404,7 +404,7 @@ package body et_board_ops_ratsnest is
 					reset_status (wire);
 				end query_airwire;
 
-				
+
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
 				log_indentation_up;
@@ -430,7 +430,7 @@ package body et_board_ops_ratsnest is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "reset proposed lines",
 			 level => log_threshold);
@@ -450,7 +450,7 @@ package body et_board_ops_ratsnest is
 	function get_net_name (
 		object : in pac_objects.cursor)
 		return pac_net_name.bounded_string
-	is 
+	is
 		use pac_objects;
 		use pac_nets;
 		aw : constant type_object_airwire := element (object);
@@ -459,7 +459,7 @@ package body et_board_ops_ratsnest is
 	end get_net_name;
 
 
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -469,20 +469,20 @@ package body et_board_ops_ratsnest is
 	end get_count;
 
 
-	
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_airwire
-	is 
+	is
 		result : type_object_airwire;
 
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -493,7 +493,7 @@ package body et_board_ops_ratsnest is
 				procedure query_airwires (
 					net_name	: in pac_net_name.bounded_string;
 					net 		: in type_net)
-				is 
+				is
 					pragma unreferenced (net_name);
 
 					procedure query_airwire (w : in pac_airwires.cursor) is begin
@@ -505,7 +505,7 @@ package body et_board_ops_ratsnest is
 									proceed := false;  -- no further probing required
 									log (text => to_string (w), level => log_threshold + 2);
 								end if;
-      
+
 							when SELECTED =>
 								if is_selected (w) then
 									result.net_cursor := net_cursor;
@@ -513,7 +513,7 @@ package body et_board_ops_ratsnest is
 									proceed := false;  -- no further probing required
 									log (text => to_string (w), level => log_threshold + 2);
 								end if;
-      
+
 							when others =>
 								null; -- CS
 						end case;
@@ -523,28 +523,28 @@ package body et_board_ops_ratsnest is
 				begin
 					iterate (net.route.airwires.lines, query_airwire'access, proceed'access);
 				end query_airwires;
-				
-				
+
+
 			begin
 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 				log_indentation_up;
 				query_element (net_cursor, query_airwires'access);
 				log_indentation_down;
 			end query_net;
-				
+
 
 		begin
 			iterate (module.nets, query_net'access, proceed'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up the first airwire / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -553,15 +553,15 @@ package body et_board_ops_ratsnest is
 
 		return result;
 	end get_first_object;
-	
-	
 
 
-	
+
+
+
 
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
@@ -571,7 +571,7 @@ package body et_board_ops_ratsnest is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -582,7 +582,7 @@ package body et_board_ops_ratsnest is
 				procedure query_airwires (
 					net_name	: in pac_net_name.bounded_string;
 					net 		: in type_net)
-				is 
+				is
 					pragma unreferenced (net_name);
 
 					procedure query_airwire (w : in pac_airwires.cursor) is begin
@@ -592,13 +592,13 @@ package body et_board_ops_ratsnest is
 									result.append ((w, net_cursor));
 									log (text => to_string (w), level => log_threshold + 2);
 								end if;
-      
+
 							when SELECTED =>
 								if is_selected (w) then
 									result.append ((w, net_cursor));
 									log (text => to_string (w), level => log_threshold + 2);
 								end if;
-      
+
 							when others =>
 								null; -- CS
 						end case;
@@ -608,40 +608,40 @@ package body et_board_ops_ratsnest is
 				begin
 					iterate (net.route.airwires.lines, query_airwire'access, proceed'access);
 				end query_airwires;
-				
-				
+
+
 			begin
 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 				log_indentation_up;
 				query_element (net_cursor, query_airwires'access);
 				log_indentation_down;
 			end query_net;
-				
+
 
 		begin
 			iterate (module.nets, query_net'access, proceed'access);
 		end query_module;
-		
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up airwires / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
-	
 
 
-	
+
+
 
 
 	procedure modify_status (
@@ -653,10 +653,10 @@ package body et_board_ops_ratsnest is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
   pragma unreferenced (module_name);
-  
+
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
@@ -665,29 +665,29 @@ package body et_board_ops_ratsnest is
 				pragma unreferenced (net_name);
 				use pac_airwires;
 
-				procedure query_airwire (w : in out type_airwire) is 
+				procedure query_airwire (w : in out type_airwire) is
 					use pac_geometry_brd;
 				begin
 					modify_status (w, operation);
 				end query_airwire;
 
-				
+
 			begin
 				net.route.airwires.lines.update_element (
 					object.wire_cursor, query_airwire'access);
 
 			end query_net;
-			
-			
-			
+
+
+
 		begin
 			update_element (
 				container	=> module.nets,
 				position	=> object.net_cursor,
 				process		=> query_net'access);
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of airwire "
@@ -696,14 +696,14 @@ package body et_board_ops_ratsnest is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
 	end modify_status;
-	
+
 
 
 
@@ -712,20 +712,20 @@ package body et_board_ops_ratsnest is
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object_airwire := element (object_cursor);
 	begin
 		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
-	
-	
-											
+
+
+
 end et_board_ops_ratsnest;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -62,12 +62,12 @@ package body et_module_read_grid is
 	grid_schematic : et_schematic_geometry.pac_grid.type_grid; -- CS rename to schematic_grid
 	grid_board : et_board_geometry.pac_grid.type_grid; -- CS rename to board_grid
 
-	
-	
-	
+
+
+
 	procedure read_drawing_grid_schematic (
 		line : in type_fields_of_line)
-	is 
+	is
 		use et_schematic_geometry.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
@@ -83,17 +83,17 @@ package body et_module_read_grid is
 		elsif kw = keyword_style then -- style lines
 			expect_field_count (line, 2);
 			grid_schematic.style := to_style (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_drawing_grid_board (
 		line : in type_fields_of_line)
 	is
@@ -118,13 +118,13 @@ package body et_module_read_grid is
 		end if;
 	end;
 
-	
-	
 
 
-	
-	
-	
+
+
+
+
+
 	procedure set_drawing_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -132,7 +132,7 @@ package body et_module_read_grid is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -141,9 +141,9 @@ package body et_module_read_grid is
 				use et_schematic_geometry.pac_grid;
 			begin
 				module.grid := grid_schematic;
-				
-				log (text => "schematic " 
-					& to_string (module.grid.spacing) 
+
+				log (text => "schematic "
+					& to_string (module.grid.spacing)
 					& " " & to_string (module.grid.on_off)
 					& " " & to_string (module.grid.style),
 					level => log_threshold + 2);
@@ -157,14 +157,14 @@ package body et_module_read_grid is
 			begin
 				module.board.grid := grid_board;
 
-				log (text => "board " 
+				log (text => "board "
 					& to_string (module.board.grid.spacing)
 					& " " & to_string (module.board.grid.on_off)
 					& " " & to_string (module.board.grid.style),
 					level => log_threshold + 2);
 			end board;
-			
-			
+
+
 		begin
 			schematic;
 			board;
@@ -174,22 +174,22 @@ package body et_module_read_grid is
 	begin
 		log (text => "module " & to_string (module_cursor),
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
-		
+
 		log_indentation_down;
 	end set_drawing_grid;
-	
-	
-	
+
+
+
 end et_module_read_grid;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

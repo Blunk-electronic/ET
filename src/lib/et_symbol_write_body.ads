@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,8 +52,8 @@ package et_symbol_write_body is
 	procedure write_body_lines (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level);
-		
-	
+
+
 	procedure write_body_arcs (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level);
@@ -63,7 +63,7 @@ package et_symbol_write_body is
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 end et_symbol_write_body;

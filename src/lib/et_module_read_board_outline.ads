@@ -70,21 +70,21 @@ package et_module_read_board_outline is
 	procedure set_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-							  
+
 
 	procedure add_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-							  
+
 end et_module_read_board_outline;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

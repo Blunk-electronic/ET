@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with gtk.box;						use gtk.box;
 with et_pcb_sides;					use et_pcb_sides;
@@ -89,17 +89,17 @@ package body et_canvas_board_devices is
 	use pac_generic_modules;
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
-	
-	
 
-	
+
+
+
 
 	-- Outputs the name of a device in the status bar:
 	procedure show_selected_device ( -- CS no need anymore ?
 		name			: in type_device_name;
 		electrical		: in boolean;
 		clarification	: in boolean := false)
-	is 
+	is
 		praeamble_electric     : constant string := "selected device: ";
 		praeamble_non_electric : constant string := "selected non-electrical device: ";
 	begin
@@ -110,7 +110,7 @@ package body et_canvas_board_devices is
 			else
 				set_status (praeamble_electric & to_string (name));
 			end if;
-		
+
 		else
 			if clarification then
 				set_status (praeamble_non_electric & to_string (name)
@@ -124,12 +124,12 @@ package body et_canvas_board_devices is
 
 
 
-	
 
-	
+
+
 	procedure show_selected_object (
 		object		: in type_object)
-	is 
+	is
 		praeamble_electric     : constant string := "selected device: ";
 		praeamble_non_electric : constant string := "selected non-electrical device: ";
 	begin
@@ -145,93 +145,93 @@ package body et_canvas_board_devices is
 			when CAT_PLACEHOLDER =>
 				set_status ("selected placeholder: " & to_string (object.placeholder));
 				-- CS
-				
+
 			when CAT_VOID => null; -- CS
 		end case;
 	end show_selected_object;
 
-	
-	
-	
 
 
 
-	
-	procedure clarify_object is 
+
+
+
+
+	procedure clarify_object is
 
 		procedure do_it is
 			use pac_objects;
-			
+
 			-- Gather all proposed objects:
-			proposed_objects : constant pac_objects.list := 
+			proposed_objects : constant pac_objects.list :=
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
-			log (text => "proposed objects total " 
+			log (text => "proposed objects total "
 				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
-			
+
 			-- Locate the selected object among the proposed objects:
 			proposed_object := proposed_objects.find (selected_object);
 
 			-- Deselect the the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (CLEAR, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
-			-- If end of list reached, then proceed at 
+			-- If end of list reached, then proceed at
 			-- the begin of the list:
 			if proposed_object = pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
-			
+
 			-- Select the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (SET, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "clarify_object", level => log_threshold + 1);
 
 		log_indentation_up;
-		
+
 		do_it;
-		
+
 		log_indentation_down;
 	end clarify_object;
 
 
 
-	
 
-	
+
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		
+
 		procedure do_it is
 			-- Get the first selected object:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 			-- Gather all selected objects:
@@ -247,14 +247,14 @@ package body et_canvas_board_devices is
 
 			if has_element (c) then
 				log (text => "modify status", level => log_threshold + 1);
-			
+
 				modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 			else
 				log (SEVERITY_ERROR, text => "nothing found");
 			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
 		log_indentation_up;
@@ -264,15 +264,15 @@ package body et_canvas_board_devices is
 
 
 
-	
 
-	
+
+
 
 	procedure find_objects (
 		point : in type_vector_model)
-	is 
+	is
 		use et_modes.board;
-		
+
 		-- The total number of objects that have
 		-- been proposed:
 		count_total : natural := 0;
@@ -295,7 +295,7 @@ package body et_canvas_board_devices is
 
 
 		-- This procedure proposes objects according to
-		-- the current verb and noun:		 
+		-- the current verb and noun:
 		procedure propose is begin
 			-- Before locating any objects, previous
 			-- proposed or selected objects should be reset
@@ -306,14 +306,14 @@ package body et_canvas_board_devices is
 			et_board_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
-			
+
 			-- Propose objects according to current verb and noun:
 			case verb is
 				when VERB_MOVE | VERB_FLIP | VERB_ROTATE | VERB_SHOW =>
-					
+
 					case noun is
 						when NOUN_DEVICE =>
-			
+
 							-- Propose electrical devices in the vicinity of the given point:
 							propose_electrical_devices (
 								module_cursor	=> active_module,
@@ -328,7 +328,7 @@ package body et_canvas_board_devices is
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
 
-							
+
 						when NOUN_PLACEHOLDER =>
 
 							-- Propose placeholders in the vicinity of the given point:
@@ -338,14 +338,14 @@ package body et_canvas_board_devices is
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
 
-							
+
 						when others =>
 							null; -- CS
 					end case;
 
 
 				when VERB_COPY | VERB_DELETE | VERB_RENAME =>
-					
+
 					case noun is
 						when NOUN_DEVICE =>
 
@@ -360,13 +360,13 @@ package body et_canvas_board_devices is
 							null; -- CS
 					end case;
 
-					
+
 				when others =>
 					null; -- CS
 			end case;
 		end propose;
 
-		
+
 	begin
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
@@ -376,12 +376,12 @@ package body et_canvas_board_devices is
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
 
-		
+
 		-- Evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				null; -- nothing to do
-				
+
 			when 1 =>
 				set_edit_process_running;
 				select_first_proposed;
@@ -389,20 +389,20 @@ package body et_canvas_board_devices is
 				if verb = VERB_MOVE then
 					set_first_selected_object_moving;
 				end if;
-				
+
 				reset_request_clarification;
-				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;
 		end case;
-		
+
 		log_indentation_down;
 	end find_objects;
 
 
-	
+
 
 
 
@@ -423,9 +423,9 @@ package body et_canvas_board_devices is
 	end rotate_device_add;
 
 
-	
 
-	
+
+
 
 
 	function get_top_most_important_library return string is
@@ -435,7 +435,7 @@ package body et_canvas_board_devices is
 		use et_directory_and_file_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
-		-- If there are library paths the select the 
+		-- If there are library paths the select the
 		-- first of them.
 		-- If no paths are defined, then return
 		-- an empty string:
@@ -445,67 +445,67 @@ package body et_canvas_board_devices is
 		else
 			top_lib_dir := get_first (all_lib_dirs);
 
-			--return expand ("$HOME/git/BEL/ET_component_library/devices");			
+			--return expand ("$HOME/git/BEL/ET_component_library/devices");
 			return expand (to_string (top_lib_dir));
-		end if;		
+		end if;
 	end get_top_most_important_library;
 
 
 
-	
 
 
-	
+
+
 	procedure cb_model_directory_selected (
-		button : access gtk_file_chooser_button_record'class) 
+		button : access gtk_file_chooser_button_record'class)
 	is begin
 		log (text => "cb_model_directory_selected", level => log_threshold);
-		
+
 		log_indentation_up;
 		log (text => "directory: " & button.get_current_folder,
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 	end cb_model_directory_selected;
 
 
 
-	
-	
+
+
 
 
 	procedure cb_package_model_selected (
-		button : access gtk_file_chooser_button_record'class) 
+		button : access gtk_file_chooser_button_record'class)
 	is
 		use et_package_model_name;
-		
+
 		-- The selected package model file (*.pac) is stored here:
 		package_model_file : pac_package_model_file.bounded_string;
-		
+
 		-- This cursor points to the package model in the library:
 		use pac_package_models;
 		package_cursor_lib : pac_package_models.cursor;
-		
+
 
 	begin -- cb_package_model_selected
 		log (text => "cb_package_model_selected", level => log_threshold);
 
 		-- Once the operator has started selecing a package model, the
-		-- counter that counts the number of ESC hits until a reset 
+		-- counter that counts the number of ESC hits until a reset
 		-- is perfomed, must be reset:
 		reset_escape_counter;
-		
+
 		log_indentation_up;
 
 		-- Get the name of the device model file from the button:
 		package_model_file := to_package_model_name (button.get_filename);
-		
-		log (text => "selected package model file: " & to_string (package_model_file), 
+
+		log (text => "selected package model file: " & to_string (package_model_file),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_up;
-		
-		-- Read the package model file and store it in the 
+
+		-- Read the package model file and store it in the
 		-- rig wide package library.
 		-- If the package is already in the library, then nothing happpens:
 		et_package_read.read_package (
@@ -513,9 +513,9 @@ package body et_canvas_board_devices is
 			log_threshold	=> log_threshold + 2);
 		-- CS add error flag output by read_package and evaluate accordingly.
 		-- Wrap follwing actions in a procedure.
-		-- CS use package cursor output by read_package instead 
+		-- CS use package cursor output by read_package instead
 		-- the following statement.
-		
+
 		-- Locate the package in the library:
 		package_cursor_lib := get_package_model (package_model_file);
 
@@ -526,7 +526,7 @@ package body et_canvas_board_devices is
 		-- No value has been assigned yet. For this reason we
 		-- assign the default value as defined in the device model.
 		-- CS unit_add.value := get_default_value (package_cursor_lib);
-				
+
 		log_indentation_down;
 		log_indentation_down;
 
@@ -534,13 +534,13 @@ package body et_canvas_board_devices is
 	end cb_package_model_selected;
 
 
-	
 
 
-	
+
+
 
 	procedure cb_package_prefix_selected (
-		combo : access gtk_combo_box_record'class) 
+		combo : access gtk_combo_box_record'class)
 	is
 		-- Get the model and active iter from the combo box:
 		use gtk.tree_model;
@@ -555,27 +555,27 @@ package body et_canvas_board_devices is
 	begin
 		log (text => "cb_package_prefix_selected", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Get the prefix of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
 
 		prefix := to_prefix (glib.values.get_string (name));
-		
+
 		log (text => "selected prefix: " & to_string (prefix),
 			 level => log_threshold + 1);
-		
+
 		-- Assign the prospective device name:
 		device_add.device_pre := get_next_available_device_name (
 			active_module, prefix, log_threshold + 1);
-		
+
 		-- Once the operator has started selecting a package variant, the
-		-- counter that counts the number of ESC hits until a reset 
+		-- counter that counts the number of ESC hits until a reset
 		-- is perfomed, must be reset:
 		reset_escape_counter;
 
 		-- The initial rotation is always zero:
 		device_add.rotation := 0.0;
-		
+
 		-- Now the information in device_add is complete.
 		-- By setting the flag "valid" the draw operation of the package
 		-- starts drawing the package as it is sticking at the current tool
@@ -583,32 +583,32 @@ package body et_canvas_board_devices is
 		device_add.valid := true;
 
 		focus_canvas;
-		
+
 		log_indentation_down;
 	end cb_package_prefix_selected;
 
 
 
-	
-	
-	
+
+
+
 
 	procedure show_package_model_selection is
 		use gtk.box;
 		use gtk.label;
 		use gtk.file_chooser;
-		
 
-		-- The button for the directory:		
+
+		-- The button for the directory:
 		button_model_directory : gtk_file_chooser_button;
 
 		-- The button for the model file:
 		button_model_file : gtk_file_chooser_button;
-		
-		
+
+
 		-- This procedure creates a button by which the operator
 		-- selects the directory where a package model can be taken from:
-		procedure make_button_directory is 
+		procedure make_button_directory is
 			box_directory : gtk_vbox;
 			label_directory : gtk_label;
 		begin
@@ -639,18 +639,18 @@ package body et_canvas_board_devices is
 			-- Connect the "on_file_set" signal with procedure
 			-- cb_model_directory_selected:
 			button_model_directory.on_file_set (cb_model_directory_selected'access);
-			
+
 			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_directory;
 
-		
+
 
 		-- This procedure creates a button by which the operator
 		-- selects the model file (*.dev):
-		procedure make_button_model is 
+		procedure make_button_model is
 			box_model : gtk_vbox;
 			label_model : gtk_label;
-			
+
 			use et_directory_and_file_ops;
 			use et_package_model_name;
 			use gtk.file_filter;
@@ -699,13 +699,13 @@ package body et_canvas_board_devices is
 		-- the operator to select a package variant for the
 		-- currently selected device model:
 		procedure make_combo_box_prefix is
-			use gtk.label;			
+			use gtk.label;
 			use gtk.cell_renderer_text;
 			use gtk.list_store;
 
 			box_prefix : gtk_vbox;
 			label_prefix : gtk_label;
-			store : gtk_list_store;			
+			store : gtk_list_store;
 			render	: gtk_cell_renderer_text;
 
 			-- This is the combo box that allows the operator
@@ -713,7 +713,7 @@ package body et_canvas_board_devices is
 			-- It is filled with allowed prefixes each time the operator selects
 			-- a new package model file:
 			cbox_prefix : gtk_combo_box;
-			
+
 		begin
 			-- put_line ("make_combo_box_prefix");
 
@@ -727,7 +727,7 @@ package body et_canvas_board_devices is
 
 			-- Create the storage model for the content of the combo box:
 			make_store_for_prefixes (et_conventions.device_prefixes, store);
-			
+
 			-- Create the combo box:
 			gtk_new_with_model (
 				combo_box	=> cbox_prefix,
@@ -747,16 +747,16 @@ package body et_canvas_board_devices is
 			add_attribute (cbox_prefix, render, "markup", 0); -- column 0
 
 			-- Show the box_variant with all its content:
-			box_prefix.show_all;			
+			box_prefix.show_all;
 		end make_combo_box_prefix;
 
 
-		
-		
+
+
 	begin
 		log (text => "show_package_model_selection", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Before inserting any widgets, the properties box must be cleared:
 		clear_out_properties_box;
 
@@ -772,33 +772,33 @@ package body et_canvas_board_devices is
 		-- Show the properties box:
 		box_v4.show_all;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end show_package_model_selection;
 
-	
-	
 
 
 
 
 
-	
+
+
+
 	procedure add_non_electrical_device (
 		place : in type_vector_model)
-	is 
+	is
 		use et_pcb_sides;
 		use et_package_library;
 		use pac_package_models;
-		
+
 		-- Build the full package position from the
 		-- given place, with rotation as given by device_add and on the
 		-- top side of the board:
-		position : constant type_package_position := 
+		position : constant type_package_position :=
 			to_package_position (place, device_add.rotation, TOP);
 	begin
 		log (text => "add_non_electrical_device", level => log_threshold);
 		log_indentation_up;
-		
+
 		add_non_electrical_device (
 			module_cursor	=> active_module,
 			package_model	=> get_package_model_file (device_add.packge),
@@ -814,24 +814,24 @@ package body et_canvas_board_devices is
 		-- assign the prospective next device name:
 		device_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (device_add.device_pre), log_threshold + 1);
-		
+
 		log_indentation_down;
 	end add_non_electrical_device;
 
 
 
 
-	
 
 
--- COPY:	
-	
+
+-- COPY:
+
 
 	procedure copy_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -845,11 +845,11 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the copy operation:
 				copy_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 
@@ -858,25 +858,25 @@ package body et_canvas_board_devices is
 				if object.cat = CAT_NON_ELECTRICAL_DEVICE then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- clear status bar
 			status_clear;
 
 			-- The preview-object is no longer required:
 			reset_device_add;
-			
+
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
-		
-		-- After the original object has been selected, and the the operator is moving 
+
+		-- After the original object has been selected, and the the operator is moving
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is
@@ -893,36 +893,36 @@ package body et_canvas_board_devices is
 					device_add.packge := get_package_model (object.non_electrical_device.cursor);
 
 					device_add.value := get_value (object.non_electrical_device.cursor);
-					
+
 					device_add.device_pre := get_next_available_device_name (
 						active_module, get_prefix (object.non_electrical_device.cursor), log_threshold + 1);
 
 					device_add.rotation := get_rotation (object.non_electrical_device.cursor);
 
 					device_add.valid := true;
-					
+
 				when others =>
 					-- CS
 					null;
 			end case;
 		end build_preview;
 
-		
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
-		
+
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 
 				-- Build the floating "preview-object" that is attached
@@ -930,7 +930,7 @@ package body et_canvas_board_devices is
 				if edit_process_running then
 					build_preview;
 				end if;
-				
+
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
@@ -945,25 +945,25 @@ package body et_canvas_board_devices is
 
 		else
 			finalize;
-		end if;			
+		end if;
 	end copy_object;
 
 
 
 
 
-	
-	
-	
-	
+
+
+
+
 -- MOVE:
 
 
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
@@ -978,33 +978,33 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				move_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> snap_to_grid (point),
 					log_threshold	=> log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
-		
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all devices in the vicinity of the given point:
 				find_objects (point);
@@ -1018,36 +1018,36 @@ package body et_canvas_board_devices is
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to the given point and 
+				-- will be drawn according to the given point and
 				-- the tool position.
 				set_first_selected_object_moving;
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
-				
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
-			
+
 		else
 			-- Finally move the selected device:
 			finalize;
 		end if;
 	end move_object;
 
-	
-	
 
-	
-	
 
-	
+
+
+
+
+
 -- ROTATE:
 
 
 	procedure rotate_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1061,25 +1061,25 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rotate_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -1092,7 +1092,7 @@ package body et_canvas_board_devices is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -1106,17 +1106,17 @@ package body et_canvas_board_devices is
 
 
 
-	
-	
+
+
 -- RENAME:
 
 
 	procedure cb_rename_new_name_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		device_name_new : type_device_name;
 
-		
+
 		-- Renames the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1130,10 +1130,10 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rename_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_name_device	=> device_name_new,
 					log_threshold	=> log_threshold + 1);
 
@@ -1141,19 +1141,19 @@ package body et_canvas_board_devices is
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
-		
+
+
 	begin
 		device_name_new := to_device_name (self.get_text); -- IC2
 
 		-- CS: Precheck device name ?
 		-- put_line ("new name entered: " & to_string (device_name_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -1167,13 +1167,13 @@ package body et_canvas_board_devices is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_rename_new_name_entered;
 
 
 
 
-	
+
 
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
@@ -1185,10 +1185,10 @@ package body et_canvas_board_devices is
 	end cb_rename_window_destroy;
 
 
-	
 
 
-	
+
+
 	procedure show_rename_window is
 
 		-- Get the first selected object (which is a unit):
@@ -1201,7 +1201,7 @@ package body et_canvas_board_devices is
 		begin
 			-- Get the name of the selected device:
 			device_name := get_device_name (object.non_electrical_device.cursor);
-			
+
 			build_rename_window;
 
 			-- Connect the "destroy" signal.
@@ -1213,15 +1213,15 @@ package body et_canvas_board_devices is
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new name:
 			rename_new.on_activate (cb_rename_new_name_entered'access);
-			
+
 			rename_new.grab_focus;
-			
+
 			rename_window.show_all;
 
-			rename_window_open := true;			
+			rename_window_open := true;
 		end do_it;
-		
-		
+
+
 	begin
 		case object.cat is
 			when CAT_NON_ELECTRICAL_DEVICE =>
@@ -1235,22 +1235,22 @@ package body et_canvas_board_devices is
 
 
 
-	
 
-	
+
+
 
 	procedure rename_object (
 		point : in type_vector_model)
-	is begin		
+	is begin
 		if not rename_window_open then
-		
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_rename_window;
@@ -1267,17 +1267,17 @@ package body et_canvas_board_devices is
 
 
 
-	
-	
-	
 
-	
+
+
+
+
 -- FLIP / MIRROR:
 
 
 	procedure flip_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1291,25 +1291,25 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				flip_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -1322,7 +1322,7 @@ package body et_canvas_board_devices is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -1331,7 +1331,6 @@ package body et_canvas_board_devices is
 		end if;
 	end flip_object;
 
-	
 
 
 
@@ -1340,14 +1339,15 @@ package body et_canvas_board_devices is
 
 
 
-	
 
--- DELETE:	
-	
+
+
+-- DELETE:
+
 
 	procedure delete_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
@@ -1362,25 +1362,25 @@ package body et_canvas_board_devices is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				delete_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -1393,7 +1393,7 @@ package body et_canvas_board_devices is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -1402,25 +1402,25 @@ package body et_canvas_board_devices is
 		end if;
 	end delete_object;
 
-	
 
 
-	
 
-	
+
+
+
 
 -- SHOW:
 
 
 	procedure show_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
 			use et_device_property_level;
 			use et_devices_electrical.units;
-			
+
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1435,8 +1435,8 @@ package body et_canvas_board_devices is
 
 				-- Show the device:
 				show_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- Highlight the device in the schematic editor:
@@ -1447,13 +1447,13 @@ package body et_canvas_board_devices is
 				case object.cat is
 					when CAT_ELECTRICAL_DEVICE =>
 						status_clear;
-						
+
 						set_status (get_properties (
 							device_cursor	=> object.electrical_device.cursor,
-							level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+							level			=> DEVICE_PROPERTIES_LEVEL_1,
 							all_units		=> true));
 
-						
+
 					when CAT_NON_ELECTRICAL_DEVICE =>
 						status_clear;
 
@@ -1461,24 +1461,24 @@ package body et_canvas_board_devices is
 							device_cursor	=> object.non_electrical_device.cursor,
 							level			=> DEVICE_PROPERTIES_LEVEL_1));
 
-						
+
 					when others =>
 						status_clear;
 						-- CS CAT_PLACEHOLDER ?
-				end case;					
+				end case;
 
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -1491,7 +1491,7 @@ package body et_canvas_board_devices is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -1500,13 +1500,13 @@ package body et_canvas_board_devices is
 		end if;
 	end show_object;
 
-	
-	
+
+
 end et_canvas_board_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with gtk.list_store;					use gtk.list_store;
 
@@ -60,49 +60,49 @@ package et_canvas_board_tracks is
 	use et_canvas_board.pac_canvas;
 	use pac_path_and_bend;
 
-	
 
-	
-	
-	
+
+
+
+
 	type type_snap_mode is (
 		NEAREST_AIRWIRE, -- track starts/ends at the nearest airwire
 		NEAREST_OBJECT, -- track starts/ends at the nearest object
 		NO_SNAP);
 
-	
+
 	function to_string (
 		mode	: in type_snap_mode)
 		return string;
-	
+
 
 	snap_mode : type_snap_mode := NEAREST_AIRWIRE;
 
 
 
 
-	
+
 
 
 	procedure make_store_for_net_names (
 		store : in out gtk_list_store);
 
 
-	
+
 	-- Displays the track properties:
 	procedure show_track_properties;
 
 
 	-- Advances to the next snap mode:
 	procedure next_snap_mode;
-	
-	
+
+
 	-- to be output in the status bar:
-	status_draw_track : constant string := 
-		status_click_left 
+	status_draw_track : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to draw track." 
+		& "to draw track."
 		& status_hint_for_abort;
 
 
@@ -127,19 +127,19 @@ package et_canvas_board_tracks is
 
 
 
-	status_show_net : constant string := 
-		status_click_left 
+	status_show_net : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to select net." 
+		& "to select net."
 		& status_hint_for_abort;
 
-		
+
 end et_canvas_board_tracks;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

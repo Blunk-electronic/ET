@@ -42,27 +42,27 @@ package et_power_sources is
 	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
 	-- The prefix "LEVEL_" is a workaround because GNAT regards "POSITIVE" as keyword.
 	-- CAUTION: Adapt functions to_string and to_power_level when changing anything here !
-	
+
 	port_power_level_default : constant type_power_level := LEVEL_ZERO;
 
 	function to_string (level : in type_power_level) return string;
 	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
 	-- The prefix LEVEL_ is removed.
-	
-	function to_power_level (level : in string) return type_power_level;	
+
+	function to_power_level (level : in string) return type_power_level;
 	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
 	-- The prefix LEVEL_ is prepended.
 
 
 
-	keyword_level					: constant string := "level";	
-	
-	
+	keyword_level					: constant string := "level";
+
+
 end et_power_sources;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

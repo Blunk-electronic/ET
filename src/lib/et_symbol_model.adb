@@ -56,7 +56,7 @@ package body et_symbol_model is
 
 
 
-	
+
 
 	function get_port_positions (
 		symbol	: in type_symbol_model)
@@ -68,14 +68,14 @@ package body et_symbol_model is
 		procedure query_port (c : in pac_symbol_ports.cursor) is begin
 			result.append (get_position (c));
 		end query_port;
-		
+
 	begin
 		symbol.ports.iterate (query_port'access);
 		return result;
 	end get_port_positions;
 
 
-	
+
 
 
 	function get_placeholders (
@@ -89,12 +89,12 @@ package body et_symbol_model is
 		end if;
 	end;
 
-	
+
 end et_symbol_model;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

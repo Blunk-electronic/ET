@@ -6,7 +6,7 @@
 --                                                                          --
 --                             B o d y                                      --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_route is
-	
+
 
 	procedure add_line (
 		route 	: in out type_net_route;
@@ -52,7 +52,7 @@ package body et_route is
 		route.lines.append (line);
 	end;
 
-	
+
 
 	procedure add_arc (
 		route 	: in out type_net_route;
@@ -62,7 +62,7 @@ package body et_route is
 	end;
 
 
-	
+
 	function get_polygons (
 		route 			: in type_net_route;
 		layer_category 	: in type_signal_layer_category;
@@ -85,10 +85,10 @@ package body et_route is
 			end if;
 		end query_line;
 
-		
-		
+
+
 		-- This procedure queries a conductor arc, converts it
-		-- to a polygon and appends it to the result:				
+		-- to a polygon and appends it to the result:
 		procedure query_arc (a : in pac_conductor_arcs.cursor) is
 			use pac_conductor_arcs;
 			arc : type_conductor_arc renames element (a);
@@ -100,14 +100,14 @@ package body et_route is
 		end query_arc;
 
 
-				
+
 		-- This procedure queries a via, converts it
 		-- to a polygon and appends it to the result:
 		procedure query_via (v : in pac_vias.cursor) is
 			use pac_vias;
 			via : type_via renames element (v);
 		begin
-			-- CS use function via_to_polyon 
+			-- CS use function via_to_polyon
 			case via.category is
 				when THROUGH =>
 					if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
@@ -129,7 +129,7 @@ package body et_route is
 					elsif blind_via_uses_layer (via, layer, bottom_layer) then
 						result.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 					end if;
-					
+
 				when BURIED =>
 					if layer_category = INNER and then
 					buried_via_uses_layer (via, layer) then
@@ -138,27 +138,27 @@ package body et_route is
 			end case;
 		end query_via;
 
-		
+
 	begin
 		-- Iterate the lines, arcs and vias of the given route:
 		route.lines.iterate (query_line'access);
 		route.arcs.iterate (query_arc'access);
 		route.vias.iterate (query_via'access);
-		
+
 		return result;
 	end get_polygons;
 
 
 
-	 
-	
+
+
 end et_route;
 
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

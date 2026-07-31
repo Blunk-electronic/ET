@@ -47,14 +47,14 @@ with ada.characters;
 
 package body et_device_appearance is
 
-	
+
 
 	function to_string (
 		appearance	: in type_appearance;
 		verbose		: in boolean := false)
-		return string 
-	is 
-		-- Remove the prefix from appearance and 
+		return string
+	is
+		-- Remove the prefix from appearance and
 		-- return the remainder as string.
 		-- APPEARANCE_PCB becomes PCB.
 		s : constant string := type_appearance'image (appearance);
@@ -72,23 +72,23 @@ package body et_device_appearance is
 	end;
 
 
-	
+
 	function to_appearance (
-		appearance : in string) 
-		return type_appearance 
+		appearance : in string)
+		return type_appearance
 	is begin
 		return type_appearance'value (appearance_prefix & appearance);
-	end;	
+	end;
 
-	
 
-	
-		
+
+
+
 end et_device_appearance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about lines, arcs and circles in the assembly documentation.
 --
 --   do do:
@@ -57,15 +57,15 @@ package et_package_read_assy_doc is
 
 	procedure read_doc_line (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_doc_arc (
 		line : in type_fields_of_line);
 
 
 	procedure read_doc_circle (
 		line : in type_fields_of_line);
-	
+
 
 
 	procedure insert_doc_line (
@@ -84,7 +84,7 @@ package et_package_read_assy_doc is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure insert_doc_zone (
 		packge			: in type_package_model_access;
@@ -97,11 +97,11 @@ package et_package_read_assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure insert_doc_placeholder (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_package_read_assy_doc;

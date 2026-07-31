@@ -54,11 +54,11 @@ with et_package_read_text;
 package body et_package_read_conductors is
 
 	use pac_geometry_2;
-	
+
 	conductor_line : type_conductor_line;
 	conductor_arc : type_conductor_arc;
 	conductor_circle : type_conductor_circle;
-	
+
 
 
 
@@ -78,7 +78,7 @@ package body et_package_read_conductors is
 			p := to_vector_model (line, 2);
 			set_A (conductor_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -86,24 +86,24 @@ package body et_package_read_conductors is
 			p := to_vector_model (line, 2);
 			set_B (conductor_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			conductor_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_conductor_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_conductor_arc (
 		line	: in type_fields_of_line)
 	is
@@ -118,22 +118,22 @@ package body et_package_read_conductors is
 			p := to_vector_model (line, 2);
 			set_A (conductor_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (conductor_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (conductor_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -144,19 +144,19 @@ package body et_package_read_conductors is
 			expect_field_count (line, 2);
 			conductor_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_conductor_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_conductor_circle (
 		line	: in type_fields_of_line)
 	is
@@ -168,7 +168,7 @@ package body et_package_read_conductors is
 			-- extract the center position starting at field 2 of line
 			set_center (conductor_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -179,7 +179,7 @@ package body et_package_read_conductors is
 			expect_field_count (line, 2);
 			conductor_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -194,74 +194,74 @@ package body et_package_read_conductors is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_conductor_lines;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.conductors.top.lines, conductor_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.conductors.bottom.lines, conductor_line);
 		end case;
 		-- CS use procedure add_line
-		
-		-- clean up for next line
-		reset_line (conductor_line);		
-	end insert_conductor_line;
-	
 
-	
-	
-	
+		-- clean up for next line
+		reset_line (conductor_line);
+	end insert_conductor_line;
+
+
+
+
+
 	procedure insert_conductor_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_conductor_arcs;
 	begin
 		-- CS check arc
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.conductors.top.arcs, conductor_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.conductors.bottom.arcs, conductor_arc);
 		end case;
 		-- CS use procedure add_arc
-		
+
 		-- clean up for next arc
-		reset_arc (conductor_arc);		
+		reset_arc (conductor_arc);
 	end insert_conductor_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_conductor_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_conductor_circles;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.conductors.top.circles, conductor_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.conductors.bottom.circles, conductor_circle);
 		end case;
 		-- CS use procedure add_circle
-		
+
 		-- clean up for next circle
-		reset_circle (conductor_circle);		
+		reset_circle (conductor_circle);
 	end insert_conductor_circle;
 
 
@@ -272,7 +272,7 @@ package body et_package_read_conductors is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_mirroring;
 		use et_board_text.pac_text_board_vectorized;
 		use et_package_read_text;
@@ -289,16 +289,16 @@ package body et_package_read_conductors is
 			alignment		=> pac_text.alignment,
 			make_border		=> true,
 			log_threshold	=> log_threshold + 1);
-			
+
 		add_text (packge.conductors, (pac_text with vectors), face);
-		
+
 		-- clean up for next text
-		reset_text (pac_text);		
+		reset_text (pac_text);
 	end;
 
-	
 
-	
+
+
 
 	procedure read_fill_zone (
 		line : in type_fields_of_line)
@@ -307,11 +307,11 @@ package body et_package_read_conductors is
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_fill_style then -- fill_style solid/hatched
-			expect_field_count (line, 2);													
+			expect_field_count (line, 2);
 			zone_fill_style := to_fill_style (f (line, 2));
 
 		elsif kw = keyword_spacing then -- spacing 0.3
-			expect_field_count (line, 2);													
+			expect_field_count (line, 2);
 			zone_fill_spacing := to_distance (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
@@ -321,20 +321,20 @@ package body et_package_read_conductors is
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			zone_width_min := to_distance (f (line, 2));
-		
+
 		elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
-			expect_field_count (line, 2);													
+			expect_field_count (line, 2);
 			zone_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.4
-			expect_field_count (line, 2);													
+			expect_field_count (line, 2);
 			zone_easing.radius := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
-	
-	
+
+
 end et_package_read_conductors;

@@ -44,12 +44,12 @@ with et_logging;				use et_logging;
 
 package et_package_write_keepout is
 
-	
+
 
 	procedure write_keepout (
 		packge			: in type_package_model;
 		log_threshold	: in type_log_level);
-	
-		
-	
+
+
+
 end et_package_write_keepout;

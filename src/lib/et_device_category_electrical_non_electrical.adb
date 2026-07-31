@@ -43,8 +43,8 @@ package body et_device_category_electrical_non_electrical is
 
 	function to_string (
 		cat	: in type_electrical_non_electrical)
-		return string 
-	is 
+		return string
+	is
 		-- Remove the prefix from cat and return the remainder.
 		s : string := type_electrical_non_electrical'image (cat);
 	begin
@@ -52,24 +52,24 @@ package body et_device_category_electrical_non_electrical is
 	end;
 
 
-	
+
 	function to_category (
-		cat : in string) 
-		return type_electrical_non_electrical 
+		cat : in string)
+		return type_electrical_non_electrical
 	is begin
 		return type_electrical_non_electrical'value (category_prefix & cat);
-	end;	
+	end;
 
-	
-	
 
-	
-		
+
+
+
+
 end et_device_category_electrical_non_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

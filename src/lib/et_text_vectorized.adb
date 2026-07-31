@@ -46,12 +46,12 @@ package body et_text_vectorized is
 
 
 	package body generic_pac_text_vectorized is
-		
+
 
 		procedure validate_text_line_width (width : in pac_geometry.type_distance) is
 		begin
 			if width not in type_text_line_width then
-				log (SEVERITY_ERROR, "line width invalid ! Allowed range is" 
+				log (SEVERITY_ERROR, "line width invalid ! Allowed range is"
 					& to_string (type_text_line_width'first) & " .."
 					& to_string (type_text_line_width'last),
 					console => true);
@@ -70,14 +70,14 @@ package body et_text_vectorized is
 		end;
 
 
-		
+
 		function get_position (text : in type_text_fab)
 			return pac_geometry.type_position
 		is begin
 			return text.position;
 		end get_position;
 
-		
+
 		function get_place (text : in type_text_fab)
 			return type_vector_model
 		is begin
@@ -92,8 +92,8 @@ package body et_text_vectorized is
 			text.position.place := place;
 		end;
 
-		
-		
+
+
 		function get_rotation (text : in type_text_fab)
 			return type_rotation
 		is begin
@@ -109,8 +109,8 @@ package body et_text_vectorized is
 				& " linewidth" & to_string (text.line_width);
 				-- CS size and alignment ?
 		end to_string;
-		
-		
+
+
 		procedure mirror_text (
 			text	: in out type_text_fab;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -122,15 +122,15 @@ package body et_text_vectorized is
 
 
 
-		
+
 		procedure rotate_text_to (
 			text	: in out type_text_fab;
 			angle	: in type_rotation)
 		is begin
 			text.position.rotation := angle;
 		end rotate_text_to;
-		
-		
+
+
 		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation)
@@ -152,7 +152,7 @@ package body et_text_vectorized is
 
 
 
-		
+
 		procedure move_text_by (
 			text	: in out type_text_fab;
 			offset	: in type_vector_model)
@@ -160,7 +160,7 @@ package body et_text_vectorized is
 			move_by (text.position.place, offset);
 		end move_text_by;
 
-		
+
 		procedure move_text_to (
 			text	: in out type_text_fab;
 			point	: in type_vector_model)
@@ -168,10 +168,10 @@ package body et_text_vectorized is
 			text.position.place := point;
 		end move_text_to;
 
-		
+
 		function text_properties (
 			text : in type_text_fab)
-			return string 
+			return string
 		is begin
 			return text_properties (type_text (text))
 				--& " pos " & to_string (type_vector_model (text.position))
@@ -181,18 +181,18 @@ package body et_text_vectorized is
 		end text_properties;
 
 
-			
-		
 
 
-		
+
+
+
 	-- VECTORIZED TEXT
 
 
-		
+
 		function to_lines (
-			char : in type_character) 
-			return pac_character_lines.list 
+			char : in type_character)
+			return pac_character_lines.list
 		is
 			use pac_character_lines;
 			result : pac_character_lines.list;
@@ -203,7 +203,7 @@ package body et_text_vectorized is
 
 				scratch.A := set (char.segments (l).start_x, char.segments (l).start_y);
 				scratch.B   := set (char.segments (l).end_x,   char.segments (l).end_y);
-					
+
 				--append (result, (
 					----A => type_vector_model (set (char (l).start_x, char (l).start_y)),
 					----B   => type_vector_model (set (char (l).end_x, char (l).end_y))
@@ -217,13 +217,13 @@ package body et_text_vectorized is
 			return result;
 		end to_lines;
 
-		
+
 		-- This function sorts lines by the distance of their start points
 		-- to the origin.
 		-- CS: The sorting could be improved but seems sufficient for now.
 		function "<" (
-			left, right : in type_character_line) 
-			return boolean 
+			left, right : in type_character_line)
+			return boolean
 		is begin
 			if left.A < right.A then
 				return true;
@@ -233,7 +233,7 @@ package body et_text_vectorized is
 		end "<";
 
 
-		
+
 
 		overriding procedure reset_text (
 			text : in out type_text_fab_with_content)
@@ -242,8 +242,8 @@ package body et_text_vectorized is
 			clear_content (text.content);
 		end;
 
-		
-		
+
+
 
 		function is_empty (
 			text : in type_text_fab_with_content)
@@ -258,7 +258,7 @@ package body et_text_vectorized is
 
 
 
-		
+
 
 		function get_content (
 			text : in type_text_fab_with_content)
@@ -267,8 +267,8 @@ package body et_text_vectorized is
 			return to_string (text.content);
 		end get_content;
 
-		
-		
+
+
 		function to_string (
 			text : in type_text_fab_with_content)
 			return string
@@ -278,12 +278,12 @@ package body et_text_vectorized is
 		end to_string;
 
 
-		
-		
+
+
 		function vectorize_text (
 			content			: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
-			rotation		: in type_rotation; 
+			rotation		: in type_rotation;
 			position		: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
 			mirror			: in type_mirror := MIRROR_NO;
 			line_width		: in pac_geometry.type_distance_positive;
@@ -299,29 +299,29 @@ package body et_text_vectorized is
 			result : type_vector_text := (width => line_width, others => <>);
 
 			-- This is the text content we will be displaying. It will be read
-			-- character by character. Each character will be mapped 
+			-- character by character. Each character will be mapped
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := pac_text_content.to_string (content);
 
 			package sorting is new pac_character_lines.generic_sorting;
 
 
-			half_line_width : constant type_float_positive := 
+			half_line_width : constant type_float_positive :=
 				type_float (line_width) * 0.5;
-			
+
 			-- Since there is a line width, the text position must be changed slightly:
 			offset_due_to_line_width : constant type_offset :=
 				to_offset (half_line_width, half_line_width);
-			
+
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
-			spacing : constant type_distance_positive := 
+			spacing : constant type_distance_positive :=
 				size * (0.25 + type_distance_positive (type_character_width'last));
 
-			
+
 			-- The scaling is done so that text height and width are
 			-- independed of the line width.
 			-- The scaling factor M applies to X and Y axis in the same way.
@@ -329,20 +329,20 @@ package body et_text_vectorized is
 
 			scale_factor_float : constant type_float_positive := type_float_positive (scale_factor);
 
-			
+
 			-- For alignment we need the total length of the text:
 			text_length : constant type_distance_positive := to_distance (half_line_width) +
 				type_distance (text'length - 1) * type_distance (spacing * scale_factor);
 			-- CS constraint_error raised if text length is zero !
-			
+
 			text_length_half : constant type_distance_positive := text_length * 0.5;
 
 			text_height : constant type_distance_positive := size;
 			text_height_half : constant type_distance_positive := size * 0.5;
 
-			
+
 			procedure scale_and_move_lines (lines : in out pac_character_lines.list) is
-				
+
 				-- Here we collect the lines of the moved character.
 				-- scratch will overwrite the given lines at the end of this procedure:
 				scratch : pac_character_lines.list;
@@ -350,7 +350,7 @@ package body et_text_vectorized is
 				procedure query_line (c : in pac_character_lines.cursor) is
 					l : type_character_line := element (c);
 				begin
-					-- According to the given text size, the line is now 
+					-- According to the given text size, the line is now
 					-- to be scaled:
 					scale (l, scale_factor_float);
 
@@ -358,9 +358,9 @@ package body et_text_vectorized is
 					move_by (
 						line	=> l,
 						offset	=> offset_due_to_line_width);
-										   
+
 					-- Move the line to the right according to the
-					-- position of the character inside the text. 
+					-- position of the character inside the text.
 					-- CS: depends on alignment ?
 					move_by (
 						line	=> l,
@@ -371,30 +371,30 @@ package body et_text_vectorized is
 					-- Collect the line in scratch:
 					append (scratch, l);
 				end query_line;
-				
+
 			begin
 				iterate (lines, query_line'access); -- query the lines of the character
 				lines := scratch; -- replace old lines by new lines
 			end scale_and_move_lines;
 
 
-			
-			procedure scale_and_move_border (border : in out pac_vectors.list) is 
+
+			procedure scale_and_move_border (border : in out pac_vectors.list) is
 
 				procedure align_vertical is begin
 					case alignment.vertical is
-						when ALIGN_BOTTOM => 
+						when ALIGN_BOTTOM =>
 							null; -- already computed for bottom alignment. nothing to do
-						
+
 						when ALIGN_CENTER =>
 							move_by (border, to_offset (zero, - text_height_half));
-							
+
 						when ALIGN_TOP =>
 							move_by (border, to_offset (zero, - text_height));
 					end case;
 				end align_vertical;
 
-				
+
 			begin -- scale_and_move_border
 				scale (border, scale_factor_float);
 				move_by (border, offset_due_to_line_width);
@@ -407,40 +407,40 @@ package body et_text_vectorized is
 				-- CS: Not tested !
 				-- Align with the origin:
 				case alignment.horizontal is
-					when ALIGN_LEFT => 
+					when ALIGN_LEFT =>
 						-- already computed for left alignment. so no need to align horizontal.
 						align_vertical;
 
 					when ALIGN_CENTER =>
 						move_by (border, to_offset (- text_length_half, zero));
-						
+
 						align_vertical;
-						
+
 					when ALIGN_RIGHT =>
 						move_by (border, to_offset (- text_length, zero));
-						
+
 						align_vertical;
 				end case;
-					
-				
+
+
 				-- Rotate as given by argument "rotation":
 				rotate_by (border, type_angle (rotation));
-				
+
 				-- Mirror if required:
 				if mirror = MIRROR_ALONG_Y_AXIS then
 					mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
 				end if;
-				
+
 				-- Move to final position as given by argument "position":
 				move_by (border, to_offset (position));
 			end scale_and_move_border;
 
-			
+
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
 			-- If required by argument make_border, a border around the
 			-- character is formed from the list of border vertices:
-			procedure add (char : in type_character) is 
+			procedure add (char : in type_character) is
 				text_lines : pac_character_lines.list := to_lines (char);
 				border_vertices : pac_vectors.list;
 
@@ -460,38 +460,38 @@ package body et_text_vectorized is
 				end if;
 			end add;
 
-			
+
 			procedure finalize is
 				scratch : pac_character_lines.list;
 
-				procedure query_line (c : in pac_character_lines.cursor) is 
+				procedure query_line (c : in pac_character_lines.cursor) is
 					l : type_character_line := element (c);
 
 					procedure align_vertical is begin
 						case alignment.vertical is
-							when ALIGN_BOTTOM => 
+							when ALIGN_BOTTOM =>
 								null; -- text is already computed for bottom alignment. nothing to do
-							
+
 							when ALIGN_CENTER =>
 								move_by (
 									line	=> l,
 									offset	=> to_offset (zero, - text_height_half));
 
-								
+
 							when ALIGN_TOP =>
 								move_by (
 									line	=> l,
 									offset	=> to_offset (zero, - text_height));
-								
+
 						end case;
 					end align_vertical;
 
-					
+
 				begin -- query_line
-					
+
 					-- Align the text with the origin:
 					case alignment.horizontal is
-						when ALIGN_LEFT => 
+						when ALIGN_LEFT =>
 							-- text is already computed for left alignment. so no need to align horizontal.
 							align_vertical;
 
@@ -499,18 +499,18 @@ package body et_text_vectorized is
 							move_by (
 								line	=> l,
 								offset	=> to_offset (- text_length_half, zero));
-							
+
 							align_vertical;
-							
+
 						when ALIGN_RIGHT =>
 							move_by (
 								line	=> l,
 								offset	=> to_offset (- text_length, zero));
-							
+
 							align_vertical;
 					end case;
 
-					
+
 					-- Rotate the text (about the origin) if required:
 					if rotation /= zero_rotation then
 						rotate_by (l, type_angle (rotation));
@@ -520,33 +520,33 @@ package body et_text_vectorized is
 					if mirror = MIRROR_ALONG_Y_AXIS then
 						mirror_line (l, MIRROR_ALONG_Y_AXIS);
 					end if;
-					
-					-- Move the line to the given position. 
+
+					-- Move the line to the given position.
 					-- The given position is the anchor point of the text.
-					move_by (l, to_offset (position));					
-					
+					move_by (l, to_offset (position));
+
 					append (scratch, l);
 				end query_line;
 
-				
+
 			begin -- finalize
 				--put_line ("length " & to_string (text_length));
-				
+
 				iterate (result.lines, query_line'access);
 				result.lines := scratch;
 
 			end finalize;
 
-			
+
 		begin -- vectorize_text
 			log (text => "vectorize_text", level => log_threshold);
 			log_indentation_up;
-			
+
 			-- Read the text to be displayed character by character and
 			-- map from character to the corresponding vectorized character:
 			for c in text'first .. text'last loop
 				place := c;
-				
+
 				case text (c) is
 					when 'A' => add (capital_a);
 					when 'B' => add (capital_b);
@@ -601,7 +601,7 @@ package body et_text_vectorized is
 					when 'x' => add (small_x);
 					when 'y' => add (small_y);
 					when 'z' => add (small_z);
-					
+
 					when '0' => add (digit_0);
 					when '1' => add (digit_1);
 					when '2' => add (digit_2);
@@ -619,10 +619,10 @@ package body et_text_vectorized is
 					when '/' => add (special_forward_slash);
 					when ':' => add (special_colon);
 					when ' ' => null;
-					
-					when others => 
+
+					when others =>
 						raise syntax_error_1 with
-						"ERROR: Invalid character in " & enclose_in_quotes (text) 
+						"ERROR: Invalid character in " & enclose_in_quotes (text)
 							 & " at position" & positive'image (place) & " !";
 
 				end case;
@@ -631,12 +631,12 @@ package body et_text_vectorized is
 			-- Align, mirror and move the text to the final position:
 			finalize;
 
-			
+
 			log_indentation_down;
 			return result;
 		end vectorize_text;
 
-		
+
 
 		function first (
 			text	: in type_vector_text)
@@ -650,17 +650,17 @@ package body et_text_vectorized is
 			text	: in type_vector_text;
 			process	: not null access procedure (
 				position: in pac_character_lines.cursor))
-		is 
+		is
 			use pac_character_lines;
 			c : pac_character_lines.cursor := text.lines.first;
 		begin
 			while c /= no_element loop
-				process (c);				
+				process (c);
 				next (c);
 			end loop;
 		end iterate;
 
-		
+
 		function get_lines (
 			text	: in type_vector_text)
 			return pac_character_lines.list
@@ -675,30 +675,30 @@ package body et_text_vectorized is
 		is begin
 			return text.borders;
 		end get_borders;
-		
-		
+
+
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive
-		is begin 
+		is begin
 			return text.width;
 		end get_linewidth;
-		
-		
+
+
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 		is
 			use pac_polygons;
 			result : pac_character_lines.list;
-				
+
 			procedure query_line (c : in pac_character_lines.cursor) is
 				line : type_character_line := element (c);
 			begin
 				mirror_line (line, axis);
 				result.append (line);
 			end query_line;
-			
+
 		begin
 			-- line segments:
 			text.lines.iterate (query_line'access);
@@ -715,17 +715,17 @@ package body et_text_vectorized is
 			angle	: in type_rotation)
 		is
 			angle_float : constant type_angle := type_angle (angle);
-			
+
 			use pac_polygons;
 			result : pac_character_lines.list;
-				
+
 			procedure query_line (c : in pac_character_lines.cursor) is
 				line : type_character_line := element (c);
 			begin
 				rotate_by (line, angle_float);
 				result.append (line);
 			end query_line;
-			
+
 		begin
 			-- line segments:
 			text.lines.iterate (query_line'access);
@@ -741,17 +741,17 @@ package body et_text_vectorized is
 			offset	: in type_vector_model)
 		is
 			offset_float : constant type_offset := to_offset (offset);
-			
+
 			use pac_polygons;
 			result : pac_character_lines.list;
-				
+
 			procedure query_line (c : in pac_character_lines.cursor) is
 				line : type_character_line := element (c);
 			begin
 				move_by (line, offset_float);
 				result.append (line);
 			end query_line;
-			
+
 		begin
 			-- line segments:
 			text.lines.iterate (query_line'access);
@@ -762,16 +762,16 @@ package body et_text_vectorized is
 
 		end move_vector_text;
 
-		
+
 	end generic_pac_text_vectorized;
 
-	
+
 end et_text_vectorized;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

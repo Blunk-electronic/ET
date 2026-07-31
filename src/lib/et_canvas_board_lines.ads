@@ -37,7 +37,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- IMPORTANT:
 -- This is about drawing lines in assy doc, silkscreen, stop mask, stencil
 -- and freetracks in conductor layers.
@@ -66,7 +66,7 @@ package et_canvas_board_lines is
 	-- This procedure creates a set of categories:
 	procedure make_affected_layer_categories;
 
-	
+
 	-- Creates the properties box where the
 	-- operator can choose the properties of the line
 	-- to be drawn:
@@ -74,11 +74,11 @@ package et_canvas_board_lines is
 
 
 	-- to be output in the status bar:
-	status_draw_line : constant string := 
-		status_click_left 
+	status_draw_line : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to draw line." 
+		& "to draw line."
 		& status_hint_for_abort;
 
 
@@ -90,12 +90,12 @@ package et_canvas_board_lines is
 	procedure add_by_category (
 		line : in type_line);
 
-	
+
 end et_canvas_board_lines;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

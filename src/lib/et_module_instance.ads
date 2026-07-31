@@ -47,10 +47,10 @@ with et_assembly_variant_name;		use et_assembly_variant_name;
 
 
 package et_module_instance is
-	
-	
 
-	-- The module instance name is something like LMX_1 or DRV_1. 
+
+
+	-- The module instance name is something like LMX_1 or DRV_1.
 	module_instance_name_length_max : constant positive := 20;
 	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
 
@@ -58,8 +58,8 @@ package et_module_instance is
 	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
 
 
-	
-	
+
+
 	type type_module_instance is record
 		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
@@ -67,20 +67,20 @@ package et_module_instance is
 	end record;
 
 
-	
+
 	-- Lots of module instances are stored in a map:
 	package pac_module_instances is new ordered_maps (
 		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
 		"<"				=> pac_module_instance_name."<",
 		element_type	=> type_module_instance);
 
-	
+
 
 end et_module_instance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

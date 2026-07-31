@@ -42,26 +42,26 @@
 package body et_symbol_name is
 
 
-	function to_string (name : in pac_symbol_model_name.bounded_string) 
-		return string 
+	function to_string (name : in pac_symbol_model_name.bounded_string)
+		return string
 	is begin
 		return pac_symbol_model_name.to_string (name);
 	end to_string;
 
-	
-	
+
+
 	function to_file_name (name : in string)
-		return pac_symbol_model_name.bounded_string 
+		return pac_symbol_model_name.bounded_string
 	is begin
 		return pac_symbol_model_name.to_bounded_string (name);
 	end;
 
-	
+
 end et_symbol_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

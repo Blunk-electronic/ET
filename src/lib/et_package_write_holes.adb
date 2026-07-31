@@ -56,35 +56,35 @@ with et_file_write;						use et_file_write;
 package body et_package_write_holes is
 
 	use et_board_geometry.pac_file_rw;
-	
+
 	use pac_holes;
 
-	
+
 
 	procedure write_holes (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
 		procedure query_hole (c : in pac_holes.cursor) is begin
-			section_mark (section_hole, HEADER);		
-			write_polygon_segments (element (c));		
-			section_mark (section_hole, FOOTER);		
+			section_mark (section_hole, HEADER);
+			write_polygon_segments (element (c));
+			section_mark (section_hole, FOOTER);
 		end query_hole;
 
-		
+
 	begin
 		log (text => "write holes", level => log_threshold);
 
 		if not is_empty (packge.holes) then
-			
-			section_mark (section_pcb_contours, HEADER);		
-			packge.holes.iterate (query_hole'access);				
+
+			section_mark (section_pcb_contours, HEADER);
+			packge.holes.iterate (query_hole'access);
 			section_mark (section_pcb_contours, FOOTER);
-			
+
 		end if;
 	end write_holes;
 
-	
-	
+
+
 end et_package_write_holes;

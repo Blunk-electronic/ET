@@ -85,32 +85,32 @@ procedure draw_conductors is
 	use et_canvas_board_preliminary_object;
 
 
-	
+
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
-	-- The properties are taken from variable 
+	-- The properties are taken from variable
 	-- et_canvas_board_texts.preliminary_text.
-	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
+	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT.
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed (
 		layer : in type_signal_layer)
-	is 
+	is
 		use et_canvas_board_texts;
 		use pac_draw_text;
 		point : type_vector_model;
 	begin
 		-- put_line ("draw_text_being_placed");
-		
+
 		if verb = VERB_PLACE and noun = NOUN_TEXT then
-			
-			if object_layer_category = LAYER_CAT_CONDUCTOR 
+
+			if object_layer_category = LAYER_CAT_CONDUCTOR
 			and object_signal_layer = layer then
 
 				-- Set the point where the text is to be drawn
 				-- while the operator is moving the tool:
 				point := get_primary_tool_position;
 
-				preliminary_text.text.position := 
+				preliminary_text.text.position :=
 					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
@@ -120,15 +120,15 @@ procedure draw_conductors is
 	end draw_text_being_placed;
 
 
-	
+
 
 	use et_net_names;
 	-- use et_net_class;
-	
+
 	use pac_nets;
 
 	use et_board_geometry.pac_polygons;
-	
+
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
@@ -137,14 +137,14 @@ procedure draw_conductors is
 	use pac_floating_hatched;
 	use pac_route_solid;
 	use pac_route_hatched;
-	
+
 	use pac_placeholders_conductor;
 	use pac_conductor_texts_board;
 
 	-- CS must be overwritten according to select status:
 	brightness : constant type_brightness := NORMAL;
 
-	
+
 	-- For diplaying net names and classes we need this stuff:
 	-- is_signal : boolean := false;
 	net_name : pac_net_name.bounded_string;
@@ -155,31 +155,31 @@ procedure draw_conductors is
 	-- CS: correct ?
 
 
-	
+
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
 
 
-	procedure set_default_brightness is 
+	procedure set_default_brightness is
 		use et_colors.board;
 	begin
 		set_color_conductor (current_layer, NORMAL);
 	end set_default_brightness;
 
-	
-	procedure set_highlight_brightness is 
+
+	procedure set_highlight_brightness is
 		use et_colors.board;
 	begin
 		set_color_conductor (current_layer, BRIGHT);
 	end set_highlight_brightness;
-	
 
 
-	
-	
-	
+
+
+
+
 -- DRAWI LINES, ARCS, CIRCLES:
-	
+
 
 	procedure draw_line (
 		line 			: in type_conductor_line;
@@ -187,10 +187,10 @@ procedure draw_conductors is
 	is
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, 
+			draw_line (line => line, width => line.width,
 					   stroke => DO_STROKE);
 		end draw;
-		
+
 	begin
 		-- Draw the line if it is in the current layer:
 		if get_layer (line) = current_layer then
@@ -200,8 +200,8 @@ procedure draw_conductors is
 				draw;
 				set_default_brightness;
 			else
-				
-				-- If the segment is selected, 
+
+				-- If the segment is selected,
 				-- then it must be drawn highlighted:
 				if is_selected (line) then
 					set_highlight_brightness;
@@ -211,15 +211,15 @@ procedure draw_conductors is
 					draw;
 				end if;
 			end if;
-			
+
 		end if;
 	end draw_line;
 
-	
 
 
 
-	
+
+
 
 
 
@@ -231,7 +231,7 @@ procedure draw_conductors is
 		procedure draw is begin
 			draw_arc (arc => arc, width => arc.width, stroke => DO_STROKE);
 		end draw;
-		
+
 	begin
 		-- Draw the arc if it is in the current layer:
 		if get_layer (arc) = current_layer then
@@ -241,8 +241,8 @@ procedure draw_conductors is
 				draw;
 				set_default_brightness;
 			else
-				
-				-- If the segment is selected, 
+
+				-- If the segment is selected,
 				-- then it must be drawn highlighted:
 				if is_selected (arc) then
 					set_highlight_brightness;
@@ -252,15 +252,15 @@ procedure draw_conductors is
 					draw;
 				end if;
 			end if;
-			
+
 		end if;
 	end draw_arc;
 
 
-	
 
 
-	
+
+
 	procedure draw_circle (
 		circle 			: in type_conductor_circle;
 		force_highlight	: in boolean := false)
@@ -275,7 +275,7 @@ procedure draw_conductors is
 				stroke	=> DO_STROKE);
 
 		end draw;
-		
+
 	begin
 		-- Draw the circle if it is in the current layer:
 		if get_layer (circle) = current_layer then
@@ -285,8 +285,8 @@ procedure draw_conductors is
 				draw;
 				set_default_brightness;
 			else
-				
-				-- If the segment is selected, 
+
+				-- If the segment is selected,
 				-- then it must be drawn highlighted:
 				if is_selected (circle) then
 					set_highlight_brightness;
@@ -296,32 +296,32 @@ procedure draw_conductors is
 					draw;
 				end if;
 			end if;
-			
+
 		end if;
 	end draw_circle;
 
 
 
 
-	
 
-	
+
+
 -- CONDUCTOR FILL ZONES
-	
+
 	use pac_islands;
 
 
-	
+
 	procedure query_island (i : in pac_islands.cursor) is
 		use pac_geometry_1;
-		
+
 		use pac_edges;
 		use pac_stripes;
 
 		island : type_island renames element (i);
 
-		
-		procedure draw_edge (e : in pac_edges.cursor) is 
+
+		procedure draw_edge (e : in pac_edges.cursor) is
 			edge : type_edge renames element (e);
 		begin
 			draw_line (
@@ -330,23 +330,23 @@ procedure draw_conductors is
 				style	=> DASHED);
 		end draw_edge;
 
-		
-		procedure query_lake (l : in pac_polygon_list.cursor) is 
+
+		procedure query_lake (l : in pac_polygon_list.cursor) is
 			use pac_polygon_list;
 			lake : type_polygon renames element (l);
 		begin
 			lake.edges.iterate (draw_edge'access);
 		end query_lake;
 
-		
-		procedure draw_stripe (s : in pac_stripes.cursor) is 
+
+		procedure draw_stripe (s : in pac_stripes.cursor) is
 			stripe : type_line_fine renames element (s);
 		begin
 			draw_line (
 				line	=> to_line_coarse (stripe),
 				width	=> 0.0); -- don't care
 		end draw_stripe;
-		
+
 	begin
 		island.shore.edges.iterate (draw_edge'access);
 		island.lakes.iterate (query_lake'access);
@@ -355,8 +355,8 @@ procedure draw_conductors is
 
 
 
-	
-	
+
+
 	procedure draw_fill_zone (
 		zone : in type_floating_solid)
 	is
@@ -367,17 +367,17 @@ procedure draw_conductors is
 
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
-			
+
 			draw_contour (
 				contour	=> zone,
 				style	=> DASHED,
-				filled	=> NO, 
+				filled	=> NO,
 				width	=> zone.linewidth);
-   
-			-- All edges of islands and their fill lines 
+
+			-- All edges of islands and their fill lines
 			-- have the same linewidth:
 			set_linewidth (zone.linewidth);
-			
+
 			iterate (zone.islands, query_island'access);
 			stroke;
 
@@ -385,9 +385,9 @@ procedure draw_conductors is
 	end draw_fill_zone;
 
 
-	
 
-	
+
+
 	procedure draw_fill_zone (
 		zone : in type_floating_hatched)
 	is
@@ -398,17 +398,17 @@ procedure draw_conductors is
 
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
-			
+
 			draw_contour (
 				contour	=> zone,
 				style	=> DASHED,
-				filled	=> NO, 
+				filled	=> NO,
 				width	=> zone.linewidth);
-   
-			-- All edges of islands and their fill lines 
+
+			-- All edges of islands and their fill lines
 			-- have the same linewidth:
 			set_linewidth (zone.linewidth);
-			
+
 			iterate (zone.islands, query_island'access);
 			stroke;
 
@@ -416,7 +416,7 @@ procedure draw_conductors is
 	end draw_fill_zone;
 
 
-	
+
 
 
 	procedure query_relief (c : in pac_reliefes.cursor) is
@@ -424,32 +424,32 @@ procedure draw_conductors is
 
 		use pac_reliefes;
 		use pac_spokes;
-		
+
 		relief : type_relief renames element (c);
 
-		procedure query_spoke (s : in pac_spokes.cursor) is 
+		procedure query_spoke (s : in pac_spokes.cursor) is
 			spoke : type_line_fine renames element (s);
 		begin
 			draw_line (
 				line	=> to_line_coarse (spoke),
 				width	=> 0.0);  -- don't care
 		end query_spoke;
-		
+
 	begin
 		iterate (relief.spokes, query_spoke'access);
 	end query_relief;
 
 
-	
 
 
-	
+
+
 	procedure draw_fill_zone (
 		zone 			: in type_route_solid;
 		force_highlight	: in boolean := false)
 	is
 
-		
+
 		procedure draw is
 			use pac_draw_contours;
 			use pac_reliefes;
@@ -460,10 +460,10 @@ procedure draw_conductors is
 			draw_contour (
 				contour	=> zone,
 				style	=> DASHED,
-				filled	=> NO, 
+				filled	=> NO,
 				width	=> zone.linewidth);
 
-			-- All edges of islands and their fill lines 
+			-- All edges of islands and their fill lines
 			-- have the same linewidth:
 			set_linewidth (zone.linewidth);
 			iterate (zone.islands, query_island'access);
@@ -475,7 +475,7 @@ procedure draw_conductors is
 			stroke;
 		end draw;
 
-		
+
 	begin
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
@@ -485,7 +485,7 @@ procedure draw_conductors is
 				draw;
 				set_default_brightness;
 			else
-				-- If the zone is selected, 
+				-- If the zone is selected,
 				-- then it must be drawn highlighted:
 				if is_selected (zone) then
 					set_highlight_brightness;
@@ -499,7 +499,7 @@ procedure draw_conductors is
 		end if;
 	end draw_fill_zone;
 
-	
+
 
 
 
@@ -514,14 +514,14 @@ procedure draw_conductors is
 		begin
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
-			
+
 			draw_contour (
 				contour	=> zone,
 				style	=> DASHED,
-				filled	=> NO, 
+				filled	=> NO,
 				width	=> zone.linewidth);
-   
-			-- All edges of islands and their fill lines 
+
+			-- All edges of islands and their fill lines
 			-- have the same linewidth:
 			set_linewidth (zone.linewidth);
 			iterate (zone.islands, query_island'access);
@@ -533,8 +533,8 @@ procedure draw_conductors is
 			stroke;
 		end draw;
 
-		
-	begin		
+
+	begin
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
 
@@ -543,7 +543,7 @@ procedure draw_conductors is
 				draw;
 				set_default_brightness;
 			else
-				-- If the zone is selected, 
+				-- If the zone is selected,
 				-- then it must be drawn highlighted:
 				if is_selected (zone) then
 					set_highlight_brightness;
@@ -553,15 +553,15 @@ procedure draw_conductors is
 					draw;
 				end if;
 			end if;
-			
+
 		end if;
 	end draw_fill_zone;
 
 
 
-	
 
-	
+
+
 
 	procedure draw_cutout (
 		cutout : in type_cutout)
@@ -579,29 +579,29 @@ procedure draw_conductors is
 			-- it will not be filled:
 
 			-- CS: test selected
-			
+
 			draw_contour (
 				contour	=> cutout,
 				style	=> DASHED,
-				filled	=> NO, 
+				filled	=> NO,
 				width	=> zero);
-   
+
 		end if;
 	end draw_cutout;
 
-	
 
 
-	
 
-	
+
+
+
 -- 	TEXT PLACEHOLDERS AND TEXTS:
-	
+
 	procedure draw_placeholder (
-		placeholder : in type_placeholder_conductor) 
-	is 
+		placeholder : in type_placeholder_conductor)
+	is
 		use et_board_ops_text;
-		use pac_text_vectorized;		
+		use pac_text_vectorized;
 		use pac_draw_text;
 		use et_colors.board;
 
@@ -609,7 +609,7 @@ procedure draw_conductors is
 		text : type_text_fab_with_content;
 
 
-		procedure draw is 
+		procedure draw is
 			use et_mirroring;
 		begin
 			-- mirror if bottom layer
@@ -619,14 +619,14 @@ procedure draw_conductors is
 					text			=> text,
 					mirror			=> MIRROR_ALONG_Y_AXIS,
 					place_absolute	=> true);
-				
+
 			else
 				draw_vector_text (text);
 			end if;
-			
+
 		end draw;
 
-		
+
 	begin
 		-- Draw the placeholder if it is in the current layer:
 		if get_layer (placeholder) = current_layer then
@@ -640,23 +640,23 @@ procedure draw_conductors is
 
 			-- Draw the placeholder highlighted if it is selected:
 			if is_selected (placeholder) then
-				set_color_conductor (current_layer, BRIGHT);				
+				set_color_conductor (current_layer, BRIGHT);
 
 				draw;
-				
+
 				set_color_conductor (current_layer, NORMAL);
 			else
 				-- not selected
 				draw;
 			end if;
-			
+
 		end if;
 	end draw_placeholder;
 
-	
 
-	
-	
+
+
+
 
 
 	procedure draw_text (
@@ -665,8 +665,8 @@ procedure draw_conductors is
 		use pac_draw_text;
 		use et_colors.board;
 
-		
-		procedure draw is 
+
+		procedure draw is
 			use et_mirroring;
 			t : type_conductor_text_board := text;
 		begin
@@ -677,13 +677,13 @@ procedure draw_conductors is
 					text			=> text,
 					mirror			=> MIRROR_ALONG_Y_AXIS,
 					place_absolute	=> true);
-					
+
 			else
 				draw_vector_text (text);
 			end if;
 		end;
-		
-		
+
+
 	begin
 		-- Draw the text if it is in the current layer:
 		if get_layer (text) = current_layer then
@@ -701,18 +701,18 @@ procedure draw_conductors is
 			else -- not selected
 				draw;
 			end if;
-			
+
 		end if;
 	end draw_text;
 
 
-	
-	
 
 
 
-	
-	
+
+
+
+
 -- VIAS
 
 	-- Draws a given via. If force_highlight is true,
@@ -721,11 +721,11 @@ procedure draw_conductors is
 	procedure draw_via ( -- CS: move to separate package (like draw_terminal ?)
 		via 			: in type_via;
 		force_highlight	: in boolean := false)
-	is 
+	is
 		-- By default the via is drawn with normal brightness.
 		-- On caller request, this value will be overridden:
 		brightness : type_brightness := NORMAL;
-		
+
 		-- When the restring is to be drawn then
 		-- we just use a circle with a certain linewidth.
 		-- The center of the circle is the position
@@ -734,58 +734,58 @@ procedure draw_conductors is
 		-- be overwritten by the tool position:
 		circle : type_circle;
 		linewidth : type_distance_positive;
-		
+
 		radius_base : type_distance_positive;
 
 
 		-- This procedure sets the linewidth
 		-- and radius of the circle to be drawn:
 		procedure set_width_and_radius (
-			r : in type_restring_width) 
+			r : in type_restring_width)
 		is begin
 			linewidth := r;
 			set_radius (circle, (radius_base + r / 2.0));
 		end set_width_and_radius;
 
 
-		
+
 		-- This procedure draws the restring using
 		-- the circle as described above:
-		procedure draw_restring is 
+		procedure draw_restring is
 			use et_colors.board;
 		begin
 			set_color_via_restring (brightness);
-			
+
 			draw_circle (
 				circle	=> circle,
 				filled	=> NO,
 				width	=> linewidth,
-				stroke	=> DO_STROKE);			
+				stroke	=> DO_STROKE);
 		end draw_restring;
 
-		
+
 		-- These flags are used to prevent objects from being drawn
 		-- multple times at the same place:
 		outer_restring_drawn, inner_restring_drawn, net_name_drawn,
 		numbers_drawn, drill_size_drawn, cancel : boolean := false;
 
-		-- CS display restring width ?			
+		-- CS display restring width ?
 
-		
+
 		-- Draws the net name right in the center of the via (no offset).
 		-- The text size is set automatically with the radius of the drill:
-		procedure draw_net_name is 
+		procedure draw_net_name is
 			use et_colors.board;
 			use et_alignment;
 
 			use pac_net_name;
-			
+
 			position : constant type_vector_model := get_center (circle);
 
 			use pac_draw_text;
 		begin
 			if not net_name_drawn then
-				
+
 				-- The net name is displayed in a special color:
 				set_color_via_net_name;
 
@@ -802,22 +802,22 @@ procedure draw_conductors is
 			end if;
 		end draw_net_name;
 
-		
-		
+
+
 		-- Draws the layer numbers above the net name.
 		-- The text size is set automatically with the radius of the drill:
-		procedure draw_numbers (from, to : in string) is 
+		procedure draw_numbers (from, to : in string) is
 			use et_colors.board;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
-			
-			offset : constant type_vector_model := 
+
+			offset : constant type_vector_model :=
 				set (zero, + radius_base * text_position_layer_and_drill_factor);
 
 			use pac_draw_text;
 		begin
 			move_by (position, offset);
-			
+
 			-- The layer numbers are displayed in a special color:
 			set_color_via_layers;
 
@@ -829,14 +829,14 @@ procedure draw_conductors is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
-			
+
 		end draw_numbers;
 
 
-		
+
 		-- Draws the drill size below the net name.
 		-- The text size is set automatically with the radius of the drill:
-		procedure draw_drill_size is 
+		procedure draw_drill_size is
 			use et_colors.board;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
@@ -847,9 +847,9 @@ procedure draw_conductors is
 			if not drill_size_drawn then
 
 				offset := set (zero, - radius_base * text_position_layer_and_drill_factor);
-				
+
 				move_by (position, offset);
-						
+
 				-- The drill size is displayed in a special color:
 				set_color_via_drill_size; -- CS
 
@@ -865,13 +865,13 @@ procedure draw_conductors is
 				drill_size_drawn := true;
 			end if;
 		end draw_drill_size;
-		
 
-		
+
+
 		-- Depening on the category of the via, the order in
 		-- which things are to be drawn differs:
-		procedure query_category is 
-			
+		procedure query_category is
+
 			procedure draw_numbers_blind_top is begin
 				-- Draw the layer numbers only once:
 				if not numbers_drawn then
@@ -883,7 +883,7 @@ procedure draw_conductors is
 				end if;
 			end draw_numbers_blind_top;
 
-			
+
 			procedure draw_numbers_blind_bottom is begin
 				-- Draw the layer numbers only once:
 				if not numbers_drawn then
@@ -893,9 +893,9 @@ procedure draw_conductors is
 
 					numbers_drawn := true;
 				end if;
-			end draw_numbers_blind_bottom;		
+			end draw_numbers_blind_bottom;
 
-			
+
 			procedure through_hole_via is begin
 				if is_inner_layer (current_layer) then
 					-- current_layer is an inner layer
@@ -911,17 +911,17 @@ procedure draw_conductors is
 
 				draw_restring;
 
-				-- For a double layer board it is sufficent to draw 
+				-- For a double layer board it is sufficent to draw
 				-- the restring of the top or bottom layer. Double layer boards
 				-- do not have inner restrings for vias.
 				if is_double_layer_board then
 					if outer_restring_drawn then
 						cancel := true; -- causes the layer iterator to cancel
 					end if;
-				else 
+				else
 				-- For a multilayer board we need to draw only one outer restring
 				-- (top or bottom, which one does not matter) and one inner restring.
-				-- Once that is done, there is no need to draw the via again.	
+				-- Once that is done, there is no need to draw the via again.
 					if outer_restring_drawn and inner_restring_drawn then
 						cancel := true; -- causes the layer iterator to cancel
 					end if;
@@ -929,33 +929,33 @@ procedure draw_conductors is
 
 				draw_net_name;
 				draw_drill_size;
-				
+
 				-- NOTE: For a through via, no layer numbers are displayed.
 			end through_hole_via;
 
 
 			procedure buried_via is begin
-				if via.layers.upper = current_layer 
+				if via.layers.upper = current_layer
 				or via.layers.lower = current_layer then
 					set_width_and_radius (via.restring_inner);
-				
+
 					draw_restring;
 
 					-- Since the inner restring width is the same for all
 					-- inner signal layers, it is sufficent to draw only one
 					-- restring.
 					cancel := true;  -- causes the layer iterator to cancel
-				
+
 					-- Draw the layer numbers only once (cancel flag already set)
 					draw_numbers (
 						from	=> to_string (via.layers.upper),
 						to		=> to_string (via.layers.lower));
-				
+
 					draw_net_name;
 					draw_drill_size;
 				end if;
 			end buried_via;
-			
+
 
 			procedure blind_via_from_top is begin
 				if current_layer = top_layer then
@@ -976,7 +976,7 @@ procedure draw_conductors is
 					draw_drill_size;
 				end if;
 
-				-- At least the top restring AND one inner restring 
+				-- At least the top restring AND one inner restring
 				-- must have been drawn. After that no more restring
 				-- shall be drawn.
 				if outer_restring_drawn and inner_restring_drawn then
@@ -1004,39 +1004,39 @@ procedure draw_conductors is
 					draw_drill_size;
 				end if;
 
-				-- At least the bottom restring AND one inner restring 
+				-- At least the bottom restring AND one inner restring
 				-- must have been drawn. After that no more restring
 				-- shall be drawn.
 				if outer_restring_drawn and inner_restring_drawn then
 					cancel := true;
 				end if;
 			end blind_via_from_bottom;
-			
-			
+
+
 		begin
 			case via.category is
 				when THROUGH =>
 					through_hole_via;
-					
+
 				when BURIED =>
 					buried_via;
-					
+
 				when BLIND_DRILLED_FROM_TOP =>
 					blind_via_from_top;
 
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					blind_via_from_bottom;
-					
+
 			end case;
 		end query_category;
 
 
-		
 
-		-- If the via is selected, then sets the 
+
+		-- If the via is selected, then sets the
 		-- brightness and position according to the tool
 		-- being used:
-		procedure set_brightness_and_position is 
+		procedure set_brightness_and_position is
 		begin
 			-- Overwrite the via position (circle.center) if the
 			-- via is selected and being moved:
@@ -1051,7 +1051,7 @@ procedure draw_conductors is
 			end if;
 		end set_brightness_and_position;
 
-	
+
 		-- Iterates through the signal layers and draws
 		-- the components of the via in each layer.
 		-- If displaying vias is disabled, then nothing happens here:
@@ -1064,7 +1064,7 @@ procedure draw_conductors is
 
 					-- Draw the layer only if it is enabled. Otherwise skip the layer:
 					if conductor_enabled (ly) then
-						
+
 						-- Set the layer being drawn:
 						current_layer := ly;
 
@@ -1083,7 +1083,7 @@ procedure draw_conductors is
 		end iterate_layers;
 
 
-		
+
 	begin -- draw_via
 		--put_line ("via.diameter" & to_string (via.diameter));
 
@@ -1100,24 +1100,24 @@ procedure draw_conductors is
 
 		-- Draw the via in the signal layers:
 		iterate_layers;
-		
+
 	end draw_via;
 
-	
-
-	
 
 
-	
-	
+
+
+
+
+
 	-- Draws the tracks, vias and texts in conductor layers:
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
+		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
 		use et_colors.board;
-		
+
 
 		-- Draw ratsnest (or airwires):
 		procedure draw_ratsnest is
@@ -1125,11 +1125,11 @@ procedure draw_conductors is
 
 			net_cursor : pac_nets.cursor;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is 
+			is
 				pragma unreferenced (net_name);
 				use pac_airwires;
 				airwire_cursor : pac_airwires.cursor;
@@ -1139,9 +1139,9 @@ procedure draw_conductors is
 				-- It indicates that individual airwires
 				-- are not to be tested whether they are selected:
 				draw_all_highlighted : boolean := false;
-				
-				
-				procedure query_airwire (airwire : in type_airwire) is 
+
+
+				procedure query_airwire (airwire : in type_airwire) is
 					use pac_geometry_brd;
 					restore_brightness : boolean := false;
 				begin
@@ -1156,12 +1156,12 @@ procedure draw_conductors is
 					end if;
 
 					 -- put_line (to_string (airwire));
-					
+
 					draw_line (
 						line	=> to_line_coarse (airwire),
 						width	=> 0.0, -- use minimal linewidth
 						stroke	=> DO_STROKE);
-					
+
 					-- Restore normal brightness.
 					-- If the whole net is selected, then nothing happens here:
 					if not draw_all_highlighted then
@@ -1174,7 +1174,7 @@ procedure draw_conductors is
 
 			begin
 				-- put_line ("draw ratsnest net " & to_string (net_name));
-				
+
 				if not net.route.airwires.hidden then
 
 					-- If the whole net is selected, then we set
@@ -1198,16 +1198,16 @@ procedure draw_conductors is
 				end if;
 			end query_net;
 
-			
+
 		begin
 			if ratsnest_enabled then
-				
+
 				-- All airwires of all nets are drawn with the same color:
 				set_color_ratsnest;
 
 				-- Iterate through the nets of the module:
 				net_cursor := module.nets.first;
-				
+
 				while has_element (net_cursor) loop
 					query_element (net_cursor, query_net'access);
 					next (net_cursor);
@@ -1216,7 +1216,7 @@ procedure draw_conductors is
 		end draw_ratsnest;
 
 
-		
+
 
 		-- This procedure draws the vias of nets:
 		procedure draw_vias is
@@ -1226,7 +1226,7 @@ procedure draw_conductors is
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is 
+			is
 				pragma unreferenced (net_name);
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
@@ -1236,17 +1236,17 @@ procedure draw_conductors is
 				-- are not to be tested whether they are selected:
 				draw_all_highlighted : boolean := false;
 
-				
+
 				procedure draw_via (via : in type_via) is begin
 					draw_via (via, draw_all_highlighted);
 				end draw_via;
 
-				
+
 			begin
 				if is_selected (net) then
 					draw_all_highlighted := true;
 				end if;
-				
+
 				-- Iterate through the vias of the candidate net:
 				while has_element (via_cursor) loop
 					query_element (via_cursor, draw_via'access);
@@ -1254,31 +1254,31 @@ procedure draw_conductors is
 				end loop;
 			end query_net;
 
-			
+
 		begin
 			-- Iterate through the nets of the module:
 			net_cursor := module.nets.first;
-			
+
 			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
-			
+
 		end draw_vias;
 
-		
+
 
 
 		-- This procedure draws the conductor tracks of nets:
 		procedure draw_tracks is
-		
+
 			net_cursor : pac_nets.cursor;
 
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is 
+			is
 				pragma unreferenced (net_name);
 
 				-- If the whole net is selected, then
@@ -1297,7 +1297,7 @@ procedure draw_conductors is
 				procedure query_line (line : in type_conductor_line) is begin
 					draw_line (line, draw_all_highlighted);
 				end;
-				
+
 
 				procedure query_arc (arc : in type_conductor_arc) is begin
 					draw_arc (arc, draw_all_highlighted);
@@ -1307,13 +1307,13 @@ procedure draw_conductors is
 				procedure query_zone_solid (zone : in type_route_solid) is begin
 					draw_fill_zone (zone, draw_all_highlighted);
 				end;
-				
+
 
 				procedure query_zone_hatched (zone : in type_route_hatched) is begin
 					draw_fill_zone (zone, draw_all_highlighted);
 				end;
 
-				
+
 			begin
 				if is_selected (net) then
 					draw_all_highlighted := true;
@@ -1328,7 +1328,7 @@ procedure draw_conductors is
 					query_element (arc_cursor, query_arc'access);
 					next (arc_cursor);
 				end loop;
-				
+
 				while has_element (zone_solid_cursor) loop
 					query_element (zone_solid_cursor, query_zone_solid'access);
 					next (zone_solid_cursor);
@@ -1338,28 +1338,28 @@ procedure draw_conductors is
 					query_element (zone_hatched_cursor, query_zone_hatched'access);
 					next (zone_hatched_cursor);
 				end loop;
-				
+
 			end query_net;
 
-			
+
 		begin
 			-- Iterate through the nets of the module:
 			net_cursor := module.nets.first;
-			
+
 			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
-			
+
 		end draw_tracks;
 
 
-		
+
 		-- This procedue draws conducting objects which are not connected with
 		-- any nets like freetracks, texts, floating zones:
 		procedure draw_non_electrical_objects is
 			objects : type_conductors_floating renames module.board.conductors_floating;
-			
+
 			line_cursor			: pac_conductor_lines.cursor	:= objects.lines.first;
 			arc_cursor			: pac_conductor_arcs.cursor  	:= objects.arcs.first;
 			circle_cursor		: pac_conductor_circles.cursor	:= objects.circles.first;
@@ -1369,7 +1369,7 @@ procedure draw_conductors is
 			placeholder_cursor	: pac_placeholders_conductor.cursor	:= objects.placeholders.first;
 			text_cursor			: pac_conductor_texts_board.cursor	:= objects.texts.first;
 
-			
+
 			procedure query_line (line : in type_conductor_line) is begin
 				draw_line (line);
 			end;
@@ -1402,7 +1402,7 @@ procedure draw_conductors is
 				draw_text (text);
 			end;
 
-			
+
 		begin
 			while has_element (line_cursor) loop
 				query_element (line_cursor, query_line'access);
@@ -1413,7 +1413,7 @@ procedure draw_conductors is
 				query_element (arc_cursor, query_arc'access);
 				next (arc_cursor);
 			end loop;
-			
+
 			while has_element (circle_cursor) loop
 				query_element (circle_cursor, query_circle'access);
 				next (circle_cursor);
@@ -1445,18 +1445,18 @@ procedure draw_conductors is
 			end loop;
 
 		end draw_non_electrical_objects;
-		
 
-		
+
+
 	begin -- query_items
-		
+
 		-- Iterate all conductor layers starting at the bottom layer and ending
 		-- with the top layer:
 		for ly in reverse top_layer .. bottom_layer loop
 
 			-- Draw the layer only if it is enabled. Otherwise skip the layer:
 			if conductor_enabled (ly) then
-				
+
 				-- Set the layer being drawn:
 				current_layer := ly;
 				--put_line (to_string (current_layer));
@@ -1467,38 +1467,38 @@ procedure draw_conductors is
 				-- Draws objects which are not connected with
 				-- and nets like freetracks, texts, floating zones:
 				draw_non_electrical_objects;
-				
+
 				-- Draw conductor objects which are connected with a net:
 				draw_tracks;
-				
-				draw_text_being_placed (ly);				
+
+				draw_text_being_placed (ly);
 			end if;
 		end loop;
 
 		-- Draw unrouted stuff (airwires):
 		draw_ratsnest;
-		
+
 		-- Draw the vias that exist in the nets:
 		draw_vias;
-		
+
 	end query_items;
 
 
 
-	
 
-	
+
+
 	-- Draws the via that is being placed with the
 	-- properties according to variable preliminary_via:
-	procedure draw_via_being_placed is 
+	procedure draw_via_being_placed is
 		use et_canvas_board_vias;
-		
+
 		-- The place where the via shall be drawn while it
 		-- is sticking at the tool (mouse or cursor):
 		position : type_vector_model;
 
 
-		procedure build_via_through is			
+		procedure build_via_through is
 			via : constant type_via := (
 				category 		=> THROUGH,
 				diameter		=> preliminary_via.drill.diameter,
@@ -1523,7 +1523,7 @@ procedure draw_conductors is
 		begin
 			draw_via (via);
 		end;
-			
+
 
 		procedure build_via_drilled_from_bottom is
 			via : constant type_via := (
@@ -1552,7 +1552,7 @@ procedure draw_conductors is
 		end;
 
 
-		
+
 	begin
 		-- put_line ("draw_via_being_placed");
 		if verb = VERB_PLACE and noun = NOUN_VIA then
@@ -1562,25 +1562,25 @@ procedure draw_conductors is
 
 			-- Get the name of the targeted net:
 			net_name := object_net_name;
-			
+
 			case preliminary_via.category is
 				when THROUGH =>
 					build_via_through;
 
 				when BLIND_DRILLED_FROM_TOP =>
 					build_via_drilled_from_top;
-					
+
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					build_via_drilled_from_bottom;
-					
+
 				when BURIED =>
 					build_via_buried;
-					
+
 			end case;
 		end if;
 	end draw_via_being_placed;
 
-	
+
 
 
 	-- Draws a conducting track path being drawn.
@@ -1592,11 +1592,11 @@ procedure draw_conductors is
 		-- Computes the path from given start to given end point.
 		-- Takes the bend style into account. Draws the path:
 		procedure compute_and_draw (
-			A, B : in type_vector_model) 
+			A, B : in type_vector_model)
 		is
 			use pac_path_and_bend;
 			use et_colors.board;
-			
+
 			line : type_line;
 
 			-- Do the actual path calculation.
@@ -1609,23 +1609,23 @@ procedure draw_conductors is
 					width	=> 0.0); -- don't care
 			end draw;
 
-			
+
 		begin
 			-- The calculated path may require a bend point.
 			-- Set/clear the "bended" flag of the line being drawn.
 			live_path.bended := path.bended;
 
-			-- set linewidth:			
+			-- set linewidth:
 			set_linewidth (object_linewidth);
 
 			-- Set the color according to the current signal layer:
 			set_color_conductor (object_signal_layer, NORMAL);
 
-			
+
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
 			if path.bended = NO then
-				
+
 				set_A (line, path.A);
 				set_B (line, path.B);
 
@@ -1639,20 +1639,20 @@ procedure draw_conductors is
 
 				set_A (line, path.A);
 				set_B (line, path.bend_point);
-				
+
 				draw;
 
 				set_A (line, path.bend_point);
 				set_B (line, path.B);
-				
-				draw;				
+
+				draw;
 			end if;
 
 			stroke;
 		end compute_and_draw;
 
 
-		
+
 	begin
 		-- Draw the path only after the actual editing process has started:
 		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
@@ -1664,8 +1664,8 @@ procedure draw_conductors is
 		end if;
 	end draw_track;
 
-	
-	
+
+
 begin
 	-- put_line ("draw conductors ...");
 
@@ -1676,29 +1676,29 @@ begin
 		process		=> query_items'access);
 
 
-	-- Draw a via that is being placed. 
+	-- Draw a via that is being placed.
 	-- If none is being placed,
 	-- nothing happens:
 	draw_via_being_placed;
 
 
-	-- Draw a freetrack being drawn. 
+	-- Draw a freetrack being drawn.
 	-- If no freetrack is being drawn,
 	-- nothing happens:
     draw_path (LAYER_CAT_CONDUCTOR);
 
 
-	-- Draw a track that is being drawn. 
+	-- Draw a track that is being drawn.
 	-- If none is being drawn, nothing happens.
 	-- This is about a track that is connected to a net:
 	draw_track;
-	
+
 end draw_conductors;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

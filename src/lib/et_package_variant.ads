@@ -52,7 +52,7 @@ with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_
 package et_package_variant is
 
 
-	
+
 	type type_package_variant is record
 		-- The link to the package model:
 		model_cursor		: pac_package_models.cursor;
@@ -64,33 +64,33 @@ package et_package_variant is
 
 
 	use pac_package_variant_name;
-	
+
 	package pac_package_variants is new ordered_maps (
 		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
 		element_type 	=> type_package_variant);
 
 	use pac_package_variants;
 
-	
+
 	-- Returns the name of the first package variant
 	-- of the given list:
 	function get_first_package_variant (
 		variants : in pac_package_variants.map)
 		return pac_package_variant_name.bounded_string;
 
-								   
+
 	-- Returns the number of package variants that
 	-- the given list contains:
 	function get_variant_count (
 		variants : in pac_package_variants.map)
 		return natural;
-	
+
 
 	-- For enquiries of port and unit that is linked to a terminal these
 	-- types are required to indicate whether a terminal is linked to a port at all.
 	-- A terminal can be left unconnected (NC in datasheets):
 	type type_terminal_linked is new boolean;
-	
+
 	type type_get_port_result (
 		linked : type_terminal_linked := false)
 	is record
@@ -101,7 +101,7 @@ package et_package_variant is
 			when FALSE => null;
 		end case;
 	end record;
-	
+
 
 	-- Returns the unit and port that is linked to the given
 	-- terminal. If no unit and port found, then an unconnected
@@ -111,8 +111,8 @@ package et_package_variant is
 		terminal	: in pac_terminal_name.bounded_string)
 		return type_get_port_result;
 
-	
-	
+
+
 	-- This is basically the reverse of get_unit_and_port.
 	-- Returns the name of the terminal that is linked to the given
 	-- unit and port. If no terminal found, then an exception is raised:
@@ -131,8 +131,8 @@ package et_package_variant is
 	end record;
 
 
-	
-	-- Returns the given terminal as string. 
+
+	-- Returns the given terminal as string.
 	-- If show_unit is true, the unit name is output.
 	-- If preamble is true, each property of the terminal is headed by a short preamble.
 	function to_string (
@@ -141,13 +141,13 @@ package et_package_variant is
 		preamble	: in boolean := true)
 		return string;
 
-	
-	
+
+
 end et_package_variant;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,20 +55,20 @@ with et_logging;				use et_logging;
 
 
 package et_thermal_relief is
-	
+
 	use pac_geometry_brd;
 	use pac_polygons;
-	
+
 	use pac_geometry_2;
 
-	
+
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
-	
+
 	subtype type_thermal_width is type_distance_positive
 		range thermal_width_min .. thermal_width_max;
 
-	
+
 	-- If a terminal is connected/associated with a polygon, then
 	-- this is the space between pad and fill_zone:
 	thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
@@ -76,35 +76,35 @@ package et_thermal_relief is
 	subtype type_thermal_gap is type_track_clearance range thermal_gap_min .. thermal_gap_max;
 
 
-	
+
 	-- Polygons which are connected with a net
 	-- can be connected with pads by thermals or solid:
-		
+
 	type type_pad_connection is (THERMAL, SOLID);
 	pad_connection_default : constant type_pad_connection := THERMAL;
 
 	function to_string (connection : in type_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_pad_connection;
 
-	
+
 	-- Polygons may be connected with SMT, THT or all pad technologies
 	-- CS: Is that a reasonable idea ????? it was inherited from kicad.
 	keyword_pad_technology : constant string := "pad_technology";
-	
+
 	type type_pad_technology is (
 		SMT_ONLY,
 		THT_ONLY,
 		SMT_AND_THT);
 
 	pad_technology_default : constant type_pad_technology := SMT_AND_THT;
-	
+
 	function to_string (technology : in type_pad_technology) return string;
 	function to_pad_technology (technology : in string) return type_pad_technology;
 
-	
+
 
 	type type_relief_properties is record
-		-- Whether SMT, THT or both kinds of pads connect with the 
+		-- Whether SMT, THT or both kinds of pads connect with the
 		-- surrounding fill zone:
 		technology	: type_pad_technology := pad_technology_default;
 		-- CS might be a useless feature. inherited from kicad.
@@ -118,20 +118,20 @@ package et_thermal_relief is
 		-- For spaces greater than gap_max no spoke will be generated:
 		gap_max		: type_thermal_gap := type_thermal_gap'first;
 	end record;
-	
+
 
 	relief_properties_default : constant type_relief_properties := (others => <>);
-	
-	
+
+
 
 	keyword_relief_width_min	: constant string := "relief_width_min";
 	keyword_width_min			: constant string := "width_min";
 	keyword_relief_gap_max		: constant string := "relief_gap_max";
 	keyword_gap_max				: constant string := "gap_max";
-	
-	
+
+
 	type type_terminal_with_relief is record
-		-- The absolute position, face and rotation of 
+		-- The absolute position, face and rotation of
 		-- the terminal in the board:
 		position	: type_terminal_position_fine;
 
@@ -139,7 +139,7 @@ package et_thermal_relief is
 		outline		: type_polygon;
 
 		-- This cursor points to the terminal as defined in the package model:
-		terminal	: pac_terminals.cursor; 
+		terminal	: pac_terminals.cursor;
 
 		-- CS for debugging the name of the device
 		-- would be helpful here.
@@ -152,15 +152,15 @@ package et_thermal_relief is
 
 
 
-	
-	package pac_terminals_with_relief is new 
+
+	package pac_terminals_with_relief is new
 		doubly_linked_lists (type_terminal_with_relief);
-	
+
 	use pac_terminals_with_relief;
 
 
 
-	
+
 	function get_terminal_name (
 		terminal : in pac_terminals_with_relief.cursor)
 		return pac_terminal_name.bounded_string;
@@ -177,18 +177,18 @@ package et_thermal_relief is
 
 
 
-	
-	
+
+
 	procedure append_relieves (
 		target	: in out pac_terminals_with_relief.list;
 		source	: in pac_terminals_with_relief.list);
-	
+
 
 	-- The spokes of a thermal symbol. These are straight conductor tracks
 	-- that start inside the pad and run outward into the surrounding fill zone.
 	-- For rectangular or circular pads they look like spokes of a wheel.
 	-- Usually there are up to 4 spokes that start at the geometrical
-	-- center of the pad. 
+	-- center of the pad.
 	-- For irregular pad contours the spokes may start at arbitrary user defined points
 	-- inside the pad - as specified in the terminal properties (see et_terminals.type_terminal):
 	package pac_spokes is new doubly_linked_lists (type_line_fine);
@@ -200,12 +200,12 @@ package et_thermal_relief is
 	end record;
 
 
-	
-	
+
+
 	-- Creates a thermal relief for the given single terminal.
-	-- The width and length of the generated thermal spokes 
+	-- The width and length of the generated thermal spokes
 	-- depends on several things:
-	-- - zone clearance 
+	-- - zone clearance
 	-- - zone linewidth
 	-- - pad geometry
 	-- - pad technology
@@ -220,14 +220,14 @@ package et_thermal_relief is
 		return type_relief;
 
 
-	
+
 	package pac_reliefes is new doubly_linked_lists (type_relief); -- CS rename to pac_thermal_symbols ?
 
 
-	
+
 	-- Creates for all given terminals a list of thermal reliefes.
 	-- The width and length of the generated thermal spokes depends on several things:
-	-- - zone clearance 
+	-- - zone clearance
 	-- - zone linewidth
 	-- - pad geometry
 	-- - pad technology
@@ -240,13 +240,13 @@ package et_thermal_relief is
 		zone_linewidth		: in type_track_width;
 		log_threshold		: in type_log_level)
 		return pac_reliefes.list;
-	
-	
+
+
 end et_thermal_relief;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

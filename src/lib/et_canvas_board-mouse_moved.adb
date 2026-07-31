@@ -43,8 +43,8 @@
 separate (et_canvas_board)
 
 procedure mouse_moved (
-	point	: in type_vector_model) 
-is 
+	point	: in type_vector_model)
+is
 	pragma unreferenced (point);
 	use et_modes.board;
 
@@ -71,7 +71,7 @@ begin
 				when others => null;
 			end case;
 
-			
+
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
@@ -83,16 +83,16 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_ZONE =>
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when others => null;
 			end case;
-			
-			
+
+
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_ASSY =>
@@ -109,7 +109,7 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_CONDUCTORS =>
 					if edit_process_running then
 						redraw_board;
@@ -119,12 +119,12 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_FREETRACK =>
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 					if edit_process_running then
 						redraw_board;
@@ -134,7 +134,7 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				-- when NOUN_NON_ELECTRICAL_DEVICE =>
 				-- 	if edit_process_running then
 				-- 		redraw_board;
@@ -144,20 +144,20 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_TEXT =>
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when NOUN_VIA =>
 					if edit_process_running then
 						redraw_board;
 					end if;
-					
+
 				when others => null;
 			end case;
-			
+
 
 		when VERB_PLACE =>
 			case noun is
@@ -166,7 +166,7 @@ begin
 
 				when NOUN_VIA =>
 					redraw_board;
-					
+
 				when others => null;
 			end case;
 
@@ -178,17 +178,17 @@ begin
 
 				when others => null;
 			end case;
-			
-			
+
+
 		when others => null;
 	end case;
-	
+
 end mouse_moved;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

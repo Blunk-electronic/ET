@@ -76,54 +76,54 @@ package body et_module_write_netchangers is
 
 
 		procedure query_netchanger (
-			cursor : pac_netchangers.cursor) 
+			cursor : pac_netchangers.cursor)
 		is
 			netchanger : type_netchanger renames element (cursor);
-			
-			use et_schematic_coordinates;	
-			
+
+			use et_schematic_coordinates;
+
 			-- Convert the netchanger position in the schematic
 			-- to the regular type_object_position:
 			position_sch : constant type_object_position :=
 				to_object_position (netchanger.position_sch);
-			
+
 		begin
 			section_mark (section_netchanger, HEADER);
-			
+
 			write (
 				keyword => keyword_name,
-				parameters => to_string (key (cursor))); 
+				parameters => to_string (key (cursor)));
 				-- 1, 2, 201, ...
 
 			write (
 				keyword => keyword_direction,
-				parameters => to_string (get_direction (netchanger))); 
+				parameters => to_string (get_direction (netchanger)));
 				-- direction forward/backward
-			
+
 			write (
-				keyword => keyword_position_in_schematic, 
-				parameters => to_string (position_sch, FORMAT_2)); 
+				keyword => keyword_position_in_schematic,
+				parameters => to_string (position_sch, FORMAT_2));
 				-- position_in_schematic sheet 1 x 147.32 y 96.97 rotation 0
-			
+
 			write (
-				keyword => keyword_position_in_board, 
+				keyword => keyword_position_in_board,
 				parameters => et_board_geometry.pac_geometry_2.to_string (
 					netchanger.position_brd.place, FORMAT_2));
 				-- position_in_board x 1.32 y 6.97
-			
+
 			write (
-				keyword => keyword_layer, 
-				parameters => to_string (netchanger.position_brd.layer)); 
+				keyword => keyword_layer,
+				parameters => to_string (netchanger.position_brd.layer));
 				-- layer 2
-				
+
 			section_mark (section_netchanger, FOOTER);
 		end query_netchanger;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -132,26 +132,26 @@ package body et_module_write_netchangers is
 			section_mark (section_netchangers, FOOTER);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " write netchangers", level => log_threshold);
-			
-		log_indentation_up;		
+
+		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
 
 	end write_netchangers;
 
-	
-	
-	
+
+
+
 end et_module_write_netchangers;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

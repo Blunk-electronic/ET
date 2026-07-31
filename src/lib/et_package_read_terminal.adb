@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 --
 --
 --
@@ -58,7 +58,7 @@ package body et_package_read_terminal is
 
 
 	procedure read_terminal  (
-		line : in type_fields_of_line)	
+		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 	begin
@@ -86,7 +86,7 @@ package body et_package_read_terminal is
 		elsif kw = keyword_drill_size then -- drill_size 0.8
 			expect_field_count (line, 2);
 			tht_drill_size := to_distance (f (line,2));
-			
+
 		elsif kw = keyword_face then -- face top/bottom
 			expect_field_count (line, 2);
 			smt_pad_face := to_face (f (line,2));
@@ -98,7 +98,7 @@ package body et_package_read_terminal is
 		elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
 			expect_field_count (line, 2);
 			smt_stop_mask_shape := to_shape (f (line,2));
-			
+
 		elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
 			expect_field_count (line, 2);
 			tht_stop_mask_shape_top := to_shape (f (line,2));
@@ -119,7 +119,7 @@ package body et_package_read_terminal is
 			expect_field_count (line, 2);
 			--smt_stencil_shrink := to_scale (f (line,2));
 			smt_stencil_shrink := to_distance (f (line,2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -143,7 +143,7 @@ package body et_package_read_terminal is
 			when BOTTOM =>
 				tht_pad_shape.bottom := contour;
 		end case;
-		
+
 		reset_contour (contour);
 	end;
 
@@ -161,11 +161,11 @@ package body et_package_read_terminal is
 			when BOTTOM =>
 				tht_stop_mask_contours_bottom := (contour with null record);
 		end case;
-		
+
 		reset_contour (contour);
 	end;
 
-	
+
 
 	procedure assign_plated_millings is begin
 		-- CS check_outline (contour, log_threshold + 1);
@@ -173,21 +173,21 @@ package body et_package_read_terminal is
 
 		reset_contour (contour);
 	end;
-	
 
-	
+
+
 
 
 	procedure assign_contour_conductor_smt is begin
 		-- CS check_outline (contour, log_threshold + 1);
 		smt_pad_shape := contour;
-		
+
 		reset_contour (contour);
 	end;
 
-	
-	
-	
+
+
+
 	procedure assign_contour_stopmask_smt is begin
 		-- CS check_outline (contour, log_threshold + 1);
 		smt_stop_mask_contours := (contour with null record);
@@ -195,9 +195,9 @@ package body et_package_read_terminal is
 		reset_contour (contour);
 	end;
 
-	
 
-	
+
+
 	procedure assign_contour_stencil_smt is begin
 		-- CS check_outline (contour, log_threshold + 1);
 		smt_stencil_contours := (contour with null record);
@@ -205,14 +205,14 @@ package body et_package_read_terminal is
 		reset_contour (contour);
 	end;
 
-	
 
-	
-	
+
+
+
 	procedure build_terminal (
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		cursor : pac_terminals.cursor;
 		inserted : boolean;
@@ -223,11 +223,11 @@ package body et_package_read_terminal is
 				when AS_PAD =>
 					return (
 						expand_mode	=> AS_PAD);
-					
+
 				when EXPAND_PAD =>
 					return (
 						expand_mode	=> EXPAND_PAD);
-				
+
 				when USER_SPECIFIC =>
 					return (
 						expand_mode	=> USER_SPECIFIC,
@@ -240,33 +240,33 @@ package body et_package_read_terminal is
 		function make_stop_mask_tht return type_stopmask_tht is begin
 			return r : type_stopmask_tht do
 				case tht_stop_mask_shape_top is
-					when AS_PAD => 
+					when AS_PAD =>
 						r.top := (expand_mode => AS_PAD);
-					
+
 					when EXPAND_PAD =>
 						r.top := (expand_mode => EXPAND_PAD);
-						
+
 					when USER_SPECIFIC =>
-						r.top := (expand_mode => USER_SPECIFIC, 
+						r.top := (expand_mode => USER_SPECIFIC,
 							contour => tht_stop_mask_contours_top);
 				end case;
 
 				case tht_stop_mask_shape_bottom is
-					when AS_PAD => 
+					when AS_PAD =>
 						r.bottom := (expand_mode => AS_PAD);
-						
+
 					when EXPAND_PAD =>
 						r.bottom := (expand_mode => EXPAND_PAD);
-						
+
 					when USER_SPECIFIC =>
-						r.bottom := (expand_mode => USER_SPECIFIC, 
+						r.bottom := (expand_mode => USER_SPECIFIC,
 							contour => tht_stop_mask_contours_bottom);
 
 				end case;
 			end return;
 		end make_stop_mask_tht;
 
-		
+
 		-- Builds the stencil of the SMT pad (there is no stencil for THT pads):
 		function make_stencil return type_stencil_shape is begin
 			return r : type_stencil_shape do
@@ -281,12 +281,12 @@ package body et_package_read_terminal is
 			end return;
 		end make_stencil;
 
-		
+
 	begin -- build_terminal
 		-- CS log message
-		
+
 		case terminal_technology is
-			when THT => 
+			when THT =>
 				case tht_hole is
 					when DRILLED =>
 
@@ -333,7 +333,7 @@ package body et_package_read_terminal is
 				tht_stop_mask_shape_bottom		:= stopmask_expand_mode_default;
 				delete_segments (tht_stop_mask_contours_top);
 				delete_segments (tht_stop_mask_contours_bottom);
-				
+
 			when SMT =>
 				pac_terminals.insert (
 					container	=> packge.terminals,
@@ -364,15 +364,15 @@ package body et_package_read_terminal is
 		end case;
 
 		if not inserted then
-			log (SEVERITY_ERROR, "terminal" & to_string (terminal_name) 
+			log (SEVERITY_ERROR, "terminal" & to_string (terminal_name)
 					& " already used !", console => true);
 			raise constraint_error;
 		end if;
 
 		-- clean up for next terminal
 		terminal_position	:= origin_zero_rotation;
-		
+
 	end build_terminal;
 
-	
+
 end et_package_read_terminal;

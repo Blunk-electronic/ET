@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,20 +58,20 @@ with et_keywords;
 
 package body et_cp_board_display is
 
-	
+
 
 	procedure display_outline (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure display (
-			status	: in string := "") 
-		is 
+			status	: in string := "")
+		is
 			ls : type_layer_status;
 		begin
 			-- Convert the given status to type_layer_status.
@@ -86,28 +86,28 @@ package body et_cp_board_display is
 					level => log_threshold + 1);
 
 			layers.outline := ls;
-			
+
 			-- CS exception handler if status is invalid
 		end display;
 
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			when 4 => display; -- if status is omitted
-			
+
 			when 5 => display (get_field (cmd, 5));
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_outline;
 
 
-	
+
 
 
 
@@ -120,10 +120,10 @@ package body et_cp_board_display is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure display (
-			status	: in string := "") 
-		is 
+			status	: in string := "")
+		is
 			ls : type_layer_status;
 		begin
 			-- Convert the given status to type_layer_status.
@@ -138,32 +138,32 @@ package body et_cp_board_display is
 					level => log_threshold + 1);
 
 			layers.ratsnest := ls;
-			
+
 			-- CS exception handler if status is invalid
 		end display;
-		
-		
+
+
 	begin
 		-- CS log message
 		case cmd_field_count is
 			when 4 => display; -- if status is omitted
-			
+
 			when 5 => display (get_field (cmd, 5));
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_ratsnest;
 
-		
 
 
 
 
 
-	
+
+
 
 	procedure display_non_conductor (
 		cmd 			: in out type_single_cmd;
@@ -176,7 +176,7 @@ package body et_cp_board_display is
 		procedure display (
 			layer	: in type_noun;
 			face	: in string; -- top/bottom
-			status	: in string := "") 
+			status	: in string := "")
 		is
 			ls : type_layer_status;
 			fc : type_face;
@@ -191,8 +191,8 @@ package body et_cp_board_display is
 
 			-- Convert the given face to type_face:
 			fc := to_face (face);
-			
-			log (text => "display " & to_lower (to_string (layer)) 
+
+			log (text => "display " & to_lower (to_string (layer))
 					& space & to_string (ls),
 					level => log_threshold + 1);
 
@@ -207,8 +207,8 @@ package body et_cp_board_display is
 						when NOUN_STENCIL		=> layers.stencil.top			:= ls;
 						when NOUN_STOPMASK		=> layers.stop_mask.top			:= ls;
 						when NOUN_ORIGINS		=> layers.device_origins.top	:= ls;
-						
-						when others => 
+
+						when others =>
 							log (SEVERITY_ERROR, "invalid layer !", console => true);
 					end case;
 
@@ -220,36 +220,36 @@ package body et_cp_board_display is
 						when NOUN_STENCIL		=> layers.stencil.bottom		:= ls;
 						when NOUN_STOPMASK		=> layers.stop_mask.bottom		:= ls;
 						when NOUN_ORIGINS		=> layers.device_origins.bottom	:= ls;
-						
-						when others => 
+
+						when others =>
 							log (SEVERITY_ERROR, "invalid layer !", console => true);
 					end case;
 			end case;
-			
+
 			-- CS exception handler if status is invalid
 		end display;
 
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			when 5 => display (noun, get_field (cmd, 5)); -- if status is omitted
-			
+
 			when 6 => display (noun, get_field (cmd, 5), get_field (cmd, 6));
-			
-			when 7 .. type_field_count'last => 
+
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_non_conductor;
 
-		
-	
 
 
-	
+
+
+
 
 
 	procedure display_conductor (
@@ -257,18 +257,18 @@ package body et_cp_board_display is
 		log_threshold	: in type_log_level)
 	is
 		use et_pcb_signal_layers;
-		
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure display (
 			layer	: in string;
 			status	: in string := "")
-		is 
+		is
 			ls : type_layer_status;
 			ly : type_signal_layer;
-		begin			
+		begin
 			-- Convert the given status to type_layer_status.
 			-- If no status given, assume status ON:
 			if status = "" then
@@ -279,27 +279,27 @@ package body et_cp_board_display is
 
 			-- Convert the given layer to type_signal_layer:
 			ly := to_signal_layer (layer);
-			
+
 			log (text => "display conductor layer " & to_string (ly) & space & to_string (ls),
 					level => log_threshold + 1);
 
 			layers.conductors (ly) := ls;
-			
+
 			-- CS exception handler if status is invalid
 		end display;
 
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			when 5 => display (get_field (cmd, 5)); -- if status is omitted
-			
+
 			when 6 => display (get_field (cmd, 5), get_field (cmd, 6));
-			
-			when 7 .. type_field_count'last => 
+
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_conductor;
@@ -308,7 +308,7 @@ package body et_cp_board_display is
 
 
 
-	
+
 
 	procedure display_vias (
 		cmd 			: in out type_single_cmd;
@@ -317,10 +317,10 @@ package body et_cp_board_display is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure display_vias (
-			status	: in string := "") 
-		is 
+			status	: in string := "")
+		is
 			ls : type_layer_status;
 			--ly : type_signal_layer;
 		begin
@@ -334,43 +334,43 @@ package body et_cp_board_display is
 
 			-- Convert the given layer to type_signal_layer:
 			--ly := to_signal_layer (layer);
-			
+
 			--log (text => "display via layer " & to_string (ly) & space & to_string (ls),
 			log (text => "display via layer " & space & to_string (ls),
 					level => log_threshold + 1);
 
 			--layers.vias (ly) := ls;
 			layers.vias := ls;
-			
+
 			-- CS exception handler if status is invalid
 		end display_vias;
 
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			--when 5 => display_vias (get_field (5)); -- if status is omitted
 			--when 6 => display_vias (get_field (5), get_field (6));
 			--when 7 .. type_field_count'last => too_long;
 			when 4 => display_vias; -- if status is omitted
-			
+
 			when 5 => display_vias (get_field (cmd, 5));
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_vias;
 
-		
 
 
 
 
 
-	
+
+
 
 	procedure display_restrict (
 		cmd 			: in out type_single_cmd;
@@ -378,7 +378,7 @@ package body et_cp_board_display is
 	is
 		use et_pcb_signal_layers;
 		use et_keywords;
-		
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
@@ -388,7 +388,7 @@ package body et_cp_board_display is
 			objects	: in string; -- route/via
 			layer	: in string; -- 1, 2, 8, ...
 			status	: in string := "")
-		is 
+		is
 			ls : type_layer_status;
 			ly : type_signal_layer;
 		begin
@@ -402,19 +402,19 @@ package body et_cp_board_display is
 
 			-- Convert the given layer to type_signal_layer:
 			ly := to_signal_layer (layer);
-			
+
 			if objects = keyword_route then
 				log (text => "display route restrict layer " & to_string (ly) & space & to_string (ls),
 					level => log_threshold + 1);
 
 				layers.route_restrict (ly) := ls;
-				
+
 			elsif objects = keyword_via then
 				log (text => "display via restrict layer " & to_string (ly) & space & to_string (ls),
 					level => log_threshold + 1);
 
 				layers.via_restrict (ly) := ls;
-				
+
 			else
 				log (SEVERITY_ERROR, "Expect keyword " &
 						enclose_in_quotes (keyword_route) & " or " &
@@ -423,31 +423,31 @@ package body et_cp_board_display is
 						console => true);
 				raise constraint_error;
 			end if;
-			
+
 			-- CS exception handler if status is invalid
 		end display_restrict_layer;
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			when 6 => display_restrict_layer (get_field (cmd, 5), get_field (cmd, 6)); -- if status is omitted
-			
+
 			when 7 => display_restrict_layer (get_field (cmd, 5), get_field (cmd, 6), get_field (cmd, 7));
 
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display_restrict;
 
-	
+
 end et_cp_board_display;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

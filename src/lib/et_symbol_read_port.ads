@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,11 +46,11 @@ package et_symbol_read_port is
 
 	procedure read_port (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_port (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 end et_symbol_read_port;

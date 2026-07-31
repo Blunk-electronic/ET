@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -55,7 +55,7 @@ package body et_netchangers.board is
 		position	: in type_netchanger_position_board)
 		return string
 	is begin
-		return to_string (position.place) 
+		return to_string (position.place)
 			& " layer " & to_string (position.layer);
 	end;
 
@@ -86,9 +86,9 @@ package body et_netchangers.board is
 	is begin
 		netchanger.position_brd.layer := layer;
 	end;
-	
-	
-	
+
+
+
 	function get_layer (
 		netchanger	: in type_netchanger)
 		return type_signal_layer
@@ -96,7 +96,7 @@ package body et_netchangers.board is
 		return netchanger.position_brd.layer;
 	end;
 
-	
+
 
 	function get_layer (
 		netchanger	: in type_netchanger)
@@ -104,13 +104,13 @@ package body et_netchangers.board is
 	is begin
 		return "L" & to_string (get_layer (netchanger));
 	end;
-	
-	
-	
-	
-	
+
+
+
+
+
 -- CATCH ZONE:
-	
+
 	function in_catch_zone (
 		netchanger	: in type_netchanger;
 		zone		: in type_catch_zone)
@@ -118,24 +118,24 @@ package body et_netchangers.board is
 	is
 		result : boolean := false;
 
-		netchanger_position : constant type_vector_model := 
+		netchanger_position : constant type_vector_model :=
 			netchanger.position_brd.place;
-			
+
 	begin
 		if in_catch_zone (zone, netchanger_position) then
 			result := true;
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end in_catch_zone;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 -- STATUS:
 
 
@@ -152,7 +152,7 @@ package body et_netchangers.board is
 	end;
 
 
-	
+
 	function is_proposed (
 		netchanger : in type_netchanger)
 		return boolean
@@ -163,9 +163,9 @@ package body et_netchangers.board is
 			return false;
 		end if;
 	end;
-	
 
-	
+
+
 	function is_moving (
 		netchanger : in type_netchanger)
 		return boolean
@@ -177,7 +177,7 @@ package body et_netchangers.board is
 		end if;
 	end;
 
-	
+
 
 	procedure set_proposed (
 		netchanger : in out type_netchanger)
@@ -186,7 +186,7 @@ package body et_netchangers.board is
 	end;
 
 
-	
+
 	procedure set_selected (
 		netchanger : in out type_netchanger)
 	is begin
@@ -195,7 +195,7 @@ package body et_netchangers.board is
 	end;
 
 
-	
+
 	procedure modify_status (
 		netchanger	: in out type_netchanger;
 		operation	: in type_status_operation)
@@ -203,8 +203,8 @@ package body et_netchangers.board is
 		modify_status (netchanger.status_brd, operation);
 	end;
 
-	
-	
+
+
 	procedure reset_status (
 		netchanger	: in out type_netchanger)
 	is begin
@@ -213,12 +213,12 @@ package body et_netchangers.board is
 	end;
 
 
-	
+
 end et_netchangers.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -61,40 +61,40 @@ package et_symbol_text is
 	use pac_text_schematic;
 
 
-	
+
 	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_symbol_text is new type_text_basic with record
-		position	: type_vector_model;		
+		position	: type_vector_model;
         content		: pac_text_content.bounded_string;
 	end record;
 
-	
-	-- GUI relevant only:
-	text_font : constant type_font := 
-		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
-	
 
-	
+	-- GUI relevant only:
+	text_font : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
+
+
+
 	-- Outputs the properties of the given text.
 	procedure write_text_properies (
 		text 			: in type_symbol_text;
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Returns the content of the given text as string.
 	function content (text : in type_symbol_text) return string;
 
 
 	package pac_symbol_texts is new doubly_linked_lists (type_symbol_text);
-	
-	
+
+
 
 end et_symbol_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

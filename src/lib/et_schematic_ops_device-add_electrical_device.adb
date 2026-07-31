@@ -63,26 +63,26 @@ procedure add_electrical_device (
 	variant			: in pac_package_variant_name.bounded_string;
 	destination		: in type_object_position;
 	commit_design	: in type_commit_design := DO_COMMIT;
-	log_threshold	: in type_log_level) 
-is	
+	log_threshold	: in type_log_level)
+is
 	use et_commit;
 	use et_undo_redo;
 	use et_modes.schematic;
 
-	
+
 	use pac_package_variant_name;
-	
+
 	use pac_device_models;
 	device_cursor_lib : pac_device_models.cursor; -- points to the device in the library
 
 	-- The next available device name:
 	next_name : type_device_name;
 
-	
-	
+
+
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_generic_module) 
+		module		: in out type_generic_module)
 	is
 		pragma unreferenced (module_name);
 		use et_symbol_ports;
@@ -92,17 +92,17 @@ is
 
 		-- CS:
 		-- There is a lot of code almost the same as with
-		-- copying and fetching devices and units. 
+		-- copying and fetching devices and units.
 		-- See procedure et_schematic_ops-units-copy_device
 		-- and et_schematic_ops-units-fetch_device.
 		-- Move common stuff to a single procedure in et_schematic_ops-units.
-		
+
 
 		-- Adds a virtual device to the devices
 		-- in the drawing. After successful inserting, the cursor
 		-- device_cursor_sch points to the device in the schematic.
 		-- For the moment, no units are added:
-		procedure add_virtual_device is 
+		procedure add_virtual_device is
 			inserted : boolean;
 			device : type_device_electrical (APPEARANCE_VIRTUAL);
 		begin
@@ -128,25 +128,25 @@ is
 		end add_virtual_device;
 
 
-		
-		
+
+
 		-- Adds a real device to the devices
 		-- in the drawing. After successful inserting, the cursor
 		-- device_cursor_sch points to the device in the schematic.
 		-- For the moment, no units are added:
-		procedure add_real_device is 
+		procedure add_real_device is
 			selected_variant : pac_package_variant_name.bounded_string;
 
-			
+
 			-- Compose and insert the device in the schematic.
 			-- For the moment the device has no units yet:
-			procedure insert_device is 
+			procedure insert_device is
 				device : type_device_electrical (appearance => APPEARANCE_PCB);
 				inserted : boolean;
 			begin
 				log (text => "insert_device", level => log_threshold + 3);
 				log_indentation_up;
-				
+
 				device := (
 					appearance 		=> APPEARANCE_PCB,
 					model_cursor	=> device_cursor_lib,
@@ -156,7 +156,7 @@ is
 
 					-- Text placeholders in the board drawing:
 					--
-					-- Initially, the text placeholders are copies of 
+					-- Initially, the text placeholders are copies of
 					-- the placeholders as they are defined in the package model.
 					-- This approach has the following implication:
 					-- If the position of a placeholder in the package model
@@ -164,13 +164,13 @@ is
 					-- then it DOES NOT get updated.
 					placeholders	=> get_default_placeholders (
 										device_cursor_lib, selected_variant),
-					
+
 
 					-- Use default position of the device in the layout.
 					-- CS: do not place the package on top of others
 					others		=> <> );
 
-				
+
 				-- Insert the device in the schematic:
 				pac_devices_electrical.insert (
 					container	=> module.devices,
@@ -182,12 +182,12 @@ is
 				-- CS test the inserted flag ?
 				log_indentation_down;
 			end insert_device;
-		
-			
+
+
 		begin
 			log (text => "add_real_device", level => log_threshold + 2);
 			log_indentation_up;
-			
+
 			-- A real device requires a package variant.
 
 			-- If a package variant was specified, then we must
@@ -198,7 +198,7 @@ is
 			-- then an error messages is output and nothing else happens.
 			-- If no package variant was given by the caller, then the first
 			-- available variant will be applied:
-			
+
 			if not is_empty (variant) then
 				-- A variant was given by the caller.
 
@@ -207,21 +207,21 @@ is
 
 					selected_variant := variant;
 					insert_device;
-										
+
 				else -- The variant does not exist.
 					log (SEVERITY_ERROR, "Package variant " & to_string (variant)
 						 & " does not exist in the specified device model !");
 				end if;
 
-				
-			else 
+
+			else
 				-- No package variant was specified by the caller.
 				-- Select the first available variant:
 				selected_variant := get_first_package_variant (device_cursor_lib);
-				
+
 				log (SEVERITY_WARNING, "No variant specified !"
 					 & " Default to first available variant " & to_string (selected_variant));
-				
+
 				insert_device;
 			end if;
 
@@ -229,31 +229,31 @@ is
 		end add_real_device;
 
 
-		
-		
+
+
 		-- Adds a bare device (without any units deployed)
 		-- to the module:
 		procedure add_bare_device is begin
 			log (text => "add_bare_device", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			-- As the first step we add a bare device to the module.
 			-- For the moment no units are deployed:
 			if is_real (device_cursor_lib) then
 				add_real_device;
 			else
-				add_virtual_device;				
+				add_virtual_device;
 			end if;
 
 			log_indentation_down;
 		end add_bare_device;
-		
+
 
 
 		-- When a device is added to the schematic, it is first
 		-- added as a bare device without any units (see procedures above).
 		--  The next step is to fetch the first available unit and add
-		-- it to the bare device. Since the available unit can 
+		-- it to the bare device. Since the available unit can
 		-- be an external or inernal unit, the variable first_available_unit
 		-- is a record that contains a cursor to an internal or
 		-- external unit:
@@ -264,8 +264,8 @@ is
 		-- The unit to be added is accessed by first_available_unit.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
-			device		: in out type_device_electrical) 
-		is 
+			device		: in out type_device_electrical)
+		is
 			pragma unreferenced (device_name);
 
 			-- This procedure composes the virtual unit and adds
@@ -301,7 +301,7 @@ is
 
 				-- Text placeholders in the schematic drawing:
 				--
-				-- Initially, the text placeholders are copies of 
+				-- Initially, the text placeholders are copies of
 				-- the placeholders as they are defined in the symbol model.
 				-- This approach has the following implication:
 				-- If the position of a placeholder in the symbol model
@@ -309,14 +309,14 @@ is
 				-- then it DOES NOT get updated.
 				placeholders := get_default_placeholders (
 					first_available_unit.int, destination);
-				
+
 				-- Compose a real unit:
 				unit := (
 					appearance		=> APPEARANCE_PCB,
 					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 					placeholders	=> placeholders,
 					others 			=> <>);
-							
+
 				-- Add the unit to the schematic:
 				pac_units.insert (
 					container	=> device.units,
@@ -324,32 +324,32 @@ is
 					new_item	=> unit);
 
 			end add_real;
-			
-			
+
+
 		begin
-			log (text => "add internal unit " 
+			log (text => "add internal unit "
 				 & to_string (get_name_internal (first_available_unit)),
 				 level => log_threshold + 2);
-			
+
 			log_indentation_up;
-			
+
 			if is_real (device_cursor_lib) then
 				add_real;
 			else
 				add_virtual;
 			end if;
-			
+
 			log_indentation_down;
 		end add_unit_internal;
 
 
-		
-		
+
+
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by first_available_unit.ext.
 		procedure add_unit_external (
 			device_name	: in type_device_name;
-			device		: in out type_device_electrical) 
+			device		: in out type_device_electrical)
 		is
 			pragma unreferenced (device_name);
 
@@ -360,7 +360,7 @@ is
 				unit : type_unit (appearance => APPEARANCE_VIRTUAL);
 			begin
 				log (text => "add_virtual", level => log_threshold + 3);
-				
+
 				-- Compose a virtual unit:
 				unit := (
 					appearance	=> APPEARANCE_VIRTUAL,
@@ -372,10 +372,10 @@ is
 					container	=> device.units,
 					key			=> get_name_external (first_available_unit), -- the unit name like A, B
 					new_item	=> unit);
-					
+
 			end add_virtual;
 
-			
+
 
 			-- This procedure composes the real unit and adds
 			-- it to the schematic:
@@ -387,18 +387,18 @@ is
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
 				log (text => "add_real", level => log_threshold + 3);
-				
+
 				-- Map from the unit back to the symbol in the library:
 				symbol_cursor := get_symbol (first_available_unit.ext);
 
 				-- Text placeholders in the schematic drawing:
 				--
-				-- Initially, the text placeholders are copies of 
+				-- Initially, the text placeholders are copies of
 				-- the placeholders as they are defined in the symbol model.
 				-- This approach has the following implication:
 				-- If the position of a placeholder in the symbol model
 				-- is changed AFTER the unit has been added to the drawing,
-				-- then it DOES NOT get updated.				
+				-- then it DOES NOT get updated.
 				placeholders := get_default_placeholders (
 									symbol_cursor, destination);
 
@@ -416,14 +416,14 @@ is
 					new_item	=> unit);
 
 			end add_real;
-			
-			
-		begin					
-			log (text => "add external unit " 
+
+
+		begin
+			log (text => "add external unit "
 				 & to_string (get_name_external (first_available_unit)),
 				 level => log_threshold + 2);
 			log_indentation_up;
-			
+
 			if is_real (device_cursor_lib) then
 				add_real;
 			else
@@ -436,7 +436,7 @@ is
 
 
 
-		
+
 		-- Here we store temporarily the ports (with their positions)
 		-- of the unit to be added:
 		ports : pac_symbol_ports.map;
@@ -446,26 +446,26 @@ is
 		unit_name : pac_unit_name.bounded_string;
 
 
-		
-		
-		-- This procedure adds a unit to the device. 
+
+
+		-- This procedure adds a unit to the device.
 		-- 1. It searches first among the internal units and then among
 		--    the external units that are provided by the device model.
 		-- 2. It also loads the variable "ports" (see above) with the ports
-		--    of the selected unit with the ports as they are defined in the 
+		--    of the selected unit with the ports as they are defined in the
 		--    device model.
 		-- 3. It loads the variable "unit_name" with the name of the selected unit.
 		procedure add_unit is begin
 			log (text => "add_unit", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			-- Now we add the first available unit to the device in schematic.
-			-- The order by which units are deployed is specified in 
+			-- The order by which units are deployed is specified in
 			-- function get_first_unit:
 			first_available_unit := get_first_unit (device_cursor_lib);
 
-			-- If an internal unit is available, then add it to device. 
-			-- If no internal unit is available but an external, then add it 
+			-- If an internal unit is available, then add it to device.
+			-- If no internal unit is available but an external, then add it
 			-- to the device. So the operator will not take notice
 			-- whether an internal or external unit is selected:
 			if has_internal_unit (first_available_unit) then
@@ -476,19 +476,19 @@ is
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
 
-				-- Fetch the ports of the unit and their default positions 
-				-- relative to the unit origin as they are defined in 
+				-- Fetch the ports of the unit and their default positions
+				-- relative to the unit origin as they are defined in
 				-- the device model:
 				unit_name := get_name_internal (first_available_unit);
-				
-				log (text => "fetch default port positions of internal unit " 
+
+				log (text => "fetch default port positions of internal unit "
 					 & to_string (unit_name), level => log_threshold + 2);
-				
+
 				ports := get_ports_from_symbol_model (
 					device_cursor	=> device_cursor_lib,
 					unit_name		=> unit_name);
 
-				
+
 			-- If no internal unit is available -> add external unit:
 			elsif has_external_unit (first_available_unit) then
 
@@ -498,26 +498,26 @@ is
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
-				-- Fetch the ports of the unit and their default positions 
-				-- relative to the unit origin as they are defined in 
+				-- Fetch the ports of the unit and their default positions
+				-- relative to the unit origin as they are defined in
 				-- the device model:
 				unit_name := get_name_external (first_available_unit);
-				
-				log (text => "fetch default port positions of external unit " 
+
+				log (text => "fetch default port positions of external unit "
 					 & to_string (unit_name), level => log_threshold + 2);
 
 				ports := get_ports_from_symbol_model (
 					device_cursor	=> device_cursor_lib,
 					unit_name		=> unit_name);
 
-				
+
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
 			end if;
 
 			log_indentation_down;
 		end add_unit;
-		
+
 
 
 		-- The ports of the unit are stored in "ports". But they are
@@ -551,9 +551,9 @@ is
 			log_indentation_down;
 		end add_ports_to_nets;
 
-		
-		
-	begin 			
+
+
+	begin
 		-- First we add a bare device to the module:
 		add_bare_device;
 
@@ -564,26 +564,26 @@ is
 		add_ports_to_nets;
 	end query_module;
 
-	
-	
+
+
 begin -- add_electrical_device
 	if not is_empty (variant) then -- real device
-		log (text => "module " & to_string (module_cursor) 
-			 & " add real electrical device " & to_string (device_model) 
-			 & " package variant " & to_string (variant) 
+		log (text => "module " & to_string (module_cursor)
+			 & " add real electrical device " & to_string (device_model)
+			 & " package variant " & to_string (variant)
 			 & " at " & to_string (destination),
 			level => log_threshold);
-		
+
 	else -- virtual device
-		log (text => "module " & to_string (module_cursor) 
-			 & " add virtual electrical device " & to_string (device_model) 
+		log (text => "module " & to_string (module_cursor)
+			 & " add virtual electrical device " & to_string (device_model)
 			 & " at " & to_string (destination),
 			level => log_threshold);
 	end if;
-		
+
 	log_indentation_up;
 
-	
+
 	-- Read the device file and store it in the rig wide device library.
 	-- If the device is already in the library, nothing happpens.
 	et_device_read.read_device (
@@ -592,13 +592,13 @@ begin -- add_electrical_device
 
 	-- CS add error flag output by read_device and evaluate accordingly.
 	-- Wrap follwing actions in a procedure.
-	-- CS use device cursor output by read_device instead 
+	-- CS use device cursor output by read_device instead
 	-- the following statement.
-	
+
 	-- locate the device in the library
 	device_cursor_lib := find (device_library, device_model);
 	-- CS use: device_cursor_lib := get_device_model_cursor (device_model);
-	
+
 
 	-- Build the next available device name:
 	next_name := get_next_available_device_name (
@@ -606,35 +606,35 @@ begin -- add_electrical_device
 
 	log (text => "auto generated device name: " & to_string (next_name),
 		 level => log_threshold);
-	
+
 
 	if commit_design = DO_COMMIT then
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
 	end if;
 
-	
+
 	update_element (
 		container	=> generic_modules,
 		position	=> module_cursor,
 		process		=> query_module'access);
 
-	
+
 	if commit_design = DO_COMMIT then
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold);
 	end if;
 
-	
+
 	log_indentation_down;
-	
+
 end add_electrical_device;
 
 
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

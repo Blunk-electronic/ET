@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  ToDo: 
+--  ToDo:
 -- - clean up
 -- - rename package to et_module_write_devices_non_electrical
 
@@ -48,18 +48,18 @@ with et_logging;				use et_logging;
 package et_module_write_device_non_electrical is
 
 	use pac_generic_modules;
-		
+
 	procedure write_devices_non_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_module_write_device_non_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

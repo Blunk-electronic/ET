@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with gtk.menu;					use gtk.menu;
 with gtk.menu_item;				use gtk.menu_item;
@@ -53,12 +53,12 @@ with et_logging;				use et_logging;
 package et_scripting_interactive_schematic is
 
 	procedure dummy;
-	
+
 	-- procedure unit_selection_cancelled (
 	-- 	self : access gtk_menu_shell_record'class);
 
-	
-	-- If the operator selects a unit from the menu, 
+
+	-- If the operator selects a unit from the menu,
 	-- then this procedure is called:
 	-- procedure unit_selected_on_fetch (
 	-- 	self : access gtk_menu_item_record'class);
@@ -70,16 +70,16 @@ package et_scripting_interactive_schematic is
 	end record;
 
 	unit_delete : type_unit_being_deleted;
-	
-	
+
+
 	-- procedure menu_propose_units_on_delete (
 	-- 	device			: in type_device_name;
 	-- 	units			: in pac_unit_names.list;
 	-- 	log_threshold	: in type_log_level);
 
-	
+
 	-- Proposes units on a menu if list "units" has
-	-- more than one item. 
+	-- more than one item.
 	-- If "units" contains only one item, then
 	-- this single unit will be granted to be drawn.
 	-- If "units" is empty, nothing happens.
@@ -88,35 +88,35 @@ package et_scripting_interactive_schematic is
 	-- 	units			: in pac_unit_names.list;
 	-- 	log_threshold	: in type_log_level);
 
-	
+
 	-- Makes the unit_move a selected unit.
 	-- Append the cursors of the device and unit to the list
-	-- proposed_units. Afterwards there will be only one single 
+	-- proposed_units. Afterwards there will be only one single
 	-- item in that list.
 	-- Sets the selected_unit. This signals the GUI which unit is to be
 	-- drawn at the cursor or mouse position:
 	-- procedure select_unit_for_move;
 
-	-- The interactive completition process of 
-	-- moving, dragging or rotating 
+	-- The interactive completition process of
+	-- moving, dragging or rotating
 	-- a unit comes to an end here.
 	-- procedure finish_unit_move;
-	
-	-- If the operator selects a unit from the menu, 
+
+	-- If the operator selects a unit from the menu,
 	-- then this procedure is called.
-	-- The connected net segments are identified and collected in 
+	-- The connected net segments are identified and collected in
 	-- container segments_being_dragged.
 	-- procedure unit_selected_on_move (
 	-- 	self : access gtk_menu_item_record'class);
 
 	-- Proposes units on a menu if list "units" has
-	-- more than one item. 
+	-- more than one item.
 	-- If "units" contains only one item, then
-	-- this single unit will be selected and 
+	-- this single unit will be selected and
 	-- granted to be drawn.
 	-- If we are about to drag a single unit, then the connected
-	-- net segments are identified and collected in 
-	-- container segments_being_dragged.	
+	-- net segments are identified and collected in
+	-- container segments_being_dragged.
 	-- If "units" is empty, nothing happens.
 	-- procedure menu_propose_units_on_move (
 	-- 	units			: in pac_unit_names.list;
@@ -125,14 +125,14 @@ package et_scripting_interactive_schematic is
 
 	-- Makes the placeholder_move a selected placeholder.
 	-- Append the cursors of the device and unit to the list
-	-- proposed_placeholders. Afterwards there will be only one single 
+	-- proposed_placeholders. Afterwards there will be only one single
 	-- item in that list.
 	-- Sets the selected_placeholder. This signals the GUI which unit is to be
 	-- drawn at the cursor or mouse position:
 	-- procedure select_placeholder_for_move;
 
-	-- The interactive completition process of 
-	-- moving, dragging or rotating 
+	-- The interactive completition process of
+	-- moving, dragging or rotating
 	-- a placeholder comes to an end here.
 	-- procedure finish_placeholder_move;
 
@@ -140,24 +140,24 @@ package et_scripting_interactive_schematic is
 -- SET VARIANT
 
 	--package_variants_menu : gtk_menu;
-	
+
 	-- When setting the package variant, the cursor to
 	-- the targeted device is stored here temporarily:
 	set_variant_device : pac_devices_electrical.cursor;
-	
+
 	-- Sets the package variant of the given device.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
 	-- procedure set_variant (
 	-- 	device : in type_device_name);
-	
 
-	
+
+
 end et_scripting_interactive_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

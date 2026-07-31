@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -44,7 +44,7 @@
 with et_string_processing;		use et_string_processing;
 package body et_device_renumbering is
 
-	
+
 
 	function "<" (left, right : in type_renumber_module) return boolean is
 		use pac_module_name;
@@ -70,7 +70,7 @@ package body et_device_renumbering is
 
 
 
-	
+
 	function to_index_range (
 		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string is
@@ -82,7 +82,7 @@ package body et_device_renumbering is
 
 
 
-	
+
 	function below (left, right : in type_index_range) return boolean is begin
 		if left.highest < right.lowest then
 			return true;
@@ -93,7 +93,7 @@ package body et_device_renumbering is
 
 
 
-	
+
 	function above (left, right : in type_index_range) return boolean is begin
 		if left.lowest > right.highest then
 			return true;
@@ -118,7 +118,7 @@ package body et_device_renumbering is
 	end;
 
 
-	
+
 
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
@@ -136,12 +136,12 @@ package body et_device_renumbering is
 	end;
 
 
-	
+
 end et_device_renumbering;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

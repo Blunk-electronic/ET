@@ -49,7 +49,7 @@ separate (et_rig)
 
 
 procedure read_rigs (
-	log_threshold 	: in type_log_level) 
+	log_threshold 	: in type_log_level)
 is
 	use ada.directories;
 
@@ -57,22 +57,22 @@ is
 	module_file_search : search_type; -- the state of the search
 	module_file_filter : constant filter_type := (ordinary_file => true, others => false);
 
-	
+
 	procedure read_module_file_pre (
-	module_file_handle : in directory_entry_type) 
-	is 
+	module_file_handle : in directory_entry_type)
+	is
 		file_name : constant string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		et_module_read.read_module (file_name, log_threshold + 1);
 	end;
-	
-	
+
+
 	-- The search of rig configuration files requires this stuff:
 	conf_file_search : search_type; -- the state of the search
 	conf_file_filter : constant filter_type := (ordinary_file => true, others => false);
 
 
-	
+
 	procedure read_conf_file (conf_file_handle : in directory_entry_type) is
 		-- backup the previous input source
 		previous_input : ada.text_io.file_type renames current_input;
@@ -81,33 +81,33 @@ is
 		file_name : constant string := simple_name (conf_file_handle); -- my_rig_configuration.conf
 		rig_cursor : pac_rigs.cursor;
 		rig_inserted : boolean;
-		
+
 		line : type_fields_of_line;
 
-		
+
 		-- This is the section stack of the configuration file:
 		max_section_depth : constant positive := 3;
-		
+
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
-		
+
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
 		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
 		assembly_variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
-		
+
 		procedure clear_module_instance is begin
 			generic_name := to_module_name ("");
 			instance_name := to_instance_name ("");
 		end clear_module_instance;
-		
+
 		purpose_A, purpose_B : pac_device_purpose.bounded_string; -- power_in, power_out
 		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
 
-		
+
 		procedure clear_connector is begin
 			purpose_A := pac_device_purpose.to_bounded_string ("");
 			purpose_A := purpose_B;
@@ -116,17 +116,17 @@ is
 		end clear_connector;
 
 
-		
+
 		procedure process_line is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 
-				
+
 				procedure create_instance (
 					rig_name	: in pac_file_name.bounded_string;
-					rig			: in out type_rig) 
+					rig			: in out type_rig)
 				is
 					pragma unreferenced (rig_name);
 					instance_created : boolean;
@@ -144,7 +144,7 @@ is
 
 					-- An instance may exist only once:
 					if not instance_created then
-						log (SEVERITY_ERROR, "module instance '" 
+						log (SEVERITY_ERROR, "module instance '"
 							& to_string (instance_name) & "' already exists !", console => true);
 						raise constraint_error;
 					end if;
@@ -152,14 +152,14 @@ is
 					clear_module_instance; -- clean up for next module instance
 				end create_instance;
 
-				
+
 				procedure create_connection (
 					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
 					pragma unreferenced (rig_name);
 					connection_inserted : boolean;
 					connection_cursor : pac_module_connections.cursor;
-					
+
 					use pac_device_purpose;
 					use pac_module_instance_name;
 				begin
@@ -174,7 +174,7 @@ is
 						-- checks and create the connection.
 						if length (instance_A) > 0 and length (instance_B) > 0
 							and length (purpose_A) > 0 and length (purpose_B) > 0 then
-							
+
 							-- create a module connector in the rig
 							rig.connections.insert (
 								new_item	=> (
@@ -204,7 +204,7 @@ is
 							if length (purpose_A) = 0 then
 								log (SEVERITY_ERROR, "purpose A not specified !", console => true);
 								raise constraint_error;
-							end if;						
+							end if;
 
 							if length (instance_B) = 0 then
 								log (SEVERITY_ERROR, "instance B not specified !", console => true);
@@ -214,58 +214,58 @@ is
 							if length (purpose_B) = 0 then
 								log (SEVERITY_ERROR, "purpose B not specified !", console => true);
 								raise constraint_error;
-							end if;						
+							end if;
 						end if;
-						
+
 					end if;
 				end create_connection;
 
-				
+
 			begin -- execute_section
 				case pac_sections_stack.current is
 
 					when SEC_INIT => null;
 
 					when SEC_MODULE_INSTANCES => null;
-					
+
 					when SEC_MODULE =>
 						case pac_sections_stack.parent is
-							when SEC_MODULE_INSTANCES =>	
+							when SEC_MODULE_INSTANCES =>
 
 								-- create an instanciated module in the rig
 								pac_rigs.update_element (
 									container	=> rigs,
 									position	=> rig_cursor,
 									process		=> create_instance'access);
-								
+
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_MODULE_CONNECTIONS => null;
 
-					
+
 					when SEC_CONNECTOR =>
 						case pac_sections_stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
-								
+
 								-- create a module connector in the rig
 								pac_rigs.update_element (
 									container	=> rigs,
 									position	=> rig_cursor,
 									process		=> create_connection'access);
-								
+
 							when others => invalid_section;
 						end case;
 
-						
+
 					when others => invalid_section;
 				end case;
-						
+
 			end execute_section;
 
 
-			
+
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -273,14 +273,14 @@ is
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string; -- [MODULE_INSTANCES
 				section			: in type_file_section) -- SEC_MODULE_INSTANCES
-				return boolean 
+				return boolean
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 7);
 						return true;
-						
+
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 
 						-- The section name in the footer must match the name
@@ -289,11 +289,11 @@ is
 							log_indentation_reset;
 							invalid_section;
 						end if;
-						
+
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
-						
+
 						pac_sections_stack.pop;
 						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 7);
@@ -301,50 +301,50 @@ is
 							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 7);
 						end if;
 						return true;
-						
+
 					else
 						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
-					
+
 				else -- neither a section header nor footer
 					return false;
 				end if;
 			end set;
 
-			
+
 		begin -- process_line
 			if set (section_module_instances, SEC_MODULE_INSTANCES) then null;
 			elsif set (section_module, SEC_MODULE) then null;
 			elsif set (section_module_connections, SEC_MODULE_CONNECTIONS) then null;
 			elsif set (section_connector, SEC_CONNECTOR) then null;
 			else
-				-- The line contains something else -> the payload data. 
+				-- The line contains something else -> the payload data.
 				-- Temporarily this data is to be stored in corresponding variables.
 
 				log (text => "line --> " & to_string (line), level => log_threshold + 7);
-				
+
 				case pac_sections_stack.current is
 
 					when SEC_INIT => null;
-						
+
 					when SEC_MODULE_INSTANCES =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_MODULE_CONNECTIONS =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_MODULE =>
 						case pac_sections_stack.parent is
-							when SEC_MODULE_INSTANCES =>							
+							when SEC_MODULE_INSTANCES =>
 								declare
 									kw : constant string := f (line, 1);
 									module_cursor : pac_generic_modules.cursor;
@@ -354,7 +354,7 @@ is
 
 										-- The generic name does not use the *.mod extension.
 										generic_name := pac_module_name.to_bounded_string (f (line,2));
-										
+
 										-- test whether a module with this generic name exists
 										if not generic_module_exists (generic_name) then
 											log (SEVERITY_WARNING, "Module " & enclose_in_quotes (to_string (generic_name)) &
@@ -362,12 +362,12 @@ is
 											--raise constraint_error;
 										end if;
 
-										
+
 									elsif kw = keyword_instance_name then
 										expect_field_count (line, 2);
 										instance_name := to_instance_name (f (line,2));
 
-										
+
 									elsif kw = keyword_assembly_variant then
 										expect_field_count (line, 2);
 										assembly_variant := to_variant (f (line,2));
@@ -386,12 +386,12 @@ is
 									end if;
 								end;
 
-								
+
 							when others => invalid_section;
 						end case;
 
-						
-					when SEC_CONNECTOR =>							
+
+					when SEC_CONNECTOR =>
 						case pac_sections_stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
 								declare
@@ -405,23 +405,23 @@ is
 										expect_field_count (line, 2);
 										instance_B := to_instance_name (f (line,2));
 										-- CS: test if instance exists
-										
+
 									elsif kw = keyword_purpose_A then
 										expect_field_count (line, 2);
 										purpose_A := to_purpose (f (line,2));
 										-- CS: test if a connector with this purpose exists in the instance
-										
+
 									elsif kw = keyword_purpose_B then
 										expect_field_count (line, 2);
 										purpose_B := to_purpose (f (line,2));
 										-- CS: test if a connector with this purpose exists in the instance
-										
+
 									-- CS: net comparator and warning on/off
 									else
 										invalid_keyword (kw);
 									end if;
 								end;
-								
+
 							when others => invalid_section;
 						end case;
 
@@ -430,13 +430,13 @@ is
 			end if;
 
 			exception when others =>
-				log (text => "file " & file_name & space & get_affected_line (line) 
+				log (text => "file " & file_name & space & get_affected_line (line)
 						& to_string (line), console => true);
 				raise;
-			
+
 		end process_line;
 
-		
+
 	begin -- read_conf_file
 		-- write name of configuration file
 		log (text => file_name, level => log_threshold + 1);
@@ -445,7 +445,7 @@ is
 		-- open rig configuration file
 		open (
 			file => file_handle,
-			mode => in_file, 
+			mode => in_file,
 			name => file_name); -- demo.conf, low_cost.conf, fully_equipped.conf
 
 		set_input (file_handle);
@@ -461,7 +461,7 @@ is
 			inserted	=> rig_inserted, -- should always be true
 			position	=> rig_cursor);
 
-		
+
 		-- read the file line by line
 		while not end_of_file loop
 			line := read_line (
@@ -477,7 +477,7 @@ is
 		end loop;
 
 		-- As a safety measure the top section must be reached:
-		if pac_sections_stack.depth > 1 then 
+		if pac_sections_stack.depth > 1 then
 			log (SEVERITY_WARNING, write_section_stack_not_empty);
 		end if;
 
@@ -489,29 +489,29 @@ is
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (previous_input);
 			raise;
-		
+
 	end read_conf_file;
 
 
 	-- The number of modules that have been read:
 	module_ct : count_type;
-	
-	
+
+
 begin -- read_rigs
 	log (text => "reading rigs ...", level => log_threshold);
 	log_indentation_up;
 
 	-- Load all modules that are inside the project directory.
-	
+
 	-- CS: It requires discussion whether loading all modules files at this time is reasonable.
-	-- Currentyl, even if a module is not, it is going to be loaded. 
+	-- Currentyl, even if a module is not, it is going to be loaded.
 	-- This causes more log information than required.
 	-- A solution could be to load a module on reading the rig configuration file.
-	-- The drawback is that the user would be required to setup a rig configuration, even 
+	-- The drawback is that the user would be required to setup a rig configuration, even
 	-- if she wants to design only one board.
 	log (text => "looking for module files ...", level => log_threshold + 1);
 	log_indentation_up;
-	
+
 	start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
 	if more_entries (module_file_search) then
 		search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
@@ -520,14 +520,14 @@ begin -- read_rigs
 	end if;
 	end_search (module_file_search);
 
-	
+
 	-- Get the module count and log:
 	module_ct := pac_generic_modules.length (generic_modules);
 	log (text => "module count: " & count_type'image (module_ct), level => log_threshold + 1);
 	-- CS list imported modules
-	
+
 	log_indentation_down;
-	
+
 	log (text => "looking for rig configuration files ...", level => log_threshold + 1);
 	log_indentation_up;
 	start_search (conf_file_search, current_directory, file_extension_asterisk, conf_file_filter);
@@ -542,10 +542,10 @@ begin -- read_rigs
 	log_indentation_down;
 
 end read_rigs;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

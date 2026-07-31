@@ -40,18 +40,18 @@
 
 
 package et_conductor_text.packages is
-	
-	
+
+
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 	use pac_conductor_texts;
 
-	
+
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);
 		proceed	: not null access boolean);
-	
+
 
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
@@ -77,12 +77,12 @@ package et_conductor_text.packages is
 		texts		: in pac_conductor_texts.list)
 		return pac_polygon_list.list;
 
-	
+
 end et_conductor_text.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

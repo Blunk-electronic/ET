@@ -57,7 +57,7 @@ package et_symbol_port_measures is
 	subtype type_port_length is type_distance_positive
 		range 2.0 .. 20.0;
 
-	
+
 	-- A port is basically a line with a linewidth equal to those
 	-- of net segments.
 	-- Its start point is the port position.
@@ -68,21 +68,21 @@ package et_symbol_port_measures is
 	--  to the right if rotation is 180 degree. net attached from the left.
 	--  downwards if the rotation is 90 degree. net attached from above.
 	--  upwards if the rotation is 270 degree. net attached from below.
-	
+
 	port_circle_linewidth : constant type_distance_positive := 0.1;
-	
+
 	port_circle_radius : constant type_distance_positive := 0.8;
 
 	-- The distance between port end point and port name:
 	port_name_spacing : constant type_distance_positive := 2.0;
 
 
-	
+
 end et_symbol_port_measures;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

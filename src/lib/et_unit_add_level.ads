@@ -42,27 +42,27 @@ package et_unit_add_level is
 
 
 	-- CS use prefix
-	
+
 	type type_add_level is (
 		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
-		REQUEST, 	-- for power supply 
+		REQUEST, 	-- for power supply
 		CAN,		-- OPTIONAl units. things like relay contacts
 		ALWAYS,		-- units that SHOULD be used always
 		MUST);		-- units that MUST be used. things like relay coils.
 
 	add_level_default : constant type_add_level := type_add_level'first;
-	
+
 	function to_string (add_level : in type_add_level) return string;
 
 	function to_add_level (add_level : in string) return type_add_level;
 
-	
-		
+
+
 end et_unit_add_level;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

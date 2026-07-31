@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -56,17 +56,17 @@ package et_board_ops_user_settings is
 
 
 
-	
+
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return type_user_settings;
 
-	
+
 end et_board_ops_user_settings;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

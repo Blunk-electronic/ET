@@ -39,7 +39,7 @@
 
 generic
 
-	
+
 package et_canvas.contours is
 
 	use pac_contours;
@@ -60,22 +60,22 @@ package et_canvas.contours is
 	procedure draw_contour (
 		contour	: in type_contour'class;
 
-		-- This is the position of the parent object (incl. rotation)					   
+		-- This is the position of the parent object (incl. rotation)
 		pos 	: in type_position := origin_zero_rotation;
 
 		-- This is the offset by which the contour is moved
 		-- in addition to pos:
 		offset	: in type_position := origin_zero_rotation;
 		-- CS currently the rotation of the contour about itself is ignored.
-		
+
 		style	: in type_line_style := CONTINUOUS;
-		
+
 		filled	: in type_filled;
 		-- NOTE: If the given contour is not closed, then
 		-- it will not be filled, regardless of this argument.
 		-- In that case the contour will be drawn with a minimal
 		-- linewidth.
-		
+
 		width	: in type_distance_positive;
 		mirror	: in type_mirror := MIRROR_NO);
 		-- CS fill style
@@ -90,7 +90,7 @@ package et_canvas.contours is
 		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror := MIRROR_NO);
 
-	
+
 	-- This procedure draws a filled contour
 	-- with an arbitrary cutout area inside:
 	procedure draw_contour_with_arbitrary_cutout (
@@ -100,13 +100,13 @@ package et_canvas.contours is
 		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror := MIRROR_NO);
 
-	
-		
+
+
 end et_canvas.contours;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

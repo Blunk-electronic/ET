@@ -44,7 +44,7 @@ with et_logging;						use et_logging;
 
 package et_unit_name is
 
-	unit_name_length_max : constant natural := 50;	
+	unit_name_length_max : constant natural := 50;
 
 	-- CS unit_name_characters, length check, character check
 	package pac_unit_name is new generic_bounded_length (unit_name_length_max);
@@ -55,33 +55,33 @@ package et_unit_name is
 	function get_length (
 		unit : in pac_unit_name.bounded_string)
 		return natural;
-	
-	
+
+
 	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
-	
+
 	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string;
 
-	
+
 	function to_unit_name (
-		unit_name : in string) 
-		return pac_unit_name.bounded_string; 
+		unit_name : in string)
+		return pac_unit_name.bounded_string;
 
 
 
 	-- Logs a message like "WARNING. Unit D not found."
-	-- The severity decides whether to output the message on 
+	-- The severity decides whether to output the message on
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_unit_not_found (
 		severity	: in type_message_severity;
 		name		: in pac_unit_name.bounded_string);
 
-		
+
 end et_unit_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

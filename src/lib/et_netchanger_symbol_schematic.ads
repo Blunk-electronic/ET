@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@
 
 --   history of changes:
 --
--- ToDo: 
+-- ToDo:
 --
 --
 
@@ -58,8 +58,8 @@ package et_netchanger_symbol_schematic is
 	use pac_geometry_2;
 
 
-		
-		
+
+
 -- PORT:
 
 
@@ -69,36 +69,36 @@ package et_netchanger_symbol_schematic is
 	subtype type_netchanger_port is type_port_general;
 
 
-	
-	position_master_port_default : constant 
+
+	position_master_port_default : constant
 		type_vector_model := (x =>  7.5, y => 0.0);
-	
-	
-	position_slave_port_default  : constant 
+
+
+	position_slave_port_default  : constant
 		type_vector_model := (x => -7.5, y => 0.0);
 
 	-- CS: instead of master/slave notation use A/B ?
-	
-	
-	
+
+
+
 	-- CS use subtype defined in et_symbol_port_measures:
-	
+
 	name_to_origin_offset : constant type_distance_positive := 2.0;
-	
+
 	-- The distance between the start point of a port and the
 	-- origin of the port name:
 	port_name_spacing_start : constant type_distance_positive := 1.7;
-	
+
 	-- The size of the name (like N31):
 	name_size : constant type_distance_positive := 2.0;
-	
+
 	-- The size of the port name:
 	port_size : constant type_distance_positive := 2.0;
-	
 
-	
-	
-	
+
+
+
+
 	-- For netchangers we use this hardcoded symbol:
 
 	type type_netchanger_symbol_base is tagged record -- CS make private
@@ -114,9 +114,9 @@ package et_netchanger_symbol_schematic is
 	end record;
 
 
-	
-	
-	type type_netchanger_symbol_forward is new type_netchanger_symbol_base 
+
+
+	type type_netchanger_symbol_forward is new type_netchanger_symbol_base
 	with record -- CS make private
 		-- The master port is on the right side of the body:
 		master_port	: type_netchanger_port := (
@@ -127,20 +127,20 @@ package et_netchanger_symbol_schematic is
 		-- The slave port is on the left side of the body:
 		slave_port	: type_netchanger_port := (
 						length		=> 5.0,
-						position	=> position_slave_port_default,						
+						position	=> position_slave_port_default,
 						rotation	=> 180.0);
 
 	end record;
 
-	
-	
+
+
 	netchanger_symbol_forward : constant type_netchanger_symbol_forward := (others => <>);
 
 
 
 
 
-	type type_netchanger_symbol_backward is new type_netchanger_symbol_base 
+	type type_netchanger_symbol_backward is new type_netchanger_symbol_base
 	with record -- CS make private
 		-- The master port is on the left side of the body:
 		master_port	: type_netchanger_port := (
@@ -151,22 +151,22 @@ package et_netchanger_symbol_schematic is
 		-- The slave port is on the right side of the body:
 		slave_port	: type_netchanger_port := (
 						length		=> 5.0,
-						position	=> position_master_port_default,						
+						position	=> position_master_port_default,
 						rotation	=> zero_rotation);
 
 	end record;
 
-	
-	
+
+
 	netchanger_symbol_backward : constant type_netchanger_symbol_backward := (others => <>);
 
 
-	
+
 end et_netchanger_symbol_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

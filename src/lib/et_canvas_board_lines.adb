@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 -- with ada.text_io;			use ada.text_io;
 with et_pcb_sides;						use et_pcb_sides;
@@ -59,8 +59,8 @@ with gdk.types.keysyms;					use gdk.types.keysyms;
 
 with gtk.widget;						use gtk.widget;
 
-with gtk.cell_renderer_text;		
-with gtk.list_store;				
+with gtk.cell_renderer_text;
+with gtk.list_store;
 with gtk.tree_model;
 
 with gtk.gentry;						use gtk.gentry;
@@ -108,11 +108,11 @@ package body et_canvas_board_lines is
 		layer_categories.append (LAYER_CAT_STOPMASK);
 		layer_categories.append (LAYER_CAT_VIA_RESTRICT);
 	end make_affected_layer_categories;
-	
 
-	
 
-	
+
+
+
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -148,22 +148,22 @@ package body et_canvas_board_lines is
 
 			when LAYER_CAT_VIA_RESTRICT =>
 				enable_via_restrict (object_signal_layer);
-				
+
 			when LAYER_CAT_STENCIL =>
 				enable_stencil (object_face);
 
 			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
-				
+
 			when others => null;
 		end case;
-		
+
 		et_canvas_board.redraw_board;
 	end layer_category_changed;
 
 
 
-	
+
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -193,20 +193,20 @@ package body et_canvas_board_lines is
 
 			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
-				
+
 			when others => null;
 		end case;
-		
+
 		et_canvas_board.redraw_board;
 	end face_changed;
-	
 
 
-	
+
+
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
-		
+
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
@@ -222,16 +222,16 @@ package body et_canvas_board_lines is
 		-- Auto-enable the affected conductor and restrict layers:
 		enable_conductor (object_signal_layer);
 		enable_via_restrict (object_signal_layer);
-		
-		et_canvas_board.redraw_board;		
+
+		et_canvas_board.redraw_board;
 	end signal_layer_changed;
 
-	
 
 
 
-	
-	
+
+
+
 	procedure apply_line_width (text : in string) is
 		width : type_distance_positive;
 	begin
@@ -245,15 +245,15 @@ package body et_canvas_board_lines is
 
 
 
-	
-	
+
+
 	function line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
-		
+
 		use gdk.types;
 		key : constant gdk_key_type := event.keyval;
 
@@ -264,20 +264,20 @@ package body et_canvas_board_lines is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
 
-			when GDK_TAB => 
+			when GDK_TAB =>
 				--put_line ("line width via tab " & text);
 				apply_line_width (text);
 
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end line_width_key_pressed;
 
 
-	
-	
-	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("line width " & text);
@@ -285,51 +285,51 @@ package body et_canvas_board_lines is
 	end line_width_entered;
 
 
-	
+
 
 
 	procedure show_line_properties is
 
 		use et_canvas_board.pac_canvas;
-		
+
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
 		use gtk.list_store;
 		use gtk.tree_model;
 
-		
 
-		box_layer_category, box_face, 
+
+		box_layer_category, box_face,
 		box_signal_layer, --box_button,
 		box_line_width : gtk_vbox;
-		
-		label_layer_category, label_face, 
+
+		label_layer_category, label_face,
 		label_signal_layer, label_line_width : gtk_label;
-		
+
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 		-- Operator can choose between fixed menu entries.
-		
+
 		cbox_line_width : gtk_combo_box_text;
 		-- Operator may enter an additional value in the menu.
-		
+
 		-- button_apply : gtk_button;
 
 		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
+		-- characters that can be entered in the fields for
 		-- text size and line width:
 		text_size_length_min : constant gint := 1;
-		text_size_length_max : constant gint := 6; 
-		
+		text_size_length_max : constant gint := 6;
+
 		line_width_length_min : constant gint := 1;
 		line_width_length_max : constant gint := 5;
-		
+
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
-		
-		
 
-		
+
+
+
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
 
@@ -339,17 +339,17 @@ package body et_canvas_board_lines is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
-			
+
 
 			-- Collects layer categories and inserts them
 			-- in the storage model:
 			procedure collect_layer_cats is
 
 				procedure query_category (
-					c : in pac_layer_categories.cursor) 
-				is 
+					c : in pac_layer_categories.cursor)
+				is
 					use pac_layer_categories;
 				begin
 					storage_model.append (iter);
@@ -357,37 +357,37 @@ package body et_canvas_board_lines is
 						to_string (element (c)));
 
 				end query_category;
-				
+
 			begin
-				make_affected_layer_categories;				
+				make_affected_layer_categories;
 				layer_categories.iterate (query_category'access);
 			end collect_layer_cats;
 
 
-			
+
 			procedure set_category_used_last is
 				c : pac_layer_categories.cursor;
-				use pac_layer_categories;				
+				use pac_layer_categories;
 			begin
 				-- Map from preliminary_zone.category to index:
 				c := find (layer_categories, object_layer_category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 
-			
-	
-		begin			
+
+
+		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
 			pack_start (box_v4, box_layer_category, padding => box_properties_spacing);
 
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => box_properties_spacing);
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the layer categories in the storage model:
-			collect_layer_cats;			
+			collect_layer_cats;
 
 			-- Create the combo box:
 			gtk.combo_box.gtk_new_with_model (
@@ -407,7 +407,7 @@ package body et_canvas_board_lines is
 		end make_combo_category;
 
 
-		
+
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
 
@@ -417,16 +417,16 @@ package body et_canvas_board_lines is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_face, homogeneous => false);
 			pack_start (box_v4, box_face, padding => box_properties_spacing);
-			
+
 			gtk_new (label_face, "FACE");
 			pack_start (box_face, label_face, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -458,7 +458,7 @@ package body et_canvas_board_lines is
 		end make_combo_for_face;
 
 
-		
+
 		procedure make_combo_for_signal_layer is
 			storage_model : gtk_list_store;
 
@@ -468,26 +468,26 @@ package body et_canvas_board_lines is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
 			pack_start (box_v4, box_signal_layer, padding => box_properties_spacing);
-			
+
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available signal layers in the storage model:
-			for choice in 
+			for choice in
 				-- The top layer is always available:
-				type_signal_layer'first .. 
+				type_signal_layer'first ..
 
 				-- The deepest available layer depends on the stack configuration:
-				get_deepest_conductor_layer (active_module) 
+				get_deepest_conductor_layer (active_module)
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -530,7 +530,7 @@ package body et_canvas_board_lines is
 
 			-- Set the line width according to the value used last:
 			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (object_linewidth), left));
-			
+
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
@@ -540,19 +540,19 @@ package body et_canvas_board_lines is
 		-- procedure make_apply_button is begin
 		-- 	gtk_new_vbox (box_button, homogeneous => false);
 		-- 	pack_start (box_v4, box_button, padding => box_properties_spacing);
-  -- 
+  --
 		-- 	gtk_new (button_apply, "Apply");
 		-- 	pack_start (box_button, button_apply, padding => box_properties_spacing);
 		-- 	button_apply.on_clicked (button_apply_clicked'access);
 		-- end make_apply_button;
-		
+
 	begin
 		--put_line ("build line properties");
 
 		-- Before inserting any widgets, the properties box
 		-- must be cleared:
 		clear_out_properties_box;
-		
+
 		-- Build the elements of the properties bar:
 		make_combo_category;
 		make_combo_for_face;
@@ -570,7 +570,7 @@ package body et_canvas_board_lines is
 
 	procedure add_by_category (
 		line : in type_line)
-	is 
+	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -578,9 +578,9 @@ package body et_canvas_board_lines is
 
 		-- A temporary contour consisting of a single segment,
 		-- used in case it is about a contour segment:
-		c : type_contour; 
+		c : type_contour;
 
-		
+
 		-- This procedure adds the given line
 		-- to the outer board contour:
 		procedure add_to_outer_contour is
@@ -594,7 +594,7 @@ package body et_canvas_board_lines is
 				module_cursor	=> active_module,
 				outline			=> (c with null record),
 				log_threshold	=> log_threshold);
-			
+
 		end add_to_outer_contour;
 
 
@@ -612,12 +612,12 @@ package body et_canvas_board_lines is
 				module_cursor	=> active_module,
 				hole			=> (c with null record),
 				log_threshold	=> log_threshold);
-			
+
 		end add_to_holes;
 
 
-		
-		
+
+
 		-- This procedure adds the given line to either
 		-- the lines (which hava a certain width) or to a zone
 		-- in the assembly documentation:
@@ -627,7 +627,7 @@ package body et_canvas_board_lines is
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as
 			-- a single line.
-			-- If the linewidth is zero, then the line is 
+			-- If the linewidth is zero, then the line is
 			-- regarded as part of the contour of a zone:
 			if object_linewidth > 0.0 then
 				add_line (
@@ -636,7 +636,7 @@ package body et_canvas_board_lines is
 					line		=> (line with object_linewidth),
 					log_threshold	=> log_threshold);
 
-			else				
+			else
 				-- Add the line to the temporary contour:
 				append_segment (c, to_segment (line));
 
@@ -646,7 +646,7 @@ package body et_canvas_board_lines is
 					zone			=> (c with null record),
 					face			=> object_face,
 					log_threshold	=> log_threshold);
-				
+
 			end if;
 		end add_to_assy_doc;
 
@@ -661,7 +661,7 @@ package body et_canvas_board_lines is
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as
 			-- a single line.
-			-- If the linewidth is zero, then the line is 
+			-- If the linewidth is zero, then the line is
 			-- regarded as part of the contour of a zone:
 			if object_linewidth > 0.0 then
 				add_line (
@@ -670,7 +670,7 @@ package body et_canvas_board_lines is
 					line		=> (line with object_linewidth),
 					log_threshold	=> log_threshold);
 
-			else				
+			else
 				-- Add the line to the temporary contour:
 				append_segment (c, to_segment (line));
 
@@ -680,11 +680,11 @@ package body et_canvas_board_lines is
 					zone			=> (c with null record),
 					face			=> object_face,
 					log_threshold	=> log_threshold);
-				
+
 			end if;
 		end add_to_silkscreen;
 
-		
+
 
 		-- This procedure adds the given line to either
 		-- the lines (which hava a certain width) or to a zone
@@ -695,7 +695,7 @@ package body et_canvas_board_lines is
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as
 			-- a single line.
-			-- If the linewidth is zero, then the line is 
+			-- If the linewidth is zero, then the line is
 			-- regarded as part of the contour of a zone:
 			if object_linewidth > 0.0 then
 				add_line (
@@ -704,7 +704,7 @@ package body et_canvas_board_lines is
 					line		=> (line with object_linewidth),
 					log_threshold	=> log_threshold);
 
-			else				
+			else
 				-- Add the line to the temporary contour:
 				append_segment (c, to_segment (line));
 
@@ -714,11 +714,11 @@ package body et_canvas_board_lines is
 					zone			=> (c with null record),
 					face			=> object_face,
 					log_threshold	=> log_threshold);
-				
+
 			end if;
 		end add_to_stopmask;
 
-		
+
 
 		-- This procedure adds the given line to either
 		-- the lines (which hava a certain width) or to a zone
@@ -729,7 +729,7 @@ package body et_canvas_board_lines is
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as
 			-- a single line.
-			-- If the linewidth is zero, then the line is 
+			-- If the linewidth is zero, then the line is
 			-- regarded as part of the contour of a zone:
 			if object_linewidth > 0.0 then
 				add_line (
@@ -738,7 +738,7 @@ package body et_canvas_board_lines is
 					line		=> (line with object_linewidth),
 					log_threshold	=> log_threshold);
 
-			else				
+			else
 				-- Add the line to the temporary contour:
 				append_segment (c, to_segment (line));
 
@@ -748,12 +748,12 @@ package body et_canvas_board_lines is
 					zone			=> (c with null record),
 					face			=> object_face,
 					log_threshold	=> log_threshold);
-				
+
 			end if;
 		end add_to_stencil;
 
 
-		-- This procedure adds the given line to 
+		-- This procedure adds the given line to
 		-- the route restrict layers:
 		procedure add_to_route_restrict is
 			use et_board_ops_route_restrict;
@@ -767,9 +767,9 @@ package body et_canvas_board_lines is
 				-- to the line. Multi-layer assignment is possible via
 				-- commandline only.
 		end add_to_route_restrict;
-		
 
-		
+
+
 		-- This procedure adds the given line to either
 		-- the lines (which hava a certain width) or to a zone
 		-- in a via restrict layer:
@@ -802,11 +802,11 @@ package body et_canvas_board_lines is
 				zone			=> (c with null record),
 				face			=> object_face,
 				log_threshold	=> log_threshold);
-			
+
 		end add_to_keepout;
 
 
-		-- This procedure adds the given line to 
+		-- This procedure adds the given line to
 		-- a conductor layer:
 		procedure add_to_conductors is
 			use et_board_ops_conductors;
@@ -819,8 +819,8 @@ package body et_canvas_board_lines is
 				log_threshold	=> log_threshold);
 		end add_to_conductors;
 
-		
-		
+
+
 	begin
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold + 1);
@@ -831,28 +831,28 @@ package body et_canvas_board_lines is
 
 			when LAYER_CAT_HOLE =>
 				add_to_holes;
-				
+
 			when LAYER_CAT_ASSY =>
 				add_to_assy_doc;
-				
+
 			when LAYER_CAT_CONDUCTOR =>
-				add_to_conductors;	
-				
+				add_to_conductors;
+
 			when LAYER_CAT_SILKSCREEN =>
 				add_to_silkscreen;
-				
+
 			when LAYER_CAT_ROUTE_RESTRICT =>
 				add_to_route_restrict;
 
 			when LAYER_CAT_VIA_RESTRICT =>
 				add_to_via_restrict;
-				
+
 			when LAYER_CAT_STENCIL =>
-				add_to_stencil;				
+				add_to_stencil;
 
 			when LAYER_CAT_KEEPOUT =>
-				add_to_keepout;				
-				
+				add_to_keepout;
+
 			when LAYER_CAT_STOPMASK =>
 				add_to_stopmask;
 
@@ -861,16 +861,16 @@ package body et_canvas_board_lines is
 		end case;
 
 		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold + 1);			
+		commit (POST, verb, noun, log_threshold + 1);
 	end add_by_category;
-		
 
-	
+
+
 end et_canvas_board_lines;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -42,7 +42,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 
 package et_module_names is
-	
+
 
 
 	-- The module file name:
@@ -51,12 +51,12 @@ package et_module_names is
 
 	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
 	function to_string (name : in pac_module_file_name.bounded_string) return string;
-	
-	
+
+
 
 	module_file_name_extension : constant string := "mod";
 	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
-	
+
 	function remove_extension (file_name : in string) return string;
 	-- Removes from a string like templates/clock_generator.mod the extension so that
 	-- the return would be templates/clock_generator .
@@ -75,13 +75,13 @@ package et_module_names is
 	function to_string (name : in pac_module_name.bounded_string) return string;
 	function to_module_name (name : in string) return pac_module_name.bounded_string;
 
-	
-	
+
+
 end et_module_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

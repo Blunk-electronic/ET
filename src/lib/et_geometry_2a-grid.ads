@@ -40,17 +40,17 @@ with et_logical_pixels;					use et_logical_pixels;
 with et_string_processing;				use et_string_processing;
 
 generic
-	
+
 package et_geometry_2a.grid is
 
 	-- The grid helps the operator to align or place objects.
 
 
 -- ON / OFF;
-	
+
 	type type_grid_on_off is (ON, OFF);
 
-	
+
 	function to_string (
 		on_off : in type_grid_on_off)
 		return string;
@@ -59,10 +59,10 @@ package et_geometry_2a.grid is
 		on_off : in string)
 		return type_grid_on_off;
 
-	
+
 
 -- STYLE (lines or dots):
-	
+
 	type type_grid_style is (DOTS, LINES);
 
 	function to_string (
@@ -77,7 +77,7 @@ package et_geometry_2a.grid is
 
 
 
-	
+
 	-- The linewidth of the grid lines:
 	grid_width_lines : constant type_logical_pixels_positive := 0.5;
 
@@ -85,19 +85,19 @@ package et_geometry_2a.grid is
 	grid_width_dots : constant type_logical_pixels_positive := 1.0;
 	grid_radius_dots : constant type_logical_pixels_positive := 0.5;
 
-	
+
 	-- The arm length of a grid point if drawn as a cross:
 	grid_cross_arm_length : constant type_logical_pixels_positive := 1.0;
 
 
 
 	-- The default grid size in in the model domain:
-	grid_spacing_default : constant type_distance_positive := 10.0; 
+	grid_spacing_default : constant type_distance_positive := 10.0;
 
 	grid_spacing_max : constant type_distance_positive := 100.0;
-	grid_spacing_min : constant type_distance_positive := 0.01; 
-	
-		
+	grid_spacing_min : constant type_distance_positive := 0.01;
+
+
 	-- If the displayed grid is too dense, then it makes no
 	-- sense to draw a grid. For this reason we define a minimum
 	-- distance between grid rows and columns. If the spacing becomes
@@ -105,7 +105,7 @@ package et_geometry_2a.grid is
 	grid_spacing_min_lp : constant type_logical_pixels_positive := 10.0;
 
 
-	-- This function processes a line starting 
+	-- This function processes a line starting
 	-- from a given position and returns a grid spacing.
 	-- Since both schematic and symbol read operations require
 	-- this function, it is placed in this package:
@@ -114,9 +114,9 @@ package et_geometry_2a.grid is
 		from : in type_field_count_positive)
 		return type_vector_model;
 
-	
 
-	
+
+
 	type type_grid is record
 		on_off	: type_grid_on_off := ON;
 		spacing : type_vector_model := (others => grid_spacing_default);
@@ -134,7 +134,7 @@ package et_geometry_2a.grid is
 	-- a simple multiplier:
 	density_multiplier : constant type_distance_positive := 2.0;
 
-	
+
 	-- This procedure changes the given grid:
 	procedure next_grid_density (
 		grid 		: in out type_grid;
@@ -144,10 +144,10 @@ package et_geometry_2a.grid is
 	-- This procedure resets the grid spacing to the default value:
 	procedure reset_grid_density (
 		grid		: in out type_grid);
-	
 
 
-	
+
+
 
 	-- For specifiying distances this type can be used.
 	-- The distance would then be notches multiplied with
@@ -155,13 +155,13 @@ package et_geometry_2a.grid is
 	type type_grid_notches is new positive;
 
 	function to_notches (
-		notches : in string) 
+		notches : in string)
 		return type_grid_notches;
-	
+
 	function to_string (
-		notches : in type_grid_notches) 
+		notches : in type_grid_notches)
 		return string;
 
-	
+
 end et_geometry_2a.grid;
 

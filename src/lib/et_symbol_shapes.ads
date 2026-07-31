@@ -56,7 +56,7 @@ package et_symbol_shapes is
 	use pac_geometry_2;
 
 
-	
+
 
 
 	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
@@ -64,7 +64,7 @@ package et_symbol_shapes is
 
 	line_width_default : constant type_line_width := 0.2;
 
-	
+
 
 -- LINES
 
@@ -72,10 +72,10 @@ package et_symbol_shapes is
 		width	: type_line_width := line_width_default;
 	end record;
 
-	
+
 	package pac_symbol_lines is new doubly_linked_lists (type_symbol_line);
 	use pac_symbol_lines;
-	
+
 
 	function get_A (
 		line : in pac_symbol_lines.cursor)
@@ -86,12 +86,12 @@ package et_symbol_shapes is
 		line : in pac_symbol_lines.cursor)
 		return type_vector_model;
 
-	
 
-	
-	
+
+
+
 -- ARCS
-	
+
 	type type_symbol_arc is new pac_geometry_2.type_arc with record
 		width	: type_line_width := line_width_default;
 	end record;
@@ -101,15 +101,15 @@ package et_symbol_shapes is
 		arc		: in out type_symbol_arc;
 		width	: in type_line_width);
 
-	
+
 	procedure reset_arc (
 		arc	: in out type_symbol_arc);
-	
-	
+
+
 	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 	use pac_symbol_arcs;
-	
-	
+
+
 	function get_A (
 		arc : in pac_symbol_arcs.cursor)
 		return type_vector_model;
@@ -129,20 +129,20 @@ package et_symbol_shapes is
 		arc : in pac_symbol_arcs.cursor)
 		return type_direction_of_rotation;
 
-	
-	
+
+
 	type type_circle_filled is (NO, YES);
-	
+
 	function to_string (filled : in type_circle_filled) return string;
-	
+
 	function to_circle_filled (filled : in string) return type_circle_filled;
 
 
 
-	
+
 
 -- CIRCLES
-	
+
 	type type_circle_base is new pac_geometry_2.type_circle with record
 		width	: type_line_width := line_width_default;
 	end record;
@@ -156,12 +156,12 @@ package et_symbol_shapes is
 		circle	: in out type_symbol_circle;
 		width	: in type_line_width);
 
-	
+
 	package pac_symbol_circles is new doubly_linked_lists (type_symbol_circle);
 
 
 
-	
+
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
 		lines		: pac_symbol_lines.list		:= pac_symbol_lines.empty_list;
@@ -170,7 +170,7 @@ package et_symbol_shapes is
 	end record;
 
 
-	
+
 
 
 
@@ -183,7 +183,7 @@ end et_symbol_shapes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

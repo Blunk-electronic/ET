@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,13 +58,13 @@ package body et_route_restrict is
 			mirror_line (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
 
-	
+
 
 	procedure rotate_lines (
 		lines	: in out pac_route_restrict_lines.list;
@@ -78,13 +78,13 @@ package body et_route_restrict is
 			rotate_line_by (line, angle);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end rotate_lines;
 
-	
+
 
 	procedure move_lines (
 		lines	: in out pac_route_restrict_lines.list;
@@ -98,17 +98,17 @@ package body et_route_restrict is
 			move_by (line, offset);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end move_lines;
 
 
-	
-	
+
+
 -- ARCS
-	
+
 	procedure mirror_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -122,13 +122,13 @@ package body et_route_restrict is
 			mirror_arc (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
-	
+
 
 	procedure rotate_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
@@ -142,14 +142,14 @@ package body et_route_restrict is
 			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end rotate_arcs;
 
 
-	
+
 	procedure move_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
 		offset	: in type_vector_model)
@@ -162,24 +162,24 @@ package body et_route_restrict is
 			move_by (arc, offset);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end move_arcs;
 
-	
 
 
-	
-	
+
+
+
 -- CIRCLES
 
 	function to_polygon_outside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon
-	is 
+	is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
@@ -187,7 +187,7 @@ package body et_route_restrict is
 	begin
 		c := type_circle (to_circle (
 			get_center (circle), get_radius (circle)));
-										
+
 		result.edges := to_edges (
 			circle		=> c,
 			tolerance	=> tolerance,
@@ -198,12 +198,12 @@ package body et_route_restrict is
 	end to_polygon_outside;
 
 
-	
+
 	function to_polygon_inside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon
-	is 
+	is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
@@ -222,7 +222,7 @@ package body et_route_restrict is
 	end to_polygon_inside;
 
 
-	
+
 	procedure mirror_circles (
 		circles	: in out pac_route_restrict_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -236,14 +236,14 @@ package body et_route_restrict is
 			mirror_circle (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
 	end mirror_circles;
 
 
-	
+
 	procedure rotate_circles (
 		circles	: in out pac_route_restrict_circles.list;
 		angle	: in type_rotation_model)
@@ -256,13 +256,13 @@ package body et_route_restrict is
 			rotate_circle_by (circle, angle);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
 	end rotate_circles;
 
-	
+
 
 	procedure move_circles (
 		circles	: in out pac_route_restrict_circles.list;
@@ -276,7 +276,7 @@ package body et_route_restrict is
 			move_by (circle, offset);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -294,13 +294,13 @@ package body et_route_restrict is
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is begin
 			result.append (to_polygon_outside (element (c), tolerance));
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		return result;
 	end to_polygons_outside;
 
-	
+
 
 	function to_polygons_inside (
 		circles		: in pac_route_restrict_circles.list;
@@ -312,18 +312,18 @@ package body et_route_restrict is
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is begin
 			result.append (to_polygon_inside (element (c), tolerance));
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		return result;
 	end to_polygons_inside;
 
-	
-	
+
+
 -- 	procedure line_route_restrict_properties (
 -- 		face			: in type_face;
 -- 		cursor			: in pac_route_restrict_lines.cursor;
--- 		log_threshold 	: in type_log_level) 
+-- 		log_threshold 	: in type_log_level)
 -- 	is
 -- 		use pac_route_restrict_lines;
 -- 		line : type_route_restrict_line;
@@ -332,9 +332,9 @@ package body et_route_restrict is
 -- 		log (text => "route restrict line face" & to_string (face) & space
 -- 			 & to_string (type_line (line)), level => log_threshold);
 -- 	end line_route_restrict_properties;
--- 
--- 	
--- 	
+--
+--
+--
 -- 	procedure arc_route_restrict_properties (
 -- 		face			: in type_face;
 -- 		cursor			: in pac_route_restrict_arcs.cursor;
@@ -344,19 +344,19 @@ package body et_route_restrict is
 -- 		arc : type_route_restrict_arc;
 -- 	begin
 -- 		arc := element (cursor);
--- 		log (text => "route restrict arc face" & to_string (face) & space 
+-- 		log (text => "route restrict arc face" & to_string (face) & space
 -- 			 & to_string (arc), level => log_threshold);
 -- 	end arc_route_restrict_properties;
 
 
 	-- CS procedure circle_route_restrict_properties
-	
-	
+
+
 end et_route_restrict;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

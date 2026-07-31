@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -108,10 +108,10 @@ package body et_board_ops_devices is
 
 
 
-	
-	
 
-	
+
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -122,10 +122,10 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -142,7 +142,7 @@ package body et_board_ops_devices is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of electrical device "
@@ -151,7 +151,7 @@ package body et_board_ops_devices is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -161,10 +161,10 @@ package body et_board_ops_devices is
 
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure propose_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -174,10 +174,10 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -187,21 +187,21 @@ package body et_board_ops_devices is
 				count := count + 1;
 			end query_device;
 
-			
+
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
-			
+
 		begin
 			while device_cursor /= pac_devices_electrical.no_element loop
 
 				if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
-					
+
 					-- log (text => "probing device " & to_string (key (device_cursor)),
 					-- 	 level => log_threshold + 1);
 					-- log_indentation_up;
-						
+
 					if in_catch_zone (
 						zone	=> catch_zone,
-						point	=> get_place (device_cursor)) 
+						point	=> get_place (device_cursor))
 					then
 						-- log_indentation_up;
 						-- log (text => "in catch zone", level => log_threshold + 1);
@@ -212,19 +212,19 @@ package body et_board_ops_devices is
 
 					-- log_indentation_down;
 				end if;
-				
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " propose electrical devices in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -235,7 +235,7 @@ package body et_board_ops_devices is
 
 
 
-	
+
 
 
 
@@ -248,10 +248,10 @@ package body et_board_ops_devices is
 	is
 		result : type_object_electrical;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
@@ -272,19 +272,19 @@ package body et_board_ops_devices is
 
 					when others => null; -- CS
 				end case;
-						
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up the first device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -295,39 +295,39 @@ package body et_board_ops_devices is
 	end get_first_device;
 
 
-	
-		
 
-	
-	
 
-	
+
+
+
+
+
 	procedure move_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
-	
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure move_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -337,14 +337,14 @@ package body et_board_ops_devices is
 
 					when RELATIVE =>
 						set_place_relative (device, point); -- preserve angle and face
-						
+
 				end case;
 			end;
 
-			
+
 			procedure move_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -354,12 +354,12 @@ package body et_board_ops_devices is
 
 					when RELATIVE =>
 						set_place_relative (device, point); -- preserve angle and face
-						
+
 				end case;
 			end;
 
 
-			
+
 		begin
 			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
@@ -369,7 +369,7 @@ package body et_board_ops_devices is
 
 			device_electrical := get_electrical_device (
 				module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -390,17 +390,17 @@ package body et_board_ops_devices is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor) 
-					 & " move device " & to_string (device_name) 
+				log (text => "module " & to_string (module_cursor)
+					 & " move device " & to_string (device_name)
 					 & " to " & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor) 
-					 & " moving device " & to_string (device_name) 
+				log (text => "module " & to_string (module_cursor)
+					 & " moving device " & to_string (device_name)
 					 & " by " & to_string (point), level => log_threshold);
 		end case;
 
@@ -412,7 +412,7 @@ package body et_board_ops_devices is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -424,7 +424,7 @@ package body et_board_ops_devices is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
@@ -434,36 +434,36 @@ package body et_board_ops_devices is
 
 
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure rotate_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_board_geometry.type_rotation_model := 90.0;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure rotate_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -476,10 +476,10 @@ package body et_board_ops_devices is
 				end case;
 			end;
 
-			
+
 			procedure rotate_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -492,16 +492,16 @@ package body et_board_ops_devices is
 				end case;
 			end;
 
-			
+
 		begin
 			-- Search the device first among the electrical devices.
 			-- The requested device must exist. Otherwise
 			-- an exception will be raised here.
 			-- Most likely it will be among them. If not,
-			-- search in non-electrical devices:			
+			-- search in non-electrical devices:
 			device_electrical := get_electrical_device (
 				module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -523,17 +523,17 @@ package body et_board_ops_devices is
 		end query_module;
 
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor) 
-					 & " rotate device " & to_string (device_name) 
+				log (text => "module " & to_string (module_cursor)
+					 & " rotate device " & to_string (device_name)
 					 & " to " & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor) 
-					 & " rotating device " & to_string (device_name) 
+				log (text => "module " & to_string (module_cursor)
+					 & " rotating device " & to_string (device_name)
 					 & " by " & to_string (rotation), level => log_threshold);
 		end case;
 
@@ -545,7 +545,7 @@ package body et_board_ops_devices is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -557,7 +557,7 @@ package body et_board_ops_devices is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
@@ -568,34 +568,34 @@ package body et_board_ops_devices is
 
 
 
-	
 
-	
+
+
 	procedure flip_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		toggle			: in boolean := false;
 		face			: in type_face := TOP; -- top/bottom
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure flip_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -604,15 +604,15 @@ package body et_board_ops_devices is
 				else
 					set_face (device, face);
 				end if;
-				
+
 				reset_placeholder_positions (device);
 			end flip_electrical;
-			
 
-			
+
+
 			procedure flip_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -621,21 +621,21 @@ package body et_board_ops_devices is
 				else
 					set_face (device, face);
 				end if;
-				
+
 				reset_placeholder_positions (device);
 			end flip_non_electrical;
 
-			
+
 		begin
 			-- Search the device first among the electrical devices.
 			-- The requested device must exist. Otherwise
 			-- an exception will be raised here.
 			-- Most likely it will be among them. If not,
 			-- search in non-electrical devices:
-			
+
 			device_electrical := get_electrical_device (
 				module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -656,24 +656,24 @@ package body et_board_ops_devices is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " flip device " & to_string (device_name),
-			 -- & " to " & to_string (face), 
+			 -- & " to " & to_string (face),
 			 -- CS: toggle, face
 			 level => log_threshold);
 
-		
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -684,16 +684,16 @@ package body et_board_ops_devices is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
-		update_ratsnest (module_cursor, log_threshold + 1);		
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
 	end flip_device;
 
 
 
-	
-	
+
+
 --------------------------------------------------------------------------------------
 
 -- NON-ELECTRICAL DEVICES:
@@ -705,10 +705,10 @@ package body et_board_ops_devices is
 		return boolean
 	is
 		device_found : boolean := false; -- to be returned
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -716,7 +716,7 @@ package body et_board_ops_devices is
 				device_found := true;
 			end if;
 		end query_devices;
-		
+
 	begin
 		pac_generic_modules.query_element (
 			position	=> module,
@@ -726,12 +726,12 @@ package body et_board_ops_devices is
 	end non_electrical_device_exists;
 
 
-	
 
 
 
-	
-	
+
+
+
 
 	function get_non_electrical_device (
 		module	: in pac_generic_modules.cursor;
@@ -739,10 +739,10 @@ package body et_board_ops_devices is
 		return pac_devices_non_electrical.cursor
 	is
 		result : pac_devices_non_electrical.cursor;
-		
+
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -757,12 +757,12 @@ package body et_board_ops_devices is
 		return result;
 	end get_non_electrical_device;
 
-	
-	
-	
 
-	
-	
+
+
+
+
+
 -- SHOW DEVICE:
 
 	procedure show_non_electrical_device (
@@ -775,42 +775,42 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
 				set_selected (device);
 			end query_device;
-			
+
 		begin
 			module.devices_non_electric.update_element (
 				device_cursor, query_device'access);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " show non-electrical device " & to_string (device_name),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
 		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
-		
+
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
-			
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
@@ -821,7 +821,7 @@ package body et_board_ops_devices is
 
 
 
-	
+
 
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -836,36 +836,36 @@ package body et_board_ops_devices is
 		use ada.strings.unbounded;
 		result : unbounded_string := to_unbounded_string ("");
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " get properties of non-electrical device " 
+		log (text => "module " & to_string (module_cursor)
+			 & " get properties of non-electrical device "
 			 & to_string (device_name)
 			 & " linebreaks " & boolean'image (linebreaks)
 			 & " inquiry level " & to_string (level),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
-			
+
 		result := to_unbounded_string (get_properties (
 			device_cursor	=> device_cursor,
-			linebreaks		=> linebreaks,											  
+			linebreaks		=> linebreaks,
 			level			=> level));
 
 		log_indentation_down;
 
 		return to_string (result);
 	end get_device_properties;
-	
-
-
-	
 
 
 
-	
+
+
+
+
+
 	function get_device_name (
 		object	: in type_object_non_electrical)
 		return string
@@ -882,8 +882,8 @@ package body et_board_ops_devices is
 		return key (object.cursor);
 	end;
 
-	
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -894,10 +894,10 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
@@ -912,7 +912,7 @@ package body et_board_ops_devices is
 			module.devices_non_electric.update_element (device.cursor, query_device'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of non-electrical device "
@@ -921,7 +921,7 @@ package body et_board_ops_devices is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -933,9 +933,9 @@ package body et_board_ops_devices is
 
 
 
-	
-	
-	
+
+
+
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -945,10 +945,10 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
@@ -958,20 +958,20 @@ package body et_board_ops_devices is
 				count := count + 1;
 			end query_device;
 
-			
+
 			device_cursor : pac_devices_non_electrical.cursor :=
 				module.devices_non_electric.first;
-			
+
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
 
 				-- log (text => "probing device " & to_string (key (device_cursor)),
 				-- 	 level => log_threshold + 1);
 				-- log_indentation_up;
-					
+
 				if in_catch_zone (
-					zone	=> catch_zone, 
-					point	=> get_place (device_cursor)) 
+					zone	=> catch_zone,
+					point	=> get_place (device_cursor))
 				then
 					-- log_indentation_up;
 					-- log (text => "in catch zone", level => log_threshold + 1);
@@ -979,15 +979,15 @@ package body et_board_ops_devices is
 					module.devices_non_electric.update_element (device_cursor, query_device'access);
 					-- log_indentation_down;
 				end if;
-				
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing non-electrical devices in" 
+			 & " proposing non-electrical devices in"
 			 & to_string (catch_zone),
 			level => log_threshold);
 
@@ -1005,19 +1005,19 @@ package body et_board_ops_devices is
 
 
 
-	
-	
+
+
 	procedure reset_status_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
@@ -1026,32 +1026,32 @@ package body et_board_ops_devices is
 				reset_status (device);
 			end query_device;
 
-			
-			device_cursor : pac_devices_non_electrical.cursor := 
+
+			device_cursor : pac_devices_non_electrical.cursor :=
 				module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
-					
+
 				-- log (text => "probing device " & to_string (key (device_cursor)),
 				-- 	 level => log_threshold + 1);
 				-- log_indentation_up;
-					
+
 				module.devices_non_electric.update_element (device_cursor, query_device'access);
 
 				-- log_indentation_down;
-				
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& "reset status of non-electrical devices", 
+		log (text => "module " & to_string (module_cursor)
+			& "reset status of non-electrical devices",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1063,9 +1063,9 @@ package body et_board_ops_devices is
 
 
 
-	
 
-	
+
+
 	function get_first_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -1074,10 +1074,10 @@ package body et_board_ops_devices is
 	is
 		result : pac_devices_non_electrical.cursor;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
@@ -1089,7 +1089,7 @@ package body et_board_ops_devices is
 							result := device_cursor;
 							exit; -- no further probing required
 						end if;
-						
+
 					when SELECTED =>
 						if is_selected (device_cursor) then
 							result := device_cursor;
@@ -1098,20 +1098,20 @@ package body et_board_ops_devices is
 
 					when others => null; -- CS
 				end case;
-						
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " look up the first non-electrical device /" 
+			 & " look up the first non-electrical device /"
 			 & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1120,13 +1120,13 @@ package body et_board_ops_devices is
 
 		return result;
 	end get_first_non_electrical_device;
-	
 
 
 
-	
 
-	
+
+
+
 
 	function get_first_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1136,13 +1136,13 @@ package body et_board_ops_devices is
 	is
 		result : type_object_non_electrical;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			device_cursor : pac_devices_non_electrical.cursor := 
+			device_cursor : pac_devices_non_electrical.cursor :=
 				module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
@@ -1152,7 +1152,7 @@ package body et_board_ops_devices is
 							result.cursor := device_cursor;
 							exit; -- no further probing required
 						end if;
-						
+
 					when SELECTED =>
 						if is_selected (device_cursor) then
 							result.cursor := device_cursor;
@@ -1161,18 +1161,18 @@ package body et_board_ops_devices is
 
 					when others => null; -- CS
 				end case;
-						
+
 				next (device_cursor);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "look up the first non-electrical device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1183,13 +1183,13 @@ package body et_board_ops_devices is
 	end get_first_non_electrical_device;
 
 
-	
-	
-		
-		
 
 
-	
+
+
+
+
+
 	function get_non_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- FD
@@ -1201,10 +1201,10 @@ package body et_board_ops_devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_device (c : in pac_devices_non_electrical.cursor) is
 				use pac_device_prefix;
 				device	: type_device_non_electrical renames element (c);
@@ -1217,56 +1217,56 @@ package body et_board_ops_devices is
 					result.insert (name, device);
 				end if;
 			end query_device;
-			
+
 		begin
 			-- Iterate the electrical devices:
 			module.devices_non_electric.iterate (query_device'access);
 		end query_module;
 
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " get non-electrical devices with prefix " & to_string (prefix),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_module'access);
 
 		log (text => "device count " & get_count (result), level => log_threshold);
-		
+
 		log_indentation_down;
-		
+
 		return result;
 	end get_non_electrical_devices_by_prefix;
 
 
 
 
-	
-	
 
-	
+
+
+
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		package_cursor_lib : pac_package_models.cursor;
 
-		
-		procedure query_module (						  
+
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor;
@@ -1277,10 +1277,10 @@ package body et_board_ops_devices is
 			-- Build the next available device name:
 			next_name := get_next_available_device_name (
 				module_cursor, prefix, log_threshold + 1);
-						
-			log (text => "add device " & to_string (next_name), 
+
+			log (text => "add device " & to_string (next_name),
 				 level => log_threshold + 1);
-			
+
 			log_indentation_up;
 
 			-- Add the non-electrical device to the module:
@@ -1295,14 +1295,14 @@ package body et_board_ops_devices is
 
 					-- Text placeholders in the board drawing:
 					--
-					-- Initially, the text placeholders are copies of 
+					-- Initially, the text placeholders are copies of
 					-- the placeholders as they are defined in the package model.
 					-- This approach has the following implication:
 					-- If the position of a placeholder in the package model
 					-- is changed AFTER the device has been added to the drawing,
 					-- then it DOES NOT get updated.
 					placeholders	=> get_default_placeholders (package_cursor_lib),
-					
+
 					others			=> <>));
 
 			-- check inserted flag
@@ -1313,15 +1313,15 @@ package body et_board_ops_devices is
 			log_indentation_down;
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " add non-electrical device " & to_string (package_model) 
+		log (text => "module " & to_string (module_cursor)
+			& " add non-electrical device " & to_string (package_model)
 			& " at " & to_string (position),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Read the package model (like ../libraries/fiducials/crosshair.pac)
 		-- and store it in the rig wide package library et_packages.packages.
 		-- If it s already in the library, nothing happens:
@@ -1339,7 +1339,7 @@ package body et_board_ops_devices is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- add the device to the module
 		update_element (
 			container	=> generic_modules,
@@ -1352,17 +1352,17 @@ package body et_board_ops_devices is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		log_indentation_down;
 	end add_non_electrical_device;
 
 
 
-	
 
 
 
-	
+
+
 
 	procedure copy_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1375,18 +1375,18 @@ package body et_board_ops_devices is
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		device_cursor : pac_devices_non_electrical.cursor;
-		
+
 		-- The next available device name:
 		next_name : type_device_name;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			-- Take a copy of the original device:
 			new_device : type_device_non_electrical := element (device_cursor);
@@ -1399,15 +1399,15 @@ package body et_board_ops_devices is
 			module.devices_non_electric.insert (next_name, new_device);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " copy non-electrical device " & to_string (device_name)
 			 & " to destination " & to_string (destination),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception is raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
@@ -1422,15 +1422,15 @@ package body et_board_ops_devices is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end copy_non_electrical_device;
 
@@ -1438,26 +1438,26 @@ package body et_board_ops_devices is
 
 
 
-	
 
 
-	
 
-	
+
+
+
 	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		device_cursor : pac_devices_non_electrical.cursor;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -1467,63 +1467,63 @@ package body et_board_ops_devices is
 			delete (module.devices_non_electric, device_cursor);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " delete non-electrical device " & to_string (device_name),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end delete_non_electrical_device;
 
 
 
 
-	
 
-	
 
-	
-	
+
+
+
+
 	procedure rename_non_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		commit_design		: in type_commit_design := DO_COMMIT;
-		log_threshold		: in type_log_level) 
-	is		
+		log_threshold		: in type_log_level)
+	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		device_cursor : pac_devices_non_electrical.cursor;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			device_after : pac_devices_non_electrical.cursor;
 			inserted : boolean;
@@ -1555,15 +1555,15 @@ package body et_board_ops_devices is
 				if same_prefix (device_name_after, device_name_before) then
 
 					-- A device having the new name must
-					-- not exist yet. So we must probe the 
+					-- not exist yet. So we must probe the
 					-- electrical and non-electrical devices:
 					if not electrical_device_exists (
-						module_cursor, device_name_after) 
-						
+						module_cursor, device_name_after)
+
 					and not non_electrical_device_exists (
-						module_cursor, device_name_after) 
+						module_cursor, device_name_after)
 					then
-						
+
 						update_element (
 							container	=> generic_modules,
 							position	=> module_cursor,
@@ -1579,50 +1579,50 @@ package body et_board_ops_devices is
 				log (SEVERITY_WARNING, "Old and new device name are equal !");
 			end if;
 		end check_names;
-			
-		
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " rename non-electrical device " & to_string (device_name_before) 
+		log (text => "module " & to_string (module_cursor)
+			 & " rename non-electrical device " & to_string (device_name_before)
 			 & " to " &  to_string (device_name_after),
 			level => log_threshold);
-				
+
 		log_indentation_up;
-		
+
 		-- Locate the targeted device in the given module.
-		-- The device must exist. Otherwise an exception 
+		-- The device must exist. Otherwise an exception
 		-- will be raised here:
 		device_cursor := get_non_electrical_device (
 			module_cursor, device_name_before);
 
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		check_names;			
 
-		
+		check_names;
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end rename_non_electrical_device;
-	
 
 
 
-	
 
 
-	
 
-	
+
+
+
+
 -- PLACEHOLDERS:
 
 
@@ -1635,20 +1635,20 @@ package body et_board_ops_devices is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure reset_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -1656,10 +1656,10 @@ package body et_board_ops_devices is
 				reset_placeholder_positions (device);
 			end;
 
-			
+
 			procedure reset_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -1667,17 +1667,17 @@ package body et_board_ops_devices is
 				reset_placeholder_positions (device);
 			end;
 
-			
+
 		begin
 			-- Search the device first among the electrical devices.
 			-- The given device must exist. Otherwise an exception will
 			-- be raised here.
 			-- Most likely it will be among them. If not,
 			-- search in non-electrical devices:
-			
+
 			device_electrical := get_electrical_device (
 				module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -1697,14 +1697,14 @@ package body et_board_ops_devices is
 
 			end if;
 		end query_module;
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " reset " & to_string (device_name) 
+			& " reset " & to_string (device_name)
 			& " placeholder positions",
 			level => log_threshold);
-	
+
 		log_indentation_up;
 
 
@@ -1712,8 +1712,8 @@ package body et_board_ops_devices is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1724,17 +1724,17 @@ package body et_board_ops_devices is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end reset_placeholder_positions;
-	
-	
-
-	
 
 
-	
-	
+
+
+
+
+
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1751,20 +1751,20 @@ package body et_board_ops_devices is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure move_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -1775,10 +1775,10 @@ package body et_board_ops_devices is
 					 -- level => log_threshold + 2);
 			end;
 
-			
+
 			procedure move_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
@@ -1789,17 +1789,17 @@ package body et_board_ops_devices is
 					 -- level => log_threshold + 2);
 			end;
 
-			
+
 		begin
 			-- The given device must exist. Otherwise an exception will
 			-- be raised here.
 			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
 			-- search in non-electrical devices:
-			
+
 			device_electrical := get_electrical_device (
 				module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -1819,14 +1819,14 @@ package body et_board_ops_devices is
 
 			end if;
 		end query_module;
-	
 
-		
+
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move " & to_string (device_name) 
+					& " move " & to_string (device_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " layer " & to_string (layer)
 					& " face " & to_string (face)
@@ -1837,7 +1837,7 @@ package body et_board_ops_devices is
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move " & to_string (device_name) 
+					& " move " & to_string (device_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " layer " & to_string (layer)
 					& " face " & to_string (face)
@@ -1847,28 +1847,28 @@ package body et_board_ops_devices is
 
 		end case;
 
-		
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end move_placeholder;
 
 
@@ -1877,9 +1877,9 @@ package body et_board_ops_devices is
 
 
 
-	
 
-	
+
+
 
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1891,57 +1891,57 @@ package body et_board_ops_devices is
 		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model := 90.0;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_electrical		: pac_devices_electrical.cursor;
-			device_non_electrical	: pac_devices_non_electrical.cursor;			
+			device_non_electrical	: pac_devices_non_electrical.cursor;
 
-			
+
 			procedure rotate_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_electrical) 
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
 				log (text => "rotate_electrical", level => log_threshold + 1);
-				
+
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
 			end;
 
-			
+
 			procedure rotate_non_electrical (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical) 
+				device		: in out type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 			begin
 				log (text => "rotate_non_electrical", level => log_threshold + 1);
-				
+
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
 			end;
 
-			
+
 		begin
 			-- The given device must exist. Otherwise an exception will
 			-- be raised here.
 			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
 			-- search in non-electrical devices:
-			
+
 			device_electrical := get_electrical_device (module_cursor, device_name);
-			
+
 			if has_element (device_electrical) then
 
 				update_element (
@@ -1960,13 +1960,13 @@ package body et_board_ops_devices is
 
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " rotate " & to_string (device_name) 
+					& " rotate " & to_string (device_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " layer " & to_string (layer)
 					& " face " & to_string (face)
@@ -1977,7 +1977,7 @@ package body et_board_ops_devices is
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " rotate " & to_string (device_name) 
+					& " rotate " & to_string (device_name)
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " layer " & to_string (layer)
 					& " face " & to_string (face)
@@ -1987,38 +1987,38 @@ package body et_board_ops_devices is
 
 		end case;
 
-		
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end rotate_placeholder;
 
 
 
-	
 
 
-	
 
-	
+
+
+
 	function get_device_name (
 		placeholder	: in type_object_placeholder)
 		return type_device_name
@@ -2029,8 +2029,8 @@ package body et_board_ops_devices is
 			return get_device_name (placeholder.device_non_electrical);
 		end if;
 	end;
-	
-	
+
+
 
 
 	function get_device_name (
@@ -2039,22 +2039,22 @@ package body et_board_ops_devices is
 	is begin
 		return to_string (get_device_name (placeholder));
 	end;
-	
-	
 
-	
+
+
+
 	function get_place (
 		placeholder	: in type_object_placeholder)
 		return type_vector_model
-	is 
+	is
 		use pac_text_placeholders;
 	begin
 		return get_place (element (placeholder.placeholder));
 	end;
 
-	
-	
-	
+
+
+
 	function get_layer (
 		placeholder	: in type_object_placeholder)
 		return string
@@ -2062,9 +2062,9 @@ package body et_board_ops_devices is
 		return to_string (placeholder.layer);
 	end;
 
-	
-	
-	
+
+
+
 	function get_meaning (
 		placeholder	: in type_object_placeholder)
 		return type_placeholder_meaning
@@ -2072,15 +2072,15 @@ package body et_board_ops_devices is
 		return get_meaning (placeholder.placeholder);
 	end;
 
-	
-	
-	
+
+
+
 
 
 	function to_string (
 		placeholder	: in type_object_placeholder)
 		return string
-	is 
+	is
 		use pac_text_placeholders;
 	begin
 		return "device " & get_device_name (placeholder)
@@ -2090,108 +2090,108 @@ package body et_board_ops_devices is
 			& " index " & to_string (placeholder.index);
 	end to_string;
 
-	
-	
 
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
-			
+
+
 			-- This procedure queries the placeholders of
 			-- all electrical devices:
 			procedure query_electrical_devices is
 				device_cursor : pac_devices_electrical.cursor := module.devices.first;
-			
-			
+
+
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in out type_device_electrical)
 				is begin
 					log (text => to_string (device_name), level => log_threshold + 2);
-					
-					propose_placeholders (device.placeholders, 
+
+					propose_placeholders (device.placeholders,
 						et_devices_electrical.get_position (device), catch_zone, count, log_threshold + 3);
 				end query_device;
 
-				
+
 			begin
 				log (text => "query_electrical_devices", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				while has_element (device_cursor) loop
 
 					if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
 						module.devices.update_element (device_cursor, query_device'access);
 					end if;
-					
+
 					next (device_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_electrical_devices;
-			
 
-			
-			
+
+
+
 			-- This procedure queries the placeholders of
-			-- all non-electrical devices:			
+			-- all non-electrical devices:
 			procedure query_non_electrical_devices is
 				device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
-					
-					
+
+
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in out type_device_non_electrical)
 				is begin
-					log (text => to_string (device_name), level => log_threshold + 2);	
-					
+					log (text => to_string (device_name), level => log_threshold + 2);
+
 					propose_placeholders (device.placeholders,
-						get_position (device), catch_zone, count, log_threshold + 3);					
+						get_position (device), catch_zone, count, log_threshold + 3);
 				end query_device;
 
-				
+
 			begin
 				log (text => "query_non_electrical_devices", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				while has_element (device_cursor) loop
-					module.devices_non_electric.update_element (device_cursor, query_device'access);					
+					module.devices_non_electric.update_element (device_cursor, query_device'access);
 					next (device_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_non_electrical_devices;
 
-			
-			
+
+
 		begin
 			query_electrical_devices;
 			query_non_electrical_devices;
 		end query_module;
 
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " propose placeholders in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2199,28 +2199,28 @@ package body et_board_ops_devices is
 		log_indentation_down;
 	end propose_placeholders;
 
-	
-	
-	
-	
-	
 
-	
-	
-	
+
+
+
+
+
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
-	
+	is
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -2228,10 +2228,10 @@ package body et_board_ops_devices is
 				pragma unreferenced (device_name);
 			begin
 				modify_status (
-					placeholders		=> device.placeholders, 
-					layer				=> placeholder.layer, 
+					placeholders		=> device.placeholders,
+					layer				=> placeholder.layer,
 					face				=> placeholder.face,
-					placeholder_cursor	=> placeholder.placeholder, 
+					placeholder_cursor	=> placeholder.placeholder,
 					operation			=> operation);
 			end query_electrical_device;
 
@@ -2243,29 +2243,29 @@ package body et_board_ops_devices is
 				pragma unreferenced (device_name);
 			begin
 				modify_status (
-					placeholders		=> device.placeholders, 
-					layer				=> placeholder.layer, 
+					placeholders		=> device.placeholders,
+					layer				=> placeholder.layer,
 					face				=> placeholder.face,
-					placeholder_cursor	=> placeholder.placeholder, 
+					placeholder_cursor	=> placeholder.placeholder,
 					operation			=> operation);
 			end query_non_electrical_device;
 
-			
-			
+
+
 		begin
 			if has_element (placeholder.device_electrical) then
 				module.devices.update_element (
 					placeholder.device_electrical, query_electrical_device'access);
-					
+
 			else
 				module.devices_non_electric.update_element (
 					placeholder.device_non_electrical, query_non_electrical_device'access);
-			
+
 			end if;
 		end query_module;
-	
-	
-	
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of placeholder "
@@ -2274,7 +2274,7 @@ package body et_board_ops_devices is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2282,15 +2282,15 @@ package body et_board_ops_devices is
 		log_indentation_down;
 	end modify_status;
 
-	
-	
-	
-	
-	
 
 
-	
-	
+
+
+
+
+
+
+
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -2298,27 +2298,27 @@ package body et_board_ops_devices is
 		return type_object_placeholder
 	is
 		result : type_object_placeholder;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 		pragma unreferenced (module_name);
-		
+
 			-- This procedure searches among the electrical devices
 			-- for the one that has the first placeholder set as
 			-- given by "flag". On the first match, the search is stopped
 			-- and the result set accordingly:
 			procedure query_electrical_devices is
-				device_cursor : pac_devices_electrical.cursor := 
+				device_cursor : pac_devices_electrical.cursor :=
 					module.devices.first;
-					
-					
+
+
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in type_device_electrical)
-				is 
+				is
 					use pac_text_placeholders;
 				begin
 					if is_real (device) then
@@ -2339,50 +2339,50 @@ package body et_board_ops_devices is
 						if has_element (result.placeholder) then
 							result.device_electrical := device_cursor;
 						end if;
-						
+
 						log_indentation_down;
 					end if;
 				end;
-				 
+
 			begin
 				log (text => "query_electrical_devices", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
-					
+
 					-- A device has been found -> abort the search:
 					if has_element (result.device_electrical) then
 						exit;
 					end if;
-					
+
 					next (device_cursor);
-				end loop;			
-				
+				end loop;
+
 				log_indentation_down;
 			end query_electrical_devices;
-			
-			
+
+
 
 
 			-- This procedure searches among the non-electrical devices
 			-- for the one that has the first placeholder set as
 			-- given by "flag". On the first match, the search is stopped
-			-- and the result set accordingly:			
+			-- and the result set accordingly:
 			procedure query_non_electrical_devices is
-				device_cursor : pac_devices_non_electrical.cursor := 
+				device_cursor : pac_devices_non_electrical.cursor :=
 					module.devices_non_electric.first;
 
-					
+
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in type_device_non_electrical)
-				is 
+				is
 					use pac_text_placeholders;
 				begin
 					log (text => to_string (device_name), level => log_threshold + 2);
 					log_indentation_up;
-					
+
 					get_first_placeholder (
 						placeholders		=> device.placeholders,
 						flag				=> flag,
@@ -2397,49 +2397,49 @@ package body et_board_ops_devices is
 					if has_element (result.placeholder) then
 						result.device_non_electrical := device_cursor;
 					end if;
-					
+
 					log_indentation_down;
 				end;
-		
-					
+
+
 			begin
 				log (text => "query_non_electrical_devices", level => log_threshold + 1);
 				log_indentation_up;
-			
+
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
-					
+
 					-- A device has been found -> abort the search:
 					if has_element (result.device_non_electrical) then
 						exit;
 					end if;
-					
+
 					next (device_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_non_electrical_devices;
 
-			
-			
+
+
 		begin
 			-- First search among the electrical devices.
 			-- If nothing found, search in non-electrical devices:
 			query_electrical_devices;
-			
+
 			if not has_element (result.device_electrical) then
 				query_non_electrical_devices;
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up the first placeholder /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2448,26 +2448,26 @@ package body et_board_ops_devices is
 
 		return result;
 	end get_first_placeholder;
-	
-	
-	
-	
-	
 
-	
-	
+
+
+
+
+
+
+
 
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -2489,42 +2489,42 @@ package body et_board_ops_devices is
 				reset_status (device.placeholders);
 			end query_non_electrical_device;
 
-			
-			device_electrical : pac_devices_electrical.cursor := 
+
+			device_electrical : pac_devices_electrical.cursor :=
 				module.devices.first;
-				
-			device_non_electrical : pac_devices_non_electrical.cursor := 
+
+			device_non_electrical : pac_devices_non_electrical.cursor :=
 				module.devices_non_electric.first;
-				
+
 		begin
 			-- Iterate though all electrical devices:
 			while has_element (device_electrical) loop
 				module.devices.update_element (
 					device_electrical, query_electrical_device'access);
-					
+
 				next (device_electrical);
 			end loop;
 
-			
+
 			-- Iterate though all non-electrical devices:
 			while has_element (device_non_electrical) loop
 				module.devices_non_electric.update_element (
 					device_non_electrical, query_non_electrical_device'access);
-					
+
 				next (device_non_electrical);
 			end loop;
 		end query_module;
 
-	
-	
+
+
 	begin
 		null;
-		log (text => "module " & to_string (module_cursor) 
-			& "reset placeholders of devices", 
+		log (text => "module " & to_string (module_cursor)
+			& "reset placeholders of devices",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2532,9 +2532,9 @@ package body et_board_ops_devices is
 		log_indentation_down;
 	end reset_status_placeholders;
 
-	
-	
-	
+
+
+
 ------------------------------------------------------------------------------------------
 
 
@@ -2544,14 +2544,14 @@ package body et_board_ops_devices is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
-	
 
-	
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -2571,7 +2571,7 @@ package body et_board_ops_devices is
 
 
 		-- SEARCH FOR A PLACEHOLDER:
-		
+
 		-- If a placeholder has been found, then go to the end of this procedure:
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
 
@@ -2580,7 +2580,7 @@ package body et_board_ops_devices is
 			-- A placeholder has been found.
 			log (text => to_string (result_placeholder),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_PLACEHOLDER;
 		end if;
 
@@ -2588,12 +2588,12 @@ package body et_board_ops_devices is
 			goto end_of_search;
 		end if;
 
-		
-		
 
-		
+
+
+
 		-- SEARCH FOR AN ELECTRICAL DEVICE:
-		
+
 		-- If a device has been found, then go to the end of this procedure:
 		result_electrical := get_first_device (module_cursor, flag, log_threshold + 1);
 
@@ -2601,7 +2601,7 @@ package body et_board_ops_devices is
 			-- A device has been found.
 			log (text => get_device_name (result_electrical.cursor),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_ELECTRICAL_DEVICE;
 		end if;
 
@@ -2611,27 +2611,27 @@ package body et_board_ops_devices is
 
 
 
-		
+
 		-- SEARCH FOR A NON-ELECTRICAL DEVICE:
-		
+
 		-- If a device has been found, then go to the end of this procedure:
-		result_non_electrical := 
+		result_non_electrical :=
 			get_first_non_electrical_device (module_cursor, flag, log_threshold + 1);
 
 		if result_non_electrical.cursor /= pac_devices_non_electrical.no_element then
 			-- A device has been found.
 			log (text => get_device_name (result_non_electrical.cursor),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_NON_ELECTRICAL_DEVICE;
 		end if;
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -2643,18 +2643,18 @@ package body et_board_ops_devices is
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
 				return (CAT_NON_ELECTRICAL_DEVICE, result_non_electrical);
-				
+
 			when CAT_PLACEHOLDER =>
 				return (CAT_PLACEHOLDER, result_placeholder);
-				
+
 		end case;
 	end get_first_object;
 
 
-	
-	
 
-	
+
+
+
 
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2667,14 +2667,14 @@ package body et_board_ops_devices is
 		-- Here the objects are collected:
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 		pragma unreferenced (module_name);
 		-- DEVICES ---------------------------------------------
-	
+
 			-- This procedure collects electrical devices
 			-- according to the given flag:
 			procedure query_electrical_devices is
@@ -2682,11 +2682,11 @@ package body et_board_ops_devices is
 				use pac_devices_electrical;
 				cursor : pac_devices_electrical.cursor;
 
-			
+
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_electrical) 
-				is 
+					device	: in type_device_electrical)
+				is
 					pragma unreferenced (name);
 
 					procedure collect is begin
@@ -2696,7 +2696,7 @@ package body et_board_ops_devices is
 
 						log (text => get_device_name (cursor), level => log_threshold + 2);
 					end collect;
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -2713,7 +2713,7 @@ package body et_board_ops_devices is
 					end case;
 				end query_device;
 
-			
+
 			begin
 				log (text => "electrical devices", level => log_threshold + 1);
 				log_indentation_up;
@@ -2727,10 +2727,10 @@ package body et_board_ops_devices is
 
 				log_indentation_down;
 			end query_electrical_devices;
-			
 
-			
-			
+
+
+
 			-- This procedure collects non-electrical devices
 			-- according to the given flag:
 			procedure query_non_electrical_devices is
@@ -2738,11 +2738,11 @@ package body et_board_ops_devices is
 				use pac_devices_non_electrical;
 				cursor : pac_devices_non_electrical.cursor;
 
-						
+
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_non_electrical) 
-				is 
+					device	: in type_device_non_electrical)
+				is
 					pragma unreferenced (name);
 
 					procedure collect is begin
@@ -2753,7 +2753,7 @@ package body et_board_ops_devices is
 						log (text => get_device_name (cursor), level => log_threshold + 2);
 					end collect;
 
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -2770,7 +2770,7 @@ package body et_board_ops_devices is
 					end case;
 				end query_device;
 
-				
+
 			begin
 				log (text => "non-electrical devices", level => log_threshold + 1);
 				log_indentation_up;
@@ -2782,36 +2782,36 @@ package body et_board_ops_devices is
 					next (cursor);
 				end loop;
 
-				log_indentation_down;			
+				log_indentation_down;
 			end query_non_electrical_devices;
-			
-			
-			
+
+
+
 		-- PLACEHOLDERS ----------------------------------------
-		
+
 			-- This procedure collects placeholders of devices
 			-- according to the given flag:
 			procedure query_placeholders is
-			
+
 				procedure query_electrical_devices is
 
 					use pac_devices_electrical;
 					device_cursor : pac_devices_electrical.cursor;
 
-				
+
 					procedure query_device (
 						name	: in type_device_name;
-						device	: in type_device_electrical) 
-					is 
+						device	: in type_device_electrical)
+					is
 						placeholders : type_placeholder_cursors;
-						
+
 						use pac_placeholder_cursors;
 
 						layer : type_placeholder_layer;
 						face : type_face;
 
-					
-						procedure query_placeholder (c : in pac_placeholder_cursors.cursor) is 
+
+						procedure query_placeholder (c : in pac_placeholder_cursors.cursor) is
 							pc : type_placeholder_cursor renames element (c);
 							p : type_object_placeholder;
 						begin
@@ -2821,11 +2821,11 @@ package body et_board_ops_devices is
 							p.layer := layer;
 							p.face := face;
 							p.index := pc.index;
-										
+
 							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
 						end;
-						
+
 					begin
 						-- Get the placeholders of the candidate device according
 						-- to the given flag. Then iterate through them and append
@@ -2833,32 +2833,32 @@ package body et_board_ops_devices is
 						if is_real (device) then
 							log (text => to_string (name), level => log_threshold + 2);
 							log_indentation_up;
-							
+
 							placeholders := get_placeholder_cursors (
 								device.placeholders, flag, log_threshold + 3);
-						
+
 							log_indentation_up;
-							
+
 							layer := SILKSCREEN;
 							face := TOP;
 							placeholders.silkscreen.top.iterate (query_placeholder'access);
-							
+
 							face := BOTTOM;
 							placeholders.silkscreen.bottom.iterate (query_placeholder'access);
-							
-							layer := ASSY_DOC;							
+
+							layer := ASSY_DOC;
 							face := TOP;
 							placeholders.assy_doc.top.iterate (query_placeholder'access);
-							
+
 							face := BOTTOM;
 							placeholders.assy_doc.bottom.iterate (query_placeholder'access);
-							
+
 							log_indentation_down;
 							log_indentation_down;
 						end if;
 					end query_device;
 
-				
+
 				begin
 					log (text => "electrical devices", level => log_threshold + 1);
 					log_indentation_up;
@@ -2873,29 +2873,29 @@ package body et_board_ops_devices is
 					log_indentation_down;
 				end query_electrical_devices;
 
-				
 
-				
-				
+
+
+
 				procedure query_non_electrical_devices is
 
 					use pac_devices_non_electrical;
 					device_cursor : pac_devices_non_electrical.cursor;
 
-				
+
 					procedure query_device (
 						name	: in type_device_name;
-						device	: in type_device_non_electrical) 
-					is 
+						device	: in type_device_non_electrical)
+					is
 						placeholders : type_placeholder_cursors;
-						
+
 						use pac_placeholder_cursors;
 
 						layer : type_placeholder_layer;
 						face : type_face;
 
-					
-						procedure query_placeholder (c : in pac_placeholder_cursors.cursor) is 
+
+						procedure query_placeholder (c : in pac_placeholder_cursors.cursor) is
 							pc : type_placeholder_cursor renames element (c);
 							p : type_object_placeholder;
 						begin
@@ -2905,42 +2905,42 @@ package body et_board_ops_devices is
 							p.layer := layer;
 							p.face := face;
 							p.index := pc.index;
-									
+
 							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
 						end;
-						
+
 					begin
 						log (text => to_string (name), level => log_threshold + 2);
 						log_indentation_up;
-						
+
 						-- Get the placeholders of the candidate device according
 						-- to the given flag. Then iterate through them and append
 						-- them to the result:
 						placeholders := get_placeholder_cursors (
 							device.placeholders, flag, log_threshold + 3);
-					
+
 						log_indentation_up;
-						
+
 						layer := SILKSCREEN;
 						face := TOP;
 						placeholders.silkscreen.top.iterate (query_placeholder'access);
-						
+
 						face := BOTTOM;
 						placeholders.silkscreen.bottom.iterate (query_placeholder'access);
-						
-						layer := ASSY_DOC;							
+
+						layer := ASSY_DOC;
 						face := TOP;
 						placeholders.assy_doc.top.iterate (query_placeholder'access);
-						
+
 						face := BOTTOM;
 						placeholders.assy_doc.bottom.iterate (query_placeholder'access);
-						
+
 						log_indentation_down;
 						log_indentation_down;
 					end query_device;
 
-				
+
 				begin
 					log (text => "non-electrical devices", level => log_threshold + 1);
 					log_indentation_up;
@@ -2955,8 +2955,8 @@ package body et_board_ops_devices is
 					log_indentation_down;
 				end query_non_electrical_devices;
 
-				
-				
+
+
 			begin
 				log (text => "placeholders", level => log_threshold + 1);
 				log_indentation_up;
@@ -2966,39 +2966,39 @@ package body et_board_ops_devices is
 
 				log_indentation_down;
 			end query_placeholders;
-			
-			
+
+
 		begin
-			query_electrical_devices;			
+			query_electrical_devices;
 			query_non_electrical_devices;
-			query_placeholders;			
+			query_placeholders;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " look up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
-		-- log (text => "total " & natural'image (get_count (result)), 
+		-- log (text => "total " & natural'image (get_count (result)),
 		--	level => log_threshold);
-		
+
 		return result;
 	end get_objects;
 
 
-	
-	
 
-	
+
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3013,7 +3013,7 @@ package body et_board_ops_devices is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_ELECTRICAL_DEVICE =>
 				modify_status (module_cursor, object.electrical_device, operation, log_threshold + 1);
@@ -3023,7 +3023,7 @@ package body et_board_ops_devices is
 
 			when CAT_PLACEHOLDER =>
 				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -3042,7 +3042,7 @@ package body et_board_ops_devices is
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -3050,7 +3050,7 @@ package body et_board_ops_devices is
 		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
 
-	
+
 
 
 
@@ -3058,7 +3058,7 @@ package body et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " reset objects",
 			level => log_threshold);
 
@@ -3075,14 +3075,14 @@ package body et_board_ops_devices is
 		-- Reset placeholders:
 		reset_status_placeholders (
 			module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end reset_status_objects;
 
 
 
 
-	
+
 
 
 	procedure copy_object (
@@ -3092,7 +3092,7 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " copy object " 
+			& " copy object "
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -3103,7 +3103,7 @@ package body et_board_ops_devices is
 			when CAT_ELECTRICAL_DEVICE =>
 				null;
 
-				
+
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
 				copy_non_electrical_device (
@@ -3112,22 +3112,22 @@ package body et_board_ops_devices is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_PLACEHOLDER => null;
-			
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end copy_object;
-	
 
 
 
-	
-	
-	
+
+
+
+
 
 
 	procedure move_object (
@@ -3137,7 +3137,7 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move object " 
+			& " move object "
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -3154,7 +3154,7 @@ package body et_board_ops_devices is
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
 				move_device (
@@ -3164,7 +3164,7 @@ package body et_board_ops_devices is
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
 
-					
+
 			when CAT_PLACEHOLDER =>
 
 				move_placeholder (
@@ -3178,17 +3178,17 @@ package body et_board_ops_devices is
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
-	
 
 
-	
+
+
 
 
 	procedure rotate_object (
@@ -3212,7 +3212,7 @@ package body et_board_ops_devices is
 					coordinates		=> relative,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
 				rotate_device (
@@ -3221,7 +3221,7 @@ package body et_board_ops_devices is
 					coordinates		=> relative,
 					log_threshold	=> log_threshold + 1);
 
-					
+
 			when CAT_PLACEHOLDER =>
 
 				rotate_placeholder (
@@ -3234,19 +3234,19 @@ package body et_board_ops_devices is
 					coordinates		=> relative,
 					rotation		=> 90.0,
 					log_threshold	=> log_threshold + 1);
-					
-				
+
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end rotate_object;
-	
 
 
 
-	
+
+
 
 
 
@@ -3265,25 +3265,25 @@ package body et_board_ops_devices is
 		case object.cat is
 			when CAT_ELECTRICAL_DEVICE =>
 				null; -- CS
-				
+
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
 				delete_non_electrical_device (
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.non_electrical_device),
 					log_threshold	=> log_threshold + 1);
-				
-				
+
+
 			when CAT_PLACEHOLDER => null; -- CS
-			
-				
+
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
+
 
 
 
@@ -3310,7 +3310,7 @@ package body et_board_ops_devices is
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
 				flip_device (
@@ -3319,20 +3319,20 @@ package body et_board_ops_devices is
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_PLACEHOLDER => null;
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end flip_object;
 
-	
 
 
-	
+
+
 
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3350,33 +3350,33 @@ package body et_board_ops_devices is
 
 		case object.cat is
 			when CAT_NON_ELECTRICAL_DEVICE =>
-				
+
 				rename_non_electrical_device (
 					module_cursor		=> module_cursor,
 					device_name_before	=> get_device_name (object.non_electrical_device),
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
-				
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end rename_object;
 
 
-	
 
 
-	
 
-	
+
+
+
 
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		error : boolean := false;
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -3406,24 +3406,24 @@ package body et_board_ops_devices is
 					device_name		=> get_device_name (object.non_electrical_device.cursor),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_PLACEHOLDER =>
 				null; -- CS clear content ? or do nothing ?
 
-								
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end show_object;
 
-	
 
 
-	
 
-	
+
+
+
 	-- Returns the position (x/y/rotation) of a submodule instance.
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
@@ -3432,15 +3432,15 @@ package body et_board_ops_devices is
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string) -- OSC1
-		return type_position 
-	is		
+		return type_position
+	is
 		position : type_position := origin_zero_rotation; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
@@ -3449,7 +3449,7 @@ package body et_board_ops_devices is
 			submod_cursor := find (module.submods, instance);
 			position := element (submod_cursor).position_in_board;
 		end;
-		
+
 	begin -- get_position
 		-- locate the given module
 		module_cursor := locate_module (module_name);
@@ -3462,7 +3462,7 @@ package body et_board_ops_devices is
 	end get_position;
 	pragma unreferenced (get_position);
 
-	
+
 	--function get_terminal_position (
 		--module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
@@ -3483,16 +3483,16 @@ package body et_board_ops_devices is
 		--use pac_terminals;
 		---- This cursor points to the terminal in the package model:
 		--terminal_cursor : pac_terminals.cursor;
-		
+
 		--terminal_technology : type_assembly_technology;
-		
+
 	--begin
 		---- Get the package model of the given device:
 		--model := get_package_model (device_cursor);
 
 		---- Get the position of the package as it is in the layout:
 		--package_position := pac_devices_electrical.element (device_cursor).position;
-		
+
 		---- Set the cursor to package model:
 		--package_model_cursor := get_package_model (model);
 
@@ -3508,17 +3508,17 @@ package body et_board_ops_devices is
 		---- Get x/y of the terminal as given by the package model.
 		---- This position is relative to the origin of the package model:
 		--terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
-		
+
 		---- Get the rotation of the terminal (about its center) as given by the package model:
 		--terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
 
 		---- Add to the terminal rotation the rotation of the package:
 		--terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));
 
-		
+
 		---- In the board: If the package has been flipped (to any side) by the operator
 		---- then the terminal must be flipped also.
-		---- If the package has not been flipped, then we assume the face of the terminal 
+		---- If the package has not been flipped, then we assume the face of the terminal
 		---- is the same as the face of the package.
 		--if element (device_cursor).flipped = YES then
 
@@ -3530,19 +3530,19 @@ package body et_board_ops_devices is
 						--terminal_position_face := TOP;
 					--end if;
 
-				--when THT => 
+				--when THT =>
 					---- If package flipped, then the face of the THT
 					---- terminal is bottom. If package not flipped, then default TOP applies:
 					--terminal_position_face := BOTTOM;
 			--end case;
 
-			
+
 			---- mirror terminal position alog Y axis (swap right x with left x)
 			--mirror (terminal_position, Y);
 
 			---- Rotate the terminal position (x/y) by the rotation of the package:
 			--rotate_by (terminal_position, - terminal_rotation);
-			
+
 		--else -- not flipped
 			--terminal_position_face := get_face (package_position);
 
@@ -3557,14 +3557,14 @@ package body et_board_ops_devices is
 		--return (
 			--technology	=> terminal_technology,
 			--place		=> terminal_position,
-			--rotation	=> terminal_rotation,	   
+			--rotation	=> terminal_rotation,
 			--face		=> terminal_position_face);
-		
+
 	--end get_terminal_position;
 
 
 
-	
+
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_nets.pac_nets.cursor;
@@ -3587,10 +3587,10 @@ package body et_board_ops_devices is
 
 		port_properties : type_port_properties_access;
 
-		
+
 		procedure query_device (d : in pac_device_ports.cursor) is
 			port : type_device_port renames element (d);
-			
+
 			-- CS use rename
 			device_cursor : pac_devices_electrical.cursor;
 			terminal_position : type_vector;
@@ -3601,7 +3601,7 @@ package body et_board_ops_devices is
 			-- Only real devices have terminals. Virtual devices are ignored here:
 			if is_real (device_cursor) then
 				log (text => to_string (port), level => log_threshold + 2);
-				
+
 				port_properties := get_port_properties (
 					module_cursor	=> module_cursor,
 					device_name		=> element (d).device_name,
@@ -3614,13 +3614,13 @@ package body et_board_ops_devices is
 				-- technology of the candidate terminal must match the given technology:
 				if observe_techno then
 					terminal_cursor := get_terminal (device_cursor, element (d).unit_name, element (d).port_name);
-					
+
 					if get_technology (terminal_cursor) = technology then
 
 						-- Get for the candidate port the position of the associated terminal:
-						terminal_position := 
+						terminal_position :=
 							get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
-						
+
 						-- Add the terminal position to the result:
 						append (result, terminal_position);
 					end if;
@@ -3628,39 +3628,39 @@ package body et_board_ops_devices is
 				else
 					-- Get for the candidate port the position of the associated terminal
 					-- regardless of the technology:
-					terminal_position := 
+					terminal_position :=
 						get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
-					
+
 					-- Add the terminal position to the result:
 					append (result, terminal_position);
 				end if;
 			end if;
 		end query_device;
 
-		
+
 		use pac_net_submodule_ports;
 		procedure query_submodule (s : in pac_net_submodule_ports.cursor) is
 		begin
 			-- CS
-			
+
 			-- element (s).module_name
 			-- element (s).port_name  -> position in brd
 			null;
 		end query_submodule;
 
-		
+
 		use pac_netchanger_ports;
 		procedure query_netchanger (n : in pac_netchanger_ports.cursor) is
 		begin
 			null;
 
 			-- CS
-			
+
 			-- element (n).index
 			-- element (n).port  -> position in brd
 		end query_netchanger;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get terminal positions",
@@ -3675,39 +3675,39 @@ package body et_board_ops_devices is
 				variant	=> et_assembly_variants.pac_assembly_variants.no_element);
 
 
-		
+
 		log (text => "devices " & natural'image (get_port_count_devices (ports)),
 			 level => log_threshold + 1);
 		log_indentation_up;
 		iterate (ports.devices, query_device'access);
 		log_indentation_down;
-		
-		
+
+
 		log (text => "submodules " & natural'image (get_port_count_submodules (ports)),
 			 level => log_threshold + 1);
-		log_indentation_up;		
+		log_indentation_up;
 		iterate (ports.submodules, query_submodule'access);
 		log_indentation_down;
 
-		
+
 		log (text => "netchangers " & natural'image (get_port_count_netchangers (ports)),
 			 level => log_threshold + 1);
 		log_indentation_up;
 		iterate (ports.netchangers, query_netchanger'access);
 		log_indentation_down;
-		
+
 
 		log_indentation_down;
-		
+
 		return result;
 
 		-- exception
 		-- 	when event: others =>
 		-- 		log (text => ada.exceptions.exception_information (event), console => true);
 				--log (text => ada.exceptions.exception_information (event));
-		
+
 	end get_terminal_positions;
-	
+
 
 
 
@@ -3717,19 +3717,19 @@ package body et_board_ops_devices is
 
 
 	procedure terminal_not_found (
-		terminal_name : in pac_terminal_name.bounded_string) 
-	is 
+		terminal_name : in pac_terminal_name.bounded_string)
+	is
 	begin
-		log (SEVERITY_ERROR, "terminal " 
-			 & enclose_in_quotes (to_string (terminal_name)) 
+		log (SEVERITY_ERROR, "terminal "
+			 & enclose_in_quotes (to_string (terminal_name))
 			 & " not found !");
-		
+
 		raise constraint_error;
 	end terminal_not_found;
 
 
 
-	
+
 
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3752,16 +3752,16 @@ package body et_board_ops_devices is
 		use pac_terminals;
 		-- This cursor points to the terminal in the package model:
 		terminal_cursor : pac_terminals.cursor;
-		
+
 		terminal_technology : type_assembly_technology;
-		
+
 	begin
 		-- Get the package model of the given device:
 		model := get_package_model_name (device_cursor);
 
 		-- Get the position of the package as it is in the layout:
 		package_position := pac_devices_electrical.element (device_cursor).position;
-		
+
 		-- Set the cursor to package model:
 		package_model_cursor := get_package_model (model);
 
@@ -3777,14 +3777,14 @@ package body et_board_ops_devices is
 		-- Get x/y of the terminal as given by the package model.
 		-- This position is relative to the origin of the package model:
 		terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
-		
+
 		-- Get the rotation of the terminal (about its center) as given by the package model:
 		terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
 
 		-- Add to the terminal rotation the rotation of the package:
 		terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));
 
-		
+
 		-- In the board: If the package has been flipped by the operator
 		-- then the terminal must be flipped also. In case of a THT terminal,
 		-- flipping the terminal has no effect, since for THT there is no "face"-property:
@@ -3799,29 +3799,29 @@ package body et_board_ops_devices is
 							terminal_position_face := TOP;
 						end if;
 
-					when THT => 
+					when THT =>
 						terminal_position_face := BOTTOM;
 				end case;
 
-				
+
 				-- mirror terminal position alog Y axis (swap right x with left x)
 				mirror (terminal_position, MIRROR_ALONG_Y_AXIS);
 
 				-- Rotate the terminal position (x/y) by the rotation of the package:
 				rotate_by (terminal_position, - terminal_rotation);
 
-				
+
 			when TOP =>
 
 				case terminal_technology is
 					when SMT =>
 						terminal_position_face := element (terminal_cursor).face;
 
-					when THT => 
+					when THT =>
 						terminal_position_face := TOP;
 				end case;
 
-				
+
 				-- Rotate the terminal position (x/y) by the rotation of the package:
 				rotate_by (terminal_position, terminal_rotation);
 		end case;
@@ -3833,17 +3833,17 @@ package body et_board_ops_devices is
 		return (
 			technology	=> terminal_technology,
 			place		=> terminal_position,
-			rotation	=> terminal_rotation,	   
+			rotation	=> terminal_rotation,
 			face		=> terminal_position_face);
-		
+
 	end get_terminal_position;
 
 
-	
 
 
 
-	
+
+
 
 
 
@@ -3858,13 +3858,13 @@ package body et_board_ops_devices is
 		-- To be returned:
 		all_terminals : pac_terminals.map;
 
-		-- Here we will store the terminals of the given 
+		-- Here we will store the terminals of the given
 		-- device which are connected with nets:
 		connected_terminals : pac_terminal_names.list;
 
-		
 
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -3882,36 +3882,36 @@ package body et_board_ops_devices is
 
 				use pac_device_ports;
 
-				
+
 				procedure query_device_port (c : in pac_device_ports.cursor) is
 					port : type_device_port renames element (c);
 					-- Now port contains the device name, unit name and port name.
-					
+
 					-- Get the cursor to the device in the schematic:
-					device_cursor_candidate : constant pac_devices_electrical.cursor := 
+					device_cursor_candidate : constant pac_devices_electrical.cursor :=
 						get_electrical_device (module_cursor, port.device_name);
 
-						
+
 					procedure query_terminal is
 						-- Get the cursor to the physical terminal (in the package model)
 						-- that is linked with the port:
-						terminal_cursor : constant pac_terminals.cursor := 
+						terminal_cursor : constant pac_terminals.cursor :=
 							get_terminal (device_cursor_candidate, port.unit_name, port.port_name);
 
 						-- Get the terminal name (like 3 or H5):
-						terminal_name : constant pac_terminal_name.bounded_string := 
+						terminal_name : constant pac_terminal_name.bounded_string :=
 							key (terminal_cursor);
 					begin
 						-- Store the terminal name in list connected_terminals:
 						connected_terminals.append (terminal_name);
 					end query_terminal;
-					
-					
+
+
 				begin
 					if is_real (device_cursor_candidate) then
 						log (text => "device " & get_device_name (device_cursor_candidate),
 							level => log_threshold + 3);
-							
+
 						if key (device_cursor_candidate) = key (get_unconnected_terminals.device_cursor) then
 						-- CS compare cursors directly ?
 							log_indentation_up;
@@ -3921,31 +3921,31 @@ package body et_board_ops_devices is
 					end if;
 				end query_device_port;
 
-				
+
 			begin
 				log (text => "net " & get_net_name (net_cursor),
 					level => log_threshold + 2);
-					
+
 				log_indentation_up;
-				
-				-- In variable "ports" we are interested in 
+
+				-- In variable "ports" we are interested in
 				-- selector "devices" exclusively.
 				-- Submodule ports and netchangers are just virtual devices
 				-- that connect two conductor tracks. They can therefore be ignored:
 				ports.devices.iterate (query_device_port'access);
-				
+
 				log_indentation_down;
 			end query_net;
-		
-		
+
+
 		begin
 			log (text => "query nets", level => log_threshold + 1);
 			log_indentation_up;
 			module.nets.iterate (query_net'access);
 			log_indentation_down;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get_unconnected_terminals of"
@@ -3953,17 +3953,17 @@ package body et_board_ops_devices is
 			level => log_threshold);
 
 		log_indentation_up;
-	
+
 		--put_line ("device " & to_string (key (device_cursor)));
 		--put_line ("all " & count_type'image (all_terminals.length));
 
 		-- If the given device is virtual, then there is
 		-- nothing to do and an empty list will be returned:
 		if is_real (device_cursor) then
-			
-			-- Get all terminals of the given device (according 
+
+			-- Get all terminals of the given device (according
 			-- to its package variant).
-			-- Later the connected terminals will be removed 
+			-- Later the connected terminals will be removed
 			-- from this list:
 			log (text => "get all terminals", level => log_threshold + 1);
 			all_terminals := get_all_terminals (device_cursor);
@@ -3972,28 +3972,28 @@ package body et_board_ops_devices is
 			query_element (module_cursor, query_module'access);
 
 			--put_line ("connected " & count_type'image (connected_terminals.length));
-			
+
 			-- Remove the connected_terminals from all_terminals
 			-- so that only the unconneced terminals are left:
 			log (text => "remove connected terminals", level => log_threshold + 1);
 			remove_terminals (all_terminals, connected_terminals);
 		end if;
 
-		
+
 		log_indentation_down;
-		
+
 		return all_terminals;
 	end get_unconnected_terminals;
 
-	
-	
-	
+
+
+
 end et_board_ops_devices;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -53,16 +53,16 @@ package body et_schematic.net_query_ops is
 		use pac_net_segments;
 
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
-			
+
 			-- Inserts the device/port in result.devices. Skips the device/port
 			-- according to the given assembly variant.
 			procedure query_devices (device_cursor : in pac_device_ports.cursor) is begin
 				if et_assembly_variants.is_mounted (
 					device		=> element (device_cursor).device_name, -- IC4, R101
-					variant		=> variant) 
+					variant		=> variant)
 				then
 					--put_line (to_string (element (device_cursor)));
-					
+
 					insert (
 						container	=> result.devices,
 						new_item	=> element (device_cursor));
@@ -73,10 +73,10 @@ package body et_schematic.net_query_ops is
 						raise constraint_error with to_string (element (device_cursor))
 						--put_line (to_string (element (device_cursor))
 						& " already in set !";
-						
+
 			end query_devices;
 
-			
+
 		begin
 			-- Collect device ports of the segment according to given assembly variant:
 			iterate (element (segment_cursor).ports_devices, query_devices'access);
@@ -89,25 +89,25 @@ package body et_schematic.net_query_ops is
 		end query_segments;
 
 
-		
+
 		procedure query_strands (strand_cursor : in pac_strands.cursor) is begin
 			iterate (element (strand_cursor).segments, query_segments'access);
 		end query_strands;
 
-		
+
 	begin
 		iterate (element (net).strands, query_strands'access);
-		
+
 		return ports;
 	end get_ports;
 
-	
-		
+
+
 end et_schematic.net_query_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

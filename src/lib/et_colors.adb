@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 -- with ada.text_io;			use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
@@ -51,7 +51,7 @@ package body et_colors is
 	end;
 
 
-	
+
 	function to_string (
 		color	: in type_color)
 		return string
@@ -67,7 +67,7 @@ package body et_colors is
 	function to_color (
 		color : in string)
 		return type_color
-	is 
+	is
 		c : constant string := to_lower (color);
 
 		-- The result:
@@ -75,36 +75,36 @@ package body et_colors is
 	begin
 		if c = "white" then
 			r := white;
-			
+
 		elsif c = "black" then
 			r := black;
-			
+
 		-- elsif
 			-- CS: Complete for all cases or find
 			-- a more elegant way to convert from c to r.
 
 		end if;
-			
+
 		return r;
 	end;
 
-	
-	
-	
+
+
+
 	function dim (
 		color		: in type_color;
 		brightness	: in type_dim_factor)
-		return type_color 
+		return type_color
 	is
 		use type color_range;
-		
+
 		b : constant color_range := color_range (brightness);
 		result : type_color;
 	begin
 		result.red		:= color.red * b;
 		result.green	:= color.green * b;
 		result.blue		:= color.blue * b;
-		
+
 		return result;
 	end dim;
 
@@ -120,12 +120,12 @@ package body et_colors is
 			when BRIGHT	=> return dim (color, 1.0);
 		end case;
 	end dim;
-	
+
 end et_colors;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
