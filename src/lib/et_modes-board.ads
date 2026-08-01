@@ -35,49 +35,49 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 package et_modes.board is
-	
+
 	type type_verb is (
 		VERB_NONE, -- means no verb entered
 
 		VERB_ADD,
-		
+
 		VERB_CLEAR,
 		VERB_COPY,
-		
+
 		VERB_DELETE,
 		VERB_DEFINE,
 		VERB_DISPLAY,
 		--DRAG,
-		VERB_DRAW,	
-		
+		VERB_DRAW,
+
 		VERB_EXECUTE,
 		VERB_EXIT,
-		
+
 		VERB_FILL,
 		VERB_FLIP,
-		
+
 		VERB_MAKE, -- CS alternatively VERB_EXPORT ?
 		VERB_MOVE,
-		
+
 		VERB_PLACE,
-		
+
 		VERB_QUIT,
-		
+
 		VERB_RENAME,
 		VERB_REMOVE,
 		VERB_RESTORE,
-		VERB_ROTATE,		
+		VERB_ROTATE,
 		VERB_ROUTE,
-		
-		VERB_SAVE,		
+
+		VERB_SAVE,
 		VERB_SET,
 		VERB_SHOW,
-		
+
 		VERB_UPDATE,
-		
+
 		VERB_ZOOM
 		--WRITE
 		);
@@ -85,15 +85,15 @@ package et_modes.board is
 	verb_default : constant type_verb := VERB_NONE;
 
 	verb : type_verb := verb_default;
-	
+
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
-	
 
-	
+
+
 	type type_noun is (
 		NOUN_NONE, -- means no noun entered
-						  
+
 		NOUN_ALL,
 		NOUN_ASSY, -- assembly documentation
 		NOUN_ARC,
@@ -164,26 +164,26 @@ package et_modes.board is
 		);
 
 	noun_default : constant type_noun := NOUN_NONE;
-	
+
 	noun : type_noun := noun_default;
 
-	
+
 	function to_string (noun : in type_noun) return string;
 	function to_noun (noun : in string) return type_noun;
 
-	
+
 	-- Resets verb and noun to default values:
 	procedure reset_verb_and_noun;
 	-- NOTE: Mind updating the mode display afterward.
-	
+
 
 	expect_entry : type_expect_entry := expect_entry_default;
-	
+
 end et_modes.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

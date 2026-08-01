@@ -63,20 +63,20 @@ package body et_module_write_grid is
 	use pac_generic_modules;
 
 
-	
+
 	procedure write_drawing_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 
-			
+
 			procedure schematic is
 				use et_schematic_geometry.pac_geometry_2;
 				use et_schematic_geometry.pac_grid;
@@ -114,12 +114,12 @@ package body et_module_write_grid is
 			section_mark (section_board, HEADER);
 			board;
 			section_mark (section_board, FOOTER);
-			
+
 			section_mark (section_drawing_grid, FOOTER);
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write drawing grid",
@@ -128,18 +128,18 @@ package body et_module_write_grid is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
+
 	end write_drawing_grid;
 
 
-	
-	
+
+
 end et_module_write_grid;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

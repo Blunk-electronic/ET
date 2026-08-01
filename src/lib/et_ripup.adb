@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 
@@ -51,13 +51,13 @@ package body et_ripup is
 		return "ripup mode: " & type_ripup_mode'image (mode);
 	end to_string;
 
-	
+
 
 	procedure reset_ripup_mode is begin
 		ripup_mode := SINGLE_SEGMENT;
 	end reset_ripup_mode;
 
-	
+
 
 	procedure next_ripup_mode is
 		i : constant natural := type_ripup_mode'pos (ripup_mode);
@@ -69,19 +69,19 @@ package body et_ripup is
 		if i < max then
 			-- jump to next mode
 			ripup_mode := type_ripup_mode'succ (type_ripup_mode'val (i));
-		else 
+		else
 			-- After the last mode, jump back to the first mode:
 			ripup_mode := type_ripup_mode'first;
 		end if;
 	end next_ripup_mode;
 
-	
-	
+
+
 end et_ripup;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

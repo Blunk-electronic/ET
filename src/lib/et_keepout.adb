@@ -54,7 +54,7 @@ package body et_keepout is
 	end is_circular;
 
 
-	
+
 
 	procedure iterate (
 		zones	: in pac_keepout_zones.list;
@@ -70,7 +70,7 @@ package body et_keepout is
 	end iterate;
 
 
-	
+
 	procedure mirror_zones (
 		zones	: in out pac_keepout_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -83,7 +83,7 @@ package body et_keepout is
 			mirror (zone, axis);
 			result.append (zone);
 		end query_zone;
-		
+
 	begin
 		zones.iterate (query_zone'access);
 		zones := result;
@@ -98,11 +98,11 @@ package body et_keepout is
 
 		procedure query_zone (c : in pac_keepout_zones.cursor) is
 			zone : type_keepout_zone := element (c);
-		begin	
+		begin
 			rotate_by (zone, angle);
 			result.append (zone);
 		end query_zone;
-		
+
 	begin
 		zones.iterate (query_zone'access);
 		zones := result;
@@ -122,14 +122,14 @@ package body et_keepout is
 			move_by (zone, offset);
 			result.append (zone);
 		end query_zone;
-		
+
 	begin
 		zones.iterate (query_zone'access);
 		zones := result;
 	end move_zones;
 
-	
-	
+
+
 	procedure mirror_keepout_objects (
 		keepout	: in out type_keepout;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -137,7 +137,7 @@ package body et_keepout is
 		mirror_zones (keepout.zones);
 		-- CS mirror_cutouts (keepout.cutouts);
 	end mirror_keepout_objects;
-	
+
 
 	procedure rotate_keepout_objects (
 		keepout	: in out type_keepout;
@@ -155,12 +155,12 @@ package body et_keepout is
 		move_zones (keepout.zones, offset);
 		-- CS move_cutouts (keepout.cutouts, offset);
 	end move_keepout_objects;
-	
+
 end et_keepout;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

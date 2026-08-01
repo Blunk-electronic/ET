@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.strings.bounded;       use ada.strings.bounded;
 
@@ -58,8 +58,8 @@ package et_meta is
 	function to_string (company : in pac_company.bounded_string) return string;
 
 	company_default : constant pac_company.bounded_string := pac_company.to_bounded_string (not_assigned);
-	
-	
+
+
 	customer_length_max : constant positive := 100;
 	package pac_customer is new generic_bounded_length (customer_length_max);
 
@@ -67,8 +67,8 @@ package et_meta is
 	function to_string (customer : in pac_customer.bounded_string) return string;
 
 	customer_default : constant pac_customer.bounded_string := pac_customer.to_bounded_string (not_assigned);
-	
-		
+
+
 	partcode_length_max : constant positive := 100;
 	package pac_partcode is new generic_bounded_length (partcode_length_max);
 
@@ -76,8 +76,8 @@ package et_meta is
 	function to_string (partcode : in pac_partcode.bounded_string) return string;
 
 	partcode_default : constant pac_partcode.bounded_string := pac_partcode.to_bounded_string (not_assigned);
-	
-	
+
+
 	drawing_number_length_max : constant positive := 100;
 	package pac_drawing_number is new generic_bounded_length (drawing_number_length_max);
 
@@ -85,8 +85,8 @@ package et_meta is
 	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string;
 
 	drawing_number_default : constant pac_drawing_number.bounded_string := pac_drawing_number.to_bounded_string (not_assigned);
-	
-	
+
+
 	revision_length_max : constant positive := 5;
 	package pac_revision is new generic_bounded_length (revision_length_max);
 
@@ -94,9 +94,9 @@ package et_meta is
 	function to_string (revision : in pac_revision.bounded_string) return string;
 
 	revision_default : constant pac_revision.bounded_string := pac_revision.to_bounded_string (not_assigned);
-	
-	
-	
+
+
+
 	person_length_max : constant positive := 20;
 	package pac_person is new generic_bounded_length (person_length_max);
 
@@ -104,13 +104,13 @@ package et_meta is
 	function to_string (person : in pac_person.bounded_string) return string;
 
 	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
-	
 
 
 
 
-	
-	
+
+
+
 	type type_meta_basic is tagged record
 		company			: pac_company.bounded_string := company_default;
 		customer		: pac_customer.bounded_string := customer_default;
@@ -126,12 +126,12 @@ package et_meta is
 	end record;
 
 	-- CS accessor subprograms to set and get company, customer, ...
-	
-	
 
-	
 
-	
+
+
+
+
 	type type_meta_schematic is new type_meta_basic with record
 		preferred_libs	: pac_library_paths_schematic.list;
 	end record;
@@ -140,26 +140,26 @@ package et_meta is
 	procedure set_device_libraries (
 		meta : in out type_meta_schematic;
 		libs : in pac_library_paths_schematic.list);
-		
+
 
 	procedure add_device_library (
 		meta : in out type_meta_schematic;
 		lib  : in pac_library_path_schematic.bounded_string);
-	
+
 
 	procedure remove_device_library (
 		meta : in out type_meta_schematic;
 		lib  : in pac_library_path_schematic.bounded_string);
 
-	
+
 	function get_device_libraries (
 		meta : in type_meta_schematic)
 		return pac_library_paths_schematic.list;
 
-		
-	
 
-	
+
+
+
 	type type_meta_board is new type_meta_basic with record
 		preferred_libs	: pac_library_paths_board.list;
 	end record;
@@ -168,50 +168,50 @@ package et_meta is
 		meta : in out type_meta_board;
 		libs : in pac_library_paths_board.list);
 
-		
+
 	procedure add_device_library (
 		meta : in out type_meta_board;
 		lib  : in pac_library_path_board.bounded_string);
 
-		
+
 	procedure remove_device_library (
 		meta : in out type_meta_board;
 		lib  : in pac_library_path_board.bounded_string);
 
-		
+
 	function get_device_libraries (
 		meta : in type_meta_board)
 		return pac_library_paths_board.list;
 
-		
-		
-	
-	
+
+
+
+
 	type type_meta is record
 		schematic	: type_meta_schematic;
 		board		: type_meta_board;
 	end record;
 
 
-	
+
 -- KEYWORDS
 
 	keyword_company			: constant string := "company";
 	keyword_customer		: constant string := "customer";
 	keyword_drawing_number	: constant string := "drawing_number";
 	keyword_drawn_by		: constant string := "drawn_by";
-	keyword_drawn_date		: constant string := "drawn_date";	
+	keyword_drawn_date		: constant string := "drawn_date";
 	keyword_checked_by		: constant string := "checked_by";
-	keyword_checked_date	: constant string := "checked_date";	
+	keyword_checked_date	: constant string := "checked_date";
 	keyword_approved_by		: constant string := "approved_by";
-	keyword_approved_date	: constant string := "approved_date";	
+	keyword_approved_date	: constant string := "approved_date";
 	-- CS move to et_keywords
-	
+
 end et_meta;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 with gtk.widget;					use gtk.widget;
@@ -72,66 +72,66 @@ package et_canvas_schematic_units is
 -- DELETE UNIT
 
 	-- to be output in the status bar:
-	status_delete_unit : constant string := 
-		status_click_left 
+	status_delete_unit : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete unit." 
+		& "to delete unit."
 		& status_hint_for_abort;
-	
 
-	status_delete_device : constant string := 
-		status_click_left 
+
+	status_delete_device : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete device." 
+		& "to delete device."
 		& status_hint_for_abort;
 
-	
+
 
 -- MOVE / DRAG / ROTATE / MIRROR UNIT
 
-	
+
 	-- to be output in the status bar:
-	status_move : constant string := 
-		status_click_left 
+	status_move : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
 		& "to move unit." -- CS move object ?
 		& status_hint_for_abort;
 
 	-- to be output in the status bar:
-	status_drag : constant string := 
-		status_click_left 
+	status_drag : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to drag unit." 
+		& "to drag unit."
 		& status_hint_for_abort;
 
 	-- to be output in the status bar:
-	status_rotate : constant string := 
-		status_click_left 
+	status_rotate : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rotate unit." 
+		& "to rotate unit."
 		& status_hint_for_abort;
-	
 
-	status_mirror : constant string := 
-		status_click_left 
+
+	status_mirror : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to mirror unit." 
+		& "to mirror unit."
 		& status_hint_for_abort;
 
-	
+
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one
 	-- proposed segment to the next in a circular manner
 	-- and set it as "selected":
 	procedure clarify_object;
-	
+
 
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
@@ -156,14 +156,14 @@ package et_canvas_schematic_units is
 	procedure mirror_object (
 		point	: in type_vector_model);
 
-	
+
 	procedure delete_object (
 		point	: in type_vector_model);
 
 
 
 
-	
+
 
 -- VALUE:
 
@@ -174,30 +174,30 @@ package et_canvas_schematic_units is
 		self : access gtk_entry_record'class);
 
 
-	-- This procedure is called when the signal "destroy" 
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the value window.
 	-- This is usually the case when:
-	--  1. the operator terminates the value window by 
+	--  1. the operator terminates the value window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the value window:
 	-- The procedure also calls procedure "reset":
 	procedure cb_value_window_destroy (
 		window : access gtk_widget_record'class);
-	
-	
+
+
 	-- This procedure shows the window where the
 	-- operator sees the old value of the targeted device
 	-- and where he can enter the new name of the device:
 	procedure show_value_window;
-	
-	
+
+
 	procedure set_value (
 		point	: in type_vector_model);
-							
 
 
 
-	
+
+
 -- PURPOSE:
 
 	-- Called when the "on_activate" signal is emitted
@@ -207,30 +207,30 @@ package et_canvas_schematic_units is
 		self : access gtk_entry_record'class);
 
 
-	-- This procedure is called when the signal "destroy" 
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the purpose window.
 	-- This is usually the case when:
-	--  1. the operator terminates the purpose window by 
+	--  1. the operator terminates the purpose window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the purpose window:
 	-- The procedure also calls procedure "reset":
 	procedure cb_purpose_window_destroy (
 		window : access gtk_widget_record'class);
 
-	
+
 	-- This procedure shows the window where the
 	-- operator sees the old purpose of the targeted device
 	-- and where he can enter the new purpose of the device:
 	procedure show_purpose_window;
 
-	
+
 	procedure set_purpose (
 		point	: in type_vector_model);
 
-	
 
 
-	
+
+
 
 -- PARTCDOE:
 
@@ -242,27 +242,27 @@ package et_canvas_schematic_units is
 		self : access gtk_entry_record'class);
 
 
-	-- This procedure is called when the signal "destroy" 
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the partcode window.
 	-- This is usually the case when:
-	--  1. the operator terminates the partcode window by 
+	--  1. the operator terminates the partcode window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the partcode window:
 	-- The procedure also calls procedure "reset":
 	procedure cb_partcode_window_destroy (
 		window : access gtk_widget_record'class);
 
-	
+
 	-- This procedure shows the window where the
 	-- operator sees the old partcode of the targeted device
 	-- and where he can enter the new partcode of the device:
 	procedure show_partcode_window;
 
-	
+
 	procedure set_partcode (
 		point	: in type_vector_model);
 
-	
+
 
 
 
@@ -277,7 +277,7 @@ package et_canvas_schematic_units is
 	-- variant_new and assigns it to the targeted device:
 	variant_new : pac_package_variant_name.bounded_string;
 
-	
+
 	-- Called when the "on_activate" signal is emitted
 	-- by the combo box when a variant has been selected
 	-- in the package_variant window:
@@ -285,10 +285,10 @@ package et_canvas_schematic_units is
 		combo : access gtk_combo_box_record'class);
 
 
-	-- This procedure is called when the signal "destroy" 
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the package_variant window.
 	-- This is usually the case when:
-	--  1. the operator terminates the package_variant window by 
+	--  1. the operator terminates the package_variant window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the package_variant window:
 	-- The procedure also calls procedure "reset":
@@ -302,13 +302,13 @@ package et_canvas_schematic_units is
 	-- to the targeted device:
 	procedure cb_package_variant_apply (
 		button : access gtk_button_record'class);
-	
-	
+
+
 	-- This procedure shows the window where the
 	-- operator sees the old package_variant of the targeted device
 	-- and where he can enter the new package_variant of the device:
 	procedure show_package_variant_window;
-	
+
 
 	procedure set_package_variant (
 		point	: in type_vector_model);
@@ -318,49 +318,49 @@ package et_canvas_schematic_units is
 
 
 -- RENAME:
-	
+
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new name in the rename window:
 	procedure cb_rename_new_name_entered (
 		self : access gtk_entry_record'class);
-	
 
-	-- This procedure is called when the signal "destroy" 
+
+	-- This procedure is called when the signal "destroy"
 	-- is emitted by the rename window.
 	-- This is usually the case when:
-	--  1. the operator terminates the rename window by 
+	--  1. the operator terminates the rename window by
 	--     clicking the X in the upper right corner of the window.
 	--  2. the operator presses the ESC key in the rename window:
 	-- The procedure also calls procedure "reset":
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class);
 
-	
+
 	-- This procedure shows the window where the
 	-- operator sees the old name of the targeted object
 	-- and where he can enter the new name of the object:
 	procedure show_rename_window;
-	
 
 
-	
+
+
 	procedure rename_object (
 		point	: in type_vector_model);
 
-	
+
 
 
 -- DRAG UNIT:
-	
+
 	procedure drag_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
 
 
-	
+
+
 
 -- ADD UNIT/DEVICE:
 
@@ -369,42 +369,42 @@ package et_canvas_schematic_units is
 	-- for electrical devices:
 	function get_top_most_important_library return string;
 
-		
-	
+
+
 	-- to be output in the status bar:
-	status_add : constant string := 
-		status_click_left 
+	status_add : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to add unit." 
+		& "to add unit."
 		& status_hint_for_abort;
 
 
-	
+
 	-- When a unit is being added this type is required:
 	type type_unit_being_added is record
 		-- The cursor to the device model:
 		device		: pac_device_models.cursor;
-		
+
 		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 		value		: pac_device_value.bounded_string; -- 100k
-		
+
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
-		
-		-- The prospective device name (like IC4) once the 
+
+		-- The prospective device name (like IC4) once the
 		-- add operation is complete.
 		-- This is relevant for the preview only:
 		device_pre	: type_device_name := (others => <>);
 
 		-- The rotation of the unit:
 		rotation	: type_rotation := 0.0;
-		
+
 		-- Indicates that the information above is valid
 		-- and a unit has been selected from the fetch menu
 		-- by the operator:
-		valid		: boolean := false;		
+		valid		: boolean := false;
 	end record;
 
 
@@ -414,29 +414,29 @@ package et_canvas_schematic_units is
 
 
 	-- Rotates the unit_fetch by 90 degrees counter-clockwise
-	-- if it is valid:	
+	-- if it is valid:
 	procedure rotate_unit_add;
 
 
-	
+
 	-- Resets unit_add to its default values:
 	procedure reset_unit_add;
 
 
-	
-	
+
+
 	-- This procedure is called when the operator
 	-- has selected a package variant:
 	procedure cb_package_variant_selected (
 		combo : access gtk_combo_box_record'class);
 
-	
+
 	-- This procedure is called when the operator
-	-- has selected a library directory from inside 
+	-- has selected a library directory from inside
 	-- the properties box:
 	procedure cb_model_directory_selected (
 		button : access gtk_file_chooser_button_record'class);
-	
+
 
 	-- This is the box that contains a label
 	-- and a combo box for package variants.
@@ -453,8 +453,8 @@ package et_canvas_schematic_units is
 	-- for the package variant selection from the properties box
 	-- and resets the flag box_package_variant_active:
 	procedure remove_box_package_variant;
-	
-	
+
+
 	-- This procedure is called when the operator
 	-- has selected a device model file from inside
 	-- the properties box.
@@ -463,7 +463,7 @@ package et_canvas_schematic_units is
 	-- is updated:
 	procedure cb_device_model_selected (
 		button : access gtk_file_chooser_button_record'class);
-	
+
 
 	-- When the operator wants to add a device to the
 	-- drawing then this procedure should be called first.
@@ -484,13 +484,13 @@ package et_canvas_schematic_units is
 
 
 -- COPY DEVICE:
-	
+
 	-- to be output in the status bar:
-	status_copy : constant string := 
-		status_click_left 
+	status_copy : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to copy a device." 
+		& "to copy a device."
 		& status_hint_for_abort;
 
 
@@ -499,29 +499,29 @@ package et_canvas_schematic_units is
 		point	: in type_vector_model);
 
 
-	
-	
-	
+
+
+
 -- FETCH UNIT:
 
 	-- To fetch a unit means to select a unit of
 	-- a device that is already in use:
 
 	-- to be output in the status bar:
-	status_fetch : constant string := 
-		status_click_left 
+	status_fetch : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to fetch unit from device." 
+		& "to fetch unit from device."
 		& status_hint_for_abort;
-	
 
-	-- Shows the available units of 
+
+	-- Shows the available units of
 	-- the selected device in a menu:
 	procedure show_fetch_menu;
 
 
-	
+
 	-- This type is required when a unit has been
 	-- selected from the fetch menu. This type is indicated
 	-- to store temporarily information for a preview
@@ -534,42 +534,42 @@ package et_canvas_schematic_units is
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 
 		value		: pac_device_value.bounded_string; -- 100k
-		
+
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
-		
+
 		-- The prospective device name (like IC4):
 		device_pre	: type_device_name := (others => <>);
 
 		-- The rotation of the unit:
 		rotation	: type_rotation := 0.0;
-		
+
 		-- Indicates that the information above is valid
 		-- and a unit has been selected from the fetch menu
 		-- by the operator:
 		valid		: boolean := false;
 	end record;
 
-	
+
 	-- If a unit of a device is being fetched, then
 	-- all the required preliminary information is stored here:
 	unit_fetch : type_unit_fetch;
 
 
 	-- Rotates the unit_fetch by 90 degrees counter-clockwise
-	-- if it is valid:	
+	-- if it is valid:
 	procedure rotate_unit_fetch;
 
-	
+
 	-- Resets the information of the unit_fetch:
 	procedure reset_unit_fetch;
-	
+
 
 	-- This callback procedure is called when the fetch menu is closed
 	-- by the operator by pressing the ESCAPE key:
 	procedure cb_fetch_menu_destroy (
 		menu : access gtk.menu_shell.gtk_menu_shell_record'class);
-	
+
 
 	-- This callback procedure is called when the operator
 	-- has selected a unit from the fetch menu.
@@ -578,8 +578,8 @@ package et_canvas_schematic_units is
 	procedure cb_fetch_menu_unit_select (
 		menu : access gtk.menu_item.gtk_menu_item_record'class);
 
-	
-	
+
+
 	-- This procedure is to be called when the operator wants
 	-- to fetch a unit at the given point on the current sheet.
 	-- 1. On the first call, it locates units in a certain zone around
@@ -596,87 +596,87 @@ package et_canvas_schematic_units is
 
 
 
-	
-
-	
-	-- to be output in the status bar:
-	status_move_placeholder : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move placeholder." 
-		& status_hint_for_abort;
-
-	-- to be output in the status bar:
-	status_rotate_placeholder : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to rotate placeholder." 
-		& status_hint_for_abort;
-
-	
 
 
 
 	-- to be output in the status bar:
-	status_rename_device : constant string := 
-		status_click_left 
+	status_move_placeholder : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to rename device." 
+		& "to move placeholder."
 		& status_hint_for_abort;
 
-	status_set_value : constant string := 
-		status_click_left 
+	-- to be output in the status bar:
+	status_rotate_placeholder : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to set value of device." 
-		& status_hint_for_abort;
-
-	status_set_purpose : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to set purpose of device." 
-		& status_hint_for_abort;
-
-	status_set_partcode : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to set partcode of device." 
-		& status_hint_for_abort;
-
-	status_set_variant : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to set package variant of device." 
+		& "to rotate placeholder."
 		& status_hint_for_abort;
 
 
 
-	
+
+
+	-- to be output in the status bar:
+	status_rename_device : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to rename device."
+		& status_hint_for_abort;
+
+	status_set_value : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to set value of device."
+		& status_hint_for_abort;
+
+	status_set_purpose : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to set purpose of device."
+		& status_hint_for_abort;
+
+	status_set_partcode : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to set partcode of device."
+		& status_hint_for_abort;
+
+	status_set_variant : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to set package variant of device."
+		& status_hint_for_abort;
+
+
+
+
 -- SHOW DEVICE:
-	
+
 	procedure show_object (
 		position : in type_vector_model);
 
-	
-	status_show_device : constant string := 
-		status_click_left 
+
+	status_show_device : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to select device." 
+		& "to select device."
 		& status_hint_for_abort;
 
-	
+
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

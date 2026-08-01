@@ -41,20 +41,20 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 
 package et_fonts is
-	
+
 
 	font_family_length_max : constant positive := 50;
-	
+
 	package pac_font_family is new generic_bounded_length (font_family_length_max);
 
-	
+
 	function to_string (
-		family : in pac_font_family.bounded_string) 
+		family : in pac_font_family.bounded_string)
 		return string;
 
-	
+
 	function to_family (
-		family : in string) 
+		family : in string)
 		return pac_font_family.bounded_string;
 
 
@@ -65,11 +65,11 @@ package et_fonts is
 		SLANT_NORMAL,
 		SLANT_ITALIC); -- CS others ?
 
-	
+
 	type type_weight is (
 		WEIGHT_NORMAL); -- CS others ?
-							
-	
+
+
 	type type_font is record
 		family	: pac_font_family.bounded_string; -- string := "monospace";
 		slant	: cairo_font_slant :=  CAIRO_FONT_SLANT_NORMAL;
@@ -84,14 +84,14 @@ package et_fonts is
 		slant	: in type_slant;
 		weight	: in type_weight)
 		return type_font;
-	
+
 
 end et_fonts;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

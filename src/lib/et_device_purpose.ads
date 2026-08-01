@@ -45,49 +45,49 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_device_purpose is
 
-	-- Devices that require operator interaction 
-	-- like connectors, LEDs or switches 
+	-- Devices that require operator interaction
+	-- like connectors, LEDs or switches
 	-- MUST have a purpose explicitly assigned.
 	-- The purpose will be visible in the schematic, in
 	-- the silkscreen and other manufcaturing related documentation.
-	
-	-- Example: The purpose of connector X44 
+
+	-- Example: The purpose of connector X44
 	-- is "power in". The purpose of LED5 is "system fail":
 
-	
+
 	keyword_purpose : constant string := "purpose";
-	
-	purpose_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
+
+	purpose_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- ");
 
 	purpose_length_max : constant positive := 50;
 
-	
+
 	package pac_device_purpose is new generic_bounded_length (purpose_length_max);
 	use pac_device_purpose;
-	
+
 
 
 	-- If no purpose is required, then this default should be used:
 	empty_purpose : constant pac_device_purpose.bounded_string := to_bounded_string ("");
-	
+
 
 	function to_string (purpose : in pac_device_purpose.bounded_string) return string;
-	
+
 	function purpose_length_valid (purpose : in string) return boolean;
-	-- Returns true if given purpose is too long. Issues warning.	
+	-- Returns true if given purpose is too long. Issues warning.
 
 
 	function get_length (
 		purpose : in pac_device_purpose.bounded_string)
 		return natural;
 
-		
 
-	
+
+
 	function purpose_characters_valid (
 		purpose		: in pac_device_purpose.bounded_string;
-		characters	: in character_set := purpose_characters) 
+		characters	: in character_set := purpose_characters)
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -101,19 +101,19 @@ package et_device_purpose is
 		error_on_invalid_character	: in boolean := true)
 		return pac_device_purpose.bounded_string;
 
-	
+
 	-- Returns true if purpose is an empty string:
 	function is_empty (
-		purpose : in pac_device_purpose.bounded_string) 
+		purpose : in pac_device_purpose.bounded_string)
 		return boolean;
-	
-	
-		
+
+
+
 end et_device_purpose;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

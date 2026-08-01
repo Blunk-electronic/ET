@@ -40,7 +40,7 @@
 
 package et_unit_swap_level is
 
-	
+
 	swap_level_max : constant natural := 10;
 
 	type type_swap_level is new natural range 0 .. swap_level_max;
@@ -49,15 +49,15 @@ package et_unit_swap_level is
 
 	function to_string (swap_level : in type_swap_level) return string;
 
-	function to_swap_level (swap_level : in string) return type_swap_level;	
+	function to_swap_level (swap_level : in string) return type_swap_level;
 
-	
-		
+
+
 end et_unit_swap_level;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -48,10 +48,10 @@ with et_keywords;						use et_keywords;
 package body et_schematic_coordinates is
 
 
-	
-	
-	function "<" (left, right : in type_object_position) 
-		return boolean 
+
+
+	function "<" (left, right : in type_object_position)
+		return boolean
 	is
 		result : boolean := false;
 	begin
@@ -61,14 +61,14 @@ package body et_schematic_coordinates is
 			result := false;
 		else
 			-- sheet numbers are equal -> compare x
-			
+
 			if get_x (left) < get_x (right) then
 				result := true;
 			elsif get_x (left) > get_x (right) then
 				result := false;
-			else 
+			else
 				-- x positions equal -> compare y
-				
+
 				if get_y (left) < get_y (right) then
 					result := true;
 				elsif get_y (left) > get_y (right) then
@@ -88,16 +88,16 @@ package body et_schematic_coordinates is
 
 			end if;
 		end if;
-			
+
 		return result;
 	end;
 
 
 
-	
+
 	procedure move (
 		position	: in out type_object_position'class;
-		offset		: in type_object_position_relative) 
+		offset		: in type_object_position_relative)
 	is begin
 		position.set (AXIS_X, get_x (position) + get_x (offset));
 		position.set (AXIS_Y, get_y (position) + get_y (offset));
@@ -116,31 +116,31 @@ package body et_schematic_coordinates is
 		move_by (position.place, offset);
 	end;
 
-	
-	
+
+
 	function to_position (
 		position	: in type_position;
 		sheet		: in type_sheet)
 		return type_object_position
-	is 
+	is
 		result : type_object_position;
 	begin
 		result.place := position.place;
 		result.rotation := get_rotation (position);
 		result.sheet := sheet;
-		
+
 		return result;
 	end;
 
 
-	
-	
-	
+
+
+
 	function to_position (
 		point 		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
-		return type_object_position 
+		return type_object_position
 	is
 		p : type_object_position;
 	begin
@@ -150,14 +150,14 @@ package body et_schematic_coordinates is
 		return p;
 	end;
 
-	
 
-	
+
+
 	function to_position_relative (
 		point 		: in type_vector_model;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
-		return type_object_position_relative 
+		return type_object_position_relative
 	is
 		p : type_object_position_relative;
 	begin
@@ -168,7 +168,7 @@ package body et_schematic_coordinates is
 	end;
 
 
-	
+
 
 
 	function to_string (
@@ -180,7 +180,7 @@ package body et_schematic_coordinates is
 		x : constant string := to_string (get_x (position));
 		y : constant string := to_string (get_y (position));
 		r : constant string := to_string (get_rotation (position));
-		
+
 		separator : constant string := " / ";
 	begin
 		case format is
@@ -195,7 +195,7 @@ package body et_schematic_coordinates is
 
 			when others => -- CS: do the same as with FORMAT_1
 				return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
-				
+
 		end case;
 	end to_string;
 
@@ -203,16 +203,16 @@ package body et_schematic_coordinates is
 
 
 
-	
+
 
 	function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_object_position
-	is		
+	is
 		use pac_geometry_2;
 		use et_sheets;
-		
+
 		position : type_object_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
@@ -224,7 +224,7 @@ package body et_schematic_coordinates is
 			-- We expect after "sheet" the sheet number
 			if get_field (line, place) = keyword_sheet then
 				position.sheet := to_sheet (get_field (line, place + 1));
-				
+
 			-- We expect after the x the corresponding value for x
 			elsif get_field (line, place) = keyword_x then
 				set (position.place, AXIS_X, to_distance (get_field (line, place + 1)));
@@ -241,25 +241,25 @@ package body et_schematic_coordinates is
 				invalid_keyword (get_field (line, place));
 				raise constraint_error; -- CS
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return position;
 	end to_position;
 
 
 
 
-	
+
 	function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_object_position_relative
-	is		
+	is
 		use pac_geometry_2;
 		use et_sheets;
-		
+
 		position : type_object_position_relative; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
@@ -271,7 +271,7 @@ package body et_schematic_coordinates is
 			-- We expect after "sheet" the sheet number
 			if get_field (line, place) = keyword_sheet then
 				position.sheet := to_sheet (get_field (line, place + 1));
-				
+
 			-- We expect after the x the corresponding value for x
 			elsif get_field (line, place) = keyword_x then
 				set (position.place, AXIS_X, to_distance (get_field (line, place + 1)));
@@ -288,22 +288,22 @@ package body et_schematic_coordinates is
 				invalid_keyword (get_field (line, place));
 				raise constraint_error; -- CS
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return position;
 	end to_position;
 
-	
-
-	
 
 
 
-	
+
+
+
+
 	function get_rotation (
-		position : in type_object_position) 
+		position : in type_object_position)
 		return type_rotation_model
 	is begin
 		return position.rotation;
@@ -319,30 +319,30 @@ package body et_schematic_coordinates is
 	is begin
 		position.rotation := rotation;
 	end set_rotation;
-	
-	
-	
-	
+
+
+
+
 	function get_sheet (
-		position : in type_object_position) 
-		return type_sheet 
+		position : in type_object_position)
+		return type_sheet
 	is begin
 		return position.sheet;
 	end get_sheet;
 
 
-	
-	
+
+
 	procedure set_sheet (
 		position	: in out type_object_position;
-		sheet		: in type_sheet) 
+		sheet		: in type_sheet)
 	is begin
 		position.sheet := sheet;
 	end set_sheet;
 
 
 
-	
+
 	procedure move_by_sheets (
 		position	: in out type_object_position;
 		offset		: in type_sheet_relative)
@@ -351,12 +351,12 @@ package body et_schematic_coordinates is
 	end;
 
 
-	
+
 end et_schematic_coordinates;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

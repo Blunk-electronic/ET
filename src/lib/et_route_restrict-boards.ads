@@ -45,10 +45,10 @@ package et_route_restrict.boards is
 	use pac_geometry_2;
 
 
-	
+
 -- LINES:
 
-	type type_route_restrict_line is new 
+	type type_route_restrict_line is new
 		et_route_restrict.type_route_restrict_line with
 	record
 		layers 	: pac_signal_layers.set;
@@ -60,54 +60,54 @@ package et_route_restrict.boards is
 	procedure reset_line (
 		line : in out type_route_restrict_line);
 
-	
+
 	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 -- ARCS:
 
 
 	type type_route_restrict_arc is new
-		et_route_restrict.type_route_restrict_arc with 
+		et_route_restrict.type_route_restrict_arc with
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
 
-	
+
 	procedure reset_arc (
 		arc : in out type_route_restrict_arc);
-	
-	
+
+
 	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 
 
-	
-	
-	
+
+
+
 -- CIRCLES:
-	
+
 	type type_route_restrict_circle is new
-		et_route_restrict.type_route_restrict_circle with 
+		et_route_restrict.type_route_restrict_circle with
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
-	
-	
+
+
 	procedure reset_circle (
 		circle : in out type_route_restrict_circle);
-	
-	
+
+
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	
-	
 
-	
+
+
+
 -- ZONE:
 
 	type type_route_restrict_contour is new -- CS rename to type_route_restrict_zone
@@ -118,22 +118,22 @@ package et_route_restrict.boards is
 
 	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
 	-- CS rename to pac_route_restrict_zones
-	
+
 	type type_route_restrict_cutout is new -- CS rename to type_route_restrict_zone_cutout
 		et_route_restrict.type_route_restrict_cutout with
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
-		
+
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 	-- CS rename to pac_route_restrict_zone_cutouts
-	
-	
-	-- NOTE: 
+
+
+	-- NOTE:
 	-- In the board drawing there is no "both-sides" as with
 	-- silkscreen or assembly documentation. Here the signal
 	-- layers specify which conductor layers are affected.
-	
+
 	type type_route_restrict is record
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
@@ -141,13 +141,13 @@ package et_route_restrict.boards is
 		contours	: pac_route_restrict_contours.list; -- CS rename contours to zone
 		cutouts		: pac_route_restrict_cutouts.list;
 
-		-- CS texts : 
+		-- CS texts :
 		-- This must not be derived from from conductor text because
 		-- it is not fabrication relevant.
 		-- It should contain notes of the designer exclusively.
 	end record;
 
-	
+
 
 
 	-- Logs the properties of the given line of route restrict
@@ -155,7 +155,7 @@ package et_route_restrict.boards is
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_route_restrict_lines.cursor;
 	-- 	log_threshold 	: in type_log_level);
- -- 
+ --
 	-- -- Logs the properties of the given arc of route restrict
 	-- procedure arc_route_restrict_properties (
 	-- 	face			: in type_face;
@@ -164,13 +164,13 @@ package et_route_restrict.boards is
 
 	-- CS procedure circle_route_restrict_properties
 
-	
-	
+
+
 end et_route_restrict.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -40,7 +40,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_via_restrict.packages is
-	
+
 
 	procedure mirror_via_restrict_objects (
 		restrict	: in out type_one_side;
@@ -49,7 +49,7 @@ package body et_via_restrict.packages is
 		null;
 		-- CS zones
 	end mirror_via_restrict_objects;
-	
+
 
 	procedure rotate_via_restrict_objects (
 		restrict	: in out type_one_side;
@@ -68,7 +68,7 @@ package body et_via_restrict.packages is
 		-- CS zones
 	end move_via_restrict_objects;
 
-	
+
 	function to_polygons (
 		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
@@ -76,7 +76,7 @@ package body et_via_restrict.packages is
 	is
 		pragma unreferenced (restrict, tolerance);
 		scratch, result : pac_polygon_list.list;
-		
+
 	begin
 		-- -- circles:
 		-- scratch := to_polygons_outside (restrict.circles, tolerance);
@@ -85,19 +85,19 @@ package body et_via_restrict.packages is
 		-- zones:
 		-- CS
 		null;
-		
+
 		return result;
 	end to_polygons;
 
 
 
-	
+
 
 	procedure add_zone (
 		via_restrict	: in out type_via_restrict;
 		zone			: in type_via_restrict_zone;
 		face			: in type_face)
-	is 
+	is
 		use pac_via_restrict_zones;
 	begin
 		case face is
@@ -109,11 +109,11 @@ package body et_via_restrict.packages is
 		end case;
 	end add_zone;
 
-				
 
 
-	
-	
+
+
+
 	procedure add_cutout (
 		via_restrict	: in out type_via_restrict;
 		cutout			: in type_via_restrict_cutout;
@@ -130,13 +130,13 @@ package body et_via_restrict.packages is
 		end case;
 	end add_cutout;
 
-	
-	
+
+
 end et_via_restrict.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

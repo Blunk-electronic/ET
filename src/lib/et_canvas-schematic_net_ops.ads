@@ -41,7 +41,7 @@
 
 generic
 
-	
+
 package et_canvas.schematic_net_ops is
 
 
@@ -57,18 +57,18 @@ package et_canvas.schematic_net_ops is
 
 	-- This flag indicates that the rename window is open:
 	rename_window_open : boolean := false;
-	
-	-- This is the field inside the rename_window 
+
+	-- This is the field inside the rename_window
 	-- where the operator enters the new name of a net:
 	rename_new : gtk_gentry;
-	
-	-- This is the field inside the rename_window 
+
+	-- This is the field inside the rename_window
 	-- where the old name of a net is shown:
 	rename_old : gtk_gentry;
 
-	
-	-- This procedure assembles the rename_window with 
-	-- all its basic properties. It sets the title of the 
+
+	-- This procedure assembles the rename_window with
+	-- all its basic properties. It sets the title of the
 	-- window with the targeted net name so that the operator
 	-- knows what net it is about.
 	-- It connects the "on_key_press_event" with the
@@ -76,22 +76,22 @@ package et_canvas.schematic_net_ops is
 	-- This procedure DOES NOT show the rename window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_rename_window 
+	-- for example procedure show_rename_window
 	-- in et_canvas_schematic_nets):
 	procedure build_rename_window;
 
 
 
-	
-	
+
+
 private
-	
-	
+
+
 
 -- RENAME WINDOW:
 
 	-- See comments on rename window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the rename window.
 	-- If ESC key pressed, then the window is destroyed
@@ -99,26 +99,26 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "rename_new" above):
 	function cb_rename_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_rename_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_rename_window_key_pressed'access;
 
 
 
-	
-	
+
+
 end et_canvas.schematic_net_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

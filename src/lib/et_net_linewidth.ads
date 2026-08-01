@@ -49,15 +49,15 @@ with et_schematic_geometry;		use et_schematic_geometry;
 package et_net_linewidth is
 
 	use pac_geometry_2;
-	
+
 	net_linewidth : constant type_distance_positive := 0.2;
 
-	
+
 end et_net_linewidth;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

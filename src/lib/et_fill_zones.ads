@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,24 +50,24 @@ with et_logging;				use et_logging;
 
 
 package et_fill_zones is
-	
+
 	use pac_geometry_brd;
 	use pac_polygons;
 
 	use pac_contours;
-	
-	
+
+
 	package pac_stripes is new doubly_linked_lists (type_line_fine);
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
 
 
-	
-	
+
+
 -- ISLANDS AND LAKES:
-	
-	
+
+
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
 	type type_island is record -- CS make private ?
@@ -79,18 +79,18 @@ package et_fill_zones is
 		-- A lake causes a cutout area inside an island:
 		lakes : pac_polygon_list.list;
 
-		-- The horizontal lines that fill the conducting area of the island:		
+		-- The horizontal lines that fill the conducting area of the island:
 		stripes	: pac_stripes.list;
 	end record;
 
 
-	
+
 	package pac_islands is new doubly_linked_lists (type_island);
 	use pac_islands;
-	
+
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
-	
+
 	-- Iterates the islands. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		islands	: in pac_islands.list;
@@ -101,25 +101,25 @@ package et_fill_zones is
 
 
 
-	
+
 -- FILL STYLE:
 
 	type type_style (style : type_fill_style) is record
 		linewidth : type_track_width;
-		
+
 		case style is
 			when SOLID	 => null;
 			when HATCHED => spacing : type_track_clearance;
 		end case;
 	end record;
-	
 
-	
+
+
 	procedure make_stripes (
 		island	: in out type_island;
 		style	: in type_style);
 
-	
+
 	procedure fill_island (
 		islands		: in out pac_islands.list;
 		position	: in pac_islands.cursor;
@@ -132,8 +132,8 @@ package et_fill_zones is
 
 
 
-	
-	
+
+
 -- GENERAL:
 
 
@@ -150,11 +150,11 @@ package et_fill_zones is
 	function to_string (easing : in type_easing_style) return string;
 
 	easing_radius_max : constant pac_geometry_2.type_distance_positive := 100.0;
-	
-	subtype type_easing_radius is pac_geometry_2.type_distance_positive 
+
+	subtype type_easing_radius is pac_geometry_2.type_distance_positive
 		range pac_geometry_2.type_distance_positive'first .. easing_radius_max;
 
-	
+
 	type type_easing is record
 		style	: type_easing_style := NONE;
 		radius	: type_easing_radius := 0.0; -- center of circle at corner point
@@ -163,7 +163,7 @@ package et_fill_zones is
 
 
 
-	
+
 	type type_zone (fill_style : type_fill_style) -- CS make private ?
 		is new type_contour with -- outer contour as drawn by the operator
 	record
@@ -172,12 +172,12 @@ package et_fill_zones is
 		linewidth : type_track_width := type_track_width'first;
 
 		-- the space between the fill_zone and foreign conductor objects:
-		isolation : type_track_clearance := type_track_clearance'first; 
-	
+		isolation : type_track_clearance := type_track_clearance'first;
+
 		easing : type_easing;
 
 		islands : pac_islands.list := no_islands;
-		
+
 		case fill_style is
 			when SOLID		=> null;
 			when HATCHED	=> spacing : type_track_clearance;
@@ -189,26 +189,26 @@ package et_fill_zones is
 	function get_half_linewidth (
 		zone	: in type_zone)
 		return type_float_positive;
-	
+
 
 
 	-- This procedure:
-	-- 1. assigns the given islands to the zone 
+	-- 1. assigns the given islands to the zone
 	-- 2. creates the lakes inside the islands
 	-- 3. Generates fill lines for the islands if "fill" is true.
 	procedure make_islands_and_lakes (
 		zone			: in out type_zone;
-		linewidth		: in type_track_width;								 
+		linewidth		: in type_track_width;
 		islands 		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
 		fill			: in boolean;
 		log_threshold	: in type_log_level);
 
-	
+
 
 
 	-- Returns true if the given point lies between
-	-- the islands of the given zone. 
+	-- the islands of the given zone.
 	-- If the point lies exactly on the edge
 	-- of an island, then it is regarded as lying ON the island,
 	-- thus the return would be false.
@@ -231,9 +231,9 @@ package et_fill_zones is
 		debug	: in boolean := false)
 		return type_polygon;
 
-	
 
-	
+
+
 	-- Outputs the distance of a point to the nearest
 	-- island into the given direction.
 	-- 1. Assumes that the given point is not on an island.
@@ -252,10 +252,10 @@ package et_fill_zones is
 		distance		: out type_float_positive;
 		log_threshold	: in type_log_level);
 
-	
-	
 
-	-- Outputs the distance from a point into the 
+
+
+	-- Outputs the distance from a point into the
 	-- given direction to the border of the conducting
 	-- area of the zone. For location of the given point only two
 	-- cases exist:
@@ -277,11 +277,11 @@ package et_fill_zones is
 		distance		: out type_float_positive;
 		log_threshold	: in type_log_level);
 
-	
 
-	
+
+
 -- SOLIDLY FILLED ZONE:
-	
+
 	type type_zone_solid  -- CS make private ?
 		is new type_zone (fill_style => SOLID) with null record;
 
@@ -289,21 +289,21 @@ package et_fill_zones is
 
 
 
-	
+
 -- HATCHED FILL ZONE:
-	
+
 	type type_zone_hatched  -- CS make private ?
 		is new type_zone (fill_style => HATCHED) with null record;
 
 	package pac_zones_hatched is new doubly_linked_lists (type_zone_hatched);
 
-														 
-	
+
+
 end et_fill_zones;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

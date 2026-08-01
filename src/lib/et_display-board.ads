@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
@@ -47,24 +47,24 @@ package et_display.board is
 		top, bottom : type_layer_status := OFF;
 	end record;
 
-	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
+	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last)
 		of type_layer_status;
 
--- 	type type_vias is array (type_signal_layer'first .. type_signal_layer'last) 
+-- 	type type_vias is array (type_signal_layer'first .. type_signal_layer'last)
 -- 		of type_layer_status;
-		
-	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
+
+	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last)
 		of type_layer_status;
 
-	type type_via_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
+	type type_via_restrict is array (type_signal_layer'first .. type_signal_layer'last)
 		of type_layer_status;
-	
 
-	
+
+
 	type type_layers is record
 		outline			: type_layer_status := ON;
 		plated_millings	: type_layer_status := ON;
-		
+
 		silkscreen		: type_paired := (top => ON, bottom => OFF);
 		assy_doc		: type_paired := (top => ON, bottom => OFF);
 		keepout			: type_paired := (others => OFF);
@@ -75,7 +75,7 @@ package et_display.board is
 
 		ratsnest		: type_layer_status := ON;
 
-		
+
 		-- By default conductor layers 1..4 are displayed:
 		conductors		: type_conductors := (
 							1 => ON,
@@ -83,11 +83,11 @@ package et_display.board is
 							3 => ON,
 							4 => ON,
 							others => OFF);
-		
+
 		--vias			: type_vias := (others => OFF);
 		vias			: type_layer_status := ON; -- CS really useful ?
 		route_restrict	: type_route_restrict := (others => OFF);
-		via_restrict	: type_via_restrict := (others => OFF);		
+		via_restrict	: type_via_restrict := (others => OFF);
 	end record;
 
 	layers : type_layers;
@@ -103,20 +103,20 @@ package et_display.board is
 	procedure disable_board_contour;
 
 
-	
+
 
 -- PLATED MILLINGS:
-	
+
 	function plated_millings_enabled return boolean;
 
 
-	
 
-	
+
+
 -- SILKSCREEN:
-	
+
 	function silkscreen_enabled (
-		face : in type_face) 
+		face : in type_face)
 		return boolean;
 
 	procedure enable_silkscreen (
@@ -124,60 +124,60 @@ package et_display.board is
 
 
 
-	
+
 -- ASSEMBLY DOCUMENTATION:
-		
+
 	function assy_doc_enabled (
-		face : in type_face) 
-		return boolean;	
+		face : in type_face)
+		return boolean;
 
 
 	procedure enable_assy_doc (
 		face : in type_face);
 
-	
+
 
 -- KEEPOUT:
-	
+
 	function keepout_enabled (
 		face : in type_face)
 		return boolean;
 
-	
-	procedure enable_keepout (
-		face : in type_face);	
 
-	
+	procedure enable_keepout (
+		face : in type_face);
+
+
 
 
 -- STOPMASK:
-	
+
 	function stop_mask_enabled (
-		face : in type_face) 
+		face : in type_face)
 		return boolean;
 
 
 	procedure enable_stopmask (
-		face : in type_face);	
+		face : in type_face);
 
 
-	
+
 
 
 -- STENCIL:
-	
+
 	function stencil_enabled (
-		face : in type_face) 
+		face : in type_face)
 		return boolean;
 
 
 	procedure enable_stencil (
-		face : in type_face);	
-
-	
+		face : in type_face);
 
 
-	
+
+
+
 	function device_origins_enabled (face : in type_face) return boolean;
 
 	function ratsnest_enabled return boolean;
@@ -185,57 +185,57 @@ package et_display.board is
 
 
 
-	
+
 -- CONDUCTOR LAYERS
-	
+
 	-- Returns true if any conductor layer is enabled:
 	function conductors_enabled return boolean;
 
-	
+
 	-- Returns true if any inner conductor layer is enabled:
 	function inner_conductors_enabled (
 		deepest_layer : in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean;
 
-	
+
 	-- Returns true if the given conductor layer is enabled:
 	function conductor_enabled (
 		layer : in type_signal_layer) return boolean;
 
-	
+
 	-- Enables the given conductor layer:
 	procedure enable_conductor (
 		layer : in type_signal_layer);
 
-	
+
 	-- Returns true if via layer is enabled:
 	function vias_enabled return boolean;
 
 
 
-	
 
-	
-	
+
+
+
 -- ROUTE RESTRICT
 
 	-- Returns true if any route restrict layer is enabled:
 	function route_restrict_enabled return boolean;
 
-	
+
 	-- Returns true if the given route restrict layer is enabled:
 	function route_restrict_layer_enabled (
-		layer : in type_signal_layer) 
+		layer : in type_signal_layer)
 		return boolean;
 
-	
+
 	-- Returns true if at least one of the given route restrict layers is enabled.
 	function route_restrict_layer_enabled (
 		layers : in pac_signal_layers.set)
 		return boolean;
 
-	
-	-- Returns true if the route restrict layer 
+
+	-- Returns true if the route restrict layer
 	-- on TOP/BOTTOM is enabled:
 	function route_restrict_enabled (
 		face 			: in type_face;
@@ -247,49 +247,49 @@ package et_display.board is
 	procedure enable_route_restrict (
 		layer : in type_signal_layer);
 
-	
-	
+
+
 
 -- VIA RESTRICT
 
 	-- Returns true if any via restrict layer is enabled:
-	function via_restrict_enabled return boolean;	
+	function via_restrict_enabled return boolean;
 
-	
+
 	-- Returns true if the given via restrict layer is enabled:
 	function via_restrict_layer_enabled (
-		layer : in type_signal_layer) 
+		layer : in type_signal_layer)
 		return boolean;
 
-	
+
 	-- Returns true if at least one of the given via restrict layers is enabled.
 	function via_restrict_layer_enabled (
 		layers : in pac_signal_layers.set)
 		return boolean;
 
-	
-	-- Returns true if the via restrict layer 
+
+	-- Returns true if the via restrict layer
 	-- on TOP/BOTTOM is enabled:
 	function via_restrict_enabled (
 		face 			: in type_face;
 		deepest_layer	: in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean;
 
-	
+
 	-- Enables the given via restrict layer:
 	procedure enable_via_restrict (
 		layer : in type_signal_layer);
 
-	
-	
+
+
 	-- Returns all enabled conductor layers in a string like "1..4,7,10..32"
 	function enabled_conductor_layers return string;
-	
+
 end et_display.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -54,16 +54,16 @@ package et_cp_board_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 	-- Sets the zoom factor.
 	-- Example: "board demo set zoom 40"
 	procedure set_zoom (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
 
-	-- This procedure parses a command that set the 
+
+
+	-- This procedure parses a command that set the
 	-- grid spacing.
 	-- Example: "board demo set grid spacing 20 20"
 	procedure set_grid (
@@ -76,21 +76,21 @@ package et_cp_board_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Moves the cursor by a certain distance.
 	-- Example: "board demo move cursor 5 -10"
 	procedure move_cursor (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Parses a command that sets the cursor and zoom factor.
 	-- Example: "board demo set cursor 90 110 50"
 	procedure set_cursor (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 	-- Parses a command that sets the color.
 	-- Example: "board demo set color background black"
 	procedure set_color (
@@ -98,12 +98,12 @@ package et_cp_board_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_cp_board_canvas;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

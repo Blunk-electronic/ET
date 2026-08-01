@@ -37,7 +37,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- This is general stuff used for operations on the
 -- canvas of the board.
 -- This related to individual objects like vias, texts, ...
@@ -57,30 +57,30 @@ package et_canvas_board_preliminary_object is
 	-- collect preliminary information here.
 
 	object_layer_category 	: type_layer_category := LAYER_CAT_ASSY;
-	
+
 	object_signal_layer		: type_signal_layer := signal_layer_default;
 
 	object_face				: type_face := face_default; -- top, bottom
 
 	object_net_name			: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
-	
+
 	-- object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
-	
+
 
 
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the preliminary object at once in a single procedure
-	-- like reset_preliminary_object. 
+	-- like reset_preliminary_object.
 	-- Instead individual small procedures could be useful
 	-- like reset_object_face or reset_object_layer_category.
 
 	procedure dummy;
-	
+
 end et_canvas_board_preliminary_object;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

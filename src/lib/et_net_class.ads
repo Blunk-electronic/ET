@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,13 +48,13 @@ with et_design_rules_board;			use et_design_rules_board;
 package et_net_class is
 
 	procedure dummy;
-	
-	
+
+
 	type type_net_class is tagged record
 		description				: pac_net_class_description.bounded_string;
 
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
+		-- The net class parameters assume default values
+		-- that cause minimal manufacturing costs even if
 		-- no net classes have been defined by the operator:
 		clearance				: type_track_clearance := 0.3;
 		track_width_min			: type_track_width := 0.3;
@@ -64,13 +64,13 @@ package et_net_class is
 		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
 	end record;
 
-		
-		
+
+
 end et_net_class;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

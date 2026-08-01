@@ -44,7 +44,7 @@ package body et_drills is
 
 	procedure validate_drill_size (drill : in type_distance_model) is begin
 		if drill not in type_drill_size then
-			log (SEVERITY_ERROR, "drill size invalid ! Allowed range is" 
+			log (SEVERITY_ERROR, "drill size invalid ! Allowed range is"
 				 & to_string (type_drill_size'first) & " .."
 				 & to_string (type_drill_size'last),
 				 console => true);
@@ -53,7 +53,7 @@ package body et_drills is
 	end validate_drill_size;
 
 
-	
+
 	function to_string (drill : in type_drill) return string is begin
 		return ("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter));
 	end to_string;
@@ -68,12 +68,12 @@ package body et_drills is
 	end get_position;
 
 
-		
+
 	function in_catch_zone (
 		zone	: in type_catch_zone;
 		drill	: in type_drill)
 		return boolean
-	is 
+	is
 		c : type_circle;
 	begin
 		-- Build a circle from the given drll:
@@ -81,11 +81,11 @@ package body et_drills is
 		set_radius (c, drill.diameter * 0.5);
 
 		-- Test whether the circle is in the catch zone:
-		return in_catch_zone (zone, c); 
+		return in_catch_zone (zone, c);
 	end in_catch_zone;
 
 
-	
+
 	function is_selected (
 		drill : in type_drill)
 		return boolean
@@ -96,7 +96,7 @@ package body et_drills is
 			return false;
 		end if;
 	end;
-	
+
 
 	procedure set_selected (
 		drill : in out type_drill)
@@ -104,14 +104,14 @@ package body et_drills is
 		set_selected (drill.status);
 	end;
 
-	
+
 	procedure clear_selected (
 		drill : in out type_drill)
 	is begin
 		clear_selected (drill.status);
 	end;
 
-	
+
 	function is_proposed (
 		drill : in type_drill)
 		return boolean
@@ -122,9 +122,9 @@ package body et_drills is
 			return false;
 		end if;
 	end;
-	
 
-	
+
+
 	procedure set_proposed (
 		drill : in out type_drill)
 	is begin
@@ -138,7 +138,7 @@ package body et_drills is
 		clear_proposed (drill.status);
 	end;
 
-	
+
 	function is_moving (
 		drill : in type_drill)
 		return boolean
@@ -149,7 +149,7 @@ package body et_drills is
 			return false;
 		end if;
 	end;
-			
+
 
 	procedure set_moving (
 		drill : in out type_drill)
@@ -165,7 +165,7 @@ package body et_drills is
 	end clear_moving;
 
 
-	
+
 	procedure modify_status (
 		drill 		: in out type_drill;
 		operation	: in type_status_operation)
@@ -173,21 +173,21 @@ package body et_drills is
 		modify_status (drill.status, operation);
 	end modify_status;
 
-	
 
-	
+
+
 	procedure reset_status (
 		drill : in out type_drill)
 	is begin
 		reset_status (drill.status);
 	end reset_status;
 
-	
+
 end et_drills;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

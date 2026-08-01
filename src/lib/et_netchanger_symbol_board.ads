@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- ToDo: 
+-- ToDo:
 --
 --
 
@@ -52,8 +52,8 @@ package et_netchanger_symbol_board is
 	name_to_origin_offset : constant type_distance_positive := 1.5;
 
 	layer_id_to_origin_offset : constant type_distance_positive := 1.0;
-	
-	
+
+
 	-- The size of the name (like N31):
 	name_size : constant type_distance_positive := 1.0;
 
@@ -61,12 +61,12 @@ package et_netchanger_symbol_board is
 	layer_size : constant type_distance_positive := 1.0;
 
 
-	
+
 	netchanger_name_font : constant type_font :=
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 
-	
+
 	linewidth_box : constant type_distance_positive := 0.25;
 
 	line_point : constant type_distance_positive := 0.7;
@@ -74,24 +74,24 @@ package et_netchanger_symbol_board is
 	-- The symbol looks like an X:
 	type type_netchanger_symbol is record
 		line_1 : type_line := type_line (to_line (
-			A => (-line_point, -line_point), 
+			A => (-line_point, -line_point),
 			B => ( line_point,  line_point)));
 
 		line_2 : type_line := type_line (to_line (
-			A => (-line_point,  line_point), 
+			A => (-line_point,  line_point),
 			B => ( line_point, -line_point)));
 	end record;
 
 
-	netchanger_symbol_board : constant 
+	netchanger_symbol_board : constant
 		type_netchanger_symbol := (others => <>);
-	
-	
+
+
 end et_netchanger_symbol_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

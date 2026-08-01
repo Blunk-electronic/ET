@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;					use ada.text_io;
 with et_contour_to_polygon;			use et_contour_to_polygon;
@@ -45,24 +45,24 @@ with et_board_ops;
 with et_net_class;					use et_net_class;
 
 package body et_routing is
-	
+
 	use pac_generic_modules;
-	
+
 
 	function get_clearance (
 		module	: in pac_generic_modules.cursor;
 		device	: in et_devices_electrical.pac_devices_electrical.cursor;
 		terminal: in pac_terminals.cursor)
 		return type_get_terminal_clearance_result
-	is 
+	is
 		use et_board_ops;
 		use pac_net_name;
 
 		-- Get a cursor to the net connected with the terminal.
 		-- If there is no net connected then we return a not-connected-status:
-		net : constant pac_nets.cursor := 
+		net : constant pac_nets.cursor :=
 			et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
-		
+
 		net_class	: type_net_class;
 		status		: type_get_terminal_clearance_result;
 
@@ -82,8 +82,8 @@ package body et_routing is
 		return status;
 	end get_clearance;
 
-			
-			
+
+
 
 
 	function get_distance_to_edge (
@@ -102,38 +102,38 @@ package body et_routing is
 			end if;
 		end update;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			use et_pcb_contour;
 			use pac_holes;
-			
+
 			procedure query_hole (c : pac_holes.cursor) is begin
 				update (get_shortest_distance (element (c), point));
 			end query_hole;
-			
+
 		begin
 			-- test board outline:
 			if log_category >= HIGH then
 				log (text => "probing outline ...", level => lth + 1);
 			end if;
-			
+
 			result := get_shortest_distance (module.board.board_contour.outline, point);
 
 			if log_category >= HIGH then
 				log (text => " distance to outline" & to_string (result),
 					 level => lth + 1);
 			end if;
-			
+
 			-- test holes in board (if there are any):
 			if not is_empty (module.board.board_contour.holes) then
 
 				if log_category >= HIGH then
-					log (text => "probing holes...", level => lth + 1);			
+					log (text => "probing holes...", level => lth + 1);
 				end if;
-				
+
 				iterate (module.board.board_contour.holes, query_hole'access);
 
 				if log_category >= HIGH then
@@ -143,48 +143,48 @@ package body et_routing is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		if log_category >= HIGH then
-			log (text => "computing distance of point" & to_string (point) 
+			log (text => "computing distance of point" & to_string (point)
 				& " to board edge ...", level => lth);
 
 			log_indentation_up;
 		end if;
-		
-		query_element (module_cursor, query_module'access);	
+
+		query_element (module_cursor, query_module'access);
 
 		if log_category >= HIGH then
 			log_indentation_down;
 		end if;
-		
+
 		return result;
 	end get_distance_to_edge;
-	
-	
+
+
 	--function on_board (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--point			: in type_vector_model;
 		--log_category	: in type_log_category;
-		--lth				: in type_log_level)		
+		--lth				: in type_log_level)
 		--return boolean
 	--is
 		--result : boolean := true;
-		
+
 		--procedure query_module (
 			--module_name	: in pac_module_name.bounded_string;
-			--module		: in type_generic_module) 
+			--module		: in type_generic_module)
 		--is
 			--procedure query_outline is begin
 				--if get_point_to_polygon_status (
-					--module.board.board_contour.outline, to_vector (point)).location = OUTSIDE 
+					--module.board.board_contour.outline, to_vector (point)).location = OUTSIDE
 				--then
 					----log (text => "outside", level => lth + 1);
 					--result := false;
 				--end if;
 			--end query_outline;
-			
-			
+
+
 			--procedure query_holes is
 				--use et_packages;
 				--use pac_holes;
@@ -192,47 +192,47 @@ package body et_routing is
 			--begin
 				--while c /= pac_holes.no_element loop
 					--if get_point_to_polygon_status (
-						--element (c), to_vector (point)).location = INSIDE 
+						--element (c), to_vector (point)).location = INSIDE
 					--then
 						--if log_category >= HIGH then
 							--log (text => "point is in a hole", level => lth + 1);
 						--end if;
-						
+
 						--result := false;
-						
+
 						--exit; -- no need to test other holes
 					--end if;
-					
+
 					--next (c);
 				--end loop;
 			--end query_holes;
 
-			
+
 		--begin -- query_module
 			--if log_category >= HIGH then
 				--log (text => "probing outline ...", level => lth + 1);
 			--end if;
-			
+
 			--query_outline;
 
 			--if result = true then -- point is inside board outlines
 				--if log_category >= HIGH then
 					--log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
 				--end if;
-				
+
 				--query_holes;
 			--end if;
 		--end query_module;
 
-		
+
 	--begin -- on_board
 		--if log_category >= HIGH then
-			--log (text => "probing whether point" & to_string (point) 
+			--log (text => "probing whether point" & to_string (point)
 			 --& " is on board ...", level => lth);
 
 			--log_indentation_up;
 		--end if;
-		
+
 		--query_element (module_cursor, query_module'access);
 
 		--if log_category >= HIGH then
@@ -241,20 +241,20 @@ package body et_routing is
 			--else
 				--log (text => "point is not on board", level => lth);
 			--end if;
-			
+
 			--log_indentation_down;
 		--end if;
 		--return result;
 	--end on_board;
 
-						  
+
 
 
 	function to_string (place : in type_place) return string is begin
 		return "place: " & type_place'image (place);
 	end to_string;
 
-	
+
 	--function get_dimensions (
 		--track : in type_track)
 		--return type_track_dimensions
@@ -270,14 +270,14 @@ package body et_routing is
 		---- the start and end points of the upper and lower edge:
 		--upper_edge_start, upper_edge_end,
 		--lower_edge_start, lower_edge_end : type_vector_model;
-		
+
 	--begin
 		---- the given track travels in this direction:
 		--result.direction := get_angle (track.center);
 
 		---- the offset of the track relative to the origin is:
 		--result.offset := to_distance_relative (track_start);
-		
+
 		---- build the line in the center of the track:
 		--result.center_line := (
 				--start_point	=> origin,
@@ -285,13 +285,13 @@ package body et_routing is
 								--x => far_right - width * 0.5,
 								--y => zero)));
 
-		
+
 		---- build the horizontally running track:
-		
+
 		---- build the boundaries of the track
 		--result.boundaries := get_boundaries (result.center_line, width);
 
-		
+
 		---- build start and end points of upper and lower edge
 		--upper_edge_start := type_vector_model (
 			--set (result.boundaries.smallest_x, result.boundaries.greatest_y));
@@ -313,31 +313,31 @@ package body et_routing is
 		--return result;
 	--end get_dimensions;
 
-	
+
 	--function get_break (
 		--init			: in type_distance;
 		--place			: in type_place;
 		--obstacle		: in type_obstacle;
 		--clearance		: in type_distance_positive;
 		--log_category	: in type_log_category;
-		--lth				: in type_log_level) 
+		--lth				: in type_log_level)
 		--return type_distance
 	--is
 		---- Build a circle that models the cap of the track.
 		---- The circle covers the clearance required for the track:
 		--c : type_circle := (radius => clearance, others => <>);
-		
+
 		---- the distance between center of cap and obstacle:
 		--d_cap_to_obstacle : type_distance;
 		--d_cap_to_obstacle_abs : type_distance_positive;
 
 		--step : type_distance_positive;
-		
+
 		---- There is a maximum of iterations. If maximum reached
 		---- a constraint_error is raised.
 		--max_iterations : constant positive := 2000; -- CS increase if necessary
 
-	--begin		
+	--begin
 		--if log_category = INSANE then
 			--log (text => "starting numerical search ...", level => lth);
 			--log_indentation_up;
@@ -354,7 +354,7 @@ package body et_routing is
 			--log (text => "clearance: " & to_string (clearance), level => lth + 1);
 			--log (text => "init     : " & to_string (init), level => lth + 1);
 		--end if;
-		
+
 		---- Set the inital position of the cap:
 		--case place is
 			--when BEFORE =>
@@ -368,12 +368,12 @@ package body et_routing is
 			--log (text => "cap start: " & to_string (c), level => lth + 1);
 		--end if;
 
-		
+
 		--for i in 1 .. max_iterations loop
-			
+
 			---- Calculate the distance between the cap (incl. clearance) and the obstacle:
 			----log (text => "cap      : " & to_string (c), level => lth + 1);
-			
+
 			--case obstacle.shape is
 				--when LINE =>
 					--d_cap_to_obstacle := get_distance (c, obstacle.line);
@@ -382,14 +382,14 @@ package body et_routing is
 				--when CIRCLE =>
 					--d_cap_to_obstacle := get_distance (c, obstacle.circle);
 			--end case;
-					
+
 			--if log_category = INSANE then
 				--log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
 			--end if;
-			
+
 			--d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
 
-			
+
 			---- Cancel this loop once the distance is sufficiently small.
 			---- Otherwise take half of the distance and move cap to new position:
 			--if d_cap_to_obstacle_abs < fab_tolerance then
@@ -397,12 +397,12 @@ package body et_routing is
 					--log (text => " break point found after" & positive'image (i) & " iterations",
 						--level => lth + 1);
 				--end if;
-				
+
 				--exit;
 			--else
 				--step := d_cap_to_obstacle_abs * 0.5;
 				----step := d_cap_to_obstacle_abs;
-				
+
 				--case place is
 					--when BEFORE =>
 						--if d_cap_to_obstacle > zero then
@@ -412,7 +412,7 @@ package body et_routing is
 							---- move cap left away from the obstacle:
 							--c.center := type_vector_model (move (c.center, 180.0, step));
 						--end if;
-						
+
 					--when AFTER =>
 						--if d_cap_to_obstacle > zero then
 							---- move cap left towards the obstacle:
@@ -424,7 +424,7 @@ package body et_routing is
 				--end case;
 			--end if;
 
-			
+
 			---- Once the maximum of iterations has been reached, raise exception:
 			--if i = max_iterations then
 				--raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
@@ -436,11 +436,11 @@ package body et_routing is
 		--if log_category = INSANE then
 			--log_indentation_down;
 		--end if;
-		
+
 		--return get_x (c.center);
 	--end get_break;
 
-	
+
 	--function get_break_by_line (
 		--track				: in type_track;
 		--track_dimensions	: in type_track_dimensions;
@@ -452,7 +452,7 @@ package body et_routing is
 	--is
 		---- the clearance between center of cap and line:
 		--clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
-		
+
 		--function move_and_rotate_line (line: in type_line) return type_line is
 			--l : type_line := line;
 		--begin
@@ -463,17 +463,17 @@ package body et_routing is
 
 		---- The line we will work with from now on:
 		--line_tmp : constant type_line := move_and_rotate_line (line);
-		
+
 		---- the boundaries of the rotated line
 		--line_boundaries : constant type_boundaries := get_boundaries (line_tmp, zero);
 		---- (The line has zero line width.)
 
-	
-		---- the intersections of the upper and lower edge of the track 
+
+		---- the intersections of the upper and lower edge of the track
 		---- with the rotated line:
 		--i_upper : constant type_intersection_of_two_lines :=
 			--get_intersection (to_line_vector (track_dimensions.upper_edge), line_tmp);
-	
+
 		--i_lower : constant type_intersection_of_two_lines :=
 			--get_intersection (to_line_vector (track_dimensions.lower_edge), line_tmp);
 
@@ -483,20 +483,20 @@ package body et_routing is
 
 		---- the place along the x-axis where the search for the break is to begin:
 		--start_point : type_distance;
-		
+
 		--bp : type_vector_model;
 		--break_exists : boolean := false;
 
-		
-		--procedure full_intersection is 
+
+		--procedure full_intersection is
 			---- The intersection of the center_line of the track with the candidate line:
 			--i_center : constant type_intersection_of_two_lines :=
 				--get_intersection (to_line_vector (track_dimensions.center_line), line_tmp);
 
-			---- We are dealing with a rectangular triangle.			
-			---- The distance from the center of the cap of the track to the 
+			---- We are dealing with a rectangular triangle.
+			---- The distance from the center of the cap of the track to the
 			---- candidate line (in x-direction).
-			---- (It is the hypothenusis of the triangle.):	
+			---- (It is the hypothenusis of the triangle.):
 			--spacing : type_distance_positive;
 
 			---- The angle between clearance and spacing:
@@ -507,13 +507,13 @@ package body et_routing is
 			--if log_category = INSANE then
 				--log_indentation_up;
 
-			----log (text => "line " & to_string (line_tmp) 
+			----log (text => "line " & to_string (line_tmp)
 				 ----& " intersects center of track at" & to_string (i_center.intersection.point)
 				 ----& " angle" & to_string (i_center.intersection.angle),
 				 ----level => lth + 2);
 
 			--end if;
-			
+
 			---- clearance is the distance from center of the cap perpendicular to the line.
 			----spacing := type_distance (round (
 				----d_fine	=> type_distance_positive (float (clearance) / cos (angle, float (units_per_cycle))),
@@ -522,19 +522,19 @@ package body et_routing is
 			--spacing := type_distance (round (
 				--d_fine	=> to_distance (type_float (clearance) / cos (angle, units_per_cycle)),
 				--mode	=> UP));
-			
+
 			----spacing := to_distance (type_float (clearance) / cos (angle, units_per_cycle));
-			
+
 			----log (text => "spacing float " & float'image (float (clearance) / cos (angle, float (units_per_cycle))));
 			----log (text => "spacing       " & to_string (spacing));
 			----log (text => "required spacing" & to_string (spacing), level => lth + 2);
-			
-			---- Depending on the given place, the break point must be moved 
+
+			---- Depending on the given place, the break point must be moved
 			---- left or right by the spacing:
 			--case place is
 				--when BEFORE =>
 					--bp := type_vector_model (set (to_distance (get_x (i_center.intersection.vector)) - spacing, zero));
-					
+
 				--when AFTER =>
 					--bp := type_vector_model (set (to_distance (get_x (i_center.intersection.vector)) + spacing, zero));
 			--end case;
@@ -544,7 +544,7 @@ package body et_routing is
 			--end if;
 		--end full_intersection;
 
-		
+
 	--begin -- get_break_by_line
 		--if bi.exists then -- line and track boundaries do intersect in some way
 
@@ -555,34 +555,34 @@ package body et_routing is
 
 			----log (text => "track " & to_string (track_dimensions.boundaries));
 			----log (text => "line  " & to_string (line_boundaries));
-			
+
 			--if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				---- The candidate line intersects the upper and lower edge of the track.
 
 				--if log_category = INSANE then
 					--log (text => "line intersects track upper and lower edge", level => lth + 1);
 				--end if;
-				
+
 				--full_intersection;
 				---- bp is now set
 
 			--else
-				---- We have a partial intersection.			
+				---- We have a partial intersection.
 				---- The candidate line intersects only one edge or none at all.
 
 				--if log_category = INSANE then
 					--log (text => "line intersects track partially", level => lth + 1);
 					--log_indentation_up;
 				--end if;
-				
+
 				--case place is
 					--when BEFORE =>
-						---- Use the LEFT border of the line boundaries 
+						---- Use the LEFT border of the line boundaries
 						---- as start point for the search operation:
 						--start_point := line_boundaries.smallest_x;
 
 					--when AFTER =>
-						---- Use the RIGHT border of the line boundaries 
+						---- Use the RIGHT border of the line boundaries
 						---- as start point for the search operation:
 						--start_point := line_boundaries.greatest_x;
 				--end case;
@@ -609,7 +609,7 @@ package body et_routing is
 
 		----bp := type_vector_model (round (bp));
 
-		
+
 		---- The computed break point must be after the start of the track.
 		---- If it is before the start of the track, then it is discarded.
 		--if get_x (bp) > zero then
@@ -619,7 +619,7 @@ package body et_routing is
 			--rotate_to (bp, track_dimensions.direction);
 			--move_by (bp, track_dimensions.offset);
 			----bp := type_vector_model (round (bp));
-			
+
 			--break_exists := true;
 
 			--if log_category = INSANE then
@@ -628,16 +628,16 @@ package body et_routing is
 			--end if;
 		--end if;
 
-		
-		
+
+
 		--if break_exists then
 			--return (exists => true, point => bp);
 		--else
 			--return (exists => false);
 		--end if;
-			
+
 	--end get_break_by_line;
-	
+
 
 	-- This function sorts the given intersections (of line and circle)
 	-- and returns them in a simple list of distances along the x-axis:
@@ -648,9 +648,9 @@ package body et_routing is
 		result : pac_distances.list;
 
 		use pac_distances_sorting;
-		
+
 		procedure read_x_position (
-			i : in type_intersection_of_line_and_circle) 
+			i : in type_intersection_of_line_and_circle)
 		is begin
 			case i.status is
 				when ONE_EXISTS =>
@@ -661,26 +661,26 @@ package body et_routing is
 				when TWO_EXIST =>
 					result.append (to_distance (get_x (i.intersection_1)));
 					result.append (to_distance (get_x (i.intersection_2)));
-					
+
 				when NONE_EXIST => null;
 			end case;
 		end read_x_position;
-		
+
 	begin
 		read_x_position (i_upper);
 		read_x_position (i_lower);
 
 		sort (result);
-		
+
 		return result;
 	end get_x_values;
 
 
-	-- Searches for each arc fragment the break before/after 
+	-- Searches for each arc fragment the break before/after
 	-- the intersection with the track.
 	--procedure set_break_points (
 		--track_dimensions	: in type_track_dimensions;
-		--clearance			: in type_distance_positive;						   
+		--clearance			: in type_distance_positive;
 		--place				: in type_place;
 		--arcs				: in type_arcs; -- arcs is an array of arc segments
 		--bp1					: in out type_vector_model;
@@ -703,13 +703,13 @@ package body et_routing is
 				--log (text => "fragment" & natural'image (i) & ": "
 					--& to_string (arcs (i)), level => lth);
 			--end if;
-			
+
 			---- Get the boundaries of the candidate arc:
 			--arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
 
 			--declare
 				---- Get the overlap area of the track and arc boundaries:
-				--bi : constant type_boundaries_intersection := 
+				--bi : constant type_boundaries_intersection :=
 					--get_intersection (track_dimensions.boundaries, arc_boundaries);
 
 				---- the place along the x-axis where the search for the break is to begin:
@@ -738,7 +738,7 @@ package body et_routing is
 						--clearance		=> clearance,
 						--log_category	=> log_category,
 						--lth				=> lth + 1);
-					
+
 					---- The break must be after the start of the track.
 					---- Otherwise the break is ignored.
 					---- Collect the x-position of the break in container x_values.
@@ -757,7 +757,7 @@ package body et_routing is
 
 		--case break_count is
 			--when 0 => null;
-			--when 1 => 
+			--when 1 =>
 				--x_cursor := x_values.first;
 				--bp1 := type_vector_model (set (element (x_cursor), zero));
 
@@ -770,9 +770,9 @@ package body et_routing is
 					--log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
 						--level => lth + 2);
 				--end if;
-				
+
 			--when 2 =>
-				--x_cursor := x_values.first;					
+				--x_cursor := x_values.first;
 				--bp1 := type_vector_model (set (element (x_cursor), zero));
 				--next (x_cursor);
 				--bp2 := type_vector_model (set (element (x_cursor), zero));
@@ -798,7 +798,7 @@ package body et_routing is
 		--end case;
 	--end set_break_points;
 
-	
+
 	--function get_break_by_arc (
 		--track				: in type_track;
 		--track_dimensions	: in type_track_dimensions;
@@ -810,7 +810,7 @@ package body et_routing is
 	--is
 		---- the clearance between center of cap and arc:
 		--clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
-		
+
 		--function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			--a : type_arc := arc;
 		--begin
@@ -826,20 +826,20 @@ package body et_routing is
 		--arc_boundaries : constant type_boundaries := get_boundaries (arc_tmp, zero);
 		---- (The arc has zero line width.)
 
-		
+
 		---- the intersections of the upper and lower edge of the track
 		---- with the rotated arc:
 		--i_upper : constant type_intersection_of_line_and_circle :=
 			--get_intersection (to_line_vector (track_dimensions.upper_edge), arc_tmp);
-	
+
 		--i_lower : constant type_intersection_of_line_and_circle :=
 			--get_intersection (to_line_vector (track_dimensions.lower_edge), arc_tmp);
 
 		---- the area where track and arc boundaries intersect:
-		--bi : constant type_boundaries_intersection := 
+		--bi : constant type_boundaries_intersection :=
 			--get_intersection (track_dimensions.boundaries, arc_boundaries);
 
-		
+
 		---- the possible break points and the number of break points:
 		--break_count : type_break_count := 0;
 		--bp1, bp2 : type_vector_model;
@@ -858,9 +858,9 @@ package body et_routing is
 				--log (text => "splitting of arc required", level => lth + 1);
 				--log_indentation_up;
 			--end if;
-			
+
 			--set_break_points (
-				--track_dimensions, clearance, place, 
+				--track_dimensions, clearance, place,
 				--split_arc (arc_tmp), -- the arc is split here
 				--bp1, bp2, break_count, log_category, lth + 2);
 
@@ -868,11 +868,11 @@ package body et_routing is
 				--log_indentation_down;
 			--end if;
 		--end split;
-		
-		
-		---- Searches the break point (before or after) by means 
+
+
+		---- Searches the break point (before or after) by means
 		---- of the boundaries of the whole overlapping area.
-		--procedure use_overlap_area is 
+		--procedure use_overlap_area is
 			---- the place along the x-axis where the search for the break is to begin:
 			--start_point : type_distance;
 		--begin
@@ -880,13 +880,13 @@ package body et_routing is
 				--log (text => "using boundaries of whole overlapping area", level => lth + 1);
 				--log_indentation_up;
 			--end if;
-			
+
 			--case place is
 				--when BEFORE =>
 					---- The start point of the search is the LEFT border of the
 					---- overlapping area:
 					--start_point := bi.intersection.smallest_x;
-														
+
 				--when AFTER =>
 					---- The start point of the search is the RIGHT border of the
 					---- overlapping area:
@@ -912,7 +912,7 @@ package body et_routing is
 				--move_by (bp1, track_dimensions.offset);
 
 				--break_count := 1;
-				
+
 				--if log_category = INSANE then
 					--log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
 						 --level => lth + 2);
@@ -923,8 +923,8 @@ package body et_routing is
 				--log_indentation_down;
 			--end if;
 		--end use_overlap_area;
-		
-		
+
+
 	--begin -- get_break_by_arc
 		--if bi.exists then -- arc and track do intersect in some way
 
@@ -932,13 +932,13 @@ package body et_routing is
 				--log (text => "break by " & to_string (arc), level => lth);
 				--log_indentation_up;
 			--end if;
-			
+
 			---- The number of intersections with the arc determines
 			---- how to proceed:
 			--case length (x_values_pre) is
 
 				--when 0 =>
-					---- The arc is embedded in the track and does NOT intersect 
+					---- The arc is embedded in the track and does NOT intersect
 					---- the edges of the track.
 					---- If x_values_pre is empty then the arc is embedded in the track
 					---- without touching the upper or lower edge of the track.
@@ -946,8 +946,8 @@ package body et_routing is
 					---- only if the area of overlap begins after the start of the track.
 					--if (place = BEFORE and bi.intersection.smallest_x >= zero)
 
-					---- CS: A similar optimization when place is AFTER ?				
-					--or place = AFTER 
+					---- CS: A similar optimization when place is AFTER ?
+					--or place = AFTER
 					----or (place = AFTER and bi.intersection.greatest_x >= zero)
 					--then
 						--use_overlap_area;
@@ -964,8 +964,8 @@ package body et_routing is
 					---- only if the last intersection comes after the start of the track.
 					--if (place = BEFORE and x_values_pre.last_element >= zero)
 
-					---- CS: A similar optimization when place is AFTER ?				
-					--or place = AFTER 
+					---- CS: A similar optimization when place is AFTER ?
+					--or place = AFTER
 					--then
 						--if i_upper.status = TWO_EXIST xor i_lower.status = TWO_EXIST then
 						---- The arc intersects either the upper or the lower edge of
@@ -982,7 +982,7 @@ package body et_routing is
 								 --level => lth);
 						--end if;
 					--end if;
-				
+
 				--when 3..4 =>
 					---- The arc intersects the track in 3 or 4 points.
 					--split;
@@ -1015,7 +1015,7 @@ package body et_routing is
 	--is
 		---- the clearance between center of cap and arc:
 		--clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
-		
+
 		--function move_circle (circle : in type_circle) return type_circle is
 			--c : type_circle := circle;
 		--begin
@@ -1030,22 +1030,22 @@ package body et_routing is
 		--circle_boundaries : constant type_boundaries := get_boundaries (circle_tmp, zero);
 		---- (The circle has zero line width.)
 
-		
+
 		---- the intersections of the upper and lower edge of the track
 		---- with the circle:
 		--i_upper : constant type_intersection_of_line_and_circle :=
 			--get_intersection (to_line_vector (track_dimensions.upper_edge), circle_tmp);
-	
+
 		--i_lower : constant type_intersection_of_line_and_circle :=
 			--get_intersection (to_line_vector (track_dimensions.lower_edge), circle_tmp);
 
 		---- the area where track and circle boundaries intersect:
-		--bi : constant type_boundaries_intersection := 
+		--bi : constant type_boundaries_intersection :=
 			--get_intersection (track_dimensions.boundaries, circle_boundaries);
 
 		---- the place along the x-axis where the search for the break is to begin:
 		--start_point : type_distance;
-		
+
 		---- the possible break points and the number of break points:
 		--break_count : type_break_count := 0;
 		--bp1, bp2 : type_vector_model;
@@ -1055,7 +1055,7 @@ package body et_routing is
 		--use pac_distances;
 		--x_values_pre : pac_distances.list := get_x_values (i_upper, i_lower);
 		---- x_values_pre now contains the sorted x-positions from left to right
-		
+
 	--begin -- get_break_by_circle
 		--if bi.exists then -- circle and track do intersect in some way
 
@@ -1063,17 +1063,17 @@ package body et_routing is
 				--log (text => "break by " & to_string (circle), level => lth);
 				--log_indentation_up;
 			--end if;
-			
+
 			---- The number of intersections with the arc determines
 			---- how to proceed:
 			---- CS: see get_break_by_arc for possible improvements here.
 			--case length (x_values_pre) is
 				--when 0 .. 2 =>
-					---- when 0: 
+					---- when 0:
 					---- The circle is embedded in the track
 					---- without touching the upper or lower edge of the track.
-					
-					---- when 1: 
+
+					---- when 1:
 					---- The circle is embedded in the track
 					---- but touches the upper or lower edge of the track.
 					---- One edge is a tangent to the circle.
@@ -1086,25 +1086,25 @@ package body et_routing is
 					---- only if the area of overlap begins after the start of the track.
 					--if (place = BEFORE and bi.intersection.smallest_x >= zero) -- CS ?
 
-					---- CS: A similar optimization when place is AFTER ?				
-					--or place = AFTER 
+					---- CS: A similar optimization when place is AFTER ?
+					--or place = AFTER
 					--then
-						---- The search for the break point (before or after) can be 
+						---- The search for the break point (before or after) can be
 						---- done by means of the boundaries of the whole overlapping area.
 
 						--if log_category = INSANE then
 							--log (text => "using boundaries of whole overlapping area",
 								--level => lth + 1);
-						
+
 							--log_indentation_up;
 						--end if;
-						
+
 						--case place is
 							--when BEFORE =>
 								---- The start point of the search is the LEFT border of the
 								---- overlapping area:
 								--start_point := bi.intersection.smallest_x;
-							
+
 							--when AFTER =>
 								---- The start point of the search is the RIGHT border of the
 								---- overlapping area:
@@ -1147,8 +1147,8 @@ package body et_routing is
 						--end if;
 					--end if;
 
-					
-				--when 4 =>					
+
+				--when 4 =>
 					---- The circle intersects the track in 4 points.
 					---- So the circle must be split in 2 arcs. Each arc
 					---- will then be treated separately.
@@ -1156,17 +1156,17 @@ package body et_routing is
 						--log (text => "splitting of circle required", level => lth + 1);
 						--log_indentation_up;
 					--end if;
-					
+
 					---- split the circle in 2 arcs:
 					--set_break_points (
-						--track_dimensions, clearance, place, 
+						--track_dimensions, clearance, place,
 						--split_circle (circle_tmp), -- the circle is split here
 						--bp1, bp2, break_count, log_category, lth + 2);
 
 					--if log_category = INSANE then
 						--log_indentation_down;
 					--end if;
-					
+
 				--when others =>
 					--raise constraint_error; -- CS useful message
 			--end case;
@@ -1176,7 +1176,7 @@ package body et_routing is
 			--end if;
 		--end if;
 
-		
+
 		--case break_count is
 			--when 0 => return (count => 0);
 			--when 1 => return (1, bp1);
@@ -1184,7 +1184,7 @@ package body et_routing is
 		--end case;
 	--end get_break_by_circle;
 
-	
+
 
 	--function after_start_of_track (
 		--track	: in type_track;
@@ -1197,24 +1197,24 @@ package body et_routing is
 	--begin
 		--if point_direction = track_direction then
 			--return true;
-			
+
 		--elsif point_direction = - track_direction then
 			--return false; -- point is before start point of track
-			
+
 		--else
 			--raise constraint_error with
 				--"ERROR: Point" & to_string (point) & " is not on track !";
 			---- CS output track properties (start, width, clearance);
-			
+
 			----return false;
 		--end if;
 	--end after_start_of_track;
 
-	
+
 	--function get_distance (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
-		--bottom_layer	: in type_signal_layer;		
+		--bottom_layer	: in type_signal_layer;
 		--start_point		: in type_vector_model;
 		--place			: in type_place := BEFORE;
 		--direction		: in type_rotation;
@@ -1228,7 +1228,7 @@ package body et_routing is
 		--lth				: in type_log_level)
 		--return type_route_distance is separate;
 
-	
+
 	--function clear_for_track (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
@@ -1241,15 +1241,15 @@ package body et_routing is
 		--width			: in type_track_width;
 		--ignore_same_net	: in boolean;
 		--log_category	: in type_log_category := log_category_default;
-		--lth				: in type_log_level)		
+		--lth				: in type_log_level)
 		--return boolean is separate;
 
-	
+
 end et_routing;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

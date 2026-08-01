@@ -40,23 +40,23 @@ package et_logic is
 
 
 	type type_output_inverted is (NO, YES);
-	
+
 	output_inverted_default : constant type_output_inverted := NO;
-	
+
 	function to_string (inverted : in type_output_inverted) return string;
 	function to_output_inverted (inverted : in string) return type_output_inverted;
 
 
 	keyword_inverted				: constant string := "inverted";
 	keyword_output_inverted			: constant string := "output_inverted";
-	
-	
-	
+
+
+
 end et_logic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

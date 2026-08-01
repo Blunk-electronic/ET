@@ -54,7 +54,7 @@ procedure draw_stop (
 	face : in type_face)
 is
 	use et_colors.board;
-	
+
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;
@@ -66,14 +66,14 @@ is
 	procedure set_default_brightness is begin
 		set_color_stop_mask (face, NORMAL);
 	end set_default_brightness;
-		
+
 	procedure set_highlight_brightness is begin
 		set_color_stop_mask (face, BRIGHT);
 	end set_highlight_brightness;
 
-	
-	
-	procedure query_line (c : in pac_stop_lines.cursor) is 
+
+
+	procedure query_line (c : in pac_stop_lines.cursor) is
 		line : type_stop_line renames element (c);
 
 		procedure draw is begin
@@ -82,7 +82,7 @@ is
 				width	=> line.width,
 				stroke	=> DO_STROKE);
 		end draw;
-			
+
 	begin
 		if is_selected (line) then
 			set_highlight_brightness;
@@ -93,9 +93,9 @@ is
 		end if;
 	end query_line;
 
-	
-	
-	procedure query_arc (c : in pac_stop_arcs.cursor) is 
+
+
+	procedure query_arc (c : in pac_stop_arcs.cursor) is
 		arc : type_stop_arc renames element (c);
 
 		procedure draw is begin
@@ -104,8 +104,8 @@ is
 				width	=> arc.width,
 				stroke	=> DO_STROKE);
 		end draw;
-	
-	begin		
+
+	begin
 		if is_selected (arc) then
 			set_highlight_brightness;
 			draw;
@@ -116,8 +116,8 @@ is
 	end query_arc;
 
 
-	
-	procedure query_circle (c : in pac_stop_circles.cursor) is 
+
+	procedure query_circle (c : in pac_stop_circles.cursor) is
 		circle : type_stop_circle renames element (c);
 
 		procedure draw is begin
@@ -127,7 +127,7 @@ is
 				width	=> circle.width,
 				stroke	=> DO_STROKE);
 		end draw;
-	
+
 	begin
 		if is_selected (circle) then
 			set_highlight_brightness;
@@ -138,8 +138,8 @@ is
 		end if;
 	end query_circle;
 
-	
-	
+
+
 	procedure query_zone (c : in pac_stop_zones.cursor) is
 		use pac_draw_contours;
 	begin
@@ -149,12 +149,12 @@ is
 			width	=> zero);
 	end query_zone;
 
-	
-	
+
+
 	procedure query_placeholder (
 	-- CS move procedure to query_items (below) and care for mirroring.
 		c : in pac_placeholders_non_conductor.cursor)
-	is 
+	is
 		use pac_text_vectorized;
 		use pac_draw_text;
 		content : pac_text_content.bounded_string;
@@ -180,9 +180,9 @@ is
 
 
 
-	
-	
-	procedure query_text (c : in pac_stop_texts.cursor) is 
+
+
+	procedure query_text (c : in pac_stop_texts.cursor) is
 	-- CS move procedure to query_items (below) and care for mirroring.
 		use pac_draw_text;
 	begin
@@ -196,10 +196,10 @@ is
 	end query_text;
 
 
-	
+
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
+		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
 	begin
@@ -227,11 +227,11 @@ is
 
 	end query_items;
 
-	
+
 begin -- draw_stop
-	
+
 	-- 	put_line ("draw solder stop mask ...");
-	
+
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
@@ -241,16 +241,16 @@ begin -- draw_stop
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_STOPMASK);
 
-	
+
 	-- Draw the zone begin drawn:
 	draw_live_zone (LAYER_CAT_STOPMASK);
-	
+
 end draw_stop;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

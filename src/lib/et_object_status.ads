@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 package et_object_status is
@@ -53,8 +53,8 @@ package et_object_status is
 	type type_object_status is private;
 
 	object_status_default : constant type_object_status;
-	
-												  
+
+
 
 	procedure set_proposed (
 		status	: in out type_object_status);
@@ -67,9 +67,9 @@ package et_object_status is
 	function is_proposed (
 		status : in type_object_status)
 		return boolean;
-	
 
-	
+
+
 	procedure set_selected (
 		status	: in out type_object_status);
 
@@ -83,7 +83,7 @@ package et_object_status is
 		return boolean;
 
 
-	
+
 
 	procedure set_moving (
 		status	: in out type_object_status);
@@ -98,7 +98,7 @@ package et_object_status is
 		return boolean;
 
 
-	
+
 
 	procedure set_locked (
 		status	: in out type_object_status);
@@ -114,16 +114,16 @@ package et_object_status is
 
 
 
-	function get_default_status 
+	function get_default_status
 		return type_object_status;
-	
-	
+
+
 	type type_action is (SET, CLEAR);
 
 	type type_flag is (PROPOSED, SELECTED, MOVING, LOCKED);
 
 	type type_status_operation is private;
-	
+
 
 	function to_operation (
 		action	: in type_action;
@@ -140,23 +140,23 @@ package et_object_status is
 		operation : in type_status_operation)
 		return type_flag;
 
-	
+
 
 	procedure modify_status (
 		status 		: in out type_object_status;
 		operation	: in type_status_operation);
 
-	
+
 	procedure reset_status (
 		status 		: in out type_object_status);
 
-	
-	
+
+
 	function to_string (
 		flag : in type_flag)
 		return string;
 
-	
+
 	function to_string (
 		operation : in type_status_operation)
 		return string;
@@ -164,16 +164,16 @@ package et_object_status is
 
 
 
-	-- This composite type is requred to 
+	-- This composite type is requred to
 	-- indicate the status of the A- and B-end
 	-- of a line or an arc:
 	type type_AB_status is private;
 
 
 
-	
 
-	
+
+
 	type type_AB_selected is private;
 
 
@@ -181,12 +181,12 @@ package et_object_status is
 		status : in type_AB_status)
 		return boolean;
 
-	
+
 	function is_B_selected (
 		status : in type_AB_status)
 		return boolean;
 
-	
+
 	procedure set_A_selected (
 		status : in out type_AB_status);
 
@@ -205,32 +205,32 @@ package et_object_status is
 
 	procedure clear_AB_selected (
 		status : in out type_AB_status);
-	
 
 
-	
-	
+
+
+
 	type type_AB_moving is private;
 
-	
+
 	function is_A_moving (
 		status : in type_AB_status)
 		return boolean;
 
-	
+
 	function is_B_moving (
 		status : in type_AB_status)
 		return boolean;
 
 
-	
+
 	procedure set_A_moving (
 		status : in out type_AB_status);
 
 
 	procedure set_B_moving (
 		status : in out type_AB_status);
-	
+
 
 	procedure clear_A_moving (
 		status : in out type_AB_status);
@@ -247,8 +247,8 @@ package et_object_status is
 	procedure clear_AB (
 		status : in out type_AB_status);
 
-	
-	
+
+
 private
 	type type_object_status is record
 		proposed	: type_proposed := false;
@@ -259,7 +259,7 @@ private
 
 
 	object_status_default : constant type_object_status := (others => <>);
-	
+
 
 	type type_status_operation is record
 		action	: type_action;
@@ -272,27 +272,27 @@ private
 		B : type_moving := false;
 	end record;
 
-	
+
 	type type_AB_selected is record
 		A : type_selected := false;
 		B : type_selected := false;
 	end record;
 
-	
+
 	type type_AB_status is record
 		selected	: type_AB_selected;
 		moving		: type_AB_moving;
-		
+
 		-- A : type_moving := false;
 		-- B : type_moving := false;
 	end record;
-	
-	
+
+
 end et_object_status;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

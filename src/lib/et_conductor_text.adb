@@ -50,11 +50,11 @@ package body et_conductor_text is
 		reset_text (type_text_fab_with_content (text));
 		text.vectors := vector_text_default;
 	end;
-		
 
 
 
-	
+
+
 	procedure mirror_text (
 		text	: in out type_conductor_text;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -79,12 +79,12 @@ package body et_conductor_text is
 		move_vector_text (text.vectors, offset);
 	end move_text;
 
-	
+
 end et_conductor_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

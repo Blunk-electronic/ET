@@ -55,7 +55,7 @@ package body et_route_restrict.boards is
 	end;
 
 
-	
+
 	procedure reset_arc (
 		arc : in out type_route_restrict_arc)
 	is begin
@@ -64,13 +64,13 @@ package body et_route_restrict.boards is
 		set_center (arc, origin);
 		-- CS probably no good idea because this default
 		-- results in an invalid arc.
-		
+
 		clear (arc.layers);
 		set_direction (arc,CCW);
 	end;
 
 
-	
+
 	procedure reset_circle (
 		circle : in out type_route_restrict_circle)
 	is begin
@@ -80,11 +80,11 @@ package body et_route_restrict.boards is
 	end;
 
 
-	
+
 -- 	procedure line_route_restrict_properties (
 -- 		face			: in type_face;
 -- 		cursor			: in pac_route_restrict_lines.cursor;
--- 		log_threshold 	: in type_log_level) 
+-- 		log_threshold 	: in type_log_level)
 -- 	is
 -- 		use pac_route_restrict_lines;
 -- 		line : type_route_restrict_line;
@@ -93,10 +93,10 @@ package body et_route_restrict.boards is
 -- 		log (text => "route restrict line layers" & to_string (line.layers) & space
 -- 			 & to_string (type_line (line)), level => log_threshold);
 -- 	end line_route_restrict_properties;
--- 
--- 	
--- 	
--- 	
+--
+--
+--
+--
 -- 	procedure arc_route_restrict_properties (
 -- 		face			: in type_face;
 -- 		cursor			: in pac_route_restrict_arcs.cursor;
@@ -106,21 +106,21 @@ package body et_route_restrict.boards is
 -- 		arc : type_route_restrict_arc;
 -- 	begin
 -- 		arc := element (cursor);
--- 		log (text => "route restrict arc layers" & to_string (arc.layers) & space 
+-- 		log (text => "route restrict arc layers" & to_string (arc.layers) & space
 -- 			 & to_string (arc), level => log_threshold);
 -- 	end arc_route_restrict_properties;
 
 
 	--CS procedure circle_route_restrict_properties
-	
 
-	
-	
+
+
+
 end et_route_restrict.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

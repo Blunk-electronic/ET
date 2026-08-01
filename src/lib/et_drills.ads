@@ -43,14 +43,14 @@ with et_object_status;			use et_object_status;
 
 package et_drills is
 	use pac_geometry_2;
-	
-	
+
+
 	-- We fit the diameter in a reasonable range via a subtype:
 	drill_size_min : constant type_distance_positive := 0.05;
 	drill_size_max : constant type_distance_positive := 10.0;
 	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
 
-	
+
 	-- Checks whether given drill size is in range of type_drill_size
 	procedure validate_drill_size (drill : in type_distance_model);
 
@@ -61,7 +61,7 @@ package et_drills is
 		status		: type_object_status;
 	end record;
 
-	
+
 	-- returns the properties of the given drill as string:
 	function to_string (drill : in type_drill) return string;
 
@@ -69,14 +69,14 @@ package et_drills is
 	function get_position (
 		drill : in type_drill)
 		return type_vector_model;
-	
+
 
 	-- Returns true if the drill is inside the given zone:
 	function in_catch_zone (
 		zone	: in type_catch_zone;
 		drill	: in type_drill)
 		return boolean;
-	
+
 
 	function is_selected (
 		drill : in type_drill)
@@ -88,7 +88,7 @@ package et_drills is
 	procedure clear_selected (
 		drill : in out type_drill);
 
-	
+
 	function is_proposed (
 		drill : in type_drill)
 		return boolean;
@@ -99,7 +99,7 @@ package et_drills is
 	procedure clear_proposed (
 		drill : in out type_drill);
 
-	
+
 	function is_moving (
 		drill : in type_drill)
 		return boolean;
@@ -110,28 +110,28 @@ package et_drills is
 	procedure clear_moving (
 		drill : in out type_drill);
 
-	
+
 	procedure modify_status (
 		drill 		: in out type_drill;
 		operation	: in type_status_operation);
 
-	
+
 
 	procedure reset_status (
 		drill : in out type_drill);
 
 
 
-	
+
 
 	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;
 
-	
+
 end et_drills;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

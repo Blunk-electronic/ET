@@ -59,14 +59,14 @@ package et_net_labels is
 
 
 
-	
+
 	type type_net_label_base is tagged record
 		size		: type_text_size := text_size_default;
 		-- CS no need, remove
-		
+
 		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
 		-- CS no need, remove
-		
+
 		status		: type_object_status;
 	end record;
 
@@ -75,7 +75,7 @@ package et_net_labels is
 	procedure set_proposed (
 		label : in out type_net_label_base);
 
-	
+
 	procedure clear_proposed (
 		label : in out type_net_label_base);
 
@@ -84,13 +84,13 @@ package et_net_labels is
 		label : in type_net_label_base)
 		return boolean;
 
-	
+
 
 
 	procedure set_selected (
 		label : in out type_net_label_base);
 
-	
+
 	procedure clear_selected (
 		label : in out type_net_label_base);
 
@@ -100,20 +100,20 @@ package et_net_labels is
 		return boolean;
 
 
-	
+
 
 	procedure modify_status (
 		label 		: in out type_net_label_base;
-		operation	: in type_status_operation);						
-	
+		operation	: in type_status_operation);
+
 
 	procedure reset_status (
 		label : in out type_net_label_base);
 
 
-	
+
 	type type_net_label is new type_net_label_base with record
-		-- The position of the label is 
+		-- The position of the label is
 		-- absolute (relative to drawing origin).
 		-- NOTE: If you ask why we do not use a relative position:
 		-- The simple answer is: There is no reference point on
@@ -139,13 +139,13 @@ package et_net_labels is
 		return string;
 
 
-	
-	
+
+
 	procedure set_rotation (
 		label		: in out type_net_label;
 		rotation	: in type_rotation_documentation);
-	
-							   
+
+
 
 	function get_position (
 		label : in type_net_label)
@@ -156,22 +156,22 @@ package et_net_labels is
 		label		: in out type_net_label;
 		position	: in type_vector_model);
 
-	
+
 	function get_position (
 		label : in type_net_label)
 		return string;
 
-	
+
 	procedure move_by (
 		label	: in out type_net_label;
 		offset	: in type_vector_model);
-						  
 
-	
+
+
 	procedure set_moving (
 		label : in out type_net_label);
 
-	
+
 	procedure clear_moving (
 		label : in out type_net_label);
 
@@ -183,11 +183,11 @@ package et_net_labels is
 
 
 
-	
-	
+
+
 	package pac_net_labels is new doubly_linked_lists (type_net_label);
 	use pac_net_labels;
-	
+
 
 	function get_position (
 		label : in pac_net_labels.cursor)
@@ -203,13 +203,13 @@ package et_net_labels is
 		label : in pac_net_labels.cursor)
 		return type_rotation_documentation;
 
-	
+
 	function get_rotation (
 		label : in pac_net_labels.cursor)
 		return string;
 
-	
-	
+
+
 	function is_proposed (
 		label : in pac_net_labels.cursor)
 		return boolean;
@@ -230,7 +230,7 @@ package et_net_labels is
 	procedure merge_labels (
 		primary		: in out pac_net_labels.list;
 		secondary	: in out pac_net_labels.list);
-		
+
 
 	-- Moves a given list of net labels by the
 	-- given offset and the given sheets:
@@ -238,35 +238,35 @@ package et_net_labels is
 		labels	: in out pac_net_labels.list;
 		offset	: in type_vector_model);
 
-	
+
 
 	-- SPACING BETWEEN NET LABEL AND NET SEGMENT:
 
 	-- Net labels are placed at some distance from the
-	-- net segment. This is independed of any grid settings:	
+	-- net segment. This is independed of any grid settings:
 	spacing_between_net_label_and_segment : constant type_distance_positive := 0.5;
-	
+
 
 	use et_fonts;
-	
+
 	-- GUI relevant only: The font of a net label:
 	net_label_font : constant type_font := (
 		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	
+
 	-- GUI relevant only: The alignment for net labels:
-	net_label_alignment : constant type_text_alignment := 
+	net_label_alignment : constant type_text_alignment :=
 		(ALIGN_LEFT, ALIGN_BOTTOM);
 
 
-	
+
 end et_net_labels;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

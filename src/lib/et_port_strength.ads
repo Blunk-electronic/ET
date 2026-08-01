@@ -54,21 +54,21 @@ package et_port_strength is
 	function to_string (tristate : in type_output_tristate) return string;
 	function to_output_tristate (tristate : in string) return type_output_tristate;
 
-	
+
 
 	keyword_weakness				: constant string := "weakness";
-	keyword_tristate				: constant string := "tristate";	
+	keyword_tristate				: constant string := "tristate";
 
 	keyword_output_weakness			: constant string := "output_weakness";
 	keyword_output_tristate			: constant string := "output_tristate";
 
-	
-	
+
+
 end et_port_strength;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

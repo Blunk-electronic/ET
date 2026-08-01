@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with et_logging;				use et_logging;
@@ -45,28 +45,28 @@ with et_script_names;			use et_script_names;
 
 package et_cp is
 
-	
-	-- Executes a command like 
+
+	-- Executes a command like
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- Dispatches further to the execution of either schematic, 
+	-- Dispatches further to the execution of either schematic,
 	-- board or project commands.
 	-- When called, the current working directory must be the
 	-- project like my_projects/blood_sample_analyzer.
 	procedure execute_script_command (
 		-- The script file that contains the command. for debug messages only:
-		script_name		: in pac_script_name.bounded_string; 
+		script_name		: in pac_script_name.bounded_string;
 		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
-	
+
 end et_cp;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

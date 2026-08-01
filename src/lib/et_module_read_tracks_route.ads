@@ -61,7 +61,7 @@ package et_module_read_tracks_route is
 
 	procedure read_track_line (
 		line : in type_fields_of_line);
-	
+
 
 	procedure read_track_arc (
 		line : in type_fields_of_line);
@@ -71,21 +71,21 @@ package et_module_read_tracks_route is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_track_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
+
 end et_module_read_tracks_route;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

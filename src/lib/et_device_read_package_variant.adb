@@ -64,29 +64,29 @@ with et_keywords;					use et_keywords;
 
 
 package body et_device_read_package_variant is
-	
-	
+
+
 -- PACKAGE VARIANT:
-	
+
 	use pac_package_variant_name;
 	variant_name : pac_package_variant_name.bounded_string; -- N, D
 
 
 
-		
-		
+
+
 	procedure read_package_variant (
 		line 			: in type_fields_of_line;
    		check_layers	: in type_layer_check := (check => NO);
 		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
-		use et_package_read;		
+		use et_package_read;
 		use et_package_library;
-		
+
 		kw : constant string := f (line, 1);
-		
-		package_model_name : pac_package_model_file.bounded_string;		
+
+		package_model_name : pac_package_model_file.bounded_string;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name D
@@ -94,8 +94,8 @@ package body et_device_read_package_variant is
 			check_variant_name_length (f (line, 2));
 			variant_name := to_variant_name (f (line, 2));
 			log (text => "variant " & to_string (variant_name), level => log_threshold);
-			
-			
+
+
 		elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
 			expect_field_count (line, 2);
 
@@ -106,13 +106,13 @@ package body et_device_read_package_variant is
 
 			package_model_name := to_package_model_name (f (line, 2));
 			log (text => "package model " & to_string (package_model_name), level => log_threshold);
-							
-			-- Read package model 
+
+			-- Read package model
 			-- (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
 			-- and do a conductor layer check if required.
 			read_package (
-				file_name		=> package_model_name, 
-				check_layers	=> check_layers, 
+				file_name		=> package_model_name,
+				check_layers	=> check_layers,
 				log_threshold	=> log_threshold);
 
 			-- Create the link to the package model in the
@@ -126,36 +126,36 @@ package body et_device_read_package_variant is
 
 
 
-	
-		
-		
+
+
+
 	procedure insert_package_variant (
 		log_threshold : in type_log_level)
 	is
 		use pac_package_variants;
-		
+
 		inserted : boolean;
 		position : pac_package_variants.cursor;
 	begin
 		log (text => "add package variant "
 			& to_string (variant_name),
 			level => log_threshold);
-		
-		check_variant_name_characters (variant_name); 
+
+		check_variant_name_characters (variant_name);
 		-- CS move to procedure read_package_variant
 
 		insert (
 			container	=> variants,
-			key			=> variant_name, -- N, D 
+			key			=> variant_name, -- N, D
 			inserted	=> inserted,
 			position	=> position,
 			new_item	=> variant);
 
 		-- A particular variant must occur only once in the device model:
 		if not inserted then
-			log (SEVERITY_ERROR, "variant " & to_string (variant_name) 
+			log (SEVERITY_ERROR, "variant " & to_string (variant_name)
 				& " already used !");
-				
+
 			raise constraint_error;
 		end if;
 
@@ -164,18 +164,18 @@ package body et_device_read_package_variant is
 	end insert_package_variant;
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 -- TERMINAL-PORT-MAP:
-	
+
 	use et_package_variant_terminal_port_map;
-	terminal_port_map : pac_terminal_port_map.map;	
-	
-	
+	terminal_port_map : pac_terminal_port_map.map;
+
+
 	procedure read_terminal_port_assignment (
 		line 			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
@@ -183,10 +183,10 @@ package body et_device_read_package_variant is
 		pragma unreferenced (log_threshold);
 		use et_unit_name;
 		use et_port_names;
-		use et_terminal_name;		
-		
+		use et_terminal_name;
+
 		use pac_terminal_port_map;
-		
+
 		inserted	: boolean;
 		position	: pac_terminal_port_map.cursor;
 
@@ -201,30 +201,30 @@ package body et_device_read_package_variant is
 		-- CS: test if terminal, unit and port exist
 	begin
 		expect_field_count (line, 6); -- terminal 14 unit 5 port VCC
-		
+
 		while place <= get_field_count (line) loop
-		
+
 			-- We expect the terminal name after the keyword "terminal"
 			if f (line, place) = keyword_terminal then
 				terminal := to_terminal_name (f (line, place + 1)); -- 14
 
 			-- After the keyword "unit" must come the unit name:
-			elsif f (line, place) = keyword_unit then 
+			elsif f (line, place) = keyword_unit then
 				unit := to_unit_name (f (line, place + 1)); -- 5
 
 			-- After the keyword "port" must come the port name
-			elsif f (line, place) = keyword_port then 
+			elsif f (line, place) = keyword_port then
 				port := to_port_name (f (line, place + 1)); -- VCC
-				
+
 			else
 				invalid_keyword (f (line, place));
 			end if;
-				
+
 			place := place + 2;
 		end loop;
 
-		
-		
+
+
 		-- insert terminal to port assigment in temporarily terminal_port_map
 		insert (
 			container	=> terminal_port_map,
@@ -239,7 +239,7 @@ package body et_device_read_package_variant is
 		-- an assigment must be unique !
 		if not inserted then
 			log (SEVERITY_ERROR, "terminal-to-port assigment already used !");
-			
+
 			raise constraint_error;
 		end if;
 
@@ -247,15 +247,15 @@ package body et_device_read_package_variant is
 		terminal	:= to_terminal_name ("");
 		unit		:= to_unit_name ("");
 		port		:= to_port_name ("");
-		
+
 	end read_terminal_port_assignment;
 
-		
-		
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure assign_terminal_port_map is begin
 		-- copy temporarily terminal_port_map to current variant
 		variant.terminal_port_map := terminal_port_map;
@@ -264,7 +264,7 @@ package body et_device_read_package_variant is
 		pac_terminal_port_map.clear (terminal_port_map);
 
 	end assign_terminal_port_map;
-	
-	
-	
+
+
+
 end et_device_read_package_variant;

@@ -36,8 +36,8 @@
 --   history of changes:
 --
 --   to do:
---		- 
---		- 
+--		-
+--		-
 
 -- with ada.containers.multiway_trees;
 
@@ -79,11 +79,11 @@ package body et_ratsnest is
 		return to_string (to_line_coarse (element (wire)));
 	end to_string;
 
-	
 
-	
+
+
 	use pac_vectors;
-	
+
 
 	function get_shortest_airwire (
 		wires : in pac_airwires.list)
@@ -99,15 +99,15 @@ package body et_ratsnest is
 				shortest := candidate_length;
 			end if;
 		end query_wire;
-		
+
 	begin
 		wires.iterate (query_wire'access);
 		return result;
 	end get_shortest_airwire;
 
 
-	
-	
+
+
 
 
 	function get_fragments (
@@ -131,8 +131,8 @@ package body et_ratsnest is
 		-- This cursor points to the conductor line being processed:
 		line_cursor : pac_conductor_lines.cursor;
 
-		
-		-- The collection of lines and arcs which form an isolated 
+
+		-- The collection of lines and arcs which form an isolated
 		-- fragment of nodes. Later, the start and end points of
 		-- lines and arcs will provide the actual nodes.
 		-- The lines and arcs which are connected with each other
@@ -146,7 +146,7 @@ package body et_ratsnest is
 		strand : type_strand;
 
 
-							 
+
 		-- Returns true if the given conductor line
 		-- is connected with the current strand:
 		function is_connected_with_strand (
@@ -156,47 +156,47 @@ package body et_ratsnest is
 			use pac_conductor_lines;
 
 			proceed : aliased boolean := true;
-			
-			procedure query_line (c : in pac_conductor_lines.cursor) is 
+
+			procedure query_line (c : in pac_conductor_lines.cursor) is
 				candidate : type_conductor_line renames element (c);
 			begin
 				-- if line_in.layer = candidate.layer then
 				if are_connected (
-					line_1			=> line_in, 
-					line_2			=> candidate, 
-					observe_layer	=> false) 
-				then					
+					line_1			=> line_in,
+					line_2			=> candidate,
+					observe_layer	=> false)
+				then
 					proceed := false; -- abort iterator
 				end if;
 			end query_line;
-			
+
 		begin
 			iterate (strand.lines, query_line'access, proceed'access);
 			return not proceed;
 		end is_connected_with_strand;
 
-		
-		
-		-- Extracts from the current strand the nodes 
+
+
+		-- Extracts from the current strand the nodes
 		-- (start/end points of lines and arcs):
 		function get_nodes_of_strand
 			return pac_vectors.list
-		is 
+		is
 			result : pac_vectors.list;
-			
+
 			procedure query_line (c : in pac_conductor_lines.cursor) is begin
 				result.append (to_vector (get_A (c)));
 				result.append (to_vector (get_B (c)));
 			end query_line;
-				
+
 		begin
 			strand.lines.iterate (query_line'access);
 			remove_redundant_vectors (result);
 			return result;
 		end get_nodes_of_strand;
-		
 
-		
+
+
 	begin
 		-- put_line ("get fragments...");
 
@@ -206,7 +206,7 @@ package body et_ratsnest is
 		while not lines_tmp.is_empty loop
 			-- If there are conductor lines given (or left over from the previous
 			-- pass of this loop), then take the first
-			-- of them, append it to the strand and delete it in the 
+			-- of them, append it to the strand and delete it in the
 			-- source container (lines_tmp):
 			strand.lines.append (lines_tmp.first_element);
 			lines_tmp.delete_first;
@@ -216,10 +216,10 @@ package body et_ratsnest is
 			if lines_tmp.is_empty then
 				result.append ((nodes => get_nodes_of_strand));
 			else
-				-- If there are lines left, then iterate the remaining 
+				-- If there are lines left, then iterate the remaining
 				-- conductor lines, starting with the first of them:
 				line_cursor := lines_tmp.first;
-				
+
 				while line_cursor /= pac_conductor_lines.no_element loop
 					-- If the candidate line is connected with the strand,
 					-- then merge the candidate line into the strand and
@@ -240,13 +240,13 @@ package body et_ratsnest is
 
 					-- If the candidate line is not connected with the strand,
 					-- then advance to the next line (in lines_tmp):
-					else						
-						next (line_cursor);						
-					end if;						
+					else
+						next (line_cursor);
+					end if;
 				end loop;
 
 				-- The above iteration has ended, either because no more
-				-- conductor lines are left over, or because the current 
+				-- conductor lines are left over, or because the current
 				-- strand is complete.
 
 				-- Extract the nodes of the current strand and append
@@ -257,14 +257,14 @@ package body et_ratsnest is
 				strand.lines.clear;
 			end if;
 		end loop;
-		
-		
+
+
 		return result;
 	end get_fragments;
 
-	
 
-	
+
+
 	function contains_airwire (
 		airwires	: in pac_airwires.list;
 		airwire		: in type_airwire)
@@ -286,11 +286,11 @@ package body et_ratsnest is
 
 		return result;
 	end contains_airwire;
-	
-	
 
 
-	
+
+
+
 	procedure iterate (
 		airwires	: in pac_airwires.list;
 		process		: not null access procedure (position : in pac_airwires.cursor);
@@ -306,7 +306,7 @@ package body et_ratsnest is
 	end iterate;
 
 
-	
+
 	function get_nearest_neighbor_of_node (
 		isolated_nodes	: in pac_vectors.list;
 		node_in			: in type_vector)
@@ -315,7 +315,7 @@ package body et_ratsnest is
 		smallest_distance : type_float_positive := type_float_positive'last;
 		node_nearest : type_vector; -- to be returned
 
-		
+
 		procedure query_node (c : in pac_vectors.cursor) is
 			d_tmp : type_float_positive;
 		begin
@@ -333,7 +333,7 @@ package body et_ratsnest is
 				end if;
 			end if;
 		end query_node;
-		
+
 	begin
 		-- probe all nodes (except the given node):
 		isolated_nodes.iterate (query_node'access);
@@ -342,15 +342,15 @@ package body et_ratsnest is
 		return node_nearest;
 	end get_nearest_neighbor_of_node;
 
-	
+
 
 	function get_distance_to_fragment (
 		fragment_cursor	: in pac_isolated_fragments.cursor;
 		node			: in type_vector)
 		return type_float_positive
-	is	
+	is
 		fragment : type_fragment renames element (fragment_cursor);
-		
+
 		result : type_float_positive := type_float_positive'last;
 
 		procedure query_node (c : in pac_vectors.cursor) is
@@ -360,13 +360,13 @@ package body et_ratsnest is
 				result := distance;
 			end if;
 		end query_node;
-		
+
 	begin
-		fragment.nodes.iterate (query_node'access);		
+		fragment.nodes.iterate (query_node'access);
 		return result;
 	end get_distance_to_fragment;
 
-	
+
 	function get_distances_to_isoldated_nodes (
 		fragment_cursor	: in pac_isolated_fragments.cursor;
 		isolated_nodes	: in pac_vectors.list)
@@ -374,7 +374,7 @@ package body et_ratsnest is
 	is
 		result : pac_distances_table.map;
 
-		procedure query_node (c : in pac_vectors.cursor) is 
+		procedure query_node (c : in pac_vectors.cursor) is
 			node : type_vector renames element (c);
 			position_in_table : pac_distances_table.cursor;
 			inserted : boolean := true;
@@ -386,14 +386,14 @@ package body et_ratsnest is
 				inserted	=> inserted);
 
 		end query_node;
-		
+
 	begin
 		isolated_nodes.iterate (query_node'access);
 		return result;
 	end get_distances_to_isoldated_nodes;
 
 
-	
+
 	function get_nearest_neighbor_of_fragment (
 		fragment_cursor : in pac_isolated_fragments.cursor;
 		isolated_nodes	: in pac_vectors.list)
@@ -409,7 +409,7 @@ package body et_ratsnest is
 		linked_total : constant count_type := fragment.nodes.length;
 
 
-		
+
 		-- Set up the array of neigboring nodes:
 		type type_neigbors is array (1 .. linked_total) of type_neigbor;
 		neigbors : type_neigbors := (others => <>);
@@ -432,7 +432,7 @@ package body et_ratsnest is
 			neigbors (pointer) := neigbor;
 
 			-- prepare for next node:
-			pointer := pointer + 1; 
+			pointer := pointer + 1;
 		end query_node_of_fragment;
 
 
@@ -448,24 +448,24 @@ package body et_ratsnest is
 				-- closer than the previous distance to the fragment.
 				if neigbors (i).distance < smallest_distance then
 					smallest_distance := neigbors (i).distance;
-					
+
 					result := neigbors (i);
 				end if;
 			end loop;
 		end find_nearest_among_neigbors;
-		
-		
+
+
 	begin
 		-- Probe the nodes of the given fragment:
 		fragment.nodes.iterate (query_node_of_fragment'access);
 
 		find_nearest_among_neigbors;
-		
+
 		return result;
 	end get_nearest_neighbor_of_fragment;
 
 
-	
+
 	function get_nearest_fragment (
 		fragments	: in pac_isolated_fragments.list;
 		reference	: in pac_isolated_fragments.cursor)
@@ -475,9 +475,9 @@ package body et_ratsnest is
 
 		type type_neigbor_fragments is array (1 .. fragments.length - 1) of type_nearest_fragment;
 		neigbor_fragments : type_neigbor_fragments;
-		
+
 		ct : count_type := 0;
-		
+
 		procedure query_fragment (c : in pac_isolated_fragments.cursor) is
 			fragment : type_fragment renames element (c); -- the candidate fragment
 			neigbor : type_neigbor;
@@ -485,7 +485,7 @@ package body et_ratsnest is
 			if fragment /= element (reference) then
 			-- CS if c /= reference then
 				ct := ct + 1;
-				-- We regard the nodes of the candidate fragment as if they where 
+				-- We regard the nodes of the candidate fragment as if they where
 				-- isolated nodes:
 				neigbor := get_nearest_neighbor_of_fragment (reference, fragment.nodes);
 				neigbor_fragments (ct) := (neigbor, c);
@@ -493,7 +493,7 @@ package body et_ratsnest is
 		end query_fragment;
 
 		smallest_distance : type_float_positive := type_float_positive'last;
-		
+
 	begin
 		-- Collect the nearest fragments in array neigbor_fragments:
 		fragments.iterate (query_fragment'access);
@@ -505,21 +505,21 @@ package body et_ratsnest is
 				smallest_distance := neigbor_fragments (i).neigbor.distance;
 				result := neigbor_fragments (i);
 			end if;
-		end loop;	
-		
+		end loop;
+
 		return result;
 	end get_nearest_fragment;
 
-	
+
 
 	function make_airwires (
 		nodes	: in pac_vectors.list;
 		strands	: in pac_isolated_fragments.list)
 		return pac_airwires.list
-	is		
+	is
 		use pac_airwires;
 		result : pac_airwires.list := pac_airwires.empty_list; -- to be returned
-		
+
 
 		-- This is the list of unconnected nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
@@ -555,7 +555,7 @@ package body et_ratsnest is
 
 				-- Remove the node from list isolated_nodes:
 				isolated_nodes.delete (nc);
-  
+
 				-- Add the node to linked nodes:
 				linked.append (node);
 			end if;
@@ -571,14 +571,14 @@ package body et_ratsnest is
 
 			result.append (aw);
 		end add_airwire;
-		
+
 
 		---------------------------------------------------------------------------------------------
 		procedure query_given_strand (c : in pac_isolated_fragments.cursor) is
 			strand : type_fragment renames element (c);
 
 			linked : pac_vectors.list;
-			
+
 			procedure query_node (c : in pac_vectors.cursor) is
 				node : type_vector renames element (c);
 			begin
@@ -614,7 +614,7 @@ package body et_ratsnest is
 			distance_tables : type_distance_tables;
 
 
-			-----------------------------------------------------------------------------------------			
+			-----------------------------------------------------------------------------------------
 			-- Returns true if the given neigbor is closer to the given fragment
 			-- than to any other fragment:
 			function is_closest_to_fragment (
@@ -636,11 +636,11 @@ package body et_ratsnest is
 				end loop;
 				return result;
 			end is_closest_to_fragment;
-			
-			
+
+
 			idx : count_type := 1;
 
-			-----------------------------------------------------------------------------------------			
+			-----------------------------------------------------------------------------------------
 			function is_unique (node : in type_vector) return boolean is
 				occurences : count_type := 0;
 			begin
@@ -659,7 +659,7 @@ package body et_ratsnest is
 				-- CS if occurences = 0 then ?
 			end is_unique;
 
-			
+
 			-----------------------------------------------------------------------------------------
 			function get_idx_of_nearest (node : in type_vector) return count_type is
 				result : count_type := 0;
@@ -680,31 +680,31 @@ package body et_ratsnest is
 
 			-----------------------------------------------------------------------------------------
 			procedure expand_fragment (i : in count_type) is
-				
+
 				procedure do_it (fr : in out type_fragment) is begin
 					move_to_linked_nodes (fr.nodes, claimed_neigbors (i).neigbor.node);
 					add_airwire (make_line (
 						claimed_neigbors (i).neigbor.origin, claimed_neigbors (i).neigbor.node));
 				end do_it;
-				
+
 			begin
-				isolated_fragments.update_element (claimed_neigbors (i).fragment, do_it'access);			
+				isolated_fragments.update_element (claimed_neigbors (i).fragment, do_it'access);
 			end expand_fragment;
 
 		---------------------------------------------------------------------------------------------
 		begin -- complete_fragments
-				
+
 			-- Iterate the isolated fragments. Each fragment
 			-- claimes a nearest isolated neigbor. This neigbor
 			-- is stored in an array.
 			while fc /= pac_isolated_fragments.no_element loop
-				
+
 				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc, isolated_nodes);
 				claimed_neigbors (idx).fragment := fc;
 
 				-- Create a distances table for each fragment:
 				distance_tables (idx) := get_distances_to_isoldated_nodes (fc, isolated_nodes);
-				
+
 				idx := idx + 1;
 				next (fc);
 			end loop;
@@ -726,7 +726,7 @@ package body et_ratsnest is
 						claimed_neigbors (idx).processed := true;
 						expand_fragment (idx);
 					end if;
-				end if;						
+				end if;
 			end loop;
 
 		end complete_fragments;
@@ -759,10 +759,10 @@ package body et_ratsnest is
 			-- We have to handle just a single fragment here.
 			-- This container contains only one fragment:
 			fragment : pac_isolated_fragments.list;
-			
+
 			neigbor : type_neigbor;
 
-			
+
 			procedure extend_fragment (fragment : in out type_fragment) is begin
 				move_to_linked_nodes (fragment.nodes, neigbor.node);
 
@@ -770,7 +770,7 @@ package body et_ratsnest is
 				add_airwire ((neigbor.origin, neigbor.node, status => <>));
 			end extend_fragment;
 
-			
+
 		begin
 			-- If there are at least two nodes, then start constructing the SCN.
 			-- Otherwise return an empty list of airwires.
@@ -779,8 +779,8 @@ package body et_ratsnest is
 				-- Create the first fragment of the SCN:
 				fragment.append ((nodes => pac_vectors.empty_list));
 				fragment.update_element (fragment.first, make_first_fragment'access);
-				
-				
+
+
 				-- As long as there are any isolated nodes left over, apply P2.
 				-- Each time P2 is applied
 				-- - isolated_nodes becomes shorter by on node.
@@ -790,11 +790,11 @@ package body et_ratsnest is
 					neigbor := get_nearest_neighbor_of_fragment (fragment.first, isolated_nodes);
 					fragment.update_element (fragment.first, extend_fragment'access);
 				end loop;
-			end if;			
+			end if;
 		end make_single_fragment;
 
 
-		
+
 		---------------------------------------------------------------------------------------------
 		procedure connect_isolated_fragments is
 
@@ -807,23 +807,23 @@ package body et_ratsnest is
 				-- put_line ("scratch" & count_type'image (scratch.nodes.length));
 				splice (
 					target	=> fragment.nodes,
-					before	=> pac_vectors.no_element, 
+					before	=> pac_vectors.no_element,
 					source	=> scratch.nodes);
 
 				-- put_line ("nodes B" & count_type'image (fragment.nodes.length));
 			end query_fragment;
-			
+
 		begin
 			-- put_line ("isolated fragments init" & count_type'image (isolated_fragments.length));
-			
+
 			while isolated_fragments.length > 1 loop
 				-- put_line ("isolated fragments left" & count_type'image (isolated_fragments.length));
-				
+
 				nearest_fragment := get_nearest_fragment (isolated_fragments, isolated_fragments.first);
 
 				add_airwire ((nearest_fragment.neigbor.origin, nearest_fragment.neigbor.node, status => <>));
 				-- put_line (to_string (result.last_element));
-				
+
 				scratch := element (nearest_fragment.fragment);
 				isolated_fragments.update_element (isolated_fragments.first, query_fragment'access);
 
@@ -833,14 +833,14 @@ package body et_ratsnest is
 			null;
 		end connect_isolated_fragments;
 
-		
+
 	-------------------------------------------------------------------------------------------------
 	begin -- make_airwires
 
 		if not strands.is_empty then -- means: if there are strands given
 			-- put_line ("strands given");
-			
-			-- Fast forward: Build the isolated fragments from the given 
+
+			-- Fast forward: Build the isolated fragments from the given
 			-- strands:
 			strands.iterate (query_given_strand'access);
 
@@ -853,23 +853,23 @@ package body et_ratsnest is
 			-- The container "isolated_fragments" now contains all fragments.
 			-- But there is no link between the fragments yet:
 			connect_isolated_fragments;
-			
+
 		else
 			-- no strands given
 			-- put_line ("no strands given");
 			make_single_fragment;
 		end if;
-			
+
 		-- Return the collection of airwires:
 		return result;
 	end make_airwires;
-	
+
 
 end et_ratsnest;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

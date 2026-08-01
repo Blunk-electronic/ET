@@ -56,11 +56,11 @@ with et_package_read_text;				use et_package_read_text;
 package body et_package_read_assy_doc is
 
 	use et_board_geometry.pac_geometry_2;
-	
+
 	doc_line : type_doc_line;
 	doc_arc : type_doc_arc;
 	doc_circle : type_doc_circle;
-	
+
 
 
 
@@ -80,7 +80,7 @@ package body et_package_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_A (doc_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -88,24 +88,24 @@ package body et_package_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_B (doc_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			doc_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_doc_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_doc_arc (
 		line	: in type_fields_of_line)
 	is
@@ -120,22 +120,22 @@ package body et_package_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_A (doc_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (doc_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (doc_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -146,19 +146,19 @@ package body et_package_read_assy_doc is
 			expect_field_count (line, 2);
 			doc_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_doc_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_doc_circle (
 		line	: in type_fields_of_line)
 	is
@@ -170,7 +170,7 @@ package body et_package_read_assy_doc is
 			-- extract the center position starting at field 2 of line
 			set_center (doc_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -181,7 +181,7 @@ package body et_package_read_assy_doc is
 			expect_field_count (line, 2);
 			doc_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -196,74 +196,74 @@ package body et_package_read_assy_doc is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_doc_lines;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.assy_doc.top.lines, doc_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.assy_doc.bottom.lines, doc_line);
 		end case;
 		-- CS use procedure add_line
-		
-		-- clean up for next line
-		reset_line (doc_line);		
-	end insert_doc_line;
-	
 
-	
-	
-	
+		-- clean up for next line
+		reset_line (doc_line);
+	end insert_doc_line;
+
+
+
+
+
 	procedure insert_doc_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_doc_arcs;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.assy_doc.top.arcs, doc_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.assy_doc.bottom.arcs, doc_arc);
 		end case;
 		-- CS use procedure add_arc
-		
+
 		-- clean up for next arc
-		reset_arc (doc_arc);		
+		reset_arc (doc_arc);
 	end insert_doc_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_doc_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_doc_circles;
 	begin
 		-- CS log message
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.assy_doc.top.circles, doc_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.assy_doc.bottom.circles, doc_circle);
 		end case;
 		-- CS use procedure add_circle
-		
+
 		-- clean up for next circle
-		reset_circle (doc_circle);		
+		reset_circle (doc_circle);
 	end insert_doc_circle;
 
 
@@ -271,12 +271,12 @@ package body et_package_read_assy_doc is
 
 
 
-	
+
 	procedure insert_doc_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
@@ -285,11 +285,11 @@ package body et_package_read_assy_doc is
 		-- clean up for next zone
 		reset_contour (contour);
 	end insert_doc_zone;
-	
 
 
 
-	
+
+
 
 	procedure insert_doc_text (
 		packge			: in type_package_model_access;
@@ -315,7 +315,7 @@ package body et_package_read_assy_doc is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use et_device_placeholders.packages;
 	begin
@@ -326,5 +326,5 @@ package body et_package_read_assy_doc is
 		reset_placeholder (pac_text_placeholder);
 	end insert_doc_placeholder;
 
-	
+
 end et_package_read_assy_doc;

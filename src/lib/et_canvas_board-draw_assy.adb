@@ -68,33 +68,33 @@ is
 	procedure set_default_brightness is begin
 		set_color_assy_doc (face, NORMAL);
 	end set_default_brightness;
-		
+
 	procedure set_highlight_brightness is begin
 		set_color_assy_doc (face, BRIGHT);
 	end set_highlight_brightness;
 
-	
-	
-	procedure query_line (c : in pac_doc_lines.cursor) is 
+
+
+	procedure query_line (c : in pac_doc_lines.cursor) is
 		line : type_doc_line renames element (c);
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, 
+			draw_line (line => line, width => line.width,
 					   stroke => DO_STROKE);
 		end draw;
-		
+
 	begin
 		if is_selected (c) then
 			set_highlight_brightness;
-			draw;			
+			draw;
 			set_default_brightness;
 		else
 			draw;
 		end if;
 	end query_line;
 
-	
-	
+
+
 	procedure query_arc (c : in pac_doc_arcs.cursor) is
 		arc : type_doc_arc renames element (c);
 
@@ -104,24 +104,24 @@ is
 				width	=> arc.width,
 				stroke	=> DO_STROKE);
 		end draw;
-		
+
 	begin
 		if is_selected (c) then
 			set_highlight_brightness;
-			draw;			
+			draw;
 			set_default_brightness;
 		else
 			draw;
 		end if;
 	end query_arc;
 
-	
-	
-	procedure query_circle (c : in pac_doc_circles.cursor) is 
+
+
+	procedure query_circle (c : in pac_doc_circles.cursor) is
 		circle : type_doc_circle renames element (c);
 	begin
 		-- CS is_selected
-		
+
 		draw_circle (
 			circle	=> circle,
 			filled	=> NO,
@@ -129,7 +129,7 @@ is
 			stroke	=> DO_STROKE);
 	end query_circle;
 
-	
+
 	procedure query_zone (c : in pac_doc_zones.cursor) is
 		use pac_draw_contours;
 	begin
@@ -140,25 +140,25 @@ is
 	end query_zone;
 
 
-	
 
 
 
-	
 
-	
+
+
+
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
-	is 
+		module		: in type_generic_module)
+	is
 		pragma unreferenced (module_name);
 
-		
-		procedure query_text (c : in pac_doc_texts.cursor) is 
+
+		procedure query_text (c : in pac_doc_texts.cursor) is
 			text : type_doc_text renames element (c);
 
-			
-			procedure draw is 
+
+			procedure draw is
 				use et_mirroring;
 				use pac_draw_text;
 			begin
@@ -173,7 +173,7 @@ is
 				end if;
 			end draw;
 
-			
+
 		begin
 			if is_selected (text) then
 				set_highlight_brightness;
@@ -185,13 +185,13 @@ is
 		end query_text;
 
 
-		
-		
+
+
 		procedure query_placeholder (
-			c : in pac_placeholders_non_conductor.cursor) 
+			c : in pac_placeholders_non_conductor.cursor)
 		is
 			placeholder : type_placeholder_non_conductor renames element (c);
-			
+
 			use pac_text_vectorized;
 			content : pac_text_content.bounded_string;
 			text : type_text_fab_with_content;
@@ -212,7 +212,7 @@ is
 				end if;
 			end draw;
 
-			
+
 		begin
 			-- Build the final content to be drawn:
 			content := to_placeholder_content (
@@ -257,12 +257,12 @@ is
 		end case;
 	end query_items;
 
-	
-	
+
+
 begin
-	
+
 -- 	put_line ("draw board assembly documentation ...");
-	
+
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
@@ -274,13 +274,13 @@ begin
 
 	-- Draw the zone begin drawn:
 	draw_live_zone (LAYER_CAT_ASSY);
-	
+
 end draw_assy;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

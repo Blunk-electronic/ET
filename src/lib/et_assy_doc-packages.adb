@@ -87,20 +87,20 @@ package body et_assy_doc.packages is
 		assy_doc	: in out type_assy_doc_both_sides;
 		zone		: in type_doc_zone;
 		face		: in type_face)
-	is 
+	is
 		use pac_doc_zones;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (assy_doc.top.zones, zone);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (assy_doc.bottom.zones, zone);
 		end case;
 	end;
 
-	
+
 
 
 
@@ -108,22 +108,22 @@ package body et_assy_doc.packages is
 		assy_doc	: in out type_assy_doc_both_sides;
 		text		: in type_doc_text;
 		face		: in type_face)
-	is 
+	is
 		use pac_doc_texts;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (assy_doc.top.texts, text);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (assy_doc.bottom.texts, text);
 		end case;
 	end;
-	
 
 
-	
+
+
 
 	procedure add_placeholder (
 		assy_doc	: in out type_assy_doc_both_sides;
@@ -133,21 +133,21 @@ package body et_assy_doc.packages is
 		use pac_text_placeholders;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (assy_doc.top.placeholders, placeholder);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (assy_doc.bottom.placeholders, placeholder);
 		end case;
 	end;
 
-	
+
 end et_assy_doc.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

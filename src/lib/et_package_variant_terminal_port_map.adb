@@ -46,13 +46,13 @@ package body et_package_variant_terminal_port_map is
 
 	procedure dummy is begin null; end;
 
-	
-		
+
+
 end et_package_variant_terminal_port_map;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

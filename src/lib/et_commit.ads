@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,12 +52,12 @@ package et_commit is
 		POST);
 
 	function to_string (stage : in type_commit_stage) return string;
-	
-	
-	subtype type_commit_index_zero_based is natural range 0 .. 100;  
+
+
+	subtype type_commit_index_zero_based is natural range 0 .. 100;
 	-- CS increase upper limit
-	
-	subtype type_commit_index is type_commit_index_zero_based 
+
+	subtype type_commit_index is type_commit_index_zero_based
 		range 1 .. type_commit_index_zero_based'last;
 
 	procedure increment (
@@ -72,7 +72,7 @@ package et_commit is
 	commit_message_length_max : constant positive := 50;
 	package pac_commit_message is new generic_bounded_length (commit_message_length_max);
 
-	
+
 	generic
 		type type_item is private;
 	package pac_commit is
@@ -89,7 +89,7 @@ package et_commit is
 		function "=" (
 			left, right : in type_commit)
 			return boolean;
-		
+
 		function make_commit (
 			index	: in type_commit_index;
 			stage	: in type_commit_stage;
@@ -97,14 +97,14 @@ package et_commit is
 			message	: in pac_commit_message.bounded_string;
 			domain	: in type_domain)
 			return type_commit;
-		
-	end pac_commit;	
-	
+
+	end pac_commit;
+
 end et_commit;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

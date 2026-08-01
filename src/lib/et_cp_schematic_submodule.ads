@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -54,7 +54,7 @@ package et_cp_schematic_submodule is
 	procedure add_submodule (
 		module			: in pac_generic_modules.cursor;
 		-- parent module (where the submodule is to be inserted)
-		
+
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
@@ -69,22 +69,22 @@ package et_cp_schematic_submodule is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	procedure drag_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-		
+
 	procedure copy_submodule (
 		module			: in pac_generic_modules.cursor;
 		 -- parent module (where the submodule is to be copied)
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 	procedure delete_submodule (
 		module			: in pac_generic_modules.cursor;
 		 -- parent module (where the submodule is to be deleted)
@@ -92,50 +92,50 @@ package et_cp_schematic_submodule is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	procedure rename_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 	procedure mount_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-		
+
 	procedure remove_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 
 	procedure set_submodule_file (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 
 	procedure build_submodules_tree (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 
 	procedure check_submodules_integrity (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
-		
-		
+
+
+
+
 -- PORTS:
 
 	procedure add_port_to_submodule (
@@ -143,7 +143,7 @@ package et_cp_schematic_submodule is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure drag_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -155,19 +155,19 @@ package et_cp_schematic_submodule is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure move_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
 
-		
+
+
 end et_cp_schematic_submodule;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

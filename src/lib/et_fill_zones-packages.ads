@@ -40,23 +40,23 @@
 --	   by a pad contour (see package et_terminals).
 
 package et_fill_zones.packages is
-	
+
 
 	-- User defined cutout areas:
 	package pac_cutouts is new doubly_linked_lists (type_contour);
 
-		
+
 	type type_fill_zones is record
 		solid	: pac_zones_solid.list;
 		hatched	: pac_zones_hatched.list;
 	end record;
 
-	
+
 end et_fill_zones.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -43,22 +43,22 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_device_placeholders is
 
 	function to_string (
-		text_meaning : in type_placeholder_meaning) 
-		return string 
+		text_meaning : in type_placeholder_meaning)
+		return string
 	is begin
 		return to_lower (type_placeholder_meaning'image (text_meaning));
 	end;
 
-	
+
 	function to_meaning (
-		text_meaning : in string) 
-		return type_placeholder_meaning 
+		text_meaning : in string)
+		return type_placeholder_meaning
 	is begin
 		return type_placeholder_meaning'value (text_meaning);
 	end;
 
 
-	
+
 	function to_string (
 		mode : in type_anchor_mode)
 		return string
@@ -66,7 +66,7 @@ package body et_device_placeholders is
 		return to_lower (type_anchor_mode'image (mode));
 	end;
 
-	
+
 
 	function to_anchor_mode (
 		mode : in string)
@@ -75,13 +75,13 @@ package body et_device_placeholders is
 		return type_anchor_mode'value (mode);
 	end;
 
-	
-	
+
+
 end et_device_placeholders;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

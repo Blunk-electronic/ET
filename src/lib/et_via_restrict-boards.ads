@@ -45,15 +45,15 @@ package et_via_restrict.boards is
 	use pac_geometry_2;
 
 	procedure dummy;
-	
 
-	
+
+
 	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
 		et_via_restrict.type_via_restrict_zone with
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
-	
+
 	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
 	-- CS rename to pac_via_restrict_zones
 
@@ -62,34 +62,34 @@ package et_via_restrict.boards is
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
-		
+
 	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
 	-- CS rename to pac_via_restrict_zone_cutouts
-	
 
-	-- NOTE: 
+
+	-- NOTE:
 	-- In the board drawing there is no "both-sides" as with
 	-- silkscreen or assembly documentation. Here the signal
 	-- layers specify which conductor layers are affected.
-	
+
 	type type_via_restrict is record
 		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
 		cutouts		: pac_via_restrict_cutouts.list;
 
-		-- CS texts : 
+		-- CS texts :
 		-- This must not be derived from from conductor text because
 		-- it is not fabrication relevant.
 		-- It should contain notes of the designer exclusively.
 	end record;
 
 
-	
-	
+
+
 end et_via_restrict.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

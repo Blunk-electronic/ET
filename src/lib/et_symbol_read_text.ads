@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,24 +51,24 @@ package et_symbol_read_text is
 
 	procedure read_text (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_text (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
 
-	
 
 
-	
+
+
 	procedure read_placeholder (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_placeholder (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_symbol_read_text;

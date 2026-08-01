@@ -60,19 +60,19 @@ package et_cmd_sts is
 		ORIGIN_CONSOLE,
 		ORIGIN_SCRIPT);
 
-	
+
 	cmd_origin_default : constant type_cmd_origin := ORIGIN_CONSOLE;
 
 
-	
+
 	function to_string (
-		origin : in type_cmd_origin) 
+		origin : in type_cmd_origin)
 		return string;
 
 
 
 	type type_single_cmd is private;
-	
+
 
 
 
@@ -81,7 +81,7 @@ package et_cmd_sts is
 	procedure set_origin (
 		cmd		: in out type_single_cmd;
 		origin	: in type_cmd_origin);
-	
+
 
 	function get_origin (
 		cmd		: in type_single_cmd)
@@ -93,13 +93,13 @@ package et_cmd_sts is
 		cmd		: in type_single_cmd)
 		return string;
 
-	
-	
+
+
 	function to_single_cmd (
 		fields	: in type_fields_of_line;
 		origin	: in type_cmd_origin)
 		return type_single_cmd;
-	
+
 
 
 	function get_line_number (
@@ -110,9 +110,9 @@ package et_cmd_sts is
 	function get_line_number (
 		cmd		: in type_single_cmd)
 		return string;
-	
 
-	
+
+
 	procedure set_fields (
 		cmd		: in out type_single_cmd;
 		fields	: in type_fields_of_line);
@@ -128,19 +128,19 @@ package et_cmd_sts is
 		cmd		: in type_single_cmd)
 		return type_fields_of_line;
 
-	
+
 	function get_all_fields (
 		cmd		: in type_single_cmd)
 		return string;
 
 
-	
+
 	function get_field_count (
 		cmd		: in type_single_cmd)
 		return natural;
 
 
-	
+
 	function is_complete (
 		cmd		: in type_single_cmd)
 		return boolean;
@@ -149,11 +149,11 @@ package et_cmd_sts is
 	procedure set_complete (
 		cmd		: in out type_single_cmd);
 
-	
+
 	procedure set_incomplete (
 		cmd		: in out type_single_cmd);
 
-	
+
 
 	function finalization_is_pending (
 		cmd		: in type_single_cmd)
@@ -174,11 +174,11 @@ package et_cmd_sts is
 		-- 3 -> other error
 		-- CS others ?
 
-	
+
 	function to_string (
 		exit_code : in type_exit_code_command)
 		return string;
-	
+
 
 	function get_exit_code (
 		cmd		: in type_single_cmd)
@@ -190,13 +190,13 @@ package et_cmd_sts is
 		code	: in type_exit_code_command);
 
 
-	
+
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd);
 
-	
-	
-	
+
+
+
 
 
 
@@ -205,11 +205,11 @@ package et_cmd_sts is
 
 	procedure invalid_keyword (
 		field : in type_field_count);
-	
-	
+
+
 
 	incomplete		: constant string := "Command incomplete ! ";
-	
+
 
 	procedure log_command_incomplete (
 		field_count		: in type_field_count;
@@ -236,7 +236,7 @@ package et_cmd_sts is
 		cmd		: in out type_single_cmd;
 		from	: in type_field_count);
 
-	
+
 
 	-- In graphical mode, scripts can be nested.
 	-- In script mode we register only the first
@@ -249,29 +249,29 @@ package et_cmd_sts is
 	-- type type_script_cmd is record
 	-- 	-- the name of the script file like "rename_power_nets.scr":
 	-- 	script_name	: pac_script_name.bounded_string;
- -- 
-	-- 	-- The text fields of the command to be executed like 
+ --
+	-- 	-- The text fields of the command to be executed like
 	-- 	-- "schematic blood_sample_analyzer set value C1 100n"
 	-- 	fields		: type_fields_of_line;
- -- 
+ --
 	-- 	-- the flag that indicates whether the command failed
 	-- 	failed		: boolean := false;
 	-- end record;
-	
+
 
 	-- The global variable that stores the status of the latest
 	-- script command.
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	-- script_cmd : type_script_cmd;
-	
+
 
 
 private
-	
+
 	type type_single_cmd is record
 		origin		: type_cmd_origin := cmd_origin_default;
-		
-		-- The text fields of the command to be executed like 
+
+		-- The text fields of the command to be executed like
 		-- "schematic blood_sample_analyzer set value C1 100n"
 		fields		: type_fields_of_line;
 
@@ -291,9 +291,9 @@ private
 
 		-- CS
 		-- line number if origin is script
-	end record;	
+	end record;
 
-	
-	
+
+
 end et_cmd_sts;
 

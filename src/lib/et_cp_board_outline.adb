@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,8 +54,8 @@ package body et_cp_board_outline is
 	use pac_geometry_2;
 	use pac_contours;
 
-	
-	
+
+
 	procedure draw_board_outline (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -66,11 +66,11 @@ package body et_cp_board_outline is
 
 
 		procedure extract_arguments is
-			-- Extract from the given command the 
+			-- Extract from the given command the
 			-- arguments (everything after "outline"):
-			-- Example command: 
+			-- Example command:
 			-- "board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50"
-			arguments : constant type_fields_of_line := 
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 4);
 
 			-- Build a basic contour from the arguments:
@@ -86,10 +86,10 @@ package body et_cp_board_outline is
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
-			
+
 		end extract_arguments;
 
-		
+
 	begin
 		log (text => "draw board outline", level => log_threshold);
 		log_indentation_up;
@@ -102,7 +102,7 @@ package body et_cp_board_outline is
 
 
 
-	
+
 
 
 
@@ -115,10 +115,10 @@ package body et_cp_board_outline is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		-- Extract from the given command the 
+		-- Extract from the given command the
 		-- arguments (everything after "hole"):
 		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
-		arguments : constant type_fields_of_line := 
+		arguments : constant type_fields_of_line :=
 			remove_field (get_fields (cmd), 1, 4);
 
 		-- Build a basic contour from the arguments:
@@ -126,11 +126,11 @@ package body et_cp_board_outline is
 	begin
 		log (text => "draw board outline", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Convert the contour to an inner pcb edge type and add it to
 		-- the already existing holes:
 		set_hole (
-			module_cursor	=> module, 
+			module_cursor	=> module,
 			hole			=> (c with null record),
 
 			-- Depending on the origin of the command,
@@ -146,9 +146,9 @@ package body et_cp_board_outline is
 
 
 
-	
 
-	
+
+
 	procedure delete_outline_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -161,7 +161,7 @@ package body et_cp_board_outline is
 	begin
 		log (text => "delete outline segment", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of the outer board contour:
@@ -169,7 +169,7 @@ package body et_cp_board_outline is
 				catch_zone := set_catch_zone (
 					center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
 					radius	=> to_zone_radius (get_field (cmd, 7)));
-					
+
 				delete_outer_segment (
 					module_cursor 	=> module,
 					catch_zone		=> catch_zone,
@@ -179,37 +179,37 @@ package body et_cp_board_outline is
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-				
-			when 8 .. type_field_count'last => 
+
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 		log_indentation_down;
 	end delete_outline_segment;
 
-	
 
 
 
-	
 
-	
+
+
+
 
 	procedure delete_hole_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
+
 		catch_zone : type_catch_zone;
 	begin
 		log (text => "delete hole segment", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of a hole
@@ -227,22 +227,22 @@ package body et_cp_board_outline is
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-				
-			when 8 .. type_field_count'last => 
+
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 		log_indentation_down;
 	end delete_hole_segment;
 
-	
+
 end et_cp_board_outline;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

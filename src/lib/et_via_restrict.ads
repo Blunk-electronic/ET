@@ -56,12 +56,12 @@ package et_via_restrict is
 
 
 	procedure dummy;
-	
+
 
 	type type_via_restrict_zone is new type_contour with null record;
 
-	
-	package pac_via_restrict_zones is new 
+
+	package pac_via_restrict_zones is new
 		doubly_linked_lists (type_via_restrict_zone);
 
 
@@ -69,18 +69,18 @@ package et_via_restrict is
 		type_contour with null record;
 	-- CS not sure whether this is really required.
 
-	
+
 	package pac_via_restrict_cutouts is new -- rename to pac_via_restrict_zone_cutouts
 		doubly_linked_lists (type_via_restrict_cutout);
 	-- CS not sure whether this is really required.
-	
 
-	
+
+
 end et_via_restrict;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -50,7 +50,7 @@ package et_device_read_unit is
 
 
 	appearance		: type_appearance;
-	
+
 
 	-- This is the pointer that points to the possible
 	-- internal symbol being read in the following:
@@ -60,34 +60,34 @@ package et_device_read_unit is
 	units_internal	: pac_units_internal.map;
 	units_external	: pac_units_external.map;
 
-	
-	
+
+
 
 -- INTERNAL UNIT:
-	
+
 	procedure read_unit_internal (
 		line : in type_fields_of_line);
 
 
-		
+
 	-- Inserts in the temporarily collection of internal units a new unit.
 	-- The symbol of the unit is the one accessed by pointer symbol_model.
 	procedure insert_unit_internal (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
-	
-	
-	
-	
+
+
+
+
 -- EXTERNAL UNIT:
-	
+
 	procedure read_unit_external (
 		line : in type_fields_of_line);
-		
-		
+
+
 	-- Inserts in the temporarily collection of external units a new unit.
 	procedure insert_unit_external (
 		log_threshold : in type_log_level);
 
-	
+
 end et_device_read_unit;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -73,10 +73,10 @@ package et_board_ops_conductors is
 	use pac_text_board_vectorized;
 	use pac_net_name;
 	use pac_grid;
-	
+
 
 -- LINES:
-	
+
 	-- Adds a line track segment to the given net in the given module.
 	-- Assumes that the given net exists. Otherwise an exception will be raised:
 	procedure add_line_to_net (
@@ -87,8 +87,8 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Draws a track line. If net_name is empty (default) 
+
+	-- Draws a track line. If net_name is empty (default)
 	-- then a freetrack will be drawn. If a net name
 	-- is given, then it calls procedure add_line_to_net (see above).
 	-- It does not check if the given net exists.
@@ -99,7 +99,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
 	--procedure add_line (
@@ -108,7 +108,7 @@ package et_board_ops_conductors is
 		--line			: in type_conductor_line;
 		--log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
 	-- It does not check if the given net exists. Calls procedure
@@ -128,7 +128,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis
 	-- in to the given direction.
@@ -150,13 +150,13 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a track starting at a terminal. The track ends at the given point.
 	-- It does not check if the given net exists. Calls procedure
 	-- add_line_to_net (see above).
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
-	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -168,7 +168,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a track starting at a terminal. The track runs
 	-- ends after the given number of notches along the given axis.
 	-- It does not check if the given net exists. Calls procedure
@@ -201,14 +201,14 @@ package et_board_ops_conductors is
 
 	-- CS do the same for lines, arcs, circles of freetracks
 
-	-- If floating line segments (of a freetrack) are searched, 
+	-- If floating line segments (of a freetrack) are searched,
 	-- then they can be identified by a cursor:
 	type type_object_line_floating is record
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 
-	
-	
+
+
 	package pac_object_lines is new doubly_linked_lists (type_object_line_net);
 
 
@@ -219,7 +219,7 @@ package et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Modifies the status flag of a floating line:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -228,7 +228,7 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Returns all lines in the given signal layer
 	-- in the vicinity of the given point.
 	-- NOTE: This is about line connected with nets:
@@ -241,8 +241,8 @@ package et_board_ops_conductors is
 
 
 
-	
-	-- Returns all line of freetracks 
+
+	-- Returns all line of freetracks
 	-- in the given signal layer
 	-- in the vicinity of the given point.
 	function get_lines (
@@ -254,9 +254,9 @@ package et_board_ops_conductors is
 
 	-- CS do the same for and circles
 
-	
 
-	
+
+
 	-- Modifies that status flag of a line (see package et_object_status).
 	-- If freetracks is false, then only net segments are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
@@ -268,7 +268,7 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place
 	-- If freetracks is false, then only nets are adressed.
@@ -283,7 +283,7 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Clears the status flags of all lines.
 	-- 1. If freetracks is false, then only nets are adressed.
 	--    The status flags of the whole net are not touched here.
@@ -292,12 +292,12 @@ package et_board_ops_conductors is
 	-- 2. If freetracks is true, then only freetracks are adressed:
 	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		freetracks		: in boolean;							   
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
 
 
 
-	
+
 	-- Returns the first line according to the given flag.
 	-- If no line has been found,
 	-- then the selector line_cursor in the return is no_element
@@ -318,8 +318,8 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_line_floating;
 
-	
-	
+
+
 	-- Advances to the next proposed line, starting at
 	-- the given line. Traverses through line segments and nets
 	-- in a circular manner. If there are no
@@ -335,7 +335,7 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Moves a line of a net:
 	procedure move_line_net (
@@ -345,7 +345,7 @@ package et_board_ops_conductors is
 		destination		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- Moves a floating line:
 	procedure move_line_floating (
@@ -358,7 +358,7 @@ package et_board_ops_conductors is
 
 
 
-	
+
 	-- Deletes the given line segment in the given net.
 	-- It is assumed that the given net exists. Otherwise
 	-- an exception will be raised:
@@ -380,11 +380,11 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
 
-	
+
+
 -- ARCS:
-	
+
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 	-- If a net name is given, then it assumes that the net
 	-- exists. Otherwise an exception will be raised:
@@ -395,7 +395,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- If arc segments of a net are searched, then they can be
 	-- identified additionally by the associated net:
 	type type_object_arc_net is record
@@ -419,7 +419,7 @@ package et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Modifies the status flag of a floating arc:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -442,8 +442,8 @@ package et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Clears the status flags of all arcs.
 	-- 1. If freetracks is false, then only nets are adressed.
 	--    The status flags of the whole net are not touched here.
@@ -452,7 +452,7 @@ package et_board_ops_conductors is
 	-- 2. If freetracks is true, then only freetracks are adressed:
 	procedure reset_proposed_arcs ( -- CS rename to reset_status_arcs
 		module_cursor	: in pac_generic_modules.cursor;
-		freetracks		: in boolean;							   
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
 
 
@@ -488,7 +488,7 @@ package et_board_ops_conductors is
 		destination		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- Moves a floating arc:
 	procedure move_arc_floating (
@@ -521,11 +521,11 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 -- TRACKS:
-	
-	-- Deletes the track segment that crosses the given 
+
+	-- Deletes the track segment that crosses the given
 	-- point in given layer.
 	-- If a net name is given, then net segments are affected.
 	-- Assumes that the targeted net exists. Otherwise an exception
@@ -542,11 +542,11 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 
 	-- Deletes all segments of the given net.
-	-- Assumes that the given net exists. Otherwise 
+	-- Assumes that the given net exists. Otherwise
 	-- an exception will be raised:
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -561,37 +561,37 @@ package et_board_ops_conductors is
 -- FILL ZONES
 
 
-	
+
 	-- This composite type helps to identify a
 	-- segment of a zone that is connected with a net:
 	type type_object_segment_net (
-		fill_style : type_fill_style := SOLID) 
+		fill_style : type_fill_style := SOLID)
 	is record
 		segment	: pac_contours.pac_segments.cursor;
 		net		: pac_nets.cursor;
-		
+
 		case fill_style is
 			when SOLID =>
 				zone_solid : pac_route_solid.cursor;
-				
+
 			when HATCHED =>
 				zone_hatched : pac_route_hatched.cursor;
 		end case;
 	end record;
 
 
-	
+
 	-- This composite type helps to identify a
 	-- segment of a floating zone:
 	type type_object_segment_floating (
-		fill_style : type_fill_style := SOLID) 
+		fill_style : type_fill_style := SOLID)
 	is record
 		segment	: pac_contours.pac_segments.cursor;
-		
+
 		case fill_style is
 			when SOLID =>
 				zone_solid : pac_floating_solid.cursor;
-				
+
 			when HATCHED =>
 				zone_hatched : pac_floating_hatched.cursor;
 		end case;
@@ -599,7 +599,7 @@ package et_board_ops_conductors is
 
 
 
-	
+
 	-- Modifies the status flag of segment of a zone
 	-- that is connected with a net:
 	procedure modify_status (
@@ -617,9 +617,9 @@ package et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
-	-- Sets the proposed-flag of all line and arc segments 
+
+
+	-- Sets the proposed-flag of all line and arc segments
 	-- of zones which are connected with nets and which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
@@ -630,8 +630,8 @@ package et_board_ops_conductors is
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
-	
-	-- Sets the proposed-flag of all line and arc segments 
+
+	-- Sets the proposed-flag of all line and arc segments
 	-- of floating zones and which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
@@ -643,46 +643,46 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Clears the proposed-flag and the selected-flag 
+
+	-- Clears the proposed-flag and the selected-flag
 	-- of all line and arc segments of zones which are connected with a net:
 	procedure reset_proposed_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	-- Clears the proposed-flag and the selected-flag 
+	-- Clears the proposed-flag and the selected-flag
 	-- of all line and arc segments of floating zones:
 	procedure reset_proposed_segments_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 	-- Returns the first segment of a
 	-- connected zone according to the given flag.
-	-- If no segment has been found, then the return 
+	-- If no segment has been found, then the return
 	-- in all components of the return is no_element:
 	function get_first_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment_net;
 
 
 	-- Returns the first segment of a
 	-- floating zone according to the given flag.
-	-- If no segment has been found, then the return 
+	-- If no segment has been found, then the return
 	-- in all components of the return is no_element:
 	function get_first_segment_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment_floating;
 
 
-	
+
 	-- Moves a contour segment of a connected zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
@@ -695,7 +695,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Moves a contour segment of a floating zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
@@ -708,7 +708,7 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Deletes a contour segment of a connected zone:
 	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -724,8 +724,8 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 -- TEXTS:
 
 
@@ -737,8 +737,8 @@ package et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -759,11 +759,11 @@ package et_board_ops_conductors is
 
 	-- This type helps to identify a text by its cursor:
 	type type_object_text is record
-		cursor	: pac_conductor_texts_board.cursor := 
+		cursor	: pac_conductor_texts_board.cursor :=
 			pac_conductor_texts_board.no_element;
 	end record;
 
-	
+
 	-- This procedure sets the status flag of the
 	-- given text object:
 	procedure modify_status (
@@ -802,12 +802,12 @@ package et_board_ops_conductors is
 
 	function get_first_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_text;
 
 
-	-- Clears the proposed-flag and the selected-flag 
+	-- Clears the proposed-flag and the selected-flag
 	-- of all texts:
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -815,7 +815,7 @@ package et_board_ops_conductors is
 
 
 
-	
+
 -- TEXT PLACEHOLDERS:
 
 	-- Places a text placeholder in a conductor layer.
@@ -826,14 +826,14 @@ package et_board_ops_conductors is
 		placeholder		: in type_placeholder_conductor;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- This type helps to identify a text placeholder by its cursor:
 	type type_object_placeholder is record
-		cursor	: pac_placeholders_conductor.cursor := 
+		cursor	: pac_placeholders_conductor.cursor :=
 			pac_placeholders_conductor.no_element;
 	end record;
-	
+
 
 	-- This procedure sets the status flag of the
 	-- given placeholder object:
@@ -853,7 +853,7 @@ package et_board_ops_conductors is
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -868,28 +868,28 @@ package et_board_ops_conductors is
 		placeholder		: in type_object_placeholder;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
- 
- 
- 
+
+
+
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_placeholder;
- 
- 
-	-- Clears the proposed-flag and the selected-flag 
+
+
+	-- Clears the proposed-flag and the selected-flag
 	-- of all placeholders:
 	procedure reset_proposed_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
- 
 
 
-	
+
+
 
 -- OBJECTS:
-	
+
 
 	-- When objects are handled then we need these
 	-- categories in order to store them in indefinite_doubly_linked_lists:
@@ -906,28 +906,28 @@ package et_board_ops_conductors is
 		);
 	-- CS CAT_CIRCLE
 
-	
-	-- This type wraps segments of zones, lines, arcs, circles, 
+
+	-- This type wraps segments of zones, lines, arcs, circles,
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_ZONE_SEGMENT_NET =>
 				segment_net			: type_object_segment_net;
-				
+
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				segment_floating	: type_object_segment_floating;
-				
+
 			when CAT_LINE_NET =>
 				line_net			: type_object_line_net;
-				
+
 			when CAT_ARC_NET =>
 				arc_net				: type_object_arc_net;
 
 			when CAT_LINE_FLOATING =>
 				line_floating		: type_object_line_floating;
-				
+
 			when CAT_ARC_FLOATING =>
 				arc_floating		: type_object_arc_floating;
 
@@ -946,14 +946,14 @@ package et_board_ops_conductors is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
+
 
 	-- Returns the first object (line, arc, circle, zone segment, text,
 	-- placeholder) according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
@@ -963,7 +963,7 @@ package et_board_ops_conductors is
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
@@ -977,7 +977,7 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1020,9 +1020,9 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	
-	
-	
+
+
+
 	-- This is a collective procedure that resets
 	-- the status flags of
 	-- of texts, lines, arcs, circles and zone segments:
@@ -1030,12 +1030,12 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_board_ops_conductors;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

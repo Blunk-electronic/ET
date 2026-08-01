@@ -58,10 +58,10 @@ package body et_board_holes is
 			next (c);
 		end loop;
 	end iterate;
-	
 
 
-	
+
+
 
 	procedure mirror_holes (
 		holes	: in out pac_holes.list;
@@ -76,7 +76,7 @@ package body et_board_holes is
 			mirror (hole);
 			result.append (hole);
 		end query_hole;
-		
+
 	begin
 		holes.iterate (query_hole'access);
 		holes := result;
@@ -95,7 +95,7 @@ package body et_board_holes is
 			rotate_by (hole, angle);
 			result.append (hole);
 		end query_hole;
-		
+
 	begin
 		holes.iterate (query_hole'access);
 		holes := result;
@@ -115,7 +115,7 @@ package body et_board_holes is
 			move_by (hole, offset);
 			result.append (hole);
 		end query_hole;
-		
+
 	begin
 		--put_line ("move holes");
 		holes.iterate (query_hole'access);
@@ -123,55 +123,55 @@ package body et_board_holes is
 	end move_holes;
 
 
-	
-	
+
+
 	function to_polygons (
 		holes		: in pac_holes.list;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		use et_contour_to_polygon;
-		
+
 		result : pac_polygon_list.list;
 
 		-- Iterate the given list of holes and convert each hole
 		-- to a polygon. The polygon in turn will be appended to the result
 		-- so that a list of polygons will be the result.
-		
+
 		procedure query_hole (c : in pac_holes.cursor) is begin
 
 			result.append (to_polygon (
 				contour		=> element (c),
-				mode		=> EXPAND,						  
+				mode		=> EXPAND,
 				tolerance	=> tolerance));
-			
+
 		end query_hole;
 
-		
+
 	begin
 		holes.iterate (query_hole'access);
 		return result;
 	end to_polygons;
-	
 
-	
+
+
 	procedure offset_holes (
 		holes			: in out pac_polygon_list.list;
 		offset			: in type_distance_positive;
 		log_threshold	: in type_log_level)
 	is
 		use pac_polygon_offsetting;
-		
+
 		--use pac_polygon_list;
 		--result : pac_polygon_list.list;
-	
+
 		--procedure query_hole (c : in pac_polygon_list.cursor) is
 			--p : type_polygon := element (c);
 		--begin
 			--if debug then
 				--put_line (" hole in : " & to_string (element (c)));
 			--end if;
-			
+
 			--offset_polygon (p, type_float_positive (offset));
 
 			--if debug then
@@ -180,18 +180,18 @@ package body et_board_holes is
 
 			--result.append (p);
 		--end query_hole;
-			
+
 	begin
 		log (text => "offsetting holes by " & to_string (offset) & "mm",
 			 level => log_threshold);
 
 
 		offset_polygons (holes, type_float_positive (offset), log_threshold + 1);
-		
+
 		--holes.iterate (query_hole'access);
 
 		--holes := result;
-		
+
 		--if debug then
 			--put_line (count_type'image (holes.length));
 		--end if;
@@ -199,16 +199,16 @@ package body et_board_holes is
 		--if debug then
 			--put_line (to_string (holes.first_element));
 		--end if;
-		
+
 	end offset_holes;
 
 
-	
+
 end et_board_holes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

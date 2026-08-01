@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,19 +46,19 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 package et_pcb_placeholders.conductor is
-	
+
 	use pac_text_board_vectorized;
-	
 
 
-	
-	type type_placeholder_conductor is new 
-		type_text_fab with 
+
+
+	type type_placeholder_conductor is new
+		type_text_fab with
 	record
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
 		-- the conductor layer the placeholder is placed in:
-		layer	: type_signal_layer := signal_layer_default; 
+		layer	: type_signal_layer := signal_layer_default;
 	end record;
 
 
@@ -67,15 +67,15 @@ package et_pcb_placeholders.conductor is
 	procedure reset_placeholder (
 		placeholder : in out type_placeholder_conductor);
 
-	
+
 	-- CS procedure set_meaning, set_layer
 	-- CS function get_layer
-	
+
 
 	overriding function to_string (
 		placeholder : in type_placeholder_conductor)
 		return string;
-	
+
 
 	function get_meaning (
 		placeholder : in type_placeholder_conductor)
@@ -86,52 +86,52 @@ package et_pcb_placeholders.conductor is
 		placeholder : in type_placeholder_conductor)
 		return type_signal_layer;
 
-						   
-	-- There can be lots of placeholders of this kind. 
+
+	-- There can be lots of placeholders of this kind.
 	-- So they can be are stored in a list:
-	package pac_placeholders_conductor is new 
+	package pac_placeholders_conductor is new
 		doubly_linked_lists (type_placeholder_conductor);
 
 	use pac_placeholders_conductor;
 
 
-	-- Iterates the placeholders. 
+	-- Iterates the placeholders.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		placeholders	: in pac_placeholders_conductor.list;
 		process			: not null access procedure (
 							position : in pac_placeholders_conductor.cursor);
 		proceed			: not null access boolean);
-		
-	
+
+
 	function to_string (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return string;
-	
+
 
 	-- Returns the signal layer of the given placeholder:
 	function get_layer (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return type_signal_layer;
-	
+
 
 	function is_selected (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean;
 
 
 	function is_proposed (
-		placeholder : in pac_placeholders_conductor.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean;
 
 
-	
-	
+
+
 end et_pcb_placeholders.conductor;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -50,7 +50,7 @@ package et_cp_schematic_unit is
 
 	-- This procedure parses a command that shows a device or a unit thereof.
 	-- "Showing" means the highlight the targeted object and writing
-	-- some basic information in the staturs bar. 
+	-- some basic information in the staturs bar.
 	-- Via the argument L1 .. L3 the amount of information to be output can
 	-- be controlled. For values greate L1 a properties window is opened that
 	-- fits all the information in.
@@ -65,7 +65,7 @@ package et_cp_schematic_unit is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- This procedure parses a command that deletes a unit
 	-- of a device like "schematic led_driver delete unit IC1 C":
 	procedure delete_unit (
@@ -73,9 +73,9 @@ package et_cp_schematic_unit is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-		
+
+
+
 
 	-- This procedure parses a command that drags a unit
 	-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
@@ -84,10 +84,10 @@ package et_cp_schematic_unit is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-		
-		
+
+
+
+
 	-- Parses a command that moves a unit either relatively or
 	-- absolutely:
 	-- example 1: schematic led_driver move unit IC1 A relative -1 2 4
@@ -96,11 +96,11 @@ package et_cp_schematic_unit is
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-	
 
-		
-		
-		
+
+
+
+
 	-- Parses a command that rotates a unit either relatively or
 	-- absolutely:
 	-- example 1: schematic led_driver rotate unit IC1 A relative -90
@@ -110,11 +110,11 @@ package et_cp_schematic_unit is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 
 	-- Parses a command that mirrors a unit.
-	-- Toggles between mirroring along its own y-axis or 
+	-- Toggles between mirroring along its own y-axis or
 	-- no mirroring.
 	-- example 1: schematic led_driver mirror unit IC1 A
 	procedure mirror_unit (
@@ -123,21 +123,21 @@ package et_cp_schematic_unit is
 		log_threshold	: in type_log_level);
 
 
-	
-		
+
+
 	-- Parses a command that fetches a unit from a device
 	-- and places it in the schematic:
-	-- example: 
+	-- example:
 	-- "schematic demo fetch unit IC1 C 1 70 100 -90"
 	procedure fetch_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
-		
-		
-		
+
+
+
+
 -- PLACEHOLDERS:
 
 	-- This procedure parses a command that rotates a placeholder
@@ -150,7 +150,7 @@ package et_cp_schematic_unit is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- This procedure parses a command that moves a placeholder
 	-- for name, value or purpose of a unit.
 	-- Example: "schematic led_driver move value R1 1 absolute 100 115"
@@ -160,13 +160,13 @@ package et_cp_schematic_unit is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
-		
+
+
 end et_cp_schematic_unit;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

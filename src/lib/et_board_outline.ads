@@ -37,9 +37,9 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This package is about the outlines of the board (PCB).
--- The term "outlines" refers to 
+-- The term "outlines" refers to
 -- 1. the outer contour
 -- 2. holes. Holes may have any shape.
 --
@@ -58,17 +58,17 @@ package et_board_outline is
 	use pac_geometry_2;
 	use pac_contours;
 	-- use pac_polygons;
-	
+
 
 	-- As a safety measure we derive dedicated types for
 	-- the outer and inner edge of the PCB from the general contour type.
-	
+
 	-- There is only one outer contour of a PCB:
 	type type_outer_contour is new type_contour with null record;
 
 
 	procedure dummy;
-	
+
 
 
 	-- The board contour consists of the outer contour
@@ -84,12 +84,12 @@ package et_board_outline is
 	-- - detect texts inside board area and output an error
 
 
-	
+
 end et_board_outline;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -84,7 +84,7 @@ with et_module_write_assembly_variants;		use et_module_write_assembly_variants;
 
 package body et_module_write is
 
-	
+
 
 	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -95,15 +95,15 @@ package body et_module_write is
 
 		-- backup the previous output destination
 		previous_output : ada.text_io.file_type renames current_output;
-		
+
 		module_file_handle : ada.text_io.file_type;
 
 
 		-- Composes the target file name like bood-sample-tester.mod,
-		-- creates the file (in the current working directory) and 
+		-- creates the file (in the current working directory) and
 		-- directs all outputs to it.
 		-- Writes s a nice header in the target file:
-		procedure write_header is 
+		procedure write_header is
 			-- use pac_project_name;
 			-- use pac_project_path;
 			use et_system_info;
@@ -111,14 +111,14 @@ package body et_module_write is
 			if pac_module_name.length (save_as_name) = 0 then
 				-- The module is to be saved with its own name:
 
-				log (text => "Saving module as " 
+				log (text => "Saving module as "
 					& enclose_in_quotes (to_string (key (module_cursor))) & " ...",
 					level => log_threshold + 1);
-					
+
 				-- Compose the target full file name and create the module file:
 				create (
 					file => module_file_handle,
-					mode => out_file, 
+					mode => out_file,
 					name => to_string (key (module_cursor))
 							& latin_1.full_stop
 							& module_file_name_extension
@@ -126,38 +126,38 @@ package body et_module_write is
 			else
 				-- The module is to be saved with a different name:
 
-				log (text => "Saving module as " 
+				log (text => "Saving module as "
 					& enclose_in_quotes (to_string (save_as_name)) & " ...",
 					level => log_threshold + 1);
 
 				create (
 					file => module_file_handle,
-					mode => out_file, 
+					mode => out_file,
 					name => to_string (save_as_name)
 							& latin_1.full_stop
 							& module_file_name_extension
 					);
 
 			end if;
-			
+
 			-- write in a nice header
 			set_output (module_file_handle);
 			put_line (comment_mark_default & " " & system_name & " module");
 			put_line (comment_mark_default & " " & get_date);
 			put_line (comment_mark_default & " " & row_separator_double);
 			new_line;
-		end write_header;		
+		end write_header;
 
 
-		
+
 
 		-- Writes a nice footer in the target file and closes it.
 		-- Directs subsequent outputs to the previous output (That
 		-- is the output which was set before write_module has been called.):
 		procedure write_footer is begin
-			new_line;		
+			new_line;
 			log (text => "closing module file ...", level => log_threshold + 1);
-			
+
 			put_line (comment_mark_default & " " & row_separator_double);
 			put_line (comment_mark_default & " " & get_date);
 			put_line (comment_mark_default & " module file end");
@@ -170,7 +170,7 @@ package body et_module_write is
 
 
 
-		
+
 		procedure query_board is
 
 			procedure write_silkscreen is
@@ -179,7 +179,7 @@ package body et_module_write is
 				section_mark (section_silkscreen, HEADER);
 
 				section_mark (section_top, HEADER);
-				
+
 				-- lines, arcs, circles:
 				write_silkscreen (module_cursor, TOP, log_threshold + 2);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
@@ -196,12 +196,12 @@ package body et_module_write is
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
 
 				section_mark (section_bottom, FOOTER);
-				
+
 				section_mark (section_silkscreen, FOOTER);
 			end write_silkscreen;
 
 
-			
+
 			procedure write_assy_doc is
 				use et_pcb_sides;
 			begin
@@ -227,12 +227,12 @@ package body et_module_write is
 
 				section_mark (section_assembly_doc, FOOTER);
 			end write_assy_doc;
-			
 
-			
+
+
 			procedure write_stencil is
 				use et_pcb_sides;
-			begin			
+			begin
 				section_mark (section_stencil, HEADER);
 
 				section_mark (section_top, HEADER);
@@ -249,7 +249,7 @@ package body et_module_write is
 			end write_stencil;
 
 
-			
+
 			procedure write_stop_mask is
 				use et_pcb_sides;
 			begin
@@ -267,7 +267,7 @@ package body et_module_write is
 				section_mark (section_bottom, HEADER);
 
 				-- lines, arcs, circles:
-				write_stopmask (module_cursor, BOTTOM, log_threshold + 2);				
+				write_stopmask (module_cursor, BOTTOM, log_threshold + 2);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
@@ -296,7 +296,7 @@ package body et_module_write is
 				section_mark (section_keepout, FOOTER);
 			end write_keepout;
 
-			
+
 
 			procedure write_route_restrict is begin
 				section_mark (section_route_restrict, HEADER);
@@ -332,12 +332,12 @@ package body et_module_write is
 				section_mark (section_conductor, FOOTER);
 			end;
 
-			
+
 		begin -- query_board
 			section_mark (section_board, HEADER);
 
 			write_board_user_settings (module_cursor, log_threshold + 1);
-		
+
 			write_devices_non_electrical (module_cursor, log_threshold + 1);
 
 			write_silkscreen;
@@ -345,7 +345,7 @@ package body et_module_write is
 			write_stencil;
 			write_stop_mask;
 			write_keepout;
-			
+
 			write_route_restrict;
 			write_via_restrict;
 
@@ -353,17 +353,17 @@ package body et_module_write is
 
 			-- outer board contour and holes:
 			write_board_outline (module_cursor, log_threshold + 1);
-			
+
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
 
 
-		
+
 	begin -- write_module
 
 		-- CS check if module is inside project directory ?
-		
+
 		write_header;
 
 		-- meta data
@@ -373,7 +373,7 @@ package body et_module_write is
 		-- rules
 		write_design_rules (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- net classes
 		write_net_classes (module_cursor, log_threshold);
 		put_line (row_separator_single);
@@ -385,23 +385,23 @@ package body et_module_write is
 		-- layer stack
 		write_layer_stack (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- nets
 		write_nets (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- frames
 		write_frames (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- scheamtic texts / notes
 		write_schematic_texts (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- submodules
 		write_submodules (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- devices
 		write_devices_electrical (module_cursor, log_threshold);
 		put_line (row_separator_single);
@@ -409,33 +409,33 @@ package body et_module_write is
 		-- assembly variants
 		write_assembly_variants (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- netchangers
 		write_netchangers (module_cursor, log_threshold);
 		put_line (row_separator_single);
-		
+
 		-- board
 		query_board;
-		put_line (row_separator_single);	
+		put_line (row_separator_single);
 
 		write_footer;
 
 		exception when event:
-			others => 
+			others =>
 				log (text => ada.exceptions.exception_message (event), console => true);
 				close (module_file_handle);
 				set_output (previous_output);
 				raise;
-		
+
 	end write_module;
 
 
 end et_module_write;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

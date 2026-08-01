@@ -39,10 +39,10 @@
 
 
 -- with ada.characters;			use ada.characters;
--- 
+--
 -- with ada.strings;				use ada.strings;
 -- with ada.strings.fixed; 		use ada.strings.fixed;
--- 
+--
 -- with et_logging;				use et_logging;
 -- with et_string_processing;		use et_string_processing;
 
@@ -52,32 +52,32 @@
 package body et_package_model_name is
 
 
-	
+
 	function to_string (
-		name : in pac_package_model_file.bounded_string) 
-		return string 
+		name : in pac_package_model_file.bounded_string)
+		return string
 	is begin
 		return pac_package_model_file.to_string (name);
 	end;
 
 
 
-	
+
 	function to_package_model_name (
-		name : in string) 
-		return pac_package_model_file.bounded_string 
+		name : in string)
+		return pac_package_model_file.bounded_string
 	is begin
 		return pac_package_model_file.to_bounded_string (name);
 	end;
 
 
-	
-	
+
+
 end et_package_model_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

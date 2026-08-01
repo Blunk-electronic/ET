@@ -69,17 +69,17 @@ package body et_module_write_meta is
 	is
 		meta : constant et_meta.type_meta := element (module_cursor).meta;
 
-		
+
 		procedure write_basic (basic : in type_meta_basic'class) is begin
 			write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
 			write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
 			write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
 			write (keyword => keyword_drawing_number, parameters => to_string (basic.drawing_number));
 			write (keyword => keyword_revision, parameters => to_string (basic.revision));
-			
+
 			write (keyword => keyword_drawn_by, parameters => to_string (basic.drawn_by), wrap => true);
 			write (keyword => keyword_drawn_date, parameters => to_string_YMD (basic.drawn_date));
-			
+
 			write (keyword => keyword_checked_by, parameters => to_string (basic.checked_by), wrap => true);
 			write (keyword => keyword_checked_date, parameters => to_string_YMD (basic.checked_date));
 
@@ -88,14 +88,14 @@ package body et_module_write_meta is
 		end write_basic;
 
 
-		
-		procedure write_schematic (sch : in type_meta_schematic) is 
+
+		procedure write_schematic (sch : in type_meta_schematic) is
 			use pac_library_paths_schematic;
-			
+
 			procedure query_lib (c : in pac_library_paths_schematic.cursor) is begin
 				write (keyword => keyword_path, parameters => to_string (element (c)));
 			end query_lib;
-	
+
 		begin -- write_schematic
 			section_mark (section_preferred_libraries, HEADER);
 			sch.preferred_libs.iterate (query_lib'access);
@@ -103,10 +103,10 @@ package body et_module_write_meta is
 		end write_schematic;
 
 
-		
+
 		procedure write_board (brd : in type_meta_board) is
 			use pac_library_paths_board;
-			
+
 			procedure query_lib (c : in pac_library_paths_board.cursor) is begin
 				write (keyword => keyword_path, parameters => to_string (element (c)));
 			end query_lib;
@@ -117,41 +117,41 @@ package body et_module_write_meta is
 			section_mark (section_preferred_libraries, FOOTER);
 		end write_board;
 
-		
-		
+
+
 	begin
 		log_indentation_up;
 		log (text => "meta data", level => log_threshold);
-		
+
 		section_mark (section_meta, HEADER);
 
 		-- schematic related
 		section_mark (section_schematic, HEADER);
 		write_basic (meta.schematic);
 		write_schematic (meta.schematic);
-		
+
 		section_mark (section_schematic, FOOTER);
 
-		
+
 		-- board related
 		section_mark (section_board, HEADER);
 		write_basic (meta.board);
 		write_board (meta.board);
 		section_mark (section_board, FOOTER);
-		
+
 		section_mark (section_meta, FOOTER);
 
 		log_indentation_down;
 	end write_meta;
 
 
-		
+
 end et_module_write_meta;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 package et_modes.project is
 
@@ -47,11 +47,11 @@ package et_modes.project is
 		VERB_SAVE
 		);
 
-	
-	
+
+
 	function to_string (verb : in type_verb_project) return string;
 	function to_verb (verb : in string) return type_verb_project;
-	
+
 	type type_noun_project is (
 		NOUN_MODULE
 		);
@@ -59,13 +59,13 @@ package et_modes.project is
 	function to_string (noun : in type_noun_project) return string;
 	function to_noun (noun : in string) return type_noun_project;
 
-	
-	
+
+
 end et_modes.project;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

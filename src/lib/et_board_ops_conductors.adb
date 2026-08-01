@@ -71,12 +71,12 @@ package body et_board_ops_conductors is
 
 	use pac_nets;
 
-	
+
 
 	function is_freetrack (
-		net_name : in pac_net_name.bounded_string) 
-		return boolean 
-	is 
+		net_name : in pac_net_name.bounded_string)
+		return boolean
+	is
 		use pac_net_name;
 	begin
 		if length (net_name) = 0 then
@@ -87,12 +87,12 @@ package body et_board_ops_conductors is
 	end is_freetrack;
 
 
-	
-	
+
+
 	function freetrack (
-		net_name : in pac_net_name.bounded_string) 
-		return string 
-	is 
+		net_name : in pac_net_name.bounded_string)
+		return string
+	is
 		use pac_net_name;
 	begin
 		if length (net_name) = 0 then
@@ -103,34 +103,34 @@ package body et_board_ops_conductors is
 	end freetrack;
 
 
-	
+
 
 	procedure no_net_segment_found (
 		layer		: in type_signal_layer;
-		zone		: in type_catch_zone) 
+		zone		: in type_catch_zone)
 	is begin
-		log (SEVERITY_WARNING, "no net segment found in layer" 
-			& to_string (layer) 
+		log (SEVERITY_WARNING, "no net segment found in layer"
+			& to_string (layer)
 			& " in" & to_string (zone));
 	end no_net_segment_found;
 
-	
-	
+
+
 
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is an SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
 	procedure check_terminal_face_vs_layer (
-		module_cursor	: in pac_generic_modules.cursor;											   
+		module_cursor	: in pac_generic_modules.cursor;
 		terminal		: in type_terminal_position_fine;
-		layer			: in type_signal_layer) 
+		layer			: in type_signal_layer)
 	is
 		procedure warning is begin
 			log (SEVERITY_WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
 		end;
-		
+
 	begin
-		-- If terminal is SMT type: check desired layer against terminal.face 
+		-- If terminal is SMT type: check desired layer against terminal.face
 		-- and issue warning if layer is an inner layer.
 		if terminal.technology = SMT then
 
@@ -150,11 +150,11 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -166,23 +166,23 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			-- A track belonging to a net requires the net 
+			-- A track belonging to a net requires the net
 			-- to be located in the given module:
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
-			
+
+
 			-- Appends the track to the net.
 			procedure add (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				use pac_conductor_lines;
@@ -192,8 +192,8 @@ package body et_board_ops_conductors is
 					new_item	=> line);
 			end add;
 
-			
-		begin				
+
+		begin
 			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
@@ -201,22 +201,22 @@ package body et_board_ops_conductors is
 
 		end do_it;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " add line to net " & to_string (net_name)
 			& " line: " & to_string (line),
 			level => log_threshold);
-			
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -226,38 +226,38 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end add_line_to_net;
-	
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_conductor_lines;
-		
-		
+
+
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -265,36 +265,36 @@ package body et_board_ops_conductors is
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> line);
 		end;
-		
-		
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& freetrack (net_name) 
+		log (text => "module " & to_string (module_cursor)
+			& freetrack (net_name)
 			& " draw " & to_string (line, true),  -- log incl. width
 			level => log_threshold);
 
 		log_indentation_up;
 
-		-- Make sure the targeted signal layer is 
+		-- Make sure the targeted signal layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, line.layer);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		if is_freetrack (net_name) then
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> add_freetrack'access);
 
 		else
-			add_line_to_net (module_cursor, 
+			add_line_to_net (module_cursor,
 				net_name, line, NO_COMMIT, log_threshold + 1);
 		end if;
 
@@ -302,34 +302,34 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		
+
 		log_indentation_down;
 	end add_line;
 
-	
-	
-	
 
-	
+
+
+
+
 	--procedure add_line (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--net_cursor		: in pac_nets.cursor; -- reset_n
 		--line			: in type_conductor_line;
-		--log_threshold	: in type_log_level) 
+		--log_threshold	: in type_log_level)
 	--is
 
 		--procedure add_named_track (
 			--module_name	: in pac_module_name.bounded_string;
-			--module		: in out type_generic_module) 
+			--module		: in out type_generic_module)
 		--is
 			--use et_nets;
-			
+
 			--procedure add (
 			---- Appends the track to the net.
 				--net_name	: in pac_net_name.bounded_string;
-				--net			: in out type_net) 
+				--net			: in out type_net)
 			--is
 				--use pac_conductor_lines;
 			--begin
@@ -354,7 +354,7 @@ package body et_board_ops_conductors is
 	--end add_line;
 
 
-	
+
 	procedure add_line_start_at_terminal_with_length (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -365,23 +365,23 @@ package body et_board_ops_conductors is
 		direction		: in type_rotation_model;
 		length			: in type_distance_positive;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
 
-		use et_devices_electrical;		
+		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
 
-		
+
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
@@ -389,14 +389,14 @@ package body et_board_ops_conductors is
 			-- further-on set line width and layer.
 
 			set_A (line, to_vector_model (terminal_position.place));
-			
+
 			line.width := width;
 			line.layer := layer;
-			
+
 
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
-			
-			-- Build the end point of the line. 
+
+			-- Build the end point of the line.
 			-- It is the start point moved in direction at given length:
 			set_B (line, move (
 					point 		=> get_A (line),
@@ -406,26 +406,26 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & to_string (net_name) 
-			& " draw line in layer" & to_string (layer) 
-			& " from " & to_string (device) & " terminal " 
-			& to_string (terminal) 
-			& " direction " & to_string (direction) 
+		log (text => "module " & to_string (module_cursor)
+			& " " & to_string (net_name)
+			& " draw line in layer" & to_string (layer)
+			& " from " & to_string (device) & " terminal "
+			& to_string (terminal)
+			& " direction " & to_string (direction)
 			& " length " & to_string (length),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
-		
-		-- Make sure the targeted layer is 
+
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
-		
-		make_line (get_terminal_position (module_cursor, 
+
+		make_line (get_terminal_position (module_cursor,
 			device_cursor, terminal));
 
 
@@ -434,15 +434,15 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		add_line_to_net (module_cursor, 
+
+		add_line_to_net (module_cursor,
 			net_name, line, NO_COMMIT, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 
 		log_indentation_down;
@@ -450,13 +450,13 @@ package body et_board_ops_conductors is
 
 
 
-	
 
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure add_line_start_at_terminal_with_notches_along_axis (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -468,22 +468,22 @@ package body et_board_ops_conductors is
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
 
-		use et_devices_electrical;		
+		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
 
-		
+
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
@@ -494,36 +494,36 @@ package body et_board_ops_conductors is
 			line.width := width;
 
 			set_A (line, to_vector_model (terminal_position.place));
-			
+
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
-			
+
 			-- Build the end point of the line. It is the start point moved in direction:
 			-- CS
-			
+
 		end make_line;
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & to_string (net_name) 
-			& " draw line in layer" & to_string (layer) 
-			& " from " & to_string (device) & " terminal " 
-			& to_string (terminal) 
-			& " direction " & to_string (direction) 
-			& " along axis " & to_string (axis) 
+		log (text => "module " & to_string (module_cursor)
+			& " " & to_string (net_name)
+			& " draw line in layer" & to_string (layer)
+			& " from " & to_string (device) & " terminal "
+			& to_string (terminal)
+			& " direction " & to_string (direction)
+			& " along axis " & to_string (axis)
 			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
-		
-		-- Make sure the targeted layer is 
+
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
-		
+
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
@@ -533,29 +533,29 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		add_line_to_net (module_cursor, 
+
+		add_line_to_net (module_cursor,
 			net_name, line, NO_COMMIT, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_line_start_at_terminal_with_notches_along_axis;
 
 
 
-	
-	
 
 
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -565,22 +565,22 @@ package body et_board_ops_conductors is
 		terminal		: in pac_terminal_name.bounded_string;
 		end_point		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
-	is		
+		log_threshold	: in type_log_level)
+	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
 
-		use et_devices_electrical;		
+		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
 
-		
+
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
@@ -595,30 +595,30 @@ package body et_board_ops_conductors is
 			set_B (line, end_point);
 
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
-			
+
 		end make_line;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & to_string (net_name) 
-			& " draw line in layer" & to_string (layer) 
-			& " from " & to_string (device) & " terminal " 
-			& to_string (terminal) 
+		log (text => "module " & to_string (module_cursor)
+			& " " & to_string (net_name)
+			& " draw line in layer" & to_string (layer)
+			& " from " & to_string (device) & " terminal "
+			& to_string (terminal)
 			& " to " & to_string (end_point),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		
+
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
-		
-		-- Make sure the targeted layer is 
+
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
-		
+
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
@@ -628,27 +628,27 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		add_line_to_net (module_cursor, 
+
+		add_line_to_net (module_cursor,
 			net_name, line, NO_COMMIT, log_threshold + 1);
 
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end add_line_start_at_terminal_end_at_point;
 
 
 
-	
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure add_line_start_at_terminal_with_notches_along_axis_2 (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -659,22 +659,22 @@ package body et_board_ops_conductors is
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
-		
+
 		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
 
-		
+
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
@@ -686,62 +686,62 @@ package body et_board_ops_conductors is
 			set_A (line, to_vector_model (terminal_position.place));
 
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
-			
+
 			-- Build the end point of the line. It is the start point moved in direction:
 			-- CS
-			
+
 		end make_line;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & to_string (net_name) 
-			& " draw line in layer" & to_string (layer) 
-			& " from " & to_string (device) & " terminal " 
-			& to_string (terminal) 
-			& " along axis " & to_string (axis) 
+		log (text => "module " & to_string (module_cursor)
+			& " " & to_string (net_name)
+			& " draw line in layer" & to_string (layer)
+			& " from " & to_string (device) & " terminal "
+			& to_string (terminal)
+			& " along axis " & to_string (axis)
 			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
-		
-		-- Make sure the targeted layer is 
+
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
-		
+
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		add_line_to_net (module_cursor, 
+
+		add_line_to_net (module_cursor,
 			net_name, line, NO_COMMIT, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end add_line_start_at_terminal_with_notches_along_axis_2;
 
 
-	
-	
 
 
-	
-	
+
+
+
+
 
 
 
@@ -755,7 +755,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			procedure query_net (
@@ -772,12 +772,12 @@ package body et_board_ops_conductors is
 			begin
 				update_element (net.route.lines, line.line_cursor, query_line'access);
 			end query_net;
-			
+
 		begin
 			update_element (module.nets, line.net_cursor, query_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -787,7 +787,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -795,13 +795,13 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end modify_status;
 
-	
 
 
 
-	
-	
-	
+
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line_floating;
@@ -812,7 +812,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -821,12 +821,12 @@ package body et_board_ops_conductors is
 			end query_line;
 
 			use pac_conductor_lines;
-			
+
 		begin
 			update_element (module.board.conductors_floating.lines, line.line_cursor, query_line'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of floating "
@@ -835,7 +835,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -845,10 +845,10 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -858,20 +858,20 @@ package body et_board_ops_conductors is
 		return pac_object_lines.list
 	is
 		result : pac_object_lines.list;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net 		: in type_net) 
+				net 		: in type_net)
 			is
 				pragma unreferenced (net_name);
 				use pac_conductor_lines;
@@ -887,13 +887,13 @@ package body et_board_ops_conductors is
 							result.append ((net_cursor, lc));
 						end if;
 					end if;
-				end query_line;				
-				
+				end query_line;
+
 			begin
 				query_element (lc, query_line'access);
 			end query_net;
 
-			
+
 		begin
 			while net_cursor /= pac_nets.no_element loop
 				pac_nets.query_element (net_cursor, query_net'access);
@@ -901,7 +901,7 @@ package body et_board_ops_conductors is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up line segments of nets"
@@ -910,25 +910,25 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 		return result;
 	end get_lines;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in type_signal_layer;
@@ -941,12 +941,12 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			net_name : pac_net_name.bounded_string;
 
-			
+
 			procedure query_line (c : in pac_conductor_lines.cursor) is
 				use pac_conductor_lines;
 				line : type_conductor_line renames element (c);
@@ -961,8 +961,8 @@ package body et_board_ops_conductors is
 					end if;
 				end if;
 			end query_line;
-		
-			
+
+
 		begin
 			module.board.conductors_floating.lines.iterate (query_line'access);
 		end query_module;
@@ -976,26 +976,26 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & get_length (result),
 			level => log_threshold + 1);
-		
+
 		log_indentation_down;
-		
+
 		return result;
 	end get_lines;
 
 
-	
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_conductor_lines.cursor;
@@ -1005,10 +1005,10 @@ package body et_board_ops_conductors is
 	is
 		use pac_conductor_lines;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -1020,7 +1020,7 @@ package body et_board_ops_conductors is
 				modify_status (line, operation);
 			end query_line;
 
-			
+
 			procedure process_freetracks is
 				conductors : type_conductors_floating renames module.board.conductors_floating;
 				l : pac_conductor_lines.cursor;
@@ -1031,15 +1031,15 @@ package body et_board_ops_conductors is
 						conductors.lines.update_element (l, query_line'access);
 						proceed := false; -- abort iterator
 					end if;
-					
+
 					next (l);
 				end loop;
 			end process_freetracks;
-			
 
-			
+
+
 			procedure process_nets is
-				
+
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
@@ -1047,7 +1047,7 @@ package body et_board_ops_conductors is
 					l : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
 					log (text => "net " & to_string (net_name), level => log_threshold + 1);
-					
+
 					while l /= pac_conductor_lines.no_element and proceed loop
 						if l = line_cursor then
 							net.route.lines.update_element (l, query_line'access);
@@ -1058,8 +1058,8 @@ package body et_board_ops_conductors is
 					end loop;
 				end query_net;
 
-				
-				net_cursor : pac_nets.cursor := module.nets.first;			
+
+				net_cursor : pac_nets.cursor := module.nets.first;
 			begin
 				while net_cursor /= pac_nets.no_element and proceed loop
 					module.nets.update_element (net_cursor, query_net'access);
@@ -1067,7 +1067,7 @@ package body et_board_ops_conductors is
 				end loop;
 			end process_nets;
 
-			
+
 		begin
 			if freetracks then
 				process_freetracks;
@@ -1076,7 +1076,7 @@ package body et_board_ops_conductors is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -1085,7 +1085,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1096,8 +1096,8 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
+
+
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1110,12 +1110,12 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			use pac_conductor_lines;
-			
+
 			procedure query_line (
 				line : in out type_conductor_line)
 			is begin
@@ -1131,7 +1131,7 @@ package body et_board_ops_conductors is
 					end if;
 				end if;
 			end query_line;
-			
+
 
 
 			procedure process_freetracks is
@@ -1146,7 +1146,7 @@ package body et_board_ops_conductors is
 			end process_freetracks;
 
 
-			
+
 			procedure process_nets is
 
 				procedure query_net (
@@ -1157,7 +1157,7 @@ package body et_board_ops_conductors is
 				begin
 					log (text => "net " & to_string (net_name), level => log_threshold + 1);
 					log_indentation_up;
-					
+
 					while line_cursor /= pac_conductor_lines.no_element loop
 						net.route.lines.update_element (line_cursor, query_line'access);
 						next (line_cursor);
@@ -1174,8 +1174,8 @@ package body et_board_ops_conductors is
 					next (net_cursor);
 				end loop;
 			end process_nets;
-			
-			
+
+
 		begin
 			if freetracks then
 				process_freetracks;
@@ -1183,15 +1183,15 @@ package body et_board_ops_conductors is
 				process_nets;
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "proposing lines in signal layer " & to_string (layer)
 			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1200,12 +1200,12 @@ package body et_board_ops_conductors is
 	end propose_lines;
 
 
-	
-	
-	
 
 
-	
+
+
+
+
 	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
@@ -1214,23 +1214,23 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_lines;
 
-			
+
 			procedure query_line (
 				line : in out type_conductor_line)
-			is 
+			is
 			begin
 				reset_status (line);
 			end query_line;
 
 
-			
+
 			procedure process_nets is
-				
+
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
@@ -1242,13 +1242,13 @@ package body et_board_ops_conductors is
 						net.route.lines.update_element (line_cursor, query_line'access);
 						next (line_cursor);
 					end loop;
-				end query_net;				
+				end query_net;
 
 				net_cursor : pac_nets.cursor := module.nets.first;
-			begin			
+			begin
 				log (text => "tracks of nets", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				while has_element (net_cursor) loop
 					module.nets.update_element (net_cursor, query_net'access);
 					next (net_cursor);
@@ -1260,7 +1260,7 @@ package body et_board_ops_conductors is
 
 
 			procedure process_freetracks is
-				line_cursor : pac_conductor_lines.cursor := 
+				line_cursor : pac_conductor_lines.cursor :=
 					module.board.conductors_floating.lines.first;
 			begin
 				log (text => "freetracks", level => log_threshold + 1);
@@ -1269,15 +1269,15 @@ package body et_board_ops_conductors is
 				while has_element (line_cursor) loop
 					module.board.conductors_floating.lines.update_element (
 						line_cursor, query_line'access);
-					
+
 					next (line_cursor);
 				end loop;
 
 				log_indentation_down;
 			end process_freetracks;
 
-			
-			
+
+
 		begin
 			if freetracks then
 				process_freetracks;
@@ -1285,9 +1285,9 @@ package body et_board_ops_conductors is
 				process_nets;
 			end if;
 		end query_module;
-	
 
-		
+
+
 	begin
 		log (text => "reset status lines",
 			 level => log_threshold);
@@ -1300,14 +1300,14 @@ package body et_board_ops_conductors is
 
 		log_indentation_down;
 	end reset_status_lines;
-	
-	
 
 
-	
-	
-	
-	
+
+
+
+
+
+
 	function get_first_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -1317,11 +1317,11 @@ package body et_board_ops_conductors is
 		result : type_object_line_net;
 
 		use pac_conductor_lines;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -1334,7 +1334,7 @@ package body et_board_ops_conductors is
 					procedure query_lines (
 						net_name	: in pac_net_name.bounded_string;
 						net 		: in type_net)
-					is 
+					is
 						pragma unreferenced (net_name);
 
 						procedure query_line (l : in pac_conductor_lines.cursor) is begin
@@ -1364,32 +1364,32 @@ package body et_board_ops_conductors is
 					begin
 						iterate (net.route.lines, query_line'access, proceed'access);
 					end query_lines;
-					
+
 				begin
 					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 					log_indentation_up;
 					query_element (net_cursor, query_lines'access);
 					log_indentation_down;
 				end query_net;
-				
+
 
 			begin
 				iterate (module.nets, query_net'access, proceed'access);
 			end process_nets;
 
-			
+
 		begin
 			process_nets;
 		end query_module;
 
 
-	begin		
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1401,7 +1401,7 @@ package body et_board_ops_conductors is
 		end if;
 
 		log_indentation_down;
-		
+
 		return result;
 	end get_first_line_net;
 
@@ -1410,7 +1410,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	function get_first_line_floating (
@@ -1422,11 +1422,11 @@ package body et_board_ops_conductors is
 		result : type_object_line_floating;
 
 		use pac_conductor_lines;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -1454,20 +1454,20 @@ package body et_board_ops_conductors is
 						null; -- CS
 				end case;
 			end query_line;
-				
-			
+
+
 		begin
 			iterate (conductors.lines, query_line'access, proceed'access);
 		end query_module;
 
 
-	begin		
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first floating line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1479,18 +1479,18 @@ package body et_board_ops_conductors is
 		end if;
 
 		log_indentation_down;
-		
+
 		return result;
 	end get_first_line_floating;
 
 
 
-	
 
-	
-	
 
-	
+
+
+
+
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_object_line_net;
@@ -1506,7 +1506,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			use pac_conductor_lines;
 
-			
+
 			procedure process_freetracks is
 				proceed : boolean := true;
 
@@ -1537,15 +1537,15 @@ package body et_board_ops_conductors is
 						end if;
 						next (l);
 					end loop;
-				end if;					
+				end if;
 			end process_freetracks;
 
 
-			
-			
+
+
 			procedure process_nets is
 				use et_nets;
-				
+
 				-- The serach for the next proposed line starts at the
 				-- given line. This flag is used to initiate the search:
 				init : boolean := true;
@@ -1559,8 +1559,8 @@ package body et_board_ops_conductors is
 				-- A temporarily cursor that points to the net being
 				-- searched in. The search starts with the given net:
 				nc : pac_nets.cursor := line.net_cursor;
-				
-				
+
+
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net)
@@ -1598,7 +1598,7 @@ package body et_board_ops_conductors is
 								end if;
 							end loop;
 						end if;
-						
+
 					else
 					-- For all further calls of this procedure:
 					-- Iterate the lines of the net starting at the first line.
@@ -1615,14 +1615,14 @@ package body et_board_ops_conductors is
 							else
 								next (lc);
 							end if;
-						end loop;					
-					end if;				
+						end loop;
+					end if;
 				end query_net;
 
-				
+
 			begin
 				-- Query the nets one by one until the last net.
-				-- Start at the GIVEN net. The iteration is cancelled once 
+				-- Start at the GIVEN net. The iteration is cancelled once
 				-- the proceed-flag is cleared by procedure query_net:
 				while nc /= pac_nets.no_element and proceed loop
 					query_element (nc, query_net'access);
@@ -1645,26 +1645,26 @@ package body et_board_ops_conductors is
 					if proceed then
 						line := (others => <>);
 					end if;
-				end if;				
+				end if;
 			end process_nets;
-				
-			
+
+
 		begin
 			if freetracks then
 				process_freetracks;
 			else
 				process_nets;
-			end if;			
+			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " advancing to next proposed line",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1672,14 +1672,14 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end next_proposed_line;
 
-	
 
 
 
 
-	
-	
-	
+
+
+
+
 	procedure move_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line_net;
@@ -1691,14 +1691,14 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_conductor_lines;
 		use et_nets;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1715,12 +1715,12 @@ package body et_board_ops_conductors is
 				net.route.lines.update_element (line.line_cursor, move'access);
 			end update_net;
 
-			
+
 		begin
-			module.nets.update_element (line.net_cursor, update_net'access);			
+			module.nets.update_element (line.net_cursor, update_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving " & to_string (line.line_cursor, true)  -- log incl. width
@@ -1735,17 +1735,17 @@ package body et_board_ops_conductors is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
@@ -1753,10 +1753,10 @@ package body et_board_ops_conductors is
 
 
 
-	
 
 
-	
+
+
 
 	procedure move_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1770,10 +1770,10 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1784,12 +1784,12 @@ package body et_board_ops_conductors is
 				log (text => (to_string (line, true)), level => log_threshold + 1);
 			end;
 
-			
+
 		begin
 			module.board.conductors_floating.lines.update_element (line.line_cursor, move'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving floating " & to_string (line.line_cursor, true)  -- log incl. width
@@ -1804,26 +1804,26 @@ package body et_board_ops_conductors is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_line_floating;
 
 
 
-	
-	
 
-	
-	
+
+
+
+
 
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1839,17 +1839,17 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
@@ -1862,9 +1862,9 @@ package body et_board_ops_conductors is
 					null; -- CS message "segment not found" ?
 				end if;
 			end query_net;
-			
 
-		begin			
+
+		begin
 			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
@@ -1872,45 +1872,45 @@ package body et_board_ops_conductors is
 
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " net " & to_string (net_name) 
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (net_name)
 			& " delete segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
-			
+
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end delete_line_net;
 
-	
-	
 
-	
 
-	
-	
+
+
+
+
+
 
 
 	procedure delete_line_floating (
@@ -1923,10 +1923,10 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			conductors : type_conductors_floating renames module.board.conductors_floating;
@@ -1942,7 +1942,7 @@ package body et_board_ops_conductors is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" delete segment" & to_string (line, true), -- log linewidth
@@ -1950,13 +1950,13 @@ package body et_board_ops_conductors is
 
 		log_indentation_up;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1965,38 +1965,38 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end delete_line_floating;
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 -- ARCS:
-	
-	
+
+
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_conductor_arcs;
 
-		
+
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -2005,21 +2005,21 @@ package body et_board_ops_conductors is
 				new_item	=> arc);
 		end;
 
-		
+
 		procedure add_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
+
 			-- Appends the track to the net.
 			procedure add (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 			begin
@@ -2028,7 +2028,7 @@ package body et_board_ops_conductors is
 					new_item	=> arc);
 			end add;
 
-			
+
 		begin
 			pac_nets.update_element (
 				container	=> module.nets,
@@ -2037,17 +2037,17 @@ package body et_board_ops_conductors is
 
 		end add_named_track;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& freetrack (net_name) 
-			& " draw arc in layer" & to_string (arc.layer) 
+		log (text => "module " & to_string (module_cursor)
+			& freetrack (net_name)
+			& " draw arc in layer" & to_string (arc.layer)
 			& to_string (arc),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		-- Make sure the targeted layer is 
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, arc.layer);
 
@@ -2057,9 +2057,9 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		if is_freetrack (net_name) then
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -2074,21 +2074,21 @@ package body et_board_ops_conductors is
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_arc;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 
 
@@ -2102,7 +2102,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			procedure query_net (
@@ -2119,12 +2119,12 @@ package body et_board_ops_conductors is
 			begin
 				update_element (net.route.arcs, arc.arc_cursor, query_arc'access);
 			end query_net;
-			
+
 		begin
 			update_element (module.nets, arc.net_cursor, query_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -2134,7 +2134,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2142,14 +2142,14 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end modify_status;
 
-	
 
 
 
 
 
-	
-	
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		arc				: in type_object_arc_floating;
@@ -2160,7 +2160,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -2169,12 +2169,12 @@ package body et_board_ops_conductors is
 			end query_arc;
 
 			use pac_conductor_arcs;
-			
+
 		begin
 			update_element (module.board.conductors_floating.arcs, arc.arc_cursor, query_arc'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of floating "
@@ -2183,7 +2183,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2195,7 +2195,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	procedure propose_arcs (
@@ -2209,12 +2209,12 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			use pac_conductor_arcs;
-			
+
 			procedure query_arc (
 				arc : in out type_conductor_arc)
 			is begin
@@ -2230,7 +2230,7 @@ package body et_board_ops_conductors is
 					end if;
 				end if;
 			end query_arc;
-			
+
 
 
 			procedure process_freetracks is
@@ -2245,7 +2245,7 @@ package body et_board_ops_conductors is
 			end process_freetracks;
 
 
-			
+
 			procedure process_nets is
 
 				procedure query_net (
@@ -2256,7 +2256,7 @@ package body et_board_ops_conductors is
 				begin
 					log (text => "net " & to_string (net_name), level => log_threshold + 1);
 					log_indentation_up;
-					
+
 					while arc_cursor /= pac_conductor_arcs.no_element loop
 						net.route.arcs.update_element (arc_cursor, query_arc'access);
 						next (arc_cursor);
@@ -2273,8 +2273,8 @@ package body et_board_ops_conductors is
 					next (net_cursor);
 				end loop;
 			end process_nets;
-			
-			
+
+
 		begin
 			if freetracks then
 				process_freetracks;
@@ -2282,15 +2282,15 @@ package body et_board_ops_conductors is
 				process_nets;
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "proposing arcs in signal layer " & to_string (layer)
 			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2300,11 +2300,11 @@ package body et_board_ops_conductors is
 
 
 
-	
 
 
 
-	
+
+
 
 
 	procedure reset_proposed_arcs (
@@ -2315,23 +2315,23 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_arcs;
 
-			
+
 			procedure query_arc (
 				arc : in out type_conductor_arc)
-			is 
+			is
 			begin
 				reset_status (arc);
 			end query_arc;
 
 
-			
+
 			procedure process_nets is
-				
+
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
@@ -2343,10 +2343,10 @@ package body et_board_ops_conductors is
 						net.route.arcs.update_element (arc_cursor, query_arc'access);
 						next (arc_cursor);
 					end loop;
-				end query_net;				
+				end query_net;
 
 				net_cursor : pac_nets.cursor := module.nets.first;
-			begin			
+			begin
 				while net_cursor /= pac_nets.no_element loop
 					module.nets.update_element (net_cursor, query_net'access);
 					next (net_cursor);
@@ -2364,8 +2364,8 @@ package body et_board_ops_conductors is
 				end loop;
 			end process_freetracks;
 
-			
-			
+
+
 		begin
 			if freetracks then
 				process_freetracks;
@@ -2373,9 +2373,9 @@ package body et_board_ops_conductors is
 				process_nets;
 			end if;
 		end query_module;
-	
 
-		
+
+
 	begin
 		log (text => "resetting proposed arcs",
 			 level => log_threshold);
@@ -2388,14 +2388,14 @@ package body et_board_ops_conductors is
 
 		log_indentation_down;
 	end reset_proposed_arcs;
-	
 
 
 
-	
-	
 
-	
+
+
+
+
 
 	function get_first_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2406,11 +2406,11 @@ package body et_board_ops_conductors is
 		result : type_object_arc_net;
 
 		use pac_conductor_arcs;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -2423,7 +2423,7 @@ package body et_board_ops_conductors is
 					procedure query_arcs (
 						net_name	: in pac_net_name.bounded_string;
 						net 		: in type_net)
-					is 
+					is
 						pragma unreferenced (net_name);
 
 						procedure query_arc (l : in pac_conductor_arcs.cursor) is begin
@@ -2453,32 +2453,32 @@ package body et_board_ops_conductors is
 					begin
 						iterate (net.route.arcs, query_arc'access, proceed'access);
 					end query_arcs;
-					
+
 				begin
 					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 					log_indentation_up;
 					query_element (net_cursor, query_arcs'access);
 					log_indentation_down;
 				end query_net;
-				
+
 
 			begin
 				iterate (module.nets, query_net'access, proceed'access);
 			end process_nets;
 
-			
+
 		begin
 			process_nets;
 		end query_module;
 
 
-	begin		
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first arc / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2490,13 +2490,13 @@ package body et_board_ops_conductors is
 		end if;
 
 		log_indentation_down;
-		
+
 		return result;
 	end get_first_arc_net;
 
 
 
-	
+
 
 
 
@@ -2511,11 +2511,11 @@ package body et_board_ops_conductors is
 		result : type_object_arc_floating;
 
 		use pac_conductor_arcs;
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -2543,20 +2543,20 @@ package body et_board_ops_conductors is
 						null; -- CS
 				end case;
 			end query_arc;
-				
-			
+
+
 		begin
 			iterate (conductors.arcs, query_arc'access, proceed'access);
 		end query_module;
 
 
-	begin		
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first floating arc / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2568,17 +2568,17 @@ package body et_board_ops_conductors is
 		end if;
 
 		log_indentation_down;
-		
+
 		return result;
 	end get_first_arc_floating;
 
 
 
-	
 
-	
 
-	
+
+
+
 	procedure move_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		arc				: in type_object_arc_net;
@@ -2594,10 +2594,10 @@ package body et_board_ops_conductors is
 		use pac_conductor_arcs;
 		use et_nets;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -2614,12 +2614,12 @@ package body et_board_ops_conductors is
 				net.route.arcs.update_element (arc.arc_cursor, move'access);
 			end update_net;
 
-			
+
 		begin
-			module.nets.update_element (arc.net_cursor, update_net'access);			
+			module.nets.update_element (arc.net_cursor, update_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving " & to_string (arc.arc_cursor, true)  -- log incl. width
@@ -2633,15 +2633,15 @@ package body et_board_ops_conductors is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 
@@ -2651,9 +2651,9 @@ package body et_board_ops_conductors is
 
 
 
-	
 
-	
+
+
 
 	procedure move_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2667,10 +2667,10 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -2681,12 +2681,12 @@ package body et_board_ops_conductors is
 				log (text => (to_string (arc, true)), level => log_threshold + 1);
 			end;
 
-			
+
 		begin
 			module.board.conductors_floating.arcs.update_element (arc.arc_cursor, move'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving floating " & to_string (arc.arc_cursor, true)  -- log incl. width
@@ -2700,15 +2700,15 @@ package body et_board_ops_conductors is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_arc_floating;
@@ -2716,9 +2716,9 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure delete_arc_net (
@@ -2735,17 +2735,17 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
@@ -2758,9 +2758,9 @@ package body et_board_ops_conductors is
 					null; -- CS message "segment not found" ?
 				end if;
 			end query_net;
-			
 
-		begin			
+
+		begin
 			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
@@ -2768,7 +2768,7 @@ package body et_board_ops_conductors is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
@@ -2782,7 +2782,7 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2792,19 +2792,19 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
 	end delete_arc_net;
 
 
-	
 
-	
 
-	
+
+
+
 
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2816,10 +2816,10 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			conductors : type_conductors_floating renames module.board.conductors_floating;
@@ -2835,7 +2835,7 @@ package body et_board_ops_conductors is
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" delete segment" & to_string (arc, true), -- log linewidth
@@ -2848,17 +2848,17 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_arc_floating;
@@ -2866,38 +2866,38 @@ package body et_board_ops_conductors is
 
 
 
-	
 
-	
 
-	
+
+
+
 	procedure delete_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 
-		
+
 		procedure ripup_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_conductor_lines.cursor := module.board.conductors_floating.lines.first;
 			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors_floating.arcs.first;
 		begin
-			-- first probe the lines. If a matching line found, delete it 
+			-- first probe the lines. If a matching line found, delete it
 			-- and abort iteration.
 			while line_cursor /= pac_conductor_lines.no_element loop
 
@@ -2920,7 +2920,7 @@ package body et_board_ops_conductors is
 						deleted := true;
 						exit;
 					end if;
-					
+
 					next (arc_cursor);
 				end loop;
 			end if;
@@ -2929,31 +2929,31 @@ package body et_board_ops_conductors is
 			if not deleted then
 				no_net_segment_found (layer, catch_zone);
 			end if;
-			
+
 		end ripup_freetrack;
 
-		
-		
+
+
 		procedure ripup_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module:
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
-			
+
+
 			procedure ripup (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				arc_cursor  : pac_conductor_arcs.cursor := net.route.arcs.first;
 			begin
-				-- first probe the lines. If a matching line found, delete it 
+				-- first probe the lines. If a matching line found, delete it
 				-- and abort iteration.
 				while line_cursor /= pac_conductor_lines.no_element loop
 
@@ -2976,7 +2976,7 @@ package body et_board_ops_conductors is
 							deleted := true;
 							exit;
 						end if;
-						
+
 						next (arc_cursor);
 					end loop;
 				end if;
@@ -2988,7 +2988,7 @@ package body et_board_ops_conductors is
 
 			end ripup;
 
-			
+
 		begin
 			pac_nets.update_element (
 				container	=> module.nets,
@@ -2997,29 +2997,29 @@ package body et_board_ops_conductors is
 
 		end ripup_named_track;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& freetrack (net_name) 
-			& " delete segment in layer " & to_string (layer) 
+		log (text => "module " & to_string (module_cursor)
+			& freetrack (net_name)
+			& " delete segment in layer " & to_string (layer)
 			& " in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		-- Make sure the targeted layer is 
+
+		-- Make sure the targeted layer is
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		if is_freetrack (net_name) then
-			
+
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
@@ -3032,23 +3032,23 @@ package body et_board_ops_conductors is
 				process		=> ripup_named_track'access);
 
 			update_ratsnest (module_cursor, log_threshold + 1);
-		end if;		
+		end if;
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_track;
 
-	
 
 
 
-	
-	
+
+
+
 
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3060,20 +3060,20 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
+				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				-- Locate the given segment in the given net:
@@ -3083,9 +3083,9 @@ package body et_board_ops_conductors is
 				net.route.arcs.clear;
 				-- CS net.route.circles.clear;
 			end query_net;
-			
 
-		begin			
+
+		begin
 			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
@@ -3093,7 +3093,7 @@ package body et_board_ops_conductors is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
@@ -3107,30 +3107,30 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end ripup_net;
 
 
 
 
-	
-	
 
-	
+
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3142,27 +3142,27 @@ package body et_board_ops_conductors is
 		use pac_segments;
 		use pac_route_solid;
 		use pac_route_hatched;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is 
+			is
 				pragma unreferenced (net_name);
-				
+
 				procedure query_zone_solid (zone : in out type_route_solid) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -3176,7 +3176,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
+
 				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -3190,7 +3190,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 			begin
 				-- Locate the zone:
 				case segment.fill_style is
@@ -3207,18 +3207,18 @@ package body et_board_ops_conductors is
 							process		=> query_zone_hatched'access);
 				end case;
 			end query_net;
-	
-			
+
+
 		begin
 			-- Search the given segment according to its net:
 			update_element (
-				container	=> module.nets, 
-				position	=> segment.net, 
+				container	=> module.nets,
+				position	=> segment.net,
 				process		=> query_net'access);
 
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -3228,7 +3228,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3240,7 +3240,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	procedure modify_status (
@@ -3253,22 +3253,22 @@ package body et_board_ops_conductors is
 		use pac_segments;
 		use pac_floating_solid;
 		use pac_floating_hatched;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
-				
+
+
 			procedure query_zone_solid (zone : in out type_floating_solid) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -3282,7 +3282,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
+
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -3296,8 +3296,8 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-	
-			
+
+
 		begin
 			-- Locate the zone:
 			case segment.fill_style is
@@ -3315,8 +3315,8 @@ package body et_board_ops_conductors is
 			end case;
 
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -3325,7 +3325,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3336,8 +3336,8 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
+
+
 
 
 	procedure propose_segments_net (
@@ -3350,7 +3350,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
@@ -3373,7 +3373,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_segment;
 
-				
+
 				procedure query_zone_solid (zone : in out type_route_solid) is
 					sc : pac_segments.cursor;
 				begin
@@ -3391,7 +3391,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
+
 				procedure query_zone_hatched (zone : in out type_route_hatched) is
 					sc : pac_segments.cursor;
 				begin
@@ -3409,33 +3409,33 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 				zcs : pac_route_solid.cursor := net.route.zones.solid.first;
 				zch : pac_route_hatched.cursor := net.route.zones.hatched.first;
-				
+
 			begin
 				while zcs /= pac_route_solid.no_element loop
 					update_element (net.route.zones.solid, zcs, query_zone_solid'access);
 					next (zcs);
 				end loop;
-				
+
 				while zch /= pac_route_hatched.no_element loop
 					update_element (net.route.zones.hatched, zch, query_zone_hatched'access);
 					next (zch);
 				end loop;
 			end query_net;
-			
-			
+
+
 			nc : pac_nets.cursor := module.nets.first;
-			
+
 		begin
 			while nc /= pac_nets.no_element loop
-				update_element (module.nets, nc, query_net'access);				
+				update_element (module.nets, nc, query_net'access);
 				next (nc);
 			end loop;
 		end query_module;
-	
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing segments of connected zones in"
@@ -3444,7 +3444,7 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3467,7 +3467,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
@@ -3484,7 +3484,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_segment;
 
-			
+
 			procedure query_zone_solid (zone : in out type_floating_solid) is
 				sc : pac_segments.cursor;
 			begin
@@ -3502,7 +3502,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
+
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is
 				sc : pac_segments.cursor;
 			begin
@@ -3520,23 +3520,23 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-				
+
 			zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 			zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
-				
+
 		begin
 			while zcs /= pac_floating_solid.no_element loop
 				update_element (module.board.conductors_floating.zones.solid, zcs, query_zone_solid'access);
 				next (zcs);
 			end loop;
-			
+
 			while zch /= pac_floating_hatched.no_element loop
 				update_element (module.board.conductors_floating.zones.hatched, zch, query_zone_hatched'access);
 				next (zch);
-			end loop;			
+			end loop;
 		end query_module;
-	
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing segments of floating zones in"
@@ -3545,7 +3545,7 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -3554,10 +3554,10 @@ package body et_board_ops_conductors is
 	end propose_segments_floating;
 
 
-	
-	
 
-	
+
+
+
 
 	procedure reset_proposed_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3567,7 +3567,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
@@ -3586,7 +3586,7 @@ package body et_board_ops_conductors is
 					reset_status (segment);
 				end query_segment;
 
-				
+
 				procedure query_zone_solid (zone : in out type_route_solid) is
 					sc : pac_segments.cursor;
 				begin
@@ -3602,7 +3602,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
+
 				procedure query_zone_hatched (zone : in out type_route_hatched) is
 					sc : pac_segments.cursor;
 				begin
@@ -3618,33 +3618,33 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 				zcs : pac_route_solid.cursor := net.route.zones.solid.first;
 				zch : pac_route_hatched.cursor := net.route.zones.hatched.first;
-				
+
 			begin
 				while zcs /= pac_route_solid.no_element loop
 					update_element (net.route.zones.solid, zcs, query_zone_solid'access);
 					next (zcs);
 				end loop;
-				
+
 				while zch /= pac_route_hatched.no_element loop
 					update_element (net.route.zones.hatched, zch, query_zone_hatched'access);
 					next (zch);
 				end loop;
 			end query_net;
-			
-			
+
+
 			nc : pac_nets.cursor := module.nets.first;
-			
+
 		begin
 			while nc /= pac_nets.no_element loop
-				update_element (module.nets, nc, query_net'access);				
+				update_element (module.nets, nc, query_net'access);
 				next (nc);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " resetting proposed segments of connected zones in conductor layers",
@@ -3656,14 +3656,14 @@ package body et_board_ops_conductors is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		log_indentation_down;		
+		log_indentation_down;
 	end reset_proposed_segments_net;
 
 
-	
 
 
-	
+
+
 
 	procedure reset_proposed_segments_floating (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3673,7 +3673,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
@@ -3686,7 +3686,7 @@ package body et_board_ops_conductors is
 				reset_status (segment);
 			end query_segment;
 
-			
+
 			procedure query_zone_solid (zone : in out type_floating_solid) is
 				sc : pac_segments.cursor;
 			begin
@@ -3702,7 +3702,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
+
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is
 				sc : pac_segments.cursor;
 			begin
@@ -3718,23 +3718,23 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-			
+
 			zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 			zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
-				
+
 		begin
 			while zcs /= pac_floating_solid.no_element loop
 				update_element (module.board.conductors_floating.zones.solid, zcs, query_zone_solid'access);
 				next (zcs);
 			end loop;
-			
+
 			while zch /= pac_floating_hatched.no_element loop
 				update_element (module.board.conductors_floating.zones.hatched, zch, query_zone_hatched'access);
 				next (zch);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " resetting proposed segments of floating zones in conductor layers",
@@ -3746,27 +3746,27 @@ package body et_board_ops_conductors is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		log_indentation_down;		
+		log_indentation_down;
 	end reset_proposed_segments_floating;
 
-	
 
 
-	
-	
 
-	
+
+
+
+
 
 	function get_first_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment_net
 	is
 
 		result : type_object_segment_net;
 		-- Note: By default the fill style of the result is SOLID.
-		-- However, in the end of this procedure it may mutate 
+		-- However, in the end of this procedure it may mutate
 		-- to HATCHED. See specification.
 
 		use pac_contours;
@@ -3787,20 +3787,20 @@ package body et_board_ops_conductors is
 		-- This flag is used to abort the iterators for nets, zones and segments
 		-- as soon as a segment has been found:
 		proceed : boolean := true;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is			
+			module		: in type_generic_module)
+		is
 			pragma unreferenced (module_name);
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net) 
+				net			: in type_net)
 			is
-				
+
 				procedure query_segment (segment : in type_segment) is begin
 					case flag is
 						when PROPOSED =>
@@ -3820,7 +3820,7 @@ package body et_board_ops_conductors is
 					end case;
 				end query_segment;
 
-				
+
 				procedure query_zone_solid (zone : in type_route_solid) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -3837,7 +3837,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
+
 				procedure query_zone_hatched (zone : in type_route_hatched) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -3854,14 +3854,14 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 			begin
 				log_indentation_up;
 				log (text => to_string (net_name), level => log_threshold + 2);
 				log_indentation_up;
-				
+
 				-- First search among solidly filled zones:
-				zcs := net.route.zones.solid.first;				
+				zcs := net.route.zones.solid.first;
 				while zcs /= pac_route_solid.no_element loop
 					query_element (zcs, query_zone_solid'access);
 					if not proceed then
@@ -3886,7 +3886,7 @@ package body et_board_ops_conductors is
 				log_indentation_down;
 			end query_net;
 
-			
+
 		begin
 			log (text => "nets", level => log_threshold + 1);
 			net_cursor := module.nets.first;
@@ -3899,26 +3899,26 @@ package body et_board_ops_conductors is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment of a connected zone / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		if not proceed then -- a segment has been found.
 			-- The segment is either belonging to a solid
 			-- or a hatche zone:
-			
+
 			if has_element (zcs) then
 				result := (
 					fill_style 		=> SOLID,
@@ -3940,26 +3940,26 @@ package body et_board_ops_conductors is
 			-- If nothing found. Return default result. See specs:
 			return result;
 		end if;
-		
+
 		return result;
 	end get_first_segment_net;
 
 
-	
+
 
 
 
 
 	function get_first_segment_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment_floating
 	is
 
 		result : type_object_segment_floating;
 		-- Note: By default the fill style of the result is SOLID.
-		-- However, in the end of this procedure it may mutate 
+		-- However, in the end of this procedure it may mutate
 		-- to HATCHED. See specification.
 
 		use pac_contours;
@@ -3977,12 +3977,12 @@ package body et_board_ops_conductors is
 		-- This flag is used to abort the iterators zones and segments
 		-- as soon as a segment has been found:
 		proceed : boolean := true;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is			
+			module		: in type_generic_module)
+		is
 			pragma unreferenced (module_name);
 
 			procedure query_segment (segment : in type_segment) is begin
@@ -4004,7 +4004,7 @@ package body et_board_ops_conductors is
 				end case;
 			end query_segment;
 
-			
+
 			procedure query_zone_solid (zone : in type_floating_solid) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -4021,7 +4021,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
+
 			procedure query_zone_hatched (zone : in type_floating_hatched) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -4038,12 +4038,12 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-				
+
 		begin
 			log_indentation_up;
-			
+
 			-- First search among solidly filled zones:
-			zcs := module.board.conductors_floating.zones.solid.first;				
+			zcs := module.board.conductors_floating.zones.solid.first;
 			while zcs /= pac_floating_solid.no_element loop
 				query_element (zcs, query_zone_solid'access);
 				if not proceed then
@@ -4068,26 +4068,26 @@ package body et_board_ops_conductors is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment of a floating zone / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		if not proceed then -- a segment has been found.
 			-- The segment is either belonging to a solid
 			-- or a hatche zone:
-			
+
 			if has_element (zcs) then
 				result := (
 					fill_style 		=> SOLID,
@@ -4107,17 +4107,17 @@ package body et_board_ops_conductors is
 			-- If nothing found. Return default result. See specs:
 			return result;
 		end if;
-		
+
 		return result;
 	end get_first_segment_floating;
 
-	
 
 
 
-	
 
-	
+
+
+
 
 	procedure move_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4137,10 +4137,10 @@ package body et_board_ops_conductors is
 		use pac_route_solid;
 		use pac_route_hatched;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -4155,7 +4155,7 @@ package body et_board_ops_conductors is
 					move_segment (s, point_of_attack, destination);
 				end query_segment;
 
-				
+
 				procedure query_zone_solid (zone : in out type_route_solid) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -4165,7 +4165,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
+
 				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
 					if is_circular (zone) then
 						null; -- CS
@@ -4175,7 +4175,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 			begin
 				-- Locate the zone as given by the segment:
 				case segment.fill_style is
@@ -4187,13 +4187,13 @@ package body et_board_ops_conductors is
 				end case;
 			end query_net;
 
-				
+
 		begin
 			-- Locate the net given by the segment:
 			update_element (module.nets, segment.net, query_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move zone segment " & to_string (segment.segment)
@@ -4209,26 +4209,26 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_segment_net;
 
 
 
-	
 
 
-	
+
+
 
 
 	procedure move_segment_floating (
@@ -4243,16 +4243,16 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_floating_solid;
 		use pac_floating_hatched;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -4261,7 +4261,7 @@ package body et_board_ops_conductors is
 				move_segment (s, point_of_attack, destination);
 			end query_segment;
 
-			
+
 			procedure query_zone_solid (zone : in out type_floating_solid) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -4271,7 +4271,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
+
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
 				if is_circular (zone) then
 					null; -- CS
@@ -4281,7 +4281,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-				
+
 		begin
 			-- Locate the zone as given by the segment:
 			case segment.fill_style is
@@ -4293,7 +4293,7 @@ package body et_board_ops_conductors is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move floating zone segment " & to_string (segment.segment)
@@ -4308,27 +4308,27 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_segment_floating;
 
 
-	
-	
 
 
-	
-	
+
+
+
+
 
 	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4339,16 +4339,16 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_route_solid;
 		use pac_route_hatched;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -4357,8 +4357,8 @@ package body et_board_ops_conductors is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				
-				procedure query_zone_solid (zone : in out type_route_solid) is 
+
+				procedure query_zone_solid (zone : in out type_route_solid) is
 					c : pac_segments.cursor := segment.segment;
 				begin
 					if is_circular (zone) then
@@ -4369,8 +4369,8 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_solid;
 
-				
-				procedure query_zone_hatched (zone : in out type_route_hatched) is 
+
+				procedure query_zone_hatched (zone : in out type_route_hatched) is
 					c : pac_segments.cursor := segment.segment;
 				begin
 					if is_circular (zone) then
@@ -4381,7 +4381,7 @@ package body et_board_ops_conductors is
 					end if;
 				end query_zone_hatched;
 
-				
+
 			begin
 				-- Locate the zone as given by the segment:
 				case segment.fill_style is
@@ -4393,13 +4393,13 @@ package body et_board_ops_conductors is
 				end case;
 			end query_net;
 
-				
+
 		begin
 			-- Locate the net given by the segment:
 			update_element (module.nets, segment.net, query_net'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete zone segment " & to_string (segment.segment)
@@ -4407,30 +4407,28 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
 
-		generic_modules.update_element (						
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_segment_net;
 
 
 
-		
-		
 
 
 
@@ -4439,7 +4437,9 @@ package body et_board_ops_conductors is
 
 
 
-	
+
+
+
 
 
 
@@ -4452,21 +4452,21 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_floating_solid;
 		use pac_floating_hatched;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
-				
-			procedure query_zone_solid (zone : in out type_floating_solid) is 
+
+			procedure query_zone_solid (zone : in out type_floating_solid) is
 				c : pac_segments.cursor := segment.segment;
 			begin
 				if is_circular (zone) then
@@ -4477,8 +4477,8 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_solid;
 
-			
-			procedure query_zone_hatched (zone : in out type_floating_hatched) is 
+
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is
 				c : pac_segments.cursor := segment.segment;
 			begin
 				if is_circular (zone) then
@@ -4489,7 +4489,7 @@ package body et_board_ops_conductors is
 				end if;
 			end query_zone_hatched;
 
-				
+
 		begin
 			-- Locate the zone as given by the segment:
 			case segment.fill_style is
@@ -4501,7 +4501,7 @@ package body et_board_ops_conductors is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete floating zone segment " & to_string (segment.segment),
@@ -4515,29 +4515,29 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;	
-		
+		end if;
+
 
 		log_indentation_down;
 	end delete_segment_floating;
 
-	
-	
-
-	
 
 
 
-	
+
+
+
+
+
 
 
 	procedure add_text (
@@ -4553,11 +4553,11 @@ package body et_board_ops_conductors is
 
 		use et_conductor_text.boards;
 		use et_mirroring;
-		
+
 
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
@@ -4566,7 +4566,7 @@ package body et_board_ops_conductors is
 
 			v_text : type_vector_text;
 			c_text : type_conductor_text_board;
-			
+
 		begin
 			mirror := signal_layer_to_mirror (signal_layer, get_deepest_conductor_layer (module_cursor));
 
@@ -4576,7 +4576,7 @@ package body et_board_ops_conductors is
 				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
 			end if;
 
-			
+
 			v_text := vectorize_text (
 				content			=> text.content,
 				size			=> text.size,
@@ -4587,19 +4587,19 @@ package body et_board_ops_conductors is
 				make_border		=> true, -- CS should be false for restrict layers
 				log_threshold	=> log_threshold + 2
 				-- CS alignment
-				); 
+				);
 
 			-- assemble the conductor text:
-			c_text := (text with 
+			c_text := (text with
 				layer		=> signal_layer,
 				vectors		=> v_text -- CS call vectorize_text here directly
 				--segments	=> make_segments (v_text, text.line_width)
 				);
-			
+
 			append (module.board.conductors_floating.texts, c_text);
 		end place_text;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text in conductor layer at "
@@ -4614,7 +4614,7 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -4624,23 +4624,23 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_text;
 
-	
-	
-
-  
-  
-
-	
 
 
 
 
-	
+
+
+
+
+
+
+
+
 
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4652,10 +4652,10 @@ package body et_board_ops_conductors is
 		use pac_conductor_texts_board;
 		result : pac_conductor_texts_board.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			procedure query_text (c : in pac_conductor_texts_board.cursor) is
@@ -4665,46 +4665,46 @@ package body et_board_ops_conductors is
 					zone	=> catch_zone,
 					point	=> get_place (text))
 				then
-					log (text => to_string (get_place (text)) 
+					log (text => to_string (get_place (text))
 						& " content " & enclose_in_quotes (to_string (text.content)),
 						level => log_threshold + 2);
-						
+
 					result.append (text);
 				end if;
 			end query_text;
 
-			
+
 		begin
 			module.board.conductors_floating.texts.iterate (query_text'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up conductor texts"
 			& " in" & to_string (catch_zone),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 		return result;
 	end get_texts;
 
 
 
-	
 
 
 
-	
+
+
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4717,12 +4717,12 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		old_position : constant type_vector_model := get_place (text);
 		new_position : type_vector_model;
 		offset : type_vector_model;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -4731,17 +4731,17 @@ package body et_board_ops_conductors is
 			text_cursor : pac_conductor_texts_board.cursor;
 
 			procedure query_text (
-				text : in out type_conductor_text_board) 
+				text : in out type_conductor_text_board)
 			is begin
 				move_text (text, offset); -- incl. vector text
 			end query_text;
-			
+
 		begin
 			text_cursor := module.board.conductors_floating.texts.find (text);
 			module.board.conductors_floating.texts.update_element (text_cursor, query_text'access);
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -4753,30 +4753,30 @@ package body et_board_ops_conductors is
 				offset := point;
 				move_by (new_position, offset);
 		end case;
-		
+
 		log (text => "module " & to_string (module_cursor)
 			& " move conductor text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset, signal layer number
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-  	
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_text;
@@ -4786,7 +4786,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4802,18 +4802,18 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_text (
-				text : in out type_conductor_text_board) 
+				text : in out type_conductor_text_board)
 			is begin
 				modify_status (text, operation);
 			end query_text;
-			
+
 		begin
 			module.board.conductors_floating.texts.update_element (
 				text.cursor, query_text'access);
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of text" -- CS log position and content ?
@@ -4826,7 +4826,7 @@ package body et_board_ops_conductors is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
@@ -4835,7 +4835,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4847,20 +4847,20 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
-			c : pac_conductor_texts_board.cursor := 
+			c : pac_conductor_texts_board.cursor :=
 				module.board.conductors_floating.texts.first;
 
-			
+
 			procedure query_text (
 				text	: in out type_conductor_text_board)
 			is begin
 				-- The candidate text must be in the given signal layer:
 				if get_layer (text) = layer then
-					
+
 					if in_catch_zone (
 						zone	=> catch_zone,
 						point	=> get_place (text))
@@ -4869,19 +4869,19 @@ package body et_board_ops_conductors is
 						count := count + 1;
 						log (text => to_string (text), level => log_threshold + 1);
 					end if;
-					
+
 				end if;
 			end query_text;
-			
-			
+
+
 		begin
 			while c /= pac_conductor_texts_board.no_element loop
 				module.board.conductors_floating.texts.update_element (c, query_text'access);
 				next (c);
 			end loop;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing texts in layer " & to_string (layer)
@@ -4889,7 +4889,7 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -4903,7 +4903,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4916,7 +4916,7 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -4924,17 +4924,17 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_text (
-				text : in out type_conductor_text_board) 
+				text : in out type_conductor_text_board)
 			is begin
 				move_text (text, destination);
 			end query_text;
-			
+
 		begin
 			module.board.conductors_floating.texts.update_element (
 				text.cursor, query_text'access);
 
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -4949,32 +4949,32 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_text;
 
-	
 
 
 
 
 
-	
 
 
-	
-	
+
+
+
+
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4986,18 +4986,18 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_conductor_texts_board.cursor := text.cursor;			
+			c : pac_conductor_texts_board.cursor := text.cursor;
 		begin
 			module.board.conductors_floating.texts.delete (c);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete conductor text " & to_string (text.cursor),
@@ -5010,7 +5010,7 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -5020,21 +5020,21 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;	
-		
+		end if;
+
 		log_indentation_down;
 	end delete_text;
 
 
 
 
-	
+
 
 
 
 	function get_first_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_text
 	is
@@ -5043,17 +5043,17 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
-			
+
 			proceed : aliased boolean := true;
 
-			texts : pac_conductor_texts_board.list renames 
+			texts : pac_conductor_texts_board.list renames
 				module.board.conductors_floating.texts;
 
-			
+
 			procedure query_text (c : in pac_conductor_texts_board.cursor) is
 				use et_object_status;
 			begin
@@ -5074,43 +5074,43 @@ package body et_board_ops_conductors is
 						null; -- CS
 				end case;
 			end query_text;
-	
-			
+
+
 		begin
 			-- Query the texts:
 			iterate (texts, query_text'access, proceed'access);
 
 			-- If nothing found, return no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_first_text;
 
-	
 
 
 
-	
-	
+
+
+
 
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5119,10 +5119,10 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_text (
 				text	: in out type_conductor_text_board)
 			is begin
@@ -5130,9 +5130,9 @@ package body et_board_ops_conductors is
 			end query_text;
 
 			use pac_conductor_texts_board;
-			c : pac_conductor_texts_board.cursor := 
+			c : pac_conductor_texts_board.cursor :=
 				module.board.conductors_floating.texts.first;
-				
+
 		begin
 			while c /= pac_conductor_texts_board.no_element loop
 				module.board.conductors_floating.texts.update_element (
@@ -5141,7 +5141,7 @@ package body et_board_ops_conductors is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed texts",
@@ -5158,9 +5158,9 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure add_placeholder (
@@ -5173,10 +5173,10 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
@@ -5184,7 +5184,7 @@ package body et_board_ops_conductors is
 			append (module.board.conductors_floating.placeholders, placeholder);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text placeholder in conductor layer "
@@ -5198,7 +5198,7 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -5208,15 +5208,15 @@ package body et_board_ops_conductors is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;	
-		
+		end if;
+
 		log_indentation_down;
 	end add_placeholder;
 
-	
 
-	
-	
+
+
+
 
 
 	procedure modify_status (
@@ -5233,18 +5233,18 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_placeholder (
-				ph : in out type_placeholder_conductor) 
+				ph : in out type_placeholder_conductor)
 			is begin
 				modify_status (ph, operation);
 			end query_placeholder;
-			
+
 		begin
 			module.board.conductors_floating.placeholders.update_element (
 				placeholder.cursor, query_placeholder'access);
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of text placeholder" -- CS log position and content ?
@@ -5257,7 +5257,7 @@ package body et_board_ops_conductors is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
@@ -5265,7 +5265,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	procedure propose_placeholders (
@@ -5278,7 +5278,7 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
@@ -5296,16 +5296,16 @@ package body et_board_ops_conductors is
 					log (text => to_string (ph), level => log_threshold + 1);
 				end if;
 			end query_placeholder;
-			
-			
+
+
 		begin
 			while c /= pac_placeholders_conductor.no_element loop
 				module.board.conductors_floating.placeholders.update_element (c, query_placeholder'access);
 				next (c);
 			end loop;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing text placeholders in layer " & to_string (layer)
@@ -5313,7 +5313,7 @@ package body et_board_ops_conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -5324,8 +5324,8 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
+
+
 
 
 	procedure move_placeholder (
@@ -5339,7 +5339,7 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -5347,21 +5347,21 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_placeholder (
-				ph : in out type_placeholder_conductor) 
+				ph : in out type_placeholder_conductor)
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
-			
+
 		begin
 			module.board.conductors_floating.placeholders.update_element (
 				placeholder.cursor, query_placeholder'access);
 
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move conductor text placeholder " 
+			& " move conductor text placeholder "
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
@@ -5373,18 +5373,18 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_placeholder;
 
@@ -5394,7 +5394,7 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	procedure delete_placeholder (
@@ -5407,18 +5407,18 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_placeholders_conductor.cursor := placeholder.cursor;			
+			c : pac_placeholders_conductor.cursor := placeholder.cursor;
 		begin
 			module.board.conductors_floating.placeholders.delete (c);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete conductor text placeholder" & to_string (placeholder.cursor),
@@ -5431,18 +5431,18 @@ package body et_board_ops_conductors is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;	
-		
+		end if;
+
 		log_indentation_down;
 	end delete_placeholder;
 
@@ -5452,13 +5452,13 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_placeholder
 	is
@@ -5467,19 +5467,19 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_conductor;
-			
+
 			proceed : aliased boolean := true;
 
-			phs : pac_placeholders_conductor.list 
+			phs : pac_placeholders_conductor.list
 				renames module.board.conductors_floating.placeholders;
 
-			
+
 			procedure query_placeholder (
-				c : in pac_placeholders_conductor.cursor) 
+				c : in pac_placeholders_conductor.cursor)
 			is
 				use et_object_status;
 			begin
@@ -5500,41 +5500,41 @@ package body et_board_ops_conductors is
 						null; -- CS
 				end case;
 			end query_placeholder;
-	
-			
+
+
 		begin
 			-- Query the placeholders:
 			iterate (phs, query_placeholder'access, proceed'access);
 
 			-- If nothing found, return no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text placeholder / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_first_placeholder;
 
-	
 
 
-	
+
+
 
 	procedure reset_proposed_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5543,10 +5543,10 @@ package body et_board_ops_conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_placeholder (
 				ph : in out type_placeholder_conductor)
 			is begin
@@ -5554,7 +5554,7 @@ package body et_board_ops_conductors is
 			end query_placeholder;
 
 			use pac_placeholders_conductor;
-			c : pac_placeholders_conductor.cursor := 
+			c : pac_placeholders_conductor.cursor :=
 				module.board.conductors_floating.placeholders.first;
 		begin
 			while c /= pac_placeholders_conductor.no_element loop
@@ -5564,7 +5564,7 @@ package body et_board_ops_conductors is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed text placeholders",
@@ -5585,7 +5585,7 @@ package body et_board_ops_conductors is
 
 
 -- OBJECTS:
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -5594,16 +5594,16 @@ package body et_board_ops_conductors is
 		return natural (objects.length);
 	end get_count;
 
-	
 
 
 
-	
-	
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -5626,63 +5626,63 @@ package body et_board_ops_conductors is
 		use pac_placeholders_conductor;
 
 
-		
+
 		procedure search_for_line_of_net is begin
 			result_line_net := get_first_line_net (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_line_net.line_cursor /= pac_conductor_lines.no_element then
 				-- A line has been found.
 				log (text => to_string (element (result_line_net.line_cursor)),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_LINE_NET;
 			end if;
 
 		end search_for_line_of_net;
 
-		
+
 
 		procedure search_for_floating_line is begin
 			result_line_floating := get_first_line_floating (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_line_floating.line_cursor /= pac_conductor_lines.no_element then
 				-- A line has been found.
 				log (text => to_string (element (result_line_floating.line_cursor)),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_LINE_FLOATING;
 			end if;
 		end search_for_floating_line;
 
 
-		
+
 		procedure search_for_arc_of_net is begin
 			result_arc_net := get_first_arc_net (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_arc_net.arc_cursor /= pac_conductor_arcs.no_element then
 				-- An arc has been found.
 				log (text => to_string (element (result_arc_net.arc_cursor)),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_ARC_NET;
 			end if;
 
 		end search_for_arc_of_net;
 
 
-		
+
 		procedure search_for_floating_arc is begin
 			result_arc_floating := get_first_arc_floating (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_arc_floating.arc_cursor /= pac_conductor_arcs.no_element then
 				-- An arc has been found.
 				log (text => to_string (element (result_arc_floating.arc_cursor)),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_ARC_FLOATING;
 			end if;
 		end search_for_floating_arc;
-	
+
 
 
 		procedure search_for_segment_of_connected_zone is begin
@@ -5693,11 +5693,11 @@ package body et_board_ops_conductors is
 				log (text => to_string (result_segment_net.segment),
 					-- CS face
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_ZONE_SEGMENT_NET;
 			end if;
 		end search_for_segment_of_connected_zone;
-	
+
 
 
 		procedure search_for_segment_of_floating_zone is begin
@@ -5708,45 +5708,45 @@ package body et_board_ops_conductors is
 				log (text => to_string (result_segment_floating.segment),
 					-- CS face
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_ZONE_SEGMENT_FLOATING;
 			end if;
 		end search_for_segment_of_floating_zone;
-	
+
 
 		procedure search_for_text is begin
 			result_text := get_first_text (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_text.cursor /= pac_conductor_texts_board.no_element then
 				-- A text has been found.
 				log (text => to_string (result_text.cursor),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_TEXT;
 			end if;
 		end search_for_text;
 
 
-		procedure search_for_placeholder is begin			
+		procedure search_for_placeholder is begin
 			result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
-			
+
 			if result_placeholder.cursor /= pac_placeholders_conductor.no_element then
 				-- A placeholder has been found.
 				log (text => to_string (result_placeholder.cursor),
 					level => log_threshold + 1);
-				
+
 				result_category := CAT_PLACEHOLDER;
 			end if;
 		end search_for_placeholder;
-	
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 
 		search_for_line_of_net;
 		-- If a line has been found, then go to the end of this procedure:
@@ -5757,7 +5757,7 @@ package body et_board_ops_conductors is
 		end if;
 
 
-		
+
 		search_for_floating_line;
 		-- If a line has been found, then go to the end of this procedure:
 
@@ -5768,7 +5768,7 @@ package body et_board_ops_conductors is
 
 
 
-		search_for_arc_of_net;		
+		search_for_arc_of_net;
 		-- If an arc has been found, then go to the end of this procedure:
 
 		-- If an object has been found, then the search is done:
@@ -5787,12 +5787,12 @@ package body et_board_ops_conductors is
 		end if;
 
 
-		
+
 		-- Now we search for an circle.
 		-- If there is one, then go to the end of this procedure:
 		-- CS
 
-		
+
 		search_for_segment_of_connected_zone;
 		-- If an object has been found, then the search is done:
 
@@ -5803,30 +5803,30 @@ package body et_board_ops_conductors is
 
 
 		search_for_segment_of_floating_zone;
-		
+
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
 
 
-		
+
 		search_for_text;
 
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
-		
+
 
 		search_for_placeholder;
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -5838,19 +5838,19 @@ package body et_board_ops_conductors is
 
 			when CAT_ARC_NET =>
 				return (CAT_ARC_NET, result_arc_net);
-				
+
 			when CAT_LINE_FLOATING =>
 				return (CAT_LINE_FLOATING, result_line_floating);
 
 			when CAT_ARC_FLOATING =>
 				return (CAT_ARC_FLOATING, result_arc_floating);
-				
+
 			when CAT_ZONE_SEGMENT_NET =>
 				return (CAT_ZONE_SEGMENT_NET, result_segment_net);
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				return (CAT_ZONE_SEGMENT_FLOATING, result_segment_floating);
-				
+
 			when CAT_TEXT =>
 				return (CAT_TEXT, result_text);
 
@@ -5863,47 +5863,47 @@ package body et_board_ops_conductors is
 
 
 
-	
+
 
 
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
 		use pac_objects;
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor;
-			
+
 			-- This procedure queries a net:
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is 
-				
+			is
+
 				use pac_route_solid;
 				zone_cursor_solid_net : pac_route_solid.cursor;
-				
+
 				use pac_route_hatched;
 				zone_cursor_hatched_net : pac_route_hatched.cursor;
 
 				use pac_contours;
 				use pac_segments;
-				
+
 				use pac_conductor_lines;
 				use pac_conductor_arcs;
 
 
 				-- This procedure queries a line of a net:
-				procedure query_line_net (line_cursor : in pac_conductor_lines.cursor) is 
+				procedure query_line_net (line_cursor : in pac_conductor_lines.cursor) is
 
 					procedure collect is begin
 						result.append ((
@@ -5914,7 +5914,7 @@ package body et_board_ops_conductors is
 						log (text => to_string (line_cursor, true), level => log_threshold + 2);
 					end collect;
 
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -5933,10 +5933,10 @@ package body et_board_ops_conductors is
 				end query_line_net;
 
 
-				
+
 
 				-- This procedure queries an arc of a net:
-				procedure query_arc_net (arc_cursor : in pac_conductor_arcs.cursor) is 
+				procedure query_arc_net (arc_cursor : in pac_conductor_arcs.cursor) is
 
 					procedure collect is begin
 						result.append ((
@@ -5947,7 +5947,7 @@ package body et_board_ops_conductors is
 						log (text => to_string (arc_cursor, true), level => log_threshold + 2);
 					end collect;
 
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -5966,40 +5966,40 @@ package body et_board_ops_conductors is
 				end query_arc_net;
 
 
-				
-				
-				
+
+
+
 				-- This procedure queries a solidly filled zone of a net:
 				procedure query_zone_solid_net (zone : in type_route_solid) is
-					
-					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
-						
+
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is
+
 						procedure collect is begin
 							result.append ((
 								cat			=> CAT_ZONE_SEGMENT_NET,
 								segment_net	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
-		
+
 							log (text => to_string (segment_cursor), level => log_threshold + 2);
 						end collect;
 
-						
+
 					begin
 						case flag is
 							when PROPOSED =>
 								if is_proposed (segment_cursor) then
 									collect;
 								end if;
-								
+
 							when SELECTED =>
 								if is_selected (segment_cursor) then
 									collect;
 								end if;
-								
+
 							when others => null;  -- CS
 						end case;
 					end query_segment;
 
-					
+
 				begin
 					if zone.contour.circular then
 						null; -- CS
@@ -6011,22 +6011,22 @@ package body et_board_ops_conductors is
 
 
 
-				
 
-				-- This procedure queries a hatched fill zone of a net:			
+
+				-- This procedure queries a hatched fill zone of a net:
 				procedure query_zone_hatched_net (zone : in type_route_hatched) is
-					
-					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is
 
 						procedure collect is begin
 							result.append ((
 								cat			=> CAT_ZONE_SEGMENT_NET,
 								segment_net	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
-		
+
 							log (text => to_string (segment_cursor), level => log_threshold + 2);
 						end collect;
 
-						
+
 					begin
 						case flag is
 							when PROPOSED =>
@@ -6038,12 +6038,12 @@ package body et_board_ops_conductors is
 								if is_selected (segment_cursor) then
 									collect;
 								end if;
-								
+
 							when others => null; -- CS
 						end case;
 					end query_segment;
 
-					
+
 				begin
 					if zone.contour.circular then
 						null; -- CS
@@ -6058,7 +6058,7 @@ package body et_board_ops_conductors is
 			begin
 				log (text => to_string (net_name), level => log_threshold + 2);
 				log_indentation_up;
-				
+
 				-- Iterate the lines of the net:
 				iterate (net.route.lines, query_line_net'access);
 
@@ -6087,7 +6087,7 @@ package body et_board_ops_conductors is
 			end query_net;
 
 
-			
+
 
 			-- This procedure queries objects which are floating
 			-- such as lines, arcs, circles, zones, texts and text placeholders:
@@ -6095,23 +6095,23 @@ package body et_board_ops_conductors is
 				use pac_contours;
 				use pac_segments;
 
-				
+
 				-- LINES
 				use pac_conductor_lines;
-				
+
 				-- This procedure queries a floating line:
-				procedure query_line (c : in pac_conductor_lines.cursor) is 
+				procedure query_line (c : in pac_conductor_lines.cursor) is
 
 					procedure collect is begin
 						result.append ((
 							cat				=> CAT_LINE_FLOATING,
 							line_floating	=> (line_cursor => c)));
-     
+
 						-- Log the line and its linewidth:
 						log (text => to_string (c, true), level => log_threshold + 2);
 					end collect;
 
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -6130,24 +6130,24 @@ package body et_board_ops_conductors is
 				end query_line;
 
 
-				
-				
+
+
 				-- ARCS
 				use pac_conductor_arcs;
 
 				-- This procedure queries a floating arc:
-				procedure query_arc (c : in pac_conductor_arcs.cursor) is 
+				procedure query_arc (c : in pac_conductor_arcs.cursor) is
 
 					procedure collect is begin
 						result.append ((
 							cat				=> CAT_ARC_FLOATING,
 							arc_floating	=> (arc_cursor => c)));
-     
+
 						-- Log the arc and its linewidth:
 						log (text => to_string (c, true), level => log_threshold + 2);
 					end collect;
 
-					
+
 				begin
 					case flag is
 						when PROPOSED =>
@@ -6165,29 +6165,29 @@ package body et_board_ops_conductors is
 					end case;
 				end query_arc;
 
-				
-				
+
+
 
 				-- FLOATING FILL ZONES SOLID
 				use pac_floating_solid;
 				zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 
-				
-				-- This procedure queries a floating solidly filled zone:				
+
+				-- This procedure queries a floating solidly filled zone:
 				procedure query_zone_solid (zone : in type_floating_solid) is
 
 					-- This procedure queries a contour line of the candidate zone:
-					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is
 
 						procedure collect is begin
 							result.append ((
 								cat					=> CAT_ZONE_SEGMENT_FLOATING,
 								segment_floating	=> (SOLID, segment_cursor, zcs)));
-		
+
 							log (text => to_string (segment_cursor), level => log_threshold + 2);
 						end collect;
 
-						
+
 					begin
 						case flag is
 							when PROPOSED =>
@@ -6199,12 +6199,12 @@ package body et_board_ops_conductors is
 								if is_selected (segment_cursor) then
 									collect;
 								end if;
-								
+
 							when others => null; -- CS
 						end case;
 					end query_segment;
 
-					
+
 				begin
 					if zone.contour.circular then
 						null; -- CS
@@ -6215,28 +6215,28 @@ package body et_board_ops_conductors is
 				end query_zone_solid;
 
 
-				
+
 
 				-- FLOATING FILL ZONES HATCHED
 				use pac_floating_hatched;
 				zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 
-				
+
 				-- This procedure queries a floating hatched zone:
 				procedure query_zone_hatched (zone : in type_floating_hatched) is
 
 					-- This procedure queries a contour line of the candidate zone:
-					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is
 
 						procedure collect is begin
 							result.append ((
 								cat					=> CAT_ZONE_SEGMENT_FLOATING,
 								segment_floating	=> (HATCHED, segment_cursor, zch)));
-		
+
 							log (text => to_string (segment_cursor), level => log_threshold + 2);
 						end collect;
 
-						
+
 					begin
 						case flag is
 							when PROPOSED =>
@@ -6248,11 +6248,11 @@ package body et_board_ops_conductors is
 								if is_selected (segment_cursor) then
 									collect;
 								end if;
-								
+
 							when others => null; -- CS
 						end case;
 					end query_segment;
-					
+
 				begin
 					if zone.contour.circular then
 						null; -- CS
@@ -6263,43 +6263,43 @@ package body et_board_ops_conductors is
 				end query_zone_hatched;
 
 
-				
+
 
 				-- TEXTS:
 				use pac_conductor_texts_board;
-				
+
 				procedure query_text (c : in pac_conductor_texts_board.cursor) is begin
 					-- CS test the given flag !!
 					if is_proposed (c) then
 						result.append ((
 							cat		=> CAT_TEXT,
 							text	=> (cursor => c)));
-	
+
 						log (text => to_string (c), level => log_threshold + 2);
 					end if;
 				end query_text;
 
-				
+
 
 
 				-- TEXT PLACEHOLDERS:
 				use pac_placeholders_conductor;
-				
+
 				procedure query_placeholder (
-					c : in pac_placeholders_conductor.cursor) 
+					c : in pac_placeholders_conductor.cursor)
 				is begin
 					-- CS test the given flag !!
 					if is_proposed (c) then
 						result.append ((
 							cat			=> CAT_PLACEHOLDER,
 							placeholder	=> (cursor => c)));
-	
+
 						log (text => to_string (c), level => log_threshold + 2);
 					end if;
 				end query_placeholder;
 
-				
-				
+
+
 			begin
 				-- Iterate all floating lines:
 				iterate (module.board.conductors_floating.lines, query_line'access);
@@ -6308,14 +6308,14 @@ package body et_board_ops_conductors is
 				iterate (module.board.conductors_floating.arcs, query_arc'access);
 
 				-- CS circles
-				
+
 				-- Iterate all texts:
 				iterate (module.board.conductors_floating.texts, query_text'access);
-	
+
 				-- Iterate all placeholders:
 				iterate (module.board.conductors_floating.placeholders, query_placeholder'access);
 
-				
+
 				-- Iterate all floating solidly filled zones:
 				while zcs /= pac_floating_solid.no_element loop
 					query_element (zcs, query_zone_solid'access);
@@ -6327,10 +6327,10 @@ package body et_board_ops_conductors is
 					query_element (zcH, query_zone_hatched'access);
 					next (zch);
 				end loop;
-				
+
 			end process_floating_objects;
-			
-		
+
+
 		begin
 			-- Process things connected with a net:
 			log (text => "nets", level => log_threshold + 1);
@@ -6348,23 +6348,23 @@ package body et_board_ops_conductors is
 			log (text => "floating conductor objects", level => log_threshold + 1);
 			log_indentation_up;
 			process_floating_objects;
-			log_indentation_down;			
+			log_indentation_down;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
-		
+
 		return result;
 	end get_objects;
 
@@ -6386,7 +6386,7 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_LINE_NET =>
 				modify_status (module_cursor, object.line_net, operation, log_threshold + 1);
@@ -6396,7 +6396,7 @@ package body et_board_ops_conductors is
 
 			when CAT_LINE_FLOATING =>
 				modify_status (module_cursor, object.line_floating, operation, log_threshold + 1);
-				
+
 			when CAT_ARC_FLOATING =>
 				modify_status (module_cursor, object.arc_floating, operation, log_threshold + 1);
 
@@ -6405,13 +6405,13 @@ package body et_board_ops_conductors is
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				modify_status (module_cursor, object.segment_floating, operation, log_threshold + 1);
-				
+
 			when CAT_TEXT =>
 				modify_status (module_cursor, object.text, operation, log_threshold + 1);
 
 			when CAT_PLACEHOLDER =>
 				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -6419,17 +6419,17 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end modify_status;
 
-	
-	
 
-	
+
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -6441,8 +6441,8 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
+
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -6451,10 +6451,10 @@ package body et_board_ops_conductors is
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
-	is 
+	is
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving conductor object " 
+			& " moving conductor object "
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -6464,31 +6464,31 @@ package body et_board_ops_conductors is
 
 		case object.cat is
 			when CAT_LINE_NET =>
-				
+
 				move_line_net (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					line			=> object.line_net,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
 
-			when CAT_ARC_NET =>	
-				
+			when CAT_ARC_NET =>
+
 				move_arc_net (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					arc				=> object.arc_net,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_LINE_FLOATING =>
 
 				move_line_floating (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					line			=> object.line_floating,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
@@ -6496,19 +6496,19 @@ package body et_board_ops_conductors is
 			when CAT_ARC_FLOATING =>
 
 				move_arc_floating (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					arc				=> object.arc_floating,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_ZONE_SEGMENT_NET =>
-				
+
 				move_segment_net (
 					module_cursor	=> module_cursor,
 					segment			=> object.segment_net,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
@@ -6518,11 +6518,11 @@ package body et_board_ops_conductors is
 				move_segment_floating (
 					module_cursor	=> module_cursor,
 					segment			=> object.segment_floating,
-					point_of_attack	=> point_of_attack, 
+					point_of_attack	=> point_of_attack,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_TEXT =>
 
 				move_text (
@@ -6540,11 +6540,11 @@ package body et_board_ops_conductors is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
 
@@ -6552,14 +6552,14 @@ package body et_board_ops_conductors is
 
 
 
-	
-	
+
+
 
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_nets;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
@@ -6578,10 +6578,10 @@ package body et_board_ops_conductors is
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
 						delete_line_net (
-							module_cursor	=> module_cursor, 
-							net_name		=> key (object.line_net.net_cursor),			
+							module_cursor	=> module_cursor,
+							net_name		=> key (object.line_net.net_cursor),
 							line			=> element (object.line_net.line_cursor),
-							log_threshold	=> log_threshold + 1);					
+							log_threshold	=> log_threshold + 1);
 
 					when WHOLE_NET =>
 						ripup_net (
@@ -6590,17 +6590,17 @@ package body et_board_ops_conductors is
 							log_threshold	=> log_threshold + 1);
 				end case;
 
-				
+
 
 			when CAT_ARC_NET =>
 
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
 						delete_arc_net (
-							module_cursor	=> module_cursor, 
-							net_name		=> key (object.arc_net.net_cursor),			
+							module_cursor	=> module_cursor,
+							net_name		=> key (object.arc_net.net_cursor),
 							arc				=> element (object.arc_net.arc_cursor),
-							log_threshold	=> log_threshold + 1);					
+							log_threshold	=> log_threshold + 1);
 
 					when WHOLE_NET =>
 						ripup_net (
@@ -6609,49 +6609,49 @@ package body et_board_ops_conductors is
 							log_threshold	=> log_threshold + 1);
 				end case;
 
-				
+
 			-- CS circles
 
-				
+
 			when CAT_LINE_FLOATING =>
 
 				delete_line_floating (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					line			=> element (object.line_floating.line_cursor),
-					log_threshold	=> log_threshold + 1);					
+					log_threshold	=> log_threshold + 1);
 
 
 
 			when CAT_ARC_FLOATING =>
 
 				delete_arc_floating (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					arc				=> element (object.arc_floating.arc_cursor),
-					log_threshold	=> log_threshold + 1);					
+					log_threshold	=> log_threshold + 1);
 
-				
-				
+
+
 			when CAT_ZONE_SEGMENT_NET =>
 
 				delete_segment_net (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment_net,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_ZONE_SEGMENT_FLOATING =>
 
 				delete_segment_floating (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment_floating,
 					log_threshold	=> log_threshold + 1);
 
 
-				
+
 			when CAT_TEXT =>
 
 				delete_text (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					text			=> object.text,
 					log_threshold	=> log_threshold + 1);
 
@@ -6659,31 +6659,31 @@ package body et_board_ops_conductors is
 			when CAT_PLACEHOLDER =>
 
 				delete_placeholder (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					placeholder		=> object.placeholder,
 					log_threshold	=> log_threshold + 1);
 
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
 
 
 
 
-	
+
+
 
 
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " reset objects",
 			level => log_threshold);
 
@@ -6691,29 +6691,29 @@ package body et_board_ops_conductors is
 
 		-- Nets:
 		reset_status_lines (
-			module_cursor	=> active_module, 
+			module_cursor	=> active_module,
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 
 		reset_proposed_arcs (
-			module_cursor	=> active_module, 
+			module_cursor	=> active_module,
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 
 
-		
+
 		-- Floating objects (freetracks):
 		reset_status_lines (
-			module_cursor	=> active_module, 
+			module_cursor	=> active_module,
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
 
 		reset_proposed_arcs (
-			module_cursor	=> active_module, 
+			module_cursor	=> active_module,
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
 
-		
+
 		-- CS circles
 
 		-- zones:
@@ -6723,19 +6723,19 @@ package body et_board_ops_conductors is
 		-- texts and placeholders.
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end reset_status_objects;
 
 
-	
+
 
 end et_board_ops_conductors;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -46,8 +46,8 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_net_ports_netchangers is
-	
-	
+
+
 	function "<" (left, right : in type_port_netchanger) return boolean is begin
 		if left.index < right.index then
 			return true;
@@ -68,20 +68,20 @@ package body et_net_ports_netchangers is
 		index	: in type_netchanger_id;
 		port	: in type_netchanger_port_name)
 		return boolean
-	is 
+	is
 		use pac_netchanger_ports;
-		item : constant type_port_netchanger := (index, port);			
+		item : constant type_port_netchanger := (index, port);
 	begin
-		return ports.contains (item); 
+		return ports.contains (item);
 	end;
 
 
-		
+
 end et_net_ports_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -41,25 +41,25 @@ with et_string_processing;		use et_string_processing;
 
 
 package et_alignment is
-	
-	
+
+
 	alignment_prefix	: constant string := ("ALIGN_");
-	
+
 	-- The alignment refers to the anchor point of the text.
 	-- The anchor point is usually where the origin of the text is.
 	type type_text_alignment_horizontal is (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT);
-	
+
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
 
-	
-	
+
+
 	type type_text_alignment_vertical is (ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM);
-	
+
 	function to_string (alignment : in type_text_alignment_vertical) return string;
 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
 
-	
+
 	type type_text_alignment is record
 		horizontal	: type_text_alignment_horizontal := ALIGN_LEFT;
 		vertical	: type_text_alignment_vertical := ALIGN_BOTTOM;
@@ -67,13 +67,13 @@ package et_alignment is
 
 	text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
 
-	
+
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
 		from : in type_field_count_positive)
 		return type_text_alignment;
 
-	
+
 	function to_string (alignment : in type_text_alignment) return string;
 	-- CS parameter for format ?
 
@@ -83,7 +83,7 @@ end et_alignment;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

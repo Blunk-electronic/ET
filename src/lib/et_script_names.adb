@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -41,7 +41,7 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_script_names is
 
-	
+
 	function get_length (
 		name : in pac_script_name.bounded_string)
 		return natural
@@ -51,31 +51,31 @@ package body et_script_names is
 
 
 
-	
+
 	function to_string (
-		name : in pac_script_name.bounded_string) 
-		return string 
+		name : in pac_script_name.bounded_string)
+		return string
 	is begin
 		return pac_script_name.to_string (name);
 	end;
 
 
-	
+
 	function to_script_name (
-		name : in string) 
-		return pac_script_name.bounded_string 
+		name : in string)
+		return pac_script_name.bounded_string
 	is begin
 		return pac_script_name.to_bounded_string (name);
 	end;
 
 
 
-	
+
 end et_script_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

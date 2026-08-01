@@ -47,48 +47,48 @@ package et_device_prefix is
 	-- and a consecutive number. Both form something like "IC702"
 	prefix_characters : character_set := to_set (span => ('A','Z'));
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
-	
+
 	package pac_device_prefix is new generic_bounded_length (prefix_length_max);
 	use pac_device_prefix;
 
-	
+
 	function to_string (
-		prefix : in pac_device_prefix.bounded_string) 
+		prefix : in pac_device_prefix.bounded_string)
 		return string;
 
-	
+
 	function to_prefix (
-		prefix : in string) 
+		prefix : in string)
 		return pac_device_prefix.bounded_string;
 
-	
+
 	-- Tests if the given prefix is longer than allowed.
 	procedure check_prefix_length (
 		prefix : in string);
 
-	
+
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 	procedure check_prefix_characters (
 		prefix : in pac_device_prefix.bounded_string);
 
-	
+
 	-- Predefined prefixes:
 	-- - for power symbols:
 	prefix_pwr : constant string := "PWR";
 	-- NOTE: When adding more predefined prefixes here, mind
 	-- to update function prefix_valid in et_conventions.
-	-- CS distinguish between power symbols with prefixes 
+	-- CS distinguish between power symbols with prefixes
 	-- like PWR_POS, PWR_GND, PWR_NEG ? Probably already solved by
 	-- the signal direction of the port ?
 
-	
-		
+
+
 end et_device_prefix;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

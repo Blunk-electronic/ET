@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - propose arguments if command incomplete
 
 with et_generic_modules;		use et_generic_modules;
@@ -55,16 +55,16 @@ package et_cp_schematic_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 	-- Sets the zoom factor.
 	-- Example: "schematic demo set zoom 40"
 	procedure set_zoom (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
-		
 
-	-- This procedure parses a command that set the 
+
+
+	-- This procedure parses a command that set the
 	-- grid spacing.
 	-- Example: "schematic demo set grid spacing 20 20"
 	procedure set_grid (
@@ -77,14 +77,14 @@ package et_cp_schematic_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Moves the cursor by a certain distance.
 	-- Example: "schematic demo move cursor 5 -10"
 	procedure move_cursor (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Parses a command that sets the cursor and zoom factor.
 	-- Example: "schematic demo set cursor 90 110 50"
 	procedure set_cursor (
@@ -99,12 +99,12 @@ package et_cp_schematic_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_cp_schematic_canvas;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

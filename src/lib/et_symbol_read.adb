@@ -54,16 +54,16 @@ with et_symbol_read_text;			use et_symbol_read_text;
 
 package body et_symbol_read is
 
-	
+
 	procedure read_symbol (
 		file_name 		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		file_handle : ada.text_io.file_type;
 
 		line : type_fields_of_line;
 
-		
+
 		-- This is the section stack of the symbol model:
 		max_section_depth : constant positive := 3; -- incl. section init
 
@@ -72,18 +72,18 @@ package body et_symbol_read is
 			max 	=> max_section_depth);
 
 
-			
+
 		-- This is the pointer that points to the symbol
 		-- being read in the following:
 		symbol_model : type_symbol_model_access;
 
 		symbol_cursor		: pac_symbol_models.cursor;
 		symbol_inserted		: boolean;
-		
-		
 
 
-		
+
+
+
 		-- This procedure reads the appearance of the
 		-- symbol and creates it where pointer symbol_model
 		-- points to:
@@ -92,7 +92,7 @@ package body et_symbol_read is
 		is
 			use et_keywords;
 			kw : constant string := f (line, 1);
-			
+
 			use et_device_appearance;
 			appearance : type_appearance;
 		begin
@@ -115,17 +115,17 @@ package body et_symbol_read is
 							others		=> <>);
 
 				end case;
-				
+
 			else
 				invalid_keyword (kw);
 			end if;
 		end read_appearance;
 
 
-		
 
-		
-		procedure process_line is 
+
+
+		procedure process_line is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
@@ -133,36 +133,36 @@ package body et_symbol_read is
 			begin
 				case pac_sections_stack.current is
 
-					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
+					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
-					when SEC_LINE =>					
+					when SEC_LINE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => insert_body_line (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_ARC =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => insert_body_arc (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => insert_body_circle (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
 							when SEC_TEXTS => insert_text (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => insert_placeholder (symbol_model, log_threshold + 1);
@@ -174,15 +174,15 @@ package body et_symbol_read is
 							when SEC_PORTS => insert_port (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_INIT => null; -- CS: should never happen
 
 					when others => invalid_section;
 				end case;
 			end execute_section;
 
-			
-			
+
+
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -190,7 +190,7 @@ package body et_symbol_read is
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string; -- [DRAW
 				section			: in type_file_section) -- SEC_DRAW
-				return boolean 
+				return boolean
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
@@ -206,11 +206,11 @@ package body et_symbol_read is
 							log_indentation_reset;
 							invalid_section;
 						end if;
-						
+
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
-						
+
 						pac_sections_stack.pop;
 						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
@@ -229,11 +229,11 @@ package body et_symbol_read is
 				end if;
 			end set;
 
-			
+
 		begin -- process_line
-			if set (section_draw, SEC_DRAW) then null;			
-			elsif set (section_line, SEC_LINE) then null;								
-			elsif set (section_arc, SEC_ARC) then null;								
+			if set (section_draw, SEC_DRAW) then null;
+			elsif set (section_line, SEC_LINE) then null;
+			elsif set (section_arc, SEC_ARC) then null;
 			elsif set (section_circle, SEC_CIRCLE) then null;
 			elsif set (section_texts, SEC_TEXTS) then null;
 			elsif set (section_text, SEC_TEXT) then null;
@@ -242,17 +242,17 @@ package body et_symbol_read is
 			elsif set (section_ports, SEC_PORTS) then null;
 			elsif set (section_port, SEC_PORT) then null;
 			else
-				-- The line contains something else -> the payload data. 
+				-- The line contains something else -> the payload data.
 				-- Temporarily this data is stored in corresponding variables.
 
 				log (text => "symbol line --> " & to_string (line), level => log_threshold + 3);
-		
+
 				case pac_sections_stack.current is
 
 					when SEC_INIT =>
 						read_appearance (line);
 
-					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
+					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
@@ -269,19 +269,19 @@ package body et_symbol_read is
 							when SEC_DRAW => read_body_arc (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => read_body_circle (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
 							when SEC_TEXTS => read_text (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder (line);
@@ -290,7 +290,7 @@ package body et_symbol_read is
 
 					when SEC_PORT =>
 						case pac_sections_stack.parent is
-							when SEC_PORTS => read_port (line);								
+							when SEC_PORTS => read_port (line);
 							when others => invalid_section;
 						end case;
 
@@ -298,44 +298,44 @@ package body et_symbol_read is
 				end case;
 			end if;
 
-			
+
 			exception when others =>
-				log (text => "file " & to_string (file_name) & space 
+				log (text => "file " & to_string (file_name) & space
 					 & get_affected_line (line) & to_string (line), console => true);
 				raise;
-			
+
 		end process_line;
 
-		
+
 		previous_input : ada.text_io.file_type renames current_input;
 
-		
+
 	begin -- read_symbol
 		log_indentation_up;
 		log (text => "read symbol model " & to_string (file_name),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		-- Test whether the symbol is already in the library.
 		-- If so, there would be no need to read the model file again:
 		if symbol_library.contains (file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
-			
+
 			-- open symbol file
 			open (
 				file => file_handle,
-				mode => in_file, 
+				mode => in_file,
 				name => et_directory_and_file_ops.expand (to_string (file_name)));
 
 			set_input (file_handle);
-			
+
 			-- Init section pac_sections_stack.
 			pac_sections_stack.init;
 			pac_sections_stack.push (SEC_INIT);
 
-			
+
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
@@ -350,48 +350,48 @@ package body et_symbol_read is
 				end if;
 			end loop;
 
-			
+
 			-- As a safety measure the top section must be reached finally.
-			if pac_sections_stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then
 				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
-			
+
 
 			set_input (previous_input);
 			close (file_handle);
 
-			
+
 			-- Insert the symbol in the symbol library:
 			pac_symbol_models.insert (
-				container	=> symbol_library, 
+				container	=> symbol_library,
 				key			=> file_name, -- libraries/symbols/nand.sym
 				position	=> symbol_cursor,
 				inserted	=> symbol_inserted,
 				new_item	=> symbol_model.all);
-			
+
 			-- CS Check integrity of symbol (style guides, conventions ...)
 			-- use symbol_cursor to access the symbol
 		end if;
 
 		log_indentation_down;
-		log_indentation_down;		
+		log_indentation_down;
 
 		exception when others =>
-			if is_open (file_handle) then 
+			if is_open (file_handle) then
 				set_input (previous_input);
-				close (file_handle); 
+				close (file_handle);
 			end if;
 			raise;
 
 	end read_symbol;
 
-	
+
 end et_symbol_read;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

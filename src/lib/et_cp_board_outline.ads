@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -56,7 +56,7 @@ package et_cp_board_outline is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Parses a command that draws a hole in the board
 	-- Example: board demo draw hole line 2 9 line 2 1 line 8 9
 	procedure draw_board_hole (
@@ -82,12 +82,12 @@ package et_cp_board_outline is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 end et_cp_board_outline;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

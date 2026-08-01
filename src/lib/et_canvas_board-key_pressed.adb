@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,13 +64,13 @@ is
 	use et_modes;
 	use et_modes.board;
 
-	
-	
+
+
 	point : type_vector_model renames get_cursor_position;
-	
 
 
-	procedure add is 
+
+	procedure add is
 		use et_canvas_board_devices;
 	begin
 		case key is
@@ -81,12 +81,12 @@ is
 				-- When adding devices, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
-				
-				-- open package model selection
-				show_package_model_selection; 
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+				-- open package model selection
+				show_package_model_selection;
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 
@@ -97,15 +97,15 @@ is
 							reset_grid_and_cursor;
 
 							-- If a package model has been selected, then
-							-- a device will be dropped at the current 
+							-- a device will be dropped at the current
 							-- cursor position. The properties of the new device
 							-- are taken from the preliminary device_add:
 							add_non_electrical_device (get_cursor_position);
 						end if;
-						
-					when others => null;						
+
+					when others => null;
 				end case;
-				
+
 
 			-- If the operator wants to rotate the device
 			-- being added, then add 90 degrees to the
@@ -116,18 +116,18 @@ is
 						put_line ("rotate");
 						rotate_device_add;
 
-					when others => null;						
+					when others => null;
 				end case;
 
-				
+
 			when others => null;
 		end case;
 	end add;
-	
 
-	
 
-	procedure clear is 
+
+
+	procedure clear is
 		use et_board_ops_fill_zones;
 	begin
 		case key is
@@ -136,12 +136,12 @@ is
 				clear_zones (active_module, log_threshold + 1);
 
 				set_status ("conductor zones cleared");
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end clear;
 
-	
+
 
 
 	procedure copy is begin
@@ -151,9 +151,9 @@ is
 				set_status (et_canvas_board_devices.status_copy);
 
 
-			-- If space pressed then the operator wishes to 
+			-- If space pressed then the operator wishes to
 			-- operate by keyboard:
-			when key_space =>		
+			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.copy_object (KEYBOARD, point);
@@ -169,19 +169,19 @@ is
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
-						
-				
+
+
 			when others => status_noun_invalid;
 		end case;
 	end copy;
 
-	
 
-	
-	procedure delete is 
+
+
+	procedure delete is
 		use et_ripup;
 	begin
 		case key is
@@ -204,7 +204,7 @@ is
 			when key_noun_keepout =>
 				noun := NOUN_KEEPOUT;
 				set_status (et_canvas_board_keepout.status_delete_object);
-				
+
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_delete_device);
@@ -216,7 +216,7 @@ is
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
 				set_status (et_canvas_board_outline.status_delete_object);
-				
+
 
 			when key_noun_via =>
 				noun := NOUN_VIA;
@@ -226,33 +226,33 @@ is
 			when key_noun_conductors =>
 				noun := NOUN_CONDUCTORS;
 				set_status (et_canvas_board_conductors.status_delete_object);
-				
+
 			-- when key_noun_track =>
 			-- 	noun := NOUN_TRACK;
 			-- 	set_status (et_canvas_board_tracks.status_delete_object);
-				
-				
+
+
 			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
 				set_status (et_canvas_board_conductors.status_delete_object);
 
 
-				
+
 			-- If "m" pressed, then a mode is being selected.
 			when key_mode =>
 				case noun is
 					when NOUN_TRACK | NOUN_CONDUCTORS =>
 						next_ripup_mode;
 						set_status (to_string (ripup_mode));
-						
+
 					when others => null;
 				end case;
 
-				
-				
-			-- If space pressed then the operator wishes to 
+
+
+			-- If space pressed then the operator wishes to
 			-- operate by keyboard:
-			when key_space =>		
+			when key_space =>
 				case noun is
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.delete_object (point);
@@ -268,7 +268,7 @@ is
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.delete_object (point);
-						
+
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.delete_object (point);
 
@@ -280,18 +280,18 @@ is
 
 					when NOUN_STENCIL =>
 						et_canvas_board_stencil.delete_object (point);
-						
+
 					when NOUN_KEEPOUT =>
 						et_canvas_board_keepout.delete_object (point);
--- 
+--
 -- 					when NOUN_VIA =>
 -- 						delete_via (KEYBOARD, point);
-						
+
 					when others => null;
-				end case;		
+				end case;
 
 
-			-- If page down pressed, then 
+			-- If page down pressed, then
 			-- the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -324,8 +324,8 @@ is
 						if clarification_pending then
 							et_canvas_board_keepout.clarify_object;
 						end if;
-						
--- 
+
+--
 -- 					when NOUN_VIA =>
 -- 						if clarification_pending then
 -- 							select_via;
@@ -340,7 +340,7 @@ is
 						if clarification_pending then
 							et_canvas_board_conductors.clarify_object;
 						end if;
-						
+
 					-- when NOUN_TRACK =>
 					-- 	if clarification_pending then
 					-- 		et_canvas_board_tracks.select_track;
@@ -351,18 +351,18 @@ is
 							et_canvas_board_conductors.clarify_object;
 						end if;
 
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end delete;
 
-	
-	
-	procedure fill is 
+
+
+	procedure fill is
 		use et_board_ops_fill_zones;
 	begin
 		case key is
@@ -371,14 +371,14 @@ is
 				fill_zones (active_module, log_threshold + 1);
 
 				set_status ("conductor zones filled");
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end fill;
 
 
-	
-	procedure flip is 
+
+	procedure flip is
 		use et_canvas_board_devices;
 	begin
 		case key is
@@ -386,15 +386,15 @@ is
 				noun := NOUN_DEVICE;
 				set_status (status_flip_device);
 
-				
+
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when key_space =>		
+			when key_space =>
 				case noun is
-					when NOUN_DEVICE =>				
+					when NOUN_DEVICE =>
 						et_canvas_board_devices.flip_object (point);
-						
+
 					when others => null;
-				end case;		
+				end case;
 
 
 			-- If page down pressed, then the operator is clarifying:
@@ -404,17 +404,17 @@ is
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
-    
-    
-					when others => null;							
+
+
+					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end flip;
 
-	
-	
+
+
 	procedure move is begin
 		case key is
 			when key_noun_assy =>
@@ -436,7 +436,7 @@ is
 			when key_noun_keepout =>
 				noun := NOUN_KEEPOUT;
 				set_status (et_canvas_board_keepout.status_move_object);
-				
+
 			-- when key_noun_track =>
 			-- 	noun := NOUN_TRACK;
 			-- 	set_status (et_canvas_board_tracks.status_move_track);
@@ -448,7 +448,7 @@ is
 			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
 				set_status (et_canvas_board_conductors.status_move_object);
-				
+
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
@@ -456,27 +456,27 @@ is
 			when key_noun_netchanger =>
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_board_netchangers.status_move_netchanger);
-				
+
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
 				set_status (et_canvas_board_outline.status_move_object);
 
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;					
+				noun := NOUN_PLACEHOLDER;
 				set_status (et_canvas_board_devices.status_move_placeholder);
-				
+
 			when key_noun_via =>
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
-		
+
 			-- when key_noun_text =>
 			-- 	noun := NOUN_TEXT;
 			-- 	set_status (et_canvas_board_texts.status_move_text);
 
 
-				
+
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when key_space =>	
+			when key_space =>
 				case noun is
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
@@ -492,47 +492,47 @@ is
 
 					when NOUN_KEEPOUT =>
 						et_canvas_board_keepout.move_object (KEYBOARD, point);
-						
+
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
-						
+
 					-- when NOUN_TRACK =>
 					-- 	et_canvas_board_tracks.move_track (KEYBOARD, point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
 
-					when NOUN_DEVICE =>		
+					when NOUN_DEVICE =>
 						et_canvas_board_devices.move_object (KEYBOARD, point);
 
-					when NOUN_NETCHANGER =>		
+					when NOUN_NETCHANGER =>
 						et_canvas_board_netchangers.move_object (KEYBOARD, point);
-						
+
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (KEYBOARD, point);
 
-					when NOUN_PLACEHOLDER =>		
+					when NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.move_object (KEYBOARD, point);
-						
+
 					-- when NOUN_TEXT =>
 					-- 	et_canvas_board_texts.move_text (KEYBOARD, point);
-						
+
 					when NOUN_VIA =>
 						et_canvas_board_vias.move_object (KEYBOARD, point);
 
 					when others => null;
-				end case;		
+				end case;
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					-- when NOUN_NAME => 
+					-- when NOUN_NAME =>
 					-- 	if clarification_pending then
 					-- 		et_canvas_board_devices.clarify_placeholder;
 					-- 	end if;
-     -- 
-					-- when NOUN_PURPOSE => 
+     --
+					-- when NOUN_PURPOSE =>
 					-- 	if clarification_pending then
 					-- 		clarify_placeholder;
 					-- 	end if;
@@ -561,12 +561,12 @@ is
 						if clarification_pending then
 							et_canvas_board_keepout.clarify_object;
 						end if;
-						
+
 					when NOUN_CONDUCTORS =>
 						if clarification_pending then
 							et_canvas_board_conductors.clarify_object;
 						end if;
-						
+
 					-- when NOUN_TRACK =>
 					-- 	if clarification_pending then
 					-- 		et_canvas_board_tracks.select_track;
@@ -576,7 +576,7 @@ is
 						if clarification_pending then
 							et_canvas_board_conductors.clarify_object;
 						end if;
-						
+
 					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
@@ -586,37 +586,37 @@ is
 						if clarification_pending then
 							et_canvas_board_netchangers.clarify_object;
 						end if;
-						
+
 					when NOUN_OUTLINE =>
 						if clarification_pending then
 							et_canvas_board_outline.clarify_object;
 						end if;
-						
+
 					-- when NOUN_TEXT =>
 					-- 	if clarification_pending then
 					-- 		et_canvas_board_texts.select_text;
 					-- 	end if;
-						
+
 					when NOUN_VIA =>
 						if clarification_pending then
 							et_canvas_board_vias.clarify_object;
 						end if;
-						
-					-- when NOUN_VALUE => 
+
+					-- when NOUN_VALUE =>
 					-- 	if clarification_pending then
 					-- 		clarify_placeholder;
 					-- 	end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end move;
 
 
-	
-	procedure draw is 
+
+	procedure draw is
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
 	begin
@@ -626,20 +626,20 @@ is
 				show_line_properties;
 				set_status (status_draw_line);
 
-				
+
 			when key_noun_arc =>
 				noun := NOUN_ARC;
 				-- CS show_arc_properties;
 				-- CS set_status (status_draw_arc);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_LINE =>
 						make_path (KEYBOARD, point,
 							et_canvas_board_lines.add_by_category'access);
-						
+
 					when others => null;
 				end case;
 
@@ -649,20 +649,20 @@ is
 				case noun is
 					when NOUN_LINE =>
 						next_bend_style (live_path);
-						
+
 					when NOUN_ZONE =>
 						next_bend_style (live_path); -- CS remove ?
-						
+
 					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end draw;
-		
 
-	
-	procedure place is 
+
+
+	procedure place is
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;
 	begin
@@ -672,13 +672,13 @@ is
 				show_text_properties;
 				set_status (status_place_text);
 
-				
+
 			when key_noun_via =>
 				noun := NOUN_VIA;
-				show_via_properties;				
+				show_via_properties;
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_TEXT =>
@@ -686,10 +686,10 @@ is
 
 					when NOUN_VIA =>
 						place_via (point);
-						
+
 					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end place;
@@ -701,10 +701,10 @@ is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_rename_device);
-				
+
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when key_space =>		
+			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.rename_object (get_cursor_position);
@@ -716,7 +716,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_DEVICE => 
+					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
@@ -724,33 +724,33 @@ is
 					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end rename;
 
-	
-	
-	
+
+
+
 	procedure rotate is begin
 		case key is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_rotate_device);
 
-				
+
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;					
+				noun := NOUN_PLACEHOLDER;
 				set_status (et_canvas_board_devices.status_rotate_placeholder);
 
 
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when key_space =>		
+			when key_space =>
 				case noun is
 					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.rotate_object (get_cursor_position);
-						
+
 					when others => null;
 				end case;
 
@@ -758,7 +758,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_DEVICE | NOUN_PLACEHOLDER => 
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
@@ -766,16 +766,16 @@ is
 					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end rotate;
 
 
-	
 
-	
-	procedure route is 
+
+
+	procedure route is
 		use pac_path_and_bend;
 		use et_canvas_board_tracks;
 	begin
@@ -792,32 +792,32 @@ is
 				case noun is
 					when NOUN_NET =>
 						et_canvas_board_tracks.make_path (KEYBOARD, point);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If "m" pressed, then a snap mode is being selected.
 			when key_mode =>
 				case noun is
 					when NOUN_NET =>
 						null;
 						-- CS next_snap_mode;
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If "b" pressed, then a bend style is being selected.
 			when key_bend_style =>
 				case noun is
 					when NOUN_NET =>
 						next_bend_style (live_path);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -825,11 +825,11 @@ is
 						if clarification_pending then
 							clarify_airwire;
 						end if;
-						
-					when others => null;							
+
+					when others => null;
 				end case;
 
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end route;
@@ -837,14 +837,14 @@ is
 
 
 
-	
+
 	procedure show is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_show_device);
-				
+
 			when key_noun_net =>
 				noun := NOUN_NET;
 				set_status (et_canvas_board_tracks.status_show_net);
@@ -853,29 +853,29 @@ is
 				noun := NOUN_NETCHANGER;
 				set_status (et_canvas_board_netchangers.status_show_netchanger);
 
-				
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.show_object (get_cursor_position);
 
-						
+
 					when NOUN_NET =>
 						-- et_canvas_schematic_nets.show_object (get_cursor_position);
 						null;
 
 					when NOUN_NETCHANGER =>
 						et_canvas_board_netchangers.show_object (get_cursor_position);
-						
+
 					when others => null;
 				end case;
 
-				
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_DEVICE => 
+					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
@@ -891,19 +891,19 @@ is
 							et_canvas_board_netchangers.clarify_object;
 						end if;
 
-						
-					when others => null;						
+
+					when others => null;
 				end case;
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end show;
 
 
-	
-	
-	
-	procedure update is 
+
+
+
+	procedure update is
 		use et_board_ops_ratsnest;
 	begin
 		case key is
@@ -912,29 +912,29 @@ is
 				update_ratsnest (active_module, log_threshold + 1);
 
 				-- CS set_status (status_ratsnest_updated);
-				
+
 			when others => status_noun_invalid;
 		end case;
 	end update;
 
 
-	
+
 begin -- key_pressed
 
 	log (text => "key_pressed (board): " & to_string (key),
 		 level => log_threshold);
 
-	
+
 	--put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 	case key is
-			
+
 		when others =>
 
-			-- CS: The following block seems not relevant any more and 
+			-- CS: The following block seems not relevant any more and
 			-- thus has been put in comments for the time being:
-			
+
 			-- If the command is waiting for finalization, usually by pressing
 			-- the space key, AND the primary tool is the keyboard, then
 			-- we call the corresponding subprogram right away here:
@@ -943,10 +943,10 @@ begin -- key_pressed
 -- 					when VERB_PLACE		=> place;
 -- 					when others			=> null;
 -- 				end case;
--- 		
+--
 -- 			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
-				
+
 				case expect_entry is
 					when EXP_VERB =>
 						--put_line ("VERB entered");
@@ -960,7 +960,7 @@ begin -- key_pressed
 						-- As long as no valid noun has been entered
 						-- display the default noun:
 						noun := noun_default;
-						
+
 						case key is
 							when key_verb_add =>
 								verb := VERB_ADD;
@@ -973,7 +973,7 @@ begin -- key_pressed
 							when key_verb_copy =>
 								verb := VERB_COPY;
 								status_enter_noun;
-								
+
 							when key_verb_delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
@@ -989,11 +989,11 @@ begin -- key_pressed
 							when key_verb_flip =>
 								verb := VERB_FLIP;
 								status_enter_noun;
-								
+
 							when key_verb_move =>
 								verb := VERB_MOVE;
 								status_enter_noun;
-								
+
 							when key_verb_place =>
 								verb := VERB_PLACE;
 								status_enter_noun;
@@ -1001,11 +1001,11 @@ begin -- key_pressed
 							when key_verb_rename =>
 								verb := VERB_RENAME;
 								status_enter_noun;
-								
+
 							when key_verb_rotate =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
-								
+
 							when key_verb_route =>
 								verb := VERB_ROUTE;
 								status_enter_noun;
@@ -1013,12 +1013,12 @@ begin -- key_pressed
 							when key_verb_show =>
 								verb := VERB_SHOW;
 								status_enter_noun;
-								
+
 							when key_verb_update =>
 								verb := VERB_UPDATE;
 								status_enter_noun;
 
-								
+
 							when others =>
 								--put_line ("other key pressed " & gdk_key_type'image (key));
 
@@ -1032,7 +1032,7 @@ begin -- key_pressed
 						---- Some toolbars or property bars must be removed:
 						--et_canvas_board_texts.remove_text_properties; -- after placing text
 
-						
+
 					when EXP_NOUN =>
 						--put_line ("NOUN entered");
 
@@ -1053,18 +1053,18 @@ begin -- key_pressed
 							when VERB_UPDATE	=> update;
 							when others => null; -- CS
 						end case;
-						
+
 				end case;
 
 			-- end if;
 	end case;
 
-	
-	redraw;	
+
+	redraw;
 	-- CS use redraw_board if only board affected
 	-- CS redraw after "enter" pressed
 
-	
+
 	update_mode_display;
 
 	-- CS
@@ -1073,12 +1073,12 @@ begin -- key_pressed
 		--reset_selections;
 		-- redraw;
 		-- update_mode_display;
-	
+
 end key_pressed;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

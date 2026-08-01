@@ -57,7 +57,7 @@ with et_logging;					use et_logging;
 -- with et_pcb_coordinates;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
--- 
+--
 with et_domains;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_directions;					use et_directions;
@@ -65,7 +65,7 @@ with et_axes;						use et_axes;
 with et_cp_schematic;
 with et_modes;						--use et_modes;
 with et_modes.board;
-with et_modes.schematic;	
+with et_modes.schematic;
 
 with et_canvas_board;
 with et_display.schematic;			--use et_display.schematic;
@@ -99,21 +99,21 @@ package body et_canvas_schematic is
 	procedure set_title_bar (
 		-- CS project name
 		module		: in pac_generic_modules.cursor)
-	is 
+	is
 		use et_system_info;
-	begin		
+	begin
 		main_window.set_title (
-			system_name 
-			& " - SCHEMATIC - " 
-			-- CS project name					  
+			system_name
+			& " - SCHEMATIC - "
+			-- CS project name
 			& to_string (key (module)));
 	end set_title_bar;
 
 
-	
-	procedure update_mode_display is 
+
+	procedure update_mode_display is
 		use et_modes.schematic;
-		
+
 		-- Get the current drawing mode
 		v : constant string := to_string (verb);
 		n : constant string := to_string (noun);
@@ -122,18 +122,18 @@ package body et_canvas_schematic is
 		gtk_entry (mode_display.cbox_mode_verb.get_child).set_text (v);
 		gtk_entry (mode_display.cbox_mode_noun.get_child).set_text (n);
 	end update_mode_display;
-	
-	
 
-	
+
+
+
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;
 		ignore_errors			: in boolean := false;
-		test_only				: in boolean := false)		
+		test_only				: in boolean := false)
 	is separate;
 
 
-	
+
 
 	procedure zoom_to_fit_all is
 		-- debug : boolean := true;
@@ -143,7 +143,7 @@ package body et_canvas_schematic is
 
 		-- Reset the translate-offset:
 		T := (0.0, 0.0);
-		
+
 		-- Compute the new bounding-box. Update global
 		-- variable bounding_box:
 		compute_bounding_box;
@@ -164,8 +164,8 @@ package body et_canvas_schematic is
 		-- fit all objects into the scrolled window:
 		S := get_ratio (bounding_box);
 
-		
-		
+
+
 		if debug then
 			put_line (" S: " & type_zoom_factor'image (S));
 		end if;
@@ -178,7 +178,7 @@ package body et_canvas_schematic is
 		center_to_visible_area (bounding_box);
 
 		backup_visible_area (bounding_box);
-		
+
 		-- Schedule a redraw of the canvas:
 		refresh;
 	end zoom_to_fit_all;
@@ -199,14 +199,14 @@ package body et_canvas_schematic is
 	end cb_zoom_to_fit;
 
 
-	
-	
+
+
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
 	is
 		pragma unreferenced (button);
 		use et_modes.schematic;
-		
+
 		-- debug : boolean := true;
 		debug : boolean := false;
 	begin
@@ -214,28 +214,28 @@ package body et_canvas_schematic is
 
 		reset_verb_and_noun;
 		update_mode_display;
-		
+
 		zoom_area.active := true;
 	end cb_zoom_area;
 
 
-	
+
 
 	procedure set_up_command_buttons is
 	begin
 		put_line ("set_up_command_buttons (schematic)");
 
 		-- Connect button signals with subprograms:
-		
+
 		button_zoom_fit.on_clicked (cb_zoom_to_fit'access);
-		-- button_zoom_fit.on_clicked (access_cb_zoom_to_fit);		
+		-- button_zoom_fit.on_clicked (access_cb_zoom_to_fit);
 
 		button_zoom_area.on_clicked (cb_zoom_area'access);
-		
+
 	end set_up_command_buttons;
 
-	
-	
+
+
 
 	function cb_window_key_pressed (
 		window	: access gtk_widget_record'class;
@@ -249,10 +249,10 @@ package body et_canvas_schematic is
 		-- this event is not passed further
 		-- to widgets down the chain.
 		-- Prosssing the event stops here.
-		
-		use gdk.types;		
+
+		use gdk.types;
 		use gdk.types.keysyms;
-		
+
 		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: constant gdk_key_type := event.keyval;
@@ -267,7 +267,7 @@ package body et_canvas_schematic is
 		-- 	restore_scrollbar_settings;
 		-- 	status_clear;
 		-- end focus_canvas;
-	
+
 
 		-- This procedure contains all the actions required
 		-- to set the focus on the console:
@@ -275,19 +275,19 @@ package body et_canvas_schematic is
 			console.grab_focus;
 			set_status ("enter command");
 		end focus_console;
-		
-			
+
+
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		
+
 		put_line ("cb_window_key_pressed (schematic)"
 			& " key " & gdk_key_type'image (event.keyval));
 
-		
-		if key_ctrl = control_mask then 
+
+		if key_ctrl = control_mask then
 			case key is
-					
+
 				when others => null;
 			end case;
 
@@ -296,7 +296,7 @@ package body et_canvas_schematic is
 
 				-- If the operator presses F2 then change the primary tool:
 				when GDK_F2 =>
-					change_primary_tool;					
+					change_primary_tool;
 					event_handled := true; -- event handled
 
 
@@ -304,14 +304,14 @@ package body et_canvas_schematic is
 				when GDK_F3 =>
 					focus_console;
 					event_handled := true;
-					
+
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					focus_canvas;
 					status_clear;
 					event_handled := true;
-					
-					
+
+
 				when GDK_F5 =>
 					zoom_to_fit_all;
 
@@ -321,38 +321,38 @@ package body et_canvas_schematic is
 					event_handled := true;
 
 
-				-- Switch between modules:	
+				-- Switch between modules:
 				when GDK_F11 =>
 					switch_module (PREVIOUS);
 					event_handled := true;
-					
+
 				when GDK_F12 =>
 					switch_module (NEXT);
 					event_handled := true;
-					
 
-					
+
+
 				when GDK_ESCAPE =>
-					reset;			
+					reset;
 
 					-- No more actions required:
 					event_handled := true;
 
-					
+
 				-- Other key events are propagated further:
 				when others =>
 					-- focus_canvas;
 					event_handled := false;
-					
+
 			end case;
 		end if;
-		
+
 		return event_handled;
 	end cb_window_key_pressed;
 
 
 
-	
+
 
 	procedure set_up_main_window is begin
 		log (text => "set_up_main_window (schematic)", level => log_threshold);
@@ -374,14 +374,14 @@ package body et_canvas_schematic is
 	procedure draw_nets is separate;
 
 	procedure draw_netchangers is separate;
-	
+
 	procedure draw_texts is separate;
 
 	procedure draw_submodules is separate;
-	
 
-	
-	
+
+
+
 	function cb_draw (
 		canvas		: access gtk_widget_record'class;
 		context_in	: in cairo.cairo_context)
@@ -389,7 +389,7 @@ package body et_canvas_schematic is
 	is
 		use cairo;
 		use et_display.schematic;
-		
+
 		event_handled : constant boolean := true;
 	begin
 		-- new_line;
@@ -407,29 +407,29 @@ package body et_canvas_schematic is
 		-- set_operator (context, cairo_operator_saturate); -- nogo
 		-- set_operator (context, cairo_operator_dest_over); -- nogo
 		-- See www.cairographics.org/operators
-		
+
 		-- Update the global visible_area:
 		visible_area := get_visible_area (canvas);
 		-- put_line (" visible " & to_string (visible_area));
 
 
 
-		
+
 		-- Set the background color:
-		set_source_rgb (context, 
+		set_source_rgb (context,
 			color_background.red, color_background.green, color_background.blue);
 
 		paint (context);
 
 
-		
+
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		draw_grid;		
+		draw_grid;
 		draw_drawing_origin;
 
-		
+
 		-- Compute the displacement in case objects are being moved or dragged.
 		-- Other objects could be dragged along if they are attached to the
 		-- primary object.
@@ -438,13 +438,13 @@ package body et_canvas_schematic is
 		object_displacement := get_object_tool_position - object_original_position;
 		-- put_line ("object_displacement " & to_string (object_displacement));
 
-		
-		draw_drawing_frame;	
+
+		draw_drawing_frame;
 
 		draw_units;
 		draw_netchangers;
-		
-		
+
+
 		if nets_enabled then
 			draw_nets;
 		end if;
@@ -457,7 +457,7 @@ package body et_canvas_schematic is
 
 		-- CS if submodules_enables ?
 		draw_submodules;
-	
+
 
 		draw_cursor;
 
@@ -465,18 +465,18 @@ package body et_canvas_schematic is
 		-- is being defined, then draw it:
 		draw_zoom_area;
 		draw_group_area;
-		
+
 		return event_handled;
 	end cb_draw;
 
 
 
-	
+
 
 
 -- UNDO / REDO:
-	
-	procedure undo is 
+
+	procedure undo is
 		use et_undo_redo;
 		use pac_undo_message;
 		message : pac_undo_message.bounded_string;
@@ -486,14 +486,14 @@ package body et_canvas_schematic is
 
 		-- Show the undo-message in the status bar:
 		set_status (to_string (message));
-		
+
 		redraw;
 	end undo;
 
 
 
-	
-	procedure redo is 
+
+	procedure redo is
 		use et_undo_redo;
 		use pac_redo_message;
 		message : pac_redo_message.bounded_string;
@@ -512,9 +512,9 @@ package body et_canvas_schematic is
 
 
 
-	
+
 -- RESET:
-	
+
 	procedure reset is
 		use et_modes;
 		use et_modes.schematic;
@@ -526,7 +526,7 @@ package body et_canvas_schematic is
 		-- Do a level 1 reset. This is a partly reset:
 		procedure level_1 is begin
 			log (text => "level 1", level => log_threshold + 1);
-			
+
 			reset_edit_process_running;
 			reset_request_clarification;
 			reset_finalizing_granted;
@@ -544,17 +544,17 @@ package body et_canvas_schematic is
 -- 			-- groups:
 -- 			et_schematic_ops_groups.reset_objects (
 -- 				active_module, log_threshold + 1);
--- 			
+--
 -- 			et_board_ops_groups.reset_objects (
 -- 				active_module, log_threshold + 1);
 
 
 			-- Mark preview data as invalid:
-			unit_add.valid := false;			
+			unit_add.valid := false;
 			unit_fetch.valid := false;
 			netchanger_add.valid := false;
-			
-			reset_preliminary_segment; 
+
+			reset_preliminary_segment;
 			-- after move/drag/draw of a net segment
 
 			-- Abort area and group select operations:
@@ -562,48 +562,48 @@ package body et_canvas_schematic is
 			reset_group_area_keyboard;
 
 
-			
+
 			set_group_not_moving;
 
 			-- Clear all "moving"-flags:
 			et_schematic_ops_groups.set_group_as_not_moving (
 				active_module, log_threshold);
 
-			
+
 			set_group_not_being_copied;
 
 			pac_device_ops.reset_window_open_flags;
 
 			pac_net_ops.rename_window_open := false;
 		end level_1;
-	
 
-		
+
+
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
 			level_1;
-			
+
 			log (text => "level 2", level => log_threshold + 1);
-						
+
 			reset_verb_and_noun;
 			update_mode_display;
 
 			reset_group_area_mouse; -- abort a define-group operation
-			
+
 			reset_unit_add; -- after adding a device
 			reset_unit_fetch; -- after fetchung a unit
 			reset_netchanger_add; -- after adding or copying a netchanger
-			
+
 			status_enter_verb;
 
 			clear_out_properties_box;
 			box_package_variant_active := false;
-			
+
 			reset_editing_process;
 		end level_2;
 
 
-		
+
 	begin
 		log (text => "RESET (schematic)", level => log_threshold + 1);
 		log_indentation_up;
@@ -613,37 +613,37 @@ package body et_canvas_schematic is
 		-- Count the number of ESC hits:
 		escape_key_pressed;
 
-		
+
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
 
 		case get_escape_counter is
 			when 0 => null;
-			
+
 			when 1 =>
 				case verb is
 					-- CS
-					
+
 					when others => level_1;
 				end case;
-				
+
 			when 2 =>
 				level_2;
 
 		end case;
 
 		log_indentation_down;
-		
+
 		redraw_schematic;
 		redraw_board;
 	end reset;
 
 
 
-	
 
 
-	
+
+
 
 	procedure save_module is
 		use ada.directories;
@@ -657,10 +657,10 @@ package body et_canvas_schematic is
 	begin
 		-- NOTE: We are not in the project directory yet but
 		-- in its parent directory.
-		
+
 		-- Change into the directory of the current project:
 		set_directory (to_string (active_project));
-		
+
 		-- Save the module with its own name:
 		write_module (
 			module_cursor	=> active_module,
@@ -668,7 +668,7 @@ package body et_canvas_schematic is
 
 		-- Return to previous directory:
 		set_directory (cur_dir_bak);
-		
+
 		-- Show a brief message in the schematic status bar:
 		set_status (status_text_module_saved);
 
@@ -677,20 +677,20 @@ package body et_canvas_schematic is
 	end save_module;
 
 
-	
 
 
-	
 
-	
 
-	
+
+
+
+
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
 	is separate;
 
-	
+
 
 	function cb_canvas_key_pressed (
 		canvas	: access gtk_widget_record'class;
@@ -700,9 +700,9 @@ package body et_canvas_schematic is
 		pragma unreferenced (canvas);
 		event_handled : constant boolean := true;
 
-		use gdk.types;		
+		use gdk.types;
 		use gdk.types.keysyms;
-		
+
 		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
 		key_shift	: constant gdk_modifier_type := event.state and shift_mask;
 		key			: constant gdk_key_type := event.keyval;
@@ -721,12 +721,12 @@ package body et_canvas_schematic is
 
 				when others => null;
 			end case;
-			
+
 			update_grid_display;
 			refresh;
 		end set_grid;
 
-		
+
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
@@ -734,23 +734,23 @@ package body et_canvas_schematic is
 		put_line ("cb_canvas_key_pressed (schematic)"
 			& " key " & gdk_key_type'image (event.keyval));
 
-		if key_ctrl = control_mask then 
+		if key_ctrl = control_mask then
 			case key is
 				-- Zoom in/out on ctrl and +/- key:
 				when GDK_KP_ADD | GDK_PLUS =>
 					zoom_on_cursor (ZOOM_IN);
 
-					
+
 				-- Zoom on cursor:
 				when GDK_KP_SUBTRACT | GDK_MINUS =>
 					zoom_on_cursor (ZOOM_OUT);
 
-					
+
 				-- Advance to next grid density on ctrl and shift
 				when GDK_Shift_L | GDK_Shift_R => -- CS: ALT key ?
 					set_grid;
-					
-					
+
+
 				-- Undo the last operation on ctrl-z
 				when GDK_LC_z =>
 					undo;
@@ -763,17 +763,17 @@ package body et_canvas_schematic is
 				-- Save the module on ctrl-s or ctrl-S:
 				when GDK_LC_s | GDK_s =>
 					save_module;
-					
-					
+
+
 				when others => null;
 			end case;
 
-			
+
 		else
 			case key is
 				when GDK_ESCAPE =>
 					reset;
-					
+
 				when GDK_Right =>
 					move_cursor (DIR_RIGHT);
 
@@ -807,13 +807,13 @@ package body et_canvas_schematic is
 						refresh;
 					end if;
 
-					
-				when others => 
+
+				when others =>
 					key_pressed (key, key_shift);
-					
+
 			end case;
 		end if;
-		
+
 		return event_handled;
 	end cb_canvas_key_pressed;
 
@@ -822,14 +822,14 @@ package body et_canvas_schematic is
 
 
 
-	
+
 -- MOUSE BUTTON PRESSED
 
 	procedure button_pressed (
 		event	: in type_mouse_event)
 	is separate;
 
-	
+
 
 	function cb_canvas_button_pressed (
 		canvas	: access gtk_widget_record'class;
@@ -846,24 +846,24 @@ package body et_canvas_schematic is
 		mouse_event := get_mouse_button_pressed_event (event);
 
 		button_pressed (mouse_event);
-		
+
 		return event_handled;
 	end cb_canvas_button_pressed;
-	
 
 
 
 
 
 
-	
+
+
 -- MOUSE BUTTON RELEASED
-	
+
 	-- CS procedure button_released (
 	-- 	event	: in type_mouse_event)
 	-- is separate;
 
-	
+
 
 	function cb_canvas_button_released (
 		canvas	: access gtk_widget_record'class;
@@ -874,7 +874,7 @@ package body et_canvas_schematic is
 		event_handled : constant boolean := true;
 
 		unused_mouse_event : type_mouse_event;
-		
+
 		debug : boolean := false;
 
 
@@ -897,41 +897,41 @@ package body et_canvas_schematic is
 					group_area_mouse.area, log_threshold);
 
 				reset_group_area_mouse; -- clean up
-				
+
 				-- Once the group has been defined,
 				-- the verb-noun mechanism must be reset:
 				expect_entry := expect_entry_default; -- expect a verb
 				reset_verb_and_noun;
-				update_mode_display;			
+				update_mode_display;
 			end if;
 		end handle_group_operation;
 
-		
+
 	begin
 		-- put_line ("cb_canvas_button_released (schematic)");
-		
+
 		unused_mouse_event := get_mouse_button_released_event (event);
 
 		-- CS button_released (mouse_event);
 
 		handle_group_operation;
-				
+
 		return event_handled;
 	end cb_canvas_button_released;
 
 
 
 
-	
 
 
-	
+
+
 -- MOUSE MOVED
 
 	procedure mouse_moved (
-		point	: in type_vector_model) 
+		point	: in type_vector_model)
 	is separate;
-	
+
 
 	function cb_canvas_mouse_moved (
 		canvas	: access gtk_widget_record'class;
@@ -949,12 +949,12 @@ package body et_canvas_schematic is
 		mp := get_mouse_moved_event (event);
 
 		mouse_moved (mp);
-		
+
 		return event_handled;
 	end cb_canvas_mouse_moved;
 
 
-	
+
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (schematic)");
 
@@ -964,7 +964,7 @@ package body et_canvas_schematic is
 		-- NOTE: No context is declared here, because the canvas widget
 		-- passes its own context to the callback procedure cb_draw.
 
-		
+
 		canvas.on_key_press_event (cb_canvas_key_pressed'access);
 
 		canvas.on_button_press_event (cb_canvas_button_pressed'access);
@@ -973,14 +973,14 @@ package body et_canvas_schematic is
 		canvas.on_motion_notify_event (cb_canvas_mouse_moved'access);
 	end set_up_canvas;
 
-	
 
-	
+
+
 	procedure update_sheet_number_display is begin
 		gtk_entry (cbox_sheet.get_child).set_text (to_string (active_sheet));
 	end update_sheet_number_display;
 
-	
+
 	procedure build_sheet_number_display is
 		spacing : gint;
 	begin
@@ -989,30 +989,30 @@ package body et_canvas_schematic is
 		gtk_new_vbox (box_sheet);
 		set_spacing (box_sheet, spacing);
 		pack_start (box_v1, box_sheet, expand => false);
-		
+
 		gtk_new (label_sheet, "SHEET (KEYPAD +/-)");
 		pack_start (box_sheet, label_sheet, expand => false);
 		gtk_new_with_entry (cbox_sheet);
 		pack_start (box_sheet, cbox_sheet);
 	end build_sheet_number_display;
 
-	
-	
 
-	
+
+
+
 
 -- REDRAW / REFRESH:
-	
+
 	procedure redraw_schematic is begin
 		refresh;
 	end redraw_schematic;
 
-	
+
 	procedure redraw_board is begin
 		et_canvas_board.pac_canvas.refresh;
 	end redraw_board;
 
-	
+
 	procedure redraw is begin
 		redraw_schematic;
 		redraw_board;
@@ -1020,17 +1020,17 @@ package body et_canvas_schematic is
 
 
 
-	
 
-	
+
+
 -- MODULE SELECT:
 
-	
-	procedure update_schematic_editor is 
+
+	procedure update_schematic_editor is
 		use et_schematic_ops_grid;
 	begin
 
-		-- Show the module name in the title bar of 
+		-- Show the module name in the title bar of
 		-- the schematic editor:
 		set_title_bar (active_module);
 
@@ -1038,7 +1038,7 @@ package body et_canvas_schematic is
 		update_grid_display;
 
 		update_sheet_number_display;
-		
+
 		-- CS Init defaults of property bars in schematic.
 
 		-- CS
@@ -1052,13 +1052,13 @@ package body et_canvas_schematic is
 
 
 
-	
+
 	procedure switch_module (
 		sel : in type_module_select)
-	is			
+	is
 		-- use ada.containers;
 		-- module_ct : count_type;
-		
+
 	begin
 		--put_line ("switch_module");
 
@@ -1066,7 +1066,7 @@ package body et_canvas_schematic is
 		-- put_line ("module count" & count_type'image (module_ct));
 
 		-- CS force a full reset (call procedure reset)
-		
+
 		case sel is
 			when NEXT =>
 				-- Advance to next module:
@@ -1088,13 +1088,13 @@ package body et_canvas_schematic is
 				end if;
 		end case;
 
-				
+
 		--put_line (to_string (key (active_module)));
-		
+
 		-- Switch module in schematic and board editor:
 		update_schematic_editor;
 		et_canvas_board.update_board_editor;
-		
+
 		redraw; -- schematic and board
 	end switch_module;
 
@@ -1108,9 +1108,9 @@ package body et_canvas_schematic is
 		cursor : constant pac_generic_modules.cursor := find (generic_modules, module);
 	begin
 		-- CS force a full reset (call procedure reset)
-		
+
 		-- If module already loaded in collection of generic modules, set the active_module:
-		if cursor /= pac_generic_modules.no_element then 
+		if cursor /= pac_generic_modules.no_element then
 			active_module := cursor;
 		else
 			-- If module not loaded yet, read it and store it in collection of generic modules:
@@ -1126,59 +1126,59 @@ package body et_canvas_schematic is
 	end set_module;
 
 
-	
-	
+
+
 	procedure connect_console is begin
-		-- Connect to the on_activate signal of the 
+		-- Connect to the on_activate signal of the
 		-- entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate 
+		gtk_entry (console.get_child).on_activate
 			(execute_command'access); -- on hitting enter
 
 	end connect_console;
 
 
 
-	
-	
+
+
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string) 
+		script : in pac_script_name.bounded_string)
 	is
 		use ada.directories;
 		use et_project_name;
 		use et_cp_schematic;
 		use et_project;
 		use et_domains;
-		
+
 		-- We compose a command that executes a script
 		-- like "schematic motor_driver execute script my_script.scr:
-		line_as_typed_by_operator : constant string := 
+		line_as_typed_by_operator : constant string :=
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
 			get_active_module & space &
 			"execute" & space & "script" & space &
 			to_string (script); -- "my_script.scr"
-		
+
 		fields : et_string_processing.type_fields_of_line;
 
 		-- The single command to be executed:
 		single_cmd : type_single_cmd;
-		
-		-- The command launches a script. Change into the project directory. 
-		-- The current directory is the parent directory of the active project. 
+
+		-- The command launches a script. Change into the project directory.
+		-- The current directory is the parent directory of the active project.
 		-- Example: The current directory is /home/user/my_projects . The directory
 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
 		--  Executing a script requires changing into the project directory blood_sample_analyzer.
 
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
-		
+
 	begin
 
-		log (text => "executing script (in schematic domain) " 
-			 & enclose_in_quotes (line_as_typed_by_operator), 
+		log (text => "executing script (in schematic domain) "
+			 & enclose_in_quotes (line_as_typed_by_operator),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		-- Store the command in the command history:
 	-- CS console.prepend_text (line_as_typed_by_operator);
 
@@ -1192,7 +1192,7 @@ package body et_canvas_schematic is
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
 		set_directory (to_string (active_project));
-		
+
 		-- Execute the schematic command.
 		-- Since the command is launched from inside the schematic
 		-- editor, its origin must be set accordingly:
@@ -1202,14 +1202,14 @@ package body et_canvas_schematic is
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
-		
+
 		-- The majority of commands requires refreshing the schematic and board drawing.
-		
+
 		-- refresh schematic and board
 	-- CS redraw;
 		--redraw (canvas);
 		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
-		
+
 		-- CS output error message in gui
 
 		-- Once the script has been executed, reset
@@ -1218,12 +1218,12 @@ package body et_canvas_schematic is
 		et_modes.board.reset_verb_and_noun;
 		et_modes.schematic.reset_verb_and_noun;
 		-- CS other domains ?
-		
+
 		log_indentation_down;
 
-		
+
 	exception when others =>
-		
+
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
 
@@ -1232,33 +1232,33 @@ package body et_canvas_schematic is
 
 
 
-	
-	
-	procedure execute_command (self : access gtk_entry_record'class) is 
-		use ada.directories;	
+
+
+	procedure execute_command (self : access gtk_entry_record'class) is
+		use ada.directories;
 		use et_project_name;
 		use et_cp_schematic;
 		use et_project;
 		use et_domains;
-		
+
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.
 		-- Since we are editing a schematic, the domain and module name itelf
-		-- are known. By prepending domain and module name here the full 
+		-- are known. By prepending domain and module name here the full
 		-- command after this declaration will be "schematic led_driver rename device R1 R2".
-		line_as_typed_by_operator : constant string := 
+		line_as_typed_by_operator : constant string :=
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
 			get_active_module & space &
 			get_text (self);
-		
+
 		fields : et_string_processing.type_fields_of_line;
 
 		-- The command to be executed:
 		single_cmd : type_single_cmd;
-		
+
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
-		-- of the active project. 
+		-- of the active project.
 		-- Example: The current directory is /home/user/my_projects . The directory
 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
 		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
@@ -1266,10 +1266,10 @@ package body et_canvas_schematic is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-				
+
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Store the latest command in the command history:
 		console.prepend_text (get_text (self));
 
@@ -1285,9 +1285,9 @@ package body et_canvas_schematic is
 		log (text => "changing to directory " &
 				enclose_in_quotes (to_string (active_project)) & " ...",
 			level => log_threshold + 1);
-		
+
 		set_directory (to_string (active_project));
-		
+
 		-- Compose and execute the schematic command.
 		-- Since it is launched from inside the board editor
 		-- its origin is set accordingly:
@@ -1298,20 +1298,20 @@ package body et_canvas_schematic is
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
 			level => log_threshold + 1);
-		
+
 		set_directory (cur_dir_bak);
-		
-		-- The majority of commands requires refreshing both 
+
+		-- The majority of commands requires refreshing both
 		-- the schematic and board:
 		redraw;
 
-		
+
 		-- CS output error message in gui
 
 		log_indentation_down;
 
 	exception when others =>
-		
+
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
 			level => log_threshold + 1);
@@ -1323,12 +1323,12 @@ package body et_canvas_schematic is
 
 
 
-	
+
 end et_canvas_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

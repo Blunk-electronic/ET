@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_pcb_placeholders.non_conductor is
-	
+
 
 	procedure reset_placeholder (
 		placeholder : in out type_placeholder_non_conductor)
@@ -54,15 +54,15 @@ package body et_pcb_placeholders.non_conductor is
 
 
 
-	
-	
+
+
 	function to_string (
 		placeholder : in type_placeholder_non_conductor)
 		return string
-	is 
+	is
 		tf : constant type_text_fab := type_text_fab (placeholder);
 	begin
-		return to_string (tf) 
+		return to_string (tf)
 			& " meaning " & to_string (get_meaning (placeholder));
 	end to_string;
 
@@ -75,7 +75,7 @@ package body et_pcb_placeholders.non_conductor is
 		return placeholder.meaning;
 	end get_meaning;
 
-	
+
 
 
 	procedure iterate (
@@ -91,10 +91,10 @@ package body et_pcb_placeholders.non_conductor is
 			next (c);
 		end loop;
 	end iterate;
-	
 
 
-	
+
+
 
 	function to_string (
 		placeholder : in pac_placeholders_non_conductor.cursor)
@@ -103,14 +103,14 @@ package body et_pcb_placeholders.non_conductor is
 		return to_string (element (placeholder));
 	end to_string;
 
-		
 
-	
 
-	
+
+
+
 
 	function is_selected (
-		placeholder : in pac_placeholders_non_conductor.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean
 	is begin
 		if is_selected (element (placeholder)) then
@@ -122,7 +122,7 @@ package body et_pcb_placeholders.non_conductor is
 
 
 	function is_proposed (
-		placeholder : in pac_placeholders_non_conductor.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean
 	is begin
 		if is_proposed (element (placeholder)) then
@@ -132,13 +132,13 @@ package body et_pcb_placeholders.non_conductor is
 		end if;
 	end is_proposed;
 
-	
-	
+
+
 end et_pcb_placeholders.non_conductor;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

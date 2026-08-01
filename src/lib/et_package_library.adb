@@ -44,26 +44,26 @@ with et_terminal_hole;			use et_terminal_hole;
 
 
 package body et_package_library is
-	
 
-	
+
+
 -- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given track clearance is in range of type_track_clearance.
 -- 	begin
 -- 		if clearance not in type_track_clearance then
--- 			log (ERROR, "track clearance invalid ! Allowed range is" 
+-- 			log (ERROR, "track clearance invalid ! Allowed range is"
 -- 				 & to_string (type_track_clearance'first) & " .."
 -- 				 & to_string (type_track_clearance'last),
 -- 				 console => true);
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end validate_track_clearance;
--- 
+--
 -- 	procedure validate_track_width (track_width : in type_distance_positive) is
 -- 	-- Checks whether the given width is in range of type_track_width.
 -- 	begin
 -- 		if track_width not in type_track_width then
--- 			log (ERROR, "track width invalid ! Allowed range is" 
+-- 			log (ERROR, "track width invalid ! Allowed range is"
 -- 				 & to_string (type_track_width'first) & " .."
 -- 				 & to_string (type_track_width'last),
 -- 				 console => true);
@@ -72,10 +72,10 @@ package body et_package_library is
 -- 	end validate_track_width;
 
 -- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is
--- 	-- Checks whether the given restring width is in range of type_restring_width.	
+-- 	-- Checks whether the given restring width is in range of type_restring_width.
 -- 	begin
 -- 		if restring_width not in type_restring_width then
--- 			log (ERROR, "restring width invalid ! Allowed range is" 
+-- 			log (ERROR, "restring width invalid ! Allowed range is"
 -- 				 & to_string (type_restring_width'first) & " .."
 -- 				 & to_string (type_restring_width'last),
 -- 				 console => true);
@@ -86,7 +86,7 @@ package body et_package_library is
 
 
 
-	
+
 -- 	procedure log_plated_millings (
 -- 		millings 		: in type_plated_millings;
 -- 		log_threshold	: in type_log_level)
@@ -94,19 +94,19 @@ package body et_package_library is
 -- -- 		use pac_pcb_contour_lines;
 -- -- 		use pac_pcb_contour_arcs;
 -- -- 		use pac_pcb_contour_circles;
--- -- 		
+-- --
 -- -- 		procedure line (cursor : in pac_pcb_contour_lines.cursor) is begin
 -- -- 			line_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
--- -- 
+-- --
 -- -- 		procedure arc (cursor : in pac_pcb_contour_arcs.cursor) is begin
 -- -- 			arc_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
--- -- 
+-- --
 -- -- 		procedure circle (cursor : in pac_pcb_contour_circles.cursor) is begin
 -- -- 			circle_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
--- 		
+--
 -- 	begin -- log_plated_millings
 -- 		null;
 -- -- CS
@@ -115,7 +115,7 @@ package body et_package_library is
 -- -- 		iterate (millings.circles, circle'access);
 -- 	end log_plated_millings;
 
-	
+
 
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
@@ -134,24 +134,24 @@ package body et_package_library is
 	end;
 
 
-	
-	
-	
+
+
+
 	procedure create_package (
 		package_name 	: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_bom_relevant;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is begin
 		log (text => "creating package" & pac_package_model_file.to_string (package_name),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
 		log (text => "appearance " & to_string (appearance),
 			 level => log_threshold);
-		
+
 		-- Test if package already exists. If already exists, issue warning and exit.
 		if pac_package_models.contains (package_library, package_name) then
-			log (SEVERITY_WARNING, text => "package already exists -> skipped", 
+			log (SEVERITY_WARNING, text => "package already exists -> skipped",
 				 level => log_threshold + 1);
 		else
 			case appearance is
@@ -168,7 +168,7 @@ package body et_package_library is
 						key			=> package_name,
 						new_item	=> (appearance => BOM_RELEVANT_NO, others => <>)
 						);
-			end case;					
+			end case;
 		end if;
 
 		log_indentation_down;
@@ -176,12 +176,12 @@ package body et_package_library is
 
 
 
-	
 
-	
-	
+
+
+
 	function get_package_model (model_name : in pac_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
-		return pac_package_models.cursor 
+		return pac_package_models.cursor
 	is begin
 		return pac_package_models.find (package_library, model_name);
 	end;
@@ -190,8 +190,8 @@ package body et_package_library is
 
 
 	function is_bom_relevant (
-		package_cursor : in pac_package_models.cursor) 
-		return boolean 
+		package_cursor : in pac_package_models.cursor)
+		return boolean
 	is
 		p : type_package_model renames element (package_cursor);
 	begin
@@ -200,11 +200,11 @@ package body et_package_library is
 
 
 
-	
-	
+
+
 	function is_bom_relevant (
-		package_model : in pac_package_model_file.bounded_string) 
-		return boolean 
+		package_model : in pac_package_model_file.bounded_string)
+		return boolean
 	is
 		cursor : pac_package_models.cursor;
 	begin
@@ -215,25 +215,25 @@ package body et_package_library is
 
 
 
-	
-	
+
+
 	function get_terminal (
 		cursor		: in pac_package_models.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
-		return pac_terminals.cursor 
+		return pac_terminals.cursor
 	is
 		terminal_cursor : pac_terminals.cursor;
 
 		procedure query_terminals (
 			model_name	: in pac_package_model_file.bounded_string;
-			model		: in type_package_model) 
+			model		: in type_package_model)
 		is
 			pragma unreferenced (model_name);
 			use pac_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);
 		end;
-		
+
 	begin
 		pac_package_models.query_element (
 			position	=> cursor,
@@ -241,19 +241,19 @@ package body et_package_library is
 
 		return terminal_cursor;
 	end get_terminal;
-	
 
 
-	
+
+
 	function get_terminal_contours (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_contour_list.list
 	is
 		packge : type_package_model renames element (package_cursor);
-		
+
 		result : pac_contour_list.list;
-		
+
 
 		procedure query_terminal (t : in pac_terminals.cursor) is
 			use pac_terminals;
@@ -261,19 +261,19 @@ package body et_package_library is
 
 			displacement : constant type_vector_model := terminal.position.place;
 
-			procedure finalize (c : in type_contour) is 
+			procedure finalize (c : in type_contour) is
 				contour : type_contour := c;
 			begin
 				rotate_by (contour, terminal.position.rotation);
 				move_by (contour, displacement);
 				result.append (contour);
 			end finalize;
-	
+
 		begin
 			case terminal.technology is
-				when THT => 
+				when THT =>
 					case layer_category is
-						when INNER =>								
+						when INNER =>
 							case terminal.tht_hole is
 								when DRILLED =>
 									finalize (get_inner_contour (
@@ -283,14 +283,14 @@ package body et_package_library is
 									finalize (terminal.millings);
 							end case;
 
-							
+
 						when OUTER_TOP =>
 							finalize (terminal.pad_shape_tht.top);
-							
+
 						when OUTER_BOTTOM =>
 							finalize (terminal.pad_shape_tht.bottom);
 					end case;
-					
+
 
 				when SMT =>
 					case layer_category is
@@ -298,7 +298,7 @@ package body et_package_library is
 							if terminal.face = TOP then
 								finalize (terminal.pad_shape_smt);
 							end if;
-						
+
 						when OUTER_BOTTOM =>
 							if terminal.face = BOTTOM then
 								finalize (terminal.pad_shape_smt);
@@ -308,7 +308,7 @@ package body et_package_library is
 					end case;
 			end case;
 		end query_terminal;
-		
+
 	begin
 		packge.terminals.iterate (query_terminal'access);
 		return result;
@@ -316,12 +316,12 @@ package body et_package_library is
 
 
 
-	
+
 	function get_conductor_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		return type_conductor_objects
-	is 
+	is
 		packge : type_package_model renames element (package_cursor);
 	begin
 		case layer_category is
@@ -335,10 +335,10 @@ package body et_package_library is
 				raise constraint_error; -- CS semantic_error ? Error message ?
 		end case;
 	end get_conductor_objects;
-	
 
 
-	
+
+
 	function get_route_restrict_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -360,7 +360,7 @@ package body et_package_library is
 
 
 
-	
+
 	function get_via_restrict_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -381,19 +381,19 @@ package body et_package_library is
 	end get_via_restrict_objects;
 
 
-	
-	
+
+
 	function get_hole_contours (
 		package_cursor	: in pac_package_models.cursor)
 		return pac_holes.list
-	is 
+	is
 		packge : type_package_model renames element (package_cursor);
 	begin
 		return packge.holes;
 	end get_hole_contours;
 
 
-	
+
 
 	function get_keepout_objects (
 		package_cursor	: in pac_package_models.cursor;
@@ -407,7 +407,7 @@ package body et_package_library is
 			when BOTTOM	=> return packge.keepout.bottom;
 		end case;
 	end get_keepout_objects;
-	
+
 
 	function get_stencil_objects (
 		package_cursor	: in pac_package_models.cursor;
@@ -435,7 +435,7 @@ package body et_package_library is
 			when BOTTOM	=> return packge.stopmask.bottom;
 		end case;
 	end get_stopmask_objects;
-	
+
 
 
 	function get_silkscreen_objects (
@@ -466,12 +466,12 @@ package body et_package_library is
 	end get_assy_doc_objects;
 
 
-	
+
 
 
 	function get_default_placeholders (
 		package_cursor : in pac_package_models.cursor)
-		return type_text_placeholders 
+		return type_text_placeholders
 	is
 		use pac_package_models;
 	begin
@@ -480,8 +480,8 @@ package body et_package_library is
 
 
 
-	
-	
+
+
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	--procedure line_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_lines.cursor;
@@ -503,7 +503,7 @@ package body et_package_library is
 		--arc : type_pcb_contour_arc;
 	--begin
 		--arc := element (cursor);
-		--log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space 
+		--log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space
 			 --& to_string (type_arc (arc)), level => log_threshold);
 	--end arc_pcb_contour_properties;
 
@@ -515,15 +515,15 @@ package body et_package_library is
 		--circle : type_pcb_contour_circle;
 	--begin
 		--circle := element (cursor);
-		--log (text => "PCB contour (edge cuts / outline) circle" & latin_1.space 
+		--log (text => "PCB contour (edge cuts / outline) circle" & latin_1.space
 			--& to_string (type_circle (circle)), level => log_threshold);
 	--end circle_pcb_contour_properties;
 
 
-	
-	
-	
-	
+
+
+
+
 
 -- 	procedure terminal_properties (
 -- 	-- Logs the properties of the given terminal.
@@ -532,69 +532,69 @@ package body et_package_library is
 -- 		log_threshold 	: in type_log_level) is
 -- 		use et_pcb_coordinates;
 -- 		log_threshold_1 : type_log_level := log_threshold + 1;
--- 
+--
 -- -- 		use type_pad_lines;
 -- -- 		use type_pad_arcs;
 -- -- 		use type_pad_circles;
--- -- 		use type_pad_polygons;		
--- 		
+-- -- 		use type_pad_polygons;
+--
 -- -- 		procedure line (cursor : in type_pad_lines.cursor) is begin
 -- -- 			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
 -- -- 		end line;
--- -- 
+-- --
 -- -- 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
 -- -- 			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
 -- -- 		end arc;
--- -- 		
+-- --
 -- -- 		procedure circle (cursor : in type_pad_circles.cursor) is begin
 -- -- 			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
 -- -- 		end circle;
--- -- 
--- -- 		procedure polygon (cursor : in type_pad_polygons.cursor) is 
+-- --
+-- -- 		procedure polygon (cursor : in type_pad_polygons.cursor) is
 -- -- 			use type_polygon_points;
 -- -- 			points : type_polygon_points.set := element (cursor).corners;
--- -- 
+-- --
 -- -- 			procedure point (cursor : in type_polygon_points.cursor) is begin
--- -- 				log (text => to_string (element (cursor)), level => log_threshold + 1);	
+-- -- 				log (text => to_string (element (cursor)), level => log_threshold + 1);
 -- -- 			end point;
--- -- 	
+-- --
 -- -- 		begin -- polygon
 -- -- 			log (text => "polygon with corners", level => log_threshold + 1);
 -- -- 			log_indentation_up;
 -- -- 			iterate (points, point'access);
 -- -- 			log_indentation_down;
 -- -- 		end polygon;
--- 			
+--
 -- 	begin -- terminal_properties
 -- 		log (text => "terminal name " & to_string (name)
 -- 			& " technology" & to_string (terminal.technology)
 -- 			& to_string (type_point (terminal.position))
 -- 			& " rotation" & to_string (rot (terminal.position)),
 -- 			level => log_threshold);
--- 
+--
 -- 		log_indentation_up;
--- 
+--
 -- 		case terminal.technology is
--- 			when THT => 
--- 				
+-- 			when THT =>
+--
 -- 				-- log pad_shape_top/bottom
 -- 				log (text => "pad contour top", level => log_threshold + 1);
 -- -- 				iterate (terminal.pad_shape_tht.top.lines, line'access);
 -- -- 				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
 -- -- 				iterate (terminal.pad_shape_tht.top.circles, circle'access);
 -- -- 				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
--- 
+--
 -- 				log (text => "pad contour bottom", level => log_threshold + 1);
 -- -- 				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
 -- -- 				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
 -- -- 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
 -- -- 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
--- 				
+--
 -- 				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
--- 
+--
 -- 				case terminal.tht_hole is
 -- 					when DRILLED =>
--- 						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1); 
+-- 						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1);
 -- 					when MILLED =>
 -- 						if log_level >= log_threshold_1 then
 -- 							log (text => "plated milling contour ");
@@ -603,30 +603,30 @@ package body et_package_library is
 -- 							log_indentation_down;
 -- 						end if;
 -- 				end case;
--- 				
--- 			when SMT => 
--- 				
+--
+-- 			when SMT =>
+--
 -- 				-- log pad_shape
 -- 				log (text => "pad contour", level => log_threshold + 1);
 -- -- 				iterate (terminal.pad_shape.lines, line'access);
 -- -- 				iterate (terminal.pad_shape.arcs, arc'access);
 -- -- 				iterate (terminal.pad_shape.circles, circle'access);
 -- -- 				iterate (terminal.pad_shape.polygons, polygon'access);
--- 				
+--
 -- 				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
 -- 				log (text => "stop mask" & to_string (terminal.stop_mask), level => log_threshold_1);
 -- 				log (text => "solder paste" & to_string (terminal.solder_paste), level => log_threshold_1);
 -- 		end case;
--- 
+--
 -- 		log_indentation_down;
 -- 	end terminal_properties;
 
-	
+
 end et_package_library;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

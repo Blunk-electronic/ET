@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -52,14 +52,14 @@ with et_commit;
 
 package body et_schematic_ops_groups is
 
-		
-	
+
+
 	procedure reset_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 
-		procedure reset_nets is 
+		procedure reset_nets is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "nets", level => log_threshold + 1);
@@ -68,8 +68,8 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
-		
-		procedure reset_devices is 
+
+		procedure reset_devices is
 			use et_schematic_ops_units;
 		begin
 			log (text => "electrical devices and units", level => log_threshold + 1);
@@ -79,7 +79,7 @@ package body et_schematic_ops_groups is
 		end;
 
 
-		procedure reset_netchangers is 
+		procedure reset_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
@@ -88,28 +88,28 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
-		
-		
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " reset objects (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		reset_nets;
 		reset_devices;
 		reset_netchangers;
 
 		-- CS reset texts, ... ?
-		
+
 		log_indentation_down;
 	end reset_objects;
 
 
 
 
-	
+
 
 
 
@@ -125,36 +125,36 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			group_units_in_rectangular_area (
 				module_cursor, sheet, area, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
-		
+
 
 		procedure group_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			group_netchangers_in_rectangular_area (
 				module_cursor, sheet, area, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
-		
+
 		procedure group_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			group_segments_in_rectangular_area (
 				module_cursor, sheet, area, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
@@ -164,18 +164,18 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "copy selected objects to clipboard",
 				 level => log_threshold + 1);
-			
+
 			log_indentation_up;
-			
+
 			copy_selected_units_to_clipboard (
 				module_cursor, log_threshold + 2);
 
 			log_indentation_down;
 		end copy_to_clipboard;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " define rectangular group (schematic)",
 			level => log_threshold);
 
@@ -186,24 +186,24 @@ package body et_schematic_ops_groups is
 		group_units;
 		group_netchangers;
 		group_net_segments;
-		
-		-- CS texts, 
+
+		-- CS texts,
 		-- Do not group placeholders of units !
 
 		-- Copy selected objects to clipboard:
 		copy_to_clipboard;
-		
+
 		log_indentation_down;
 	end define_group_rectangular;
 
-	
-	
-	
-	
-	
 
-	
-	
+
+
+
+
+
+
+
 	procedure delete_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -213,9 +213,9 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-	
-	
-		procedure delete_nets is 
+
+
+		procedure delete_nets is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "nets", level => log_threshold + 1);
@@ -224,8 +224,8 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
-		
-		procedure delete_devices is 
+
+		procedure delete_devices is
 			use et_schematic_ops_units;
 		begin
 			log (text => "electrical devices and units", level => log_threshold + 1);
@@ -235,7 +235,7 @@ package body et_schematic_ops_groups is
 		end;
 
 
-		procedure delete_netchangers is 
+		procedure delete_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
@@ -244,45 +244,45 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
-		
-		
+
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " delete group (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		delete_nets;
 		delete_devices;
 		delete_netchangers;
 
 		-- CS delete texts, ... ?
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
-		
+
 		log_indentation_down;
 	end delete_group;
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
 	procedure drag_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		offset			: in type_vector_model; -- x/y
@@ -293,53 +293,53 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		procedure drag_units is
 			use et_schematic_ops_units;
 		begin
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
-			
-			drag_selected_units (module_cursor, 
+
+			drag_selected_units (module_cursor,
 				offset, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
-		
+
 
 		procedure drag_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			
-			drag_selected_netchangers (module_cursor, 
+
+			drag_selected_netchangers (module_cursor,
 				offset, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
-		
+
 		procedure drag_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
-			
-			drag_selected_net_segments (module_cursor, 
+
+			drag_selected_net_segments (module_cursor,
 				offset, log_threshold + 2);
 
 			log_indentation_down;
 		end;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " drag group (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
@@ -360,24 +360,24 @@ package body et_schematic_ops_groups is
 
 		-- CS texts
 
-		
+
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset.
 		-- This is important for the "moving" flags.
 		reset_objects (module_cursor, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end drag_group;
-	
+
 
 
 
@@ -397,39 +397,39 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_selected_units_as_moving (module_cursor, 
+
+			set_selected_units_as_moving (module_cursor,
 				log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
-		
+
 
 		procedure set_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_selected_netchangers_as_moving (module_cursor, 
+
+			set_selected_netchangers_as_moving (module_cursor,
 				log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
-		
+
 		procedure set_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_selected_net_segments_as_moving (module_cursor, 
+
+			set_selected_net_segments_as_moving (module_cursor,
 				log_threshold + 2);
 
 			log_indentation_down;
 		end;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -441,7 +441,7 @@ package body et_schematic_ops_groups is
 		set_units;
 		set_netchangers;
 		set_net_segments;
-		
+
 		log_indentation_down;
 	end set_group_as_moving;
 
@@ -450,7 +450,7 @@ package body et_schematic_ops_groups is
 
 
 
-	
+
 
 
 
@@ -465,39 +465,39 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_all_units_as_not_moving (module_cursor, 
+
+			set_all_units_as_not_moving (module_cursor,
 				log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
-		
+
 
 		procedure set_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_all_netchangers_as_not_moving (module_cursor, 
+
+			set_all_netchangers_as_not_moving (module_cursor,
 				log_threshold + 2);
 
 			log_indentation_down;
 		end;
 
-		
+
 		procedure set_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
-			
-			set_all_net_segments_as_not_moving (module_cursor, 
+
+			set_all_net_segments_as_not_moving (module_cursor,
 				log_threshold + 2);
 
 			log_indentation_down;
 		end;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -509,10 +509,10 @@ package body et_schematic_ops_groups is
 		set_units;
 		set_netchangers;
 		set_net_segments;
-		
+
 		log_indentation_down;
 	end set_group_as_not_moving;
-	
+
 
 
 
@@ -532,56 +532,56 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		
+
 		procedure copy_units is
 			use et_schematic_ops_units;
 		begin
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
-			
-			copy_selected_units (module_cursor, 
+
+			copy_selected_units (module_cursor,
 				sheet, offset, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
-		
+
 
 		procedure copy_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			
-			copy_selected_netchangers (module_cursor, 
+
+			copy_selected_netchangers (module_cursor,
 				sheet, offset, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end;
 
-		
+
 		procedure copy_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
-			
-			copy_selected_net_segments (module_cursor, 
+
+			copy_selected_net_segments (module_cursor,
 				sheet, offset, log_threshold + 2);
 
 			log_indentation_down;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-				& " copy group by sheet(s) " & relative_to_string (sheet) 
+				& " copy group by sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (offset),
 			level => log_threshold);
 
-				
+
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
@@ -599,12 +599,12 @@ package body et_schematic_ops_groups is
 
 		-- CS texts
 
-		
+
 		-- Previously to commiting the design,
-		-- the status of all objects must be reset:		
+		-- the status of all objects must be reset:
 		reset_objects (module_cursor, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
@@ -612,10 +612,10 @@ package body et_schematic_ops_groups is
 
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end copy_group;
-	
+
 
 
 
@@ -635,17 +635,17 @@ package body et_schematic_ops_groups is
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-				& " paste group by sheet(s) " & relative_to_string (sheet) 
+				& " paste group by sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (offset),
 			level => log_threshold);
 
-				
+
 		log_indentation_up;
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
@@ -655,12 +655,12 @@ package body et_schematic_ops_groups is
 		-- CS
 		-- Transfer objects from clipboard to the
 		-- given module:
-		
+
 		-- Previously to commiting the design,
-		-- the status of all objects must be reset:		
+		-- the status of all objects must be reset:
 		reset_objects (module_cursor, log_threshold + 1);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
@@ -668,16 +668,16 @@ package body et_schematic_ops_groups is
 
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end paste_group;
 
-	
+
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

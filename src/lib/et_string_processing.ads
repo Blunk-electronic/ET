@@ -50,46 +50,46 @@ package et_string_processing is
 
 
 	row_separator_length 	: constant positive := 100;
-	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";	
+	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";
 	row_separator_double	: constant string (1..row_separator_length)	:= row_separator_length * "=";
 -- 	item_not_specified		: constant string (1..7) := "missing";
 
-	
+
 -- WARNING AND ERROR MESSAGES:
 
-	
+
 	-- Returns a message about the metric system used.
 	function metric_system return string;
 
-	
+
 	-- Returns a message about the degrees used.
 	function angles_in_degrees return string;
-	
+
 
 	-- Removes a possible trailing directory separtor.
 	-- Removes the trailing directory separtor (if preset).
 	function strip_directory_separator (text : in string) return string;
 
-	
+
 	-- This is the default comment mark:
 	comment_mark_default : constant string := ("--");
 
-	
-	-- Converts a horizontal tabulator 
+
+	-- Converts a horizontal tabulator
 	-- to a space charachter:
 	function ht_to_space (c : in character) return character;
 
-	
+
 	-- Replaces a tilde by space. Other characters are returned unchanged.
 	function tilde_to_space (c : in character) return character;
 
 
-	
+
 	-- Returns true if text_with_wildcards matches text_exact.
 	-- text_with_wildcards is something like R41* , text_exact is something like R415
 	function wildcard_match (
-		text_with_wildcards	: in string; 
-		text_exact 			: in string) 
+		text_with_wildcards	: in string;
+		text_exact 			: in string)
 		return boolean;
 
 
@@ -100,79 +100,79 @@ package et_string_processing is
 		comment_mark	: in string;			-- the comment mark (like "--" or "#"
 		test_whole_line	: in boolean := true)	-- when false, cares for the comment mark at line begin only
 		return string;							-- further comment marks are ignored
-		
 
-	
+
+
 	-- Field numbers:
-	subtype type_field_count is natural 
+	subtype type_field_count is natural
 		range 0 .. 100; -- CS increase if required
 
-	
+
 	-- Field positions start with 1:
-	subtype type_field_count_positive is type_field_count 
+	subtype type_field_count_positive is type_field_count
 		range 1 .. type_field_count'last;
 
-	
-	
+
+
 	-- Returns the number of fields in a given string.
 	-- Example: For the given string "This is a dummy text"
 	-- the field count is 5:
 	function get_field_count (
-		text_in : in string) 
+		text_in : in string)
 		return type_field_count;
 
 
-	
+
 	-- Removes heading and trailing quotation from given string
 	function strip_quotes (
-		text_in : in string) 
+		text_in : in string)
 		return string;
 
 
-	
-	-- Adds heading and trailing quotate to given string. 
+
+	-- Adds heading and trailing quotate to given string.
 	-- NOTE: apostrophe is ', quotation is "
 	function enclose_in_quotes ( -- CS rename to quote
 		text_in	: in string;
-		quote	: in character := latin_1.apostrophe) 
+		quote	: in character := latin_1.apostrophe)
 		return string;
 
 
-	
+
 	-- Adds heading and trailing quotate to given character.
 	-- NOTE: apostrophe is ', quotation is "
 	function enclose_in_quotes ( -- CS rename to quote
 		charcter_in	: in character;
-		quote		: in character := latin_1.apostrophe) 
+		quote		: in character := latin_1.apostrophe)
 		return string;
 
 
-	-- Reduces successive space characters 
+	-- Reduces successive space characters
 	-- to a single one:
 	function trim_spaces (
-		text_in : in string) 
+		text_in : in string)
 		return string;
 
-	
+
 	-- Removes a trailing directory separator.
 	-- Handles both Windows and Linux separators (\ and /):
 	function remove_trailing_directory_separator (
-		path_in : in string) 
+		path_in : in string)
 		return string;
-	
 
-	
-	-- Returns true if given string is a number. 
+
+
+	-- Returns true if given string is a number.
 	-- CS: See body for things to do:
 	function is_number (
-		text : in string) 
+		text : in string)
 		return boolean;
 
 
 
-	
-	
-	-- Extracts a field separated by ifs at position. If trailer is true, the 
+
+
+	-- Extracts a field separated by ifs at position. If trailer is true, the
 	-- trailing content until trailer_to is also returned.
 	function get_field_from_line (
 		text_in 	: in string;
@@ -182,33 +182,33 @@ package et_string_processing is
 		trailer_to 	: in character := latin_1.semicolon)
 		return string;
 
-	
-	
+
+
 	-- This type serves to collect strings. It MUST be a vector, because
 	-- this allows do pick out arbitrary strings by their indexes:
 	package pac_list_of_strings is new indefinite_vectors (
-		index_type		=> positive, 
+		index_type		=> positive,
 		element_type	=> string);
 
 
-	
-	-- This type is required when reading lines from files. 
-	-- It is a composite type whose components are hidden. 
-	-- They can only be accessed by special functions 
+
+	-- This type is required when reading lines from files.
+	-- It is a composite type whose components are hidden.
+	-- They can only be accessed by special functions
 	-- and procedures. See below.
 	type type_fields_of_line is private;
 
 
 
 
-	
+
 	-- Breaks down a given string and returns a type_fields_of_line.
 	function read_line (
 		-- The line to be processed and broken down in fields:
-		line			: in string; 
-						   
-		-- The line number				   
-		number			: in positive := positive'first;	
+		line			: in string;
+
+		-- The line number
+		number			: in positive := positive'first;
 
 		-- The comment mark like "--" or "#":
 		comment_mark	: in string := comment_mark_default;
@@ -228,25 +228,25 @@ package et_string_processing is
 		return type_fields_of_line;
 
 
-	
 
-	
-	
+
+
+
 	-- Appends a field to a line:
 	procedure append_field (
 		line	: in out type_fields_of_line;
 		field	: in string);
 
 
-	
+
 	-- Append right fields to left fields:
 	function append_field (
 		left	: in type_fields_of_line;
-		right	: in type_fields_of_line) 
+		right	: in type_fields_of_line)
 		return type_fields_of_line;
 
 
-	
+
 	-- Remove fields from line:
 	function remove_field (
 		line	: in type_fields_of_line;
@@ -263,48 +263,48 @@ package et_string_processing is
 		content		: in string);
 
 
-	
+
 	procedure invalid_keyword (word : in string);
-	
-	-- Returns the field at the given position. Raises constraint error if there is no 
+
+	-- Returns the field at the given position. Raises constraint error if there is no
 	-- field at given position.
 	function get_field (
 		line		: in type_fields_of_line;
-		position	: in type_field_count_positive) 
+		position	: in type_field_count_positive)
 		return string;
 
 
 	-- This function returns the string at position in given line:
 	-- It is frequently used when reading lines of files.
 	function f (
-		line		: in type_fields_of_line; 
-		position	: in type_field_count_positive) 
+		line		: in type_fields_of_line;
+		position	: in type_field_count_positive)
 		return string renames get_field;
 
 
-	
-	
+
+
 	function to_string (line : in type_fields_of_line) return string;
 
-	
+
 	-- Returns the line number of the given line.
 	function get_line_number (
-		line : in type_fields_of_line) 
+		line : in type_fields_of_line)
 		return positive;
 
-	
+
 	-- Returns the line number of the given line in a string like "line x:"
 	function get_affected_line (
-		line : in type_fields_of_line) 
+		line : in type_fields_of_line)
 		return string;
 
-	
+
 	-- Returns the number of fields in the given line.
 	function get_field_count (
-		line : in type_fields_of_line) 
+		line : in type_fields_of_line)
 		return type_field_count;
 
-	
+
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
 
 
@@ -316,10 +316,10 @@ package et_string_processing is
 		warn			: in boolean := true); 		-- warn if too many fields
 		-- CS output error flag ?
 
-	
+
 private
-	
-	
+
+
 	type type_fields_of_line is record
 		fields		: pac_list_of_strings.vector;
 		field_count	: type_field_count := type_field_count'first; -- number of fields in line
@@ -327,12 +327,12 @@ private
 	end record;
 
 
-		
+
 end et_string_processing;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,32 +59,32 @@ with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 package body et_cp_schematic_assembly_variant is
 
 	use pac_generic_modules;
-	
 
-	
+
+
 	procedure create_assembly_variant (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "create assembly variant", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		case cmd_field_count is
 			when 5 =>
 				create_assembly_variant (
 					module_name		=> key (module),
 					variant_name	=> to_variant (get_field (cmd, 5)),
 					log_threshold	=> log_threshold + 1);
-				
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -97,7 +97,7 @@ package body et_cp_schematic_assembly_variant is
 
 
 
-	
+
 
 	procedure delete_assembly_variant (
 		module			: in pac_generic_modules.cursor;
@@ -105,7 +105,7 @@ package body et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "delete assembly variant", level => log_threshold);
@@ -118,10 +118,10 @@ package body et_cp_schematic_assembly_variant is
 					module_name		=> key (module),
 					variant_name	=> to_variant (get_field (cmd, 5)),
 					log_threshold	=> log_threshold + 1);
-				
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -131,11 +131,11 @@ package body et_cp_schematic_assembly_variant is
 
 
 
-	
 
 
 
-	
+
+
 
 	procedure describe_assembly_variant (
 		module			: in pac_generic_modules.cursor;
@@ -143,7 +143,7 @@ package body et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "describe assembly variant", level => log_threshold);
@@ -157,14 +157,14 @@ package body et_cp_schematic_assembly_variant is
 					variant_name	=> to_variant (get_field (cmd, 5)), -- low_cost
 					description		=> et_assembly_variants.to_unbounded_string (get_field (cmd, 6)), -- "the cheap version"
 					log_threshold	=> log_threshold + 1);
-				
+
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end describe_assembly_variant;
 
@@ -174,7 +174,7 @@ package body et_cp_schematic_assembly_variant is
 
 
 
-	
+
 
 
 	procedure mount_device (
@@ -183,14 +183,14 @@ package body et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		use et_device_name;
 		use et_device_purpose;
 		use et_device_partcode;
 		use et_device_value;
-		
+
 		value : pac_device_value.bounded_string; -- 470R
 		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		purpose : pac_device_purpose.bounded_string; -- brightness_control
@@ -198,13 +198,13 @@ package body et_cp_schematic_assembly_variant is
 		log (text => "mount device", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		-- validate value
 		value := to_value_with_check (get_field (cmd, 7));
 
 		-- validate partcode
 		partcode := to_partcode (get_field (cmd, 8));
-		
+
 		case cmd_field_count is
 			when 8 =>
 				-- set value and partcode
@@ -219,7 +219,7 @@ package body et_cp_schematic_assembly_variant is
 			when 9 =>
 				-- optionally the purpose can be set also
 				purpose := to_purpose (get_field (cmd, 9)); -- brightness_control
-							
+
 				mount_device (
 					module_name		=> key (module),
 					variant_name	=> to_variant (get_field (cmd, 5)), -- low_cost
@@ -228,23 +228,23 @@ package body et_cp_schematic_assembly_variant is
 					partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 					purpose			=> purpose, -- brightness_control
 					log_threshold	=> log_threshold + 1);
-				
-			when 10 .. type_field_count'last => 
+
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 
 		log_indentation_down;
 	end mount_device;
-	
 
 
 
 
 
-	
+
+
 
 	procedure unmount_device (
 		module			: in pac_generic_modules.cursor;
@@ -252,16 +252,16 @@ package body et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_device_name;
 	begin
 		log (text => "unmount device", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
-			when 6 =>									
+			when 6 =>
 				unmount_device
 					(
 					module_name		=> key (module),
@@ -271,7 +271,7 @@ package body et_cp_schematic_assembly_variant is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -283,8 +283,8 @@ package body et_cp_schematic_assembly_variant is
 
 
 
-	
-	
+
+
 
 	procedure remove_device (
 		module			: in pac_generic_modules.cursor;
@@ -292,7 +292,7 @@ package body et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_device_name;
 	begin
@@ -310,22 +310,22 @@ package body et_cp_schematic_assembly_variant is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 
 		log_indentation_down;
 	end remove_device;
-	
-	
+
+
 end et_cp_schematic_assembly_variant;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

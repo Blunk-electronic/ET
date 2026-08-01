@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - clean up, rework
 --
 
@@ -72,12 +72,12 @@ package body et_board_ops_material_pnp is
 
 
 	use pac_devices_electrical;
-	
 
-	
+
+
 	procedure make_pick_and_place (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -87,12 +87,12 @@ package body et_board_ops_material_pnp is
 		use pac_assembly_variant_name;
 
 		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
-			
+
 			-- Here we collect the pick and place data in the first step. It will then
 			-- be passed to procedure et_pick_and_place.write_pnp.
 			pnp : et_pick_and_place.pac_devices.map;
 
-			
+
 			procedure collect (
 			-- Collects devices of the given module and its variant in container pnp.
 			-- Adds to the device index the given offset.
@@ -111,17 +111,17 @@ package body et_board_ops_material_pnp is
 					end if;
 				end;
 
-				
+
 				procedure query_devices (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_generic_module) 
+					module		: in type_generic_module)
 				is
 					device_name : type_device_name;
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
-						et_board_coordinates.type_package_position 
-					is 
+						et_board_coordinates.type_package_position
+					is
 						-- Get the device position in the generic submodule:.
 						device_position : et_board_coordinates.type_package_position := position_generic;
 					begin
@@ -137,7 +137,7 @@ package body et_board_ops_material_pnp is
 						return device_position;
 					end;
 
-					
+
 					procedure test_inserted is begin
 						if not inserted then
 							log (SEVERITY_ERROR, "multiple occurence of device " & to_string (device_name),
@@ -146,8 +146,8 @@ package body et_board_ops_material_pnp is
 						end if;
 					end;
 
-					
-					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is 
+
+					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						use et_device_appearance;
@@ -159,12 +159,12 @@ package body et_board_ops_material_pnp is
 
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
-							
+
 								device_name := pac_devices_electrical.key (cursor_schematic);
 
 								-- Store device in pnp list as it is:
 								apply_offset (device_name, offset, log_threshold + 2);
-								
+
 								et_pick_and_place.pac_devices.insert (
 									container	=> pnp,
 									key			=> device_name, -- IC4, R3
@@ -176,7 +176,7 @@ package body et_board_ops_material_pnp is
 		-- 								packge		=> package_model (cursor_schematic)),
 									position	=> cursor_pnp,
 									inserted	=> inserted);
-								
+
 								test_inserted;
 
 							end if;
@@ -184,16 +184,16 @@ package body et_board_ops_material_pnp is
 					end query_properties_default;
 
 
-					
+
 					procedure query_properties_variants (
-						cursor_schematic : in pac_devices_electrical.cursor) 
-					is 
+						cursor_schematic : in pac_devices_electrical.cursor)
+					is
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_device_appearance;
-						
+
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance PCB)
@@ -201,15 +201,15 @@ package body et_board_ops_material_pnp is
 
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
-													
+
 								device_name := pac_devices_electrical.key (cursor_schematic);
-								
+
 								-- Get a cursor to the alternative device as specified in the assembly variant:
-								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name); 
-								
+								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name);
+
 								if alt_dev_cursor = et_assembly_variants.pac_device_variants.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in pnp list as it is:
-								
+
 									apply_offset (device_name, offset, log_threshold + 2);
 
 									et_pick_and_place.pac_devices.insert (
@@ -218,7 +218,7 @@ package body et_board_ops_material_pnp is
 										new_item	=> (
 											position	=> apply_position_in_board (element (cursor_schematic).position)),
 	-- 										value		=> element (cursor_schematic).value,
-	-- 										partcode	=> element (cursor_schematic).partcode,	
+	-- 										partcode	=> element (cursor_schematic).partcode,
 	-- 										purpose		=> element (cursor_schematic).purpose,
 	-- 										packge		=> package_model (cursor_schematic)),
 										position	=> cursor_pnp,
@@ -234,7 +234,7 @@ package body et_board_ops_material_pnp is
 										when NO =>
 											log (text => to_string (device_name) & " not mounted -> skipped",
 												level => log_threshold + 2);
-											
+
 										when YES =>
 											apply_offset (device_name, offset, log_threshold + 2);
 
@@ -261,21 +261,21 @@ package body et_board_ops_material_pnp is
 						end if;
 					end query_properties_variants;
 
-					
+
 				begin -- query_devices
 					-- if default variant given, then assembly variants are irrelevant:
 					if is_default (variant) then
 
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
-								" default variant by applying device index offset" & 
+								" default variant by applying device index offset" &
 								to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
 
 						log_indentation_up;
-						
+
 						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_default'access);
@@ -285,36 +285,36 @@ package body et_board_ops_material_pnp is
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
 								" variant " & enclose_in_quotes (to_variant (variant)) &
-								" by applying device index offset" & 
+								" by applying device index offset" &
 								to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
 
 						log_indentation_up;
-						
+
 						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_variants'access);
 
 					end if;
-					
+
 					log_indentation_down;
 				end query_devices;
 
-				
+
 			begin
 				query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
-				
+
 			end collect;
 
-			
+
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
 			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
-			
+
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> pac_renumber_modules.cursor,
@@ -324,7 +324,7 @@ package body et_board_ops_material_pnp is
 			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
-			
+
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
@@ -335,10 +335,10 @@ package body et_board_ops_material_pnp is
 			-- This is the position of the submodule in the board (usually its lower left corner):
 			position_in_board : type_position := origin_zero_rotation;
 
-			
+
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
-			procedure query_submodules is 
+			procedure query_submodules is
 				use pac_renumber_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
@@ -404,10 +404,10 @@ package body et_board_ops_material_pnp is
 					-- and the position_in_board of the current submodule:
 					--move_by (position_in_board, to_distance_relative (get_position (parent_name, module_instance)));
 					move_by (position_in_board.place, get_position (parent_name, module_instance).place);
-					
+
 					-- CS position_in_board must be rotated according to rotation specified where
-					-- the submodule has been instanciated. 
-					
+					-- the submodule has been instanciated.
+
 					-- collect devices from current module
 					collect (
 						module_cursor		=> locate_module (module_name),
@@ -416,15 +416,15 @@ package body et_board_ops_material_pnp is
 						position_in_board	=> position_in_board -- the position of the submodule inside the parent module
 						);
 
-					if first_child (tree_cursor) = pac_renumber_modules.no_element then 
+					if first_child (tree_cursor) = pac_renumber_modules.no_element then
 					-- No submodules on the current level. means we can't go deeper:
-						
+
 						log_indentation_up;
 						log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
 						log_indentation_down;
 					else
 					-- There are submodules on the current level:
-						
+
 						-- backup the cursor to the current submodule on this level
 						stack_level.push (tree_cursor);
 
@@ -443,10 +443,10 @@ package body et_board_ops_material_pnp is
 
 					-- restore the position_in_board of this submodule
 					position_in_board := stack_position_in_board.pop;
-					
+
 					next_sibling (tree_cursor); -- next submodule on this level
 				end loop;
-				
+
 				log_indentation_down;
 
 			exception
@@ -454,9 +454,9 @@ package body et_board_ops_material_pnp is
 					log_indentation_reset;
 					log (text => ada.exceptions.exception_information (event), console => true);
 					raise;
-				
+
 			end query_submodules;
-				
+
 
 		begin -- make_for_variant
 			if is_default (variant_name) then
@@ -477,18 +477,18 @@ package body et_board_ops_material_pnp is
 				variant				=> variant_name,
 				offset				=> 0,
 				position_in_board	=> origin_zero_rotation -- zero x/x/rotation
-				); 
-			
+				);
+
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
 			tree_cursor := pac_renumber_modules.root (submod_tree);
-			
+
 			stack_level.init;
 			stack_variant.init;
 			stack_position_in_board.init;
-			
+
 			-- collect devices of the submodules
 			query_submodules;
 
@@ -499,22 +499,22 @@ package body et_board_ops_material_pnp is
 				variant_name	=> variant_name,	-- low_cost
 				-- format	=> NATIVE			-- CS: should be an argument in the future
 				log_threshold	=> log_threshold + 1);
-			
+
 			log_indentation_down;
 		end make_for_variant;
 
-		
+
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
 			use pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
 
-		
+
 	begin -- make_pick_and_place
 		log (text => "generating pick & place data ...", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 
@@ -529,7 +529,7 @@ package body et_board_ops_material_pnp is
 
 		-- make p&p of other variants
 		iterate (element (module_cursor).assembly_variants.variants, query_variant'access);
-		
+
 		log_indentation_down;
 
 		exception
@@ -537,17 +537,17 @@ package body et_board_ops_material_pnp is
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
-		
+
 	end make_pick_and_place;
 
-	
+
 
 end et_board_ops_material_pnp;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

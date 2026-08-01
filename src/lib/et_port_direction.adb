@@ -47,28 +47,28 @@ package body et_port_direction is
 
 
 	function to_string (
-		direction : in type_port_direction) 
-		return string 
+		direction : in type_port_direction)
+		return string
 	is begin
 		return to_lower (type_port_direction'image (direction));
 	end;
 
 
-	
+
 	function to_port_direction (
-		direction : in string) 
-		return type_port_direction 
+		direction : in string)
+		return type_port_direction
 	is begin
 		return type_port_direction'value (direction);
 	end;
 
-	
-	
+
+
 end et_port_direction;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

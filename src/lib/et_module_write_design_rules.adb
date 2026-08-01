@@ -60,17 +60,17 @@ package body et_module_write_design_rules is
 	use pac_generic_modules;
 
 
-	
+
 
 	procedure write_design_rules (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			rules : constant type_design_rules := get_design_rules (module);
 		begin
@@ -84,17 +84,17 @@ package body et_module_write_design_rules is
 			end if;
 
 			-- CS schematic rules
-			
+
 			section_mark (section_rules, FOOTER);
 		end;
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " write design rules",
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_module'access);
 
 		log_indentation_down;
@@ -102,14 +102,14 @@ package body et_module_write_design_rules is
 
 
 
-	
-	
+
+
 end et_module_write_design_rules;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

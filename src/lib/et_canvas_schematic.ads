@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- This package draws the schematic via various child packages.
 -- This package instantiates the generic canvas package (et_canvas_general.pac_canvas)
 -- and extends the type_view by the type_drawing. The latter is the link
@@ -84,10 +84,10 @@ with et_canvas.schematic_net_ops;
 
 
 package et_canvas_schematic is
-	
+
 	use pac_generic_modules;
 
-	
+
 	-- In the title bar of the main window follwing information
 	-- should be displayed:
 	-- - system name like ET
@@ -97,27 +97,27 @@ package et_canvas_schematic is
 	-- This procedure sets the title bar according to
 	-- the given project and module name:
 	procedure set_title_bar (
-		-- CS project name								
+		-- CS project name
 		module		: in pac_generic_modules.cursor);
 
 
 	-- Updates the verb/noun display:
 	procedure update_mode_display;
 
-	
+
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas (
 		canvas_name			=> "schematic", -- CS provide domain name like scripting.type_domain
 		pac_geometry		=> et_schematic_geometry.pac_geometry_2,
-		pac_grid			=> et_schematic_geometry.pac_grid,								
+		pac_grid			=> et_schematic_geometry.pac_grid,
 		pac_path			=> et_schematic_geometry.pac_path_and_bend,
 		pac_offsetting		=> et_schematic_geometry.pac_polygon_offsetting,
 		pac_polygons		=> et_schematic_geometry.pac_polygons,
 		pac_contours		=> et_schematic_geometry.pac_contours,
 		pac_text			=> et_schematic_text.pac_text_schematic,
 		pac_text_vectorized	=> et_schematic_text.pac_text_schematic_vectorized);
-		
-	
+
+
 	use pac_canvas;
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
@@ -126,7 +126,7 @@ package et_canvas_schematic is
 
 	package pac_device_ops is new pac_canvas.schematic_device_ops;
 	package pac_net_ops is new pac_canvas.schematic_net_ops;
-	
+
 
 	-- This procedure parses the whole database of model objects
 	-- and the primitive objects of the drawing frame,
@@ -142,55 +142,55 @@ package et_canvas_schematic is
 	--
 	-- The arguments can be used to:
 	-- - Abort on first error. Means NOT to parse the whole database but to
-	--   abort the parsing on the first violation of the maximal allowed 
+	--   abort the parsing on the first violation of the maximal allowed
 	--   dimensions (width and height).
 	-- - Ignore errors. Means to generate a bounding-box that might be
 	--   wider or taller than actually allowed. This is useful for debugging
-	--   and testing the effects of violations of maximal bounding-box 
+	--   and testing the effects of violations of maximal bounding-box
 	--   dimensions.
 	-- - Test only. Means to simulate the compuation of the bounding-box only.
 	--   The global variable bounding_box will NOT be touched in any case.
 	procedure compute_bounding_box (
-		abort_on_first_error	: in boolean := false; 
+		abort_on_first_error	: in boolean := false;
 		-- CS currently not implemented
-		
+
 		ignore_errors			: in boolean := false;
 		test_only				: in boolean := false);
 
-	
-	
+
+
 	-- This procedure sets the global zoom factor S and translate-offset T
 	-- so that all objects of bounding-box fit into the scrolled window.
 	-- The zoom center is the top-left corner of bounding-box.
 	procedure zoom_to_fit_all;
 
 
-	-- This callback procedure is called each time the 
+	-- This callback procedure is called each time the
 	-- button "zoom fit" is clicked.
 	procedure cb_zoom_to_fit (
 		button : access gtk_button_record'class);
 
 
-	-- This callback procedure is called each time the 
+	-- This callback procedure is called each time the
 	-- button "zoom area" is clicked.
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class);
 
-	
+
 	-- Connects additional button signals with subprograms:
 	procedure set_up_command_buttons;
-	
+
 
 	-- This function is called each time the operator
 	-- hits a key on the keyboard. It does not matter
 	-- which widget inside the main window has the focus.
 	-- This callback function is at the top of the event-chain.
 	-- It is called at first on a key-press event.
-	-- If it returns false, then it signals to the 
+	-- If it returns false, then it signals to the
 	-- next widget in the chain downwards to handle the event
 	-- further.
 	-- The return should depend on the severity of the key.
-	-- For example in case of an "emergency-exit" 
+	-- For example in case of an "emergency-exit"
 	-- the operator hits the ESC key, which causes the abort of
 	-- all pending operations. In this case the return would be true
 	-- and the event would not be passed on to any widgets down
@@ -199,14 +199,14 @@ package et_canvas_schematic is
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 
 	-- Connects additional key signals with subprograms:
 	procedure set_up_main_window;
-	
 
-	-- This function is called each time the canvas 
+
+	-- This function is called each time the canvas
 	-- is to be refreshed.
 	-- It is called by the signal "on_draw" emitted by the canvas.
 	-- The connection is set up in procedure set_up_canvas.
@@ -223,9 +223,9 @@ package et_canvas_schematic is
 
 
 -- UNDO / REDO:
-	
+
 	procedure undo;
-	
+
 	procedure redo;
 
 
@@ -235,7 +235,7 @@ package et_canvas_schematic is
 
 	-- This procedure resets a lot of stuff and should
 	-- be called when the operator presses the ESCAPE key.
-	-- Here the commands to abort any pending 
+	-- Here the commands to abort any pending
 	-- operations related to the canvas can be found.
 	-- Reset or cleared are those things:
 	-- - proposed objects
@@ -245,22 +245,22 @@ package et_canvas_schematic is
 	-- - status bar
 	procedure reset;
 	-- CS add parameter to enforce a full reset
-	
-	
+
+
 
 -- SAVE MODULE:
 
 	status_text_module_saved : constant string := "Module saved.";
 
-	-- This procedure saves the current_active_module 
+	-- This procedure saves the current_active_module
 	-- in its file:
 	procedure save_module;
 
 
-	
 
-	
-	
+
+
+
 	-- This callback function is called each time the
 	-- operator hits a key and if the canvas has the focus:
 	function cb_canvas_key_pressed (
@@ -289,7 +289,7 @@ package et_canvas_schematic is
 
 
 
-	
+
 	-- This callback function is called each time the operator
 	-- moves the pointer (or the mouse) inside the canvas:
 	function cb_canvas_mouse_moved (
@@ -298,14 +298,14 @@ package et_canvas_schematic is
 		return boolean;
 
 
-	
+
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;
 
-	
+
 
 -- SHEET:
-	
+
 	box_sheet		: gtk_vbox;
 	label_sheet		: gtk_label;
 	cbox_sheet		: gtk_combo_box_text;
@@ -313,35 +313,35 @@ package et_canvas_schematic is
 	procedure update_sheet_number_display;
 	procedure build_sheet_number_display;
 
-	
 
 
-	
+
+
 
 -- CONSOLE:
-	
+
 	procedure connect_console;
 
 
-	
-	-- Composes a console command like 
+
+	-- Composes a console command like
 	-- "schematic motor_driver execute script my_script.scr"
 	-- and sends it to procedure et_scripting.schematic_cmd
 	-- to be executed.
 	-- Resets verb and noun in all domains:
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string);	
+		script : in pac_script_name.bounded_string);
 
-	
+
 	-- Executes a command as typed on the console by the operator
 	-- like "rename device R1 R2".
 	-- Changes into the directory as indicated by current_active_module.
-	-- Calls et_scripting.execute_schematic_command for the actual execution.	
+	-- Calls et_scripting.execute_schematic_command for the actual execution.
 	procedure execute_command (self : access gtk_entry_record'class);
 
 
-	
--- 	label_console_text : constant string := 
+
+-- 	label_console_text : constant string :=
 -- 		(8 * " ") & "switch module: F11 / F12";
 
 
@@ -358,35 +358,35 @@ package et_canvas_schematic is
 	procedure redraw;
 
 
-	
+
 
 -- MODULE SELECT:
 
 	type type_module_select is (NEXT, PREVIOUS);
 
-	
+
 	-- Updates title bars, grid display, sheet number display
-	-- of the schematic editor window according to the 
-	-- current active module and sheet:	
+	-- of the schematic editor window according to the
+	-- current active module and sheet:
 	procedure update_schematic_editor;
 
 
 
 	-- Switches between modules in the order as specified
-	-- by argument sel. 
+	-- by argument sel.
 	-- - If sel is NEXT:
 	--   Advances no previous generic module. If there is no
-	--   previous module, selects the last module of 
+	--   previous module, selects the last module of
 	--   collection of generic modules.
 	-- - If sel is PREVIOUS:
 	--   Advances no next generic module. If there is no
-	--   next module, selects the first module of 
+	--   next module, selects the first module of
 	--   collection of generic modules:
 	procedure switch_module (
 		sel : in type_module_select);
 
-	
-	
+
+
 
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.
@@ -395,12 +395,12 @@ package et_canvas_schematic is
 	procedure set_module (
 		module	: in pac_module_name.bounded_string); -- motor_driver
 
-	
+
 end et_canvas_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

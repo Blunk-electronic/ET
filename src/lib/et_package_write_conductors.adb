@@ -61,57 +61,57 @@ package body et_package_write_conductors is
 
 	use pac_geometry_2;
 	use pac_file_rw;
-	
+
 	use et_conductor_segment;
-	
+
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
 	use pac_conductor_texts;
-	
-	
+
+
 
 	procedure write_conductors (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
-	
-		procedure write_line (cursor : in pac_conductor_lines.cursor) is 
+
+		procedure write_line (cursor : in pac_conductor_lines.cursor) is
 			line : type_conductor_line renames element (cursor);
 		begin
 			section_mark (section_line, HEADER);
 			write_line (element (cursor));
-			
-			write (keyword => keyword_width, 
+
+			write (keyword => keyword_width,
 				parameters => to_string (line.width));
-			
+
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is
 			arc : type_conductor_arc renames element (cursor);
 		begin
 			section_mark (section_arc , HEADER);
 			write_arc (element (cursor));
 
-			write (keyword => keyword_width, 
+			write (keyword => keyword_width,
 				parameters => to_string (arc.width));
-			
+
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_conductor_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_conductor_circles.cursor) is
 			circle : type_conductor_circle renames element (cursor);
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (circle);
-			
-			write (keyword => keyword_width, 
+
+			write (keyword => keyword_width,
 				parameters => to_string (circle.width));
-			
-			section_mark (section_circle, FOOTER);		
+
+			section_mark (section_circle, FOOTER);
 		end write_circle;
 
 
@@ -124,14 +124,14 @@ package body et_package_write_conductors is
 		end write_text;
 
 
-		
+
 	begin
 		log (text => "write conductors", level => log_threshold);
 
 		section_mark (section_conductor, HEADER);
 
 		-- top
-		section_mark (section_top, HEADER);			
+		section_mark (section_top, HEADER);
 		iterate (packge.conductors.top.lines, write_line'access);
 		iterate (packge.conductors.top.arcs, write_arc'access);
 		iterate (packge.conductors.top.circles, write_circle'access);
@@ -140,17 +140,17 @@ package body et_package_write_conductors is
 		section_mark (section_top, FOOTER);
 
 		-- bottom
-		section_mark (section_bottom, HEADER);			
+		section_mark (section_bottom, HEADER);
 		iterate (packge.conductors.bottom.lines, write_line'access);
 		iterate (packge.conductors.bottom.arcs, write_arc'access);
 		iterate (packge.conductors.bottom.circles, write_circle'access);
-		iterate (packge.conductors.bottom.texts, write_text'access);			
+		iterate (packge.conductors.bottom.texts, write_text'access);
 		-- CS zones
 		section_mark (section_bottom, FOOTER);
 
 		section_mark (section_conductor, FOOTER);
-	
+
 	end write_conductors;
 
-	
+
 end et_package_write_conductors;

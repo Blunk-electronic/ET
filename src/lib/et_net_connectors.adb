@@ -45,43 +45,43 @@ with et_keywords;						use et_keywords;
 
 package body et_net_connectors is
 
-	
+
 	function to_string (direction : in type_connector_direction) return string is begin
 		return to_lower (type_connector_direction'image (direction));
 	end;
 
-	
+
 	function to_direction (direction : in string) return type_connector_direction is begin
 		return type_connector_direction'value (direction);
 	end;
 
 
 
-	
 
-	
+
+
 	procedure make_net_connector (
 		arguments	: in type_fields_of_line;
 		error		: out boolean;
 		connector	: out type_net_connector)
 	is
 
-		function f (place : in type_field_count_positive) 
-			return string 
+		function f (place : in type_field_count_positive)
+			return string
 		is begin
 			return to_lower (get_field (arguments, place));
 		end;
-		
+
 	begin
 		error := false;
-		
+
 		-- Iterate all fields of given list of arguments:
-		-- P points to the place in arguments at which we 
+		-- P points to the place in arguments at which we
 		-- fetch a field from.
 		-- If something goes wrong, then the error-flag is
 		-- set and the iteration cancelled:
 		for p in 1 .. get_field_count (arguments) loop
-			
+
 			case p is
 				when 1 => -- direction
 					if f (p) /= keyword_direction then
@@ -92,16 +92,16 @@ package body et_net_connectors is
 				when 2 => -- input
 					connector.direction := to_direction (f (p));
 
-				when others =>					
+				when others =>
 					error := true;
 					exit;
 			end case;
 		end loop;
 	end make_net_connector;
 
-	
 
-	
+
+
 
 	function to_string (
 		connector : in type_net_connector)
@@ -113,10 +113,10 @@ package body et_net_connectors is
 			return "inactive";
 		end if;
 	end;
-		
 
 
-	
+
+
 
 	function get_direction (
 		connector	: in type_net_connector)
@@ -134,9 +134,9 @@ package body et_net_connectors is
 	end;
 
 
-	
 
-	
+
+
 
 	procedure modify_status (
 		connector 	: in out type_net_connector;
@@ -147,7 +147,7 @@ package body et_net_connectors is
 		end if;
 	end;
 
-	
+
 
 	procedure reset_status (
 		labels : in out type_net_connectors)
@@ -155,14 +155,14 @@ package body et_net_connectors is
 		if labels.A.active then
 			reset_status (labels.A.status);
 		end if;
-		
+
 		if labels.B.active then
 			reset_status (labels.B.status);
 		end if;
 	end;
-	
 
-	
+
+
 
 	function is_active (
 		connector : in type_net_connector)
@@ -170,7 +170,7 @@ package body et_net_connectors is
 	is begin
 		return connector.active;
 	end;
-	
+
 
 	procedure set_active (
 		connector : in out type_net_connector)
@@ -191,7 +191,7 @@ package body et_net_connectors is
 		end if;
 	end;
 
-	
+
 
 	procedure set_proposed (
 		connector : in out type_net_connector)
@@ -210,7 +210,7 @@ package body et_net_connectors is
 		end if;
 	end;
 
-	
+
 
 
 
@@ -225,7 +225,7 @@ package body et_net_connectors is
 		end if;
 	end;
 
-	
+
 
 	procedure set_selected (
 		connector : in out type_net_connector)
@@ -257,7 +257,7 @@ package body et_net_connectors is
 			return false;
 		end if;
 	end;
-	
+
 
 	procedure set_moving (
 		connector : in out type_net_connector)
@@ -275,9 +275,9 @@ package body et_net_connectors is
 			clear_moving (connector.status);
 		end if;
 	end;
-	
-	
-	
+
+
+
 	procedure reset_connector (
 		connector : in out type_net_connector)
 	is begin
@@ -285,13 +285,13 @@ package body et_net_connectors is
 	end;
 
 
-	
-	
+
+
 end et_net_connectors;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

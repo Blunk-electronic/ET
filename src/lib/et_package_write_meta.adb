@@ -51,25 +51,25 @@ with et_file_write;						use et_file_write;
 
 package body et_package_write_meta is
 
-	
+
 
 	procedure write_meta (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is begin
 		log (text => "write meta data", level => log_threshold);
-		
-		write (keyword => keyword_description, wrap => true, 
+
+		write (keyword => keyword_description, wrap => true,
 			   parameters => to_string (packge.description));
 
-		write (keyword => keyword_bom_relevant, 
+		write (keyword => keyword_bom_relevant,
 			   parameters => to_string (packge.appearance));
-		
-		write (keyword => keyword_assembly_technology, 
+
+		write (keyword => keyword_assembly_technology,
 			   parameters => to_string (packge.technology));
 
 
 	end write_meta;
-			
-	
+
+
 end et_package_write_meta;

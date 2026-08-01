@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- 
+--
 -- To Do:
 -- - clean up
 --
@@ -70,42 +70,42 @@ with et_device_read_package_variant;	use et_device_read_package_variant;
 
 
 package body et_device_read is
-	
+
 
 	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;
 		use et_device_value;
 		use et_device_prefix;
-		
+
 		file_handle : ada.text_io.file_type;
 
 		line : type_fields_of_line;
 
-		
+
 		-- This is the sections stack of the device model:
 		max_section_depth : constant positive := 6;
-		
+
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
-		
-		
-		
+
+
+
 		-- VARIABLES FOR TEMPORARILY STORAGE:
-		
+
 		prefix		: pac_device_prefix.bounded_string; -- T, IC
 		value		: pac_device_value.bounded_string; -- BC548
 		partcode	: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		-- NOTE: Please find other global variables in
 		-- package spec et_device_read_unit.
-		
 
-		
+
+
 		-- CS: should be outside of procedure read_device.
 		-- This procedure reads general meta information
 		-- of the device model:
@@ -126,7 +126,7 @@ package body et_device_read is
 				prefix := to_prefix (f (line, 2));
 				check_prefix_characters (prefix);
 				log (text => "prefix " & to_string (prefix), level => log_threshold);
-				
+
 				if not et_conventions.prefix_valid (prefix) then
 					--log (message_warning & "prefix of device model " &
 					--	 to_string (file_name) & " not conformant with conventions !");
@@ -147,20 +147,20 @@ package body et_device_read is
 					log_indentation_reset;
 					value_invalid (to_string (value));
 				end if;
-				
+
 				log (text => "value " & to_string (value), level => log_threshold);
 
 			elsif kw = keyword_appearance then -- appearance virtual/pcb
 				expect_field_count (line, 2);
 				appearance := to_appearance (f (line, 2));
-				log (text => "appearance " & to_string (appearance), level => log_threshold);								
+				log (text => "appearance " & to_string (appearance), level => log_threshold);
 
 			elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 				expect_field_count (line, 2);
 
 				-- validate partcode length
 				partcode := to_partcode (f (line, 2));
-				
+
 				log (text => "partcode " & to_string (partcode), level => log_threshold);
 			else
 				invalid_keyword (kw);
@@ -168,12 +168,12 @@ package body et_device_read is
 		end read_meta;
 
 
-		
+
 
 		-- CS: should be outside of procedure read_device.
 		-- Assemble the final device and add
 		-- it to the device library:
-		procedure add_device_model_to_library is 
+		procedure add_device_model_to_library is
 			use et_conventions;
 		begin
 			case appearance is
@@ -185,13 +185,13 @@ package body et_device_read is
 					if pac_device_value.length (value) > 0 then
 						if not value_valid (value, prefix) then
 							log (SEVERITY_WARNING, "default value of device model " &
-								to_string (file_name) & 
+								to_string (file_name) &
 								" not conformant with conventions !");
 						end if;
 					end if;
 
 					pac_device_models.insert (
-						container	=> device_library, 
+						container	=> device_library,
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
 								appearance		=> APPEARANCE_PCB,
@@ -201,12 +201,12 @@ package body et_device_read is
 								value			=> value,
 								--partcode		=> partcode,
 								variants		=> variants));
-								
+
 
 
 				when APPEARANCE_VIRTUAL =>
 					pac_device_models.insert (
-						container	=> device_library, 
+						container	=> device_library,
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (
 								appearance		=> APPEARANCE_VIRTUAL,
@@ -216,118 +216,118 @@ package body et_device_read is
 
 			end case;
 
-			
+
 			-- clean up for next device:
 			variants.clear;
 			units_internal.clear;
 			units_external.clear;
 		end add_device_model_to_library;
 
-		
-		
-		
-		
-		
-		procedure process_line is 
-			
+
+
+
+
+
+		procedure process_line is
+
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
-				
+
 			begin
 				case pac_sections_stack.current is
 
-					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
+					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_VARIANT =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANTS => insert_package_variant (log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TERMINAL_PORT_MAP =>
 						case pac_sections_stack.parent is
-							when SEC_VARIANT => assign_terminal_port_map;								
+							when SEC_VARIANT => assign_terminal_port_map;
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_UNIT =>
 						case pac_sections_stack.parent is
 							when SEC_UNITS_INTERNAL => insert_unit_internal (symbol_model, log_threshold + 1);
-							when SEC_UNITS_EXTERNAL => insert_unit_external (log_threshold + 1);								
+							when SEC_UNITS_EXTERNAL => insert_unit_external (log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_SYMBOL =>
 						case pac_sections_stack.parent is
 							when SEC_UNIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_DRAW =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null;  -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_LINE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => insert_body_line (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_ARC =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW => insert_body_arc (symbol_model, log_threshold + 1);								
+							when SEC_DRAW => insert_body_arc (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => insert_body_circle (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXTS =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
 							when SEC_TEXTS => insert_text (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDERS =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => insert_placeholder (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PORTS =>
-						case pac_sections_stack.parent is 
+						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PORT =>
 						case pac_sections_stack.parent is
 							when SEC_PORTS => insert_port (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_INIT => null; -- CS: should never happen
 
 					when others => invalid_section;
@@ -335,7 +335,7 @@ package body et_device_read is
 
 			end execute_section;
 
-			
+
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -343,7 +343,7 @@ package body et_device_read is
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [UNIT
 				section			: in type_file_section) -- SEC_UNIT
-				return boolean 
+				return boolean
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
@@ -359,11 +359,11 @@ package body et_device_read is
 							log_indentation_reset;
 							invalid_section;
 						end if;
-						
+
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
-						
+
 						pac_sections_stack.pop;
 						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
@@ -382,18 +382,18 @@ package body et_device_read is
 				end if;
 			end set;
 
-			
+
 		begin -- process_line
 			if set (section_variants, SEC_VARIANTS) then null;
 			elsif set (section_variant, SEC_VARIANT) then null;
 			elsif set (section_terminal_port_map, SEC_TERMINAL_PORT_MAP) then null;
 			elsif set (section_units_internal, SEC_UNITS_INTERNAL) then null;
-			elsif set (section_units_external, SEC_UNITS_EXTERNAL) then null;			
+			elsif set (section_units_external, SEC_UNITS_EXTERNAL) then null;
 			elsif set (section_unit, SEC_UNIT) then null;
 			elsif set (section_symbol, SEC_SYMBOL) then null;
-			elsif set (section_draw, SEC_DRAW) then null;			
-			elsif set (section_line, SEC_LINE) then null;								
-			elsif set (section_arc, SEC_ARC) then null;								
+			elsif set (section_draw, SEC_DRAW) then null;
+			elsif set (section_line, SEC_LINE) then null;
+			elsif set (section_arc, SEC_ARC) then null;
 			elsif set (section_circle, SEC_CIRCLE) then null;
 			elsif set (section_texts, SEC_TEXTS) then null;
 			elsif set (section_text, SEC_TEXT) then null;
@@ -402,36 +402,36 @@ package body et_device_read is
 			elsif set (section_ports, SEC_PORTS) then null;
 			elsif set (section_port, SEC_PORT) then null;
 			else
-				-- The line contains something else -> the payload data. 
+				-- The line contains something else -> the payload data.
 				-- Temporarily this data is stored in corresponding variables.
 
 				log (text => "device line --> " & to_string (line), level => log_threshold + 3);
-		
+
 				case pac_sections_stack.current is
-					when SEC_INIT => read_meta (line, log_threshold + 1);						
-						
-					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
+					when SEC_INIT => read_meta (line, log_threshold + 1);
+
+					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL =>
 						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_VARIANT =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANTS => read_package_variant (line, check_layers, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_TERMINAL_PORT_MAP =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANT =>
 								read_terminal_port_assignment (line, log_threshold);
-							
+
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_UNIT =>
 						case pac_sections_stack.parent is
 							when SEC_UNITS_INTERNAL => read_unit_internal (line);
@@ -439,7 +439,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_SYMBOL =>
 						case pac_sections_stack.parent is
 							when SEC_UNIT =>
@@ -447,98 +447,98 @@ package body et_device_read is
 									when SEC_UNITS_INTERNAL => null;
 									when others => invalid_section;
 								end case;
-								
+
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_DRAW =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null;  -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_LINE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => read_body_line (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_ARC =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => read_body_arc (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
 							when SEC_DRAW => read_body_circle (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXTS =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
 							when SEC_TEXTS => read_text (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDERS =>
 						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PORTS =>
-						case pac_sections_stack.parent is 
+						case pac_sections_stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-						
+
 					when SEC_PORT =>
 						case pac_sections_stack.parent is
 							when SEC_PORTS => read_port (line);
 							when others => invalid_section;
 						end case;
-						
+
 					when others => invalid_section;
 				end case;
 			end if;
 
-			
+
 			exception when others =>
-				log (text => "file " & to_string (file_name) & space 
+				log (text => "file " & to_string (file_name) & space
 					 & get_affected_line (line) & to_string (line), console => true);
 				raise;
-			
+
 		end process_line;
 
-		
-		
+
+
 		previous_input : ada.text_io.file_type renames current_input;
 
-		
-		
+
+
 	begin
 		log_indentation_up;
 		log (text => "read device model " & to_string (file_name),
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		-- CS clean up below:
-		
+
 		-- test if container device_library already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		if pac_device_models.contains (device_library, file_name) then
@@ -554,7 +554,7 @@ package body et_device_read is
 					-- open device model file
 					open (
 						file => file_handle,
-						mode => in_file, 
+						mode => in_file,
 						name => file);
 
 				else
@@ -564,14 +564,14 @@ package body et_device_read is
 				end if;
 			end;
 
-			
+
 			set_input (file_handle);
-			
+
 			-- Init section pac_sections_stack.
 			pac_sections_stack.init;
 			pac_sections_stack.push (SEC_INIT);
 
-			
+
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
@@ -587,35 +587,35 @@ package body et_device_read is
 				end if;
 			end loop;
 
-			
+
 			-- As a safety measure the top section must be reached finally.
-			if pac_sections_stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then
 				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 
-			
+
 			set_input (previous_input);
 			close (file_handle);
-			
-			add_device_model_to_library;			
+
+			add_device_model_to_library;
 		end if;
 
-		
+
 		-- CS Check integrity of device: port terminal map, positions of units, ...
 		-- (style guides, conventions ...)
 		-- use function "last" to fetch latest device
 
 		log_indentation_down;
-		log_indentation_down;		
+		log_indentation_down;
 
 		exception when others =>
-			if is_open (file_handle) then 
+			if is_open (file_handle) then
 				set_input (previous_input);
-				close (file_handle); 
+				close (file_handle);
 			end if;
 			raise;
 
 	end read_device;
 
-	
+
 end et_device_read;

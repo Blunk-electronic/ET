@@ -66,23 +66,23 @@ package body et_schematic_ops_netlists is
 
 	use et_netchangers;
 	use pac_netchangers;
-	
+
 	use et_submodules.pac_submodules;
 
-	
-	
-	
-	
+
+
+
+
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
-		return pac_device_ports_extended.set 
+		return pac_device_ports_extended.set
 	is
 		ports_extended : pac_device_ports_extended.set; -- to be returned
 
 		use pac_device_ports;
 
-		
+
 		procedure query_ports (port_cursor : in pac_device_ports.cursor) is
 			port_sch		: type_device_port := element (port_cursor);
 			more_properties	: type_port_properties_access;
@@ -95,16 +95,16 @@ package body et_schematic_ops_netlists is
 			-- Get further properties of the current port if the device
 			-- is real (appears in PCB):
 			if is_real (device_cursor) then
-				
+
 				more_properties := get_port_properties (
-					module_cursor	=> module_cursor, 
-					device_name		=> port_sch.device_name, 
+					module_cursor	=> module_cursor,
+					device_name		=> port_sch.device_name,
 					unit_name		=> port_sch.unit_name,
 					port_name		=> port_sch.port_name);
-				
+
 				pac_device_ports_extended.insert (
 					container	=> ports_extended,
-					new_item	=> 
+					new_item	=>
 						(
 						direction		=> more_properties.direction, -- CS
 						device			=> port_sch.device_name, -- IC1
@@ -115,39 +115,39 @@ package body et_schematic_ops_netlists is
 			end if;
 		end query_ports;
 
-		
+
 	begin -- extend_ports
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
 
-	
-	
 
 
-	
+
+
+
 	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
 	-- The submodule must exist in the module.
 	function port_direction (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string) -- clock_out
-		return type_netchanger_port_name 
+		return type_netchanger_port_name
 	is
 		use et_submodules;
 		direction : type_netchanger_port_name; -- to be returned
 
-		
+
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			submod_cursor : pac_submodules.cursor;
 
-			
+
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submod		: in et_submodules.type_submodule) 
+				submod		: in et_submodules.type_submodule)
 			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
@@ -157,7 +157,7 @@ package body et_schematic_ops_netlists is
 				direction := element (port_cursor).direction;
 			end query_ports;
 
-			
+
 		begin -- query_submodules
 			-- locate submodule in schematic
 			submod_cursor := find (module.submods, submod_instance);
@@ -165,26 +165,26 @@ package body et_schematic_ops_netlists is
 			query_element (submod_cursor, query_ports'access);
 		end query_submodules;
 
-		
+
 	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
-		
+
 		return direction;
 	end port_direction;
 
 
-	
 
 
-	
 
-	
+
+
+
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set 
+		return pac_submodule_ports_extended.set
 	is
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
@@ -199,16 +199,16 @@ package body et_schematic_ops_netlists is
 
 			pac_submodule_ports_extended.insert (
 				container	=> ports_extended,
-				new_item	=> 
+				new_item	=>
 					(
 					module		=> port.module_name, -- OSC1
 					port		=> port.port_name, -- clock_out
 					direction	=> direction -- master/slave
 					)
 				);
-			
+
 		end query_ports;
-		
+
 	begin
 		iterate (ports, query_ports'access);
 		return ports_extended;
@@ -219,7 +219,7 @@ package body et_schematic_ops_netlists is
 
 
 
-	
+
 
 
 
@@ -233,14 +233,14 @@ package body et_schematic_ops_netlists is
 		log_threshold	: in type_log_level)
 	is
 		-- CS: rework, simplify code
-		
+
 		use et_assembly_variants.pac_assembly_variants;
 		variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
-		
+
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			use et_nets.pac_nets;
 			net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
@@ -250,7 +250,7 @@ package body et_schematic_ops_netlists is
 			device_ports_extended : pac_device_ports_extended.set;
 			submodule_ports_extended : pac_submodule_ports_extended.set;
 
-			
+
 			-- Applies the given offset to the devices
 			-- in device_ports_extended:
 			procedure apply_offsets is
@@ -260,10 +260,10 @@ package body et_schematic_ops_netlists is
 				-- ports_with_offset overwrites device_ports_extended:
 				ports_with_offset : pac_device_ports_extended.set;
 
-				
+
 				procedure query_ports (
 					cursor : in pac_device_ports_extended.cursor)
-				is 
+				is
 					-- take a copy of the port as it is:
 					port : type_device_port_extended := element (cursor);
 				begin
@@ -276,7 +276,7 @@ package body et_schematic_ops_netlists is
 						new_item	=> port);
 				end;
 
-				
+
 			begin
 				iterate (device_ports_extended, query_ports'access);
 
@@ -284,8 +284,8 @@ package body et_schematic_ops_netlists is
 				device_ports_extended := ports_with_offset;
 			end apply_offsets;
 
-			
-			
+
+
 			procedure insert_net (
 				module : in out type_netlist_module)
 			is begin
@@ -305,9 +305,9 @@ package body et_schematic_ops_netlists is
 					-- CS: constraint_error arises here if net already in list. should never happen.
 			end insert_net;
 
-			
-			
-		begin -- query_nets			
+
+
+		begin -- query_nets
 			if is_default (variant) then
 				variant_cursor := et_assembly_variants.pac_assembly_variants.no_element;
 			else
@@ -318,52 +318,52 @@ package body et_schematic_ops_netlists is
 			end if;
 			-- Now variant_cursor points to the given assembly variant. If it points to
 			-- no element then it is about the default variant.
-			
+
 			-- loop in nets of given module
 			while has_element (net_cursor_sch) loop
 
 				net_name := et_nets.pac_nets.key (net_cursor_sch);
-				
-				log (text => "net " 
-						& pac_net_name.to_string (prefix) 
+
+				log (text => "net "
+						& pac_net_name.to_string (prefix)
 						& pac_net_name.to_string (net_name),
 						level => log_threshold + 1);
 
 				log_indentation_up;
-				
+
 				-- Get all device, netchanger and submodule ports of this net
 				-- according to the given assembly variant:
 				all_ports := get_ports (net_cursor_sch, variant_cursor);
-			
+
 				-- extend the submodule ports by their directions (master/slave):
 				submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
-				
+
 				-- extend the device ports by further properties (direction, terminal name, ...):
 				device_ports_extended := extend_ports (module_cursor, all_ports.devices);
-				
-				-- The portlist device_ports_extended now requires the device indexes 
+
+				-- The portlist device_ports_extended now requires the device indexes
 				-- to be changed according to the given offset:
 				apply_offsets;
-				
+
 				-- insert the net with its ports in the list of nets
 				pac_netlist_modules.update_element (
 					container	=> netlist_tree,
 					position	=> netlist_cursor,
 					process		=> insert_net'access);
-				
+
 				log_indentation_down;
-				
+
 				next (net_cursor_sch);
 			end loop;
 		end query_nets;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " collect nets", level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_nets'access);
@@ -373,18 +373,18 @@ package body et_schematic_ops_netlists is
 
 
 
-	
 
 
-	
-	
+
+
+
 	function make_prefix (
 		tree_cursor		: in pac_renumber_modules.cursor)
 		return pac_net_name.bounded_string
 	is
 		use pac_net_name;
 		prefix : pac_net_name.bounded_string;
-		
+
 		use pac_renumber_modules;
 		cursor : pac_renumber_modules.cursor := tree_cursor;
 	begin
@@ -401,51 +401,51 @@ package body et_schematic_ops_netlists is
 			prefix := to_prefix (element (cursor).instance) & prefix;
 			cursor := parent (cursor);
 		end loop;
-			
+
 		return prefix;
 	end make_prefix;
 
-	
 
-	
-	
-		
-	
-	
-	
-	-- This stack keeps record of the netlist_cursor as we 
+
+
+
+
+
+
+
+	-- This stack keeps record of the netlist_cursor as we
 	-- go trough the design structure:
 	package stack_netlist is new et_generic_stacks.stack_lifo (
 		item	=> pac_netlist_modules.cursor,
 		max 	=> et_submodules.nesting_depth_max);
 
-	
-	-- A stack keeps record of the submodule level where 
+
+	-- A stack keeps record of the submodule level where
 	-- tree_cursor is pointing at.
 	package stack_level is new et_generic_stacks.stack_lifo (
 		item	=> pac_renumber_modules.cursor,
 		max 	=> et_submodules.nesting_depth_max);
 
-	
-	-- Another stack keeps record of the assembly variant 
+
+	-- Another stack keeps record of the assembly variant
 	-- at the submodule level.
 	package stack_variant is new et_generic_stacks.stack_lifo (
 		item	=> pac_assembly_variant_name.bounded_string,
 		max 	=> et_submodules.nesting_depth_max);
 
-	
-	
-	
+
+
+
 	procedure query_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in pac_assembly_variant_name.bounded_string;
 		netlist_tree 	: in out pac_netlist_modules.tree;
 		netlist_cursor 	: in out pac_netlist_modules.cursor;
 		variant			: in out pac_assembly_variant_name.bounded_string;
-		log_threshold	: in type_log_level)	
-	is 
-				
-		
+		log_threshold	: in type_log_level)
+	is
+
+
 		-- This procedure queries the given top-module
 		-- and iterates through its submodules:
 		procedure query_topmodule (
@@ -453,32 +453,32 @@ package body et_schematic_ops_netlists is
 			top_module		: in type_generic_module)
 		is
 			submodule_name 	: pac_module_name.bounded_string;
-			
+
 			parent_name : pac_module_name.bounded_string; -- water_pump
-			
+
 			submodule_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-			
+
 			offset : type_name_index;
 
 			alt_submod : pac_submodule_variants.cursor;
-						
-			
+
+
 			-- Get the root of the submodules tree:
-			tree_cursor : pac_renumber_modules.cursor := 
+			tree_cursor : pac_renumber_modules.cursor :=
 				top_module.submod_tree.root;
-			
-			
-			-- Insert a submodule in netlist_tree. 
+
+
+			-- Insert a submodule in netlist_tree.
 			-- Wherever procedure query_submodules is
-			-- called, cursor netlist_cursor is pointing 
-			-- at the latest parent module. The submodules 
-			-- detected here must be inserted as children 
+			-- called, cursor netlist_cursor is pointing
+			-- at the latest parent module. The submodules
+			-- detected here must be inserted as children
 			-- of that parent module:
 			procedure insert_submodule is begin
 
 				-- backup netlist_cursor
 				stack_netlist.push (netlist_cursor);
-				
+
 				pac_netlist_modules.insert_child (
 					container	=> netlist_tree,
 					parent		=> netlist_cursor,
@@ -500,33 +500,33 @@ package body et_schematic_ops_netlists is
 					netlist_tree	=> netlist_tree,
 					netlist_cursor	=> netlist_cursor,
 					log_threshold	=> log_threshold + 2);
-				
+
 				-- restore netlist_cursor
 				netlist_cursor := stack_netlist.pop;
 			end insert_submodule;
-		
+
 
 			use et_schematic_ops_submodules;
 			use pac_submodule_variants;
 			use pac_renumber_modules;
-		
-		begin			
-			-- Start with the first submodule on the 
+
+		begin
+			-- Start with the first submodule on the
 			-- current hierarchy level:
 			tree_cursor := first_child (tree_cursor);
 
-			
+
 			-- iterate through the submodules on this level
 			while has_element (tree_cursor) loop
-			
+
 				-- Get the generic name of the submodule candidate:
 				submodule_name := element (tree_cursor).name;
-				
+
 				-- Get the instance name of the submodule candidate:
 				submodule_instance := element (tree_cursor).instance;
-				
-				log (text => "submodule instance " 
-					& enclose_in_quotes (to_string (submodule_instance)) 
+
+				log (text => "submodule instance "
+					& enclose_in_quotes (to_string (submodule_instance))
 					& " of generic module " & enclose_in_quotes (to_string (submodule_name)),
 					level => log_threshold + 1);
 
@@ -541,11 +541,11 @@ package body et_schematic_ops_netlists is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				
+
 				-- Get the device name offset of the current submodule;
 				offset := element (tree_cursor).device_names_offset;
-				
-				
+
+
 				if not is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
@@ -565,21 +565,21 @@ package body et_schematic_ops_netlists is
 
 				end if;
 
-				
+
 				-- Insert submodule in netlist_tree.
 				insert_submodule;
 
-				
-				if first_child (tree_cursor) = pac_renumber_modules.no_element then 
+
+				if first_child (tree_cursor) = pac_renumber_modules.no_element then
 				-- No submodules on the current level. means we can't go deeper:
-					
+
 					log_indentation_up;
 					log (text => "no submodules here -> bottom reached",
 						level => log_threshold + 1);
 					log_indentation_down;
 				else
 				-- There are submodules on the current level:
-					
+
 					-- backup the cursor to the current submodule on this level
 					stack_level.push (tree_cursor);
 
@@ -606,19 +606,19 @@ package body et_schematic_ops_netlists is
 
 				next_sibling (tree_cursor); -- next submodule on this level
 			end loop;
-		
+
 		end query_topmodule;
-		
-		
-		
+
+
+
 	begin
 		log (text => "top-module " & to_string (module_cursor)
-			& " query submodules", level => log_threshold);		
+			& " query submodules", level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_topmodule'access);
-		
+
 		log_indentation_down;
 
 		-- CS: rework exception handler
@@ -627,20 +627,20 @@ package body et_schematic_ops_netlists is
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
-		
+
 	end query_submodules;
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure make_netlists (
 		module_cursor 	: in pac_generic_modules.cursor;
 		write_files		: in boolean := false;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_netlists_export;
 
@@ -648,7 +648,7 @@ package body et_schematic_ops_netlists is
 		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;
 
-		
+
 		procedure make_for_variant (
 			variant_name : in pac_assembly_variant_name.bounded_string)
 		is
@@ -662,20 +662,20 @@ package body et_schematic_ops_netlists is
 
 
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
-			
+
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : pac_module_netlist.tree;
 
-			
+
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
 			procedure update_netlist (
 				module_name		: in pac_module_name.bounded_string;
-				module			: in out type_generic_module) 
+				module			: in out type_generic_module)
 			is
-				
+
 				procedure assign_netlist (
 					variant		: in pac_assembly_variant_name.bounded_string;
-					netlist		: in out pac_module_netlist.tree) 
+					netlist		: in out pac_module_netlist.tree)
 				is begin
 					-- overwrite the current netlist by the new netlist:
 					netlist := make_for_variant.netlist;
@@ -684,10 +684,10 @@ package body et_schematic_ops_netlists is
 				use pac_module_netlists;
 				netlist_cursor : pac_module_netlists.cursor;
 
-				
+
 			begin -- update_netlist
 				log (text => "updating netlist ...", level => log_threshold + 2);
-				
+
 				-- Locate the netlist within the module.
 				-- If the netlist does not exist yet, insert it in module.netlists.
 				-- If the netlist does exist, overwrite it by the new netlist.
@@ -709,7 +709,7 @@ package body et_schematic_ops_netlists is
 				end if;
 			end update_netlist;
 
-			
+
 		begin -- make_for_variant
 			if is_default (variant_name) then
 				log (text => "default assembly variant ", level => log_threshold + 1);
@@ -725,7 +725,7 @@ package body et_schematic_ops_netlists is
 			stack_netlist.init;
 
 			-- Insert the top module in the netlist_tree. It is the only node on this level.
-			-- Submodules will be inserted as children of the top module (where netlist_cursor 
+			-- Submodules will be inserted as children of the top module (where netlist_cursor
 			-- points at AFTER this statement):
 			pac_netlist_modules.insert_child (
 				container	=> netlist_tree,
@@ -759,21 +759,21 @@ package body et_schematic_ops_netlists is
 				variant			=> variant,
 				log_threshold	=> log_threshold + 2);
 
-			
-			
+
+
 			-- Container netlist_tree is now ready for further processing.
 			-- It contains the modules and their nets ordered in a tree structure.
 			-- But the connections between nets are
 			-- still unknown and will be analyzed now:
 			netlist := make_netlist (
-				modules			=> netlist_tree,	
+				modules			=> netlist_tree,
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
 				variant_name	=> variant_name, 	-- low_cost, empty if default variant
 				write_file		=> write_files,
 				log_threshold	=> log_threshold);
 
 			-- Now netlist provides information on primary nets and their subordinated secondary nets.
-			
+
 			-- Update the netlist (indicated by variant_name) in the module by variable "netlist".
 			-- NOTE: This is about the internal netlist (module.netlists) and has nothing to do
 			-- with netlist files to be exported for manufacturing and testing:
@@ -781,25 +781,25 @@ package body et_schematic_ops_netlists is
 				container		=> generic_modules,
 				position		=> module_cursor,
 				process			=> update_netlist'access);
-			
+
 			log_indentation_down;
 		end make_for_variant;
 
-		
+
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
 			use pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
 
-		
+
 	begin -- make_netlists
 		log (text => "module " & to_string (module_cursor)
 			 & " generate netlists", level => log_threshold);
-		
+
 		log_indentation_up;
 
-		-- Build the submodule tree of the module according 
+		-- Build the submodule tree of the module according
 		-- to the current design structure.
 		-- All further operations rely on this tree:
 		et_schematic_ops_submodules.build_submodules_tree (
@@ -812,18 +812,18 @@ package body et_schematic_ops_netlists is
 		-- make netlists of other variants
 		et_assembly_variants.pac_assembly_variants.iterate (
 			element (module_cursor).assembly_variants.variants, query_variant'access);
-		
+
 		log_indentation_down;
 	end make_netlists;
 
 
-	
+
 end et_schematic_ops_netlists;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

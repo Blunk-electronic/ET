@@ -51,15 +51,15 @@ package body et_fill_zones.boards is
 		return type_priority'image (priority_level);
 	end;
 
-	
+
 	function to_priority (priority_level : in string) return type_priority is begin
 		return type_priority'value (priority_level);
 	end;
 
-	
 
-	
-	
+
+
+
 	function to_string (
 		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
@@ -70,15 +70,15 @@ package body et_fill_zones.boards is
 		use ada.strings.unbounded;
 		use ada.tags;
 		--use et_nets;
-		
+
 		result : unbounded_string := to_unbounded_string ("properties:");
 
-		
+
 		procedure append (s : in string) is begin
 			result := result & space & s;
 		end append;
 
-		
+
 		procedure connected_with_net (p : in type_route_solid) is begin
 			case p.connection is
 				when THERMAL => null;
@@ -89,28 +89,28 @@ package body et_fill_zones.boards is
 		end connected_with_net;
 		pragma unreferenced (connected_with_net);
 
-		
+
 	begin
 
-		if fill_zone'tag = type_floating_solid'tag 
-		or fill_zone'tag = type_floating_hatched'tag 
+		if fill_zone'tag = type_floating_solid'tag
+		or fill_zone'tag = type_floating_hatched'tag
 		then
 			append ("floating");
-			
-		elsif fill_zone'tag = type_route_solid'tag 
-		or    fill_zone'tag = type_route_hatched'tag 
+
+		elsif fill_zone'tag = type_route_solid'tag
+		or    fill_zone'tag = type_route_hatched'tag
 		then
 			append ("net " & pac_net_name.to_string (net_name));
-			
+
 			-- CS connected_with_net (type_route_solid (fill_zone));
 		end if;
 
-		
+
 		case fill_zone.fill_style is
 			when SOLID =>
 				append (keyword_fill_style & space & to_string (fill_zone.fill_style));
 
-				
+
 			when HATCHED =>
 				append (keyword_fill_style & space & to_string (fill_zone.fill_style));
 
@@ -120,7 +120,7 @@ package body et_fill_zones.boards is
 		append (keyword_isolation & to_string (fill_zone.isolation));
 		append (keyword_easing_style & space & to_string (fill_zone.easing.style));
 		append (keyword_easing_radius & to_string (fill_zone.easing.radius));
-		
+
 		append (keyword_layer & space & to_string (properties.layer));
 		append (keyword_priority & to_string (properties.priority_level));
 
@@ -131,12 +131,12 @@ package body et_fill_zones.boards is
 
 
 
-	
+
 end et_fill_zones.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

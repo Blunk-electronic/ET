@@ -35,7 +35,7 @@
 --
 --  Description:
 --	- "to crop" german: stutzen, abschneiden
---    Im Zusammenhang zwei Polygonen A und B: 
+--    Im Zusammenhang zwei Polygonen A und B:
 --			- "den ueberlappenden Bereich beider Polygone ermitteln
 --			  und diesen vom zu bescheidenen Polygon B abziehen"
 --
@@ -44,38 +44,38 @@
 
 
 generic
-	
+
 package et_geometry_1.et_polygons.cropping is
 
 	use pac_polygon_list;
-	
+
 	-- The result of a polygon cropping operation:
 	type type_crop (exists : boolean := true) is record
 		-- The status of polygon A in relation to polygon B:
 		status : type_overlap_status;
-		
+
 		case exists is
 			when TRUE =>
 				-- The list of sub-polygons:
-				fragments : pac_polygon_list.list; 
+				fragments : pac_polygon_list.list;
 
 				-- The number of fragments:
 				count : count_type;
-				
+
 			when FALSE => null;
 		end case;
 	end record;
-	
+
 
 	function "=" (
 		left, right : in type_crop)
 		return boolean;
-	
 
-	
+
+
 	function to_string (cr : in type_crop) return string;
-	
-	
+
+
 	-- Crops polygon B by polygon A.
 	-- These scenarios may exist:
 	-- 1. A and B are congruent. Result: B is cropped to zero area. List "cropped" is empty.
@@ -83,7 +83,7 @@ package et_geometry_1.et_polygons.cropping is
 	--    in list "cropped".
 	-- 3. A inside B. Result: no crop. List "cropped" does not exist in the result.
 	-- 4. B inside A. Result: B is cropped to zero area. List "cropped" is empty.
-	-- 5. A overlaps B. Result: B is cropped by A. List "cropped" contains at 
+	-- 5. A overlaps B. Result: B is cropped by A. List "cropped" contains at
 	--    least one polygon.
 	function crop (
 		polygon_A	: in type_polygon; -- the cropping polygon
@@ -103,19 +103,19 @@ package et_geometry_1.et_polygons.cropping is
 		debug			: in boolean := false)
 		return pac_polygon_list.list;
 
-	
+
 	function multi_crop_2 (
 		polygon_B_list	: in pac_polygon_list.list; -- the cropped polygons / zu bescheidende Polygone
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)
 		return pac_polygon_list.list;
-	
-	
+
+
 end et_geometry_1.et_polygons.cropping;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 -- with et_exceptions;				use et_exceptions;
@@ -51,13 +51,13 @@ package body et_module_clipboard is
 	end;
 
 
-	
-		
+
+
 end et_module_clipboard;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

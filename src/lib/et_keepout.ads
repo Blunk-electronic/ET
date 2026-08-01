@@ -46,7 +46,7 @@ with et_mirroring;				use et_mirroring;
 
 
 package et_keepout is
-	
+
 	use pac_geometry_2;
 	use pac_contours;
 
@@ -63,8 +63,8 @@ package et_keepout is
 		zone	: in pac_keepout_zones.cursor)
 		return boolean;
 
-	
-	
+
+
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -73,12 +73,12 @@ package et_keepout is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Mirrors a list of zones along the given axis:
 	procedure mirror_zones (
 		zones	: in out pac_keepout_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of zones by the given angle about the origin:
 	procedure rotate_zones (
 		zones	: in out pac_keepout_zones.list;
@@ -89,13 +89,13 @@ package et_keepout is
 		zones	: in out pac_keepout_zones.list;
 		offset	: in type_vector_model);
 
-	
+
 
 	type type_keepout_cutout is new type_contour with null record;
-	package pac_keepout_cutouts is new doubly_linked_lists (type_keepout_cutout);	
+	package pac_keepout_cutouts is new doubly_linked_lists (type_keepout_cutout);
 	use pac_keepout_cutouts;
 	-- CS not sure whether this is really required
-	
+
 	type type_keepout is tagged record
 		zones	: pac_keepout_zones.list;
 		cutouts : pac_keepout_cutouts.list;
@@ -106,7 +106,7 @@ package et_keepout is
 	procedure mirror_keepout_objects (
 		keepout	: in out type_keepout;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates the given objects by the given angle
 	-- about the origin:
 	procedure rotate_keepout_objects (
@@ -119,12 +119,12 @@ package et_keepout is
 		offset	: in type_vector_model);
 
 
-	
+
 end et_keepout;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_directory_and_file_ops;
 with et_file_sections;					use et_file_sections;
@@ -47,9 +47,9 @@ separate (et_design_rules_board)
 procedure read_rules (
 	file_name		: in pac_file_name.bounded_string;
 	log_threshold 	: in type_log_level)
-is 
+is
 	previous_input : ada.text_io.file_type renames current_input;
-	
+
 	-- Environment variables like $dru-files could be in file name.
 	-- In order to test whether the given dru file exists, file name_name must be expanded
 	-- so that the environment variables are replaced by the real paths like:
@@ -66,16 +66,16 @@ is
 	-- The line read from the the dru file:
 	line : type_fields_of_line;
 
-	
+
 	-- This is the section stack of the design rules:
 	max_section_depth : constant positive := 3;
-	
+
 	package pac_sections_stack is new gen_pac_sections_stack (
 		item	=> type_file_section,
 		max 	=> max_section_depth);
 
 
-	
+
 	clearances 	: type_clearances;
 	sizes		: type_sizes;
 	restring	: type_restring;
@@ -83,7 +83,7 @@ is
 	rules		: type_design_rules_board;
 
 
-	
+
 	procedure read_clearances is
 		kw : constant string := f (line, 1);
 	begin
@@ -107,14 +107,14 @@ is
 			expect_field_count (line, 2);
 
 			clearances.edge_to_edge := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_clearances;
 
 
-	
+
 	procedure read_sizes is
 		kw : constant string := f (line, 1);
 	begin
@@ -128,14 +128,14 @@ is
 			expect_field_count (line, 2);
 
 			sizes.drills := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_sizes;
 
 
-	
+
 	procedure read_restring is
 		kw : constant string := f (line, 1);
 	begin
@@ -154,14 +154,14 @@ is
 			expect_field_count (line, 2);
 
 			restring.delta_size := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_restring;
 
 
-	
+
 	procedure read_stop_mask is
 		kw : constant string := f (line, 1);
 	begin
@@ -170,30 +170,30 @@ is
 			expect_field_count (line, 2);
 
 			stop_mask.expansion_min := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_stop_mask;
 
 
-	
+
 	procedure process_line is
 
-		procedure execute_section is 
+		procedure execute_section is
 		begin
-			
+
 			case pac_sections_stack.current is
 
 				when SEC_CLEARANCES =>
 					case pac_sections_stack.parent is
-						when SEC_INIT	=> rules.clearances := clearances;							
+						when SEC_INIT	=> rules.clearances := clearances;
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_SIZES =>
 					case pac_sections_stack.parent is
-						when SEC_INIT	=> rules.sizes := sizes;							
+						when SEC_INIT	=> rules.sizes := sizes;
 						when others		=> invalid_section;
 					end case;
 
@@ -208,17 +208,17 @@ is
 						when SEC_INIT	=> rules.stop_mask := stop_mask;
 						when others		=> invalid_section;
 					end case;
-				
+
 				when SEC_INIT => null; -- CS: should never happen
 
 				when others => invalid_section;
 			end case;
-			
+
 		end execute_section;
 
-		
 
-		
+
+
 		function set (
 		-- Tests if the current line is a section header or footer. Returns true in both cases.
 		-- Returns false if the current line is neither a section header or footer.
@@ -226,7 +226,7 @@ is
 		-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			section_keyword	: in string; -- [CLEARANCES
 			section			: in type_file_section) -- SEC_CLEARANCES
-			return boolean 
+			return boolean
 		is begin
 			if f (line, 1) = section_keyword then -- section name detected in field 1
 				if f (line, 2) = section_begin then -- section header detected in field 2
@@ -242,11 +242,11 @@ is
 						log_indentation_reset;
 						invalid_section;
 					end if;
-					
+
 					-- Now that the section ends, the data collected in temporarily
 					-- variables is processed.
 					execute_section;
-					
+
 					pac_sections_stack.pop;
 					if pac_sections_stack.empty then
 						log (text => write_top_level_reached, level => log_threshold + 5);
@@ -265,7 +265,7 @@ is
 			end if;
 		end set;
 
-		
+
 	begin -- process_line
 		if set (section_clearances, SEC_CLEARANCES) then null;
 		elsif set (section_sizes, SEC_SIZES) then null;
@@ -273,11 +273,11 @@ is
 		elsif set (section_stopmask, SEC_STOPMASK) then null;
 
 		else
-			-- The line contains something else -> the payload data. 
+			-- The line contains something else -> the payload data.
 			-- Temporarily this data is stored in corresponding variables.
 
 			log (text => "dru line --> " & to_string (line), level => log_threshold + 4);
-	
+
 			case pac_sections_stack.current is
 
 				when SEC_CLEARANCES =>
@@ -303,23 +303,23 @@ is
 						when SEC_INIT	=> read_stop_mask;
 						when others		=> invalid_section;
 					end case;
-					
+
 				when SEC_INIT => null; -- CS: should never happen
 
 				when others => invalid_section;
 			end case;
-			
+
 		end if;
 
 		exception when others =>
-			log (text => "file " & enclose_in_quotes (to_string (file_name)) & space 
+			log (text => "file " & enclose_in_quotes (to_string (file_name)) & space
 					& get_affected_line (line) & to_string (line), console => true);
 			raise;
-		
+
 	end process_line;
 
 
-	
+
 begin -- read_rules
 	log (text => "reading design rules ...", level => log_threshold);
 	log_indentation_up;
@@ -333,15 +333,15 @@ begin -- read_rules
 			-- open dru file
 			open (
 				file => file_handle,
-				mode => in_file, 
+				mode => in_file,
 				name => expanded_name);
-			
+
 			set_input (file_handle);
-			
+
 			-- Init section pac_sections_stack.
 			pac_sections_stack.init;
 			pac_sections_stack.push (SEC_INIT);
-			
+
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
@@ -357,7 +357,7 @@ begin -- read_rules
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if pac_sections_stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then
 				log (text => message_warning & write_section_stack_not_empty);
 			end if;
 
@@ -375,18 +375,18 @@ begin -- read_rules
 				);
 
 			-- CS check rule_inserted flag ? should always be true after inserting
-				
+
 		else
 			log (text => "already loaded -> no need to load anew", level => log_threshold + 1);
 		end if;
-		
+
 	else
 		log (SEVERITY_ERROR, "file " & enclose_in_quotes (expanded_name) & " not found !", console => true);
 		raise constraint_error;
 	end if;
-	
+
 	log_indentation_down;
-	
+
 	exception when others =>
 		if is_open (file_handle) then close (file_handle); end if;
 		set_input (previous_input);
@@ -398,7 +398,7 @@ end read_rules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

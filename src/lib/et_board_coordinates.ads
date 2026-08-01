@@ -46,14 +46,14 @@ with et_pcb_sides;					use et_pcb_sides;
 package et_board_coordinates is
 
 	use pac_geometry_2;
-	
-	
+
+
 	type type_package_position is new pac_geometry_2.type_position with private;
 
-	
+
 
 	package_position_default : constant type_package_position;
- 
+
 
 
 	-- This function returns the given package position
@@ -77,22 +77,22 @@ package et_board_coordinates is
 		from : in type_field_count_positive)
 		return type_package_position;
 
-		
+
 	function to_package_position (
 		point 		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
 		return type_package_position;
 
-	placeholder_position_default : constant type_package_position;	
+	placeholder_position_default : constant type_package_position;
 
 
-	
+
 	procedure set_face (
 		position: in out type_package_position;
 		face	: in type_face);
 
-	
+
 	function get_face (
 		packge : in type_package_position)
 		return type_face;
@@ -101,9 +101,9 @@ package et_board_coordinates is
 	-- Changes from top to bottom or vice versa:
 	procedure toggle_face (
 		position : in out type_package_position);
-	
-	
-							
+
+
+
 	-- Returns the location vector and rotation of
 	-- the given package position:
 	function get_position (
@@ -116,8 +116,8 @@ package et_board_coordinates is
 	procedure set_position (
 		package_position	: in out type_package_position;
 		position			: in type_position);
-	
-							  
+
+
 	-- Returns the x/y position of a package:
 	function get_place (
 		position : in type_package_position)
@@ -129,8 +129,8 @@ package et_board_coordinates is
 	function is_flipped (
 		position : in type_package_position)
 		return boolean;
-	
-							
+
+
 	-- Composes from a given point and angle the terminal position.
 	function to_terminal_position (
 		point		: in type_vector_model;
@@ -138,10 +138,10 @@ package et_board_coordinates is
 		return type_position'class;
 
 
-	
+
 private
-		
-		type type_package_position is new pac_geometry_2.type_position 
+
+		type type_package_position is new pac_geometry_2.type_position
 			with record
 				face : type_face := TOP;
 			end record;
@@ -152,12 +152,12 @@ private
 	placeholder_position_default : constant type_package_position := (
 		pac_geometry_2.origin_zero_rotation with face => TOP);
 
-		
+
 end et_board_coordinates;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

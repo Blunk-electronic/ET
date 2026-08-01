@@ -53,16 +53,16 @@ package et_silkscreen is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_text_board_vectorized;
-	
+
 
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	linewidth_default : constant type_linewidth := 0.2;
 
 
-	
+
 
 -- LINES:
-	
+
 	type type_silk_line is new pac_geometry_2.type_line with record
 		width	: type_linewidth;
 	end record;
@@ -71,7 +71,7 @@ package et_silkscreen is
 	overriding procedure reset_line (
 		line : in out type_silk_line);
 
-	
+
 	package pac_silk_lines is new doubly_linked_lists (type_silk_line);
 	use pac_silk_lines;
 
@@ -85,13 +85,13 @@ package et_silkscreen is
 
 	-- CS likewise iteratator for circles
 
-	
+
 	-- Returns true if the "proposed-flag" of the given line is set:
 	function is_proposed (
 		line_cursor	: in pac_silk_lines.cursor)
 		return boolean;
 
-	
+
 	-- Returns true if the "selected-flag" of the given line is set:
 	function is_selected (
 		line_cursor	: in pac_silk_lines.cursor)
@@ -99,7 +99,7 @@ package et_silkscreen is
 
 
 
-	
+
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_silk_lines.list;
@@ -108,19 +108,19 @@ package et_silkscreen is
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
 		lines	: in out pac_silk_lines.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_silk_lines.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-	
 
-	
+
+
 -- ARCS:
-	
+
 	type type_silk_arc is new pac_geometry_2.type_arc with record
 		width	: type_linewidth;
 	end record;
@@ -129,8 +129,8 @@ package et_silkscreen is
 	overriding procedure reset_arc (
 		arc : in out type_silk_arc);
 
-	
-	
+
+
 	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc);
 	use pac_silk_arcs;
 
@@ -142,38 +142,38 @@ package et_silkscreen is
 		process	: not null access procedure (position : in pac_silk_arcs.cursor);
 		proceed	: not null access boolean);
 
-	
 
-	
+
+
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_silk_arcs.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given arc is set:
 	function is_selected (
 		arc_cursor	: in pac_silk_arcs.cursor)
 		return boolean;
-	
+
 
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_silk_arcs.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);	
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
 		arcs	: in out pac_silk_arcs.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_silk_arcs.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
 
-	
+
 
 -- CIRCLES:
 
@@ -181,11 +181,11 @@ package et_silkscreen is
 		width	: type_linewidth;
 	end record;
 
-	
+
 	overriding procedure reset_circle (
 		circle : in out type_silk_circle);
 
-	
+
 	package pac_silk_circles is new doubly_linked_lists (type_silk_circle);
 	use pac_silk_circles;
 
@@ -198,18 +198,18 @@ package et_silkscreen is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
 		circle_cursor	: in pac_silk_circles.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given circle is set:
 	function is_selected (
 		circle_cursor	: in pac_silk_circles.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_silk_circles.list;
@@ -218,18 +218,18 @@ package et_silkscreen is
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
 		circles	: in out pac_silk_circles.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_silk_circles.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
 
-	
+
 -- ZONES:
-	
+
 	type type_silk_zone is new type_contour with null record;
 	package pac_silk_zones is new doubly_linked_lists (type_silk_zone);
 	use pac_silk_zones;
@@ -242,7 +242,7 @@ package et_silkscreen is
 
 
 
-	
+
 
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
@@ -252,29 +252,29 @@ package et_silkscreen is
 		proceed	: not null access boolean);
 
 
-	
+
 
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_silk_zones.list;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);					
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
 		contours	: in out pac_silk_zones.list;
-		angle		: in type_rotation_model);					
+		angle		: in type_rotation_model);
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
 		contours	: in out pac_silk_zones.list;
-		offset		: in type_vector_model);					
+		offset		: in type_vector_model);
 
-	
-	
-	
+
+
+
 -- TEXTS:
-	
-	type type_silk_text is new type_text_fab_with_content with null record;	
+
+	type type_silk_text is new type_text_fab_with_content with null record;
 
 	package pac_silk_texts is new doubly_linked_lists (type_silk_text);
 	use pac_silk_texts;
@@ -285,20 +285,20 @@ package et_silkscreen is
 	function is_proposed (
 		text_cursor	: in pac_silk_texts.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given text is set:
 	function is_selected (
 		text_cursor	: in pac_silk_texts.cursor)
 		return boolean;
 
 
-	
+
 	-- Returns the position, linewidth and content
 	-- of the given text:
 	function to_string (
 		text : in pac_silk_texts.cursor)
 		return string;
-	
+
 
 	-- Iterates the texts.
 	-- Aborts the process when the proceed-flag goes false:
@@ -309,7 +309,7 @@ package et_silkscreen is
 
 
 
-	
+
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_silk_texts.list;
@@ -318,16 +318,16 @@ package et_silkscreen is
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (
 		texts	: in out pac_silk_texts.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (
 		texts	: in out pac_silk_texts.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
 
-	
+
 	-- This is the base type for silkscreen objects in general:
 	type type_silkscreen is tagged record
 		lines 	: pac_silk_lines.list;
@@ -362,12 +362,12 @@ package et_silkscreen is
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_silk_texts.cursor;
 	-- 	log_threshold 	: in type_log_level);
-	
+
 end et_silkscreen;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

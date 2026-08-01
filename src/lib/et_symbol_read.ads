@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_symbol_model;					use et_symbol_model;
 
 package et_symbol_read is
 
-	
+
 	-- Opens the symbol file and stores the symbol in
 	-- the symbol library.
 	-- CS error : out boolean;
@@ -52,6 +52,6 @@ package et_symbol_read is
 		file_name 		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level);
 	-- CS rename to read_symbol_model
-	
-	
+
+
 end et_symbol_read;

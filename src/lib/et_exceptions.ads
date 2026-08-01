@@ -34,7 +34,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 package et_exceptions is
@@ -44,15 +44,15 @@ package et_exceptions is
 	syntax_error_2		: exception;
 
 	exception_command_incomplete	: exception;
-	
+
 
 	semantic_error_1	: exception;
-	
+
 end et_exceptions;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

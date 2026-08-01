@@ -53,11 +53,11 @@ package body et_net_names is
 	end net_name_to_string;
 
 
-	
-	
+
+
 	procedure check_net_name_length (net : in string) is begin
 		if net'length > net_name_length_max then
-			log (SEVERITY_ERROR, "max. number of characters for net name is" 
+			log (SEVERITY_ERROR, "max. number of characters for net name is"
 				 & positive'image (net_name_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -66,10 +66,10 @@ package body et_net_names is
 
 
 
-	
+
 	procedure check_net_name_characters (
 		net			: in pac_net_name.bounded_string;
-		characters	: in character_set := net_name_characters) 
+		characters	: in character_set := net_name_characters)
 	is
 		invalid_character_position : natural := 0;
 		inversion_mark_position : natural := 0;
@@ -82,8 +82,8 @@ package body et_net_names is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "invalid character in net name '" 
-				 & to_string (net) & "' at position" 
+			log (SEVERITY_ERROR, "invalid character in net name '"
+				 & to_string (net) & "' at position"
 				 & natural'image (invalid_character_position) & " !",
 				 console => true);
 
@@ -95,18 +95,18 @@ package body et_net_names is
 		inversion_mark_position := pac_net_name.index (net, net_inversion_mark);
 		if inversion_mark_position > 0 then
 			if inversion_mark_position /= pac_net_name.length (net) then
-				log (SEVERITY_ERROR, "net " & to_string (net) 
+				log (SEVERITY_ERROR, "net " & to_string (net)
 					& " inversion mark must be at the end of the net name !",
 					console => true);
 				raise constraint_error;
 			end if;
 		end if;
-		
+
 	end check_net_name_characters;
 
 
 
-	
+
 	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean
 	is begin
@@ -119,15 +119,15 @@ package body et_net_names is
 
 
 
-	
+
 	function to_net_name (net_name : in string) return pac_net_name.bounded_string is begin
 		return pac_net_name.to_bounded_string (to_upper (net_name));
 	end to_net_name;
-	
 
 
 
-	
+
+
 	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
 		return pac_net_name.bounded_string -- N$56
 	is
@@ -140,9 +140,9 @@ package body et_net_names is
 
 
 
-	
+
 	function anonymous (net_name : in pac_net_name.bounded_string) -- N$456
-		return boolean 
+		return boolean
 	is
 		result : boolean := true;
 
@@ -156,9 +156,9 @@ package body et_net_names is
 		-- Otherwise the trailing characters must be investigated:
 		if prefix = anonymous_net_name_prefix then
 
-			-- Could be an anonymous net. Check the index_string. 
+			-- Could be an anonymous net. Check the index_string.
 			-- If index_string contains something that is not a digit,
-			-- then it is not an anonymous net. Abort loop prematurely:			
+			-- then it is not an anonymous net. Abort loop prematurely:
 			for c in index_string'first .. index_string'last loop
 				if not is_digit (index_string (c)) then
 					result := false;
@@ -167,8 +167,8 @@ package body et_net_names is
 			end loop;
 
 			-- Result is still true if index_string contains only digits.
-			
-		else 
+
+		else
 			result := false; -- not anonymous
 		end if;
 
@@ -177,7 +177,7 @@ package body et_net_names is
 
 
 
-	
+
 
 	procedure clear_net_name (
 		net_name : in out pac_net_name.bounded_string)
@@ -185,8 +185,8 @@ package body et_net_names is
 		net_name := no_name;
 	end;
 
-	
-	
+
+
 
 	function to_string (
 		net	: in pac_net_names.cursor)
@@ -199,14 +199,14 @@ package body et_net_names is
 
 
 
-	
+
 
 
 
 	procedure message_net_not_found (
 		severity	: in type_message_severity;
 		name		: in pac_net_name.bounded_string)
-	is 
+	is
 
 		function get_message_text (
 			name : in pac_net_name.bounded_string)
@@ -215,7 +215,7 @@ package body et_net_names is
 			return "Net " & to_string (name) & " not found !";
 		end;
 
-		
+
 	begin
 		case severity is
 			when SEVERITY_ERROR =>
@@ -232,20 +232,20 @@ package body et_net_names is
 		end case;
 	end message_net_not_found;
 
-	
 
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure message_net_already_exists (
 		severity	: in type_message_severity;
 		name		: in pac_net_name.bounded_string)
-	is 
+	is
 
 		function get_message_text (
 			name : in pac_net_name.bounded_string)
@@ -254,7 +254,7 @@ package body et_net_names is
 			return "Net " & to_string (name) & " already exists !";
 		end;
 
-		
+
 	begin
 		case severity is
 			when SEVERITY_ERROR =>
@@ -270,13 +270,13 @@ package body et_net_names is
 					console		=> false);
 		end case;
 	end message_net_already_exists;
-	
-	
+
+
 end et_net_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -56,42 +56,42 @@ package body et_commandline_switches is
 		put_line (dash & switch_native_project_save_as);
 
 		put_line (dash & switch_native_package_create);
-		put_line (dash & switch_native_package_open);		
+		put_line (dash & switch_native_package_open);
 		put_line (dash & switch_native_package_save_as);
 
 		put_line (dash & switch_native_symbol_create);
-		put_line (dash & switch_native_symbol_open);		
+		put_line (dash & switch_native_symbol_open);
 		put_line (dash & switch_native_symbol_save_as);
 
 		put_line (dash & switch_native_device_create);
-		put_line (dash & switch_native_device_open);		
+		put_line (dash & switch_native_device_open);
 		put_line (dash & switch_native_device_save_as);
 
 		put_line (dash & switch_frame_schematic_create);
-		put_line (dash & switch_frame_schematic_open);		
+		put_line (dash & switch_frame_schematic_open);
 		put_line (dash & switch_frame_schematic_save_as);
 
 		put_line (dash & switch_frame_pcb_create);
-		put_line (dash & switch_frame_pcb_open);		
+		put_line (dash & switch_frame_pcb_open);
 		put_line (dash & switch_frame_pcb_save_as);
-		
+
 		put_line (dash & switch_execute_script);
 		put_line (dash & switch_make_default_conv);
 		put_line (dash & switch_import_project);
 
 		put_line (dash & switch_runmode);
-		
+
 		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
 	end show_cdl_switches;
 
 
 
-	
+
 end et_commandline_switches;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

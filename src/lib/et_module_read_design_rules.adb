@@ -65,7 +65,7 @@ package body et_module_read_design_rules is
 		-- CS ERC rules ?
 
 
-		
+
 
 	procedure read_rules (
 		line : in type_fields_of_line)
@@ -77,16 +77,16 @@ package body et_module_read_design_rules is
 		end if;
 	end read_rules;
 
-	
-	
 
-		
+
+
+
 
 	procedure set_rules (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -107,14 +107,14 @@ package body et_module_read_design_rules is
 			else
 				log (SEVERITY_WARNING, "No layout design rules specified ! Defaults will be applied !");
 			end if;
-				
+
 			-- CS module.rules.erc ?
 		end;
-		
+
 	begin
 		log (text => "design rules ...", level => log_threshold + 1);
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -125,14 +125,14 @@ package body et_module_read_design_rules is
 
 
 
-	
-	
+
+
 end et_module_read_design_rules;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

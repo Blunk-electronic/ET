@@ -39,7 +39,7 @@
 
 
 package et_coordinates_formatting is
-	
+
 
 	type type_output_format is (
 		FORMAT_1,
@@ -48,22 +48,22 @@ package et_coordinates_formatting is
 		FORMAT_4);
 
 
-	
+
 	axis_separator : constant string := "/";
 	point_preamble : constant string := " (x" & axis_separator & "y) ";
-	--point_preamble_with_rotation : constant string := 
+	--point_preamble_with_rotation : constant string :=
 		--" (x"
 		--& axis_separator
 		--& "y"
 		--& axis_separator
 		--& "rotation)";
 
-	
+
 	vector_preamble_2d : constant string := "(x" & axis_separator & "y) ";
 	vector_preamble_3d : constant string := "(x" & axis_separator & "y" & axis_separator & "z) ";
 
 
-	point_preamble_with_rotation : constant string := 
+	point_preamble_with_rotation : constant string :=
 		" (x"
 		& axis_separator
 		& "y"
@@ -72,7 +72,7 @@ package et_coordinates_formatting is
 
 
 
-	position_preamble : constant string := 
+	position_preamble : constant string :=
 			" (x"
 			& axis_separator
 			& "y"
@@ -81,12 +81,12 @@ package et_coordinates_formatting is
 			& axis_separator
 			& "face)";
 
-		
+
 end et_coordinates_formatting;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

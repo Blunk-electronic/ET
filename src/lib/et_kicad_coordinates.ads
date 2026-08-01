@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,30 +49,30 @@ use et_schematic_geometry.pac_geometry_2;
 
 
 package et_kicad_coordinates is
-	
+
 	schematic_file_name_length : constant positive := 100; -- includes extension
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
+	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length);
 
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
 	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
-	
+
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length_max : constant positive := 100;
-	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); 
+	package type_submodule_name is new generic_bounded_length (submodule_name_length_max);
 	use type_submodule_name;
 
 -- 	procedure check_submodule_name_length (name : in string);
 -- 	-- Checks if the given submodule name is not longer than allowed.
-	
-	submodule_name_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
+
+	submodule_name_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_");
 
 	procedure check_submodule_name_characters (
 		name		: in type_submodule_name.bounded_string;
 		characters	: in character_set := submodule_name_characters);
 	-- Checks for forbidden characters in submodule name.
 
-	
+
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver/counter/supply
     -- The first item in this list is the name of the top level module.
@@ -85,7 +85,7 @@ package et_kicad_coordinates is
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
 
-	
+
 	--type type_position is new type_vector_model with private;
 	type type_position is private;
 
@@ -97,7 +97,7 @@ package et_kicad_coordinates is
 		position	: in out type_position;
 		place		: in type_vector_model);
 
-	
+
 	procedure rotate_point (
 		position	: in out type_position;
 		angle		: in type_rotation_model);
@@ -112,23 +112,23 @@ package et_kicad_coordinates is
 		position	: in out type_position;
 		offset		: in type_vector_model);
 
-	
+
 	procedure set (
 		position	: in out type_position;
 		axis		: in type_axis_2D;
 		value		: in type_distance_model);
 
-	
+
 	function path (position : in type_position) return type_path_to_submodule.list;
 
 	procedure set_path (position : in out type_position; path : in type_path_to_submodule.list);
 	-- Sets the path in given position.
-	
-	
+
+
 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
 
-	
+
 	type type_scope is (
 		XY, -- only x an y pos.
 		SHEET, 	-- coordinates sheet related
@@ -146,26 +146,26 @@ package et_kicad_coordinates is
 
 	function same_path_and_sheet (left, right : in type_position) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
-	
+
 	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
-	
-private 
-	
+
+private
+
 	--type type_position is new type_vector_model with record
 	type type_position is record
 		point			: type_vector_model;
-		path            : type_path_to_submodule.list; 
+		path            : type_path_to_submodule.list;
 		sheet_number	: type_sheet := type_sheet'first;
 	end record;
 
-		
+
 end et_kicad_coordinates;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

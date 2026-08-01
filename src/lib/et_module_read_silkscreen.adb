@@ -60,11 +60,11 @@ package body et_module_read_silkscreen is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	
+
 	silk_line : type_silk_line;
 	silk_arc : type_silk_arc;
 	silk_circle : type_silk_circle;
-	
+
 
 
 
@@ -84,7 +84,7 @@ package body et_module_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_A (silk_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -92,24 +92,24 @@ package body et_module_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_B (silk_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			silk_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_silk_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_silk_arc (
 		line	: in type_fields_of_line)
 	is
@@ -124,22 +124,22 @@ package body et_module_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_A (silk_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (silk_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (silk_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -150,19 +150,19 @@ package body et_module_read_silkscreen is
 			expect_field_count (line, 2);
 			silk_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_silk_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_silk_circle (
 		line	: in type_fields_of_line)
 	is
@@ -174,7 +174,7 @@ package body et_module_read_silkscreen is
 			-- extract the center position starting at field 2 of line
 			set_center (silk_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -185,28 +185,28 @@ package body et_module_read_silkscreen is
 			expect_field_count (line, 2);
 			silk_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_silk_circle;
-	
-	
 
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_silk_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -214,7 +214,7 @@ package body et_module_read_silkscreen is
 			add_line (module.board.silkscreen, silk_line, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -226,21 +226,21 @@ package body et_module_read_silkscreen is
 	end insert_silk_line;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure insert_silk_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -248,7 +248,7 @@ package body et_module_read_silkscreen is
 			add_arc (module.board.silkscreen, silk_arc, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -259,23 +259,23 @@ package body et_module_read_silkscreen is
 		reset_arc (silk_arc);
 	end insert_silk_arc;
 
-	
-	
-	
-	
-	
 
-		
+
+
+
+
+
+
 	procedure insert_silk_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -283,25 +283,25 @@ package body et_module_read_silkscreen is
 			add_circle (module.board.silkscreen, silk_circle, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
-		reset_circle (silk_circle);		
+
+		reset_circle (silk_circle);
 	end insert_silk_circle;
-	
-	
-	
+
+
+
 end et_module_read_silkscreen;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

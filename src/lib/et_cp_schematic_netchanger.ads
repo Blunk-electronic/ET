@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -58,7 +58,7 @@ package et_cp_schematic_netchanger is
 
 	-- This procedure parses a command that moves a netchanger.
 	-- Example: "schematic led_driver move netchanger 2 absolute 3 30 0"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -68,17 +68,17 @@ package et_cp_schematic_netchanger is
 
 	-- This procedure parses a command that drags a netchanger.
 	-- Example: "schematic demo drag netchanger 2 relative 30 0"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 
 	-- Example: "schematic demo delete netchanger 2"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure delete_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -86,21 +86,21 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- The rotation can either be 0 or 90 degrees. Other angles are
 	-- not accepted.
 	-- Example: "schematic demo rotate netchanger 2 90"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure rotate_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the direction of a netchanger.
 	-- Example: "schematic demo set netchanger 2 forward/backward"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_netchanger_direction (
 		module			: in pac_generic_modules.cursor;
@@ -110,7 +110,7 @@ package et_cp_schematic_netchanger is
 
 	-- Parses a command that renames a netchanger.
 	-- Example: "schematic demo rename netchanger 1 10"
-	-- If the original netchanger (1) does not exist, then nothing 
+	-- If the original netchanger (1) does not exist, then nothing
 	-- happens and a warning is output:
 	procedure rename_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -120,7 +120,7 @@ package et_cp_schematic_netchanger is
 
 	-- Parses a command that copies a netchanger.
 	-- Example: "schematic demo copy netchanger 1 4 100 40"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure copy_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -130,15 +130,15 @@ package et_cp_schematic_netchanger is
 
 	-- Parses a command that dissovles a netchanger.
 	-- Example: "schematic demo dissolve netchanger 4"
-	-- If the targeted netchanger does not exist, then nothing 
+	-- If the targeted netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure dissolve_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Parses a command that locates and shows a netchanger.
 	-- Example: "schematic demo show netchanger 44"
 	-- If the targeted netchanger does not exist, then
@@ -154,12 +154,12 @@ package et_cp_schematic_netchanger is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_cp_schematic_netchanger;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

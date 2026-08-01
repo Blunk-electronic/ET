@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,7 +47,7 @@ with gtk.file_filter;
 with gtk.main;
 with gtk.label;
 with gtk.menu;
-with gtk.cell_renderer_text;		
+with gtk.cell_renderer_text;
 with gtk.list_store;
 with gtk.tree_model;
 
@@ -97,7 +97,7 @@ package body et_canvas_schematic_units is
 
 	procedure show_selected_object (
 		object		: in type_object)
-	is 
+	is
 		praeamble : constant string := "selected object: ";
 	begin
 		case object.cat is
@@ -111,72 +111,72 @@ package body et_canvas_schematic_units is
 					& get_meaning (object.placeholder)
 					& ". " & status_next_object_clarification);
 
-				
+
 			when CAT_VOID => null; -- CS
 		end case;
 	end show_selected_object;
 
-	
 
 
 
-	
-	procedure clarify_object is 
+
+
+	procedure clarify_object is
 
 		procedure do_it is
 			use pac_objects;
-			
+
 			-- Gather all proposed objects:
-			proposed_objects : constant pac_objects.list := 
+			proposed_objects : constant pac_objects.list :=
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
-			log (text => "proposed objects total " 
+			log (text => "proposed objects total "
 				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
-			
+
 			-- Locate the selected object among the proposed objects:
 			proposed_object := proposed_objects.find (selected_object);
 
 			-- Deselect the the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (CLEAR, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
-			-- If end of list reached, then proceed at 
+			-- If end of list reached, then proceed at
 			-- the begin of the list:
 			if proposed_object = pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
-			
+
 			-- Select the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (SET, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "clarify_object", level => log_threshold + 1);
-		log_indentation_up;		
-		do_it;		
+		log_indentation_up;
+		do_it;
 		log_indentation_down;
 	end clarify_object;
 
@@ -184,15 +184,15 @@ package body et_canvas_schematic_units is
 
 
 
-	
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		
+
 		procedure do_it is
 			-- Get the first selected object:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 			-- Gather all selected objects:
@@ -204,11 +204,11 @@ package body et_canvas_schematic_units is
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
-			
+
 			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set_first_selected_object_moving", level => log_threshold);
 		log_indentation_up;
@@ -218,16 +218,16 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
-	
+
+
 
 
 	procedure find_objects (
 		point : in type_vector_model)
-	is 
+	is
 		use et_modes.schematic;
-		
+
 		-- The total number of objects that have
 		-- been proposed:
 		count_total : natural := 0;
@@ -264,12 +264,12 @@ package body et_canvas_schematic_units is
 
 			-- Propose objects according to current verb and noun:
 			case verb is
-				when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE 
+				when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE
 					| VERB_RENAME | VERB_ROTATE | VERB_MIRROR | VERB_SHOW =>
-					
+
 					case noun is
 						when NOUN_DEVICE | NOUN_UNIT =>
-							
+
 							-- Propose units in the vicinity of the given point:
 							propose_units (
 								module_cursor	=> active_module,
@@ -277,9 +277,9 @@ package body et_canvas_schematic_units is
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
 
-							
+
 						when NOUN_PLACEHOLDER =>
-							
+
 							-- Propose placeholders in the vicinity of the given point:
 							propose_placeholders (
 								module_cursor	=> active_module,
@@ -287,13 +287,13 @@ package body et_canvas_schematic_units is
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
 
-							
+
 						when others =>
 							null; -- CS
 					end case;
 
 
-					
+
 				when VERB_SET =>
 					case noun is
 						when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
@@ -310,15 +310,15 @@ package body et_canvas_schematic_units is
 						when others =>
 							null; -- CS
 					end case;
-					
-							
+
+
 				when others =>
-					null; -- CS 
+					null; -- CS
 
 			end case;
 		end propose;
-		
-		
+
+
 	begin
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
@@ -328,12 +328,12 @@ package body et_canvas_schematic_units is
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
 
-		
+
 		-- Evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				null; -- nothing to do
-				
+
 			when 1 =>
 				set_edit_process_running;
 				select_first_proposed;
@@ -342,7 +342,7 @@ package body et_canvas_schematic_units is
 					when VERB_MOVE =>
 						set_first_selected_object_moving;
 						-- CS ? set_status (status_move);
-						
+
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
 
@@ -355,30 +355,30 @@ package body et_canvas_schematic_units is
 
 					when others => null; -- CS
 				end case;
-				
+
 				reset_request_clarification;
-				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;
 		end case;
-		
+
 		log_indentation_down;
 	end find_objects;
 
 
-	
 
 
 
-	
+
+
 
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
@@ -393,63 +393,63 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				move_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-				
+
 				-- If a unit has been moved, then the board
 				-- must be redrawn:
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			set_status (status_move);
 			-- CS clear status bar ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to the given point and 
+				-- will be drawn according to the given point and
 				-- the tool position.
 				set_first_selected_object_moving;
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
-				
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
-			
+
 		else
 			-- Finally move the selected device:
 			finalize;
@@ -459,15 +459,15 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
-	
-	
-	
+
+
+
+
 	procedure rotate_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -481,10 +481,10 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rotate_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a unit has been rotated, then the board
@@ -492,12 +492,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar
 			-- set_status (status_rotate);
@@ -505,7 +505,7 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -513,7 +513,7 @@ package body et_canvas_schematic_units is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then rotate the object immediatley.
 			if edit_process_running then
 				finalize;
@@ -530,14 +530,14 @@ package body et_canvas_schematic_units is
 
 
 
-	
+
 
 
 
 	procedure mirror_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -551,10 +551,10 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				mirror_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a unit has been mirrored, then the board
@@ -562,12 +562,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- clear status bar
 			status_clear;
@@ -575,7 +575,7 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -583,7 +583,7 @@ package body et_canvas_schematic_units is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then rotate the object immediatley.
 			if edit_process_running then
 				finalize;
@@ -598,16 +598,16 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
-	
-	
+
+
+
 
 
 	procedure delete_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : type_object := get_first_object (
@@ -621,7 +621,7 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- If a whole device is to be deleted, then
 				-- we clear the cursor that points to the unit.
 				-- This way, procedure delete_object is notified
@@ -632,8 +632,8 @@ package body et_canvas_schematic_units is
 
 				-- Do the delete operation:
 				delete_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
@@ -641,12 +641,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -654,7 +654,7 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -662,7 +662,7 @@ package body et_canvas_schematic_units is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then delete the object immediateley.
 			if edit_process_running then
 				finalize;
@@ -679,15 +679,15 @@ package body et_canvas_schematic_units is
 
 
 
-	
+
 
 
 	procedure cb_new_value_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		device_value_new : pac_device_value.bounded_string;
 
-		
+
 		-- Sets the value of the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -701,11 +701,11 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the set value operation:
 				set_value (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_value		=> device_value_new,
 					log_threshold	=> log_threshold + 1);
 
@@ -714,12 +714,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -727,13 +727,13 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		device_value_new := to_value (self.get_text); -- 100R
 
 		-- CS: Precheck device value ?
 		-- put_line ("new value entered: " & to_string (device_value_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -747,13 +747,13 @@ package body et_canvas_schematic_units is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_new_value_entered;
 
 
 
 
-	
+
 	procedure cb_value_window_destroy (
 		window : access gtk_widget_record'class)
 	is
@@ -765,7 +765,7 @@ package body et_canvas_schematic_units is
 
 
 
-	
+
 
 
 	procedure show_value_window is
@@ -774,7 +774,7 @@ package body et_canvas_schematic_units is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		
+
 		procedure do_it is
 			device	: type_device_name; -- IC1
 			value	: pac_device_value.bounded_string;
@@ -784,7 +784,7 @@ package body et_canvas_schematic_units is
 
 			-- Get the old value of the selected device:
 			value := get_value (object.unit.device_cursor);
-				
+
 			build_value_window (device);
 
 			-- Connect the "destroy" signal.
@@ -792,47 +792,47 @@ package body et_canvas_schematic_units is
 
 			-- Set the old value in the window:
 			value_old.set_text (to_string (value));
-	
+
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new value:
 			value_new.on_activate (cb_new_value_entered'access);
-			
+
 			value_new.grab_focus;
-			
+
 			value_window.show_all;
 
 			value_window_open := true;
 		end do_it;
-		
-				
+
+
 	begin
 		case object.cat is
 			when CAT_UNIT =>
 				do_it;
-  
+
 			when others =>
 				raise constraint_error; -- CS
 		end case;
 	end show_value_window;
 
 
-	
 
 
-	
+
+
 
 	procedure set_value (
 		point	: in type_vector_model)
 	is begin
 		if not value_window_open then
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_value_window;
@@ -852,17 +852,17 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
-	
+
+
 
 
 	procedure cb_new_purpose_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		device_purpose_new : pac_device_purpose.bounded_string;
 
-		
+
 		-- Sets the purpose of the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -876,11 +876,11 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the set purpose operation:
 				set_purpose (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_purpose		=> device_purpose_new,
 					log_threshold	=> log_threshold + 1);
 
@@ -889,12 +889,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -902,13 +902,13 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		device_purpose_new := to_purpose (self.get_text); -- "Brightness Control"
 
 		-- CS: Precheck device purpose ?
 		-- put_line ("new purpose entered: " & to_string (device_purpose_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -922,13 +922,13 @@ package body et_canvas_schematic_units is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_new_purpose_entered;
 
-	
 
 
-	
+
+
 
 
 	procedure cb_purpose_window_destroy (
@@ -940,10 +940,10 @@ package body et_canvas_schematic_units is
 		reset;
 	end cb_purpose_window_destroy;
 
-	
 
-	
-	
+
+
+
 
 	procedure show_purpose_window is
 
@@ -951,7 +951,7 @@ package body et_canvas_schematic_units is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		
+
 		procedure do_it is
 			device	: type_device_name; -- IC1
 			purpose	: pac_device_purpose.bounded_string;
@@ -961,7 +961,7 @@ package body et_canvas_schematic_units is
 
 			-- Get the old purpose of the selected device:
 			purpose := get_purpose (object.unit.device_cursor);
-				
+
 			build_purpose_window (device);
 
 			-- Connect the "destroy" signal.
@@ -969,24 +969,24 @@ package body et_canvas_schematic_units is
 
 			-- Set the old purpose in the window:
 			purpose_old.set_text (to_string (purpose));
-	
+
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new purpose:
 			purpose_new.on_activate (cb_new_purpose_entered'access);
-			
+
 			purpose_new.grab_focus;
-			
+
 			purpose_window.show_all;
 
 			purpose_window_open := true;
 		end do_it;
-		
-				
+
+
 	begin
 		case object.cat is
 			when CAT_UNIT =>
 				do_it;
-  
+
 			when others =>
 				raise constraint_error; -- CS
 		end case;
@@ -994,22 +994,22 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
+
+
 
 
 	procedure set_purpose (
 		point	: in type_vector_model)
 	is begin
 		if not purpose_window_open then
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_purpose_window;
@@ -1025,20 +1025,20 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
 
 
 
 
-	
+
+
+
 
 	procedure cb_new_partcode_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		device_partcode_new : pac_device_partcode.bounded_string;
 
-		
+
 		-- Sets the partcode of the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1052,11 +1052,11 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the set partcode operation:
 				set_partcode (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_partcode	=> device_partcode_new,
 					log_threshold	=> log_threshold + 1);
 
@@ -1065,12 +1065,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -1078,13 +1078,13 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		device_partcode_new := to_partcode (self.get_text); -- R_PAC_S_0805_VAL_100R
 
 		-- CS: Precheck device partcode ?
 		-- put_line ("new partcode entered: " & to_string (device_partcode_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -1098,13 +1098,13 @@ package body et_canvas_schematic_units is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_new_partcode_entered;
 
-	
 
-	
-	
+
+
+
 
 
 	procedure cb_partcode_window_destroy (
@@ -1116,11 +1116,11 @@ package body et_canvas_schematic_units is
 		reset;
 	end cb_partcode_window_destroy;
 
-	
 
-	
 
-	
+
+
+
 
 	procedure show_partcode_window is
 
@@ -1128,7 +1128,7 @@ package body et_canvas_schematic_units is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		
+
 		procedure do_it is
 			device	: type_device_name; -- IC1
 			partcode	: pac_device_partcode.bounded_string;
@@ -1138,7 +1138,7 @@ package body et_canvas_schematic_units is
 
 			-- Get the old partcode of the selected device:
 			partcode := get_partcode (object.unit.device_cursor);
-				
+
 			build_partcode_window (device);
 
 			-- Connect the "destroy" signal.
@@ -1146,24 +1146,24 @@ package body et_canvas_schematic_units is
 
 			-- Set the old partcode in the window:
 			partcode_old.set_text (to_string (partcode));
-	
+
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new partcode:
 			partcode_new.on_activate (cb_new_partcode_entered'access);
-			
+
 			partcode_new.grab_focus;
-			
+
 			partcode_window.show_all;
 
 			partcode_window_open := true;
 		end do_it;
-		
-				
+
+
 	begin
 		case object.cat is
 			when CAT_UNIT =>
 				do_it;
-  
+
 			when others =>
 				raise constraint_error; -- CS
 		end case;
@@ -1173,22 +1173,22 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
+
+
 
 
 	procedure set_partcode (
 		point	: in type_vector_model)
 	is begin
 		if not partcode_window_open then
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_partcode_window;
@@ -1209,13 +1209,13 @@ package body et_canvas_schematic_units is
 
 
 
-	
+
 -- PACKAGE VARIANT:
 
 
 	procedure cb_new_package_variant_selected (
 		combo : access gtk_combo_box_record'class)
-	is 
+	is
 		-- Get the model and active iter from the combo box:
 		use gtk.tree_model;
 		model : constant gtk_tree_model := combo.get_model;
@@ -1223,26 +1223,26 @@ package body et_canvas_schematic_units is
 
 		use glib.values;
 		name : gvalue;
-		
+
 	begin
 		log (text => "cb_new_package_variant_selected", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Get the variant name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
-		
+
 		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
 
-		log (text => "selected variant: " 
+		log (text => "selected variant: "
 			 & pac_package_variant_name.to_string (variant_new),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 	end cb_new_package_variant_selected;
 
-	
 
-	
+
+
 
 
 	procedure cb_package_variant_window_destroy (
@@ -1254,14 +1254,14 @@ package body et_canvas_schematic_units is
 		reset;
 	end cb_package_variant_window_destroy;
 
-	
 
 
-	
+
+
 
 	procedure cb_package_variant_apply (
 		button : access gtk_button_record'class)
-	is 
+	is
 		pragma unreferenced (button);
 
 		-- Sets the package_variant of the selected object:
@@ -1277,11 +1277,11 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the set package variant operation:
 				set_package_variant (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_variant		=> variant_new,
 					log_threshold	=> log_threshold + 1);
 
@@ -1290,12 +1290,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -1307,7 +1307,7 @@ package body et_canvas_schematic_units is
 	begin
 		log (text => "cb_package_variant_apply", level => log_threshold);
 		log_indentation_up;
-		
+
 		finalize;
 
 		-- put_line ("destroy window");
@@ -1315,16 +1315,16 @@ package body et_canvas_schematic_units is
 		-- If everything was fine, close the window and clean up.
 		package_variant_window.destroy;
 
-		-- put_line ("done");		
+		-- put_line ("done");
 		log_indentation_down;
 	end cb_package_variant_apply;
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 	procedure show_package_variant_window is
 
@@ -1332,7 +1332,7 @@ package body et_canvas_schematic_units is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		
+
 		procedure do_it is
 			unused_device	: type_device_name; -- IC1
 
@@ -1344,7 +1344,7 @@ package body et_canvas_schematic_units is
 
 			-- Get the old variant of the selected device:
 			variant := get_package_variant (object.unit.device_cursor);
-				
+
 			build_package_variant_window (object.unit.device_cursor);
 
 			-- Connect the "destroy" signal.
@@ -1352,9 +1352,9 @@ package body et_canvas_schematic_units is
 
 			-- Set the old variant in the window:
 			package_variant_old.set_text (to_string (variant));
-	
+
 			-- Connect the "on_changed" signal that
-			-- is emitted when an entry for the new variant 
+			-- is emitted when an entry for the new variant
 			-- has been selected:
 			package_variant_new.on_changed (cb_new_package_variant_selected'access);
 			package_variant_new.grab_focus;
@@ -1362,42 +1362,42 @@ package body et_canvas_schematic_units is
 			-- Connect the "on_clicked" signal that is emitted
 			-- when the operator clicks the "apply"-button:
 			package_variant_button_apply.on_clicked (cb_package_variant_apply'access);
-			
+
 			package_variant_window.show_all;
 
 			package_variant_window_open := true;
 		end do_it;
-		
-				
+
+
 	begin
 		case object.cat is
 			when CAT_UNIT =>
 				do_it;
-  
+
 			when others =>
 				raise constraint_error; -- CS
 		end case;
 	end show_package_variant_window;
 
 
-	
 
-	
 
-	
+
+
+
 
 	procedure set_package_variant (
 		point	: in type_vector_model)
 	is begin
 		if not package_variant_window_open then
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_package_variant_window;
@@ -1413,20 +1413,20 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
 
-	
+
+
 
 
 -- RENAME:
 
 	procedure cb_rename_new_name_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		device_name_new : type_device_name;
 
-		
+
 		-- Renames the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1440,33 +1440,33 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rename_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_name_device	=> device_name_new,
 					log_threshold	=> log_threshold + 1);
 
 
 				redraw_board;
 				-- CS redraw schematic ?
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
-		
+
+
 	begin
 		device_name_new := to_device_name (self.get_text); -- IC2
 
 		-- CS: Precheck device name ?
 		-- put_line ("new name entered: " & to_string (device_name_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -1480,14 +1480,14 @@ package body et_canvas_schematic_units is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_rename_new_name_entered;
 
 
 
-	
 
-	
+
+
 
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
@@ -1500,9 +1500,9 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
-	
+
+
+
 
 	procedure show_rename_window is
 
@@ -1516,7 +1516,7 @@ package body et_canvas_schematic_units is
 		begin
 			-- Get the name of the selected device:
 			device_name := get_device_name (object.unit.device_cursor);
-			
+
 			build_rename_window;
 
 			-- Connect the "destroy" signal.
@@ -1528,15 +1528,15 @@ package body et_canvas_schematic_units is
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new name:
 			rename_new.on_activate (cb_rename_new_name_entered'access);
-			
+
 			rename_new.grab_focus;
-			
+
 			rename_window.show_all;
 
-			rename_window_open := true;			
+			rename_window_open := true;
 		end do_it;
-		
-		
+
+
 	begin
 		case object.cat is
 			when CAT_UNIT =>
@@ -1548,24 +1548,24 @@ package body et_canvas_schematic_units is
 	end show_rename_window;
 
 
-	
 
 
 
-	
-	
+
+
+
 	procedure rename_object (
 		point	: in type_vector_model)
 	is begin
 		if not rename_window_open then
-		
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_rename_window;
@@ -1578,21 +1578,21 @@ package body et_canvas_schematic_units is
 			end if;
 		end if;
 	end rename_object;
-	
 
-	
 
-	
 
-	
+
+
+
+
 
 -- DRAG UNIT:
-	
+
 
 	procedure drag_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
+	is
 
 		-- Drags the selected object:
 		procedure finalize is
@@ -1610,10 +1610,10 @@ package body et_canvas_schematic_units is
 				-- units and connected net segments, a reset
 				-- is required for units and net segments:
 				et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
-				
+
 				drag_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 
@@ -1622,12 +1622,12 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if; -- CS really required ? Redraw the schematic instead ?
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete); -- CS correct ?
@@ -1635,14 +1635,14 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
-			
+
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
@@ -1650,17 +1650,17 @@ package body et_canvas_schematic_units is
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to the given point and 
+				-- will be drawn according to the given point and
 				-- the tool position.
 				set_first_selected_object_moving;
-				
+
 				-- Set the net segments which are
 				-- connected with the selected unit as "moving":
 				set_segments_moving (active_module, log_threshold + 1);
@@ -1677,11 +1677,11 @@ package body et_canvas_schematic_units is
 		end if;
 	end drag_object;
 
-	
 
 
 
-	
+
+
 
 
 -- ADD UNIT/DEVICE:
@@ -1693,7 +1693,7 @@ package body et_canvas_schematic_units is
 		use et_directory_and_file_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
-		-- If there are library paths the select the 
+		-- If there are library paths the select the
 		-- first of them.
 		-- If no paths are defined, then return
 		-- an empty string:
@@ -1703,9 +1703,9 @@ package body et_canvas_schematic_units is
 		else
 			top_lib_dir := get_first (all_lib_dirs);
 
-			--return expand ("$HOME/git/BEL/ET_component_library/devices");			
+			--return expand ("$HOME/git/BEL/ET_component_library/devices");
 			return expand (to_string (top_lib_dir));
-		end if;		
+		end if;
 	end get_top_most_important_library;
 
 
@@ -1717,20 +1717,20 @@ package body et_canvas_schematic_units is
 		end if;
 	end;
 
-	
 
-	
+
+
 	procedure reset_unit_add is begin
 		unit_add := (others => <>);
 	end reset_unit_add;
 
 
-	
-	
-	
+
+
+
 
 	procedure cb_package_variant_selected (
-		combo : access gtk_combo_box_record'class) 
+		combo : access gtk_combo_box_record'class)
 	is
 		-- Get the model and active iter from the combo box:
 		use gtk.tree_model;
@@ -1746,21 +1746,21 @@ package body et_canvas_schematic_units is
 		log (text => "selected variant: " & pac_package_variant_name.to_string (unit_add.variant),
 			 level => log_threshold + 1);
 		-- CS move downward after unit_add.variant assignment
-		
+
 		-- Get the variant name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
-		
+
 		unit_add.variant := to_variant_name (glib.values.get_string (name));
 
-		
+
 		-- Once the operator has started selecting a package variant, the
-		-- counter that counts the number of ESC hits until a reset 
+		-- counter that counts the number of ESC hits until a reset
 		-- is perfomed, must be reset:
 		reset_escape_counter;
-		
+
 		-- The initial rotation is always zero:
 		unit_add.rotation := 0.0;
-		
+
 		-- Now the information in unit_add is complete.
 		-- By setting the flag "valid" the draw operation of the unit
 		-- starts drawing the unit as it is sticking at the current tool
@@ -1768,35 +1768,35 @@ package body et_canvas_schematic_units is
 		unit_add.valid := true;
 
 		focus_canvas;
-		
+
 		log_indentation_down;
 	end cb_package_variant_selected;
 
 
 
 
-	
-	
-	
+
+
+
 	procedure cb_model_directory_selected (
-		button : access gtk_file_chooser_button_record'class) 
+		button : access gtk_file_chooser_button_record'class)
 	is begin
 		log (text => "cb_model_directory_selected", level => log_threshold);
-		
+
 		log_indentation_up;
 		log (text => "directory: " & button.get_current_folder,
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 	end cb_model_directory_selected;
 
 
 
-	
 
 
 
-	
+
+
 	procedure remove_box_package_variant is begin
 		if box_package_variant_active then
 			-- Remove the box_variant and everything
@@ -1805,14 +1805,14 @@ package body et_canvas_schematic_units is
 			box_package_variant_active := false;
 		end if;
 	end;
-	
 
 
-	
 
-	
+
+
+
 	procedure cb_device_model_selected (
-		button : access gtk_file_chooser_button_record'class) 
+		button : access gtk_file_chooser_button_record'class)
 	is
 		-- The delected device model file (*.dev) is stored here:
 		device_model_file : pac_device_model_file.bounded_string;
@@ -1829,18 +1829,18 @@ package body et_canvas_schematic_units is
 		use pac_package_variants;
 		variants : pac_package_variants.map;
 
-		
+
 		-- This procedure builds the box_variant with a
 		-- combo box inside that allows
 		-- the operator to select a package variant for the
 		-- currently selected device model:
 		procedure make_combo_box_package_variant is
-			use gtk.label;			
+			use gtk.label;
 			use gtk.cell_renderer_text;
 			use gtk.list_store;
-			
+
 			label_variant : gtk_label;
-			store : gtk_list_store;			
+			store : gtk_list_store;
 			render	: gtk_cell_renderer_text;
 
 			-- This is the combo box that allows the operator
@@ -1848,7 +1848,7 @@ package body et_canvas_schematic_units is
 			-- It is filled with variant names each time the operator selects
 			-- a new device model file:
 			cbox_package_variant : gtk_combo_box;
-			
+
 		begin
 			-- put_line ("make_combo_box_package_variant");
 
@@ -1867,7 +1867,7 @@ package body et_canvas_schematic_units is
 
 			-- Create the storage model for the content of the combo box:
 			make_store_for_variants (variants, store);
-			
+
 			-- Create the combo box:
 			gtk_new_with_model (
 				combo_box	=> cbox_package_variant,
@@ -1887,32 +1887,32 @@ package body et_canvas_schematic_units is
 			add_attribute (cbox_package_variant, render, "markup", 0); -- column 0
 
 			-- Show the box_variant with all its content:
-			box_package_variant.show_all;			
+			box_package_variant.show_all;
 
 			box_package_variant_active := true;
 		end make_combo_box_package_variant;
 
-		
+
 
 	begin -- cb_device_model_selected
 		log (text => "cb_device_model_selected", level => log_threshold);
 
 		-- Once the operator has started selecing a device model, the
-		-- counter that counts the number of ESC hits until a reset 
+		-- counter that counts the number of ESC hits until a reset
 		-- is perfomed, must be reset:
 		reset_escape_counter;
-		
+
 		log_indentation_up;
 
 		-- Get the name of the device model file from the button:
 		device_model_file := to_file_name (button.get_filename);
-		
-		log (text => "selected device model file: " & to_string (device_model_file), 
+
+		log (text => "selected device model file: " & to_string (device_model_file),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_up;
-		
-		-- Read the device mode file and store it in the 
+
+		-- Read the device mode file and store it in the
 		-- rig wide device library.
 		-- If the device is already in the library, then nothing happpens:
 		et_device_read.read_device (
@@ -1920,9 +1920,9 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 2);
 		-- CS add error flag output by read_device and evaluate accordingly.
 		-- Wrap follwing actions in a procedure.
-		-- CS use device cursor output by read_device instead 
+		-- CS use device cursor output by read_device instead
 		-- the following statement.
-		
+
 		-- Locate the device in the library:
 		device_cursor_lib := get_device_model (device_model_file);
 
@@ -1940,18 +1940,18 @@ package body et_canvas_schematic_units is
 		-- assign the default value as defined in the device model.
 		-- If the device is virtual, then an empty value will be assigned:
 		unit_add.value := get_default_value (device_cursor_lib);
-				
+
 		-- In the preview, the total number of units determines whether
 		-- to show the unit name as a suffix or not:
 		unit_add.total := get_unit_count (unit_add.device);
-		
+
 		-- Assign the prospective device name:
 		unit_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (device_cursor_lib), log_threshold + 2);
 
 		-- The initial rotation is always zero:
 		unit_add.rotation := 0.0;
-		
+
 		-- Depending on the nature of the device we
 		-- offer a selection of package variants. Virtual devices
 		-- like supply symbols have no package variants:
@@ -1984,7 +1984,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 
 		status_clear;
-		
+
 		-- Now the information in unit_add is complete.
 		-- By setting the flag "valid" the draw operation of the unit
 		-- starts drawing the unit as it is sticking at the current tool
@@ -1996,28 +1996,28 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
 
-	
-	
-	
+
+
+
+
 	procedure show_device_model_selection is
 		use gtk.box;
 		use gtk.label;
 		use gtk.file_chooser;
-		
 
-		-- The button for the directory:		
+
+		-- The button for the directory:
 		button_model_directory : gtk_file_chooser_button;
 
 		-- The button for the model file:
 		button_model_file : gtk_file_chooser_button;
-		
-		
+
+
 		-- This procedure creates a button by which the operator
 		-- selects the directory where a device model can be taken from:
-		procedure make_button_directory is 
+		procedure make_button_directory is
 			box_directory : gtk_vbox;
 			label_directory : gtk_label;
 		begin
@@ -2048,18 +2048,18 @@ package body et_canvas_schematic_units is
 			-- Connect the "on_file_set" signal with procedure
 			-- cb_model_directory_selected:
 			button_model_directory.on_file_set (cb_model_directory_selected'access);
-			
+
 			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_directory;
 
-		
+
 
 		-- This procedure creates a button by which the operator
 		-- selects the model file (*.dev):
-		procedure make_button_model is 
+		procedure make_button_model is
 			box_model : gtk_vbox;
 			label_model : gtk_label;
-			
+
 			use et_directory_and_file_ops;
 			use gtk.file_filter;
 			file_filter : gtk_file_filter;
@@ -2099,12 +2099,12 @@ package body et_canvas_schematic_units is
 
 			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_model;
-		
-		
+
+
 	begin
 		log (text => "show_device_model_selection", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Before inserting any widgets, the properties box must be cleared:
 		clear_out_properties_box;
 		box_package_variant_active := false;
@@ -2127,15 +2127,15 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
-	
+
+
+
 	procedure add_electrical_device (
 		place : in type_vector_model)
 	is begin
 		log (text => "add_electrical_device", level => log_threshold);
 		log_indentation_up;
-		
+
 		add_electrical_device (
 			module_cursor	=> active_module,
 			device_model	=> get_device_model_file (unit_add.device),
@@ -2151,22 +2151,22 @@ package body et_canvas_schematic_units is
 		-- assign the prospective next device name:
 		unit_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (unit_add.device), log_threshold + 1);
-		
+
 		log_indentation_down;
 	end add_electrical_device;
 
 
 
-	
 
-	
-	
+
+
+
 
 	procedure copy_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -2180,11 +2180,11 @@ package body et_canvas_schematic_units is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the copy operation:
 				copy_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> type_position (to_position (point, unit_add.rotation)),
 					log_threshold	=> log_threshold + 1);
 
@@ -2193,25 +2193,25 @@ package body et_canvas_schematic_units is
 				if object.cat = CAT_UNIT then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
 
 			-- The preview-object is no longer required:
 			reset_unit_add;
-			
+
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
-		
-		-- After the orignial object has been selected, and the the operator is moving 
+
+		-- After the orignial object has been selected, and the the operator is moving
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is
@@ -2231,7 +2231,7 @@ package body et_canvas_schematic_units is
 					if is_real (unit_add.device) then
 						unit_add.variant := get_package_variant (object.unit.device_cursor);
 					end if;
-					
+
 					unit_add.name := get_first_unit (unit_add.device);
 					unit_add.value := get_value (object.unit.device_cursor);
 					unit_add.total := get_unit_count (object.unit.device_cursor);
@@ -2241,29 +2241,29 @@ package body et_canvas_schematic_units is
 
 					unit_add.rotation := get_rotation (object.unit.unit_cursor);
 					unit_add.valid := true;
-					
+
 				when others =>
 					-- CS
 					null;
 			end case;
 		end build_preview;
 
-		
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
-		
+
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 
 				-- Build the floating "preview-object" that is attached
@@ -2271,7 +2271,7 @@ package body et_canvas_schematic_units is
 				if edit_process_running then
 					build_preview;
 				end if;
-				
+
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
@@ -2286,14 +2286,14 @@ package body et_canvas_schematic_units is
 
 		else
 			finalize;
-		end if;			
+		end if;
 	end copy_object;
 
 
-	
 
 
-	
+
+
 
 
 
@@ -2306,15 +2306,15 @@ package body et_canvas_schematic_units is
 -- FETCH UNIT:
 
 
-	
+
 	procedure show_fetch_menu is
 
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
-		
+
 		use pac_devices_electrical;
-	
-		
+
+
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_device_models.cursor;
 
@@ -2324,7 +2324,7 @@ package body et_canvas_schematic_units is
 		unit_names : pac_unit_names.list;
 
 		use pac_unit_name;
-		
+
 
 		procedure show_menu is
 			use gtk.menu;
@@ -2332,22 +2332,22 @@ package body et_canvas_schematic_units is
 
 			menu : gtk_menu; -- the menu
 			item : gtk_menu_item; -- an item on the menu
-									   
+
 			-- If no units are available, then no menu is to be shown.
 			-- So we must count units with this stuff:
 			subtype type_units_available is natural range 0 .. type_unit_count'last;
 			units_available : type_units_available := 0;
-					
 
-			
-			procedure query_name (c : in pac_unit_names.cursor) is 
+
+
+			procedure query_name (c : in pac_unit_names.cursor) is
 				in_use : boolean := false;
 
-				
+
 				-- Sets the in_use flag if given unit is already in use:
 				procedure query_in_use (
 					device_name	: in type_device_name;
-					device		: in type_device_electrical) 
+					device		: in type_device_electrical)
 				is
 					pragma unreferenced (device_name);
 					use pac_units;
@@ -2357,7 +2357,7 @@ package body et_canvas_schematic_units is
 					end if;
 				end query_in_use;
 
-				
+
 			begin -- query_name
 				-- Test whether the unit is already in use.
 				query_element (
@@ -2367,9 +2367,9 @@ package body et_canvas_schematic_units is
 				-- If the unit is available then put its name on the menu:
 				if not in_use then -- unit is available
 					-- put_line ("unit " & to_string (element (c)) & " available");
-					
+
 					units_available := units_available + 1;
-					
+
 					-- Build the menu item. NOTE: The actual unit name must be
 					-- the 2nd string of the entry. Procedure cb_fetch_menu_unit_select expects
 					-- it at this place:
@@ -2386,7 +2386,7 @@ package body et_canvas_schematic_units is
 			end query_name;
 
 
-			
+
 		begin -- show_menu
 
 			-- create the menu
@@ -2410,7 +2410,7 @@ package body et_canvas_schematic_units is
 				-- assign to the preliminary unit the value of the parent device.
 				-- If the device is virtual, then an empty value will be assigned:
 				unit_fetch.value := get_value (object.unit.device_cursor);
-				
+
 				-- Show the menu:
 				menu.show;
 
@@ -2420,15 +2420,15 @@ package body et_canvas_schematic_units is
 				-- Open the menu:
 				menu.popup (
 					-- CS func => set_position'access,
-							
+
 					-- button 0 means: this is not triggered by a key press
 					-- or a button click:
 					button => 0,
-							
+
 					-- get_current_event_time causes the menu to remain
 					-- until a 2nd click.
 					activate_time => gtk.main.get_current_event_time);
-				
+
 				-- put_line ("units menu open");
 			else
 				set_status ("No more units of this device available !");
@@ -2437,16 +2437,16 @@ package body et_canvas_schematic_units is
 		end show_menu;
 
 
-		
+
 	begin -- show_fetch_menu
 		put_line ("show_fetch_menu");
-		
+
 
 		case object.cat is
 			when CAT_UNIT =>
 				device_model := get_device_model_file (object.unit.device_cursor);
 				-- put_line ("model " & to_string (device_model));
-				
+
 				device_cursor_lib := get_device_model (device_model);
 
 				-- CS use device_cursor_lib := get_device_model (object.unit.device_cursor);
@@ -2456,17 +2456,17 @@ package body et_canvas_schematic_units is
 
 				-- collect the names of all units of the selected device:
 				-- put_line ("get all units");
-				unit_names := get_all_units (device_cursor_lib);				
-				
+				unit_names := get_all_units (device_cursor_lib);
+
 				show_menu;
-				
-				
+
+
 			when others =>
 				null;
 		end case;
-		
+
 	end show_fetch_menu;
-	
+
 
 
 
@@ -2476,23 +2476,23 @@ package body et_canvas_schematic_units is
 			add (unit_fetch.rotation, 90.0);
 		end if;
 	end;
-		
-	
 
-	
+
+
+
 
 	procedure reset_unit_fetch is begin
 		unit_fetch := (others => <>);
 	end;
-	
 
 
 
 
-	
-	
+
+
+
 	procedure cb_fetch_menu_destroy (
-		menu : access gtk.menu_shell.gtk_menu_shell_record'class) 
+		menu : access gtk.menu_shell.gtk_menu_shell_record'class)
 	is
 		pragma unreferenced (menu);
 	begin
@@ -2505,63 +2505,63 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
 
-	
+
+
 	-- Extracts from the selected menu item the unit name.
 	procedure cb_fetch_menu_unit_select (
 		menu : access gtk.menu_item.gtk_menu_item_record'class)
 	is
-		
+
 		-- Extract the unit name from field 2 of the menu item:
 		unit_name : constant string := get_field_from_line (
 			text_in		=> menu.get_label,
 			position	=> 2);
 	begin
 		put_line ("cb_fetch_menu_unit_select");
-		
+
 		-- assign the unit to be drawn:
 		unit_fetch.name := to_unit_name (unit_name);
 
 		-- In the preview, the total number of units determines whether
 		-- to show the unit name as a suffix or not:
 		unit_fetch.total := get_unit_count (unit_fetch.device);
-		
+
 		-- Signal procedure draw_units to draw this unit as a preview:
 		unit_fetch.valid := true;
 
 		reset_status_units (active_module, log_threshold + 1);
-		
-		set_status ("Device " & to_string (unit_fetch.device_pre) 
+
+		set_status ("Device " & to_string (unit_fetch.device_pre)
 			& " unit " & unit_name & " selected.");
 
 		-- exception
 		-- 	when event: others =>
 		-- 		-- log (text => ada.exceptions.exception_information (event), console => true);
 		-- 		log (text => ada.exceptions.exception_information (event));
-		
+
 	end cb_fetch_menu_unit_select;
-	
 
 
 
-	
-	
-	
+
+
+
+
 	procedure fetch_unit (
 		tool	: in type_tool;
-		point	: in type_vector_model) 
-	is 
+		point	: in type_vector_model)
+	is
 		use pac_unit_name;
 
-		
+
 		procedure finalize is begin
 			log (text => "finalize fetch", level => log_threshold);
 			log_indentation_up;
-						
+
 			reset_status_objects (active_module, log_threshold + 1);
-			
+
 			fetch_unit (
 				module_cursor	=> active_module,
 				device_name		=> unit_fetch.device_pre,
@@ -2572,13 +2572,13 @@ package body et_canvas_schematic_units is
 			-- If a unit has been fetched, then the board
 			-- must be redrawn:
 			redraw_board;
-			
+
 			-- Clean up for the next unit to be fetched:
-			reset_unit_fetch;			
+			reset_unit_fetch;
 			reset_request_clarification;
 			set_status (status_fetch);
 
-			log_indentation_down;		
+			log_indentation_down;
 		end finalize;
 
 
@@ -2587,11 +2587,11 @@ package body et_canvas_schematic_units is
 		primary_tool := tool;
 
 		-- CS test whether the fetch menu is not open ?
-		
+
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (point);
-			
+
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
@@ -2610,7 +2610,7 @@ package body et_canvas_schematic_units is
 		end if;
 
 
-		-- If a unit has been selected from the 
+		-- If a unit has been selected from the
 		-- fetch menu, then the data in unit_fetch is regarded
 		-- as valid and the unit inserted in the database:
 		if unit_fetch.valid then
@@ -2621,18 +2621,18 @@ package body et_canvas_schematic_units is
 
 
 
-	
-	
+
+
 
 
 	procedure show_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
 			use et_device_property_level;
-			
+
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -2647,8 +2647,8 @@ package body et_canvas_schematic_units is
 
 				-- Show the device:
 				show_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- Highlight the package in the board editor:
@@ -2661,27 +2661,27 @@ package body et_canvas_schematic_units is
 
 						set_status (get_properties (
 							device_cursor	=> object.unit.device_cursor,
-							level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+							level			=> DEVICE_PROPERTIES_LEVEL_1,
 							all_units		=> false,
 							unit_cursor		=> object.unit.unit_cursor));
 
 					when others =>
 						status_clear;
 						-- CS CAT_PLACEHOLDER ?
-				end case;					
+				end case;
 
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -2694,7 +2694,7 @@ package body et_canvas_schematic_units is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -2702,15 +2702,15 @@ package body et_canvas_schematic_units is
 			finalize;
 		end if;
 	end show_object;
-	
 
-	
-	
+
+
+
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

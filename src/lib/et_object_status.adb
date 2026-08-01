@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -70,8 +70,8 @@ package body et_object_status is
 	end;
 
 
-	
-	
+
+
 	procedure set_selected (
 		status	: in out type_object_status)
 	is begin
@@ -98,7 +98,7 @@ package body et_object_status is
 	end;
 
 
-	
+
 
 	procedure set_moving (
 		status	: in out type_object_status)
@@ -126,7 +126,7 @@ package body et_object_status is
 	end;
 
 
-	
+
 
 	procedure set_locked (
 		status	: in out type_object_status)
@@ -141,7 +141,7 @@ package body et_object_status is
 		status.locked := false;
 	end clear_locked;
 
-	
+
 	function is_locked (
 		status : in type_object_status)
 		return boolean
@@ -157,23 +157,23 @@ package body et_object_status is
 
 
 
-	function get_default_status 
+	function get_default_status
 		return type_object_status
 	is begin
 		return object_status_default;
 	end get_default_status;
-	
 
-	
+
+
 
 	function to_operation (
 		action	: in type_action;
 		flag	: in type_flag)
 		return type_status_operation
-	is begin 
+	is begin
 		return (action, flag);
 	end;
-	
+
 
 
 
@@ -185,7 +185,7 @@ package body et_object_status is
 		return operation.action;
 	end;
 
-	
+
 
 	function get_flag (
 		operation : in type_status_operation)
@@ -195,7 +195,7 @@ package body et_object_status is
 	end;
 
 
-	
+
 
 	procedure modify_status (
 		status 		: in out type_object_status;
@@ -233,14 +233,14 @@ package body et_object_status is
 				case operation.action is
 					when SET =>
 						set_locked (status);
-   
+
 					when CLEAR =>
 						clear_locked (status);
 				end case;
-			
+
 		end case;
 	end modify_status;
-	
+
 
 
 	procedure reset_status (
@@ -250,9 +250,9 @@ package body et_object_status is
 	end reset_status;
 
 
-	
 
-	
+
+
 	function to_string (
 		flag : in type_flag)
 		return string
@@ -260,7 +260,7 @@ package body et_object_status is
 		return "flag: " & type_flag'image (flag);
 	end to_string;
 
-	
+
 	function to_string (
 		operation : in type_status_operation)
 		return string
@@ -273,8 +273,8 @@ package body et_object_status is
 
 
 
-	
-	
+
+
 	function is_A_selected (
 		status : in type_AB_status)
 		return boolean
@@ -282,7 +282,7 @@ package body et_object_status is
 		return boolean (status.selected.A);
 	end;
 
-	
+
 	function is_B_selected (
 		status : in type_AB_status)
 		return boolean
@@ -290,7 +290,7 @@ package body et_object_status is
 		return boolean (status.selected.B);
 	end;
 
-	
+
 	procedure set_A_selected (
 		status : in out type_AB_status)
 	is begin
@@ -327,8 +327,8 @@ package body et_object_status is
 	end;
 
 
-	
-	
+
+
 
 
 	function is_A_moving (
@@ -338,7 +338,7 @@ package body et_object_status is
 		return boolean (status.moving.A);
 	end;
 
-	
+
 	function is_B_moving (
 		status : in type_AB_status)
 		return boolean
@@ -347,9 +347,9 @@ package body et_object_status is
 	end;
 
 
-	
 
-	
+
+
 	procedure set_A_moving (
 		status : in out type_AB_status)
 	is begin
@@ -394,14 +394,14 @@ package body et_object_status is
 		clear_AB_selected (status);
 		clear_AB_moving (status);
 	end;
-	
 
-	
+
+
 end et_object_status;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -54,7 +54,7 @@ package body et_route_restrict.packages is
 		mirror_circles (restrict.circles);
 		-- CS zones
 	end mirror_route_restrict_objects;
-	
+
 
 	procedure rotate_route_restrict_objects (
 		restrict	: in out type_one_side;
@@ -77,7 +77,7 @@ package body et_route_restrict.packages is
 		-- CS zones
 	end move_route_restrict_objects;
 
-	
+
 	function to_polygons (
 		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
@@ -94,7 +94,7 @@ package body et_route_restrict.packages is
 		-- CS
 		return result;
 	end to_polygons;
-	
+
 
 
 
@@ -115,7 +115,7 @@ package body et_route_restrict.packages is
 	end add_zone;
 
 
-	
+
 
 	procedure add_cutout (
 		route_restrict	: in out type_route_restrict;
@@ -134,12 +134,12 @@ package body et_route_restrict.packages is
 	end add_cutout;
 
 
-	
+
 end et_route_restrict.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

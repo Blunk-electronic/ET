@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
@@ -53,16 +53,16 @@ package et_board_ops_grid is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	-- Sets the grid of the module.
 	-- Sets the grid in the database and on the canvas:
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level);		
+		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the grid of the module.
 	-- Sets the grid in the database and on the canvas:
 	procedure set_grid (
@@ -77,12 +77,12 @@ package et_board_ops_grid is
 		log_threshold	: in type_log_level)
 		return pac_grid.type_grid;
 
-											
+
 end et_board_ops_grid;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

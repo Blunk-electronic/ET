@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;				use et_generic_modules;
 with et_drawing_frame;					use et_drawing_frame;
@@ -52,30 +52,30 @@ package et_schematic_ops_sheets is
 
 	procedure sheet_not_found (
 		sheet : in type_sheet);
-	
+
 
 	-- Returns the total number of sheets
 	-- that the module currently has:
 	function get_sheet_count (
 		module	: in pac_generic_modules.cursor)
 		return type_sheet;
-		
-		
-		
+
+
+
 	-- Returns true if the given sheet exists:
 	function sheet_exists (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
 		return boolean;
-	
 
-							  
+
+
 	-- Returns the description of a sheet of a generic module:
 	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
 		return type_schematic_description;
-	
+
 
 
 	-- Sets the category of the given sheet.
@@ -87,9 +87,9 @@ package et_schematic_ops_sheets is
 		category		: in type_schematic_sheet_category;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
 
-	
+
+
 	-- Deletes the given sheet.
 	-- Assumes that the sheet exists. Otherwise an exception
 	-- is raised:
@@ -98,18 +98,18 @@ package et_schematic_ops_sheets is
 		sheet			: in type_sheet;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
-	
-	
+
+
+
 	-- CS subprograms to get and set the title block position ?
 	-- currently this is defined in the frame template file *.frs
-	
+
 
 end et_schematic_ops_sheets;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

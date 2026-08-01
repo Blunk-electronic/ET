@@ -51,30 +51,30 @@ package body et_directions is
 		return to_lower (type_direction_of_rotation'image (direction));
 	end to_string;
 
-	
-	
+
+
 	function to_direction (direction : in string) return type_direction_of_rotation is begin
 		return type_direction_of_rotation'value (direction);
 	end to_direction;
 
-	
-	
+
+
 	function reverse_direction (direction : in type_direction_of_rotation)
 		return type_direction_of_rotation is
 	begin
-		case direction is 
+		case direction is
 			when CW => return CCW;
 			when CCW => return CW;
 		end case;
 	end reverse_direction;
 
 
-	
+
 end et_directions;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

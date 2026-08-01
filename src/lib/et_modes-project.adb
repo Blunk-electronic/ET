@@ -44,46 +44,46 @@ with et_logging;				use et_logging;
 package body et_modes.project is
 
 
-	function to_string (verb : in type_verb_project) return string is 
+	function to_string (verb : in type_verb_project) return string is
 		s : constant string := type_verb_project'image (verb);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 
-	
+
 	function to_verb (verb : in string) return type_verb_project is begin
 		return type_verb_project'value (verb_prefix & verb);
-	
+
 		exception when others =>
 			log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 
 
-	
-	function to_string (noun : in type_noun_project) return string is 
+
+	function to_string (noun : in type_noun_project) return string is
 		s : constant string := type_noun_project'image (noun);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 
-	
+
 	function to_noun (noun : in string) return type_noun_project is begin
 		return type_noun_project'value (noun_prefix & noun);
-	
+
 		exception when others =>
 			log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
 	end;
-	
-	
+
+
 end et_modes.project;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

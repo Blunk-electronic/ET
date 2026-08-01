@@ -47,10 +47,10 @@ package et_import is
 		KICAD_V4,
 		KICAD_V5
 		); -- CS: eagle_vx
-	
-	-- If no format specified via cmd line, a default applies so that the operator can be 
+
+	-- If no format specified via cmd line, a default applies so that the operator can be
 	-- notified about missing cad format.
-	cad_format : type_cad_format := UNKNOWN; 
+	cad_format : type_cad_format := UNKNOWN;
 
 	procedure validate_cad_format (format : in string);
 
@@ -63,17 +63,17 @@ package et_import is
 	-- Returns a message that the given format is not supported.
 
 
-	
+
 	-- Checks if the given project of the given format exists in the current working directory.
 	procedure validate_project (
 		name 		: in pac_project_name.bounded_string;
 		cad_format	: in type_cad_format := UNKNOWN);
-	
+
 end et_import;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

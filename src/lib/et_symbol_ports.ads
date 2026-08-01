@@ -62,9 +62,9 @@ package et_symbol_ports is
 
 	use pac_geometry_2;
 	use pac_text_schematic;
-	
-	
-	
+
+
+
 
 	-- The distance between the line of a port and the terminal name:
 	terminal_name_spacing_line : constant type_distance_positive := 1.0;
@@ -74,26 +74,26 @@ package et_symbol_ports is
 	terminal_name_spacing_start : constant type_distance_positive := 1.7;
 
 
-	
+
 	type type_port_base is new type_port_general with record
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
 
 		-- CS: This selector is probably not required
 		-- if we use a hardcoded text size for the name:
 		port_name_size			: type_text_size := text_size_default;
-		
+
 		terminal_name_visible	: type_terminal_name_visible := terminal_name_visible_default;
 		terminal_name_size		: type_text_size := text_size_default;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	
 
 
 
-	
-	type type_symbol_port (direction : type_port_direction) 
-	is new type_port_base with record 
+
+
+	type type_symbol_port (direction : type_port_direction)
+	is new type_port_base with record
 		case direction is
 			when INPUT_DIGITAL =>
 				sensitivity_edge		: type_sensitivity_edge;
@@ -102,29 +102,29 @@ package et_symbol_ports is
 			when OUTPUT_ANALOG =>
 				output_analog_tristate	: type_output_tristate;
 				output_analog_weakness	: type_output_weakness;
-				
+
 			when OUTPUT_DIGITAL =>
 				output_digital_inverted	: type_output_inverted;
 				output_digital_tristate	: type_output_tristate;
 				output_digital_weakness	: type_output_weakness;
-				
+
 			when BIDIR_DIGITAL =>
 				output_inverted			: type_output_inverted;
-				output_tristate			: type_output_tristate;				
+				output_tristate			: type_output_tristate;
 				output_weakness			: type_output_weakness;
 				input_sensitivity_edge	: type_sensitivity_edge;
 				input_sensitivity_level	: type_sensitivity_level;
-				
+
 			when POWER_OUT | POWER_IN =>
 				level	: type_power_level;
-				
+
 			when others => null;
 		end case;
 	end record;
 
 
-	
-	
+
+
 	-- Ports of a symbol are collected in a map. A map because a port with a certain name
 	-- like GND may exist only once in the symbol. Te symbol is an abstraction of a
 	-- function block within a device. It does not matter how many GND terminals exist
@@ -133,7 +133,7 @@ package et_symbol_ports is
 	use et_port_names;
 	use pac_port_name;
 
-	
+
 	package pac_symbol_ports is new indefinite_ordered_maps (
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_symbol_port);
@@ -146,16 +146,16 @@ package et_symbol_ports is
 		port_cursor : in pac_symbol_ports.cursor)
 		return pac_port_name.bounded_string;
 
-	
+
 
 	-- Returns the total number of ports in the given list:
 	function get_count (
 		ports : in pac_symbol_ports.map)
 		return natural;
-	
+
 
 	-- Returns the x/y-position of the given port:
-	function get_position (							  
+	function get_position (
 		port	: in pac_symbol_ports.cursor)
 		return type_vector_model;
 
@@ -169,15 +169,15 @@ package et_symbol_ports is
 		position	: in type_vector_model;
 		deleted		: out boolean;
 		port_name	: out pac_port_name.bounded_string);
-	
-	
+
+
 	-- Moves the given ports by given offset.
 	procedure move_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
 		offset	: in type_object_position); -- the offset (only x/y matters)
-	
 
-	-- Rotates the given ports by given 
+
+	-- Rotates the given ports by given
 	-- angle about the origin of the symbol:
 	procedure rotate_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
@@ -188,15 +188,15 @@ package et_symbol_ports is
 	procedure mirror_ports (
 		ports	: in out pac_symbol_ports.map);
 
-	
+
 
 	-- CS procedure that outputs the properties of a port
-	
+
 end et_symbol_ports;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

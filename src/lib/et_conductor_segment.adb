@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,8 +45,8 @@ with et_contour_to_polygon;
 
 package body et_conductor_segment is
 
-	
-	
+
+
 -- LINES:
 
 	overriding procedure reset_line (
@@ -57,8 +57,8 @@ package body et_conductor_segment is
 	end;
 
 
-	
-	
+
+
 	function to_polygon (
 		line 		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
@@ -93,7 +93,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
 		process	: not null access procedure (position : in pac_conductor_lines.cursor);
@@ -108,13 +108,13 @@ package body et_conductor_segment is
 	end iterate;
 
 
-	
+
 
 	--function get_shortest_distance (
 		--point	: in type_point;
 		--segment	: in type_conductor_line_segment)
 		--return type_distance_model
-	--is 
+	--is
 		--result : type_distance_model := zero;
 
 		--type type_segment_area is new type_polygon with null record;
@@ -147,7 +147,7 @@ package body et_conductor_segment is
 					--append (s.segments, (ARC, type_arc (reverse_arc (segment.cap_start))));
 					--polygon.contours := s;
 				--end;
-			--end if;			
+			--end if;
 		--end build_polygon;
 
 		----distance : type_distance_polar;
@@ -157,12 +157,12 @@ package body et_conductor_segment is
 		--build_polygon;
 
 		----put_line (to_string (polygon));
-		
+
 		--if not is_closed (polygon).closed then
 			--raise constraint_error with "contour of conductor segment not closed !";
 		--end if;
 
-		
+
 		----distance := get_shortest_distance (polygon, point);
 		--declare
 			--ipq : constant type_point_to_polygon_status :=
@@ -175,13 +175,13 @@ package body et_conductor_segment is
 			--case ipq.location is
 				--when INSIDE =>
 					--result := - to_distance (ipq.distance);
-					
+
 				--when OUTSIDE | ON_EDGE | ON_VERTEX =>
 					--result := + to_distance (ipq.distance);
 
 			--end case;
 		--end;
-		
+
 		--return result;
 	--end get_shortest_distance;
 
@@ -199,7 +199,7 @@ package body et_conductor_segment is
 			mirror_line (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
@@ -207,7 +207,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure rotate_lines (
 		lines	: in out pac_conductor_lines.list;
 		angle	: in type_rotation_model)
@@ -220,7 +220,7 @@ package body et_conductor_segment is
 			rotate_line_by (line, angle);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
@@ -228,7 +228,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure move_lines (
 		lines	: in out pac_conductor_lines.list;
 		offset	: in type_vector_model)
@@ -241,7 +241,7 @@ package body et_conductor_segment is
 			move_by (line, offset);
 			result.append (line);
 		end;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
@@ -250,7 +250,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	function to_polygons (
 		lines		: in pac_conductor_lines.list;
 		tolerance	: in type_distance_positive)
@@ -261,25 +261,25 @@ package body et_conductor_segment is
 		procedure query_line (c : in pac_conductor_lines.cursor) is begin
 			result.append (to_polygon (element (c), tolerance));
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		return result;
 	end to_polygons;
 
-	
 
 
-	
+
+
 	procedure line_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		line : type_conductor_line;
 	begin
 		line := element (cursor);
-		log (text => "conductor line face" & to_string (face) & space 
+		log (text => "conductor line face" & to_string (face) & space
 			 & to_string (line)
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_conductor_properties;
@@ -290,8 +290,8 @@ package body et_conductor_segment is
 
 
 
-	
-	
+
+
 -- ARCS:
 
 	overriding procedure reset_arc (
@@ -301,12 +301,12 @@ package body et_conductor_segment is
 		arc.width := linewidth_default;
 	end;
 
-	
 
-	
+
+
 	function to_polygon (
 		arc 		: in type_conductor_arc;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon
 	is begin
 		return to_polygon (
@@ -316,7 +316,7 @@ package body et_conductor_segment is
 			mode		=> EXPAND);
 
 	end to_polygon;
-	
+
 
 
 
@@ -327,7 +327,7 @@ package body et_conductor_segment is
 		return get_A (element (arc));
 	end;
 
-	
+
 	function get_B (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
@@ -336,7 +336,7 @@ package body et_conductor_segment is
 	end;
 
 
-	
+
 	procedure iterate (
 		arcs	: in pac_conductor_arcs.list;
 		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
@@ -350,18 +350,18 @@ package body et_conductor_segment is
 		end loop;
 	end iterate;
 
-	
+
 	--function get_shortest_distance (
 		--point	: in type_point;
 		--segment	: in type_conductor_arc_segment)
 		--return type_distance_model
-	--is 
+	--is
 		--result : type_distance_model := zero;
 
 		--type type_segment_area is new type_polygon_base with null record;
 		--polygon : type_segment_area;
 
-		--procedure build_polygon is 
+		--procedure build_polygon is
 			--use pac_polygon_segments;
 			--s : type_polygon_segments := (circular => false, others => <>);
 		--begin
@@ -379,7 +379,7 @@ package body et_conductor_segment is
 		--build_polygon;
 
 		----distance := get_shortest_distance (polygon, point);
-		
+
 		--declare
 			--ipq : constant type_point_to_polygon_status :=
 				--get_point_to_polygon_status (polygon, to_vector (point));
@@ -387,15 +387,15 @@ package body et_conductor_segment is
 			--case ipq.location is
 				--when INSIDE =>
 					--result := - to_distance (ipq.distance);
-					
+
 				--when OUTSIDE | ON_EDGE | ON_VERTEX =>
 					--result := + to_distance (ipq.distance);
 			--end case;
 		--end;
-		
+
 		--return result;
 	--end get_shortest_distance;
-	
+
 
 	procedure mirror_arcs (
 		arcs	: in out pac_conductor_arcs.list;
@@ -410,14 +410,14 @@ package body et_conductor_segment is
 			mirror_arc (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
 
-	
+
 
 	procedure rotate_arcs (
 		arcs	: in out pac_conductor_arcs.list;
@@ -431,7 +431,7 @@ package body et_conductor_segment is
 			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
@@ -439,7 +439,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure move_arcs (
 		arcs	: in out pac_conductor_arcs.list;
 		offset	: in type_vector_model)
@@ -452,7 +452,7 @@ package body et_conductor_segment is
 			move_by (arc, offset);
 			result.append (arc);
 		end;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
@@ -461,7 +461,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	function to_polygons (
 		arcs		: in pac_conductor_arcs.list;
 		tolerance	: in type_distance_positive)
@@ -472,7 +472,7 @@ package body et_conductor_segment is
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is begin
 			result.append (to_polygon (element (c), tolerance));
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		return result;
@@ -481,16 +481,16 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure arc_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		arc : type_conductor_arc;
 	begin
 		arc := element (cursor);
-		log (text => "conductor arc face" & to_string (face) & space 
+		log (text => "conductor arc face" & to_string (face) & space
 			 & to_string (arc)
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_conductor_properties;
@@ -498,7 +498,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 
 -- CIRCLES:
 
@@ -509,22 +509,22 @@ package body et_conductor_segment is
 		circle.width := linewidth_default;
 	end;
 
-	
 
 
-	
+
+
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon
-	is 
+	is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
-		-- outer_radius : constant type_float_positive := 
+		-- outer_radius : constant type_float_positive :=
 		-- 	circle.radius + 0.5 * type_float_positive (circle.width);
 
-		outer_radius : constant type_distance_positive := 
+		outer_radius : constant type_distance_positive :=
 			get_radius (circle) + 0.5 * circle.width;
 	begin
 		result.edges := to_edges (
@@ -537,13 +537,13 @@ package body et_conductor_segment is
 	end to_polygon_outside;
 
 
-	
-	
+
+
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon
-	is 
+	is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
@@ -566,7 +566,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure iterate (
 		circles	: in pac_conductor_circles.list;
 		process	: not null access procedure (position : in pac_conductor_circles.cursor);
@@ -583,8 +583,8 @@ package body et_conductor_segment is
 
 
 
-	
-	
+
+
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -598,7 +598,7 @@ package body et_conductor_segment is
 			mirror_circle (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -607,7 +607,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure rotate_circles (
 		circles	: in out pac_conductor_circles.list;
 		angle	: in type_rotation_model)
@@ -620,7 +620,7 @@ package body et_conductor_segment is
 			rotate_circle_by (circle, angle);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -628,7 +628,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	procedure move_circles (
 		circles	: in out pac_conductor_circles.list;
 		offset	: in type_vector_model)
@@ -641,7 +641,7 @@ package body et_conductor_segment is
 			move_by (circle, offset);
 			result.append (circle);
 		end;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -649,7 +649,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	function to_polygons_outside (
 		circles		: in pac_conductor_circles.list;
 		tolerance	: in type_distance_positive)
@@ -660,7 +660,7 @@ package body et_conductor_segment is
 		procedure query_circle (c : in pac_conductor_circles.cursor) is begin
 			result.append (to_polygon_outside (element (c), tolerance));
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		return result;
@@ -668,7 +668,7 @@ package body et_conductor_segment is
 
 
 
-	
+
 	function to_polygons_inside (
 		circles		: in pac_conductor_circles.list;
 		tolerance	: in type_distance_positive)
@@ -679,34 +679,34 @@ package body et_conductor_segment is
 		procedure query_circle (c : in pac_conductor_circles.cursor) is begin
 			result.append (to_polygon_inside (element (c), tolerance));
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		return result;
 	end to_polygons_inside;
 
 
-	
-	
+
+
 
 	procedure circle_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is begin
-		log (text => "conductor circle face" & to_string (face) & space 
+		log (text => "conductor circle face" & to_string (face) & space
 			& to_string (type_circle (element (cursor)))
 			& " width" & to_string (element (cursor).width),
 			level => log_threshold);
 
 	end circle_conductor_properties;
 
-	
+
 end et_conductor_segment;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

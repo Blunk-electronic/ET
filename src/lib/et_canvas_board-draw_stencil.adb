@@ -49,7 +49,7 @@ separate (et_canvas_board)
 
 
 procedure draw_stencil (
-	face : in type_face) 
+	face : in type_face)
 is
 	use et_colors.board;
 
@@ -57,25 +57,25 @@ is
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
 	use pac_stencil_zones;
-	
+
 
 	procedure set_default_brightness is begin
 		set_color_stencil (face, NORMAL);
 	end set_default_brightness;
 
-	
+
 	procedure set_highlight_brightness is begin
 		set_color_stencil (face, BRIGHT);
 	end set_highlight_brightness;
 
 
-	
-	
-	procedure query_line (c : in pac_stencil_lines.cursor) is 
+
+
+	procedure query_line (c : in pac_stencil_lines.cursor) is
 		line : type_stencil_line renames element (c);
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, 
+			draw_line (line => line, width => line.width,
 					   stroke => DO_STROKE);
 		end draw;
 
@@ -90,8 +90,8 @@ is
 	end query_line;
 
 
-	
-	procedure query_arc (c : in pac_stencil_arcs.cursor) is 
+
+	procedure query_arc (c : in pac_stencil_arcs.cursor) is
 		arc : type_stencil_arc renames element (c);
 
 		procedure draw is begin
@@ -111,8 +111,8 @@ is
 		end if;
 	end query_arc;
 
-	
-	procedure query_circle (c : in pac_stencil_circles.cursor) is 
+
+	procedure query_circle (c : in pac_stencil_circles.cursor) is
 		-- CS use renames
 	begin
 		draw_circle (
@@ -122,7 +122,7 @@ is
 			stroke	=> DO_STROKE);
 	end query_circle;
 
-	
+
 	procedure query_zone (c : in pac_stencil_zones.cursor) is
 		-- CS use renames
 		use pac_draw_contours;
@@ -133,10 +133,10 @@ is
 			width	=> zero);
 	end query_zone;
 
-	
+
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
+		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
 	begin
@@ -149,7 +149,7 @@ is
 				iterate (module.board.stencil.top.arcs, query_arc'access);
 				iterate (module.board.stencil.top.circles, query_circle'access);
 				iterate (module.board.stencil.top.zones, query_zone'access);
-				
+
 			when BOTTOM =>
 				iterate (module.board.stencil.bottom.lines, query_line'access);
 				iterate (module.board.stencil.bottom.arcs, query_arc'access);
@@ -158,10 +158,10 @@ is
 		end case;
 	end query_items;
 
-	
+
 begin
 -- 	put_line ("draw stencil / solder paste mask ...");
-	
+
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
@@ -172,14 +172,14 @@ begin
 
 	-- Draw the zone begin drawn:
 	draw_live_zone (LAYER_CAT_STENCIL);
-	
-	
+
+
 end draw_stencil;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

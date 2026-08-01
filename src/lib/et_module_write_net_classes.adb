@@ -61,13 +61,13 @@ with et_file_write;					use et_file_write;
 package body et_module_write_net_classes is
 
 	use pac_generic_modules;
-		
+
 	use pac_net_classes;
 	use pac_geometry_2;
 
 
-	
-		
+
+
 
 	procedure write_net_classes (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -75,7 +75,7 @@ package body et_module_write_net_classes is
 	is
 
 
-		procedure query_class (class_cursor : in pac_net_classes.cursor) is 
+		procedure query_class (class_cursor : in pac_net_classes.cursor) is
 			name : string renames get_net_class_name (class_cursor);
 			net_class : type_net_class renames element (class_cursor);
 		begin
@@ -95,37 +95,37 @@ package body et_module_write_net_classes is
 		end;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			section_mark (section_net_classes, HEADER);
 			iterate (module.net_classes, query_class'access);
-			section_mark (section_net_classes, FOOTER);		
+			section_mark (section_net_classes, FOOTER);
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " write net classes", level => log_threshold);
-			
-		log_indentation_up;		
+
+		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
 	end write_net_classes;
 
 
-	
-	
+
+
 end et_module_write_net_classes;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

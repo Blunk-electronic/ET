@@ -35,20 +35,20 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 --
--- 
+--
 -- DESCRIPTION:
--- 
+--
 
 
 package et_device_property_level is
 
 
 
-	
+
 	--property_level_prefix : constant string := ("DEVICE_PROPERTIES_LEVEL_");
-	
+
 	type type_properties_level is (
 		DEVICE_PROPERTIES_LEVEL_1, -- basic information
 		DEVICE_PROPERTIES_LEVEL_2, -- moderate information
@@ -61,22 +61,22 @@ package et_device_property_level is
 
 
 	-- Maps from a string like "L1", "L2" or "L3"
-	-- to a type_properties_level (capitalzation does not matter).	
+	-- to a type_properties_level (capitalzation does not matter).
 	-- For any other string the return is DEVICE_PROPERTIES_LEVEL_1
 	-- and the error flag is set:
 	function to_properties_level (
 		level	: in string;
-		error	: out boolean)							 
+		error	: out boolean)
 		return type_properties_level;
 
-	
-	
-		
+
+
+
 end et_device_property_level;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

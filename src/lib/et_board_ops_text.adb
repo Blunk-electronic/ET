@@ -46,14 +46,14 @@ with et_meta;
 
 package body et_board_ops_text is
 
-	
+
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
 		meaning 		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string 
+		return pac_text_content.bounded_string
 	is
 		m : type_generic_module renames element (module_cursor);
-		
+
 		use et_meta;
 		meta : constant type_meta_board := m.meta.board;
 
@@ -72,17 +72,17 @@ package body et_board_ops_text is
 			when MODULE				=> result := to_content (to_string (key (module_cursor)));
 			when REVISION			=> result := to_content (to_string (meta.revision));
 		end case;
-		
+
 		return result;
 	end to_placeholder_content;
-	
+
 
 end et_board_ops_text;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

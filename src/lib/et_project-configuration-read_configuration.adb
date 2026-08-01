@@ -39,43 +39,43 @@
 
 
 separate (et_project.configuration)
-	
+
 procedure read_configuration (
 	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-	log_threshold 	: in type_log_level) 
+	log_threshold 	: in type_log_level)
 is
 	use et_string_processing;
 	use ada.directories;
 
 	-- compose the name of the project file to read like blood_sample_analyzer.prj
-	file_name : constant string := 
+	file_name : constant string :=
 		compose (current_directory, to_string (project_name), file_extension);
 
 	-- backup the previous input source
 	previous_input : ada.text_io.file_type renames current_input;
-	
+
 	file_handle : ada.text_io.file_type;
 
 	-- the line fetched from the configuration file:
 	line : type_fields_of_line;
 
 
-	
+
 	-- This is the section stack of the configuration file:
 	max_section_depth : constant positive := 2;
-	
+
 	package pac_sections_stack is new gen_pac_sections_stack (
 		item	=> type_file_section,
 		max 	=> max_section_depth);
 
 
 
-	
+
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 	conventions_file_name : et_conventions.pac_file_name.bounded_string;
 
 
-	
+
 	procedure read_rules is
 		use et_conventions;
 		kw : constant string := f (line, 1);
@@ -84,7 +84,7 @@ is
 			expect_field_count (line, 2);
 
 			conventions_file_name := to_file_name (f (line, 2));
-			
+
 			-- read the conventions file
 			et_conventions.read_conventions (conventions_file_name, log_threshold + 1);
 		else
@@ -93,8 +93,8 @@ is
 	end read_rules;
 
 
-	
-	procedure set_rules is 
+
+	procedure set_rules is
 		use et_conventions.pac_file_name;
 	begin
 		if length (conventions_file_name) > 0 then
@@ -109,15 +109,15 @@ is
 
 
 
-	
+
 	procedure do_it is
-	
+
 		procedure process_line is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
-				
+
 			begin -- execute_section
 				case pac_sections_stack.current is
 
@@ -126,16 +126,16 @@ is
 							when SEC_INIT	=> set_rules;
 							when others		=> invalid_section;
 						end case;
-					
+
 					when SEC_INIT => null;
-					
+
 					when others => invalid_section;
 				end case;
-						
+
 			end execute_section;
 
 
-			
+
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -143,14 +143,14 @@ is
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string;
 				section			: in type_file_section)
-				return boolean 
+				return boolean
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 7);
 						return true;
-						
+
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 
 						-- The section name in the footer must match the name
@@ -159,11 +159,11 @@ is
 							log_indentation_reset;
 							invalid_section;
 						end if;
-						
+
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
-						
+
 						pac_sections_stack.pop;
 						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 7);
@@ -171,12 +171,12 @@ is
 							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 7);
 						end if;
 						return true;
-						
+
 					else
 						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
-					
+
 				else -- neither a section header nor footer
 					return false;
 				end if;
@@ -184,16 +184,16 @@ is
 
 
 
-			
+
 		begin -- process_line
 			if set (section_environment_variables, SEC_ENVIRONMENT_VARIABLES) then null;
 			elsif set (section_rules, SEC_RULES) then null;
 			else
-				-- The line contains something else -> the payload data. 
+				-- The line contains something else -> the payload data.
 				-- Temporarily this data is to be stored in corresponding variables.
 
 				log (text => "line --> " & to_string (line), level => log_threshold + 7);
-				
+
 				case pac_sections_stack.current is
 
 					when SEC_RULES =>
@@ -201,26 +201,26 @@ is
 							when SEC_INIT	=> read_rules;
 							when others		=> invalid_section;
 						end case;
-						
+
 					when SEC_INIT => null;
 
 					when others => invalid_section;
 				end case;
 			end if;
 
-			
+
 			exception when others =>
-				log (text => "file " & enclose_in_quotes (file_name) 
-					 & space & get_affected_line (line) 
+				log (text => "file " & enclose_in_quotes (file_name)
+					 & space & get_affected_line (line)
 						& to_string (line), console => true);
 				raise;
-			
+
 		end process_line;
 
 
-		
+
 	begin -- do_it
-		
+
 		-- read the file line by line
 		while not end_of_file loop
 			line := read_line (
@@ -234,24 +234,24 @@ is
 				process_line;
 			end if;
 		end loop;
-		
+
 	end do_it;
 
 
-	
+
 begin
-	log (text => "read project configuration file " 
+	log (text => "read project configuration file "
 		 & enclose_in_quotes (file_name),
 		 level => log_threshold);
-	
+
 	log_indentation_up;
 
-	
+
 	if exists (file_name) then
 
 		open (
 			file => file_handle,
-			mode => in_file, 
+			mode => in_file,
 			name => file_name);
 
 		set_input (file_handle);
@@ -259,22 +259,22 @@ begin
 		-- Init section pac_sections_stack.
 		pac_sections_stack.init;
 		pac_sections_stack.push (SEC_INIT);
-		
+
 		do_it;
 
 		-- As a safety measure the top section must be reached:
-		if pac_sections_stack.depth > 1 then 
+		if pac_sections_stack.depth > 1 then
 			log (SEVERITY_WARNING, write_section_stack_not_empty);
 		end if;
-		
+
 
 		set_input (previous_input);
 		close (file_handle);
-		
+
 	else
 		log (SEVERITY_ERROR, "Project configuration file " & enclose_in_quotes (file_name) & " not found !",
 			 console => true);
-		
+
 		raise constraint_error;
 	end if;
 
@@ -283,9 +283,9 @@ begin
 
 	-- log (text => "done", level => log_threshold);
 
-	
+
 	exception when
-		others => 
+		others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (previous_input);
 			raise;
@@ -294,7 +294,7 @@ end read_configuration;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -51,8 +51,8 @@ package body et_cmd_origin_to_commit is
 			when ORIGIN_SCRIPT => return NO_COMMIT;
 		end case;
 	end;
-		
 
-	
+
+
 end et_cmd_origin_to_commit;
 

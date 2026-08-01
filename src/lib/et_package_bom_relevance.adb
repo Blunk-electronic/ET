@@ -46,29 +46,29 @@ package body et_package_bom_relevance is
 
 
 	function to_string (
-		bom_relevant : in type_bom_relevant) 
-		return string 
-	is 
+		bom_relevant : in type_bom_relevant)
+		return string
+	is
 		s : constant string := to_lower (type_bom_relevant'image (bom_relevant));
 	begin
-		return s (bom_relevant_prefix'length + 1 .. s'last); 
+		return s (bom_relevant_prefix'length + 1 .. s'last);
 	end;
 
-	
-	
+
+
 	function to_bom_relevant (
-		bom_relevant : in string) 
-		return type_bom_relevant 
+		bom_relevant : in string)
+		return type_bom_relevant
 	is begin
 		return type_bom_relevant'value (bom_relevant_prefix & bom_relevant);
 	end;
-	
-	
+
+
 end et_package_bom_relevance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

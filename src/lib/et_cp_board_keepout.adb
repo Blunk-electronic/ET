@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,9 +58,9 @@ package body et_cp_board_keepout is
 
 	use et_board_geometry.pac_contours;
 
-	
 
-	
+
+
 	procedure draw_keepout_zone (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -70,19 +70,19 @@ package body et_cp_board_keepout is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- Extract from the given command the zone 
+		-- Extract from the given command the zone
 		-- arguments (everything after "keepout"):
 		procedure build_zone is
-			arguments : constant type_fields_of_line := 
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 6);
-			
+
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
 			face : type_face;
 		begin
 			face := to_face (get_field (cmd, 5));
-			
+
 			add_zone (
 				module_cursor	=> module,
 				zone			=> (c with null record),
@@ -94,12 +94,12 @@ package body et_cp_board_keepout is
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
-	
+
 
 	begin
 		log (text => "draw keepout zone", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
 		if get_field (cmd, 6) = keyword_zone then
@@ -118,7 +118,7 @@ package body et_cp_board_keepout is
 
 
 
-	
+
 	procedure draw_keepout_zone_cutout (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -129,12 +129,12 @@ package body et_cp_board_keepout is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- Extract from the given command the zone 
+		-- Extract from the given command the zone
 		-- arguments (everything after "keepout"):
 		procedure build_zone is
-			arguments : constant type_fields_of_line := 
+			arguments : constant type_fields_of_line :=
 				remove_field (get_fields (cmd), 1, 6);
-			
+
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
@@ -154,12 +154,12 @@ package body et_cp_board_keepout is
 			-- 	log_threshold	=> log_threshold + 1);
 
 		end build_zone;
-	
+
 
 	begin
 		log (text => "draw keepout cutout zone", level => log_threshold);
 		log_indentation_up;
-		
+
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
 		if get_field (cmd, 6) = keyword_zone then
@@ -172,7 +172,7 @@ package body et_cp_board_keepout is
 		log_indentation_down;
 	end draw_keepout_zone_cutout;
 
-	
+
 
 
 
@@ -197,14 +197,14 @@ package body et_cp_board_keepout is
 		log_indentation_down;
 	end delete_keepout;
 
-	
-		
-	
+
+
+
 end et_cp_board_keepout;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

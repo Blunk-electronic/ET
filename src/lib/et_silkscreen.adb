@@ -53,7 +53,7 @@ package body et_silkscreen is
 	end;
 
 
-	
+
 
 	procedure iterate (
 		lines	: in pac_silk_lines.list;
@@ -68,7 +68,7 @@ package body et_silkscreen is
 		end loop;
 	end iterate;
 
-	
+
 
 	function is_proposed (
 		line_cursor	: in pac_silk_lines.cursor)
@@ -81,7 +81,7 @@ package body et_silkscreen is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		line_cursor	: in pac_silk_lines.cursor)
@@ -95,7 +95,7 @@ package body et_silkscreen is
 	end is_selected;
 
 
-	
+
 	procedure mirror_lines (
 		lines	: in out pac_silk_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -108,14 +108,14 @@ package body et_silkscreen is
 			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
 
 
-	
+
 	procedure rotate_lines (
 		lines	: in out pac_silk_lines.list;
 		angle	: in type_rotation_model)
@@ -135,7 +135,7 @@ package body et_silkscreen is
 	end rotate_lines;
 
 
-	
+
 	procedure move_lines (
 		lines	: in out pac_silk_lines.list;
 		offset	: in type_vector_model)
@@ -155,7 +155,7 @@ package body et_silkscreen is
 	end move_lines;
 
 
-	
+
 
 
 
@@ -171,8 +171,8 @@ package body et_silkscreen is
 	end;
 
 
-	
-	
+
+
 
 	procedure iterate (
 		arcs	: in pac_silk_arcs.list;
@@ -187,9 +187,9 @@ package body et_silkscreen is
 		end loop;
 	end iterate;
 
-	
 
-	
+
+
 
 	function is_proposed (
 		arc_cursor	: in pac_silk_arcs.cursor)
@@ -201,7 +201,7 @@ package body et_silkscreen is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		arc_cursor	: in pac_silk_arcs.cursor)
@@ -215,8 +215,8 @@ package body et_silkscreen is
 	end is_selected;
 
 
-	
-	
+
+
 
 	procedure mirror_arcs (
 		arcs	: in out pac_silk_arcs.list;
@@ -230,13 +230,13 @@ package body et_silkscreen is
 			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
-	
+
 
 	procedure rotate_arcs (
 		arcs	: in out pac_silk_arcs.list;
@@ -259,7 +259,7 @@ package body et_silkscreen is
 
 	procedure move_arcs (
 		arcs	: in out pac_silk_arcs.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_silk_arcs.list;
 
@@ -289,9 +289,9 @@ package body et_silkscreen is
 		circle.width := linewidth_default;
 	end;
 
-	
 
-	
+
+
 	procedure iterate (
 		circles	: in pac_silk_circles.list;
 		process	: not null access procedure (position : in pac_silk_circles.cursor);
@@ -305,7 +305,7 @@ package body et_silkscreen is
 		end loop;
 	end iterate;
 
-	
+
 
 	function is_proposed (
 		circle_cursor	: in pac_silk_circles.cursor)
@@ -317,7 +317,7 @@ package body et_silkscreen is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		circle_cursor	: in pac_silk_circles.cursor)
@@ -331,7 +331,7 @@ package body et_silkscreen is
 	end is_selected;
 
 
-	
+
 
 
 	procedure mirror_circles (
@@ -346,7 +346,7 @@ package body et_silkscreen is
 			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -355,7 +355,7 @@ package body et_silkscreen is
 
 	procedure rotate_circles (
 		circles	: in out pac_silk_circles.list;
-		angle	: in type_rotation_model)		
+		angle	: in type_rotation_model)
 	is
 		result : pac_silk_circles.list;
 
@@ -367,14 +367,14 @@ package body et_silkscreen is
 		end query_circle;
 
 	begin
-		circles.iterate (query_circle'access);		
+		circles.iterate (query_circle'access);
 		circles := result;
-	end rotate_circles;			
+	end rotate_circles;
 
 
 	procedure move_circles (
 		circles	: in out pac_silk_circles.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_silk_circles.list;
 
@@ -404,7 +404,7 @@ package body et_silkscreen is
 		end if;
 	end is_circular;
 
-	
+
 
 
 	procedure iterate (
@@ -422,10 +422,10 @@ package body et_silkscreen is
 
 
 
-	
+
 	procedure mirror_contours (
 		contours	: in out pac_silk_zones.list;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)		
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_silk_zones.list;
 
@@ -435,7 +435,7 @@ package body et_silkscreen is
 			mirror (contour, axis);
 			result.append (contour);
 		end query_contour;
-		
+
 	begin
 		contours.iterate (query_contour'access);
 		contours := result;
@@ -444,7 +444,7 @@ package body et_silkscreen is
 
 	procedure rotate_contours (
 		contours	: in out pac_silk_zones.list;
-		angle		: in type_rotation_model)		
+		angle		: in type_rotation_model)
 	is
 		result : pac_silk_zones.list;
 
@@ -456,14 +456,14 @@ package body et_silkscreen is
 		end query_contour;
 
 	begin
-		contours.iterate (query_contour'access);		
+		contours.iterate (query_contour'access);
 		contours := result;
-	end rotate_contours;			
+	end rotate_contours;
 
 
 	procedure move_contours (
 		contours	: in out pac_silk_zones.list;
-		offset		: in type_vector_model)		
+		offset		: in type_vector_model)
 	is
 		result : pac_silk_zones.list;
 
@@ -495,7 +495,7 @@ package body et_silkscreen is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		text_cursor	: in pac_silk_texts.cursor)
@@ -507,10 +507,10 @@ package body et_silkscreen is
 			return false;
 		end if;
 	end is_selected;
-		
 
 
-	
+
+
 
 	function to_string (
 		text : in pac_silk_texts.cursor)
@@ -518,10 +518,10 @@ package body et_silkscreen is
 	is begin
 		return to_string (element (text));
 	end to_string;
-	
 
 
-	
+
+
 
 	procedure iterate (
 		texts	: in pac_silk_texts.list;
@@ -537,9 +537,9 @@ package body et_silkscreen is
 	end iterate;
 
 
-	
 
-	
+
+
 
 	procedure mirror_texts (
 		texts	: in out pac_silk_texts.list;
@@ -553,14 +553,14 @@ package body et_silkscreen is
 			mirror_text (text, axis);
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end mirror_texts;
 
 
-	
+
 	procedure rotate_texts (
 		texts	: in out pac_silk_texts.list;
 		angle	: in type_rotation_model)
@@ -573,13 +573,13 @@ package body et_silkscreen is
 			rotate_text_by (text, angle);
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end rotate_texts;
 
-	
+
 
 	procedure move_texts (
 		texts	: in out pac_silk_texts.list;
@@ -593,14 +593,14 @@ package body et_silkscreen is
 			move_text_to (text, offset); -- CS should be move_text_by
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end move_texts;
-	
 
-	
+
+
 	procedure line_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_lines.cursor;
@@ -610,12 +610,12 @@ package body et_silkscreen is
 		line : type_silk_line;
 	begin
 		line := element (cursor);
-		log (text => "silk screen line face" & to_string (face) & space 
+		log (text => "silk screen line face" & to_string (face) & space
 			 & to_string (type_line (line))
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_silk_screen_properties;
 
-	
+
 	procedure arc_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_arcs.cursor;
@@ -625,12 +625,12 @@ package body et_silkscreen is
 		arc : type_silk_arc;
 	begin
 		arc := element (cursor);
-		log (text => "silk screen arc face" & to_string (face) & space 
+		log (text => "silk screen arc face" & to_string (face) & space
 			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_silk_screen_properties;
 
-	
+
 	procedure circle_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_circles.cursor;
@@ -647,26 +647,26 @@ package body et_silkscreen is
 	-- procedure text_silk_screen_properties (
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_silk_texts.cursor;
-	-- 	log_threshold 	: in type_log_level) 
+	-- 	log_threshold 	: in type_log_level)
 	-- is
 	-- 	use et_text.pac_text_content;
 	-- 	text : type_silk_text renames element (cursor);
 	-- begin
 	-- 	log (text => "silk screen text face" & to_string (face) & space
 	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
- -- 
+ --
 	-- 	log_indentation_up;
 	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
 	-- 	log_indentation_down;
 	-- end text_silk_screen_properties;
 
 
-	
+
 end et_silkscreen;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

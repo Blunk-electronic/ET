@@ -55,8 +55,8 @@ package et_module_read_text_board is
 
 	use pac_generic_modules;
 
-	
-	-- This procdure reads a property of a general 
+
+	-- This procdure reads a property of a general
 	-- placeholder in the board drawing (like project name, material code, ...):
 	procedure read_board_text_placeholder (
 		line : in type_fields_of_line);
@@ -65,57 +65,57 @@ package et_module_read_text_board is
 	procedure read_board_text_non_conductor (
 		line : in type_fields_of_line);
 
-	
-	
-	
+
+
+
 	procedure read_board_text_conductor (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure read_board_text_conductor_placeholder (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_board_text_contours (
 		line : in type_fields_of_line);
 
-	
-	
+
+
 	procedure insert_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
 		face			: in type_face;  -- TOP, BOTTOM
 		log_threshold	: in type_log_level);
-		
-		
+
+
 	procedure insert_board_text_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	procedure build_non_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
 		face 			: in et_pcb_sides.type_face;  -- TOP, BOTTOM
 		log_threshold	: in type_log_level);
-		
-	
-	
+
+
+
 	procedure build_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-		
-	
+
+
 end et_module_read_text_board;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

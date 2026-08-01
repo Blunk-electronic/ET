@@ -49,10 +49,10 @@ with et_keywords;					use et_keywords;
 
 
 package body et_geometry_2a is
-	
+
 	function get_info (editor: in string)
-		return string 
-	is 
+		return string
+	is
 		use ada.characters.latin_1;
 		distance_digits_total : constant positive := type_distance'digits;
 		distance_digits_right : constant positive := type_distance'scale;
@@ -65,7 +65,7 @@ package body et_geometry_2a is
 	begin
 		--CS put_line ("rounding error:" & pac_geometry_1.to_string (type_float'small));
 		-- CS write accuracy
-		
+
 		return to_upper (editor & " editor:")
 		& lf & "distance fine [mm]"
 		& lf & "min:        " & type_distance'image (type_distance'first)
@@ -109,9 +109,9 @@ package body et_geometry_2a is
 
 
 
-	
 
-	
+
+
 -- DISTANCE:
 
 
@@ -139,7 +139,7 @@ package body et_geometry_2a is
 	end in_range;
 
 
-	
+
 
 	function get_greatest (
 		left, right : in type_distance)
@@ -154,8 +154,8 @@ package body et_geometry_2a is
 		end if;
 	end get_greatest;
 
-	
-	
+
+
 	function get_smallest (
 		left, right : in type_distance)
 		return type_distance
@@ -171,8 +171,8 @@ package body et_geometry_2a is
 
 
 
-	
-	
+
+
 	procedure limit_to_maximum (
 		distance	: in out type_distance;
 		maximum		: in type_distance)
@@ -182,8 +182,8 @@ package body et_geometry_2a is
 		end if;
 	end limit_to_maximum;
 
-	
-	
+
+
 	procedure limit_to_minimum (
 		distance	: in out type_distance;
 		minimum		: in type_distance)
@@ -193,7 +193,7 @@ package body et_geometry_2a is
 		end if;
 	end limit_to_minimum;
 
-	
+
 
 
 	procedure clip (
@@ -206,21 +206,21 @@ package body et_geometry_2a is
 	end;
 
 
-	
-	
-	
+
+
+
 	function mil_to_distance (
-		mil : in string) 
-		return type_distance 
+		mil : in string)
+		return type_distance
 	is begin
 		return type_distance (pac_geometry_1.mil_to_distance (mil));
 		-- CS use to_distance instead of type_distance ?
 	end mil_to_distance;
-	
+
 
 	function distance_to_mil (
-		distance : in type_distance) 
-		return string 
+		distance : in type_distance)
+		return string
 	is begin
 		return pac_geometry_1.distance_to_mil (type_float (distance));
 	end;
@@ -240,7 +240,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function to_string (
 		distance : in type_distance)
 		return string
@@ -252,9 +252,9 @@ package body et_geometry_2a is
 
 
 	function to_distance (f : in type_float)
-		return type_distance 
+		return type_distance
 	is
-		
+
 		d1 : type_distance;
 		d2 : type_float;
 
@@ -262,9 +262,9 @@ package body et_geometry_2a is
 		-- CS should be a package wide constant ?
 	begin
 		d1 := type_distance (f);
-		
+
 		d2 := 10.0 * abs (f - type_float (d1));
-		
+
 		if f < 0.0 then
 			if d2 > f1 then
 				d1 := d1 - type_distance'small;
@@ -276,7 +276,7 @@ package body et_geometry_2a is
 		end if;
 
 		return d1;
-		
+
 		--if f < 0.0 then
 			--declare
 				--r : string (1 .. type_distance'digits + 2); -- sign + point
@@ -305,19 +305,19 @@ package body et_geometry_2a is
 
 
 
-	function to_distance (dd : in string) 
+	function to_distance (dd : in string)
 		return type_distance
 	is begin
 		return type_distance'value (dd);
 
 		exception when others =>
-			raise syntax_error_2 with 
-				"ERROR: Expect a distance instead of " 
+			raise syntax_error_2 with
+				"ERROR: Expect a distance instead of "
 				& enclose_in_quotes (dd) & " !";
 	end to_distance;
 
 
-	
+
 
 	function clip_distance (d : in type_distance)
 		return type_position_axis
@@ -328,7 +328,7 @@ package body et_geometry_2a is
 		end if;
 	end clip_distance;
 
-	
+
 	procedure clip_distance (d : in out type_distance) is begin
 		if d > axis_max then d := axis_max;
 		elsif d < axis_min then d := axis_min;
@@ -336,10 +336,10 @@ package body et_geometry_2a is
 	end clip_distance;
 
 
-	
-	
-	
-	
+
+
+
+
 -- ROTATION / ANGLE:
 
 	procedure toggle_rotation (
@@ -353,13 +353,13 @@ package body et_geometry_2a is
 			null;
 		end if;
 	end;
-	
-	
 
-	
+
+
+
 	function to_string (
-		rotation : in type_rotation) 
-		return string 
+		rotation : in type_rotation)
+		return string
 	is begin
 		if rotation < zero_rotation then
 			return space & type_rotation'image (rotation);
@@ -371,19 +371,19 @@ package body et_geometry_2a is
 	end;
 
 
-	
+
 	function to_rotation (
 		rotation : in string)
-		return type_rotation 
+		return type_rotation
 	is begin
 		return type_rotation'value (rotation);
 	end;
 
 
 
-	
+
 	function to_rotation (f : in type_float)
-		return type_rotation 
+		return type_rotation
 	is
 
 		d1 : type_rotation := type_rotation (f);
@@ -393,7 +393,7 @@ package body et_geometry_2a is
 
 	begin
 		d2 := 10.0 * abs (f - type_float (d1));
-		
+
 		if f < 0.0 then
 			if d2 > f1 then
 				d1 := d1 - type_rotation'small;
@@ -405,7 +405,7 @@ package body et_geometry_2a is
 		end if;
 
 		return d1;
-		
+
 		--if f < 0.0 then
 			--declare
 				--r : string (1 .. type_rotation'digits + 2); -- sign + point
@@ -434,21 +434,21 @@ package body et_geometry_2a is
 		return type_float (a);
 	end to_angle;
 
-	
+
 
 	function add (
 		left, right : in type_rotation)
-		return type_rotation 
+		return type_rotation
 	is
 		subtype type_rotation_wide is type_float range -720.0 .. +720.0;
 		scratch : type_rotation_wide;
 		result : type_rotation; -- to be returned
 	begin
 		scratch := type_float (left) + type_float (right);
-		
+
 		if scratch >= 360.0 then
 			scratch := scratch - 360.0;
-			
+
 		elsif scratch <= -360.0 then
 			scratch := scratch + 360.0;
 		end if;
@@ -483,7 +483,7 @@ package body et_geometry_2a is
 	end;
 
 
-		
+
 	function is_0_or_90 (
 		rotation : in type_rotation)
 		return boolean
@@ -498,18 +498,18 @@ package body et_geometry_2a is
 
 
 
-	
 
 
-	
+
+
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
-	
-	
+
+
 	function to_string (
 		v 		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is 
+	is
 		x : constant string := to_string (v.x);
 		y : constant string := to_string (v.y);
 
@@ -524,7 +524,7 @@ package body et_geometry_2a is
 
 			when FORMAT_3 =>
 				return x & space & y;
-				
+
 			when others => -- do the same as with FORMAT_1
 				return "x/y " & x & separator & y;
 		end case;
@@ -541,12 +541,12 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function to_vector_model (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in type_field_count_positive)
-		return type_vector_model 
+		return type_vector_model
 	is
 		point : type_vector_model; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
@@ -567,25 +567,25 @@ package body et_geometry_2a is
 				-- CS invalid_keyword (get_field (line, place));
 				raise constraint_error; -- CS
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return point;
 	end to_vector_model;
 
 
-	
-	
+
+
 
 	procedure reset (
-		point : in out type_vector_model) 
+		point : in out type_vector_model)
 	is begin
 		point.x := zero;
 		point.y := zero;
 	end;
-	
-	
+
+
 
 	function invert (
 		point	: in type_vector_model)
@@ -594,7 +594,7 @@ package body et_geometry_2a is
 		return (- point.x, - point.y);
 	end invert;
 
-	
+
 
 	function invert (
 		point	: in type_vector_model;
@@ -616,7 +616,7 @@ package body et_geometry_2a is
 	-- function add (
 	-- 	v1, v2 : in type_vector_model)
 	-- 	return type_vector_model
-	-- is 
+	-- is
 	-- 	r : type_vector_model;
 	-- begin
 	-- 	r.x := v1.x + v2.x;
@@ -637,7 +637,7 @@ package body et_geometry_2a is
 	end;
 
 
-	
+
 
 	procedure add (
 		v1 : in out type_vector_model;
@@ -649,7 +649,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function "-" (
 		left, right : in type_vector_model)
@@ -663,8 +663,8 @@ package body et_geometry_2a is
 	end;
 
 
-	
-	
+
+
 	procedure move_by (
 		point	: in out type_vector_model;
 		offset	: in type_vector_model)
@@ -675,31 +675,31 @@ package body et_geometry_2a is
 
 
 
-	
+
 	procedure rotate_by (
 		point		: in out type_vector_model;
 		rotation	: in type_rotation;
 		center		: in type_vector_model := origin)
-	is			
+	is
 		v : type_vector;
 		a : constant type_angle := type_angle (rotation);
 	begin
 		if center = origin then
-			
+
 			v := to_vector (point);
-			
+
 			rotate_by (
 				vector		=> v,
 				rotation	=> a,
 				debug		=> false);
-		
+
 			point := to_vector_model (v);
-			
+
 		else
 			move_by (point, invert (center));
 
 			v := to_vector (point);
-			
+
 			rotate_by (
 				vector		=> v,
 				rotation	=> a,
@@ -708,12 +708,12 @@ package body et_geometry_2a is
 			point := to_vector_model (v);
 
 			move_by (point, center);
-		end if;		
+		end if;
 	end rotate_by;
-	
 
 
-	
+
+
 
 	procedure rotate_to (
 		point		: in out type_vector_model;
@@ -725,16 +725,16 @@ package body et_geometry_2a is
 		-- compute distance of given point to origin
 		if get_x (point) = zero and get_y (point) = zero then
 			distance_to_origin := 0.0;
-			
+
 		elsif get_x (point) = zero then
 			distance_to_origin := type_float (abs (get_y (point)));
-			
+
 		elsif get_y (point) = zero then
 			distance_to_origin := type_float (abs (get_x (point)));
-			
+
 		else
 			distance_to_origin := sqrt (
-				type_float (abs (get_x (point))) ** 2.0 
+				type_float (abs (get_x (point))) ** 2.0
 				+
 				type_float (abs (get_y (point))) ** 2.0
 				);
@@ -757,22 +757,22 @@ package body et_geometry_2a is
 			point	=> point,
 			value	=> to_distance (scratch * distance_to_origin)
 			);
-		
+
 	end rotate_to;
 
 
-	
-	
-	
+
+
+
 	function get_distance (
-		point_one, point_two : in type_vector_model) 
-		return type_distance_polar 
+		point_one, point_two : in type_vector_model)
+		return type_distance_polar
 	is begin
 		return get_distance (to_vector (point_one), to_vector (point_two));
 	end get_distance;
-	
 
-	
+
+
 	function get_distance (
 		point	: in type_vector_model;
 		vector	: in type_vector)
@@ -785,8 +785,8 @@ package body et_geometry_2a is
 
 
 
-	
-	
+
+
 	function get_distance (
 		p1, p2 : in type_vector_model)
 		return type_distance_positive
@@ -800,15 +800,15 @@ package body et_geometry_2a is
 		d := sqrt (dx**2.0 + dy**2.0);
 		return type_distance_positive (d);
 	end get_distance;
-	
+
 
 
 
 	function get_distance (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
-		axis	: in type_axis_2d) 
-		return type_distance 
+		axis	: in type_axis_2d)
+		return type_distance
 	is
 		d : type_distance;
 	begin
@@ -823,8 +823,8 @@ package body et_geometry_2a is
 		return d;
 	end get_distance;
 
-	
-	
+
+
 	function get_angle (
 		p1, p2 : in type_vector_model)
 		return type_rotation
@@ -847,48 +847,48 @@ package body et_geometry_2a is
 				a := -90.0;
 			end if;
 		end if;
-		
+
 		return type_rotation (a);
 
 		exception
-			when ADA.NUMERICS.ARGUMENT_ERROR => 
+			when ADA.NUMERICS.ARGUMENT_ERROR =>
 				put_line ("tangens error");
 				raise;
-		
+
 	end get_angle;
 
 
 
 	function get_rotation_about_origin (
-		point : in type_vector_model) 
-		return type_rotation 
+		point : in type_vector_model)
+		return type_rotation
 	is begin
 		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
 	end;
 
-	
-	
+
+
 
 	function get_x (
-		point : in type_vector_model) 
-		return type_position_axis 
+		point : in type_vector_model)
+		return type_position_axis
 	is begin
 		return point.x;
 	end;
 
 
-	
+
 	function get_y (
 		point : in type_vector_model)
-		return type_position_axis 
+		return type_position_axis
 	is begin
 		return point.y;
 	end;
-	
+
 
 	function set (
 		x, y : in type_position_axis)
-		return type_vector_model 
+		return type_vector_model
 	is
 		point : type_vector_model;
 	begin
@@ -913,18 +913,18 @@ package body et_geometry_2a is
 
 	procedure set (
 		point	: in out type_vector_model;
-		position: in type_vector_model) 
+		position: in type_vector_model)
 	is begin
 		point.x := position.x;
 		point.y := position.y;
 	end;
-	
 
-	
+
+
 	function to_vector (
 		point	: in type_vector_model)
-		return type_vector 
-	is 
+		return type_vector
+	is
 		f : type_float := type_float (get_x (point));
 	begin
 		return set (
@@ -935,20 +935,20 @@ package body et_geometry_2a is
 	end to_vector;
 
 
-	
+
 
 	function to_vector_model (
 		v	: in type_vector)
 		return type_vector_model
 	is begin
 		--log (text => "to point: vector" & to_string (v));
-		
+
 		-- Since the return is a 2D point,
 		-- the z component of v must be zero:
 		if get_z (v) /= 0.0 then
 			raise constraint_error;
 		end if;
-					
+
 		return set (
 			x => to_distance (get_x (v)),
 			y => to_distance (get_y (v)));
@@ -956,10 +956,10 @@ package body et_geometry_2a is
 			-- Do not use type_distance (get_x (v)) !
 			-- function to_distance conducts rounding
 			-- by bankers rule.
-		
+
 		exception
 			when constraint_error =>
-				raise constraint_error 
+				raise constraint_error
 					with "vector component too great:" & to_string (v);
 
 	end to_vector_model;
@@ -971,36 +971,36 @@ package body et_geometry_2a is
 		d 		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model
-	is 
+	is
 		p : type_vector_model;
 	begin
 		if clip then
 			p.x := clip_distance (d.x);
-			p.y := clip_distance (d.y);				
+			p.y := clip_distance (d.y);
 		else
 			p.x := d.x;
 			p.y := d.y;
 		end if;
-		
+
 		return p;
 
 		exception
 			when constraint_error =>
-				log (text => "distance too great: x/y" 
+				log (text => "distance too great: x/y"
 					& to_string (d.x)
 					& "/"
 					& to_string (d.y));
 				raise;
-		
+
 	end to_vector_model;
-	
-	
+
+
 
 	function to_vector_model (
 		x,y : in string)
 		return type_vector_model
-	is 
-		result : type_vector_model;					
+	is
+		result : type_vector_model;
 	begin
 		result.x := to_distance (dd => x);
 		result.y := to_distance (dd => y);
@@ -1010,9 +1010,9 @@ package body et_geometry_2a is
 	end to_vector_model;
 
 
-	
 
-	
+
+
 
 	function to_offset (
 		p : in type_vector_model)
@@ -1032,8 +1032,8 @@ package body et_geometry_2a is
 
 
 
-	
-	
+
+
 	function get_distance_absolute (
 		point	: in type_vector_model;
 		vector	: in type_vector)
@@ -1041,7 +1041,7 @@ package body et_geometry_2a is
 	is begin
 		return get_distance_total (to_vector (point), vector);
 	end get_distance_absolute;
-	
+
 
 
 	function get_distance_relative (
@@ -1057,10 +1057,10 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function get_distance_absolute (
-		point_one, point_two : in type_vector_model) 
-		return type_float_positive 
+		point_one, point_two : in type_vector_model)
+		return type_float_positive
 	is begin
 		return get_distance_total (to_vector (point_one), to_vector (point_two));
 	end get_distance_absolute;
@@ -1070,7 +1070,7 @@ package body et_geometry_2a is
 	function get_distance_absolute (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
-		axis	: in type_axis_2d) 
+		axis	: in type_axis_2d)
 		return type_distance_positive
 	is
 		d : type_distance_positive;
@@ -1082,7 +1082,7 @@ package body et_geometry_2a is
 			when AXIS_Y =>
 				d := abs (point_2.y - point_1.y);
 		end case;
-				
+
 		return d;
 	end get_distance_absolute;
 
@@ -1101,13 +1101,13 @@ package body et_geometry_2a is
 			when DIR_DOWN	=> point.y := point.y - distance;
 		end case;
 	end;
-	
 
-	
-	
+
+
+
 	procedure move_to (
 		point		: in out type_vector_model;
-		destination	: in type_vector_model) 
+		destination	: in type_vector_model)
 	is begin
 		point.x := destination.x;
 		point.y := destination.y;
@@ -1120,20 +1120,20 @@ package body et_geometry_2a is
 		direction	: in type_rotation;
 		distance	: in type_distance_positive;
 		clip		: in boolean := false)
-		return type_vector_model 
-	is 			
+		return type_vector_model
+	is
 		v_tmp : type_vector;
 		rx, ry : type_distance;
-		result : type_vector_model;			
+		result : type_vector_model;
 	begin
 		v_tmp := move_by (
 			v			=> to_vector (point),
 			direction	=> type_angle (direction),
 			distance	=> type_float_positive (distance));
-		
+
 		rx := to_distance (v_tmp.x);
 		ry := to_distance (v_tmp.y);
-		
+
 		if clip then
 			clip_distance (rx);
 			clip_distance (ry);
@@ -1143,26 +1143,26 @@ package body et_geometry_2a is
 		return result;
 	end move;
 
-	
+
 
 	procedure mirror_point (
 		point	: in out type_vector_model;
-		axis	: in type_mirror) 
+		axis	: in type_mirror)
 	is begin
 		case axis is
 			when MIRROR_ALONG_X_AXIS =>
 				point.y := point.y * (-1.0);
-				
+
 			when MIRROR_ALONG_Y_AXIS =>
 				point.x := point.x * (-1.0);
-				
+
 			when MIRROR_NO =>
 				null;
 		end case;
 	end mirror_point;
 
 
-	
+
 
 	function "<" (left, right : in type_vector_model) return boolean is begin
 		if left.x < right.x then
@@ -1173,11 +1173,11 @@ package body et_geometry_2a is
 		-- left.x = right.x -> compare y:
 		elsif left.y < right.y then
 			return true;
-		else 
+		else
 			-- if left.y greater or equal right.y
 			return false;
 		end if;
-		
+
 		-- CS compare absolute distance to origin instead
 	end;
 
@@ -1192,17 +1192,17 @@ package body et_geometry_2a is
 	is
 		pragma unreferenced (mode);
 		-- Convert the given points to vectors:
-		vectors : pac_vectors.list := to_vectors (points);				
+		vectors : pac_vectors.list := to_vectors (points);
 	begin
-		-- Sort the vectors by their distance to 
+		-- Sort the vectors by their distance to
 		-- the reference point (in ascending order):
 		sort_by_distance (vectors, to_vector (reference));
-		
+
 		-- Convert the vectors back to model vectors:
 		points := to_points (vectors);
 	end sort_by_distance;
-		
-	
+
+
 
 
 	function get_length (
@@ -1226,18 +1226,18 @@ package body et_geometry_2a is
 		procedure move (p : in out type_vector_model) is begin
 			move_by (p, offset);
 		end;
-		
+
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, move'access);
 		end;
-	
+
 	begin
-		points.iterate (query_point'access); 
+		points.iterate (query_point'access);
 	end move_points;
 
 
-	
-	
+
+
 	procedure rotate_points (
 		points 		: in out pac_points.list;
 		rotation	: in type_rotation)
@@ -1247,17 +1247,17 @@ package body et_geometry_2a is
 		procedure rotate (p : in out type_vector_model) is begin
 			rotate_by (p, rotation);
 		end;
-		
+
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, rotate'access);
 		end;
-	
+
 	begin
-		points.iterate (query_point'access); 
+		points.iterate (query_point'access);
 	end rotate_points;
 
 
-	
+
 
 	procedure mirror_points (
 		points 	: in out pac_points.list;
@@ -1268,18 +1268,18 @@ package body et_geometry_2a is
 		procedure mirror_point (p : in out type_vector_model) is begin
 			mirror_point (p, mirror);
 		end;
-		
+
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, mirror_point'access);
 		end;
-	
+
 	begin
-		points.iterate (query_point'access); 
+		points.iterate (query_point'access);
 	end mirror_points;
 
 
-	
-	
+
+
 
 	function get_nearest (
 		points		: in pac_points.list;
@@ -1287,26 +1287,26 @@ package body et_geometry_2a is
 		return type_vector_model
 	is
 		use pac_points;
-		
+
 		result : type_vector_model;
 
 		distance : type_float_positive := type_float_positive'last;
-		
+
 		procedure query_point (p : in pac_points.cursor) is
-			d_scratch : constant type_float_positive := 
+			d_scratch : constant type_float_positive :=
 				get_absolute (get_distance (reference, element (p)));
 		begin
 			-- put_line (to_string (element (p)));
-					  
+
 			if d_scratch < distance then
 				distance := d_scratch;
 				result := element (p);
 			end if;
 		end query_point;
-		
+
 	begin
 		-- put_line ("get_nearest");
-		
+
 		points.iterate (query_point'access);
 		return result;
 	end get_nearest;
@@ -1321,11 +1321,11 @@ package body et_geometry_2a is
 		result : pac_vectors.list;
 
 		use pac_points;
-		
+
 		procedure query_point (c : in pac_points.cursor) is begin
 			result.append (to_vector (element (c)));
 		end query_point;
-		
+
 	begin
 		points.iterate (query_point'access);
 		return result;
@@ -1334,7 +1334,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function to_points (
 		vectors : in pac_vectors.list)
 		return pac_points.list
@@ -1342,11 +1342,11 @@ package body et_geometry_2a is
 		result : pac_points.list;
 
 		use pac_vectors;
-		
+
 		procedure query_vector (c : in pac_vectors.cursor) is begin
 			result.append (to_vector_model (element (c)));
 		end;
-		
+
 	begin
 		vectors.iterate (query_vector'access);
 		return result;
@@ -1354,7 +1354,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	procedure remove_redundant_points (
 		points : in out pac_points.list)
@@ -1367,7 +1367,7 @@ package body et_geometry_2a is
 				target.append (element (p));
 			end if;
 		end query_point;
-		
+
 	begin
 		points.iterate (query_point'access);
 		points := target;
@@ -1375,9 +1375,9 @@ package body et_geometry_2a is
 
 
 
-	
+
 -- AREA:
-	
+
 	function to_string (
 		box : in type_area)
 		return string
@@ -1396,7 +1396,7 @@ package body et_geometry_2a is
 	is begin
 		area.position := position;
 	end;
-		
+
 
 
 	procedure set_width (
@@ -1418,7 +1418,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	procedure swap_edges (
 		area : in out type_area)
 	is
@@ -1427,10 +1427,10 @@ package body et_geometry_2a is
 		area.width  := area.height;
 		area.height := w;
 	end swap_edges;
-	
 
 
-	
+
+
 	function get_corners (
 		area	: in type_area)
 		return type_area_corners
@@ -1440,15 +1440,15 @@ package body et_geometry_2a is
 		result.BL := (area.position.x, area.position.y);
 		result.BR := (area.position.x + area.width, area.position.y);
 
-		result.TL := (area.position.x, area.position.y + area.height); 
-		result.TR := (area.position.x + area.width, 
-					  area.position.y + area.height); 
+		result.TL := (area.position.x, area.position.y + area.height);
+		result.TR := (area.position.x + area.width,
+					  area.position.y + area.height);
 		return result;
 	end get_corners;
 
 
-	
-	
+
+
 	function get_center (
 		area	: in type_area)
 		return type_vector_model
@@ -1461,22 +1461,22 @@ package body et_geometry_2a is
 	end get_center;
 
 
-	
+
 
 	function get_diagonal (
 		area : type_area)
 		return type_distance_positive
-	is 
+	is
 		d : type_distance_positive;
 		w : constant type_float_positive := type_float_positive (area.width);
 		h : constant type_float_positive := type_float_positive (area.height);
 	begin
-		d := type_distance_positive (sqrt (w ** 2.0 + h ** 2.0));		
+		d := type_distance_positive (sqrt (w ** 2.0 + h ** 2.0));
 		return d;
 	end get_diagonal;
 
 
-	
+
 	function in_area (
 		point	: type_vector_model;
 		area	: type_area)
@@ -1494,25 +1494,25 @@ package body et_geometry_2a is
 						result := true;
 					end if;
 				end if;
-				
+
 			end if;
 		end if;
-		
+
 		return result;
 	end in_area;
 
 
 
-	
 
-	
+
+
 	function areas_overlap (
 		A, B : in type_area)
 		return boolean
 	is
 		-- CS: Optimization required. Compiler options ?
 		-- CS: rename lx, gx, ly, gy to x1, x2, y1, y2
-		
+
 		-- AREA A:
 		-- This is the lowest x used by area A
 		A_lx : type_distance renames A.position.x;
@@ -1520,7 +1520,7 @@ package body et_geometry_2a is
 		-- This is the greatest x used by area A
 		A_gx : constant type_distance := A_lx + A.width;
 
-		
+
 		-- This is the lowest y used by area A
 		A_ly : type_distance renames A.position.y;
 
@@ -1535,7 +1535,7 @@ package body et_geometry_2a is
 		-- This is the greatest x used by area B
 		B_gx : constant type_distance := B_lx + B.width;
 
-		
+
 		-- This is the lowest y used by area B
 		B_ly : type_distance renames B.position.y;
 
@@ -1543,9 +1543,9 @@ package body et_geometry_2a is
 		B_gy : constant type_distance := B_ly + B.height;
 
 	begin
-		-- If all of the four criteria are true then the two 
+		-- If all of the four criteria are true then the two
 		-- areas DO overlap:
-		if	B_lx < A_gx 
+		if	B_lx < A_gx
 		and	B_gx > A_lx
 		and	B_ly < A_gy
 		and	B_gy > A_ly then
@@ -1556,13 +1556,13 @@ package body et_geometry_2a is
 	end areas_overlap;
 
 
-	
+
 	procedure merge_areas (
 		A : in out type_area;
 		B : in type_area)
 	is
 		-- CS: Optimization required. Compiler options ?
-		
+
 		-- AREA A:
 		-- This is the lowest x used by area A
 		A_lx : type_distance renames A.position.x;
@@ -1570,7 +1570,7 @@ package body et_geometry_2a is
 		-- This is the greatest x used by area A
 		A_gx : type_distance := A_lx + A.width;
 
-		
+
 		-- This is the lowest y used by area A
 		A_ly : type_distance renames A.position.y;
 
@@ -1585,7 +1585,7 @@ package body et_geometry_2a is
 		-- This is the greatest x used by area B
 		B_gx : constant type_distance := B_lx + B.width;
 
-		
+
 		-- This is the lowest y used by area B
 		B_ly : type_distance renames B.position.y;
 
@@ -1597,7 +1597,7 @@ package body et_geometry_2a is
 		if B_lx < A_lx then
 			A_lx := B_lx;
 		end if;
-		
+
 		if B_gx > A_gx then
 			A_gx := B_gx;
 		end if;
@@ -1606,7 +1606,7 @@ package body et_geometry_2a is
 		if B_ly < A_ly then
 			A_ly := B_ly;
 		end if;
-		
+
 		if B_gy > A_gy then
 			A_gy := B_gy;
 		end if;
@@ -1649,14 +1649,14 @@ package body et_geometry_2a is
 			else
 				area.position.y := K2.y;
 			end if;
-			
+
 			-- width and height:
 			area.width  := abs (K2.x - K1.x);
-			
+
 			area.height := abs (K2.y - K1.y);
 
 
-			
+
 			if debug then
 				put_line ("area " & to_string (area));
 			end if;
@@ -1673,15 +1673,15 @@ package body et_geometry_2a is
 
 
 
-	
-	
 
-	
+
+
+
 	function get_opposide_end (
 		AB_end	: in type_start_end_point)
 		return type_start_end_point
 	is begin
-		case AB_end is 
+		case AB_end is
 			when A => return B;
 			when B => return A;
 		end case;
@@ -1689,7 +1689,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function to_string (
 		point : in type_start_end_point)
@@ -1699,7 +1699,7 @@ package body et_geometry_2a is
 	end to_string;
 
 
-	
+
 	function to_start_end_point (
 		point : in string)
 		return type_start_end_point
@@ -1708,43 +1708,43 @@ package body et_geometry_2a is
 	end;
 
 
-	
 
--- LINE:	
+
+-- LINE:
 
 	procedure reset_line (
 		line : in out type_line)
 	is begin
 		line := (others => <>);
 	end;
-	
+
 
 
 
 	function to_line (
 		A, B : in type_vector_model)
 		return type_line'class
-	is 
+	is
 		l : type_line;
 	begin
 		l.A := A;
 		l.B := B;
 		return l;
 	end;
-	
-	
 
-	
+
+
+
 	function to_string (
-		line : in type_line) 
-		return string 
+		line : in type_line)
+		return string
 	is begin
-		return "A: " & to_string (line.A) 
+		return "A: " & to_string (line.A)
 			& " B: " & to_string (line.B);
 	end;
 
 
-	
+
 
 	function get_end_point (
 		line 	: in type_line;
@@ -1759,8 +1759,8 @@ package body et_geometry_2a is
 
 
 
-	
-	
+
+
 
 	function to_AB_end (
 		line		: in type_line;
@@ -1771,7 +1771,7 @@ package body et_geometry_2a is
 
 		orientation : type_line_orientation;
 
-		
+
 		procedure test_x is begin
 			case NSWE_end is
 				when DIR_WEST =>
@@ -1849,29 +1849,29 @@ package body et_geometry_2a is
 			end case;
 		end test_xy;
 
-		
-		
+
+
 	begin
 		orientation := get_orientation (line);
 
 		case orientation is
 			when ORIENT_HORIZONTAL =>
 				test_x;
-				
+
 			when ORIENT_VERTICAL =>
 				test_y;
 
 			when ORIENT_SLOPING =>
 				test_xy;
 		end case;
-		
+
 		return result;
 	end to_AB_end;
 
-	
 
 
-	
+
+
 
 	function to_NSWE_end (
 		line		: in type_line;
@@ -1890,7 +1890,7 @@ package body et_geometry_2a is
 					else
 						result := DIR_EAST;
 					end if;
-					
+
 				when B =>
 					if line.B.x < line.A.x then  -- B is west of A
 						result := DIR_WEST;
@@ -1899,7 +1899,7 @@ package body et_geometry_2a is
 					end if;
 			end case;
 		end test_x;
-		
+
 
 		procedure test_y is begin
 			case AB_end is
@@ -1909,7 +1909,7 @@ package body et_geometry_2a is
 					else
 						result := DIR_NORTH;
 					end if;
-					
+
 				when B =>
 					if line.B.y < line.A.y then  -- B is south of A
 						result := DIR_SOUTH;
@@ -1919,7 +1919,7 @@ package body et_geometry_2a is
 			end case;
 		end test_y;
 
-		
+
 	begin
 		orientation := get_orientation (line);
 
@@ -1931,19 +1931,19 @@ package body et_geometry_2a is
 			-- if it were horizontal. Control via additional argument ?
 			when ORIENT_SLOPING		=> test_x;
 		end case;
-		
+
 		return result;
 	end to_NSWE_end;
 
 
 
-	
+
 
 
 	function get_x_of_west_end (
 		line	: in type_line)
 		return type_distance
-	is 
+	is
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
 		orientation : constant type_line_orientation := get_orientation (line);
@@ -1958,18 +1958,18 @@ package body et_geometry_2a is
 			when ORIENT_VERTICAL =>
 				result := get_x (get_end_point (line, A));
 		end case;
-								 
+
 		return result;
 	end;
 
 
-	
-	
+
+
 
 	function get_x_of_east_end (
 		line	: in type_line)
 		return type_distance
-	is 
+	is
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
 		orientation : constant type_line_orientation := get_orientation (line);
@@ -1984,7 +1984,7 @@ package body et_geometry_2a is
 			when ORIENT_VERTICAL =>
 				result := get_x (get_end_point (line, A));
 		end case;
-								 
+
 		return result;
 	end;
 
@@ -1996,7 +1996,7 @@ package body et_geometry_2a is
 	function get_y_of_north_end (
 		line	: in type_line)
 		return type_distance
-	is 
+	is
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
 		orientation : constant type_line_orientation := get_orientation (line);
@@ -2011,11 +2011,11 @@ package body et_geometry_2a is
 			when ORIENT_HORIZONTAL =>
 				result := get_y (get_end_point (line, A));
 		end case;
-								 
+
 		return result;
 	end;
 
-	
+
 
 
 
@@ -2023,7 +2023,7 @@ package body et_geometry_2a is
 	function get_y_of_south_end (
 		line	: in type_line)
 		return type_distance
-	is 
+	is
 		result : type_distance := 0.0;
 		AB_end : type_start_end_point;
 		orientation : constant type_line_orientation := get_orientation (line);
@@ -2038,15 +2038,15 @@ package body et_geometry_2a is
 			when ORIENT_HORIZONTAL =>
 				result := get_y (get_end_point (line, A));
 		end case;
-								 
+
 		return result;
 	end;
 
 
-	
-	
 
-	
+
+
+
 	function to_rotation (
 		line		: in type_line;
 		AB_end		: in type_start_end_point)
@@ -2064,13 +2064,13 @@ package body et_geometry_2a is
 			when DIR_NORTH	=> result :=  90.0;
 			when DIR_SOUTH	=> result := 270.0;
 		end case;
-			
+
 		return result;
-	end to_rotation;	
+	end to_rotation;
 
 
-	
-	
+
+
 
 	function get_A (
 		line : in type_line)
@@ -2079,7 +2079,7 @@ package body et_geometry_2a is
 		return line.A;
 	end;
 
-	
+
 
 	function get_B (
 		line : in type_line)
@@ -2093,16 +2093,16 @@ package body et_geometry_2a is
 	function get_center (
 		line : in type_line)
 		return type_vector_model
-	is 
+	is
 		c : type_vector;
 		l : constant type_line_fine := to_line_fine (line);
 	begin
-		c := get_center (l);		
+		c := get_center (l);
 		return to_vector_model (c);
 	end get_center;
 
 
-	
+
 
 	procedure set_A (
 		line	: in out type_line;
@@ -2127,9 +2127,9 @@ package body et_geometry_2a is
 	is begin
 		move_by (line.A, offset);
 	end;
-	
 
-	
+
+
 	procedure move_B_by (
 		line	: in out type_line;
 		offset	: in type_vector_model)
@@ -2137,9 +2137,9 @@ package body et_geometry_2a is
 		move_by (line.B, offset);
 	end;
 
-	
 
-	
+
+
 	function is_selected (
 		line : in type_line)
 		return boolean
@@ -2151,14 +2151,14 @@ package body et_geometry_2a is
 		end if;
 	end is_selected;
 
-	
+
 	procedure set_selected (
 		line : in out type_line)
 	is begin
 		set_selected (line.status);
 	end set_selected;
 
-	
+
 	procedure clear_selected (
 		line : in out type_line)
 	is begin
@@ -2175,7 +2175,7 @@ package body et_geometry_2a is
 		return is_A_selected (line.status_AB);
 	end;
 
-	
+
 	function is_B_selected (
 		line : in type_line)
 		return boolean
@@ -2189,21 +2189,21 @@ package body et_geometry_2a is
 	is begin
 		set_A_selected (line.status_AB);
 	end;
-	
-	
+
+
 	procedure set_B_selected (
 		line : in out type_line)
 	is begin
 		set_B_selected (line.status_AB);
 	end;
 
-	
+
 	procedure clear_A_selected (
 		line	: in out type_line)
 	is begin
 		clear_A_selected (line.status_AB);
 	end;
-	
+
 
 	procedure clear_B_selected (
 		line	: in out type_line)
@@ -2213,7 +2213,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function is_proposed (
 		line : in type_line)
@@ -2221,19 +2221,19 @@ package body et_geometry_2a is
 	is begin
 		if is_proposed (line.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_proposed;
 
-	
+
 	procedure set_proposed (
 		line : in out type_line)
 	is begin
 		set_proposed (line.status);
 	end set_proposed;
 
-	
+
 	procedure clear_proposed (
 		line : in out type_line)
 	is begin
@@ -2241,7 +2241,7 @@ package body et_geometry_2a is
 	end clear_proposed;
 
 
-	
+
 
 
 	function is_moving (
@@ -2250,19 +2250,19 @@ package body et_geometry_2a is
 	is begin
 		if is_moving (line.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_moving;
 
-	
+
 	procedure set_moving (
 		line : in out type_line)
 	is begin
 		set_moving (line.status);
 	end set_moving;
 
-	
+
 	procedure clear_moving (
 		line : in out type_line)
 	is begin
@@ -2273,7 +2273,7 @@ package body et_geometry_2a is
 
 	procedure modify_status (
 		line 		: in out type_line;
-		operation	: in type_status_operation)						
+		operation	: in type_status_operation)
 	is begin
 		modify_status (line.status, operation);
 	end modify_status;
@@ -2288,7 +2288,7 @@ package body et_geometry_2a is
 		return is_A_moving (line.status_AB);
 	end;
 
-	
+
 	function is_B_moving (
 		line : in type_line)
 		return boolean
@@ -2298,7 +2298,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	procedure set_A_moving (
 		line	: in out type_line)
@@ -2306,7 +2306,7 @@ package body et_geometry_2a is
 		set_A_moving (line.status_AB);
 	end;
 
-	
+
 	procedure clear_A_moving (
 		line	: in out type_line)
 	is begin
@@ -2314,7 +2314,7 @@ package body et_geometry_2a is
 	end;
 
 
-	
+
 	procedure set_B_moving (
 		line	: in out type_line)
 	is begin
@@ -2334,14 +2334,14 @@ package body et_geometry_2a is
 	procedure set_selected (
 		line	: in out type_line;
 		area	: in type_area)
-	is 
+	is
 		A_in_area, B_in_area : boolean := false;
 	begin
 		-- Test if start point of line is
 		-- in the given area:
 		if in_area (
 			point	=> get_A (line),
-			area	=> area) 
+			area	=> area)
 		then
 			set_A_selected (line);
 			A_in_area := true;
@@ -2352,35 +2352,35 @@ package body et_geometry_2a is
 		-- in the given area:
 		if in_area (
 			point	=> get_B (line),
-			area	=> area) 
+			area	=> area)
 		then
 			set_B_selected (line);
 			B_in_area := true;
 		end if;
-	
-	
+
+
 		-- If A and B are in the area
 		-- the set the whole line as selected:
 		if A_in_area and B_in_area then
 			set_selected (line);
 		end if;
 	end set_selected;
-	
-	
 
-	
-	
+
+
+
+
 	procedure reset_status (
 		line 	: in out type_line)
 	is begin
 		reset_status (line.status);
 
 		clear_AB_selected (line.status_AB);
-		clear_AB_moving (line.status_AB);		
+		clear_AB_moving (line.status_AB);
 	end reset_status;
 
-	
-	
+
+
 	procedure move_by (
 		line	: in out type_line;
 		offset	: in type_vector_model)
@@ -2409,7 +2409,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	procedure mirror_line (
 		line : in out type_line;
@@ -2419,18 +2419,18 @@ package body et_geometry_2a is
 		mirror_point (line.B, axis);
 	end mirror_line;
 
-	
+
 
 	procedure rotate_line_by (
 		line		: in out type_line;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation)
 	is begin
 		rotate_by (line.A, rotation);
 		rotate_by (line.B, rotation);
 	end;
 
-	
-	
+
+
 	function to_line_fine (
 		line : in type_line)
 		return type_line_fine
@@ -2454,14 +2454,14 @@ package body et_geometry_2a is
 		l.status := line.status;
 		return l;
 	end to_line_coarse;
-	
+
 
 
 	function get_distance (
 		line		: in type_line;
 		vector		: in type_vector;
 		line_range	: in type_line_range)
-		return type_distance_point_line 
+		return type_distance_point_line
 	is begin
 		return get_distance (
 			vector		=> vector,
@@ -2472,7 +2472,7 @@ package body et_geometry_2a is
 
 	function get_distance (
 		line		: in type_line;
-		point		: in type_vector_model; 
+		point		: in type_vector_model;
 		line_range	: in type_line_range)
 		return type_distance_point_line
 	is begin
@@ -2483,7 +2483,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function on_line (
 		line	: in type_line;
 		vector	: in type_vector)
@@ -2492,7 +2492,7 @@ package body et_geometry_2a is
 		return on_line (vector, to_line_fine (line));
 	end on_line;
 
-	
+
 	function on_line (
 		line	: in type_line;
 		point	: in type_vector_model)
@@ -2500,7 +2500,7 @@ package body et_geometry_2a is
 	is begin
 		return on_line (to_vector (point), to_line_fine (line));
 	end on_line;
-	
+
 
 
 	function between_A_and_B (
@@ -2515,7 +2515,7 @@ package body et_geometry_2a is
 		if point /= get_A (line) and point /= get_B (line) then
 
 			-- If the point lies on the the line
-			-- then return true. Otherwise the default 
+			-- then return true. Otherwise the default
 			-- false will be returned:
 			if on_line (line, point) then
 				result := true;
@@ -2525,12 +2525,12 @@ package body et_geometry_2a is
 		return result;
 	end between_A_and_B;
 
-	
-	
+
+
 
 	function get_start_vector (
 		line	: in type_line)
-		return type_vector 
+		return type_vector
 	is begin
 		return set (
 			x => type_float (line.A.x),
@@ -2538,10 +2538,10 @@ package body et_geometry_2a is
 			z => 0.0);
 	end get_start_vector;
 
-	
+
 	function get_end_vector (
 		line	: in type_line)
-		return type_vector 
+		return type_vector
 	is begin
 		return set (
 			x => type_float (line.B.x),
@@ -2552,7 +2552,7 @@ package body et_geometry_2a is
 
 	function get_direction_vector (
 		line	: in type_line)
-		return type_vector 
+		return type_vector
 	is begin
 		return set (
 			x => type_float (line.B.x - line.A.x),
@@ -2560,7 +2560,7 @@ package body et_geometry_2a is
 			z => 0.0);
 	end get_direction_vector;
 
-	
+
 
 	function to_line_vector (
 		line	: in type_line)
@@ -2571,8 +2571,8 @@ package body et_geometry_2a is
 			v_direction	=> get_direction_vector (line));
 	end to_line_vector;
 
-	
-	
+
+
 
 	function get_shortest_distance (
 		line	: in type_line;
@@ -2583,7 +2583,7 @@ package body et_geometry_2a is
 	end get_shortest_distance;
 
 
-	
+
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_vector)
@@ -2608,7 +2608,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function get_bounding_box (
 		line	: in type_line;
@@ -2616,7 +2616,7 @@ package body et_geometry_2a is
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
-		
+
 		result : type_area;
 		w, h : type_distance;
 
@@ -2624,7 +2624,7 @@ package body et_geometry_2a is
 	begin
 		-- x-axis:
 		w := line.B.x - line.A.x;
-		
+
 		if w > 0.0 then -- line runs from left to right
 			result.position.x := line.A.x;
 			result.width := w;
@@ -2632,10 +2632,10 @@ package body et_geometry_2a is
 			result.position.x := line.B.x;
 			result.width := -w;
 		end if;
-		
+
 		-- y-axis:
 		h := line.B.y - line.A.y;
-		
+
 		if h > 0.0 then -- line runs upwards
 			result.position.y := line.A.y;
 			result.height := h;
@@ -2656,7 +2656,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function get_intersection (
 		line		: in type_line;
@@ -2665,43 +2665,43 @@ package body et_geometry_2a is
 	is begin
 		return get_intersection (
 			line_vector	=> line_vector,
-			line		=> to_line_fine (line));		
+			line		=> to_line_fine (line));
 	end get_intersection;
 
-	
+
 
 
 
 	function get_orientation (
-		line : in type_line) 
-		return type_line_orientation 
-	is		
+		line : in type_line)
+		return type_line_orientation
+	is
 		result : type_line_orientation;
-		
-		dx : constant type_distance := 
+
+		dx : constant type_distance :=
 			get_x (get_A (line)) - get_x (get_B (line));
-		
-		dy : constant type_distance := 
+
+		dy : constant type_distance :=
 			get_y (get_A (line)) - get_y (get_B (line));
-		
+
 	begin
-		if dx = zero then 
+		if dx = zero then
 			result := ORIENT_VERTICAL;
-		
+
 		elsif dy = zero then
 			result := ORIENT_HORIZONTAL;
-			
-		else 
+
+		else
 			result := ORIENT_SLOPING;
 		end if;
 
 		return result;
 	end get_orientation;
 
-	
 
 
-	
+
+
 
 
 	function lines_overlap (
@@ -2719,10 +2719,10 @@ package body et_geometry_2a is
 		-- meet each other on the same spot:
 		function touch return boolean is begin
 			if get_A (line_1) = get_B (line_2) or get_A (line_1) = get_A (line_2)
-			or get_B (line_1) = get_B (line_2) or get_B (line_1) = get_A (line_2) 
-			then 
+			or get_B (line_1) = get_B (line_2) or get_B (line_1) = get_A (line_2)
+			then
 				return true;
-			else 
+			else
 				return false;
 			end if;
 		end touch;
@@ -2730,23 +2730,23 @@ package body et_geometry_2a is
 
 		procedure test_ranges is
 			include_limits : constant boolean := false;
-			
+
 			-- x and y component of A and B end of line 1:
 			L1_Ax : type_distance renames line_1.A.x;
 			L1_Ay : type_distance renames line_1.A.y;
-			
+
 			L1_Bx : type_distance renames line_1.B.x;
 			L1_By : type_distance renames line_1.B.y;
-			
+
 			-- x and y component of A and B end of line 2:
 			L2_Ax : type_distance renames line_2.A.x;
 			L2_Ay : type_distance renames line_2.A.y;
-			
+
 			L2_Bx : type_distance renames line_2.B.x;
 			L2_By : type_distance renames line_2.B.y;
 		begin
 			case O1 is
-				when ORIENT_HORIZONTAL =>					
+				when ORIENT_HORIZONTAL =>
 					-- The y values must be equal:
 					if L1_Ay = L2_Ay then
 
@@ -2754,7 +2754,7 @@ package body et_geometry_2a is
 						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax, include_limits => include_limits)
 						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx, include_limits => include_limits)
 
-						-- CASE H2: Line 1 runs from right to left:					
+						-- CASE H2: Line 1 runs from right to left:
 						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax, include_limits => include_limits)
 						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx, include_limits => include_limits)
 
@@ -2763,7 +2763,7 @@ package body et_geometry_2a is
 						end if;
 					end if;
 
-					
+
 				when ORIENT_VERTICAL =>
 					-- The x values must be equal:
 					if L1_Ax = L2_Ax then
@@ -2772,7 +2772,7 @@ package body et_geometry_2a is
 						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay, include_limits => include_limits)
 						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By, include_limits => include_limits)
 
-						-- CASE V2: Line 1 runs from up to down:					
+						-- CASE V2: Line 1 runs from up to down:
 						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay, include_limits => include_limits)
 						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By, include_limits => include_limits)
 
@@ -2780,15 +2780,15 @@ package body et_geometry_2a is
 							result := true;
 						end if;
 					end if;
-					
+
 
 				when ORIENT_SLOPING =>
 					raise constraint_error; -- CS should never happen
-					
+
 			end case;
 		end test_ranges;
-		
-		
+
+
 	begin
 		-- If both lines are equal, then they do overlap.
 		-- The orientation does not matter in this case:
@@ -2815,12 +2815,12 @@ package body et_geometry_2a is
 				test_ranges;
 			end if;
 		end if;
-		
+
 		return result;
 	end lines_overlap;
 
 
-	
+
 
 
 	function split_line (
@@ -2841,7 +2841,7 @@ package body et_geometry_2a is
 				return result;
 			end;
 		else
-			
+
 		-- If the given point is neither A or B of the
 		-- given line, then the given line is broken down
 		-- in two lines:
@@ -2860,7 +2860,7 @@ package body et_geometry_2a is
 	end split_line;
 
 
-	
+
 
 
 	function split_line (
@@ -2869,7 +2869,7 @@ package body et_geometry_2a is
 		return type_split_line
 	is
 		debug : constant boolean := false;
-		
+
 		fragment_count : natural;
 
 		-- In case the given list of points is
@@ -2877,7 +2877,7 @@ package body et_geometry_2a is
 		-- will be returned:
 		result_no_split : type_split_line (count => 1);
 
-		
+
 		function do_it return type_split_line is
 			result : type_split_line (count => fragment_count);
 			points_sorted : pac_points.list := points;
@@ -2886,7 +2886,7 @@ package body et_geometry_2a is
 
 			-- This index points to the fragment being built:
 			i : natural := 1;
-			
+
 			procedure query_point (c : in pac_points.cursor) is
 				p : type_vector_model renames element (c);
 				l : type_line;
@@ -2894,7 +2894,7 @@ package body et_geometry_2a is
 				if debug then
 					put_line ("i:" & natural'image (i));
 				end if;
-				
+
 				-- CS if p = get_A (line) or p = get_B (line) then
 				-- 	null; -- skip
 
@@ -2917,7 +2917,7 @@ package body et_geometry_2a is
 				i := i + 1; -- prepare next segment
 			end query_point;
 
-			
+
 		begin
 			-- Sort the given points by their increasing distance
 			-- to the A end of the line:
@@ -2931,8 +2931,8 @@ package body et_geometry_2a is
 			points_sorted.iterate (query_point'access);
 			return result;
 		end do_it;
-		
-			
+
+
 	begin
 		-- We will always have one more fragment than split points:
 		fragment_count := 1 + natural (points.length);
@@ -2944,17 +2944,17 @@ package body et_geometry_2a is
 				-- then the given line will be returned as it is:
 				result_no_split.segments (1) := line;
 				return result_no_split;
-				
+
 			when others =>
 				return do_it;
 		end case;
-		
+
 	end split_line;
-	
 
 
 
-	
+
+
 
 	procedure merge_lines (
 		primary			: in out type_line;
@@ -2979,7 +2979,7 @@ package body et_geometry_2a is
 		end case;
 	end merge_lines;
 
-	
+
 
 
 
@@ -2999,7 +2999,7 @@ package body et_geometry_2a is
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end in_area;
 
@@ -3022,9 +3022,9 @@ package body et_geometry_2a is
 	end to_line_array;
 
 
-	
 
-	
+
+
 
 	function merge_lines (
 		primary			: in type_line;
@@ -3037,7 +3037,7 @@ package body et_geometry_2a is
 		OP : constant type_line_orientation := get_orientation (primary);
 		OS : constant type_line_orientation := get_orientation (secondary);
 
-		-- The two given lines may run into various 
+		-- The two given lines may run into various
 		-- directions (upwards, downwards, right, left).
 		-- We need their smallest and greatest extension along
 		-- the x and y axis. So the function get_bounding_box seems
@@ -3059,7 +3059,7 @@ package body et_geometry_2a is
 			raise constraint_error;
 		end if;
 
-		
+
 		-- Merge both bounding boxes. The outcome is stored in AP:
 		merge_areas (AP, AS);
 
@@ -3077,7 +3077,7 @@ package body et_geometry_2a is
 				result.A.y := AP.position.y;
 				result.B.y := AP.position.y;
 
-				
+
 			when ORIENT_VERTICAL =>
 				-- Y-values are relevant.
 				-- The resulting line runs from bottom to top:
@@ -3088,30 +3088,30 @@ package body et_geometry_2a is
 				result.A.x := AP.position.x;
 				result.B.x := AP.position.x;
 
-  
+
 			when ORIENT_SLOPING =>
 				raise constraint_error; -- CS should never happen
 		end case;
-		
+
 
 		return result;
 	end merge_lines;
-	
 
-	
-	
-	
-	
+
+
+
+
+
 -- ARC:
 
 
 	function to_arc (
 		center		: in type_vector_model;
-		A	: in type_vector_model;			
+		A	: in type_vector_model;
 		B	: in type_vector_model;
 		direction	: in type_direction_of_rotation)
 		return type_arc'class
-	is 
+	is
 		arc : type_arc;
 	begin
 		arc := (center, A, B, direction, others => <>);
@@ -3119,9 +3119,9 @@ package body et_geometry_2a is
 		-- CS consistence check !!
 		return arc;
 	end to_arc;
-	
 
-	
+
+
 	procedure reset_arc (
 		arc		: in out type_arc)
 	is begin
@@ -3129,7 +3129,7 @@ package body et_geometry_2a is
 	end reset_arc;
 
 
-	
+
 	procedure set_center (
 		arc		: in out type_arc;
 		center	: in type_vector_model)
@@ -3140,7 +3140,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	procedure set_A (
 		arc			: in out type_arc;
@@ -3149,8 +3149,8 @@ package body et_geometry_2a is
 		arc.A := A;
 	end set_A;
 
-	
-	
+
+
 	procedure set_B (
 		arc			: in out type_arc;
 		B	: in type_vector_model)
@@ -3158,7 +3158,7 @@ package body et_geometry_2a is
 		arc.B := B;
 	end set_B;
 
-	
+
 
 	procedure set_direction (
 		arc			: in out type_arc;
@@ -3168,7 +3168,7 @@ package body et_geometry_2a is
 	end set_direction;
 
 
-	
+
 
 	function get_center (
 		arc : in type_arc)
@@ -3176,9 +3176,9 @@ package body et_geometry_2a is
 	is begin
 		return arc.center;
 	end get_center;
-	
 
-	
+
+
 	function get_A (
 		arc : in type_arc)
 		return type_vector_model
@@ -3186,7 +3186,7 @@ package body et_geometry_2a is
 		return arc.A;
 	end get_A;
 
-	
+
 
 	function get_B (
 		arc : in type_arc)
@@ -3206,7 +3206,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function to_arc_fine (
 		arc : in type_arc)
 		return pac_geometry_1.type_arc_fine
@@ -3218,12 +3218,12 @@ package body et_geometry_2a is
 			direction	=> arc.direction);
 	end to_arc_fine;
 
-	
+
 
 	function to_arc_coarse (
 		arc : in pac_geometry_1.type_arc_fine)
 		return type_arc'class
-	is 
+	is
 		result : type_arc;
 	begin
 		result := (
@@ -3237,14 +3237,14 @@ package body et_geometry_2a is
 	end to_arc_coarse;
 
 
-	
+
 	function to_string (
-		arc : in type_arc) 
+		arc : in type_arc)
 		return string
 	is begin
-		return "A: " & to_string (arc.A) 
+		return "A: " & to_string (arc.A)
 			& " B: " & to_string (arc.B)
-			& " C: " & to_string (arc.center) 
+			& " C: " & to_string (arc.center)
 			& " D: " & to_string (arc.direction);
 	end to_string;
 
@@ -3261,7 +3261,7 @@ package body et_geometry_2a is
 	end get_intersection;
 
 
-	
+
 
 	function is_selected (
 		arc : in type_arc)
@@ -3274,23 +3274,23 @@ package body et_geometry_2a is
 		end if;
 	end is_selected;
 
-	
-	
+
+
 	procedure set_selected (
 		arc : in out type_arc)
 	is begin
 		set_selected (arc.status);
 	end set_selected;
 
-	
+
 	procedure clear_selected (
 		arc : in out type_arc)
 	is begin
 		clear_selected (arc.status);
 	end clear_selected;
 
-	
-	
+
+
 
 	function is_proposed (
 		arc : in type_arc)
@@ -3298,19 +3298,19 @@ package body et_geometry_2a is
 	is begin
 		if is_proposed (arc.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_proposed;
 
-	
+
 	procedure set_proposed (
 		arc : in out type_arc)
 	is begin
 		set_proposed (arc.status);
 	end set_proposed;
 
-	
+
 	procedure clear_proposed (
 		arc : in out type_arc)
 	is begin
@@ -3318,7 +3318,7 @@ package body et_geometry_2a is
 	end clear_proposed;
 
 
-	
+
 
 
 	function is_moving (
@@ -3327,19 +3327,19 @@ package body et_geometry_2a is
 	is begin
 		if is_moving (arc.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_moving;
 
-	
+
 	procedure set_moving (
 		arc : in out type_arc)
 	is begin
 		set_moving (arc.status);
 	end set_moving;
 
-	
+
 	procedure clear_moving (
 		arc : in out type_arc)
 	is begin
@@ -3350,12 +3350,12 @@ package body et_geometry_2a is
 
 	procedure modify_status (
 		arc 		: in out type_arc;
-		operation	: in type_status_operation)						
+		operation	: in type_status_operation)
 	is begin
 		modify_status (arc.status, operation);
 	end modify_status;
 
-	
+
 
 	procedure reset_status (
 		arc 		: in out type_arc)
@@ -3367,7 +3367,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function reverse_arc (arc : in type_arc) return type_arc'class is
 		result : type_arc := arc;
@@ -3379,12 +3379,12 @@ package body et_geometry_2a is
 			when CW  => result.direction := CCW;
 			when CCW => result.direction := CW;
 		end case;
-		
+
 		return result;
 	end reverse_arc;
 
-	
-	
+
+
 	procedure reverse_arc (arc : in out type_arc) is
 		scratch : constant type_vector_model := arc.A;
 	begin
@@ -3398,17 +3398,17 @@ package body et_geometry_2a is
 	end reverse_arc;
 
 
-	
+
 	function normalize_arc (arc: in type_arc) return type_arc'class is
 	begin
 		case arc.direction is
-			when CW  => return reverse_arc (arc);					
+			when CW  => return reverse_arc (arc);
 			when CCW => return arc;
 		end case;
 	end normalize_arc;
 
 
-	
+
 	function zero_length (arc : in type_arc) return boolean is
 	begin
 		if arc.A = arc.B then
@@ -3420,7 +3420,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	procedure move_by (
 		arc		: in out type_arc;
 		offset	: in type_vector_model)
@@ -3446,7 +3446,7 @@ package body et_geometry_2a is
 		move_by (point => arc.A, offset => offset);
 		move_by (point => arc.B, offset => offset);
 	end move_to;
-	
+
 
 
 
@@ -3460,28 +3460,28 @@ package body et_geometry_2a is
 		arc.direction := reverse_direction (arc.direction);
 	end mirror_arc;
 
-	
+
 
 	procedure rotate_arc_by (
 		arc			: in out type_arc;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation)
 	is begin
 		rotate_by (arc.center, rotation);
 		rotate_by (arc.A, rotation);
 		rotate_by (arc.B, rotation);
 	end;
-	
 
-	
+
+
 	function get_radius_start (
-		arc : in type_arc) 
-		return type_float_positive 
+		arc : in type_arc)
+		return type_float_positive
 	is begin
 		return get_distance_absolute (arc.center, arc.A);
 	end get_radius_start;
 
 
-	
+
 	function get_radius_end (
 		arc : in type_arc)
 		return type_float_positive
@@ -3490,18 +3490,18 @@ package body et_geometry_2a is
 	end get_radius_end;
 
 
-	
+
 	function is_valid (
 		arc : in type_arc)
-		return boolean 
-	is 
+		return boolean
+	is
 		rs : constant type_float_positive := get_radius_start (arc);
 		re : constant type_float_positive := get_radius_end (arc);
 	begin
 		-- put_line (to_string (arc));
 		-- put_line ("rs " & to_string (rs));
 		-- put_line ("re " & to_string (re));
-		
+
 		if rs = re then
 
 			if rs > 0.0 then
@@ -3515,21 +3515,21 @@ package body et_geometry_2a is
 	end is_valid;
 
 
-	
+
 
 	function get_arc_B (
 		center	: in type_vector_model;
-		A		: in type_vector_model;	
+		A		: in type_vector_model;
 		angle 	: in type_angle) -- unit is degrees
 		return type_vector_model
-	is						
+	is
 		arc : type_arc;
 
 		radius : type_float;
 		angle_start, angle_end : type_angle; -- CS type_angle_positive ?
 		end_x, end_y : type_float;
-		
-	begin		
+
+	begin
 		-- build an arc from the information available
 		arc := (
 			center		=> center,
@@ -3537,7 +3537,7 @@ package body et_geometry_2a is
 			B	=> origin, -- not determined yet
 			direction	=> get_direction (angle),
 			others		=> <>);
-		
+
 		-- move arc so that its center is at 0/0
 		move_to (arc, origin);
 
@@ -3546,7 +3546,7 @@ package body et_geometry_2a is
 
 		-- calculate the angle where the arc begins:
 
-		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- NOTE: If x and y are zero then the arctan operation is not possible.
 		-- In this case we assume the resulting angle is zero.
 		if get_x (arc.A) = zero and get_y (arc.A) = zero then
 			angle_start := 0.0;
@@ -3556,7 +3556,7 @@ package body et_geometry_2a is
 					x => type_float (get_x (arc.A)),
 					cycle => units_per_cycle);
 		end if;
-		
+
 		-- the angle where the arc ends:
 		angle_end := angle_start + angle;
 
@@ -3569,23 +3569,23 @@ package body et_geometry_2a is
 			--y	=> type_distance (end_y)); -- CS
 			x	=> to_distance (end_x),
 			y	=> to_distance (end_y));
-						
+
 	end get_arc_B;
 
-	
 
 
-	
-	
-	
+
+
+
+
 	function to_arc_angles (
-		arc : in type_arc) 
-		return type_arc_angles 
+		arc : in type_arc)
+		return type_arc_angles
 	is
 	-- The angles may be negative. For example instead of 270 degree
 	-- the angle can be -90 degree.
 		result : type_arc_angles;
-					
+
 		-- Take a copy of the given arc in arc_tmp.
 		arc_tmp : type_arc := arc;
 	begin
@@ -3594,22 +3594,22 @@ package body et_geometry_2a is
 
 		-- the center is not changed:
 		set_center (result, to_vector (arc.center));
-		
+
 		-- calculate the radius of the arc
 		set_radius (result, get_distance_absolute (
 			arc_tmp.center, to_vector (arc_tmp.A)));
-		
+
 		-- calculate the angles where the arc begins and ends:
 
-		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- NOTE: If x and y are zero then the arctan operation is not possible.
 		-- In this case we assume the resulting angle is zero.
-		
+
 		if get_x (arc_tmp.A) = zero and get_y (arc_tmp.A) = zero then
 			set_angle_start (result, 0.0);
 		else
 			set_angle_start (result, arctan (
 					y => type_float (get_y (arc_tmp.A)),
-					x => type_float (get_x (arc_tmp.A)), 
+					x => type_float (get_x (arc_tmp.A)),
 					cycle => units_per_cycle));
 		end if;
 
@@ -3626,19 +3626,19 @@ package body et_geometry_2a is
 		if get_angle_start (result) = get_angle_end (result) then
 			raise constraint_error; -- CS warning instead ?
 		end if;
-		
+
 		-- direction is not changed:
 		set_direction (result, arc.direction);
-		
+
 		return result;
 	end to_arc_angles;
 
 
-	
-		
 
 
-	
+
+
+
 
 	function get_shortest_distance (
 		arc		: in type_arc;
@@ -3648,7 +3648,7 @@ package body et_geometry_2a is
 		A : constant type_arc_fine := to_arc_fine (arc);
 		P : constant type_vector := to_vector (point);
 	begin
-		return get_shortest_distance (A, P);		
+		return get_shortest_distance (A, P);
 	end get_shortest_distance;
 
 
@@ -3665,7 +3665,7 @@ package body et_geometry_2a is
 		return get_absolute (get_shortest_distance (A, P));
 	end get_shortest_distance;
 
-	
+
 
 
 
@@ -3679,14 +3679,14 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function get_bounding_box (
 		arc 	: in type_arc;
 		width	: in type_distance_positive)
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
-		
+
 		result : type_area;
 
 		c : type_circle;
@@ -3695,12 +3695,12 @@ package body et_geometry_2a is
 		c.radius := type_distance_positive (get_radius_start (arc));
 
 		result := get_bounding_box (c, width);
-		
+
 		return result;
 	end get_bounding_box;
 
 
-	
+
 
 -- CIRCLE:
 
@@ -3709,7 +3709,7 @@ package body et_geometry_2a is
 		center	: in type_vector_model;
 		radius	: in type_distance_positive)
 		return type_circle'class
-	is 
+	is
 		circle : type_circle;
 	begin
 		circle := (center, radius, others => <>);
@@ -3724,7 +3724,7 @@ package body et_geometry_2a is
 		c := (others => <>);
 	end reset_circle;
 
-	
+
 
 	procedure set_center (
 		c : in out type_circle;
@@ -3733,7 +3733,7 @@ package body et_geometry_2a is
 		c.center := e;
 	end set_center;
 
-	
+
 	procedure set_radius (
 		c : in out type_circle;
 		r : in type_distance_positive)
@@ -3749,9 +3749,9 @@ package body et_geometry_2a is
 	is begin
 		return c.center;
 	end get_center;
-	
 
-	
+
+
 	function get_radius (
 		c : in type_circle)
 		return type_distance_positive
@@ -3759,9 +3759,9 @@ package body et_geometry_2a is
 		return c.radius;
 	end get_radius;
 
-	
 
-	
+
+
 	function to_circle_fine (
 		circle : in type_circle)
 		return type_circle_fine
@@ -3775,18 +3775,18 @@ package body et_geometry_2a is
 	end to_circle_fine;
 
 
-	
-	
+
+
 	function to_string (
-		circle : in type_circle) 
-		return string 
+		circle : in type_circle)
+		return string
 	is begin
-		return "C: " & to_string (circle.center) 
+		return "C: " & to_string (circle.center)
 			& " R: " & to_string (circle.radius);
 	end to_string;
 
 
-	
+
 
 	function get_intersection (
 		circle	: in type_circle;
@@ -3799,7 +3799,7 @@ package body et_geometry_2a is
 	end get_intersection;
 
 
-	
+
 
 	function is_selected (
 		circle : in type_circle)
@@ -3812,22 +3812,22 @@ package body et_geometry_2a is
 		end if;
 	end is_selected;
 
-	
+
 	procedure set_selected (
 		circle : in out type_circle)
 	is begin
 		set_selected (circle.status);
 	end set_selected;
 
-	
+
 	procedure clear_selected (
 		circle : in out type_circle)
 	is begin
 		clear_selected (circle.status);
 	end clear_selected;
 
-	
-	
+
+
 
 	function is_proposed (
 		circle : in type_circle)
@@ -3835,19 +3835,19 @@ package body et_geometry_2a is
 	is begin
 		if is_proposed (circle.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_proposed;
 
-	
+
 	procedure set_proposed (
 		circle : in out type_circle)
 	is begin
 		set_proposed (circle.status);
 	end set_proposed;
 
-	
+
 	procedure clear_proposed (
 		circle : in out type_circle)
 	is begin
@@ -3855,7 +3855,7 @@ package body et_geometry_2a is
 	end clear_proposed;
 
 
-	
+
 
 
 	function is_moving (
@@ -3864,19 +3864,19 @@ package body et_geometry_2a is
 	is begin
 		if is_moving (circle.status) then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_moving;
 
-	
+
 	procedure set_moving (
 		circle : in out type_circle)
 	is begin
 		set_moving (circle.status);
 	end set_moving;
 
-	
+
 	procedure clear_moving (
 		circle : in out type_circle)
 	is begin
@@ -3887,12 +3887,12 @@ package body et_geometry_2a is
 
 	procedure modify_status (
 		circle 		: in out type_circle;
-		operation	: in type_status_operation)						
+		operation	: in type_status_operation)
 	is begin
 		modify_status (circle.status, operation);
 	end modify_status;
 
-	
+
 
 	procedure reset_status (
 		circle 		: in out type_circle)
@@ -3903,7 +3903,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 	function to_radius (
 		r : in string)
 		return type_distance_positive
@@ -3921,8 +3921,8 @@ package body et_geometry_2a is
 
 
 
-	
-	
+
+
 	procedure move_by (
 		circle	: in out type_circle;
 		offset	: in type_vector_model)
@@ -3934,7 +3934,7 @@ package body et_geometry_2a is
 
 	procedure mirror_circle (
 		circle		: in out type_circle;
-		axis		: in type_mirror) 
+		axis		: in type_mirror)
 	is begin
 		mirror_point (circle.center, axis);
 	end mirror_circle;
@@ -3943,7 +3943,7 @@ package body et_geometry_2a is
 
 	procedure rotate_circle_by (
 		circle		: in out type_circle;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation)
 	is begin
 		rotate_by (circle.center, rotation);
 	end;
@@ -3952,10 +3952,10 @@ package body et_geometry_2a is
 
 
 
-	
 
 
-	
+
+
 
 	function get_shortest_distance (
 		circle	: in type_circle;
@@ -3983,10 +3983,10 @@ package body et_geometry_2a is
 	end get_shortest_distance;
 
 
-	
 
-	
-	
+
+
+
 	function get_bounding_box (
 		circle 	: in type_circle;
 		width	: in type_distance_positive)
@@ -3994,7 +3994,7 @@ package body et_geometry_2a is
 	is
 		-- CS: Optimization required. Compiler options ?
 		-- CS: output warning if radius is zero ?
-		
+
 		result : type_area;
 		w : type_distance;
 
@@ -4007,13 +4007,13 @@ package body et_geometry_2a is
 
 		result.position.x := circle.center.x - w / 2.0;
 		result.position.y := circle.center.y - w / 2.0;
-		
+
 		return result;
 	end get_bounding_box;
 
 
 
-	
+
 
 
 -- POSITION:
@@ -4024,15 +4024,15 @@ package body et_geometry_2a is
 	is begin
 		position := origin_zero_rotation;
 	end;
-	
 
 
-	
+
+
 	function to_string (
 		position	: in type_position;
 		format		: in type_output_format := FORMAT_1)
-		return string 
-	is 
+		return string
+	is
 		x : constant string := to_string (get_x (position));
 		y : constant string := to_string (get_y (position));
 		r : constant string := to_string (get_rotation (position));
@@ -4056,12 +4056,12 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in type_field_count_positive)
-		return type_position 
+		return type_position
 	is
 		point : type_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
@@ -4081,29 +4081,29 @@ package body et_geometry_2a is
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif get_field (line, place) = keyword_rotation then
 				set_rotation (point, to_rotation (get_field (line, place + 1)));
-				
+
 			else
 				-- CS invalid_keyword (f (line, place));
 				raise constraint_error; -- CS
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return point;
 	end to_position;
 
 
 
-	
-	
-	
+
+
+
 
 	function to_position (
 		point		: in type_vector_model;
 		rotation	: in type_rotation)
 		return type_position'class
-	is 
+	is
 		result : type_position;
 	begin
 		result.place := point;
@@ -4135,15 +4135,15 @@ package body et_geometry_2a is
 	end get_place;
 
 
-	
+
 	procedure set_place (
 		position	: in out type_position;
 		place		: in type_vector_model)
 	is begin
 		position.place := place;
 	end;
-	
-	
+
+
 
 	procedure set_place_relative (
 		position	: in out type_position;
@@ -4153,7 +4153,7 @@ package body et_geometry_2a is
 	end;
 
 
-	
+
 
 	function get_x (
 		position : in type_position)
@@ -4161,7 +4161,7 @@ package body et_geometry_2a is
 	is begin
 		return position.place.x;
 	end get_x;
-	
+
 
 	function get_y (
 		position : in type_position)
@@ -4171,12 +4171,12 @@ package body et_geometry_2a is
 	end get_y;
 
 
-	
 
-	
+
+
 	function get_rotation (
 		position : in type_position)
-		return type_rotation 
+		return type_rotation
 	is begin
 		return position.rotation;
 	end;
@@ -4184,12 +4184,12 @@ package body et_geometry_2a is
 
 	procedure set_rotation (
 		position	: in out type_position;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation)
 	is begin
 		position.rotation := rotation;
 	end;
 
-	
+
 
 
 	procedure set_rotation_relative (
@@ -4200,7 +4200,7 @@ package body et_geometry_2a is
 	end;
 
 
-	
+
 
 	procedure add (
 		position	: in out type_position;
@@ -4211,16 +4211,16 @@ package body et_geometry_2a is
 		case mirror is
 			when MIRROR_NO =>
 				rotate_by (position.place, get_rotation (offset));
-				
-				add (position.place, offset.place);				
+
+				add (position.place, offset.place);
 				add (position.rotation, offset.rotation);
 
 			when MIRROR_ALONG_Y_AXIS =>
 				mirror_point (position.place, MIRROR_ALONG_Y_AXIS);
 
 				rotate_by (position.place, - get_rotation (offset));
-				
-				add (position.place, offset.place);				
+
+				add (position.place, offset.place);
 				add (position.rotation, offset.rotation);
 
 			when others =>
@@ -4228,10 +4228,10 @@ package body et_geometry_2a is
 		end case;
 	end add;
 
-	
-	
 
-	
+
+
+
 -- CATCH ZONE:
 
 	function set_catch_zone (
@@ -4251,7 +4251,7 @@ package body et_geometry_2a is
 		return zone.center;
 	end get_center;
 
-	
+
 
 	function get_radius (
 		zone	: in type_catch_zone)
@@ -4260,8 +4260,8 @@ package body et_geometry_2a is
 		return zone.radius;
 	end get_radius;
 
-	
-	
+
+
 	function to_string (
 		zone : in type_catch_zone)
 		return string
@@ -4269,7 +4269,7 @@ package body et_geometry_2a is
 		return " catch zone: " & to_string (zone.center)
 			& " radius " & pac_geometry_1.to_string (zone.radius);
 	end to_string;
-	
+
 
 
 	function to_zone_radius (
@@ -4280,7 +4280,7 @@ package body et_geometry_2a is
 	end to_zone_radius;
 
 
-	
+
 	function in_radius (
 		distance : in type_float_positive;
 		radius	 : in type_zone_radius)
@@ -4292,8 +4292,8 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end in_radius;
-	
-	
+
+
 
 
 
@@ -4310,12 +4310,12 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end in_catch_zone;
-	
-
-	
 
 
-	
+
+
+
+
 
 	function in_catch_zone (
 		zone	: in type_catch_zone;
@@ -4351,18 +4351,18 @@ package body et_geometry_2a is
 				return true;
 			else
 				-- case 2
-				if distance_to_center - width_float <= zone.radius then 
+				if distance_to_center - width_float <= zone.radius then
 					return true;
 				else
 					return false;
-				end if;				
+				end if;
 			end if;
 		end if;
 	end in_catch_zone;
-		
 
 
-	
+
+
 
 	function in_catch_zone (
 		zone	: in type_catch_zone;
@@ -4372,18 +4372,18 @@ package body et_geometry_2a is
 	is
 		-- debug : boolean := true;
 		debug : constant boolean := false;
-		
+
 		distance : type_float;
 		distance_polar : type_distance_polar;
 	begin
 		distance_polar := get_shortest_distance (
 			to_arc_fine (arc), to_vector (get_center (zone)));
-		
+
 		if debug then
 			put_line ("in_catch_zone arc");
 			put_line ("dp " & to_string (distance_polar));
 		end if;
-		
+
 		distance := get_absolute (distance_polar);
 
 		distance := distance - type_float_positive (width);
@@ -4419,21 +4419,21 @@ package body et_geometry_2a is
 	end in_catch_zone;
 
 
-	
+
 
 	procedure nothing_found (
 		zone	: in type_catch_zone)
 	is begin
-		log (importance => SEVERITY_WARNING, 
+		log (importance => SEVERITY_WARNING,
 			 text => "nothing found in" & to_string (zone));
 	end nothing_found;
 
 
 
 
-	
-	
-	
+
+
+
 
 -- ZONES OF A LINE
 
@@ -4445,36 +4445,36 @@ package body et_geometry_2a is
 		return type_line_zone'image (zone);
 	end;
 
-	
 
-	
+
+
 	function get_zone (
 		line	: in type_line;
 		point	: in type_vector_model)
-		return type_line_zone 
+		return type_line_zone
 	is
 		zone : type_line_zone; -- to be returned
-	
+
 		line_length : type_distance;
 		zone_border : type_distance;
-		
+
 	begin -- get_zone
 		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
-		
-		-- The greater distance from start to end point in X or Y determines 
+
+		-- The greater distance from start to end point in X or Y determines
 		-- whether the line is handled like a horizontal or vertical drawn line.
-		if get_distance_absolute (line.A, line.B, AXIS_X) > 
+		if get_distance_absolute (line.A, line.B, AXIS_X) >
 			get_distance_absolute (line.A, line.B, AXIS_Y) then
 
 			-- distance in X greater -> decision will be made along the X axis.
 			-- The line will be handled like a horizontal drawn line.
-			
+
 			-- calculate the zone border. This depends on the line length in X direction.
 			line_length := get_distance_absolute (line.A, line.B, AXIS_X);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
-			
-			if get_x (line.A) < get_x (line.B) then 
+
+			if get_x (line.A) < get_x (line.B) then
 			-- DRAWN FROM LEFT TO THE RIGHT
 				if get_x (point) < get_x (line.A) + zone_border then
 					zone := START_POINT; -- point is in the zone of line.A
@@ -4484,7 +4484,7 @@ package body et_geometry_2a is
 					zone := CENTER;
 				end if;
 
-			else 
+			else
 			-- DRAWN FROM RIGHT TO THE LEFT
 				if get_x (point) > get_x (line.A) - zone_border then
 					zone := START_POINT; -- point is in the zone of line.A
@@ -4495,7 +4495,7 @@ package body et_geometry_2a is
 				end if;
 			end if;
 
-			
+
 		else
 			-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
 			-- The line will be handled like a vertical drawn line.
@@ -4504,8 +4504,8 @@ package body et_geometry_2a is
 			line_length := get_distance_absolute (line.A, line.B, AXIS_Y);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
-			
-			if get_y (line.A) < get_y (line.B) then 
+
+			if get_y (line.A) < get_y (line.B) then
 			-- DRAWN UPWARDS
 				if get_y (point) < get_y (line.A) + zone_border then
 					zone := START_POINT; -- point is in the zone of line.A
@@ -4514,8 +4514,8 @@ package body et_geometry_2a is
 				else
 					zone := CENTER;
 				end if;
-					
-			else 
+
+			else
 			-- DRAWN DOWNWARDS
 				if get_y (point) > get_y (line.A) - zone_border then
 					zone := START_POINT; -- point is in the zone of line.A
@@ -4525,10 +4525,10 @@ package body et_geometry_2a is
 					zone := CENTER;
 				end if;
 			end if;
-			
-			
+
+
 		end if;
-		
+
 		return zone;
 	end get_zone;
 
@@ -4546,11 +4546,11 @@ package body et_geometry_2a is
 			when START_POINT =>
 				offset := get_distance_relative (line.A, destination);
 				move_start_by (line, offset);
-				
+
 			when END_POINT =>
 				offset := get_distance_relative (line.B, destination);
 				move_end_by (line, offset);
-				
+
 			when CENTER =>
 				offset := get_distance_relative (point_of_attack, destination);
 				move_start_by (line, offset);
@@ -4561,19 +4561,19 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 	function get_zone (
 		arc		: in type_arc;
 		point	: in type_vector_model)
-		return type_line_zone 
+		return type_line_zone
 	is
 		zone : type_line_zone := CENTER; -- to be returned
 
 		subtype type_arcs is type_arc_segments (1 .. 3);
 		segments : type_arcs;
 
-		idx : positive;		
+		idx : positive;
 
 	begin
 		-- Split the given arc into three segments
@@ -4585,18 +4585,18 @@ package body et_geometry_2a is
 		idx := get_nearest (segments, to_vector (point));
 
 		-- put_line ("idx" & positive'image (idx));
-		
+
 		case idx is
 			when 1 => zone := START_POINT;
 			when 3 => zone := END_POINT;
 			when others => null;
 		end case;
-		
+
 		return zone;
 	end get_zone;
 
 
-	
+
 
 	procedure attack (
 		arc				: in out type_arc;
@@ -4605,7 +4605,7 @@ package body et_geometry_2a is
 	is
 		-- debug : boolean := true;
 		debug : constant boolean := false;
-		
+
 		zone : type_line_zone;
 		offset : type_vector_model;
 	begin
@@ -4617,7 +4617,7 @@ package body et_geometry_2a is
 			put_line ("destination     " & to_string (destination));
 			put_line ("zone            " & to_string (zone));
 		end if;
-		
+
 
 		case zone is
 			when START_POINT =>
@@ -4635,7 +4635,7 @@ package body et_geometry_2a is
 	end attack;
 
 
-	
+
 
 	function get_bounding_box (
 		line		: in type_line'class;
@@ -4643,7 +4643,7 @@ package body et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
 		-- Make a copy of the given line:
@@ -4658,17 +4658,17 @@ package body et_geometry_2a is
 			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
 			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
 		end case;
-		
+
 		-- Move the line by offset_1:
 		move_by (l, offset_1);
-		
+
 		-- Move the line by offset_2:
 		move_by (l, offset_2);
 
 		-- Get the bounding-box of line:
 		b := get_bounding_box (l, width);
 		-- put_line ("b " & to_string (b));
-		
+
 		return b;
 	end get_bounding_box;
 
@@ -4680,7 +4680,7 @@ package body et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
 		-- Make a copy of the given arc:
@@ -4699,14 +4699,14 @@ package body et_geometry_2a is
 
 		-- Move the arc by offset_1:
 		move_by (c, offset_1);
-				 
+
 		-- Move the arc by offset_2:
 		move_by (c, offset_2);
 
 		-- Get the bounding-box of arc:
 		b := get_bounding_box (c, width);
 		-- put_line ("b " & to_string (b));
-		
+
 		return b;
 	end get_bounding_box;
 
@@ -4718,7 +4718,7 @@ package body et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
 		-- Make a copy of the given circle:
@@ -4735,17 +4735,17 @@ package body et_geometry_2a is
 			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
 			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
 		end case;
-		
+
 		-- Move the circle by offset_1:
 		move_by (c, offset_1);
-				 
+
 		-- Move the arc by offset_2:
 		move_by (c, offset_2);
 
 		-- Get the bounding-box of arc:
 		b := get_bounding_box (c, width);
 		-- put_line ("b " & to_string (b));
-		
+
 		return b;
 	end get_bounding_box;
 
@@ -4756,11 +4756,11 @@ package body et_geometry_2a is
 		drag : in type_drag)
 		return string
 	is begin
-		return "from " & to_string (drag.before) 
+		return "from " & to_string (drag.before)
 		& " to " & to_string (drag.after);
 	end;
 
-	
-	
+
+
 end et_geometry_2a;
 

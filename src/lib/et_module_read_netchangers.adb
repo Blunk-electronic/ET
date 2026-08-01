@@ -68,16 +68,16 @@ package body et_module_read_netchangers is
 	netchanger		: type_netchanger;
 	netchanger_id	: type_netchanger_id := type_netchanger_id'first;
 
-	
-	
+
+
 	procedure read_netchanger (
 		line : in type_fields_of_line)
 	is
 		-- CS separate procedures for board related stuff
-		
+
 		use et_schematic_geometry;
 		use et_board_geometry.pac_geometry_2;
-		use et_schematic_coordinates;	
+		use et_schematic_coordinates;
 		kw : constant string := f (line, 1);
 
 		position : type_object_position;
@@ -85,7 +85,7 @@ package body et_module_read_netchangers is
 		direction : type_netchanger_direction := FORWARD;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		
+
 		if kw = keyword_name then -- name 1, 2, 304, ...
 			expect_field_count (line, 2);
 			netchanger_id := to_netchanger_id (f (line, 2));
@@ -93,14 +93,14 @@ package body et_module_read_netchangers is
 
 		elsif kw = keyword_direction then -- direction forward/backward
 			expect_field_count (line, 2);
-			
+
 			direction := to_netchanger_direction (f (line, 2));
 			set_direction (netchanger, direction);
-		
 
-		elsif kw = keyword_position_in_schematic then 
+
+		elsif kw = keyword_position_in_schematic then
 			-- position_in_schematic sheet 1 x 1.000 y 5.555 rotation 0
-			
+
 			expect_field_count (line, 9);
 
 			-- extract position (in schematic) starting at field 2
@@ -109,42 +109,42 @@ package body et_module_read_netchangers is
 			set_sheet (netchanger, get_sheet (position));
 			set_place (netchanger, get_place (position));
 			set_rotation (netchanger, get_rotation (position));
-			
-			
-		elsif kw = keyword_position_in_board then 
+
+
+		elsif kw = keyword_position_in_board then
 			-- position_in_board x 55.000 y 7.555
 			expect_field_count (line, 5);
 
 			-- extract position (in board) starting at field 2
 			netchanger.position_brd.place := to_vector_model (line, 2);
 
-			
+
 		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 			expect_field_count (line, 2);
 			netchanger.position_brd.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (netchanger.layer);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_netchanger;
 
 
-		
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
-		
+
+
 		procedure insert_netchanger (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			inserted : boolean;
@@ -163,37 +163,37 @@ package body et_module_read_netchangers is
 
 			-- A netchanger name must be unique:
 			if not inserted then
-				log (SEVERITY_ERROR, "netchanger id" & to_string (netchanger_id) 
+				log (SEVERITY_ERROR, "netchanger id" & to_string (netchanger_id)
 					& " already used !", console => true);
 				raise constraint_error;
 			end if;
-			
+
 			-- clean up for next netchanger
 			netchanger_id := type_netchanger_id'first;
 			reset_netchanger (netchanger);
 		end insert_netchanger;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert netchanger",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (module_cursor, insert_netchanger'access);
 		log_indentation_down;
 	end insert_netchanger;
-	
-	
-	
-	
+
+
+
+
 end et_module_read_netchangers;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

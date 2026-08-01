@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,7 @@ package body et_csv is
 	begin
 		return trim (type_column'image (column),left);
 	end to_string;
-	
+
 	procedure reset_column is
 	begin
 		column := type_column'first;
@@ -59,7 +59,7 @@ package body et_csv is
 		column := column + 1;
 	end next_column;
 
-	
+
 	procedure put_field (
 	-- Puts a field into a csv file.
 	-- Each field (even if empty) is enclosed in delimiters.
@@ -91,27 +91,27 @@ package body et_csv is
 			end loop;
 
 		elsif column > field_count then -- column must not exceed field_count -> error
-			
+
 			log (SEVERITY_ERROR, "record length "
 				& to_string (field_count)
 				& " less than current column "
 				& to_string (column)
 				& " !");
-			
+
 			raise constraint_error;
 		end if;
-		
+
 		new_line (file);
 
 		reset_column;
 	end put_lf;
-		
+
 end et_csv;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
 

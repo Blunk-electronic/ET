@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.text_io;				use ada.text_io;
@@ -50,28 +50,28 @@ with et_csv;					use et_csv;
 
 
 package body et_material is
-	
+
 	function to_string (name : in type_file_name.bounded_string) return string is begin
 		return type_file_name.to_string (name);
 	end;
 
-	
+
 	function to_file_name (name : in string) return type_file_name.bounded_string is begin
 		return type_file_name.to_bounded_string (name);
 	end;
 
-	
+
 	procedure write_bom (
 		bom				: in pac_bom_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
-		log_threshold	: in type_log_level) 
-	is		
+		log_threshold	: in type_log_level)
+	is
 
 		file_name : type_file_name.bounded_string;
-		
-		procedure set_file_name is 
+
+		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
 			-- use pac_module_name;
@@ -80,7 +80,7 @@ package body et_material is
 		begin
 			if is_default (variant_name) then
 				file_name := to_file_name (
-							compose 
+							compose
 							(
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_bom,
@@ -91,26 +91,26 @@ package body et_material is
 
 			else
 				file_name := to_file_name (
-							compose 
+							compose
 							(
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_bom,
 
-								name					=> to_string (module_name) & "_" & 
+								name					=> to_string (module_name) & "_" &
 															to_variant (variant_name),
 								extension				=> extension_bom
 							));
 			end if;
-		end;	
+		end;
 
-		
+
 		bom_handle : ada.text_io.file_type;
 		device_cursor : pac_bom_devices.cursor := bom.first;
 
-		
+
 		procedure eagle is
 			use et_csv;
-			
+
 			column_part			: constant string := "Part";
 			column_value		: constant string := "Value";
 			column_device		: constant string := "Device";
@@ -123,7 +123,7 @@ package body et_material is
 			column_partcode_ext	: constant string := "PART_CODE_EXT"; -- not used
 			column_updated		: constant string := "UPDATED";
 
-			
+
 			procedure query_device (cursor : in pac_bom_devices.cursor) is
 			begin
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
@@ -142,10 +142,10 @@ package body et_material is
 				put_lf (file => bom_handle, field_count => et_csv.column);
 			end query_device;
 
-			
+
 		begin -- eagle
 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
-			
+
 			-- write the BOM table header
 			et_csv.reset_column;
 			put_field (file => bom_handle, text => column_part);
@@ -164,19 +164,19 @@ package body et_material is
 			pac_bom_devices.iterate (
 				container	=> bom,
 				process		=> query_device'access);
-			
+
 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
 			-- put_line (bom_handle, comment_mark & " end of list");
-			
+
 		end;
 
 
-		
+
 		procedure native is -- CS not complete. accessories ?
 			use et_csv;
 
 			column_item			: constant string := "ITEM";
-			column_device		: constant string := "DEVICE";			
+			column_device		: constant string := "DEVICE";
 			column_value		: constant string := "VALUE";
 			column_package		: constant string := "PACKAGE";
 			column_partcode		: constant string := "PARTCODE";
@@ -193,10 +193,10 @@ package body et_material is
 
 				put_lf (file => bom_handle, field_count => et_csv.column);
 			end query_device;
-			
+
 		begin -- native
 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
-			
+
 			-- write the BOM table header
 			et_csv.reset_column;
 			put_field (file => bom_handle, text => column_item);
@@ -210,22 +210,22 @@ package body et_material is
 			pac_bom_devices.iterate (
 				container	=> bom,
 				process		=> query_device'access);
-			
+
 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
 			-- put_line (bom_handle, comment_mark & " end of list");
-			
+
 		end;
 
-		
+
 	begin -- write_bom
 		-- build the name of the BOM file
 		set_file_name;
 
 		log (text => "writing BOM file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
-		
+
 		create (
 			file => bom_handle,
-			mode => out_file, 
+			mode => out_file,
 			name => to_string (file_name));
 
 		case format is
@@ -233,7 +233,7 @@ package body et_material is
 			when EAGLE => eagle;
 			when others => raise constraint_error;
 		end case;
-				
+
 		close (bom_handle);
 
 		exception
@@ -241,19 +241,19 @@ package body et_material is
 				if is_open (bom_handle) then
 					close (bom_handle);
 				end if;
-				
+
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
-				
+
 	end write_bom;
 
-	
+
 end et_material;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

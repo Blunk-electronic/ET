@@ -46,29 +46,29 @@ package et_board_layer_category is
 
 
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:	
+	-- and package names:
 	layer_category_prefix : constant string := "LAYER_CAT_";
 
-	
+
 	type type_layer_category is (
 
 		LAYER_CAT_OUTLINE,
-		LAYER_CAT_HOLE,							
-									
+		LAYER_CAT_HOLE,
+
 		-- CONDUCTOR LAYERS.
 		-- These layers are numbered:
 		LAYER_CAT_CONDUCTOR,
-		
+
 		-- NON CONDUCTOR LAYERS.
 		-- These layers are paired. Means there is a TOP and a BOTTOM:
 		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_ASSY,
 		LAYER_CAT_STOPMASK,
-		
+
 		LAYER_CAT_KEEPOUT,
 		LAYER_CAT_STENCIL,
 
-		
+
 		-- NOTE: Restrict layers do not contain any conducting
 		-- objects. They are irrelevant for manufacturing.
 		-- Since they are of mere supportive nature for routing
@@ -77,15 +77,15 @@ package et_board_layer_category is
 		LAYER_CAT_ROUTE_RESTRICT,
 		LAYER_CAT_VIA_RESTRICT);
 
-	
-	
+
+
 	function to_layer_category (
-		cat : in string) 
+		cat : in string)
 		return type_layer_category;
 
-	
+
 	function to_string (
-		cat : in type_layer_category) 
+		cat : in type_layer_category)
 		return string;
 
 
@@ -102,13 +102,13 @@ package et_board_layer_category is
 	-- This is a list with an index and an associated layer category:
 	layer_categories : pac_layer_categories.vector;
 
-	
-	
+
+
 end et_board_layer_category;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

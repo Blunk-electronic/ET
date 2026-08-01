@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,7 +54,7 @@ package et_drawing_frame.schematic is
 
 
 	-- default file names:
-	template_schematic_default : constant pac_template_name.bounded_string := 
+	template_schematic_default : constant pac_template_name.bounded_string :=
 		pac_template_name.to_bounded_string (
 			compose (
 				name		=> template_file_name_dummy,
@@ -63,11 +63,11 @@ package et_drawing_frame.schematic is
 
 
 
-	
-	
+
+
 -- TEXT PLACEHOLDERS AND TITLE BLOCK
 
-	
+
 
 	-- The set of basic placeholders is extended by other things which are
 	-- required in the schematic:
@@ -76,13 +76,13 @@ package et_drawing_frame.schematic is
 		sheet_description	: type_placeholder;
 		sheet_category		: type_placeholder; -- development, routing, product
 	end record;
-	
+
 	type type_title_block_schematic is new type_title_block with record
 		placeholders_additional : type_placeholders_schematic;
 	end record;
 
 
-	
+
 
 
 
@@ -92,20 +92,20 @@ package et_drawing_frame.schematic is
 		title_block_schematic : type_title_block_schematic;
 	end record;
 
-	
 
 
-	
+
+
 	-- Applies defaults to given frame:
 	procedure apply_defaults_schematic (frame : in out type_frame_schematic);
 
 
 	function make_default_frame_schematic
 		return type_frame_schematic;
-	
-	
 
-	
+
+
+
 
 
 -- THE FINAL FRAME:
@@ -114,30 +114,30 @@ package et_drawing_frame.schematic is
 	-- and package names:
 	category_prefix : constant string := ("CAT_");
 	-- CS apply prefix !
-	
+
 	type type_schematic_sheet_category is (
 		DEVELOPMENT,
 		ROUTING,
 		PRODUCT
 		);
 
-	
+
 	schematic_sheet_category_default : constant type_schematic_sheet_category := DEVELOPMENT;
 
-	
+
 	function to_string (cat : in type_schematic_sheet_category) return string;
 
 	function to_category (cat : in string) return type_schematic_sheet_category;
 
-	
+
 	type type_schematic_description is record
 		content		: pac_text_content.bounded_string := to_content ("no description");
 		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 
 
-	
-	-- For each sheet of a schematic a description is required. 
+
+	-- For each sheet of a schematic a description is required.
 	-- The descriptions are ordered by the sheet numbers:
 	package pac_schematic_descriptions is new vectors (
 		index_type		=> type_sheet,
@@ -149,25 +149,25 @@ package et_drawing_frame.schematic is
 	function get_sheet (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string;
-		
-		
+
+
 	function get_category (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string;
-		
+
 
 	function get_content (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string;
 
-		
-		
+
+
 	-- Returns the total number of sheets:
 	function get_sheet_count (
 		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet;
-		
-	
+
+
 	-- The final drawing frames:
 	type type_frames_schematic is record
 		template		: pac_template_name.bounded_string := template_schematic_default;
@@ -175,30 +175,30 @@ package et_drawing_frame.schematic is
 
 		--frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
 		frame			: type_frame_schematic := make_default_frame_schematic;
-		
+
 		descriptions	: pac_schematic_descriptions.vector;
 	end record;
 
-	
-	
+
+
 	-- Returns true if the given sheet exists:
 	function sheet_exists (
 		frames	: in type_frames_schematic;
 		sheet	: in type_sheet)
 		return boolean;
 
-		
+
 	function get_sheet_count (
 		frames	: in type_frames_schematic)
 		return type_sheet;
-		
-		
-		
+
+
+
 	-- CS append sheet
 	-- CS insert sheet
 	-- CS edit description
-	
-		
+
+
 	-- Deletes the given sheet.
 	-- Decrements following sheet numbers by 1.
 	-- If the targeted sheet does not exist, then
@@ -213,13 +213,13 @@ package et_drawing_frame.schematic is
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet;
 		cat		: in type_schematic_sheet_category);
-		
-	
+
+
 end et_drawing_frame.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

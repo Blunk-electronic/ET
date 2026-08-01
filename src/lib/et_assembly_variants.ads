@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - rename package to et_module_assembly_variants
 --
 
@@ -59,15 +59,15 @@ package et_assembly_variants is
 
 	use pac_assembly_variant_name;
 
-	
 
-	
+
+
 	-- An assembly variant should be described more or less detailled by the operator:
 	type type_description is new unbounded_string;
 
-	
 
-	
+
+
 	type type_mounted is (YES, NO);
 
 	function to_mounted (mounted : in string) return type_mounted;
@@ -87,7 +87,7 @@ package et_assembly_variants is
 		end case;
 	end record;
 
-	
+
 
 	-- Variants of devices are collected in a map.
 	package pac_device_variants is new indefinite_ordered_maps (
@@ -96,25 +96,25 @@ package et_assembly_variants is
 
 	use pac_device_variants;
 
-	
-	
-	-- Submodules may come with their own assembly variants. 
+
+
+	-- Submodules may come with their own assembly variants.
 	-- NOTE: In contrast to a device, there is no option not to mount a submodule.
 	-- There might be further extensions in the future, so we use a record:
 	type type_submodule_variant is record
 		variant : pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
 	end record;
 
-	
-	
-	-- Variants of submodules are collected in a map.	
+
+
+	-- Variants of submodules are collected in a map.
 	package pac_submodule_variants is new ordered_maps (
 		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		element_type	=> type_submodule_variant);
 
 
-	
-	
+
+
 	-- The final assembly variant is composed of a description and the affected devices:
 	type type_assembly_variant is record
 		description	: type_description;
@@ -122,8 +122,8 @@ package et_assembly_variants is
 		submodules	: pac_submodule_variants.map;
 	end record;
 
-	
-	
+
+
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
 	package pac_assembly_variants is new ordered_maps (
@@ -137,7 +137,7 @@ package et_assembly_variants is
 		variants : in pac_assembly_variants.map)
 		return natural;
 
-	
+
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 	function is_mounted (
@@ -159,7 +159,7 @@ package et_assembly_variants is
 	function get_count (
 		variants : in type_module_assembly_variants)
 		return natural;
-	
+
 
 	-- Returns true if the given variant exists among
 	-- the list of variants:
@@ -167,13 +167,13 @@ package et_assembly_variants is
 		variants	: in type_module_assembly_variants;
 		variant		: in pac_assembly_variant_name.bounded_string)
 		return boolean;
-								   
-	
+
+
 end et_assembly_variants;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

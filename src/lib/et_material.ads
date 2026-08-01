@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -53,10 +53,10 @@ with et_package_model_name;		use et_package_model_name;
 
 
 package et_material is
-	
+
 	-- Whenever we deal with BOM files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
-	package type_file_name is new generic_bounded_length (file_name_length_max); 
+	package type_file_name is new generic_bounded_length (file_name_length_max);
 
 	extension_bom : constant string := "csv";
 
@@ -70,37 +70,37 @@ package et_material is
 		purpose		: pac_device_purpose.bounded_string; 	-- brightness_control
 	end record;
 
-		
+
 	package pac_bom_devices is new ordered_maps (
 		key_type		=> type_device_name, -- IC4
 		element_type	=> type_bom_device);
 
 	use pac_bom_devices;
 
-	
+
 	type type_bom_format is (
 		NATIVE,
 		EAGLE,
 		KICAD
 		-- CS others ?
-		);		
-	
+		);
+
 	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container bom in the file.
 	-- - The BOM file will be named after the module name and the assembly variant.
 	-- - Exports the BOM of the given module to the export/CAM directory.
 	procedure write_bom (
 		bom				: in pac_bom_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
-	
+
 end et_material;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

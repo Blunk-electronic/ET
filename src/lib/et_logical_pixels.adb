@@ -48,7 +48,7 @@ package body et_logical_pixels is
 		return type_logical_pixels'image (lp);
 	end to_string;
 
-	
+
 
 	function to_lp (
 		gd : in glib.gdouble)
@@ -57,7 +57,7 @@ package body et_logical_pixels is
 		return type_logical_pixels (gd);
 	end to_lp;
 
-	
+
 	function to_gdouble (
 		lp : in type_logical_pixels)
 		return glib.gdouble
@@ -65,26 +65,26 @@ package body et_logical_pixels is
 		return glib.gdouble (lp);
 	end to_gdouble;
 
-	
+
 	function to_gdouble_positive (
 		lp : in type_logical_pixels_positive)
 		return glib.gdouble
 	is begin
 		return glib.gdouble (lp);
 	end to_gdouble_positive;
-	
-	
+
+
 	function to_string (
 		v : in type_logical_pixels_vector)
 		return string
 	is begin
 		--return "vector logical pixels x/y: "
-		return to_string (v.x) & "/" 
+		return to_string (v.x) & "/"
 			& to_string (v.y);
 	end to_string;
 
-	
-	
+
+
 	procedure clip_max (
 		value	: in out type_logical_pixels;
 		limit	: in type_logical_pixels)
@@ -93,8 +93,8 @@ package body et_logical_pixels is
 			value := limit;
 		end if;
 	end clip_max;
-	
-	
+
+
 	procedure clip_min (
 		value	: in out type_logical_pixels;
 		limit	: in type_logical_pixels)
@@ -104,6 +104,6 @@ package body et_logical_pixels is
 		end if;
 	end clip_min;
 
-	
+
 end et_logical_pixels;
 

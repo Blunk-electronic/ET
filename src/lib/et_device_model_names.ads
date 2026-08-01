@@ -45,40 +45,40 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_device_model_names is
 
-	
+
 	device_model_file_extension : constant string := "dev";
 
-	
+
 	device_model_file_name_length_max : constant positive := 200;
 
 	-- A device model has a name like
 	-- "../lbr/logic_ttl/7400.dev"
 	-- The model name is equally to the file name that contains
 	-- the model:
-	package pac_device_model_file is new 
+	package pac_device_model_file is new
 		generic_bounded_length (device_model_file_name_length_max);
 	-- CS rename to pac_device_model_name
-		
+
 	-- use pac_device_model_file;
 
 
-	
+
 	function get_length (
 		model_name : in pac_device_model_file.bounded_string)
 		return natural;
-	
-	
+
+
 	function to_string (name : in pac_device_model_file.bounded_string) return string;
 
 	function to_file_name (name : in string) return pac_device_model_file.bounded_string;
 	-- CS rename to to_device_model_name
-	
-		
+
+
 end et_device_model_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

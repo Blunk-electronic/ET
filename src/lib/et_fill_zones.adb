@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,7 +47,7 @@ with et_exceptions;				use et_exceptions;
 package body et_fill_zones is
 
 
-	
+
 
 	procedure iterate (
 		islands	: in pac_islands.list;
@@ -65,12 +65,12 @@ package body et_fill_zones is
 
 
 
-	
-	
+
+
 	procedure make_stripes (
 		island	: in out type_island;
 		style	: in type_style)
-	is		
+	is
 		-- The boundaries of the island (greatest/smallest x/y):
 		-- boundaries : constant type_boundaries := get_boundaries (island.shore.centerline);
 		boundaries : constant type_boundaries := get_boundaries (island.shore);
@@ -86,7 +86,7 @@ package body et_fill_zones is
 		-- The lower the factor the more overlap. 1.0 means no overlap.
 		--overlap_factor : constant type_float_positive := 0.99;
 
-		
+
 		stripe_count_rational : type_float_positive;
 		stripe_count_natural : natural;
 		stripe_spacing : type_float_positive;
@@ -102,7 +102,7 @@ package body et_fill_zones is
 
 		-- The main collection of x-values where a stripe enters or leaves an outer or inner border:
 		x_main : pac_float_numbers.list;
-		
+
 		use pac_float_numbers;
 		use pac_float_numbers_sorting;
 
@@ -120,7 +120,7 @@ package body et_fill_zones is
 						B	=> set (element (next (i)), A.y),
 						status		=> <>)); -- default status
 
-					stripe_start := false;					
+					stripe_start := false;
 				else
 					stripe_start := true;
 				end if;
@@ -128,39 +128,39 @@ package body et_fill_zones is
 			end if;
 		end query_x_intersection;
 
-		
+
 		-- This procedure queries a lake and appends
 		-- the x-values of the candidate border to the main collection of
 		-- x-values:
 		use pac_polygon_list;
-		
+
 		procedure query_lake (l : in pac_polygon_list.cursor) is
 			lake : type_polygon renames element (l);
-		begin			
+		begin
 			status := get_point_status (lake, A);
 
 			splice (
 				target	=> x_main,
-				source	=> status.x_intersections, 
+				source	=> status.x_intersections,
 				before	=> pac_float_numbers.no_element);
 
-			exception 
+			exception
 				when others =>
 					--put_line ("bottom: " & to_string (bottom));
 					--put_line ("height: " & to_string (height));
 					put_line ("status : " & to_string (
 						get_point_status (lake, A, true)));
-					
+
 					raise;
 		end query_lake;
 
-		
+
 	begin
 		--new_line;
 		--put_line ("bottom: " & to_string (bottom));
 		--put_line ("height: " & to_string (height));
 		--put_line ("left: " & to_string (A.x));
-		
+
 		case style.style is
 			when SOLID =>
 				-- Since the stripes must overlap slightly the effective
@@ -175,16 +175,16 @@ package body et_fill_zones is
 				-- Round up the number of stripes to the next natural number (like 7)
 				stripe_count_natural := natural (type_float_positive'ceiling (
 						stripe_count_rational));
-				
+
 
 				stripe_spacing := height / type_float_positive (stripe_count_natural);
 
 
 				-- Compute the rows of stripes from bottom to top:
 				for row in 1 .. stripe_count_natural loop
-				
+
 					A.y := bottom + type_float_positive (row) * stripe_spacing;
-					
+
 					status := get_point_status (island.shore, A, false); -- debug off
 					x_main := status.x_intersections;
 
@@ -196,17 +196,17 @@ package body et_fill_zones is
 
 					-- Build the stripes for the current row:
 					stripe_start := true;
-					x_main.iterate (query_x_intersection'access);					
+					x_main.iterate (query_x_intersection'access);
 				end loop;
 
-				
+
 			when HATCHED =>
 				null;
 				-- CS
 		end case;
 
-		
-		exception 
+
+		exception
 			when others =>
 				--put_line ("bottom: " & to_string (bottom));
 				--put_line ("height: " & to_string (height));
@@ -214,14 +214,14 @@ package body et_fill_zones is
 				put_line ("A: " & to_string (A));
 
 				raise;
-		
+
 	end make_stripes;
 
-	
 
 
-	
-	
+
+
+
 	procedure fill_island (
 		islands		: in out pac_islands.list;
 		position	: in pac_islands.cursor;
@@ -237,14 +237,14 @@ package body et_fill_zones is
 	end fill_island;
 
 
-	
-	
 
 
 
-	
+
+
+
 -- EASING:
-	
+
 	function to_easing_style (easing : in string) return type_easing_style is begin
 		return type_easing_style'value (easing);
 	end;
@@ -257,24 +257,24 @@ package body et_fill_zones is
 
 
 
-	
+
 	function get_half_linewidth (
 		zone	: in type_zone)
 		return type_float_positive
 	is begin
-		return type_float_positive (zone.linewidth) * 0.5;		
+		return type_float_positive (zone.linewidth) * 0.5;
 	end get_half_linewidth;
 
-	
 
-	
+
+
 
 
 
 
 	procedure make_islands_and_lakes (
 		zone			: in out type_zone;
-		linewidth		: in type_track_width;								 
+		linewidth		: in type_track_width;
 		islands 		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
 		fill			: in boolean;
@@ -283,17 +283,17 @@ package body et_fill_zones is
 		debug : boolean := false;
 
 		use pac_polygon_list;
-		
+
 
 		-- This procedure assigns the given islands to the given zone:
 		procedure set_islands (islands : in pac_polygon_list.list) is
-			
-			procedure query_island (i : in pac_polygon_list.cursor) is 
+
+			procedure query_island (i : in pac_polygon_list.cursor) is
 				island : type_polygon renames element (i);
 			begin
 				zone.islands.append ((
 					shore		 => island,
-					others		 => <>)); 
+					others		 => <>));
 			end query_island;
 
 		begin
@@ -316,14 +316,14 @@ package body et_fill_zones is
 			-- to it all lakes that are on the island:
 			procedure query_island (
 				island : in out type_island)
-			is 
+			is
 				use pac_overlap_status;
 				use pac_polygon_union;
 
 				-- These are the lakes that lie
 				-- on the candidate island:
 				lakes_on_island : pac_polygon_list.list;
-				
+
 				-- This procedure queries a lake and appends
 				-- it to the lakes that are on the island:
 				procedure query_lake (c : in pac_polygon_list.cursor) is
@@ -331,12 +331,12 @@ package body et_fill_zones is
 				begin
 					island.lakes.append (lake);
 				end query_lake;
-				
+
 
 			begin
 				-- Get lakes on the candidate island:
 				lakes_on_island := get_polygons (
-					area		=> island.shore,  
+					area		=> island.shore,
 					polygons	=> lakes_tmp,
 					status		=> to_set (B_INSIDE_A));
 
@@ -344,9 +344,9 @@ package body et_fill_zones is
 
 				-- Iterate the lakes:
 				lakes_on_island.iterate (query_lake'access);
-			end query_island;					
-			
-	
+			end query_island;
+
+
 		begin
 			while has_element (island_cursor) loop
 				-- CS optimize so that only those islands are queried
@@ -356,7 +356,7 @@ package body et_fill_zones is
 
 				zone.islands.update_element (island_cursor, query_island'access);
 				next (island_cursor);
-			end loop;					
+			end loop;
 		end set_lakes;
 
 
@@ -364,7 +364,7 @@ package body et_fill_zones is
 
 		-- Fills the islands according to the fill style
 		-- of the given zone:
-		procedure fill_islands is 
+		procedure fill_islands is
 			use pac_islands;
 			island_cursor : pac_islands.cursor := zone.islands.first;
 		begin
@@ -377,35 +377,35 @@ package body et_fill_zones is
 					begin
 						while island_cursor /= pac_islands.no_element loop
 							fill_island (
-								islands		=> zone.islands, 
+								islands		=> zone.islands,
 								position	=> island_cursor,
 								style		=> style,
 								process		=> make_stripes'access);
 
 							next (island_cursor);
-						end loop;					
+						end loop;
 
 					end;
-					
+
 				when HATCHED =>
 					declare
 						style : constant type_style := (
 							style		=> HATCHED,
-							linewidth	=> linewidth,						   
+							linewidth	=> linewidth,
 							spacing		=> zone.spacing);
 					begin
 						while island_cursor /= pac_islands.no_element loop
 							fill_island (
-								islands		=> zone.islands, 
+								islands		=> zone.islands,
 								position	=> island_cursor,
 								style		=> style,
 								process		=> make_stripes'access);
 
 							next (island_cursor);
-						end loop;					
+						end loop;
 
-					end;					
-			end case;			
+					end;
+			end case;
 		end fill_islands;
 
 
@@ -427,7 +427,7 @@ package body et_fill_zones is
 
 
 
-	
+
 
 	function between_islands (
 		zone	: in type_zone;
@@ -437,20 +437,20 @@ package body et_fill_zones is
 	is
 		proceed : aliased boolean := true;
 
-		
+
 		procedure query_island (c : in pac_islands.cursor) is
 			island : type_island renames element (c);
 
 			status : constant type_point_status :=
 				get_point_status (island.shore, point, debug);
-			
+
 		begin
 			case status.location is
 				when INSIDE | ON_VERTEX | ON_EDGE => proceed := false;
 				when others => null;
 			end case;
 		end query_island;
-		
+
 	begin
 		iterate (zone.islands, query_island'access, proceed'access);
 		return proceed;
@@ -460,7 +460,7 @@ package body et_fill_zones is
 
 
 
-	
+
 
 
 	function get_lake (
@@ -472,18 +472,18 @@ package body et_fill_zones is
 		result : type_polygon;
 		proceed : aliased boolean := true;
 
-		
+
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
 
-			
+
 			procedure query_lake (l : in pac_polygon_list.cursor) is
 				use pac_polygon_list;
 				lake : type_polygon renames element (l);
 
 				lake_status : constant type_point_status :=
 					get_point_status (lake, point);
-				
+
 			begin
 				if debug then
 					put_line (" lake");
@@ -497,12 +497,12 @@ package body et_fill_zones is
 						if debug then
 							put_line ("  inside");
 						end if;
-						
+
 					when others => null;
 				end case;
 			end query_lake;
 
-			
+
 		begin
 			if debug then
 				put_line (" island");
@@ -511,12 +511,12 @@ package body et_fill_zones is
 			iterate (island.lakes, query_lake'access, proceed'access);
 		end query_island;
 
-		
+
 	begin
 		if debug then
 			put_line ("get lake");
 		end if;
-		
+
 		iterate (zone.islands, query_island'access, proceed'access);
 
 		if debug then
@@ -528,20 +528,20 @@ package body et_fill_zones is
 		--end if;
 
 		if proceed then
-			raise semantic_error_1 with "Point is not in a lake !"; 
+			raise semantic_error_1 with "Point is not in a lake !";
 			-- CS output something more helpful
 		end if;
-		
+
 		return result;
 	end get_lake;
-	
 
 
 
 
 
-	
-	
+
+
+
 
 	procedure get_distance_to_island (
 		zone			: in type_zone;
@@ -555,7 +555,7 @@ package body et_fill_zones is
 		-- and travels into the given direction:
 		ray : constant type_ray := (point, direction);
 
-		
+
 		use pac_vectors;
 		intersections : pac_vectors.list;
 
@@ -564,10 +564,10 @@ package body et_fill_zones is
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
 
-			
+
 			procedure query_centerline (e : in pac_edges.cursor) is
 				use pac_edges;
-				I : constant type_line_vector_intersection := 
+				I : constant type_line_vector_intersection :=
 					get_intersection (ray, element (e));
 			begin
 				case I.status is
@@ -578,13 +578,13 @@ package body et_fill_zones is
 				end case;
 			end query_centerline;
 
-			
+
 		begin
 			island.shore.edges.iterate (query_centerline'access);
 		end query_island;
 
 
-		
+
 	begin
 		log (text => "get_distance_to_island"
 			 & " point: " & to_string (point)
@@ -604,7 +604,7 @@ package body et_fill_zones is
 			island_exists := false;
 			distance := type_float_positive'last;
 		else
-			-- Extract from intersections the one that is 
+			-- Extract from intersections the one that is
 			-- closest to the given start point:
 			remove_redundant_vectors (intersections);
 			sort_by_distance (intersections, point);
@@ -612,17 +612,17 @@ package body et_fill_zones is
 			island_exists := true;
 			distance := get_distance_total (point, intersections.first_element);
 		end if;
-		
-		
+
+
 		log_indentation_down;
 	end get_distance_to_island;
 
-	
-	
-	
 
 
-	
+
+
+
+
 
 
 
@@ -635,7 +635,7 @@ package body et_fill_zones is
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure between_islands is begin
 			get_distance_to_island (
 				zone			=> zone,
@@ -646,7 +646,7 @@ package body et_fill_zones is
 				log_threshold	=> log_threshold + 2);
 		end;
 
-		
+
 
 		procedure in_lake is
 			lake : type_polygon;
@@ -659,11 +659,11 @@ package body et_fill_zones is
 
 			-- Get the distance from the point to
 			-- the shore of the lake:
-			distance := get_distance_to_border (lake, point, direction);			
+			distance := get_distance_to_border (lake, point, direction);
 		end;
-		
 
-		
+
+
 	begin
 		log (text => "get_distance_to_border"
 			 & " start point: " & to_string (point)
@@ -674,20 +674,20 @@ package body et_fill_zones is
 
 		if between_islands (zone, point) then
 			log (text => "point lies between islands", level => log_threshold + 1);
-			between_islands;			
+			between_islands;
 		else
 			log (text => "point lies on an island", level => log_threshold + 1);
 			in_lake;
 		end if;
-		
+
 		log_indentation_down;
 	end get_distance_to_border;
 
 
-	
 
-	
-	
+
+
+
 -- 	procedure route_fill_zone_properties (
 -- 	-- Logs the properties of the given fill_zone of a route
 -- 		cursor			: in pac_conductor_fill_zones_signal.cursor;
@@ -698,7 +698,7 @@ package body et_fill_zones is
 -- 		point_cursor : type_fill_zone_points.cursor;
 -- 	begin
 -- 		-- general stuff
--- 		log (text => "fill_zone" & 
+-- 		log (text => "fill_zone" &
 -- 			 " " & text_fill_zone_signal_layer & to_string (element (cursor).layer) &
 -- 			 " " & text_fill_zone_width_min & to_string (element (cursor).width_min) &
 -- 			 " " & text_fill_zone_pad_connection & to_string (element (cursor).pad_connection) &
@@ -707,9 +707,9 @@ package body et_fill_zones is
 -- 			 " " & text_fill_zone_corner_easing & to_string (element (cursor).corner_easing) &
 -- 			 " " & text_fill_zone_easing_radius & to_string (element (cursor).easing_radius),
 -- 			 level => log_threshold);
--- 
+--
 -- 		log_indentation_up;
--- 		
+--
 -- 		-- type depended stuff
 -- 		case element (cursor).pad_connection is
 -- 			when THERMAL =>
@@ -717,15 +717,15 @@ package body et_fill_zones is
 -- 					" " & text_fill_zone_thermal_width & to_string (element (cursor).thermal_width) &
 -- 					" " & text_fill_zone_thermal_gap & to_string (element (cursor).thermal_gap),
 -- 					level => log_threshold);
--- 
+--
 -- 			when SOLID =>
 -- 				log (text => text_fill_zone_pad_technology & to_string (element (cursor).solid_technology),
 -- 					level => log_threshold);
--- 				
+--
 -- 			when NONE =>
 -- 				null;
 -- 		end case;
--- 
+--
 -- 		-- corner points
 -- 		log (text => text_fill_zone_corner_points, level => log_threshold);
 -- 		points := element (cursor).corners;
@@ -734,17 +734,17 @@ package body et_fill_zones is
 -- 			log (text => to_string (element (point_cursor)), level => log_threshold);
 -- 			next (point_cursor);
 -- 		end loop;
--- 		
+--
 -- 		log_indentation_down;
 -- 	end route_fill_zone_properties;
 
-		
-	
+
+
 end et_fill_zones;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

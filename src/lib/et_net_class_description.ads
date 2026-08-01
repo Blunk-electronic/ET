@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,33 +43,33 @@ with ada.strings.bounded; 			use ada.strings.bounded;
 
 
 package et_net_class_description is
-	
-	
+
+
 	net_class_description_length_max : constant positive := 200;
 
-	
+
 	package pac_net_class_description is new generic_bounded_length (
 		net_class_description_length_max);
 
 	use pac_net_class_description;
-	
-	
+
+
 	function to_string (
-		class_description : in pac_net_class_description.bounded_string) 
+		class_description : in pac_net_class_description.bounded_string)
 		return string;
-		
-		
+
+
 	function to_net_class_description (
-		class_description : in string) 
+		class_description : in string)
 		return pac_net_class_description.bounded_string;
-	
-	
-	
+
+
+
 end et_net_class_description;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

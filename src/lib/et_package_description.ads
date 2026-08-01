@@ -42,7 +42,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 
 package et_package_description is
-	
+
 
 	package_description_length_max : constant positive := 200;
 	package pac_package_description is new generic_bounded_length (package_description_length_max);
@@ -51,16 +51,16 @@ package et_package_description is
 		description : in pac_package_description.bounded_string;
 		verbose		: in boolean := false) return string;
 
-	function to_package_description (description : in string) 
+	function to_package_description (description : in string)
 		return pac_package_description.bounded_string;
 
 
-	
+
 end et_package_description;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

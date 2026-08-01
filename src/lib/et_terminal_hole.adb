@@ -46,24 +46,24 @@ with ada.characters.handling;	use ada.characters.handling;
 
 package body et_terminal_hole is
 
-	
+
 
 	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
 		return to_lower (type_terminal_tht_hole'image (tht_hole));
 	end;
 
-	
+
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
 		return type_terminal_tht_hole'value (tht_hole);
 	end;
 
-	
-	
+
+
 end et_terminal_hole;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - clean up, rework
 --
 
@@ -59,16 +59,16 @@ package body et_board_ops_submodule is
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string) -- OSC1
-		return type_position 
-	is		
+		return type_position
+	is
 		position : type_position := origin_zero_rotation; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		
+
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
@@ -78,7 +78,7 @@ package body et_board_ops_submodule is
 			position := element (submod_cursor).position_in_board;
 		end;
 
-		
+
 	begin -- get_position
 		-- locate the given module
 		module_cursor := locate_module (module_name);
@@ -94,14 +94,14 @@ package body et_board_ops_submodule is
 
 
 
-	
 
 
-	
+
+
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -109,22 +109,22 @@ package body et_board_ops_submodule is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 
-			
+
 			procedure move (
 				instance	: in pac_module_instance_name.bounded_string;
-				submodule	: in out et_submodules.type_submodule) 
+				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (instance);
 			begin
@@ -141,10 +141,10 @@ package body et_board_ops_submodule is
 						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
-				
+
 			end move;
 
-			
+
 		begin -- query_submodules
 			if contains (module.submods, instance) then
 
@@ -161,7 +161,7 @@ package body et_board_ops_submodule is
 
 		end;
 
-		
+
 	begin -- move_submodule
 		case coordinates is
 			when ABSOLUTE =>
@@ -178,15 +178,15 @@ package body et_board_ops_submodule is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		
+
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -196,25 +196,25 @@ package body et_board_ops_submodule is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 
-		
+
 		-- CS update_ratsnest (module_cursor, log_threshold + 1);
 		-- requires to move this procedure to a child package
 		-- for operations on submodules.
 	end move_submodule;
 
 
-	
 
-	
+
+
 end et_board_ops_submodule;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

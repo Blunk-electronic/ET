@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2023                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,18 +46,18 @@ package et_time is
 	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
 	type type_date is new string (1..19); -- "2017-08-17T14:17:25"
 
-	
+
 	-- Returns the given date as string.
 	function to_string (date : in type_date) return string;
 
-	
+
 	-- Returns true if given date is valid and plausible.
 	function date_valid (date : in type_date) return boolean;
 
-	
+
 	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
 	function get_date (
-		preamble : in boolean := true) 
+		preamble : in boolean := true)
 		return string;
 
 
@@ -71,21 +71,21 @@ package et_time is
 		time	: ada.calendar.time)
 		return string;
 
-	
+
 	-- Use it to indicate uninialized date.
 	function date_first return time; -- returns 1901-01-01
 
-	
+
 	-- Converts something like 1901-01-01 to a time type:
 	function to_date (
-		date : in string) 
+		date : in string)
 		return time;
-		
+
 end et_time;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

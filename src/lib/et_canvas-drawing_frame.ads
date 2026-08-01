@@ -44,19 +44,19 @@ with et_meta;					use et_meta;
 
 
 generic
-	
+
 package et_canvas.drawing_frame is
 
 	package pac_draw_text is new et_canvas.text;
-	
-	
+
+
 	-- Converts a type_distance (used with frames) to
 	-- a distance in the model domain:
 	function to_distance (
 		d : in et_drawing_frame.type_distance)
 		return pac_geometry.type_distance;
 
-	
+
 	-- Converts a type_position (used with frames) to
 	-- a model vector:
 	function to_vector (
@@ -64,13 +64,13 @@ package et_canvas.drawing_frame is
 		return type_vector_model;
 
 
-	-- Converts a line of the frame domain to 
+	-- Converts a line of the frame domain to
 	-- a line in the model domain:
 	function to_line (
 		l : in et_drawing_frame.type_line)
 		return pac_geometry.type_line;
 
-	
+
 
 	-- This procedure draws the outer and inner border
 	-- and the quadrant bars of the frame:
@@ -100,14 +100,14 @@ package et_canvas.drawing_frame is
 		placeholders			: in type_placeholders_basic;
 		title_block_position	: in pac_geometry.type_position);
 
-	
-	
+
+
 end et_canvas.drawing_frame;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
 

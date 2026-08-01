@@ -75,7 +75,7 @@ package et_net_strands is
 		place => far_upper_right);
 
 
-	
+
 
 	function get_x (
 		position	: in type_strand_position)
@@ -93,12 +93,12 @@ package et_net_strands is
 
 
 
-	function "<" (left, right : in type_strand_position) 
+	function "<" (left, right : in type_strand_position)
 		return boolean;
 
 
-	
-	
+
+
 	-- This function returns the given strand position
 	-- as string formatted as follows:
 	-- FORMAT_1 : sheet/x/y/rotation 1 / 4.5 / 5.6
@@ -122,32 +122,32 @@ package et_net_strands is
 		return type_strand_position;
 
 
-	
-	
-	-- A strand is a collection of net segments which belong to each other. 
+
+
+	-- A strand is a collection of net segments which belong to each other.
 	-- Segments belong to each other because their start/end points meet.
-	-- A strand has coordinates. 
+	-- A strand has coordinates.
 	type type_strand is record -- CS make private ?
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
 		position	: type_strand_position;
 		segments	: pac_net_segments.list;
 
-		status : type_object_status; 
-		-- IMPORTANT: status "moving" shall not be used. 
+		status : type_object_status;
+		-- IMPORTANT: status "moving" shall not be used.
 		-- CS: Use precondition when modifying the status ?
-	end record;		
+	end record;
 
-	
+
 	-- Set the place of the given strand:
 	procedure set_place (
 		strand	: in out type_strand;
-		place	: in type_vector_model);					
+		place	: in type_vector_model);
 
 
 	-- CS function get_place or get_position
 	-- CS return type_vector_model and string
-	
+
 	-- Returns true if the given strand has segments:
 	function has_segments (
 		strand : in type_strand)
@@ -167,7 +167,7 @@ package et_net_strands is
 	-- Calculates and sets the x/y position of the given strand.
 	-- The position is determined by the end of a net segment
 	-- that is closest to the drawing origin.
-	-- Leaves the sheet number of the strand as it is.	
+	-- Leaves the sheet number of the strand as it is.
 	procedure set_strand_position (
 		strand : in out type_strand);
 
@@ -175,17 +175,17 @@ package et_net_strands is
 	-- Set the sheet of the given strand:
 	procedure set_sheet (
 		strand	: in out type_strand;
-		sheet	: in type_sheet);					
+		sheet	: in type_sheet);
 
 
 	-- Moves a strand by the given number of sheets:
 	procedure move_strand (
 		strand	: in out type_strand;
-		offset	: in type_sheet_relative);					
+		offset	: in type_sheet_relative);
 
-	
+
 	-- Searches for net segments that run into the same direction
-	-- and overlap each other. Replaces such segments by a single 
+	-- and overlap each other. Replaces such segments by a single
 	-- segment:
 	procedure optimize_strand_1 (
 		strand			: in out type_strand;
@@ -201,7 +201,7 @@ package et_net_strands is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- If strands are to be joined (or merged) with each other
 	-- then the connection can be:
 	-- 1. At a single point. When a strand is moved so that it
@@ -219,28 +219,28 @@ package et_net_strands is
 				segment : type_net_segment;
 		end case;
 	end record;
-				
-	
+
+
 	-- Merges strand "source" in strand "target".
 	-- The joint specifies how the two strands are connected.
 	-- - If joint is a single point, then the strands will be
 	--   connected at this place. CS: NOT IMPLEMENTED YET !
 	-- - If joint is a segment, then its A end will be connected
 	--   with the target and its B end will be connected with the source.
-	--   As a result overlapping segments will occur. 
+	--   As a result overlapping segments will occur.
 	--   An optimization procedure irons this overlapping segments out
 	--   so that only a single segment remains.
 	-- Updates the position of target.
 	-- Leaves status of target unchanged:
 	procedure merge_strands (
-		target			: in out type_strand;						
+		target			: in out type_strand;
 		source			: in type_strand;
 		joint			: in type_strand_joint;
 		log_threshold	: in type_log_level);
 
-	
 
-	
+
+
 	type type_connected_segment is record
 		segment	: pac_net_segments.cursor; -- CS rename to cursor
 		AB_end	: type_start_end_point;
@@ -254,19 +254,19 @@ package et_net_strands is
 		segment	: in type_connected_segment)
 		return boolean;
 
-	
-	package pac_connected_segments is new 
+
+	package pac_connected_segments is new
 		doubly_linked_lists (type_connected_segment);
 
-		
+
 	function get_length (
 		segments : in pac_connected_segments.list)
 		return natural;
 
-	
+
 	-- Returns the net segments which are connected
 	-- with the given primary segment at the given end (A/B).
-	-- NOTE; The primary segment must belong to the given strand.	
+	-- NOTE; The primary segment must belong to the given strand.
 	function get_connected_segments (
 		primary 	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
@@ -289,16 +289,16 @@ package et_net_strands is
 	function get_connected_ports (
 		segments	: in pac_connected_segments.list)
 		return natural;
-	
-		
+
+
 	-- Sets a junction at the given place in the given strand.
 	-- If the given place does not qualify for a junction,
 	-- then nothing happens:
 	procedure set_junction (
 		strand	: in out type_strand;
 		place	: in type_vector_model);
-	
-	
+
+
 
 	-- Clears all junctions of the given connected
 	-- segments in the given strand:
@@ -306,7 +306,7 @@ package et_net_strands is
 		strand		: in out type_strand;
 		segments	: in out pac_connected_segments.list);
 
-	
+
 
 	-- Returns the first segment (among the given segments)
 	-- on which the given point sits between A and B end:
@@ -316,7 +316,7 @@ package et_net_strands is
 		return pac_net_segments.cursor;
 
 
-		
+
 	-- Tests whether at the given point exist other
 	-- net segments except the one indicated by "except":
 	function other_segments_exist (
@@ -324,7 +324,7 @@ package et_net_strands is
 		except		: in pac_net_segments.cursor;
 		point		: in type_vector_model)
 		return boolean;
-		
+
 
 	-- This function returns the number of segments
 	-- of the given strand that start or end at the
@@ -334,40 +334,40 @@ package et_net_strands is
 		point	: in type_vector_model)
 		return natural;
 
-		
-		
+
+
 	type type_segment_to_extend is record -- CS make private
 		cursor	: pac_net_segments.cursor;
 		AB_end	: type_start_end_point;
 	end record;
-	
-	
+
+
 	-- Returns true if selector "cursor" of
 	-- the given segment points to a segment:
 	function has_element (
 		segment : in type_segment_to_extend)
 		return boolean;
-		
-		
+
+
 	-- Returns the cursor to a net segment that is
 	-- to be extended:
 	function get_segment (
 		segment	: in type_segment_to_extend)
 		return pac_net_segments.cursor;
 
-		
+
 	-- Retruns the end point (A/B) of a net segment
 	-- that is to be extended:
 	function get_end (
 		segment	: in type_segment_to_extend)
 		return type_start_end_point;
 
-		
-		
+
+
 
 	-- Returns the first segment (among the given segments)
 	-- and its end (A/B) which can be extended by the given segment.
-	-- AB_end indicates which end of the given segment is to 
+	-- AB_end indicates which end of the given segment is to
 	-- be connected. A segment can only be extended if all those
 	-- criteria are met:
 	-- 1. It runs in the same direction as the given segment.
@@ -380,10 +380,10 @@ package et_net_strands is
 		AB_end		: in type_start_end_point)
 		return type_segment_to_extend;
 
-	
-	
+
+
 	-- Attaches the given segment to the given strand.
-	-- AB_end indicates which end of the segment is 
+	-- AB_end indicates which end of the segment is
 	-- to be connected.
 	-- In case a junction is required, then the junction
 	-- will be set on the given segment only:
@@ -418,7 +418,7 @@ package et_net_strands is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Deletes the given target segment in a given strand.
 	-- The result can be:
@@ -440,12 +440,12 @@ package et_net_strands is
 		strand_2		: out type_strand;
 		log_threshold	: in type_log_level);
 
-	
-								 
+
+
 	procedure set_proposed (
 		strand : in out type_strand);
 
-	
+
 	procedure clear_proposed (
 		strand : in out type_strand);
 
@@ -454,13 +454,13 @@ package et_net_strands is
 		strand : in type_strand)
 		return boolean;
 
-	
+
 
 
 	procedure set_selected (
 		strand : in out type_strand);
 
-	
+
 	procedure clear_selected (
 		strand : in out type_strand);
 
@@ -475,14 +475,14 @@ package et_net_strands is
 	procedure modify_status (
 		strand		: in out type_strand;
 		operation	: in type_status_operation);
-	
+
 
 	procedure reset_status (
 		strand		: in out type_strand);
 
 
-	
-	
+
+
 
 	-- Returns the sheet number where the given strand is on:
 	function get_sheet (
@@ -490,12 +490,12 @@ package et_net_strands is
 		return type_sheet;
 
 
-	
+
 	-- Returns the (sheet/x/y) position of the given strand:
 	function get_position (
 		strand : in type_strand)
 		return type_strand_position;
-	
+
 
 	-- Returns the (sheet/x/y) position of the given strand
 	-- as string:
@@ -516,9 +516,9 @@ package et_net_strands is
 
 
 
-	
-	
-	
+
+
+
 
 	-- Returns true if the given strand has segments:
 	function has_segments (
@@ -526,27 +526,27 @@ package et_net_strands is
 		return boolean;
 
 
-	
+
 	function is_proposed (
 		strand : in pac_strands.cursor)
 		return boolean;
 
-	
+
 	function is_selected (
 		strand : in pac_strands.cursor)
 		return boolean;
 
-	
 
-	
+
+
 	-- Returns the (sheet/x/y) position of the given strand:
 	function get_position (
 		strand : in pac_strands.cursor)
 		return string;
 
 
-	
-	-- Iterates the strands. 
+
+	-- Iterates the strands.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		strands	: in pac_strands.list;
@@ -554,11 +554,11 @@ package et_net_strands is
 		proceed	: not null access boolean);
 
 
-	
 
 
-	
-	
+
+
+
 	-- Returns a cursor to the segment that is
 	-- on the lowest x/y position of the given strand:
 	function get_first_segment (
@@ -570,8 +570,8 @@ package et_net_strands is
 	function get_sheet (
 		strand_cursor	: in pac_strands.cursor)
 		return type_sheet;
-	
-	
+
+
 	-- Returns true if the given point is on the given
 	-- net segment:
 	function on_segment (
@@ -579,32 +579,32 @@ package et_net_strands is
 		point			: in type_vector_model)
 		return boolean;
 
-	
+
 	-- Returns true if the given point is on the given strand:
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
 		place			: in type_object_position)
 		return boolean;
-	
 
 
 
 
-	
 
-	
+
+
+
 	package pac_strand_cursors is new doubly_linked_lists (pac_strands.cursor);
 
 
 
-	
+
 	type type_strand_segment_cursor is record
 		strand_cursor	: pac_strands.cursor;
 		segment_cursor	: pac_net_segments.cursor;
 		AB_end			: type_start_end_point;
 	end record;
 
-	package pac_strand_segment_cursors is new 
+	package pac_strand_segment_cursors is new
 		doubly_linked_lists (type_strand_segment_cursor);
 
 
@@ -619,9 +619,9 @@ package et_net_strands is
 		nodes			: in pac_strand_segment_cursors.list;
 		log_threshold	: in type_log_level)
 		return pac_net_segments.list;
-	
 
-	
+
+
 
 
 	-- Returns true if the given segment of the given
@@ -634,7 +634,7 @@ package et_net_strands is
 		segment		: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point)
 		return boolean;
-	
+
 
 	-- Places a net connector on an end of the
 	-- given net segment. The actual end will be
@@ -646,12 +646,12 @@ package et_net_strands is
 		segment			: in pac_net_segments.cursor;
 		position		: in type_vector_model;
 		log_threshold	: in type_log_level);
-	
+
 end et_net_strands;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

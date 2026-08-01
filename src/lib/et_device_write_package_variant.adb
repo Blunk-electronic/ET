@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- 
+--
 -- To Do:
 -- - clean up
 -- - use renames
@@ -70,7 +70,7 @@ package body et_device_write_package_variant is
 	is
 		pragma unreferenced (log_threshold);
 		use pac_package_variant_name;
-		
+
 		use pac_package_variants;
 		variant_cursor : pac_package_variants.cursor := variants.first;
 
@@ -78,23 +78,23 @@ package body et_device_write_package_variant is
 
 		procedure write_variant (
 			packge	: in pac_package_variant_name.bounded_string;
-			variant	: in type_package_variant) 
+			variant	: in type_package_variant)
 		is
 			pragma unreferenced (packge);
 			use et_package_library;
 			use et_port_names;
 
 			use et_package_variant_terminal_port_map;
-			use pac_terminal_port_map;	
-			
-			
+			use pac_terminal_port_map;
+
+
 			procedure write_terminal (
-				terminal_cursor : in pac_terminal_port_map.cursor) 
+				terminal_cursor : in pac_terminal_port_map.cursor)
 			is
 				use et_unit_name.pac_unit_name;
 				use et_terminal_name;
 			begin
-				write (keyword => keyword_terminal, parameters => 
+				write (keyword => keyword_terminal, parameters =>
 					space & to_string (key (terminal_cursor)) & space -- terminal name like G14 or 16
 					-- CS use a function that returns the terminal name as string
 					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
@@ -102,30 +102,30 @@ package body et_device_write_package_variant is
 					);
 			end write_terminal;
 
-			
+
 		begin
-			write (keyword => keyword_package_model, 
+			write (keyword => keyword_package_model,
 				   parameters => get_package_model_name (variant.model_cursor));
 					-- CS path correct ??
-			
+
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
 			-- CS sort the terminals numerical, not alphabetical !
-			section_mark (section_terminal_port_map, FOOTER);						
+			section_mark (section_terminal_port_map, FOOTER);
 		end write_variant;
 
 
-		
+
 	begin
 		-- CS log messages
-		
+
 		section_mark (section_variants, HEADER);
 
-		
+
 		while variant_cursor /= pac_package_variants.no_element loop
 			section_mark (section_variant, HEADER);
-			
-			write (keyword => keyword_name, 
+
+			write (keyword => keyword_name,
 				parameters => to_string (key (variant_cursor)));
 
 			query_element (
@@ -133,14 +133,14 @@ package body et_device_write_package_variant is
 				process		=> write_variant'access);
 
 			section_mark (section_variant, FOOTER);
-			
+
 			next (variant_cursor);
 		end loop;
 
-		
+
 		section_mark (section_variants, FOOTER);
 	end write_package_variant;
 
-	
-		
+
+
 end et_device_write_package_variant;

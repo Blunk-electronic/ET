@@ -49,50 +49,50 @@ package body et_device_model_unit_external is
 	function get_ports_external (
 		unit_cursor	: in pac_units_external.cursor)
 		return pac_symbol_ports.map
-	is 
+	is
 		result : pac_symbol_ports.map; -- to be returned
 
 		unit : type_unit_external renames element (unit_cursor);
-		
-		
+
+
 		procedure query_symbol (
 			symbol_name	: in pac_symbol_model_name.bounded_string;
-			symbol		: in type_symbol_model) 
+			symbol		: in type_symbol_model)
 		is
 			pragma unreferenced (symbol_name);
 		begin
 			result := symbol.ports;
 		end query_symbol;
 
-		
+
 	begin
 		-- Fetch the ports of the external unit.
 		-- CS: constraint_error arises here if symbol model could not be located.
 		pac_symbol_models.query_element (
 			position	=> unit.model_cursor,
 			process		=> query_symbol'access);
-		
+
 		return result;
 	end get_ports_external;
 
-	
 
-	
+
+
 
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_name.bounded_string
-	is 
+	is
 		u : type_unit_external renames element (unit);
 		use pac_symbol_models;
 	begin
 		return key (u.model_cursor);
 	end get_symbol_model_file;
-	
 
 
-	
-	
+
+
+
 	function get_symbol_model_name (
 		unit	: in pac_units_external.cursor)
 		return string
@@ -102,11 +102,11 @@ package body et_device_model_unit_external is
 	end;
 
 
-	
-	
-	
 
-	
+
+
+
+
 	function get_symbol (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_models.cursor
@@ -123,14 +123,14 @@ package body et_device_model_unit_external is
 
 
 
-	
+
 
 	function get_port_positions (
 		unit	: in pac_units_external.cursor)
 		return pac_points.list
 	is
 		result : pac_points.list;
-		
+
 		-- The name of the associated symbol model file:
 		sym_name : pac_symbol_model_name.bounded_string;
 		-- like /libraries/symbols/NAND.sym
@@ -138,18 +138,18 @@ package body et_device_model_unit_external is
 		-- The cursor of the actual symbol in
 		-- the symbol library:
 		sym_cursor : pac_symbol_models.cursor;
-	
+
 	begin
 		-- If the given cursor points to a unit, then
 		-- extract the port positions. Otherwise return
 		-- an empty list:
 		if has_element (unit) then
-			
+
 			-- Get the name of the symbol model file
 			-- of the given external unit:
 			sym_name := get_symbol_model_file (unit);
 
-			-- Locate the symbol in the rig wide 
+			-- Locate the symbol in the rig wide
 			-- symbol model library:
 			get_symbol_model (sym_name, sym_cursor);
 
@@ -160,14 +160,14 @@ package body et_device_model_unit_external is
 		return result;
 	end get_port_positions;
 
-	
 
-	
+
+
 end et_device_model_unit_external;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -61,12 +61,12 @@ with et_module_names;				use et_module_names;
 package body et_gui_2 is
 
 
-	
+
 	procedure init_schematic (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-		log_threshold_in: in type_log_level) 
+		log_threshold_in: in type_log_level)
 	is
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
@@ -74,7 +74,7 @@ package body et_gui_2 is
 		use pac_generic_modules;
 		use et_sheets;
 		use et_schematic_coordinates;
-	begin		
+	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
 		-- using the gui wide variable log_threshold:
 		log_threshold := log_threshold_in;
@@ -82,15 +82,15 @@ package body et_gui_2 is
 		log (text => "init_schematic", level => log_threshold);
 
 
-		
+
 		-- Set the current active project, module and sheet:
-		log (text => "set active project " & enclose_in_quotes (to_string (project)), 
+		log (text => "set active project " & enclose_in_quotes (to_string (project)),
 			 level => log_threshold);
 
 		active_project := project;
 
 
-		
+
 		-- Set the current active module:
 		log (text => "set active module " & enclose_in_quotes (to_string (key (module))),
 			 level => log_threshold);
@@ -98,21 +98,21 @@ package body et_gui_2 is
 		active_module := module;
 
 
-		
+
 		-- Set the current active sheet:
 		log (text => "set active sheet " & type_sheet'image (sheet),
 			 level => log_threshold);
 
 		active_sheet := sheet;
 
-		
-		
+
+
 		-- CS set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
 
-		
+
 		-- Set up general things of the main window:
 		pac_canvas.set_up_main_window;
 
@@ -122,7 +122,7 @@ package body et_gui_2 is
 		-- Set the title bar of the main window:
 		set_title_bar (
 			module	=> active_module);
-  
+
 
 		-- Set up the primary tool display:
 		log (text => "build primary tool display", level => log_threshold + 1);
@@ -131,7 +131,7 @@ package body et_gui_2 is
 		-- Set up the sheet number display:
 		log (text => "build sheet number display", level => log_threshold + 1);
 		build_sheet_number_display;
-		
+
 		-- Set up the coordinates display:
 		log (text => "build coordinates display", level => log_threshold + 1);
 		set_up_coordinates_display;
@@ -154,7 +154,7 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_schematic.set_up_canvas;
 
-		
+
 		-- Activate the main window:
 		log (text => "show schematic window", level => log_threshold + 1);
 		main_window.show_all;
@@ -164,13 +164,13 @@ package body et_gui_2 is
 		canvas.grab_focus;
 
 		-- Set zoom so that all objects fit into the scrolled window:
-		zoom_to_fit (bounding_box);		
+		zoom_to_fit (bounding_box);
 
 		-- Backup the currently visible area.
 		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
 		backup_visible_area (bounding_box);
 
-	
+
 		update_sheet_number_display;
 		update_zoom_display;
 		update_scale_display;
@@ -178,7 +178,7 @@ package body et_gui_2 is
 		-- Set the grid as specified in the database:
 		pac_canvas.grid := et_schematic_ops_grid.get_grid (module, log_threshold + 1);
 		update_grid_display;
-		
+
 		-- CS ? canvas.update_mode_display;
 
 	end init_schematic;
@@ -186,12 +186,12 @@ package body et_gui_2 is
 
 
 
-	
-	
+
+
 	procedure init_board (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
-		log_threshold_in: in type_log_level) 
+		log_threshold_in: in type_log_level)
 	is
 		pragma unreferenced (project);
 		use et_canvas_board;
@@ -204,14 +204,14 @@ package body et_gui_2 is
 
 		log (text => "init_board", level => log_threshold);
 
-		
-		
+
+
 		-- CS set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
 
-		
+
 		-- Set up general things of the main window:
 		pac_canvas.set_up_main_window;
 
@@ -222,7 +222,7 @@ package body et_gui_2 is
 		set_title_bar (
 			module	=> active_module);
 
-		
+
 		-- Set up the primary tool display:
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
@@ -238,7 +238,7 @@ package body et_gui_2 is
 		log (text => "build console", level => log_threshold + 1);
 		build_console;
 		connect_console;
-		
+
 		-- Set up the scrolled window and the scrollbars:
 		set_up_swin_and_scrollbars;
 
@@ -248,9 +248,9 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_board.set_up_canvas;
 
-		
+
 		-- Activate the main window:
-		log (text => "show board window", level => log_threshold + 1);		
+		log (text => "show board window", level => log_threshold + 1);
 		main_window.show_all;
 
 		-- Initialize the scrollbars:
@@ -278,14 +278,14 @@ package body et_gui_2 is
 
 
 
-	
-	
+
+
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_sheets;
 	begin
@@ -302,14 +302,14 @@ package body et_gui_2 is
 
 		log (text => "init gtk main (GUI) ... ", level => log_threshold);
 		log_indentation_up;
-		
+
 		gtk.main.init;
 
 		-- Set up the schematic window.
  		init_schematic (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
-		
+
 		-- Set up the board window.
 		init_board (project, module, log_threshold + 1);
 
@@ -319,60 +319,60 @@ package body et_gui_2 is
 		-- CS
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
 
-		
+
 		-- If a script was given on startup as argument, execute it now:
-		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
+		-- NOTE 1: The script execution must start AFTER BOTH schematic and board
 		--         have been completely displayed.
-		-- NOTE 2: The procedure execute_script_console is available 
+		-- NOTE 2: The procedure execute_script_console is available
 		--         in et_canvas_schematic and et_canvas_board.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
-  
+
 			--et_gui.schematic_callbacks.execute_script (script);
 			et_canvas_schematic.execute_script_console (script);
 			-- 1. Composes a command that executes the script
 			--    like "schematic motor_driver execute script my_script.scr"
 			--    as if it was entered by the operator as an ordinary command.
 			-- 2. Launches the script via procedure et_scripting.execute_schematic_command.
-			-- 3. Procedure et_scripting.execute_schematic_command in turn calls 
+			-- 3. Procedure et_scripting.execute_schematic_command in turn calls
 			--    et_scripting.execute_nested_script.
 			-- 4. et_scripting.execute_nested_script reads the script line per line
 			--    and calls for each line et_scripting.execute_command.
 			-- 5. et_scripting.execute_script_command parses the command and dispatches
-			--    to procedure execute_schematic_command, execute_board_command 
+			--    to procedure execute_schematic_command, execute_board_command
 			--    or execute_project_command.
 		end if;
-  
+
 
 		et_canvas_schematic.pac_canvas.update_grid_display;
 		et_canvas_board.pac_canvas.update_grid_display;
 
 		et_canvas_schematic.update_mode_display;
 		et_canvas_board.update_mode_display;
-		
+
 		-- CS Init defaults of property bars in schematic.
 
 		-- Init defaults of property bars in board:
 		-- et_canvas_board.init_property_bars;
-		
 
-		
+
+
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.
 		gtk.main.main;
-		
+
 		log_indentation_down;
-		
-	end single_module;	
+
+	end single_module;
 
 
-	
+
 end et_gui_2;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

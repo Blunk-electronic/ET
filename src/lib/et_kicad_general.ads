@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,11 +50,11 @@ package et_kicad_general is
 
 	comment_mark : constant string := "#";
 
-	
+
 -- V4
 	pcb_new_version_4_0_7		: constant string := "4.0.7";
 	pcb_file_format_version_4	: constant string := "4";
-	
+
 	host_name_pcbnew			: constant string := "pcbnew";
 
 -- V5
@@ -65,7 +65,7 @@ package et_kicad_general is
 	host_name_pcbnew_dummy_v5	: constant string := "kicad";
 
 
-    encoding_default 					: constant string := "utf-8";	
+    encoding_default 					: constant string := "utf-8";
 
 	file_extension_project   			: constant string := "pro";
 	file_extension_schematic 			: constant string := "sch";
@@ -75,40 +75,40 @@ package et_kicad_general is
 	schematic_version_v4	: constant positive := 2; -- CS use dedicated type for schematic version
     schematic_version_v5	: constant positive := 4;
 
-	
-	
+
+
 	-- If lines of a file are to be collected we use this simple list:
 	package pac_lines_of_file is new doubly_linked_lists (
 		element_type	=> type_fields_of_line,
 		"=" 			=> lines_equally);
 
 
-	
+
 -- TIMESTAMP
-	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
+	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only
 	type type_timestamp is new string (1..8); -- like "3459A3C1"
 	timestamp_default : constant type_timestamp := "00000000";
-	
+
 	procedure check_timestamp (timestamp : in type_timestamp);
 	-- Checks the given timestamp for valid characters and plausible time.
 
-	
+
 -- LIBRARIES
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
-	
+
 	-- For storing BARE library names like "bel_primitives" we use this bounded string:
-	package type_library_name is new generic_bounded_length (library_name_length_max); 
+	package type_library_name is new generic_bounded_length (library_name_length_max);
 
 	function to_library_name (library_name : in string) return type_library_name.bounded_string;
 	-- converts a string to a type_library_name
-	
+
 	-- CS: for type_library_name: character set, check characters, check length
-	
+
 	function to_string (library_name : in type_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 
-	
+
 
 	-- Libraries are stored in directories:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
@@ -124,13 +124,13 @@ package et_kicad_general is
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
 
-	
+
 end et_kicad_general;
 
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

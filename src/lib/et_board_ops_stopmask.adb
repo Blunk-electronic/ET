@@ -54,25 +54,25 @@ package body et_board_ops_stopmask is
 	use pac_stop_circles;
 	use pac_stop_texts;
 
-	
-	
-	
+
+
+
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -81,7 +81,7 @@ package body et_board_ops_stopmask is
 					append (
 						container	=> module.board.stopmask.top.lines,
 						new_item	=> line);
-					
+
 				when BOTTOM =>
 					append (
 						container	=> module.board.stopmask.bottom.lines,
@@ -89,7 +89,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" draw stopmask line" &
@@ -101,12 +101,12 @@ package body et_board_ops_stopmask is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -115,7 +115,7 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_line;
@@ -123,8 +123,8 @@ package body et_board_ops_stopmask is
 
 
 
-	
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -133,34 +133,34 @@ package body et_board_ops_stopmask is
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_line (
 				line	: in out type_stop_line)
 			is begin
 				modify_status (line, operation);
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stop_lines.list renames module.board.stopmask.top.lines;
 			begin
 				top.update_element (line.cursor, query_line'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 			begin
 				bottom.update_element (line.cursor, query_line'access);
 			end query_bottom;
 
-			
+
 		begin
 			case line.face is
 				when TOP =>
@@ -171,16 +171,16 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (element (line.cursor)) -- CS: log top/bottom			
+			& to_string (element (line.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -190,10 +190,10 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
-	
+
+
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -205,7 +205,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_stop_lines.cursor;
@@ -224,8 +224,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stop_lines.list renames module.board.stopmask.top.lines;
 			begin
 				if not top.is_empty then
@@ -237,8 +237,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 			begin
 				if not bottom.is_empty then
@@ -250,15 +250,15 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing lines in" & to_string (catch_zone)
@@ -276,10 +276,10 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
-	
+
+
 
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -288,22 +288,22 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_stop_lines.list renames module.board.stopmask.top.lines;
 			bottom	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 
-			
+
 			procedure query_line (
 				line	: in out type_stop_line)
 			is begin
 				reset_status (line);
 			end query_line;
 
-			
+
 			lc : pac_stop_lines.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -314,7 +314,7 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -325,13 +325,13 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed lines",
@@ -349,22 +349,22 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
-	
+
+
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_line
 	is
 		result : type_object_line;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -372,7 +372,7 @@ package body et_board_ops_stopmask is
 			top_items 		: pac_stop_lines.list renames module.board.stopmask.top.lines;
 			bottom_items	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 
-			
+
 			procedure query_line (c : in pac_stop_lines.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -391,9 +391,9 @@ package body et_board_ops_stopmask is
 						null; -- CS
 				end case;
 			end query_line;
-			
 
-			
+
+
 		begin
 			-- Query the lines in the top layer first:
 			iterate (top_items, query_line'access, proceed'access);
@@ -407,18 +407,18 @@ package body et_board_ops_stopmask is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -432,10 +432,10 @@ package body et_board_ops_stopmask is
 
 
 
-	
-	
 
-	
+
+
+
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -450,15 +450,15 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_stop_lines.cursor;
 
-			
+
 			procedure query_line (line : in out type_stop_line) is
 			begin
 				-- case coordinates is
@@ -471,23 +471,23 @@ package body et_board_ops_stopmask is
 				-- end case;
 			end query_line;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					line_cursor := module.board.stopmask.top.lines.find (line);
 					module.board.stopmask.top.lines.update_element (line_cursor, query_line'access);
-					
+
 				when BOTTOM =>
 					line_cursor := module.board.stopmask.bottom.lines.find (line);
 					module.board.stopmask.bottom.lines.update_element (line_cursor, query_line'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move stopmask " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -501,17 +501,17 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_line;
 
@@ -520,8 +520,8 @@ package body et_board_ops_stopmask is
 
 
 
-	
-	
+
+
 
 
 	procedure delete_line (
@@ -535,10 +535,10 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_stop_lines.cursor;
@@ -550,7 +550,7 @@ package body et_board_ops_stopmask is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_stop_lines.no_element then
-						module.board.stopmask.top.lines.delete (line_cursor); 
+						module.board.stopmask.top.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -561,7 +561,7 @@ package body et_board_ops_stopmask is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_stop_lines.no_element then
-						module.board.stopmask.bottom.lines.delete (line_cursor); 
+						module.board.stopmask.bottom.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -571,10 +571,10 @@ package body et_board_ops_stopmask is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete in stopmask" & to_string (line),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
@@ -582,7 +582,7 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -591,39 +591,39 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_line;
 
 
 
 
-	
 
-	
-	
+
+
+
 
 -- ARCS:
-	
-	
+
+
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		arc				: in type_stop_arc;		
+		arc				: in type_stop_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -640,7 +640,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" draw stopmask arc" &
@@ -654,31 +654,31 @@ package body et_board_ops_stopmask is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_arc;
-	
 
 
 
-	
+
+
 
 
 
@@ -693,31 +693,31 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_arc (
 				arc	: in out type_stop_arc)
 			is begin
 				modify_status (arc, operation);
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			begin
 				top.update_element (arc.cursor, query_arc'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 			begin
 				bottom.update_element (arc.cursor, query_arc'access);
 			end query_bottom;
 
-			
+
 		begin
 			case arc.face is
 				when TOP =>
@@ -728,16 +728,16 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (element (arc.cursor)) -- CS: log top/bottom			
+			& to_string (element (arc.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -748,7 +748,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 
@@ -763,7 +763,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_stop_arcs.cursor;
@@ -782,8 +782,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			begin
 				if not top.is_empty then
@@ -795,8 +795,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 			begin
 				if not bottom.is_empty then
@@ -808,15 +808,15 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing arcs in " & to_string (catch_zone)
@@ -833,12 +833,12 @@ package body et_board_ops_stopmask is
 	end propose_arcs;
 
 
-	
-
-	
 
 
-	
+
+
+
+
 
 	procedure reset_proposed_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -847,22 +847,22 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			bottom	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 
-			
+
 			procedure query_arc (
 				arc	: in out type_stop_arc)
 			is begin
 				reset_status (arc);
 			end query_arc;
 
-			
+
 			lc : pac_stop_arcs.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -873,7 +873,7 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -884,13 +884,13 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed arcs",
@@ -908,22 +908,22 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 
 	function get_first_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_arc
 	is
 		result : type_object_arc;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -931,7 +931,7 @@ package body et_board_ops_stopmask is
 			top_items 		: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			bottom_items	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 
-			
+
 			procedure query_arc (c : in pac_stop_arcs.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -951,7 +951,7 @@ package body et_board_ops_stopmask is
 				end case;
 			end query_arc;
 
-			
+
 		begin
 			-- Query the arcs in the top layer first:
 			iterate (top_items, query_arc'access, proceed'access);
@@ -965,18 +965,18 @@ package body et_board_ops_stopmask is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first arc / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -989,13 +989,13 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
 
 
-	
-	
+
+
+
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -1010,15 +1010,15 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			arc_cursor : pac_stop_arcs.cursor;
 
-			
+
 			procedure query_arc (arc : in out type_stop_arc) is
 			begin
 				-- case coordinates is
@@ -1031,23 +1031,23 @@ package body et_board_ops_stopmask is
 				-- end case;
 			end query_arc;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					arc_cursor := module.board.stopmask.top.arcs.find (arc);
 					module.board.stopmask.top.arcs.update_element (arc_cursor, query_arc'access);
-					
+
 				when BOTTOM =>
 					arc_cursor := module.board.stopmask.bottom.arcs.find (arc);
 					module.board.stopmask.bottom.arcs.update_element (arc_cursor, query_arc'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move stopmask " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
@@ -1060,8 +1060,8 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -1069,19 +1069,19 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_arc;
 
 
 
 
-	
 
-	
-	
-	
+
+
+
+
 
 
 
@@ -1096,10 +1096,10 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_arcs;
@@ -1112,7 +1112,7 @@ package body et_board_ops_stopmask is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_stop_arcs.no_element then
-						module.board.stopmask.top.arcs.delete (arc_cursor); 
+						module.board.stopmask.top.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1123,7 +1123,7 @@ package body et_board_ops_stopmask is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_stop_arcs.no_element then
-						module.board.stopmask.bottom.arcs.delete (arc_cursor); 
+						module.board.stopmask.bottom.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1133,10 +1133,10 @@ package body et_board_ops_stopmask is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete stopmask arc " & to_string (arc),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
@@ -1144,7 +1144,7 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1153,41 +1153,41 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_arc;
 
 
-	
 
 
 
 
 
 
-	
+
+
 
 -- CIRCLES:
-	
-	
+
+
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stop_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -1205,7 +1205,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" draw stopmask circle" &
@@ -1217,12 +1217,12 @@ package body et_board_ops_stopmask is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1231,7 +1231,7 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_circle;
@@ -1239,10 +1239,10 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
-	
+
+
 
 
 	procedure add_zone (
@@ -1255,16 +1255,16 @@ package body et_board_ops_stopmask is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			use pac_stop_zones;
 			c : pac_stop_zones.cursor;
@@ -1289,7 +1289,7 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -1309,7 +1309,7 @@ package body et_board_ops_stopmask is
 						module.board.stopmask.top.zones.append (zone);
 					end if;
 
-					
+
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
 					c := module.board.stopmask.bottom.zones.first;
@@ -1331,8 +1331,8 @@ package body et_board_ops_stopmask is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " draw stopmask zone" 
+		log (text => "module " & to_string (module_cursor)
+			 & " draw stopmask zone"
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
@@ -1343,7 +1343,7 @@ package body et_board_ops_stopmask is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1352,18 +1352,18 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end add_zone;
-	
 
 
 
-	
 
 
-	
+
+
+
 
 
 	procedure modify_status (
@@ -1375,21 +1375,21 @@ package body et_board_ops_stopmask is
 		use pac_contours;
 		use pac_segments;
 		use pac_stop_zones;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
+
 			procedure query_zone (
 				zone : in out type_stop_zone)
 			is begin
@@ -1405,28 +1405,28 @@ package body et_board_ops_stopmask is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
 			-- Search the given segment according to its
 			-- zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -1436,7 +1436,7 @@ package body et_board_ops_stopmask is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1449,7 +1449,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 	procedure propose_segments (
@@ -1462,7 +1462,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_zones;
@@ -1471,7 +1471,7 @@ package body et_board_ops_stopmask is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1483,14 +1483,14 @@ package body et_board_ops_stopmask is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_stop_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1507,8 +1507,8 @@ package body et_board_ops_stopmask is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
@@ -1519,11 +1519,11 @@ package body et_board_ops_stopmask is
 							container	=> module.board.stopmask.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
 
-					
+
 				when BOTTOM =>
 					zc := module.board.stopmask.bottom.zones.first;
 
@@ -1532,13 +1532,13 @@ package body et_board_ops_stopmask is
 							container	=> module.board.stopmask.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
-			end case;	
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing segments in " & to_string (catch_zone)
@@ -1555,14 +1555,14 @@ package body et_board_ops_stopmask is
 	end propose_segments;
 
 
-	
 
 
 
 
-	
-	
-	
+
+
+
+
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -1570,7 +1570,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_zones;
@@ -1579,7 +1579,7 @@ package body et_board_ops_stopmask is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1587,14 +1587,14 @@ package body et_board_ops_stopmask is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_stop_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1611,8 +1611,8 @@ package body et_board_ops_stopmask is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			zc := module.board.stopmask.top.zones.first;
 
@@ -1621,11 +1621,11 @@ package body et_board_ops_stopmask is
 					container	=> module.board.stopmask.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 
-					
+
 			zc := module.board.stopmask.bottom.zones.first;
 
 			while zc /= pac_stop_zones.no_element loop
@@ -1633,12 +1633,12 @@ package body et_board_ops_stopmask is
 					container	=> module.board.stopmask.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " resetting proposed segments of zones in stopmask",
@@ -1657,13 +1657,13 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
-	
+
+
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
@@ -1673,22 +1673,22 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_stop_zones;
-			
+
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
-			
-			
-			procedure query_zone (z : in pac_stop_zones.cursor) is 
+
+
+			procedure query_zone (z : in pac_stop_zones.cursor) is
 
 				procedure query_segment (
-					c : in pac_segments.cursor) 
+					c : in pac_segments.cursor)
 				is begin
 					case flag is
 						when PROPOSED =>
@@ -1715,16 +1715,16 @@ package body et_board_ops_stopmask is
 							null; -- CS
 					end case;
 				end query_segment;
-				
-				
+
+
 				procedure query_segments (z : in type_stop_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
-						proceed		=> proceed'access);				
+						proceed		=> proceed'access);
 				end query_segments;
 
-				
+
 			begin
 				if is_circular (z) then
 					null; -- CS
@@ -1733,41 +1733,41 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
 				zones	=> module.board.stopmask.top.zones,
-				process	=> query_zone'access, 
+				process	=> query_zone'access,
 				proceed	=> proceed'access);
 
-			
+
 			-- If nothing found, iterate the bottom layer:
 			if proceed then
 				face := BOTTOM;
-				
+
 				iterate (
 					zones	=> module.board.stopmask.bottom.zones,
-					process	=> query_zone'access, 
+					process	=> query_zone'access,
 					proceed	=> proceed'access);
 
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -1775,12 +1775,12 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
 
 
-	
+
+
 
 
 	procedure move_segment (
@@ -1795,15 +1795,15 @@ package body et_board_ops_stopmask is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_stop_zones;
-				
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1812,16 +1812,16 @@ package body et_board_ops_stopmask is
 				move_segment (s, point_of_attack, destination);
 			end do_it;
 
-			
+
 			procedure query_zone (
 				zone : in out type_stop_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
-					-- Locate the given segment in 
+					-- Locate the given segment in
 					-- the candidate zone:
 					update_element (
 						container	=> zone.contour.segments,
@@ -1830,28 +1830,28 @@ package body et_board_ops_stopmask is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-				
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move stopmask zone segment " & to_string (segment.segment)
@@ -1866,8 +1866,8 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -1878,8 +1878,8 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_segment;
 
@@ -1888,8 +1888,8 @@ package body et_board_ops_stopmask is
 
 
 
-	
-	
+
+
 
 
 
@@ -1907,51 +1907,51 @@ package body et_board_ops_stopmask is
 		use pac_segments;
 		use pac_stop_zones;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_zone (
 				zone : in out type_stop_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
-					c := segment.segment;					
+					c := segment.segment;
 					zone.contour.segments.delete (c);
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stopmask.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " delete stopmask zone segment " 
+			& " delete stopmask zone segment "
 			& to_string (segment.segment),
 			level => log_threshold);
 
@@ -1962,31 +1962,31 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_segment;
-	
-
-	
 
 
 
 
 
 
-	
 
-	
+
+
+
+
+
 
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1994,18 +1994,18 @@ package body et_board_ops_stopmask is
 		text			: in type_text_fab_with_content;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-		begin			
+		begin
 			case face is
 				when TOP =>
 					append (module.board.stopmask.top.texts, (text with null record));
@@ -2015,7 +2015,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text in stopmask at "
@@ -2024,13 +2024,13 @@ package body et_board_ops_stopmask is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2040,20 +2040,20 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_text;
 
 
 
-	
-
-	
 
 
 
-	
+
+
+
+
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -2065,10 +2065,10 @@ package body et_board_ops_stopmask is
 		use pac_stop_texts;
 		result : pac_stop_texts.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			procedure query_text (c : in pac_stop_texts.cursor) is
@@ -2078,14 +2078,14 @@ package body et_board_ops_stopmask is
 					zone	=> catch_zone,
 					point	=> text.position.place)
 				then
-					log (text => to_string (text.position.place) 
+					log (text => to_string (text.position.place)
 						& " content " & enclose_in_quotes (to_string (text.content)),
 						level => log_threshold + 2);
-						
+
 					result.append (text);
 				end if;
 			end query_text;
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -2096,33 +2096,33 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " looking up stopmask texts in" & to_string (catch_zone),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
-		
+
 		log_indentation_down;
 		return result;
 	end get_texts;
 
 
 
-	
-	
 
 
-	
+
+
+
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -2135,7 +2135,7 @@ package body et_board_ops_stopmask is
 		new_position : type_vector_model;
 		offset : type_vector_model;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2146,7 +2146,7 @@ package body et_board_ops_stopmask is
 			procedure query_text (text : in out type_stop_text) is begin
 				move_text_to (text, offset); -- CS should be move_text_by ?
 			end query_text;
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -2159,7 +2159,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -2171,9 +2171,9 @@ package body et_board_ops_stopmask is
 				offset := point;
 				move_by (new_position, offset);
 		end case;
-		
+
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " moving stopmask text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
@@ -2190,7 +2190,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 
@@ -2210,7 +2210,7 @@ package body et_board_ops_stopmask is
 			procedure query_text (text : in out type_stop_text) is begin
 				modify_status (text, operation);
 			end query_text;
-			
+
 		begin
 			case text.face is
 				when TOP =>
@@ -2223,7 +2223,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of text" -- CS log position and content ?
@@ -2236,17 +2236,17 @@ package body et_board_ops_stopmask is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
-	
 
 
 
 
-	
-	
+
+
+
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2258,7 +2258,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			c : pac_stop_texts.cursor;
@@ -2276,8 +2276,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_text;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stop_texts.list renames module.board.stopmask.top.texts;
 			begin
 				if not top.is_empty then
@@ -2289,8 +2289,8 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_stop_texts.list renames module.board.stopmask.bottom.texts;
 			begin
 				if not bottom.is_empty then
@@ -2302,15 +2302,15 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing texts in" & to_string (catch_zone)
@@ -2318,7 +2318,7 @@ package body et_board_ops_stopmask is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -2330,10 +2330,10 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
-	
-	
+
+
+
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2346,7 +2346,7 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2356,7 +2356,7 @@ package body et_board_ops_stopmask is
 			procedure query_text (text : in out type_stop_text) is begin
 				move_text_to (text, destination);
 			end query_text;
-			
+
 		begin
 			case text.face is
 				when TOP =>
@@ -2368,11 +2368,11 @@ package body et_board_ops_stopmask is
 						text.cursor, query_text'access);
 			end case;
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (text.face) 
+			& " face" & to_string (text.face)
 			& " move stopmask text to "
 			& to_string (destination),
 			level => log_threshold);
@@ -2383,31 +2383,31 @@ package body et_board_ops_stopmask is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_text;
 
 
-	
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2419,13 +2419,13 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_stop_texts.cursor := text.cursor;			
+			c : pac_stop_texts.cursor := text.cursor;
 		begin
 			case text.face is
 				when TOP =>
@@ -2436,10 +2436,10 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (text.face) 
+			& " face" & to_string (text.face)
 			& " delete stopmask text",
 			level => log_threshold);
 
@@ -2450,18 +2450,18 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_text;
 
@@ -2472,11 +2472,11 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 	function get_first_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_text
 	is
@@ -2485,17 +2485,17 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_texts;
-			
+
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_stop_texts.list renames module.board.stopmask.top.texts;
 			bottom_items	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
 
-			
+
 			procedure query_text (c : in pac_stop_texts.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -2514,8 +2514,8 @@ package body et_board_ops_stopmask is
 						null; -- CS
 				end case;
 			end query_text;
-	
-			
+
+
 		begin
 			-- Query the texts in the top layer first:
 			iterate (top_items, query_text'access, proceed'access);
@@ -2529,24 +2529,24 @@ package body et_board_ops_stopmask is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -2558,7 +2558,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2567,13 +2567,13 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_stop_texts.list renames module.board.stopmask.top.texts;
 			bottom	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
 
-			
+
 			procedure query_text (
 				text	: in out type_stop_text)
 			is begin
@@ -2582,7 +2582,7 @@ package body et_board_ops_stopmask is
 
 
 			c : pac_stop_texts.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					c := top.first;
@@ -2593,7 +2593,7 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					c := bottom.first;
@@ -2604,13 +2604,13 @@ package body et_board_ops_stopmask is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed texts",
@@ -2630,11 +2630,11 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
-	
 
-	
+
+
+
 
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2653,7 +2653,7 @@ package body et_board_ops_stopmask is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_placeholders_non_conductor;						
+			use pac_placeholders_non_conductor;
 		begin
 			case face is
 				when TOP =>
@@ -2664,7 +2664,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " add text placeholder in stopmask "
@@ -2679,18 +2679,18 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end add_placeholder;
 
@@ -2698,11 +2698,11 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
 
 
-	
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
@@ -2716,13 +2716,13 @@ package body et_board_ops_stopmask is
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
-			
+
 			procedure query_placeholder (
-				ph : in out type_placeholder_non_conductor) 
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				modify_status (ph, operation);
 			end query_placeholder;
-			
+
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2735,7 +2735,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of text placeholder" -- CS log position and content ?
@@ -2748,7 +2748,7 @@ package body et_board_ops_stopmask is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end modify_status;
 
@@ -2757,7 +2757,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 	procedure propose_placeholders (
@@ -2770,7 +2770,7 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
@@ -2788,13 +2788,13 @@ package body et_board_ops_stopmask is
 					log (text => to_string (ph), level => log_threshold + 1);
 				end if;
 			end query_placeholder;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
 					c := module.board.stopmask.top.placeholders.first;
-					
+
 					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.stopmask.top.placeholders.update_element (c, query_placeholder'access);
 						next (c);
@@ -2803,15 +2803,15 @@ package body et_board_ops_stopmask is
 
 				when BOTTOM =>
 					c := module.board.stopmask.bottom.placeholders.first;
-					
+
 					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.stopmask.bottom.placeholders.update_element (c, query_placeholder'access);
 						next (c);
 					end loop;
-			end case;					
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing text placeholders in" & to_string (catch_zone)
@@ -2819,22 +2819,22 @@ package body et_board_ops_stopmask is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
 	end propose_placeholders;
-	
 
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2847,21 +2847,21 @@ package body et_board_ops_stopmask is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
-			
+
 			procedure query_placeholder (
-				ph : in out type_placeholder_non_conductor) 
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
 
-			
+
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2873,11 +2873,11 @@ package body et_board_ops_stopmask is
 						placeholder.cursor, query_placeholder'access);
 			end case;
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move text placeholder " 
+			& " move text placeholder "
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
@@ -2889,7 +2889,7 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2899,8 +2899,8 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_placeholder;
 
@@ -2908,7 +2908,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 
@@ -2929,7 +2929,7 @@ package body et_board_ops_stopmask is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;			
+			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2940,7 +2940,7 @@ package body et_board_ops_stopmask is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete text placeholder" & to_string (placeholder.cursor),
@@ -2953,7 +2953,7 @@ package body et_board_ops_stopmask is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2963,22 +2963,22 @@ package body et_board_ops_stopmask is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_placeholder;
 
 
 
 
-	
 
-	
+
+
 
 
 	function get_first_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_placeholder
 	is
@@ -2987,19 +2987,19 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_placeholders_non_conductor;
-			
+
 			proceed : aliased boolean := true;
 
 			top_items 		: pac_placeholders_non_conductor.list renames module.board.stopmask.top.placeholders;
 			bottom_items	: pac_placeholders_non_conductor.list renames module.board.stopmask.bottom.placeholders;
 
-			
+
 			procedure query_placeholder (
-				c : in pac_placeholders_non_conductor.cursor) 
+				c : in pac_placeholders_non_conductor.cursor)
 			is begin
 				case flag is
 					when PROPOSED =>
@@ -3018,8 +3018,8 @@ package body et_board_ops_stopmask is
 						null; -- CS
 				end case;
 			end query_placeholder;
-	
-			
+
+
 		begin
 			-- Query the placeholders in the top layer first:
 			iterate (top_items, query_placeholder'access, proceed'access);
@@ -3033,24 +3033,24 @@ package body et_board_ops_stopmask is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first text placeholder / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -3063,7 +3063,7 @@ package body et_board_ops_stopmask is
 
 
 
-	
+
 
 
 	procedure reset_proposed_placeholders (
@@ -3073,10 +3073,10 @@ package body et_board_ops_stopmask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_placeholder (
 				ph : in out type_placeholder_non_conductor)
 			is begin
@@ -3084,7 +3084,7 @@ package body et_board_ops_stopmask is
 			end query_placeholder;
 
 			use pac_placeholders_non_conductor;
-			c : pac_placeholders_non_conductor.cursor := 
+			c : pac_placeholders_non_conductor.cursor :=
 				module.board.stopmask.top.placeholders.first;
 		begin
 			-- Iterate the placeholders at the top:
@@ -3103,7 +3103,7 @@ package body et_board_ops_stopmask is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed text placeholders",
@@ -3122,12 +3122,12 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
-	
+
+
 
 -- OBJECTS:
-	
+
 
 
 	function get_count (
@@ -3136,15 +3136,15 @@ package body et_board_ops_stopmask is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
-	
-	
+
+
+
 
 
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -3169,9 +3169,9 @@ package body et_board_ops_stopmask is
 
 		log_indentation_up;
 
-		
+
 		-- SEARCH FOR A LINE:
-		
+
 		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
 
@@ -3180,7 +3180,7 @@ package body et_board_ops_stopmask is
 			log (text => to_string (element (result_line.cursor))
 				 & " face " & to_string (result_line.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_LINE;
 		end if;
 
@@ -3189,9 +3189,9 @@ package body et_board_ops_stopmask is
 		end if;
 
 
-		
+
 		-- SEARCH FOR AN ARC:
-		
+
 		-- If an arc has been found, then go to the end of this procedure:
 		result_arc := get_first_arc (module_cursor, flag, log_threshold + 1);
 
@@ -3200,7 +3200,7 @@ package body et_board_ops_stopmask is
 			log (text => to_string (element (result_arc.cursor))
 				 & " face " & to_string (result_arc.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_ARC;
 		end if;
 
@@ -3215,7 +3215,7 @@ package body et_board_ops_stopmask is
 
 
 		-- SEARCH FOR A SEGMENT OF A ZONE:
-		
+
 		-- If there is one, then go to the end  of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
 
@@ -3224,7 +3224,7 @@ package body et_board_ops_stopmask is
 			log (text => to_string (result_segment.segment)
 					& " face " & to_string (result_segment.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_ZONE_SEGMENT;
 		end if;
 
@@ -3235,15 +3235,15 @@ package body et_board_ops_stopmask is
 
 
 		-- SEARCH FOR A TEXT:
-		
+
 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
-		
+
 		if result_text.cursor /= pac_stop_texts.no_element then
 			-- A text has been found.
 			log (text => to_string (result_text.cursor)
 					& " face " & to_string (result_text.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_TEXT;
 		end if;
 
@@ -3251,28 +3251,28 @@ package body et_board_ops_stopmask is
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
-		
-		
+
+
 		-- SEARCH FOR A PLACEHOLDER:
 
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
-		
+
 		if result_placeholder.cursor /= pac_placeholders_non_conductor.no_element then
 			-- A placeholder has been found.
 			log (text => to_string (result_placeholder.cursor)
 					& " face " & to_string (result_placeholder.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_PLACEHOLDER;
 		end if;
 
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -3284,7 +3284,7 @@ package body et_board_ops_stopmask is
 
 			when CAT_ARC =>
 				return (CAT_ARC, result_arc);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
@@ -3293,17 +3293,17 @@ package body et_board_ops_stopmask is
 
 			when CAT_PLACEHOLDER =>
 				return (CAT_PLACEHOLDER, result_placeholder);
-				
+
 		end case;
 	end get_first_object;
 
 
 
-	
 
 
 
-	
+
+
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -3313,24 +3313,24 @@ package body et_board_ops_stopmask is
 		use pac_objects;
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_zones;
 			zone_cursor : pac_stop_zones.cursor;
 			face : type_face := TOP;
-			
+
 			use pac_stop_lines;
 			line_cursor : pac_stop_lines.cursor;
 
 			use pac_stop_arcs;
 			arc_cursor : pac_stop_arcs.cursor;
-			
+
 			-- CS circles
-			
+
 			use pac_stop_texts;
 			text_cursor : pac_stop_texts.cursor;
 
@@ -3338,15 +3338,15 @@ package body et_board_ops_stopmask is
 			use pac_placeholders_non_conductor;
 			placeholder_cursor : pac_placeholders_non_conductor.cursor;
 
-			
-			
+
+
 			procedure query_zone (zone : in type_stop_zone) is
 				use pac_contours;
 				use pac_segments;
 				-- CS test circular flag !!
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
-				
-				procedure query_segment (segment : in type_segment) is 
+
+				procedure query_segment (segment : in type_segment) is
 
 					procedure collect is begin
 						result.append ((
@@ -3367,22 +3367,22 @@ package body et_board_ops_stopmask is
 							if is_selected (segment) then
 								collect;
 							end if;
-							
+
 						when others => null; -- CS
 					end case;
 				end query_segment;
-				
+
 			begin
 				while segment_cursor /= pac_segments.no_element loop
 					query_element (segment_cursor, query_segment'access);
 					next (segment_cursor);
 				end loop;
 			end query_zone;
-			
 
 
-			
-			procedure query_line (line : in type_stop_line) is 
+
+
+			procedure query_line (line : in type_stop_line) is
 
 				procedure collect is begin
 					result.append ((
@@ -3391,7 +3391,7 @@ package body et_board_ops_stopmask is
 
 					log (text => to_string (line), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3409,9 +3409,9 @@ package body et_board_ops_stopmask is
 			end query_line;
 
 
-			
-	
-			procedure query_arc (arc : in type_stop_arc) is 
+
+
+			procedure query_arc (arc : in type_stop_arc) is
 
 				procedure collect is begin
 					result.append ((
@@ -3420,7 +3420,7 @@ package body et_board_ops_stopmask is
 
 					log (text => to_string (arc), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3440,8 +3440,8 @@ package body et_board_ops_stopmask is
 
 
 
-			
-			procedure query_text (text : in type_stop_text) is 
+
+			procedure query_text (text : in type_stop_text) is
 
 				procedure collect is begin
 					result.append ((
@@ -3450,7 +3450,7 @@ package body et_board_ops_stopmask is
 
 					log (text => to_string (text), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3468,9 +3468,9 @@ package body et_board_ops_stopmask is
 			end query_text;
 
 
-			
 
-			procedure query_placeholder (placeholder : in type_placeholder_non_conductor) is 
+
+			procedure query_placeholder (placeholder : in type_placeholder_non_conductor) is
 
 				procedure collect is begin
 					result.append ((
@@ -3479,7 +3479,7 @@ package body et_board_ops_stopmask is
 
 					log (text => to_string (placeholder), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -3496,12 +3496,12 @@ package body et_board_ops_stopmask is
 				end case;
 			end query_placeholder;
 
-			
-			
+
+
 		begin
 			log (text => "top zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.stopmask.top.zones.first;
 			while zone_cursor /= pac_stop_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -3510,10 +3510,10 @@ package body et_board_ops_stopmask is
 
 			log_indentation_down;
 
-			
+
 			log (text => "top lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.stopmask.top.lines.first;
 			while line_cursor /= pac_stop_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -3525,7 +3525,7 @@ package body et_board_ops_stopmask is
 
 			log (text => "top arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.stopmask.top.arcs.first;
 			while arc_cursor /= pac_stop_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -3535,13 +3535,13 @@ package body et_board_ops_stopmask is
 			log_indentation_down;
 
 
-			
+
 			-- CS circles
 
 
 			log (text => "top texts", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			text_cursor := module.board.stopmask.top.texts.first;
 			while text_cursor /= pac_stop_texts.no_element loop
 				query_element (text_cursor, query_text'access);
@@ -3550,11 +3550,11 @@ package body et_board_ops_stopmask is
 
 			log_indentation_down;
 
-			
+
 
 			log (text => "top text placeholders", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			placeholder_cursor := module.board.stopmask.top.placeholders.first;
 			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
@@ -3564,12 +3564,12 @@ package body et_board_ops_stopmask is
 			log_indentation_down;
 
 
-			
+
 			face := BOTTOM;
 
 			log (text => "bottom zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.stopmask.bottom.zones.first;
 			while zone_cursor /= pac_stop_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -3578,11 +3578,11 @@ package body et_board_ops_stopmask is
 
 			log_indentation_down;
 
-			
-			
+
+
 			log (text => "bottom lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.stopmask.bottom.lines.first;
 			while line_cursor /= pac_stop_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -3595,7 +3595,7 @@ package body et_board_ops_stopmask is
 
 			log (text => "bottom arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.stopmask.bottom.arcs.first;
 			while arc_cursor /= pac_stop_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -3605,13 +3605,13 @@ package body et_board_ops_stopmask is
 			log_indentation_down;
 
 
-			
+
 			-- CS circles
 
-			
+
 			log (text => "bottom texts", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			text_cursor := module.board.stopmask.bottom.texts.first;
 			while text_cursor /= pac_stop_texts.no_element loop
 				query_element (text_cursor, query_text'access);
@@ -3623,39 +3623,39 @@ package body et_board_ops_stopmask is
 
 			log (text => "bottom text placeholders", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			placeholder_cursor := module.board.stopmask.bottom.placeholders.first;
 			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
 				next (placeholder_cursor);
 			end loop;
 
-			log_indentation_down;			
+			log_indentation_down;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element ( -- CS query_module is sufficient
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
-	
 
 
 
 
 
-	
+
+
 
 
 	procedure modify_status (
@@ -3671,14 +3671,14 @@ package body et_board_ops_stopmask is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_LINE =>
 				modify_status (module_cursor, object.line, operation, log_threshold + 1);
 
 			when CAT_ARC =>
 				modify_status (module_cursor, object.arc, operation, log_threshold + 1);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
@@ -3687,7 +3687,7 @@ package body et_board_ops_stopmask is
 
 			when CAT_PLACEHOLDER =>
 				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -3695,18 +3695,18 @@ package body et_board_ops_stopmask is
 		log_indentation_down;
 	end modify_status;
 
-	
 
 
-	
-	
+
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -3717,9 +3717,9 @@ package body et_board_ops_stopmask is
 
 
 
-	
 
-	
+
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3730,7 +3730,7 @@ package body et_board_ops_stopmask is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move stopmask object " 
+			& " move stopmask object "
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -3740,17 +3740,17 @@ package body et_board_ops_stopmask is
 
 		case object.cat is
 			when CAT_LINE =>
-				move_line (module_cursor, object.line.face, 
+				move_line (module_cursor, object.line.face,
 					element (object.line.cursor),
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
-				move_arc (module_cursor, object.arc.face, 
+				move_arc (module_cursor, object.arc.face,
 					element (object.arc.cursor),
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
@@ -3768,20 +3768,20 @@ package body et_board_ops_stopmask is
 					object.placeholder,
 					destination, DO_COMMIT,
 					log_threshold + 1);
-							
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
-	
 
 
 
 
 
-	
+
+
 
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3796,7 +3796,7 @@ package body et_board_ops_stopmask is
 		reset_proposed_lines (module_cursor, log_threshold + 1);
 		reset_proposed_arcs (module_cursor, log_threshold + 1);
 		-- CS circles
-		
+
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		reset_proposed_segments (module_cursor, log_threshold + 1);
@@ -3810,8 +3810,8 @@ package body et_board_ops_stopmask is
 
 
 
-	
-	
+
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -3827,34 +3827,34 @@ package body et_board_ops_stopmask is
 		case object.cat is
 			when CAT_LINE =>
 				delete_line (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.line.face,
 					line			=> element (object.line.cursor),
 					commit_design	=> DO_COMMIT,
-					log_threshold	=> log_threshold + 1);					
+					log_threshold	=> log_threshold + 1);
 
 
 			when CAT_ARC =>
 				delete_arc (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.arc.face,
 					arc				=> element (object.arc.cursor),
 					commit_design	=> DO_COMMIT,
-					log_threshold	=> log_threshold + 1);					
-				
+					log_threshold	=> log_threshold + 1);
+
 			-- CS circles
-				
+
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment,
 					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_TEXT =>
 				delete_text (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					text			=> object.text,
 					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
@@ -3862,38 +3862,38 @@ package body et_board_ops_stopmask is
 
 			when CAT_PLACEHOLDER =>
 				delete_placeholder (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					placeholder		=> object.placeholder,
 					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
 
 
-	
-	
 
 
-	
+
+
+
+
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stop_lines;
@@ -3914,7 +3914,7 @@ package body et_board_ops_stopmask is
 				arc_cursor    	:= module.board.stopmask.bottom.arcs.first;
 				circle_cursor	:= module.board.stopmask.bottom.circles.first;
 			end if;
-			
+
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stop_lines.no_element loop
 				if in_catch_zone (
@@ -3976,9 +3976,9 @@ package body et_board_ops_stopmask is
 			if not deleted then
 				nothing_found (catch_zone);
 			end if;
-			
+
 		end delete;
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" deleting stopmask object face" & to_string (face) &
@@ -3992,17 +3992,17 @@ package body et_board_ops_stopmask is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
-		
+
 	end delete_object;
 
-	
-	
+
+
 end et_board_ops_stopmask;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

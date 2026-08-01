@@ -67,9 +67,9 @@ package et_conductors_floating_package is
 		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 
-	
-	-- Since NON ELECTRIC conductor objects of a package can be on both sides 
-	-- of the board we need this type. There is no reason for NON ELECTRIC 
+
+	-- Since NON ELECTRIC conductor objects of a package can be on both sides
+	-- of the board we need this type. There is no reason for NON ELECTRIC
 	-- conductor objects in inner layers. So we deal with top and bottom side only:
 	type type_conductor_objects_both_sides is record -- CS rename to type_conductors_both_sides ?
 		top		: type_conductor_objects;
@@ -85,29 +85,29 @@ package et_conductors_floating_package is
 		face		: in type_face);
 
 
-	
-	
 
-	-- Mirrors the given non-electric conductor objects 
+
+
+	-- Mirrors the given non-electric conductor objects
 	-- along the given axis:
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	
-	-- Rotates the given non-electric conductor objects 
+
+	-- Rotates the given non-electric conductor objects
 	-- by the given angle about the origin:
 	procedure rotate_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		angle		: in type_rotation_model);
 
-	-- Moves the given non-electric conductor objects 
+	-- Moves the given non-electric conductor objects
 	-- by the given offset:
 	procedure move_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		offset		: in type_vector_model);
 
-	
+
 	-- Converts the given non-electric conductor objects to polygons.
 	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
 	--  edge of a conductor circle is converted to a polygon.
@@ -115,14 +115,14 @@ package et_conductors_floating_package is
 		conductors	: in type_conductor_objects;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
-	
 
-	
+
+
 end et_conductors_floating_package;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

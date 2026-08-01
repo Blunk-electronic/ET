@@ -41,7 +41,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_module_instance is
-	
+
 
 	function to_string (name : in pac_module_instance_name.bounded_string) return string is begin
 		return pac_module_instance_name.to_string (name);
@@ -52,12 +52,12 @@ package body et_module_instance is
 		return pac_module_instance_name.to_bounded_string (name);
 	end;
 
-	
+
 end et_module_instance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

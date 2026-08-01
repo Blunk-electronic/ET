@@ -40,31 +40,31 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_port_names is
 
-	
+
 	function to_string (
-		port : in pac_port_name.bounded_string) 
-		return string 
+		port : in pac_port_name.bounded_string)
+		return string
 	is begin
 		return pac_port_name.to_string (port);
 	end;
 
 
-	
+
 	function to_port_name (
-		name : in string) 
-		return pac_port_name.bounded_string 
+		name : in string)
+		return pac_port_name.bounded_string
 	is begin
 		return pac_port_name.to_bounded_string (name);
 	end;
 
-	
-	
-	
+
+
+
 end et_port_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -41,19 +41,19 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_canvas_tool is
 
-	
+
 	function to_string (tool : in type_tool) return string is begin
 		return type_tool'image (tool);
 	end to_string;
 
-	
+
 	function to_tool (tool : in string) return type_tool is begin
 		return type_tool'value (tool);
 	end to_tool;
 
 
 
-	function to_string (b : in type_mouse_button) return string is 
+	function to_string (b : in type_mouse_button) return string is
 		button : constant string := " button clicked";
 	begin
 		case b is
@@ -64,13 +64,13 @@ package body et_canvas_tool is
 		end case;
 	end to_string;
 
-	
-	
+
+
 end et_canvas_tool;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

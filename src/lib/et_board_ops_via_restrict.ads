@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;				use et_generic_modules;
 
@@ -50,15 +50,15 @@ package et_board_ops_via_restrict is
 
 
 	use pac_generic_modules;
-	
-	
+
+
 	-- CS draw_zone
 	-- CS delete_segment of zone contour
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	
+
 	-- Deletes the segment of via restrict that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
@@ -78,7 +78,7 @@ package et_board_ops_via_restrict is
 	--    which are incomplete (or open) and tries to append or prepend
 	--    the given zone to one of the existing open zones having
 	--    the same layer stack.
-	-- 2. If this attempt fails, then the given zone is regarded as 
+	-- 2. If this attempt fails, then the given zone is regarded as
 	--    a new zone.
 	-- 3. If all existing zones are already closed, then the given zone
 	--    is regarded a a new zone and added to the existing zones.
@@ -88,13 +88,13 @@ package et_board_ops_via_restrict is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 end et_board_ops_via_restrict;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

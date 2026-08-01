@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- 
+--
 -- To Do:
 -- - clean up
 --
@@ -61,8 +61,8 @@ with et_keywords;					use et_keywords;
 
 
 package body et_device_read_unit is
-	
-	
+
+
 	unit_name		: pac_unit_name.bounded_string; -- IO_BANK_2
 	unit_position	: type_vector_model := origin; -- the position of the unit inside the device editor
 	unit_swap_level	: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
@@ -70,12 +70,12 @@ package body et_device_read_unit is
 
 	unit_external 	: type_unit_external;
 	unit_external_model_name : pac_symbol_model_name.bounded_string;
-	
-	
+
+
 
 
 -- INTERNAL UNIT:
-	
+
 	procedure read_unit_internal (
 		line : in type_fields_of_line)
 	is
@@ -102,11 +102,11 @@ package body et_device_read_unit is
 						appearance	=> APPEARANCE_PCB,
 						others		=> <>);
 
-				when others => 
+				when others =>
 					raise constraint_error; -- CS
 
 			end case;
-			
+
 		elsif kw = keyword_position then -- position x 0.00 y 0.00
 			expect_field_count (line, 5);
 
@@ -121,17 +121,17 @@ package body et_device_read_unit is
 		elsif kw = keyword_add_level then
 			expect_field_count (line, 2);
 			unit_add_level := to_add_level (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_unit_internal;
-	
 
 
-	
-	
-	
+
+
+
+
 	procedure insert_unit_internal (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
@@ -146,7 +146,7 @@ package body et_device_read_unit is
 	begin
 		-- Depending on the appearance of the device, a unit with the same
 		-- appearance is inserted in units_internal.
-		case appearance is 
+		case appearance is
 			when APPEARANCE_VIRTUAL =>
 				pac_units_internal.insert (
 					container	=> units_internal,
@@ -175,41 +175,41 @@ package body et_device_read_unit is
 
 		end case;
 
-		-- A unit name must occur only once. 
+		-- A unit name must occur only once.
 		-- Make sure the unit_name is not in use by any internal or external units:
-		
+
 		-- Test occurence in internal units:
 		if not inserted then
-			log (SEVERITY_ERROR, "unit " & to_string (unit_name) 
+			log (SEVERITY_ERROR, "unit " & to_string (unit_name)
 				& " already used by another internal unit !", console => true);
 			raise constraint_error;
 		end if;
 
 		-- Make sure the unit name is not in use by any external unit:
 		if pac_units_external.contains (units_external, unit_name) then
-			log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
+			log (SEVERITY_ERROR, "unit name " & to_string (unit_name)
 				& " already used by an external unit !", console => true);
 			raise constraint_error;
 		end if;
-		
+
 		-- clean up for next unit
 		unit_name := to_unit_name ("");
 		unit_position := origin;
 		unit_swap_level := swap_level_default;
 		unit_add_level := add_level_default;
 		symbol_model := null;
-		
+
 	end insert_unit_internal;
 
-	
-	
 
-	
+
+
+
 
 
 -- EXTERNAL UNIT:
-	
-	
+
+
 	procedure read_unit_external (
 		line : in type_fields_of_line)
 	is
@@ -240,39 +240,39 @@ package body et_device_read_unit is
 		elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
 			expect_field_count (line, 2);
 			unit_external_model_name := to_file_name (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_unit_external;
-	
-	
 
-	
-	
 
-	
+
+
+
+
+
 	procedure insert_unit_external (
 		log_threshold	: in type_log_level)
 	is
 		use pac_unit_name;
-		
+
 		-- CS log messages
-		
-		
+
+
 		procedure read_symbol_model is
 		begin
 			-- read the symbol model (like ../libraries/symbols/power_gnd.sym)
 			read_symbol (unit_external_model_name,
-				log_threshold + 1);			
+				log_threshold + 1);
 		end read_symbol_model;
-		
-		
-		
+
+
+
 		inserted : boolean;
-		
+
 		-- Adds the internal unit to the device:
-		procedure add_to_device is 
+		procedure add_to_device is
 			cursor : pac_units_external.cursor;
 		begin
 			pac_units_external.insert (
@@ -282,55 +282,55 @@ package body et_device_read_unit is
 				key			=> unit_name,
 				new_item	=> unit_external);
 		end add_to_device;
-		
-		
-		
+
+
+
 		-- Tests the "inserted" flag and issues a log message.
 		-- The inserted-flag indicates that the unit does not exist
-		-- already:			
+		-- already:
 		procedure check_for_name_in_use is begin
-			-- A unit name must occur only once. 
+			-- A unit name must occur only once.
 			-- Make sure the unit_name is not in use by any internal or external units:
 
 			-- Test occurence in external units:
 			if not inserted then
-				log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
+				log (SEVERITY_ERROR, "unit name " & to_string (unit_name)
 					& " already used by another external unit !");
 				raise constraint_error;
 			end if;
 
 			-- Make sure the unit name is not in use by any internal unit:
 			if pac_units_internal.contains (units_internal, unit_name) then
-				log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
+				log (SEVERITY_ERROR, "unit name " & to_string (unit_name)
 					& " already used by an internal unit !");
 				raise constraint_error;
-			end if;			
+			end if;
 		end check_for_name_in_use;
-		
-		
-		
+
+
+
 		procedure clean_up is begin
 			-- clean up for next unit
 			unit_name := to_unit_name ("");
-			-- CS unit_external_model_name := 
-			unit_external := (others => <>);		
+			-- CS unit_external_model_name :=
+			unit_external := (others => <>);
 		end clean_up;
-		
-		
+
+
 	begin
-		
-		read_symbol_model;			
-		
+
+		read_symbol_model;
+
 		-- Get the cursor to the symbol model:
 		unit_external.model_cursor := get_symbol_model (unit_external_model_name);
-		
+
 		add_to_device;
-		
+
 		check_for_name_in_use;
 
 		clean_up;
 	end insert_unit_external;
-		
-		
-	
+
+
+
 end et_device_read_unit;

@@ -49,23 +49,23 @@ with et_commit;
 
 package body et_board_ops_frame is
 
-	
+
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_drawing_frame.type_position; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is 
+			module		: in out type_generic_module)
+		is
 			pragma unreferenced (module_name);
 			unused_p1 : et_drawing_frame.type_position;
 		begin
@@ -80,9 +80,9 @@ package body et_board_ops_frame is
 			end case;
 		end set_origin;
 
-		
+
 		use et_drawing_frame;
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -92,19 +92,19 @@ package body et_board_ops_frame is
 
 			when RELATIVE =>
 				log (text => "module " & to_string (key (module_cursor)) &
-					 " move drawing frame origin by " & to_string (point), 
+					 " move drawing frame origin by " & to_string (point),
 					 level => log_threshold);
 		end case;
 
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -114,7 +114,7 @@ package body et_board_ops_frame is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_drawing_frame;
@@ -124,41 +124,41 @@ package body et_board_ops_frame is
 
 
 
-	
+
 
 
 
 	function get_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)								
+		log_threshold	: in type_log_level)
 		return et_drawing_frame.type_position
 	is
 		result : et_drawing_frame.type_position;
 
-		
+
 		procedure get_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module 		: in type_generic_module) 
+			module 		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			result := get_position (module.board.frame.frame);
 		end get_origin;
 
-		
+
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
 			" query drawing frame position",
 		level => log_threshold);
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> get_origin'access);
-		
+
 		return result;
 	end get_frame_position;
 
-		
+
 
 
 
@@ -169,38 +169,38 @@ package body et_board_ops_frame is
 	is
 		use et_drawing_frame;
 
-		
+
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module 		: in out type_generic_module) 
+			module 		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			set_position (module.board.frame.frame, position);
 		end set_origin;
 
-		
+
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
 			 " set drawing frame position"
 			 & to_string (position),
 		level => log_threshold);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> set_origin'access);
-		
+
 	end set_frame_position;
 
 
-	
+
 end et_board_ops_frame;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

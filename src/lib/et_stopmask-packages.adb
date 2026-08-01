@@ -84,46 +84,46 @@ package body et_stopmask.packages is
 		stopmask	: in out type_stopmask_both_sides;
 		zone		: in type_stop_zone;
 		face		: in type_face)
-	is 
+	is
 		use pac_stop_zones;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (stopmask.top.zones, zone);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (stopmask.bottom.zones, zone);
 		end case;
 	end;
 
 
-	
+
 
 	procedure add_text (
 		stopmask	: in out type_stopmask_both_sides;
 		text		: in type_stop_text;
 		face		: in type_face)
-	is 
+	is
 		use pac_stop_texts;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (stopmask.top.texts, text);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (stopmask.bottom.texts, text);
 		end case;
 	end;
 
 
-	
+
 end et_stopmask.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

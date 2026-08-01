@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -56,10 +56,10 @@ package et_board_ops_keepout is
 
 	use pac_generic_modules;
 
-	
+
 
 -- ZONES:
-	
+
 	-- Draws a keepout zone.
 	-- The given zone can consist of a single segment or a
 	-- fragment of a zone contour.
@@ -67,7 +67,7 @@ package et_board_ops_keepout is
 	--    then the procedure serches for already existing zones
 	--    which are incomplete (or open) and tries to append or prepend
 	--    the given zone to one of the existing open zones.
-	-- 2. If this attempt fails, then the given zone is regarded as 
+	-- 2. If this attempt fails, then the given zone is regarded as
 	--    a new zone.
 	-- 3. If all existing zones are already closed, then the given zone
 	--    is regarded a a new zone and added to the existing zones.
@@ -78,7 +78,7 @@ package et_board_ops_keepout is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 
 	-- This composite type helps to identify a
@@ -97,10 +97,10 @@ package et_board_ops_keepout is
 		segment			: in type_object_segment;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-	
 
 
-	-- Sets the proposed-flag of all line and arc segments 
+
+	-- Sets the proposed-flag of all line and arc segments
 	-- of a zone which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
@@ -113,20 +113,20 @@ package et_board_ops_keepout is
 
 
 
-	-- Clears the proposed-flag and the selected-flag 
+	-- Clears the proposed-flag and the selected-flag
 	-- of all line and arc segments:
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Returns the first line or arc segment according to the given flag.
 	-- If no segment has been found, then the return is no_element:
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment;
 
@@ -154,11 +154,11 @@ package et_board_ops_keepout is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 
 -- OBJECTS:
-	
+
 
 	-- When objects are handled then we need these
 	-- categories in order to store them in indefinite_doubly_linked_lists:
@@ -167,13 +167,13 @@ package et_board_ops_keepout is
 		CAT_ZONE_SEGMENT
 		);
 
-	
-	-- This type wraps segments of zones, lines, arcs, circles, 
+
+	-- This type wraps segments of zones, lines, arcs, circles,
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_ZONE_SEGMENT =>
 				segment		: type_object_segment;
 		end case;
@@ -187,16 +187,16 @@ package et_board_ops_keepout is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
 
-	
+
+
 
 	-- Returns the first object (line, arc, circle, zone segment, text,
 	-- placeholder) according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
@@ -205,10 +205,10 @@ package et_board_ops_keepout is
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
-									  
+
 
 	-- Modifies the status flag of an object:
 	procedure modify_status (
@@ -217,7 +217,7 @@ package et_board_ops_keepout is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -238,27 +238,27 @@ package et_board_ops_keepout is
 
 
 	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
+	-- the proposed-flag and the selected-flag
 	-- of texts, lines, arcs, circles and zone segments:
 	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 end et_board_ops_keepout;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

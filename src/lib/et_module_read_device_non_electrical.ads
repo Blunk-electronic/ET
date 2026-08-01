@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  ToDo: 
+--  ToDo:
 -- - clean up
 -- - rename global subroutines
 
@@ -48,13 +48,13 @@ with et_logging;				use et_logging;
 package et_module_read_device_non_electrical is
 
 	use pac_generic_modules;
-		
+
 
 	procedure read_device_non_electrical (
 		line : in type_fields_of_line);
 
-	
-	
+
+
 	procedure insert_device_non_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
@@ -71,18 +71,18 @@ package et_module_read_device_non_electrical is
 	procedure read_device_text_placeholder (
 		line : in type_fields_of_line);
 
-	
+
 	procedure insert_package_placeholder;
-	
+
 
 	procedure insert_placeholders;
 
-	
+
 end et_module_read_device_non_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

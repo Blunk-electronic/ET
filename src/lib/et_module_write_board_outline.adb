@@ -55,45 +55,45 @@ with et_file_write;					use et_file_write;
 
 
 package body et_module_write_board_outline is
-	
+
 	use pac_generic_modules;
 	use et_board_geometry.pac_file_rw;
 	-- use pac_geometry_2;
 	-- use pac_contours;
-		
-			
+
+
 
 	procedure write_board_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_board_holes;
 		use pac_holes;
 
 
-		
+
 		procedure query_hole (
 			hole : in type_hole)
 		is begin
 			log (text => "hole", level => log_threshold + 2);
 			-- CS log lower left corner
-			section_mark (section_hole, HEADER);		
-			write_polygon_segments (hole);		
-			section_mark (section_hole, FOOTER);		
+			section_mark (section_hole, HEADER);
+			write_polygon_segments (hole);
+			section_mark (section_hole, FOOTER);
 		end;
 
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			hole_cursor : pac_holes.cursor := module.board.board_contour.holes.first;
 
 		begin
 			-- Write outer contour:
 			log (text => "outer contour", level => log_threshold + 1);
-			
+
 			section_mark (section_outline, HEADER);
 			write_polygon_segments (module.board.board_contour.outline);
 			section_mark (section_outline, FOOTER);
@@ -106,32 +106,32 @@ package body et_module_write_board_outline is
 				next (hole_cursor);
 			end loop;
 			log_indentation_down;
-			
+
 		end query_module;
 
-								   
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write board outline",
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		section_mark (section_pcb_contours, HEADER);
-		query_element (module_cursor, query_module'access);		
+		query_element (module_cursor, query_module'access);
 		section_mark (section_pcb_contours, FOOTER);
 
 		log_indentation_down;
 	end write_board_outline;
 
-	
-	
+
+
 end et_module_write_board_outline;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

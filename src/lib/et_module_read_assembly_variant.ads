@@ -64,7 +64,7 @@ package et_module_read_assembly_variant is
 	procedure read_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_fields_of_line);
-	
+
 
 
 	procedure insert_assembly_variant (
@@ -73,19 +73,19 @@ package et_module_read_assembly_variant is
 
 
 
-	-- Tests whether the submodules provides the assembly variants as 
+	-- Tests whether the submodules provides the assembly variants as
 	-- specified in module file section ASSEMBLY_VARIANTS.
 	procedure test_assembly_variants_of_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_module_read_assembly_variant;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

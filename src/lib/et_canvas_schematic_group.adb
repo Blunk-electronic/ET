@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 --
--- 
+--
 --
 
 
@@ -52,8 +52,8 @@ package body et_canvas_schematic_group is
 
 	use et_canvas_schematic.pac_canvas;
 
-	
-	
+
+
 	procedure drag_group (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -69,7 +69,7 @@ package body et_canvas_schematic_group is
 
 			-- Clear all "moving"-flags:
 			set_group_as_not_moving (active_module, log_threshold);
-			
+
 			-- Compute the final offset by which the
 			-- group is to be moved:
 			offset := point - object_point_of_attack;
@@ -77,36 +77,36 @@ package body et_canvas_schematic_group is
 			-- Do the final drag with the group:
 			drag_group (active_module,
 				offset, DO_COMMIT, log_threshold);
-				
+
 			-- Prepare for a new editing process;
-			reset_editing_process; 
+			reset_editing_process;
 
 			-- Clear the status bar:
 			status_clear;
 		end finalize;
-			
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
-			-- So this branch is executed on the 
+			-- So this branch is executed on the
 			-- first call of this procedure:
-			
+
 			-- Set the tool being used:
 			object_tool := tool;
 
 			-- Set the point where the group is
 			-- grabbed (or attacked):
 			object_point_of_attack := point;
-			
+
 			-- Set selected objects as "moving":
 			set_group_as_moving (active_module, log_threshold);
 
 			-- For the subprograms that draw objects
 			-- of a moving group:
 			set_group_moving;
-			
+
 			set_edit_process_running;
 
 		else
@@ -116,7 +116,6 @@ package body et_canvas_schematic_group is
 		end if;
 	end drag_group;
 
-	
 
 
 
@@ -124,7 +123,8 @@ package body et_canvas_schematic_group is
 
 
 
-	
+
+
 
 
 	procedure copy_group (
@@ -146,38 +146,38 @@ package body et_canvas_schematic_group is
 
 			-- Do the final copying with the group:
 			copy_group (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				sheet			=> 0, -- we stay on the current sheet
 				offset			=> offset,
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
-				
+
 			-- Prepare for a new editing process;
-			reset_editing_process; 
+			reset_editing_process;
 
 			-- Clear the status bar:
 			status_clear;
 		end finalize;
-			
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
-			-- So this branch is executed on the 
+			-- So this branch is executed on the
 			-- first call of this procedure:
-			
+
 			-- Set the tool being used:
 			object_tool := tool;
 
 			-- Set the point where the group is
 			-- grabbed (or attacked):
 			object_point_of_attack := point;
-			
+
 			-- For the subprograms that draw objects
 			-- of a group being copied:
 			set_group_being_copied;
-			
+
 			set_edit_process_running;
 
 		else
@@ -193,7 +193,7 @@ package body et_canvas_schematic_group is
 
 
 
-	
+
 
 
 	procedure paste_group (
@@ -215,38 +215,38 @@ package body et_canvas_schematic_group is
 
 			-- Do the final pasting with the group:
 			paste_group (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				sheet			=> 0, -- we stay on the current sheet
 				offset			=> offset,
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
-				
+
 			-- Prepare for a new editing process;
-			reset_editing_process; 
+			reset_editing_process;
 
 			-- Clear the status bar:
 			status_clear;
 		end finalize;
-			
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
-			-- So this branch is executed on the 
+			-- So this branch is executed on the
 			-- first call of this procedure:
-			
+
 			-- Set the tool being used:
 			object_tool := tool;
 
 			-- Set the point where the group is
 			-- grabbed (or attacked):
 			object_point_of_attack := point;
-			
+
 			-- For the subprograms that draw objects
 			-- of a group being pasted:
 			set_group_not_being_pasted;
-			
+
 			set_edit_process_running;
 
 		else
@@ -256,12 +256,12 @@ package body et_canvas_schematic_group is
 		end if;
 	end paste_group;
 
-	
+
 end et_canvas_schematic_group;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

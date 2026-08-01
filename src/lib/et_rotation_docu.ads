@@ -42,12 +42,12 @@ package et_rotation_docu is
 
 	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
 	-- CS use prefix
-	
+
 	-- Converts a string to a type_rotation_documentation:
 	function to_rotation_documentation (
 		rotation : in string)
 		return type_rotation_documentation;
-	
+
 
 	-- Toggles between HORIZONTAL and VERTICAL:
 	procedure toggle_rotation (rotation : in out type_rotation_documentation);
@@ -58,7 +58,7 @@ end et_rotation_docu;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

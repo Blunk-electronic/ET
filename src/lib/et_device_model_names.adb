@@ -46,36 +46,36 @@ package body et_device_model_names is
 	function get_length (
 		model_name : in pac_device_model_file.bounded_string)
 		return natural
-	is 
+	is
 		use pac_device_model_file;
 	begin
 		return natural (length (model_name));
 	end get_length;
 
 
-	
-	
-	function to_string (name : in pac_device_model_file.bounded_string) 
+
+
+	function to_string (name : in pac_device_model_file.bounded_string)
 		return string is
 	begin
 		return pac_device_model_file.to_string (name);
 	end;
 
 
-	
-	function to_file_name (name : in string) 
+
+	function to_file_name (name : in string)
 		return pac_device_model_file.bounded_string is
 	begin
 		return pac_device_model_file.to_bounded_string (name);
 	end;
-	
 
-		
+
+
 end et_device_model_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

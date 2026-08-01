@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -52,20 +52,20 @@ package body et_net_ports is
 		use pac_device_ports;
 		use pac_net_submodule_ports;
 		use pac_netchanger_ports;
-		
+
 		result : type_net_ports := left;
 
 	begin
 		union (result.devices, right.devices);
 		union (result.submodules, right.submodules);
 		union (result.netchangers, right.netchangers);
-		
+
 		return result;
 	end merge_ports;
 
 
 
-	
+
 	procedure merge_ports (
 		target	: in out type_net_ports;
 		source	: in type_net_ports)
@@ -76,8 +76,8 @@ package body et_net_ports is
 		target := scratch;
 	end;
 
-	
-	
+
+
 
 	function in_ports (
 		ports	: in type_net_ports;
@@ -90,7 +90,7 @@ package body et_net_ports is
 		port_cursor : pac_netchanger_ports.cursor;
 	begin
 		port_cursor := ports.netchangers.find (port);
-		
+
 		if has_element (port_cursor) then
 			result := true;
 		end if;
@@ -113,7 +113,7 @@ package body et_net_ports is
 		port_cursor : pac_net_submodule_ports.cursor;
 	begin
 		port_cursor := ports.submodules.find (port);
-		
+
 		if has_element (port_cursor) then
 			result := true;
 		end if;
@@ -123,11 +123,11 @@ package body et_net_ports is
 
 
 
-	
+
 
 	function no_ports (
-		ports : in type_net_ports) 
-		return boolean 
+		ports : in type_net_ports)
+		return boolean
 	is
 		result : boolean := true;
 		use pac_device_ports;
@@ -149,13 +149,13 @@ package body et_net_ports is
 		return result;
 	end no_ports;
 
-	
+
 
 
 	function get_port_count (
 		ports : in type_net_ports)
 		return natural
-	is 
+	is
 		result : natural := 0;
 
 		d, s, n : count_type := 0;
@@ -172,7 +172,7 @@ package body et_net_ports is
 		return result;
 	end;
 
-		
+
 
 
 
@@ -191,7 +191,7 @@ package body et_net_ports is
 		return natural (ports.submodules.length);
 	end;
 
-	
+
 	function get_port_count_netchangers (
 		ports : in type_net_ports)
 		return natural
@@ -199,13 +199,13 @@ package body et_net_ports is
 		return natural (ports.netchangers.length);
 	end;
 
-	
-	
+
+
 end et_net_ports;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

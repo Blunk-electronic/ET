@@ -49,41 +49,41 @@ with et_fonts;					use et_fonts;
 
 
 package et_vias is
-	
+
 	use pac_polygons;
 	use pac_geometry_2;
 
-	
+
 	type type_micro_vias_allowed is (NO, YES);
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
 	function to_string (allowed : in type_micro_vias_allowed) return string;
-	
-	
+
+
 
 	-- For blind or buried vias use this type. This is about inner layers only.
 	subtype type_via_layer is type_signal_layer range
 		type_signal_layer'first + 1 -- the topmost inner layer
-		.. 
+		..
 		type_signal_layer'last - 1; -- the deepest inner layer.
 		-- NOTE: The upper end of the range defined here does not
 		-- suffice. The deepest inner layer of a particular buried or blind
 		-- via must be validated against the pcb layer stack of the board.
-		
-	
+
+
 	type type_buried_layers is record
 		-- The topmost signal layer of the via:
 		upper	: type_via_layer := type_via_layer'first;
 
 		-- The deepest signal layer of the via:
 		lower	: type_via_layer := type_via_layer'first;
-		-- NOTE: It is reasonable to use as default the 
+		-- NOTE: It is reasonable to use as default the
 		-- same as for the upper layer. The last value in
-		-- range type_via_layer would always produce a lower 
+		-- range type_via_layer would always produce a lower
 		-- layer much deeper than the deepest layer of the stack.
 	end record;
-	
 
-	
+
+
 	-- Converts two strings like "2" and "6" to a type_buried_layers.
 	-- Checks the layers. The layers must be inner layers. Otherwise
 	-- exception error is raised.
@@ -92,10 +92,10 @@ package et_vias is
 		bottom			: in type_signal_layer) -- 16
 		return type_buried_layers;
 
-	
+
 	function to_string (layers : in type_buried_layers) return string;
 
-	
+
 	type type_via_category is (
 		THROUGH,
 		BURIED,
@@ -106,20 +106,20 @@ package et_vias is
 	via_category_default : constant type_via_category := THROUGH;
 
 
-	
+
 	function to_string (category : in type_via_category) return string;
 
 	function to_via_category (category : in string) return type_via_category;
-	
 
-	
+
+
 	type type_via (category : type_via_category) is new type_drill with record
 
-		-- Whatever the via category, there is always a restring 
+		-- Whatever the via category, there is always a restring
 		-- in inner layers (mostly wider than restring_outer).
 		-- Exception: One or two layer boards do not have innner restring.
 		restring_inner	: type_restring_width;
-		
+
 		case category is
 			when THROUGH =>
 				-- Restring in outer layers (top/bottom)
@@ -132,25 +132,25 @@ package et_vias is
 
 				-- the deepest layer of the via:
 				lower			: type_via_layer; -- CS rename to deepest
-				
+
 				-- CS: stop mask open
-				
+
 			when BLIND_DRILLED_FROM_BOTTOM =>
 				restring_bottom	: type_restring_width;
 
 				-- the topmost layer of the via:
 				upper			: type_via_layer; -- CS rename to highest
-				
+
 				-- CS: stop mask open
-				
+
 			when BURIED =>
 				layers : type_buried_layers;
-				
+
 		end case;
 	end record;
 
 
-	
+
 	-- returns the properties of the given via as string:
 	function to_string (via : in type_via) return string;
 
@@ -162,7 +162,7 @@ package et_vias is
 		return type_area;
 
 
-	
+
 
 	-- Returns true if the given buried via uses the given layer.
 	-- The given via must be of category BURIED. Otherwise an exception
@@ -174,7 +174,7 @@ package et_vias is
 		layer	: in type_signal_layer)
 		return boolean;
 
-	
+
 	-- Returns true if the given blind via uses the given layer.
 	-- The given via must be of category BLIND_DRILLED_FROM_TOP or
 	-- BLIND_DRILLED_FROM_BOTTOM. Otherwise an exception will be raised.
@@ -186,7 +186,7 @@ package et_vias is
 		bottom	: in type_signal_layer := type_signal_layer'last)
 		return boolean;
 
-	
+
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 	use pac_vias;
@@ -194,20 +194,20 @@ package et_vias is
 
 	-- Returns the position of a via as a string:
 	function to_string (
-		via : in pac_vias.cursor) 
+		via : in pac_vias.cursor)
 		return string;
 
 
 	function get_position (
 		via : in pac_vias.cursor)
 		return type_vector_model;
-	
+
 
 	function is_selected (
 		via : in pac_vias.cursor)
 		return boolean;
 
-	
+
 	function is_proposed (
 		via : in pac_vias.cursor)
 		return boolean;
@@ -217,8 +217,8 @@ package et_vias is
 		via : in pac_vias.cursor)
 		return boolean;
 
-	
-	
+
+
 	-- Iterates the vias. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		vias	: in pac_vias.list;
@@ -231,7 +231,7 @@ package et_vias is
 	via_text_font : constant type_font :=
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
-	
+
 	-- This constant defines the text size of the layer numbers
 	-- and net names
 	-- that are displayed in the center of the via.
@@ -247,13 +247,13 @@ package et_vias is
 	-- and drill size.
 	text_position_layer_and_drill_factor : constant type_distance_positive := 0.4;
 
-	
+
 	type type_user_specific_drill_size is record
 		active	: boolean := false;
 		size	: type_drill_size := type_drill_size'first;
 	end record;
 
-	
+
 	type type_user_specific_restring is record
 		active	: boolean := false;
 		width	: type_restring_width := type_restring_width'first;
@@ -269,7 +269,7 @@ package et_vias is
 
 
 
-	-- Builds a polygon from the given via position, 
+	-- Builds a polygon from the given via position,
 	-- restring and diameter:
 	function to_polygon (
 		position	: in type_vector_model;
@@ -277,13 +277,13 @@ package et_vias is
 		diameter	: in type_drill_size;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
-	
-		
+
+
 end et_vias;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

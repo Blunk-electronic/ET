@@ -58,19 +58,19 @@ package body et_package_write_keepout is
 
 
 	use et_board_geometry.pac_file_rw;
-	
+
 	use pac_keepout_zones;
 	use pac_keepout_cutouts;
 
-	
+
 
 	procedure write_keepout (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
 
-		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 
+		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -80,7 +80,7 @@ package body et_package_write_keepout is
 		end write_polygon;
 
 
-		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
+		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is
 			use pac_keepout_cutouts;
 		begin
 			section_mark (section_cutout_zone, HEADER);
@@ -90,8 +90,8 @@ package body et_package_write_keepout is
 			section_mark (section_cutout_zone, FOOTER);
 		end;
 
-		
-		
+
+
 	begin
 		log (text => "write keepout", level => log_threshold);
 
@@ -102,16 +102,16 @@ package body et_package_write_keepout is
 		iterate (packge.keepout.top.zones, write_polygon'access);
 		iterate (packge.keepout.top.cutouts, write_cutout'access);
 		section_mark (section_top, FOOTER);
-		
+
 		-- bottom
 		section_mark (section_bottom, HEADER);
-		iterate (packge.keepout.bottom.zones, write_polygon'access);			
+		iterate (packge.keepout.bottom.zones, write_polygon'access);
 		iterate (packge.keepout.bottom.cutouts, write_cutout'access);
 		section_mark (section_bottom, FOOTER);
 
-		section_mark (section_keepout, FOOTER);				
+		section_mark (section_keepout, FOOTER);
 
 	end write_keepout;
 
-	
+
 end et_package_write_keepout;

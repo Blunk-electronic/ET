@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   To Do: 
+--   To Do:
 --
 --
 
@@ -54,7 +54,7 @@ with et_netlist_category;
 with et_netlist_name;
 with et_string_processing;
 with et_device_name;
-with et_port_direction;			
+with et_port_direction;
 with et_port_names;
 with et_terminal_name;
 with et_module_instance;
@@ -68,14 +68,14 @@ package body et_netlist_cat_1 is
 	function get_net_count (
 		netlist : in pac_netlist_cat_1.map)
 		return string
-	is 
+	is
 		ct : count_type := 0;
 	begin
-		ct := netlist.length;		
+		ct := netlist.length;
 		return count_type'image (ct);
 	end;
-	
-	
+
+
 
 
 
@@ -97,8 +97,8 @@ package body et_netlist_cat_1 is
 
 
 
-	
-	
+
+
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
@@ -106,7 +106,7 @@ package body et_netlist_cat_1 is
 		log_threshold	: in type_log_level)
 	is
 		use et_netlist_name;
-		
+
 		-- The netlist file:
 		file_name	: pac_netlist_file_name.bounded_string;
 		file_handle	: ada.text_io.file_type;
@@ -114,15 +114,15 @@ package body et_netlist_cat_1 is
 
 		-- Composes the name of the file to
 		-- be created and written to:
-		procedure set_file_name is 
+		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
 			use pac_assembly_variant_name;
 			use et_export;
 
-			module_name : constant pac_module_name.bounded_string := 
+			module_name : constant pac_module_name.bounded_string :=
 				get_module_name (module_cursor);
-			
+
 		begin
 			if is_default (variant) then
 				file_name := to_file_name (
@@ -139,62 +139,62 @@ package body et_netlist_cat_1 is
 						containing_directory	=> directory_export & dir_separator & directory_cam &
 													dir_separator & directory_netlists,
 
-						name					=> to_string (module_name) & "_" & 
+						name					=> to_string (module_name) & "_" &
 													to_variant (variant),
-						
+
 						extension				=> extension_netlist));
 			end if;
-		end set_file_name;	
+		end set_file_name;
 
 
 
 		-- Writes a nice header in the netlist file:
-		procedure write_header is 
+		procedure write_header is
 			use et_system_info;
 			use et_time;
 			use et_string_processing;
 			use et_netlist_category;
 		begin
-			put_line (file_handle, comment_mark 
+			put_line (file_handle, comment_mark
 				& " " & system_name & " " & to_string (NETLIST_CAT_1)
 				& " format version " & format_version);
-				
-			put_line (file_handle, comment_mark 
+
+			put_line (file_handle, comment_mark
 				& " " & get_date);
-				
+
 			put_line (file_handle, comment_mark
 				& " module " & to_string (module_cursor));
-				
-			put_line (file_handle, comment_mark 
+
+			put_line (file_handle, comment_mark
 				& " " & row_separator_double);
-			
-			put_line (file_handle, comment_mark 
+
+			put_line (file_handle, comment_mark
 				& " net count total" & get_net_count (netlist));
-				
+
 			-- CS: statistics about pin count ?
-			
+
 			put_line (file_handle, comment_mark);
 			put_line (file_handle, comment_mark & " legend:");
 			put_line (file_handle, comment_mark & "  net name");
-			put_line (file_handle, comment_mark 
+			put_line (file_handle, comment_mark
 				& "  device name port characteristic terminal/pin/pad");
-				
-			put_line (file_handle, comment_mark 
+
+			put_line (file_handle, comment_mark
 				& "  submodule name port"); -- CS direction, characteristic
-				
-			put_line (file_handle, comment_mark 
+
+			put_line (file_handle, comment_mark
 				& "  netchanger name port ");
-				
+
 			put_line (file_handle, comment_mark);
 
-			put_line (file_handle, comment_mark 
+			put_line (file_handle, comment_mark
 				& " " & row_separator_single);
 		end write_header;
 
 
 
 		-- Writes a nice footer in the netlist file:
-		procedure write_footer is 
+		procedure write_footer is
 			use et_string_processing;
 		begin
 			new_line (file_handle);
@@ -211,28 +211,28 @@ package body et_netlist_cat_1 is
 			use pac_netlist_cat_1;
 			net_cursor : pac_netlist_cat_1.cursor := netlist.first;
 
-			
+
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net_ports_cat_1)
-			is			
+			is
 				use ada.strings;
 				separator : constant character := space;
 
-			
+
 				-- This procedure writes the ports of
 				-- the devices which are connected with the
 				-- candidate net:
-				procedure write_devices is 
+				procedure write_devices is
 
 					use pac_device_ports_extended;
 					device_cursor : pac_device_ports_extended.cursor :=
 						net.devices.first;
 
-				
+
 					procedure query_device (
 						device : in type_device_port_extended)
-					is	
+					is
 						use et_device_name;
 						use et_port_direction;
 						use et_port_names;
@@ -246,18 +246,18 @@ package body et_netlist_cat_1 is
 							& to_string (device.terminal));
 						-- CS characteristics
 					end query_device;
-				
-				
+
+
 				begin
 					-- Iterate through the devices of the candidate net:
-					while has_element (device_cursor) loop				
+					while has_element (device_cursor) loop
 						query_element (device_cursor, query_device'access);
 						next (device_cursor);
 					end loop;
 				end write_devices;
-				
-				
-				
+
+
+
 				-- This procedure writes the ports of
 				-- the submodules which are connected with the
 				-- candidate net:
@@ -265,11 +265,11 @@ package body et_netlist_cat_1 is
 					use pac_submodule_ports_extended;
 					submodule_cursor : pac_submodule_ports_extended.cursor :=
 						net.submodules.first;
-						
-						
+
+
 					procedure query_submodule (
 						submodule : type_submodule_port_extended)
-					is 
+					is
 						use et_module_instance;
 					begin
 						put_line (file_handle, -- OSC1 RF_OUT
@@ -278,7 +278,7 @@ package body et_netlist_cat_1 is
 							& to_string (submodule.port));
 							-- CS direction, characteristics
 					end query_submodule;
-					
+
 
 				begin
 					-- Iterate through the submodules of the candidate net:
@@ -287,10 +287,10 @@ package body et_netlist_cat_1 is
 						next (submodule_cursor);
 					end loop;
 				end write_submodules;
-				
-				
 
-				
+
+
+
 				-- This procedure writes the ports of
 				-- the netchangers which are connected with the
 				-- candidate net:
@@ -298,11 +298,11 @@ package body et_netlist_cat_1 is
 					use pac_netchanger_ports;
 					netchanger_cursor : pac_netchanger_ports.cursor :=
 						net.netchangers.first;
-						
-						
+
+
 					procedure query_netchanger (
 						netchanger : type_port_netchanger)
-					is 
+					is
 						use et_netchangers;
 						use et_netchangers.schematic;
 					begin
@@ -311,7 +311,7 @@ package body et_netlist_cat_1 is
 							& get_netchanger_name (netchanger.index) & separator
 							& to_string (netchanger.port));
 					end query_netchanger;
-					
+
 
 				begin
 					-- Iterate through the netchangers of the candidate net:
@@ -321,80 +321,80 @@ package body et_netlist_cat_1 is
 					end loop;
 				end write_netchangers;
 
-				
-				
+
+
 			begin
 				log (text => "net " & to_string (net_name),
 					level => log_threshold + 1);
 
 				new_line (file_handle);
 				-- put_line (file_handle, comment_mark & " -------");
-				put_line (file_handle, 
+				put_line (file_handle,
 					identifier_net & separator
 					& to_string (net_name));
 
-				write_devices;				
-				write_submodules;				
-				write_netchangers;	
+				write_devices;
+				write_submodules;
+				write_netchangers;
 			end query_net;
 
-			
+
 		begin
 			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
 		end write_nets;
-		
-		
-		
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " assembly variant " & to_variant (variant)
 			& " write netlist",
 			-- CS full file name and target directory
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		set_file_name;
 
 		create (
 			file => file_handle,
-			mode => out_file, 
+			mode => out_file,
 			name => to_string (file_name));
 
 		write_header;
 		write_nets;
 		write_footer;
-		
+
 		close (file_handle);
 
 		log_indentation_down;
 
-		
+
 		exception
 			when others =>
 				if is_open (file_handle) then
 					close (file_handle);
 				end if;
-				
+
 				log_indentation_reset;
 				-- log (text => ada.exceptions.exception_information (event), console => true);
 				-- raise;
 
-		
+
 	end write_netlist;
-	
-	
-	
-	
+
+
+
+
 end et_netlist_cat_1;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

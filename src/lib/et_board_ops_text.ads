@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;				use et_generic_modules;
 
@@ -50,21 +50,21 @@ package et_board_ops_text is
 
 	use pac_generic_modules;
 
-	
+
 	-- Maps from the meaning of a text placeholder
 	-- to its actutal content:
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)										
+		meaning 		: in type_placeholder_meaning_non_conductor)
 		return pac_text_content.bounded_string;
-	
-	
-											
+
+
+
 end et_board_ops_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

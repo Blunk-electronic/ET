@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -66,11 +66,11 @@ package body et_board_ops_keepout is
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			c : pac_keepout_zones.cursor;
@@ -95,7 +95,7 @@ package body et_board_ops_keepout is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -115,7 +115,7 @@ package body et_board_ops_keepout is
 						module.board.keepout.top.zones.append (zone);
 					end if;
 
-					
+
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
 					c := module.board.keepout.bottom.zones.first;
@@ -137,8 +137,8 @@ package body et_board_ops_keepout is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " add keepout zone " 
+		log (text => "module " & to_string (module_cursor)
+			 & " add keepout zone "
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
@@ -150,7 +150,7 @@ package body et_board_ops_keepout is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -160,8 +160,8 @@ package body et_board_ops_keepout is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end add_zone;
 
@@ -180,21 +180,21 @@ package body et_board_ops_keepout is
 		use pac_contours;
 		use pac_segments;
 		use pac_keepout_zones;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
+
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is begin
@@ -210,28 +210,28 @@ package body et_board_ops_keepout is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
 			-- Search the given segment according to its
 			-- zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.keepout.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.keepout.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modify status of "
@@ -241,7 +241,7 @@ package body et_board_ops_keepout is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -253,7 +253,7 @@ package body et_board_ops_keepout is
 
 
 
-	
+
 
 
 	procedure propose_segments (
@@ -266,7 +266,7 @@ package body et_board_ops_keepout is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_keepout_zones;
@@ -275,7 +275,7 @@ package body et_board_ops_keepout is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -287,14 +287,14 @@ package body et_board_ops_keepout is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -311,8 +311,8 @@ package body et_board_ops_keepout is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
@@ -323,11 +323,11 @@ package body et_board_ops_keepout is
 							container	=> module.board.keepout.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
 
-					
+
 				when BOTTOM =>
 					zc := module.board.keepout.bottom.zones.first;
 
@@ -336,13 +336,13 @@ package body et_board_ops_keepout is
 							container	=> module.board.keepout.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
-			end case;	
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " propose segments in" & to_string (catch_zone)
@@ -359,14 +359,14 @@ package body et_board_ops_keepout is
 	end propose_segments;
 
 
-	
 
 
 
-	
 
-	
-	
+
+
+
+
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -374,7 +374,7 @@ package body et_board_ops_keepout is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_keepout_zones;
@@ -383,7 +383,7 @@ package body et_board_ops_keepout is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -391,14 +391,14 @@ package body et_board_ops_keepout is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -415,8 +415,8 @@ package body et_board_ops_keepout is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			zc := module.board.keepout.top.zones.first;
 
@@ -425,11 +425,11 @@ package body et_board_ops_keepout is
 					container	=> module.board.keepout.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 
-					
+
 			zc := module.board.keepout.bottom.zones.first;
 
 			while zc /= pac_keepout_zones.no_element loop
@@ -437,12 +437,12 @@ package body et_board_ops_keepout is
 					container	=> module.board.keepout.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " reset proposed segments of zones in keepout",
@@ -463,11 +463,11 @@ package body et_board_ops_keepout is
 
 
 
-	
+
 
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
@@ -477,22 +477,22 @@ package body et_board_ops_keepout is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_keepout_zones;
-			
+
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
-			
-			
-			procedure query_zone (z : in pac_keepout_zones.cursor) is 
+
+
+			procedure query_zone (z : in pac_keepout_zones.cursor) is
 
 				procedure query_segment (
-					c : in pac_segments.cursor) 
+					c : in pac_segments.cursor)
 				is begin
 					case flag is
 						when PROPOSED =>
@@ -519,16 +519,16 @@ package body et_board_ops_keepout is
 							null; -- CS
 					end case;
 				end query_segment;
-				
-				
+
+
 				procedure query_segments (z : in type_keepout_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
-						proceed		=> proceed'access);				
+						proceed		=> proceed'access);
 				end query_segments;
 
-				
+
 			begin
 				if is_circular (z) then
 					null; -- CS
@@ -537,41 +537,41 @@ package body et_board_ops_keepout is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
 				zones	=> module.board.keepout.top.zones,
-				process	=> query_zone'access, 
+				process	=> query_zone'access,
 				proceed	=> proceed'access);
 
-			
+
 			-- If nothing found, iterate the bottom layer:
 			if proceed then
 				face := BOTTOM;
-				
+
 				iterate (
 					zones	=> module.board.keepout.bottom.zones,
-					process	=> query_zone'access, 
+					process	=> query_zone'access,
 					proceed	=> proceed'access);
 
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -581,7 +581,7 @@ package body et_board_ops_keepout is
 
 
 
-	
+
 
 
 
@@ -598,15 +598,15 @@ package body et_board_ops_keepout is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_keepout_zones;
-				
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -615,16 +615,16 @@ package body et_board_ops_keepout is
 				move_segment (s, point_of_attack, destination);
 			end do_it;
 
-			
+
 			procedure query_zone (
 				zone : in out type_keepout_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
-					-- Locate the given segment in 
+					-- Locate the given segment in
 					-- the candidate zone:
 					update_element (
 						container	=> zone.contour.segments,
@@ -633,28 +633,28 @@ package body et_board_ops_keepout is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.keepout.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.keepout.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-				
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move keepout zone segment " & to_string (segment.segment)
@@ -669,8 +669,8 @@ package body et_board_ops_keepout is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -680,19 +680,19 @@ package body et_board_ops_keepout is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_segment;
 
 
-	
 
 
 
 
 
-	
+
+
 
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -703,56 +703,56 @@ package body et_board_ops_keepout is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		use pac_contours;
 		use pac_segments;
 		use pac_keepout_zones;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_zone (
 				zone : in out type_keepout_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
-					c := segment.segment;					
+					c := segment.segment;
 					zone.contour.segments.delete (c);
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.keepout.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.keepout.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.keepout.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " delete keepout zone segment " 
+			& " delete keepout zone segment "
 			& to_string (segment.segment),
 			level => log_threshold);
 
@@ -762,26 +762,26 @@ package body et_board_ops_keepout is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_segment;
-	
 
 
 
 
 
 
-	
+
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -789,14 +789,14 @@ package body et_board_ops_keepout is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
-	
-	
-	
+
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -815,7 +815,7 @@ package body et_board_ops_keepout is
 
 
 		-- SEARCH FOR A SEGMENT OF A ZONE:
-		
+
 		-- If there is one, then go to the end  of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
 
@@ -824,16 +824,16 @@ package body et_board_ops_keepout is
 			log (text => to_string (result_segment.segment)
 					& " face " & to_string (result_segment.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_ZONE_SEGMENT;
 		end if;
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -842,7 +842,7 @@ package body et_board_ops_keepout is
 
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
-				
+
 		end case;
 	end get_first_object;
 
@@ -851,10 +851,10 @@ package body et_board_ops_keepout is
 
 
 
-	
 
-	
-	
+
+
+
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -864,25 +864,25 @@ package body et_board_ops_keepout is
 		use pac_objects;
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_keepout_zones;
 			zone_cursor : pac_keepout_zones.cursor;
 			face : type_face := TOP;
-			
-			
+
+
 			procedure query_zone (zone : in type_keepout_zone) is
 				use pac_contours;
 				use pac_segments;
 
 				segment_cursor : pac_segments.cursor;
 
-				
-				procedure query_segment (segment : in type_segment) is 
+
+				procedure query_segment (segment : in type_segment) is
 
 					procedure collect is begin
 						result.append ((
@@ -903,30 +903,30 @@ package body et_board_ops_keepout is
 							if is_selected (segment) then
 								collect;
 							end if;
-							
+
 						when others => null; -- CS
 					end case;
 				end query_segment;
 
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
 					segment_cursor := zone.contour.segments.first;
-					
+
 					while segment_cursor /= pac_segments.no_element loop
 						query_element (segment_cursor, query_segment'access);
 						next (segment_cursor);
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			log (text => "top zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.keepout.top.zones.first;
 			while zone_cursor /= pac_keepout_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -935,12 +935,12 @@ package body et_board_ops_keepout is
 
 			log_indentation_down;
 
-			
+
 			face := BOTTOM;
 
 			log (text => "bottom zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.keepout.bottom.zones.first;
 			while zone_cursor /= pac_keepout_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -950,29 +950,29 @@ package body et_board_ops_keepout is
 			log_indentation_down;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element ( -- CS query_module is sufficient
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
-	
 
 
 
 
 
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -987,11 +987,11 @@ package body et_board_ops_keepout is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
-			
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -999,20 +999,20 @@ package body et_board_ops_keepout is
 		log_indentation_down;
 	end modify_status;
 
-	
 
 
 
 
 
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -1023,9 +1023,9 @@ package body et_board_ops_keepout is
 
 
 
-	
 
-	
+
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1036,7 +1036,7 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move keepout object " 
+			& " move keepout object "
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -1050,21 +1050,21 @@ package body et_board_ops_keepout is
 					object.segment,
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
-							
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
-	
 
 
 
 
 
 
-	
+
+
 
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1080,12 +1080,12 @@ package body et_board_ops_keepout is
 	end reset_proposed_objects;
 
 
-	
 
 
 
 
-	
+
+
 
 
 	procedure delete_object (
@@ -1103,29 +1103,29 @@ package body et_board_ops_keepout is
 		case object.cat is
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
 
 
-	
-	
-	
-	
+
+
+
+
+
 end et_board_ops_keepout;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

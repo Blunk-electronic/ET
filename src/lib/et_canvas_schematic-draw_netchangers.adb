@@ -67,7 +67,7 @@ separate (et_canvas_schematic)
 procedure draw_netchangers is
 
 	use et_colors.schematic;
-	
+
 	brightness : type_brightness := NORMAL;
 
 
@@ -81,12 +81,12 @@ procedure draw_netchangers is
 		port				: in type_netchanger_port;
 		netchanger_position	: in type_position)
 	is
-	
+
 		-- For the rotation of port and port name, the
 		-- total rotation is required:
-		rotation_total : constant type_rotation := 
+		rotation_total : constant type_rotation :=
 			add (port.rotation, get_rotation (netchanger_position));
-		
+
 		-- This is the start point of the line:
 		A : constant type_vector_model := port.position;
 
@@ -98,20 +98,20 @@ procedure draw_netchangers is
 		-- The position of the origin of the port name:
 		pos_port_name : type_vector_model;
 
-	
-	
-		-- Compute the following positions according to rotation and 
+
+
+		-- Compute the following positions according to rotation and
 		-- length of the port:
-		-- - start and end point of the line (The end points towards 
+		-- - start and end point of the line (The end points towards
 		--   the netchanger body.)
-		-- - From start and end of the line (A/B) the preliminary 
+		-- - From start and end of the line (A/B) the preliminary
 		--   position of the port name is computed.
 		--
 		-- NOTE: Regarding the position of the port name:
-		-- For the moment, the computations below leave the rotation of the 
-		-- netchanger in the schematic outside. For the moment we assume 
-		-- that the netchanger is not rotated in the schematic. We look 
-		-- at the default rotation of the ports as they are defined in 
+		-- For the moment, the computations below leave the rotation of the
+		-- netchanger in the schematic outside. For the moment we assume
+		-- that the netchanger is not rotated in the schematic. We look
+		-- at the default rotation of the ports as they are defined in
 		-- the netchanger symbol.
 		-- The final coordinates of the port name will be computed later.
 		procedure compute_positions is begin
@@ -119,32 +119,32 @@ procedure draw_netchangers is
 				-- Compute the end point. It is left of the start point:
 				set (axis => AXIS_X, value => get_x (A) - port.length, point => B);
 
-				-- Compute the position of the port name. 
+				-- Compute the position of the port name.
 				-- It is some distance left of the start point:
 				pos_port_name := A;
-				set (axis => AXIS_X, 
+				set (axis => AXIS_X,
 					value => get_x (A) - port_name_spacing_start, point => pos_port_name);
-				
+
 			elsif port.rotation = 180.0 then  -- end point points to the left
 				-- Compute the end point. It is right of the start point:
 				set (axis => AXIS_X, value => get_x (A) + port.length, point => B);
 
-				-- Compute the position of the port name. 
+				-- Compute the position of the port name.
 				-- It is some distance right of the start point:
 				pos_port_name := A;
-				set (axis => AXIS_X, 
+				set (axis => AXIS_X,
 					value => get_x (A) + port_name_spacing_start, point => pos_port_name);
-				
+
 			else
 				raise constraint_error; -- CS do something helpful. should never happen
-			end if;	
+			end if;
 		end compute_positions;
-		
-		
-		
-		
+
+
+
+
 		-- Draws the line and the circle of the port:
-		procedure draw_line_and_circle is 
+		procedure draw_line_and_circle is
 			-- The line that represents the port:
 			line : type_line;
 
@@ -158,7 +158,7 @@ procedure draw_netchangers is
 
 			-- Draw the line:
 			set_color_symbols (brightness);
-			
+
 			draw_line (line, netchanger_position, net_linewidth,
 				stroke	=> DO_STROKE);
 
@@ -166,7 +166,7 @@ procedure draw_netchangers is
 			-- of the line if the port-layer is enabled:
 			if ports_enabled then
 				-- put_line ("draw port");
-				
+
 				-- The start point of the port must have a small green circle around it.
 				-- set color and line width
 				set_color_ports (brightness);
@@ -177,20 +177,20 @@ procedure draw_netchangers is
 
 				-- Draw the circle. It is not filled:
 				draw_circle (
-					circle	=> circle, 
-					pos		=> netchanger_position, 
+					circle	=> circle,
+					pos		=> netchanger_position,
 					filled	=> NO,
-					width	=> port_circle_linewidth, 
+					width	=> port_circle_linewidth,
 					stroke	=> DO_STROKE);
-				
+
 			end if;
 		end draw_line_and_circle;
 
-		
-		
-	
+
+
+
 		-- This procedure draws the port name at its final
-		-- position taking into account the rotation of 
+		-- position taking into account the rotation of
 		-- the netchanger in the schematic:
 		procedure draw_port_name is
 			use pac_text;
@@ -204,48 +204,48 @@ procedure draw_netchangers is
 
 			use pac_draw_text;
 		begin
-			-- Rotate the position of the port name by the 
+			-- Rotate the position of the port name by the
 			-- rotation of the netchanger:
 			rotate_by (pos_port_name, get_rotation (netchanger_position));
 
 			-- Move the name by the netchanger position:
 			move_by (pos_port_name, get_place (netchanger_position));
 
-			
+
 			-- Now some fine adjustment is required to place the port
 			-- name some distance away from the line of the port.
-			-- Compute the position of the origin of the port name regarding 
+			-- Compute the position of the origin of the port name regarding
 			-- its distance from the line of the port:
 			if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-				-- The line is horizontal. So the port name must be 
+				-- The line is horizontal. So the port name must be
 				-- moved up above the line by some distance:
 				move (pos_port_name, DIR_UP, terminal_name_spacing_line);
 				alignment.horizontal := ALIGN_RIGHT;
 
 			elsif rotation_total = 90.0 or rotation_total = -270.0 then
-				-- The line is vertical. So the port name must be 
+				-- The line is vertical. So the port name must be
 				-- moved left of the line by some distance:
 				move (pos_port_name, DIR_LEFT, terminal_name_spacing_line);
 				alignment.horizontal := ALIGN_RIGHT;
-				
+
 			elsif rotation_total = 180.0 or rotation_total = -180.0 then
-				-- The line is horizontal. So the port name must be 
+				-- The line is horizontal. So the port name must be
 				-- moved up above the line by some distance:
 				move (pos_port_name, DIR_UP, terminal_name_spacing_line);
 				alignment.horizontal := ALIGN_LEFT;
-				
+
 			elsif rotation_total = -90.0 or rotation_total = 270.0 then
-				-- The line is vertical. So the port name must be 
+				-- The line is vertical. So the port name must be
 				-- moved left of the line by some distance:
 				move (pos_port_name, DIR_LEFT, terminal_name_spacing_line);
 				alignment.horizontal := ALIGN_LEFT;
-				
+
 			else
 				raise constraint_error; -- CS should never happen
 			end if;
 			-- CS: move to a procedure
-			
-			
+
+
 			set_color_symbols (brightness);
 
 			-- CS move to a procedure
@@ -265,20 +265,20 @@ procedure draw_netchangers is
 
 		end draw_port_name;
 
-	
+
 	begin
 		compute_positions;
-		draw_line_and_circle;	
+		draw_line_and_circle;
 		draw_port_name;
 	end draw_port;
 
-	
-	
-	
-	
+
+
+
+
 	-- This procedure draws the name of the netchanger (like N31).
 	-- It takes the index (like 31) and the position of the
-	-- netchanger. 
+	-- netchanger.
 	-- Depending on the rotation of the netchanger the name
 	-- is offset slightly to a new position relative to the
 	-- center of the netchanger.
@@ -290,46 +290,46 @@ procedure draw_netchangers is
 		use pac_text;
 		use pac_draw_text;
 		use et_alignment;
-		
+
 		alignment : constant type_text_alignment := (
 			horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
 
-		-- The rotation of the netchanger:	
+		-- The rotation of the netchanger:
 		rotation : constant type_rotation_0_90 := get_rotation (position);
-		
+
 		-- The final position of the name.
 		-- Initially it is the same as the netchanger position
 		-- (where its center/origin is):
 		pos_final : type_vector_model := get_place (position);
-		
-		
-		
+
+
+
 		-- This procedure computes the final position of
 		-- the name (like N31) depending on the rotation
 		-- of the netchanger. The netchanger can only be
 		-- rotated to 0 or 90 degrees:
 		procedure compute_position is begin
 			if rotation = 0.0 then
-				-- The netchanger is horizontal. 
+				-- The netchanger is horizontal.
 				-- So the name must be moved down:
 				move (pos_final, DIR_DOWN, name_to_origin_offset);
 
 			elsif rotation = 90.0 then
-				-- The netchanger is vertical. 
+				-- The netchanger is vertical.
 				-- So the name must be moved right:
 				move (pos_final, DIR_RIGHT, name_to_origin_offset);
-				
+
 			else
 				raise constraint_error; -- CS should never happen
 			end if;
 		end compute_position;
 
-		
+
 
 		-- This procedure does the final drawing of the name:
-		procedure do_draw is begin	
+		procedure do_draw is begin
 			set_color_placeholders (brightness);
-			
+
 			draw_text (
 				content		=> to_content (get_netchanger_name (index)),
 				size		=> name_size,
@@ -345,15 +345,15 @@ procedure draw_netchangers is
 				alignment	=> alignment);
 		end do_draw;
 
-		
-	begin		
-		compute_position;		
-		do_draw;		
+
+	begin
+		compute_position;
+		do_draw;
 	end draw_name;
-	
-	 
-	
-	
+
+
+
+
 
 	-- This procedure draws the body of the netchanger
 	-- at the given position. Currently the body consists
@@ -362,70 +362,70 @@ procedure draw_netchangers is
 		position : in type_position)
 	is begin
 		set_color_symbols (brightness);
-		
+
 		draw_arc (
 			arc		=> netchanger_symbol_forward.arc,
 			-- It does not matter whether to use the
 			-- netchanger_symbol_forward or netchanger_symbol_backward
 			-- as both have the same body.
 			-- See specs in package et_netchanger_symbol_schematic.
-			
+
 			pos		=> position,
 			width	=> net_linewidth,
 			stroke	=> DO_STROKE);
-	
+
 	end draw_body;
 
-	
-	
-	
-	
+
+
+
+
 	-- This procedure draws the ports of the
-	-- netchanger depending on the direction of the 
+	-- netchanger depending on the direction of the
 	-- netchanger candidate:
 	procedure draw_ports (
 		position 	: in type_position;
 		direction	: in type_netchanger_direction)
-	is begin			
+	is begin
 		case direction is
 			when FORWARD =>
 				-- Draw the ports of the netchanger:
 				draw_port (
-					name => MASTER, 
-					port => netchanger_symbol_forward.master_port, 
+					name => MASTER,
+					port => netchanger_symbol_forward.master_port,
 					netchanger_position => position);
 
 				draw_port (
-					name => SLAVE, 
-					port => netchanger_symbol_forward.slave_port, 
+					name => SLAVE,
+					port => netchanger_symbol_forward.slave_port,
 					netchanger_position => position);
-			
+
 			when BACKWARD =>
 				-- Draw the ports of the netchanger:
 				draw_port (
-					name => MASTER, 
-					port => netchanger_symbol_backward.master_port, 
+					name => MASTER,
+					port => netchanger_symbol_backward.master_port,
 					netchanger_position => position);
 
 				draw_port (
-					name => SLAVE, 
-					port => netchanger_symbol_backward.slave_port, 
+					name => SLAVE,
+					port => netchanger_symbol_backward.slave_port,
 					netchanger_position => position);
-			
+
 		end case;
 	end draw_ports;
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	-- This procedure iterates through all netchangers
-	-- of the active module and draws them:	 
+	-- of the active module and draws them:
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
-	is 
+		module		: in type_generic_module)
+	is
 		pragma unreferenced (module_name);
 		use pac_netchangers;
 		netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
@@ -434,15 +434,15 @@ procedure draw_netchangers is
 		procedure query_netchanger (
 			index		: in type_netchanger_id;
 			netchanger	: in type_netchanger)
-		is		
+		is
 			-- Get the original position where the netchanger will be drawn.
 			-- NOTE: A netchanger can only assume a rotation of 0 or 90 degree
 			-- by its specification:
 			position : type_position := to_position (netchanger.position_sch);
-			
+
 			-- Get the sheet number where the netchanger is:
 			sheet : constant type_sheet := get_sheet (netchanger);
-			
+
 			-- This procedure draws the components of
 			-- the netchanger candidate (body, ports, name):
 			procedure draw_netchanger is begin
@@ -451,28 +451,28 @@ procedure draw_netchangers is
 
 				-- Draw the ports of the netchanger:
 				draw_ports (position, get_direction (netchanger));
-						
+
 				-- Draw the name of the netchanger (like N33):
 				draw_name (index => index, position => position);
-						
+
 				-- Draw the origin of the netchanger:
 				set_color_origin (brightness);
 				draw_origin ((get_place (position), 0.0));
 				-- NOTE: The origin is never rotated.
 			end draw_netchanger;
 
-			
+
 		begin
-			-- First of all, we draw a netchanger only 
+			-- First of all, we draw a netchanger only
 			-- if it is on the current active sheet:
 			if sheet = active_sheet then
-			
-				-- The default brightness is NORMAL. 
-				-- If the netchanger is selected, 
+
+				-- The default brightness is NORMAL.
+				-- If the netchanger is selected,
 				-- then the brightness will be increased:
-				brightness := NORMAL;				
-				
-				
+				brightness := NORMAL;
+
+
 				-- Draw the netchanger candidate highlighted if
 				-- it is selected:
 				if is_selected (netchanger) then
@@ -482,27 +482,27 @@ procedure draw_netchangers is
 					-- If a group is being copied and the
 					-- netchanger is member of the group, then
 					-- we compute the position of the netchanger candidate
-					-- here and call procedure draw_netchanger:					
+					-- here and call procedure draw_netchanger:
 					if group_is_being_copied then
 						-- Get the position of the netchanger candidate.
 						-- This is a conversion from netchanger position
 						-- to a regular position (x/y/rotation):
 						position := to_position (netchanger.position_sch);
-						
+
 						-- Move the netchanger by the current group offset.
 						-- So this is the position where the copy of the
 						-- netchanger wiil be drawn:
 						move_by (position.place, get_group_offset);
-						
+
 						-- Draw the components of the netchanger copy:
 						draw_netchanger;
-						
+
 						-- Restore the position of the original netchanger
 						-- because the original will be drawn later:
 						position := to_position (netchanger.position_sch);
 					end if;
-					
-					
+
+
 					-- Overwrite the position if the netchanger
 					-- 1. alone is being moved or
 					-- 2. if a whole group is being moved:
@@ -523,9 +523,9 @@ procedure draw_netchangers is
 				draw_netchanger;
 			end if;
 		end query_netchanger;
-		
-									   
-	begin		
+
+
+	begin
 		-- Iterate through the netchangers of the module:
 		while has_element (netchanger_cursor) loop
 			query_element (netchanger_cursor, query_netchanger'access);
@@ -533,94 +533,94 @@ procedure draw_netchangers is
 		end loop;
 	end query_module;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	-- Draws the netchanger being added.
 	-- The netchanger is drawn in a preview.
 	procedure draw_netchanger_being_added is
 		use et_canvas_schematic_netchangers;
 		use et_modes.schematic;
-		
-		
-		procedure do_draw is 
-			position : type_position;		
+
+
+		procedure do_draw is
+			position : type_position;
 		begin
 			-- The whole netchanger will be drawn highlighted:
 			brightness := BRIGHT;
-		
+
 			-- Assemble the place where the netchanger will be drawn.
 			-- Depends on the tool used for placing the netchanger:
 			set_place (position, get_primary_tool_position);
 			set_rotation (position, netchanger_add.rotation);
-		
+
 			draw_body (position);
-			
-			-- Now, depending on the direction of the netchanger 
-			-- being added, we we draw either the forward-symbol 
+
+			-- Now, depending on the direction of the netchanger
+			-- being added, we we draw either the forward-symbol
 			-- or the backward-symbol:
 			case netchanger_add.direction is
 				when FORWARD =>
 					-- Draw the ports of the netchanger:
 					draw_port (
-						name => MASTER, 
-						port => netchanger_symbol_forward.master_port, 
+						name => MASTER,
+						port => netchanger_symbol_forward.master_port,
 						netchanger_position => position);
 
 					draw_port (
-						name => SLAVE, 
-						port => netchanger_symbol_forward.slave_port, 
+						name => SLAVE,
+						port => netchanger_symbol_forward.slave_port,
 						netchanger_position => position);
-				
+
 				when BACKWARD =>
 					-- Draw the ports of the netchanger:
 					draw_port (
-						name => MASTER, 
-						port => netchanger_symbol_backward.master_port, 
+						name => MASTER,
+						port => netchanger_symbol_backward.master_port,
 						netchanger_position => position);
 
 					draw_port (
-						name => SLAVE, 
-						port => netchanger_symbol_backward.slave_port, 
+						name => SLAVE,
+						port => netchanger_symbol_backward.slave_port,
 						netchanger_position => position);
-				
+
 			end case;
 			-- CS double code. see procedure query_netchanger above
-			-- move to a single separate procedure like 
+			-- move to a single separate procedure like
 			-- draw_ports (direction, position)
 
-			
+
 			-- Draw the name of the netchanger (like N33):
 			draw_name (index => netchanger_add.name_pre, position => position);
-					
+
 			-- Draw the origin of the netchanger:
 			set_color_origin (brightness);
 			draw_origin ((get_place (position), 0.0));
-			-- NOTE: The origin is never rotated.		
+			-- NOTE: The origin is never rotated.
 		end do_draw;
-		
+
 	begin
 		case verb is
 			when VERB_ADD =>
 				if noun = NOUN_NETCHANGER then
 					do_draw;
 				end if;
-				
+
 			when VERB_COPY =>
 				if netchanger_add.valid then
 					do_draw;
 				end if;
-			
+
 			when others => null; -- CS should never happen
 		end case;
 	end draw_netchanger_being_added;
-	
-	
-	
-	
-	
+
+
+
+
+
 begin
 -- 	put_line ("draw netchangers (schematic)");
 
@@ -630,13 +630,13 @@ begin
 		process		=> query_module'access);
 
 	draw_netchanger_being_added;
-	
+
 end draw_netchangers;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

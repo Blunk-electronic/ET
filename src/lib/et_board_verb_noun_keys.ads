@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with gdk.types;						use gdk.types;
@@ -65,10 +65,10 @@ package et_board_verb_noun_keys is
 
 
 
-	
--- NOUNS:	
-	
-	key_noun_arc		: constant gdk_key_type := GDK_LC_a;	
+
+-- NOUNS:
+
+	key_noun_arc		: constant gdk_key_type := GDK_LC_a;
 	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
 	key_noun_netchanger	: constant gdk_key_type := GDK_LC_e;
@@ -76,13 +76,13 @@ package et_board_verb_noun_keys is
 	key_noun_line		: constant gdk_key_type := GDK_LC_l;
 	key_noun_outline	: constant gdk_key_type := GDK_LC_o;
 	key_noun_placeholder: constant gdk_key_type := GDK_LC_p;
-	
+
 	-- CS: This is a multi-assignment to key "n".
 	-- For the moment it seems not to cause trouble:
 	key_noun_net 		: constant gdk_key_type := GDK_LC_n;
 
 	-- key_noun_layer		: constant gdk_key_type := GDK_LC_y;
-	
+
 	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
 
 	key_noun_ratsnest	: constant gdk_key_type := GDK_LC_r;
@@ -98,9 +98,9 @@ package et_board_verb_noun_keys is
 
 
 
-	
+
 -- MISCELLANEOUS:
-	
+
 	key_space			: constant gdk_key_type := GDK_Space;
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
@@ -110,7 +110,7 @@ end et_board_verb_noun_keys;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

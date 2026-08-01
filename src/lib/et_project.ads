@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - clean up
 -- - separate packages ?
 
@@ -51,7 +51,7 @@ package et_project is
 
 
 -- DIRECTORY NAMES:
-	
+
 	-- after importing a foreign project, native ET projects are created here:
 	directory_import		: constant string := "et_import";
 
@@ -59,67 +59,67 @@ package et_project is
 	directory_projects		: constant string := "projects";
 
 	-- native library directories
-	directory_libraries 				: constant string := "libraries";	
+	directory_libraries 				: constant string := "libraries";
 	directory_libraries_devices			: constant string := "devices";
 	directory_libraries_symbols			: constant string := "symbols";
-	directory_libraries_packages		: constant string := "packages";	
+	directory_libraries_packages		: constant string := "packages";
 
 	directory_libraries_schemlets		: constant string := "schemlets";
-	
+
 	-- supplementary stuff of a project
 	directory_dru			: constant string := "pcb-design-rules";
 -- 	directory_cam			: constant string := "CAM";
 -- 	directory_net_classes	: constant string := "net_classes";
-	directory_templates		: constant string := "templates";		
+	directory_templates		: constant string := "templates";
 -- 	directory_settings		: constant string := "settings";
 	directory_reports		: constant string := "reports";
 	directory_documentation	: constant string := "documentation";
-	directory_miscellaneous	: constant string := "miscellaneous";		
+	directory_miscellaneous	: constant string := "miscellaneous";
 
 
 
 
-	
+
 -- PROJECTS ROOT DIRECTORY:
-	
+
 	-- This is the root directory where all projects live:
 	projects_root_dir_length : constant natural := 100;
-	
+
 	package pac_root_directory is new generic_bounded_length (projects_root_dir_length);
-	
+
 	projects_root_dir : pac_root_directory.bounded_string;
-	
-	
 
 
-	
+
+
+
 -- PROJECT PATH:
-	
+
 	project_path_max : constant natural := 200;
-	
+
 	package pac_project_path is new generic_bounded_length (project_path_max);
-	
+
 	function to_string (path : in pac_project_path.bounded_string) return string;
-	
+
 	function to_project_path (path : in string) return pac_project_path.bounded_string;
 
 
 
-	
-	
+
+
 -- ACTIVE PROJECT:
-	
+
 	-- Here we store the name of the currently open project:
 	active_project : pac_project_name.bounded_string;
 
 
 
 
-	
 
-	
+
+
 	-- Creates given project directory.
-	-- Creates a default rig configuration file.										   
+	-- Creates a default rig configuration file.
 	-- Already existing projects in given project_path are overwritten.
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
@@ -127,7 +127,7 @@ package et_project is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	procedure create_project_directory_bare (
@@ -135,7 +135,7 @@ package et_project is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Opens the project with the given name. Assumes the project to exist
 	-- in the current directory.
 	-- Assigns to the global variable "current_project" the given project_name.
@@ -144,13 +144,13 @@ package et_project is
 		log_threshold 	: in type_log_level);
 
 
-	
+
 	-- Files outside the project directory MUST NOT be saved. To test a file for its location
 	-- this function shall be used.
 	function inside_project_directory (file_name : in string) return boolean;
 
 
-	
+
 	-- Saves the current project under the given destination like blood_sample_analyzer_experimental.
 	-- Saves generic modules that are inside the project. Modules outside the project directory are
 	-- untouched.
@@ -164,12 +164,12 @@ package et_project is
 		log_threshold 	: in type_log_level);
 
 
-	
+
 end et_project;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

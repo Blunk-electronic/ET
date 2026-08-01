@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 -- with ada.text_io;
 -- with ada.strings;
@@ -43,14 +43,14 @@
 
 package body et_display.schematic is
 
-	
+
 	function device_names_enabled return boolean is begin
 		if layers.device_names = ON then
 			return true;
 		else
 			return false;
 		end if;
-	end device_names_enabled;	
+	end device_names_enabled;
 
 	function device_values_enabled return boolean is begin
 		if layers.device_values = ON then
@@ -58,7 +58,7 @@ package body et_display.schematic is
 		else
 			return false;
 		end if;
-	end device_values_enabled;	
+	end device_values_enabled;
 
 	function device_purposes_enabled return boolean is begin
 		if layers.device_purposes = ON then
@@ -66,8 +66,8 @@ package body et_display.schematic is
 		else
 			return false;
 		end if;
-	end device_purposes_enabled;	
-	
+	end device_purposes_enabled;
+
 	function ports_enabled return boolean is begin
 		if layers.ports = ON then
 			return true;
@@ -75,7 +75,7 @@ package body et_display.schematic is
 			return false;
 		end if;
 	end ports_enabled;
-	
+
 	function nets_enabled return boolean is begin
 		if layers.nets = ON then
 			return true;
@@ -92,12 +92,12 @@ package body et_display.schematic is
 		end if;
 	end texts_enabled;
 
-	
+
 end et_display.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

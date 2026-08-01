@@ -47,11 +47,11 @@ with ada.strings; 				use ada.strings;
 
 package body et_units_of_measurement is
 
-	
+
 
 	function to_unit_of_measurement (
-		unit : in string) 
-		return type_unit_of_measurement 
+		unit : in string)
+		return type_unit_of_measurement
 	is
 		unit_out : type_unit_of_measurement;
 	begin
@@ -64,21 +64,21 @@ package body et_units_of_measurement is
 					 console => true);
 
 				log (text => "supported units are:");
-				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) .. 
+				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) ..
 					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
 					log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
 				end loop;
-						
+
 				raise constraint_error;
 	end to_unit_of_measurement;
 
 
 
 
-	
+
 	function to_string (
-		unit : in type_unit_of_measurement) 
-		return string 
+		unit : in type_unit_of_measurement)
+		return string
 	is begin
 		return type_unit_of_measurement'image (unit);
 	end to_string;
@@ -86,10 +86,10 @@ package body et_units_of_measurement is
 
 
 
-	
+
 	procedure check_abbrevation_of_unit_characters (
 		abbrevation	: in pac_unit_abbrevation.bounded_string;
-		characters	: in character_set) 
+		characters	: in character_set)
 	is
 		invalid_character_position : natural := 0;
 	begin
@@ -99,8 +99,8 @@ package body et_units_of_measurement is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "abbrevaton of unit of measurement " 
-				& to_string (abbrevation) 
+			log (SEVERITY_ERROR, "abbrevaton of unit of measurement "
+				& to_string (abbrevation)
 				& " has invalid character at position"
 				& natural'image (invalid_character_position),
 				console => true);
@@ -110,13 +110,13 @@ package body et_units_of_measurement is
 
 
 
-	
-		
+
+
 end et_units_of_measurement;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

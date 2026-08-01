@@ -49,12 +49,12 @@ package et_device_write_unit is
 	procedure write_internal_units (
 		units 			: in pac_units_internal.map;
 		log_threshold	: in type_log_level);
-		
 
-		
+
+
 	procedure write_external_units (
 		units 			: in pac_units_external.map;
 		log_threshold	: in type_log_level);
 
-		
+
 end et_device_write_unit;

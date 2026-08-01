@@ -66,7 +66,7 @@ package body et_symbol_read_text is
 	symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 
 
-	
+
 
 	procedure read_text (
 		line : in type_fields_of_line)
@@ -91,7 +91,7 @@ package body et_symbol_read_text is
 		elsif kw = keyword_rotation then -- rotation 90.0
 			expect_field_count (line, 2);
 			symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
-			
+
 -- 		elsif kw = keyword_style then -- style italic
 -- 			expect_field_count (line, 2);
 -- 			symbol_text_base.style := to_text_style (f (line, 2));
@@ -104,11 +104,11 @@ package body et_symbol_read_text is
 			invalid_keyword (kw);
 		end if;
 	end read_text;
-	
-				
-		
-		
-		
+
+
+
+
+
 	procedure insert_text (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
@@ -124,15 +124,15 @@ package body et_symbol_read_text is
 				content		=> symbol_text_content,
 				position	=> symbol_text_position));
 
-		
+
 		-- clean up for next symbol text
 		symbol_text_base := (others => <>);
 		symbol_text_content := to_content ("");
 		symbol_text_position := origin;
-		
+
 		log_indentation_down;
 	end insert_text;
-	
+
 
 
 
@@ -177,8 +177,8 @@ package body et_symbol_read_text is
 	end read_placeholder;
 
 
-	
-	
+
+
 
 	procedure insert_placeholder (
 		symbol			: in type_symbol_model_access;
@@ -189,7 +189,7 @@ package body et_symbol_read_text is
 
 		-- Assign symbol the text placeholder to the symbol.
 		-- The meaning of the placeholder determines where
-		-- the placeholder is to be assigned. 
+		-- the placeholder is to be assigned.
 		-- If meaning is not specified in section PLACEHOLDER,
 		-- the default meaning is assumed which raise an error.
 
@@ -198,43 +198,43 @@ package body et_symbol_read_text is
 
 		case symbol_placeholder_meaning is
 			when NAME =>
-				symbol.placeholders.name := (symbol_text_base with 
+				symbol.placeholders.name := (symbol_text_base with
 					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
 
 			when VALUE =>
-				symbol.placeholders.value := (symbol_text_base with 
+				symbol.placeholders.value := (symbol_text_base with
 					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
 
 			when PURPOSE =>
-				symbol.placeholders.purpose := (symbol_text_base with 
+				symbol.placeholders.purpose := (symbol_text_base with
 					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
 
 			-- Default meaning causes an error:
-			when others => 
+			when others =>
 				log (SEVERITY_ERROR, "meaning of placeholder not specified !");
 				raise constraint_error;
 		end case;
 
-		
+
 		-- clean up for next symbol text placeholder
 		symbol_text_base := (others => <>);
 		symbol_text_position := origin;
 		symbol_placeholder_meaning := placeholder_meaning_default;
-		
+
 		log_indentation_down;
 	end insert_placeholder;
 
-	
-	
+
+
 end et_symbol_read_text;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

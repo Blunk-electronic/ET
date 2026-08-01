@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- 
+--
 -- To Do:
 -- - clean up
 --
@@ -66,9 +66,9 @@ package body et_device_write_unit is
 
 
 	use pac_unit_name;
-	
 
-	
+
+
 	procedure write_internal_units (
 		units 			: in pac_units_internal.map;
 		log_threshold	: in type_log_level)
@@ -77,10 +77,10 @@ package body et_device_write_unit is
 
 		unit_internal_cursor : pac_units_internal.cursor := units.first;
 
-		
+
 		procedure query_internal_unit (
 			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_internal) 
+			unit	: in type_unit_internal)
 		is
 			use et_symbol_write;
 		begin
@@ -92,30 +92,30 @@ package body et_device_write_unit is
 			save_symbol_1 (unit.symbol, log_threshold + 1);
 			section_mark (section_symbol, FOOTER);
 		end query_internal_unit;
-		
-		
+
+
 	begin
 		section_mark (section_units_internal, HEADER);
-		
+
 		while unit_internal_cursor /= pac_units_internal.no_element loop
 			section_mark (section_unit, HEADER);
 			query_element (unit_internal_cursor, query_internal_unit'access);
 			section_mark (section_unit, FOOTER);
 			next (unit_internal_cursor);
 		end loop;
-		
+
 		section_mark (section_units_internal, FOOTER);
 	end write_internal_units;
 
-	
 
 
 
 
-	
 
-	
-		
+
+
+
+
 	procedure write_external_units (
 		units 			: in pac_units_external.map;
 		log_threshold	: in type_log_level)
@@ -124,11 +124,11 @@ package body et_device_write_unit is
 		use pac_units_external;
 
 		unit_external_cursor : pac_units_external.cursor := units.first;
-		
-		
+
+
 		procedure query_external_unit (
 			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_external) 
+			unit	: in type_unit_external)
 		is
 			use et_symbol_library;
 		begin
@@ -136,16 +136,16 @@ package body et_device_write_unit is
 			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			
+
 			-- write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
 
-			write (keyword => keyword_symbol_file, 
+			write (keyword => keyword_symbol_file,
 				   parameters => get_symbol_model_name (unit.model_cursor));
 
-			
+
 		end query_external_unit;
-		
-		
+
+
 	begin
 		section_mark (section_units_external, HEADER);
 
@@ -155,11 +155,11 @@ package body et_device_write_unit is
 			section_mark (section_unit, FOOTER);
 			next (unit_external_cursor);
 		end loop;
-		
+
 		section_mark (section_units_external, FOOTER);
 	end write_external_units;
 
-	
 
-		
+
+
 end et_device_write_unit;

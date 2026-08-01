@@ -50,45 +50,45 @@ with et_logging;				use et_logging;
 
 package et_net_names is
 
-	
+
 	-- If the name of a strand can not be identified,
 	-- we default to the well proven "N$" notation:
 	anonymous_net_name_prefix : constant string := "N$";
 	subtype type_anonymous_net_index is positive range 1 .. 1_000_000;
 	-- CS increase upper limit if necessary.
 
-	
+
 	-- The name of a net may have 100 characters which seems sufficient for now.
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
 
-	
-	net_inversion_mark : constant string := "#"; 
+
+	net_inversion_mark : constant string := "#";
 	-- CS required ? should not be allowed at all. Operater should write net_name_N
 	-- instead.
 
-	
+
 	net_name_length_max : constant natural := 100;
 
-	
-	package pac_net_name is new generic_bounded_length (net_name_length_max); 
+
+	package pac_net_name is new generic_bounded_length (net_name_length_max);
 	use pac_net_name;
 
-	
+
 	no_name : constant pac_net_name.bounded_string := to_bounded_string ("");
 
-	
+
 
 	function net_name_to_string (
 		net_name	: in pac_net_name.bounded_string)
 		return string;
 
-	
-	
+
+
 	-- Tests if the given net name is longer than allowed.
 	procedure check_net_name_length (net : in string);
 
 
-	
+
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
 	procedure check_net_name_characters (
@@ -96,23 +96,23 @@ package et_net_names is
 		characters	: in character_set := net_name_characters);
 
 
-	
+
 	-- Returns true if given net name is empty:
 	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean;
 
-	
+
 	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
 
 
-	
-	
+
+
 	-- Returns a name for an anonymous net like N$56
-	function to_anonymous_net_name (index : in type_anonymous_net_index) 
+	function to_anonymous_net_name (index : in type_anonymous_net_index)
 		return pac_net_name.bounded_string;
 
 
-	
+
 	-- Returns true if the given net name is anonymous.
 	-- CS rename to is_anonymous
 	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
@@ -121,15 +121,15 @@ package et_net_names is
 	-- Changes the given net name to an empty string:
 	procedure clear_net_name (
 		net_name : in out pac_net_name.bounded_string);
-	
-	
+
+
 	-- Net names can also be collected in simple lists:
 	package pac_net_names is new doubly_linked_lists (pac_net_name.bounded_string);
 
 	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
 
-	
+
 	-- Returns the name of the net indicated by the given cursor as string:
 	function to_string (
 		net	: in pac_net_names.cursor)
@@ -138,28 +138,28 @@ package et_net_names is
 
 
 	-- Logs a message like "WARNING. Net GND not found."
-	-- The severity decides whether to output the message on 
+	-- The severity decides whether to output the message on
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_net_not_found (
 		severity	: in type_message_severity;
 		name		: in pac_net_name.bounded_string);
-				 
+
 	-- Logs a message like "WARNING. Net GND already exists."
-	-- The severity decides whether to output the message on 
+	-- The severity decides whether to output the message on
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_net_already_exists (
 		severity	: in type_message_severity;
 		name		: in pac_net_name.bounded_string);
 
-	
+
 end et_net_names;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

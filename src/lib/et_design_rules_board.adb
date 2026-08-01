@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.text_io;					use ada.text_io;
@@ -49,7 +49,7 @@ with et_exceptions;					use et_exceptions;
 
 package body et_design_rules_board is
 
-	
+
 	function is_empty (rules : in pac_file_name.bounded_string) return boolean is begin
 		if pac_file_name.length (rules) = 0 then
 			return true;
@@ -59,33 +59,33 @@ package body et_design_rules_board is
 	end is_empty;
 
 
-	
+
 	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
 		return pac_file_name.to_bounded_string (file);
 	end to_file_name;
 
 
-	
+
 	function to_string (file : in pac_file_name.bounded_string) return string is begin
 		return pac_file_name.to_string (file);
 	end to_string;
 
 
-	
+
 	procedure validate_track_clearance (clearance : in type_distance_model) is begin
 		if clearance not in type_track_clearance then
 			raise semantic_error_1 with
-				"ERROR: Track clearance invalid ! Allowed range is" 
+				"ERROR: Track clearance invalid ! Allowed range is"
 				 & to_string (type_track_clearance'first) & " .."
 				 & to_string (type_track_clearance'last);
 		end if;
 	end validate_track_clearance;
 
 
-	
 
 
-	
+
+
 	function auto_set_restring (
 		category	: in type_restring_category;
 		drill_size	: in type_drill_size;
@@ -97,7 +97,7 @@ package body et_design_rules_board is
 	begin
 		--scratch := drill_size + drill_size * drill_to_restring_multiplier;
 		scratch := drill_size * drill_to_restring_multiplier;
-		
+
 		case category is
 			when OUTER =>
 				result := scratch;
@@ -110,28 +110,28 @@ package body et_design_rules_board is
 	end auto_set_restring;
 
 
-	
-	
+
+
 	procedure validate_restring_width (
-		restring_width : in type_distance_model) 
+		restring_width : in type_distance_model)
 	is begin
 		if restring_width not in type_restring_width then
 			raise semantic_error_1 with
-				"ERROR: Restring width invalid ! Allowed range is" 
+				"ERROR: Restring width invalid ! Allowed range is"
 				 & to_string (type_restring_width'first) & " .."
 				 & to_string (type_restring_width'last);
 		end if;
 	end validate_restring_width;
 
 
-	
-	
+
+
 	procedure validate_track_width (
-		track_width : in type_distance_model) 
+		track_width : in type_distance_model)
 	is begin
 		if track_width not in type_track_width then
 			raise semantic_error_1 with
-				"ERROR: Track width invalid ! Allowed range is" 
+				"ERROR: Track width invalid ! Allowed range is"
 				 & to_string (type_track_width'first) & " .."
 				 & to_string (type_track_width'last);
 		end if;
@@ -139,16 +139,16 @@ package body et_design_rules_board is
 
 
 
-	
+
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is separate;
 
 
-	
+
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
-		return type_design_rules_board 
+		return type_design_rules_board
 	is
 		use pac_design_rules_board;
 
@@ -163,12 +163,12 @@ package body et_design_rules_board is
 			return design_rules_default;
 		end if;
 	end get_rules;
-	
+
 end et_design_rules_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

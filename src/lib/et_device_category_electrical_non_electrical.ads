@@ -46,39 +46,39 @@ package et_device_category_electrical_non_electrical is
 	-- connected with nets.
 	--
 	-- Non-electrical devices do not appear in the schematic.
-	-- Things like mounting holes or fiducials are usually not 
+	-- Things like mounting holes or fiducials are usually not
 	-- connected with a net and therefore do not apprear in the schematic.
-	
-	
+
+
 	category_prefix	: constant string := ("CAT_");
 
 
-	
+
 	type type_electrical_non_electrical is (
 		CAT_ELECTRICAL,
 		CAT_NON_ELECTRICAL);
 
 
-	
+
 
 	function to_string (
 		cat	: in type_electrical_non_electrical)
 		return string;
 
 
-	
-	function to_category (
-		cat	: in string) 
-		return type_electrical_non_electrical;
-	
 
-	
-		
+	function to_category (
+		cat	: in string)
+		return type_electrical_non_electrical;
+
+
+
+
 end et_device_category_electrical_non_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

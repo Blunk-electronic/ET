@@ -42,40 +42,40 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_package_model_name is
 
-	-- The package model name is 
+	-- The package model name is
 	-- something like "libraries/packages/smd/SOT23.pac".
 	-- So it is about the name of a file that contains
 	-- the actual package model.
 	-- The model name is equally to the file name that contains
 	-- the model:
-	
+
 	package_model_file_name_length_max : constant positive := 300;
-	
-	package pac_package_model_file is new 
+
+	package pac_package_model_file is new
 		generic_bounded_length (package_model_file_name_length_max);
 	-- CS rename to pac_package_model_name
-		
-		
+
+
 	package_model_file_extension : constant string := "pac";
 
-	
-	
+
+
 	function to_string (
-		name : in pac_package_model_file.bounded_string) 
+		name : in pac_package_model_file.bounded_string)
 		return string;
 
-	
+
 	function to_package_model_name (
-		name : in string) 
+		name : in string)
 		return pac_package_model_file.bounded_string;
 
 
-	
+
 end et_package_model_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

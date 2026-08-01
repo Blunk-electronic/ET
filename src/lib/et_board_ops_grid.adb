@@ -44,26 +44,26 @@ with et_string_processing;			use et_string_processing;
 
 package body et_board_ops_grid is
 
-	
+
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			-- Set the grid in the database:			
+			-- Set the grid in the database:
 			module.board.grid := grid;
 		end;
 
-		
+
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
 			& " set board grid to " & to_string (grid.spacing),
@@ -78,18 +78,18 @@ package body et_board_ops_grid is
 			process		=> do_it'access);
 
 	end set_grid;
-	
 
-	
+
+
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -97,7 +97,7 @@ package body et_board_ops_grid is
 			module.board.grid := grid;
 		end;
 
-		
+
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			& " setting board grid" & to_string (grid.spacing),
@@ -111,7 +111,7 @@ package body et_board_ops_grid is
 	end set_grid;
 
 
-	
+
 
 	function get_grid (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -123,10 +123,10 @@ package body et_board_ops_grid is
 
 		result : type_grid;
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -134,7 +134,7 @@ package body et_board_ops_grid is
 			result := module.board.grid;
 		end;
 
-		
+
 	begin
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			& " getting board grid",
@@ -149,11 +149,11 @@ package body et_board_ops_grid is
 
 
 end et_board_ops_grid;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

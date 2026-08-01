@@ -57,18 +57,18 @@ with et_file_write;						use et_file_write;
 package body et_package_write_via_restrict is
 
 	use et_board_geometry.pac_file_rw;
-	
+
 	use pac_via_restrict_zones;
 	use pac_via_restrict_cutouts;
 
-	
+
 
 	procedure write_via_restrict (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
-	
-		procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is 
+
+		procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -77,8 +77,8 @@ package body et_package_write_via_restrict is
 			section_mark (section_zone, FOOTER);
 		end write_zone;
 
-		
-		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
+
+		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is
 		begin
 			section_mark (section_cutout_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -87,8 +87,8 @@ package body et_package_write_via_restrict is
 			section_mark (section_cutout_zone, FOOTER);
 		end write_cutout;
 
-		
-		
+
+
 	begin
 		log (text => "write via restrict", level => log_threshold);
 
@@ -96,19 +96,19 @@ package body et_package_write_via_restrict is
 
 		-- top
 		section_mark (section_top, HEADER);
-		iterate (packge.via_restrict.top.zones, write_zone'access);			
+		iterate (packge.via_restrict.top.zones, write_zone'access);
 		iterate (packge.via_restrict.top.cutouts, write_cutout'access);
 		section_mark (section_top, FOOTER);
 
 		-- bottom
 		section_mark (section_bottom, HEADER);
-		iterate (packge.via_restrict.bottom.zones, write_zone'access);			
+		iterate (packge.via_restrict.bottom.zones, write_zone'access);
 		iterate (packge.via_restrict.bottom.cutouts, write_cutout'access);
 		section_mark (section_bottom, FOOTER);
-		
-		section_mark (section_via_restrict, FOOTER);	
-		
+
+		section_mark (section_via_restrict, FOOTER);
+
 	end write_via_restrict;
 
-	
+
 end et_package_write_via_restrict;

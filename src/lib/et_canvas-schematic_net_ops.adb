@@ -41,11 +41,11 @@
 package body et_canvas.schematic_net_ops is
 
 
-	
+
 -- RENAME WINDOW:
-	
-	
-	procedure build_rename_window is 
+
+
+	procedure build_rename_window is
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		-- label_status	: gtk.label.gtk_label;
@@ -59,15 +59,15 @@ package body et_canvas.schematic_net_ops is
 
 		-- Connect the "on_key_press_event" signal:
 		rename_window.on_key_press_event (access_cb_rename_window_key_pressed);
-		
-		
+
+
 		gtk_new_vbox (box);
 		add (rename_window, box);
 
 		-- show the old name:
 		gtk_new (label_old, "old:");
 		pack_start (box, label_old);
-		
+
 		gtk_new (rename_old);
 		pack_start (box, rename_old);
 
@@ -82,7 +82,7 @@ package body et_canvas.schematic_net_ops is
 		-- gtk_new (label_status);
 		-- pack_start (box, label_status);
 
-		
+
 	end build_rename_window;
 
 
@@ -90,15 +90,15 @@ package body et_canvas.schematic_net_ops is
 
 
 
-	
 
 
 
-	
 
-	
+
+
+
 -- RENAME WINDOW:
-	
+
 	function cb_rename_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
@@ -106,15 +106,15 @@ package body et_canvas.schematic_net_ops is
 	is
 		pragma unreferenced (window);
 		debug : constant boolean := false;
-		
+
 		event_handled : boolean;
-		key : constant gdk_key_type := event.keyval;		
+		key : constant gdk_key_type := event.keyval;
 	begin
 		if debug then
 			put_line ("cb_rename_window_key_pressed");
 		end if;
 
-		
+
 		case key is
 			when GDK_ESCAPE =>
 				if debug then
@@ -127,30 +127,30 @@ package body et_canvas.schematic_net_ops is
 				-- the canvas is instantiated. For example see procedure
 				-- show_rename_window in et_cnavas_schematic:
 				rename_window.destroy;
-				
+
 				event_handled := true;
 
-				
+
 			when others =>
 				if debug then
 					put_line ("other key");
 				end if;
-				
+
 				event_handled := false;
 		end case;
-		
+
 		return event_handled;
 	end cb_rename_window_key_pressed;
-	
 
-	
-	
+
+
+
 end et_canvas.schematic_net_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
 

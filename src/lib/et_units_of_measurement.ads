@@ -50,9 +50,9 @@ with ada.containers.ordered_maps;
 package et_units_of_measurement is
 
 
-	-- CS apply prefix 
+	-- CS apply prefix
 
-	
+
 	type type_unit_of_measurement is (
 		MILLIOHM,
 		OHM,
@@ -65,10 +65,10 @@ package et_units_of_measurement is
 		MICROFARAD,
 		MILLIFARAD,
 		FARAD,
-		
+
 		NANOHENRY,
-		MICROHENRY,		
-		MILLIHENRY,	
+		MICROHENRY,
+		MILLIHENRY,
 		HENRY,
 
 		VOLT,
@@ -82,19 +82,19 @@ package et_units_of_measurement is
 		);
 
 
-	
+
 	-- Converts a string to type_unit_of_measurement:
 	function to_unit_of_measurement (
-		unit : in string) 
+		unit : in string)
 		return type_unit_of_measurement;
 
-	
+
 	-- Returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
 	function to_string (
-		unit : in type_unit_of_measurement) 
+		unit : in type_unit_of_measurement)
 		return string;
 
-	
+
 	-- The abbrevations of units of measurement are limited to two characters.
 	-- So the user could define units like uF or mH. More than two characters are not common.
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
@@ -104,7 +104,7 @@ package et_units_of_measurement is
 	unit_abbrevation_length_max : constant positive := 2;
 
 
-	
+
 	package pac_unit_abbrevation is new generic_bounded_length (unit_abbrevation_length_max);
 
 	use pac_unit_abbrevation;
@@ -116,24 +116,24 @@ package et_units_of_measurement is
 		element_type	=> pac_unit_abbrevation.bounded_string); -- R, m, k, ...
 
 
-	
-	
+
+
 	-- Tests if the given abbrevation contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	procedure check_abbrevation_of_unit_characters (
 		abbrevation	: in pac_unit_abbrevation.bounded_string;
 		characters	: in character_set);
-	
 
 
-	
-	
-		
+
+
+
+
 end et_units_of_measurement;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

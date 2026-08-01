@@ -40,26 +40,26 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_fonts is
-	
+
 
 	function to_string (
-		family : in pac_font_family.bounded_string) 
+		family : in pac_font_family.bounded_string)
 		return string
 	is begin
 		return pac_font_family.to_string (family);
 	end to_string;
 
 
-	
+
 	function to_family (
-		family : in string) 
-		return pac_font_family.bounded_string 
+		family : in string)
+		return pac_font_family.bounded_string
 	is begin
 		return pac_font_family.to_bounded_string (family);
 	end to_family;
 
 
-	
+
 	function to_font (
 		family	: in type_family;
 		slant	: in type_slant;
@@ -84,7 +84,7 @@ package body et_fonts is
 
 			when SLANT_ITALIC =>
 				result.slant := CAIRO_FONT_SLANT_ITALIC;
-				
+
 			when others =>
 				null; -- CS
 		end case;
@@ -99,14 +99,14 @@ package body et_fonts is
 
 		return result;
 	end to_font;
-	
+
 
 end et_fonts;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

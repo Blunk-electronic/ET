@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about contours in general.
 --
 --
@@ -74,9 +74,9 @@ package et_package_read_terminal is
 
 	tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
 	tht_stop_mask_shape_top			: type_stopmask_expand_mode := stopmask_expand_mode_default;
-	tht_stop_mask_shape_bottom		: type_stopmask_expand_mode := stopmask_expand_mode_default;		
+	tht_stop_mask_shape_bottom		: type_stopmask_expand_mode := stopmask_expand_mode_default;
 	tht_stop_mask_contours_top		: type_stopmask_contour;
-	tht_stop_mask_contours_bottom	: type_stopmask_contour;		
+	tht_stop_mask_contours_bottom	: type_stopmask_contour;
 
 	tht_width_inner_layers	: type_track_width := type_track_width'first;
 	tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
@@ -85,14 +85,14 @@ package et_package_read_terminal is
 
 	terminal_name			: pac_terminal_name.bounded_string;
 	terminal_technology		: type_assembly_technology := assembly_technology_default;
-	tht_pad_shape			: type_pad_outline_tht;		
+	tht_pad_shape			: type_pad_outline_tht;
 	smt_pad_shape			: type_contour;
 
 	smt_pad_face			: type_face := face_default;
 
 	smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
 	smt_stop_mask_shape		: type_stopmask_expand_mode := stopmask_expand_mode_default;
-	smt_stop_mask_contours	: type_stopmask_contour;		
+	smt_stop_mask_contours	: type_stopmask_contour;
 
 	-- NOTE: Solder paste is applied to SMT pads only.
 	smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
@@ -102,46 +102,46 @@ package et_package_read_terminal is
 	smt_stencil_shrink		: type_distance_positive := stencil_shrink_mode_default;
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure read_terminal (
 		line : in type_fields_of_line);
-	
-	
-	
+
+
+
 
 -- THT:
 
 	procedure assign_contour_conductor_tht (
 		face : in type_face);
 
-	
+
 	procedure assign_contour_stopmask_tht (
 		face : in type_face);
-	
+
 
 	procedure assign_plated_millings;
 
 
-	
-	
+
+
 
 -- SMT:
-	
+
 	procedure assign_contour_conductor_smt;
 
 	procedure assign_contour_stopmask_smt;
-	
+
 	procedure assign_contour_stencil_smt;
-	
-	
-	
+
+
+
 	-- Assembles the elements of a terminal and appends the final terminal to the
 	-- list of terminals of the package.
 	procedure build_terminal ( -- CS rename to insert_terminal
 		packge			: in type_package_model_access;
 		log_threshold	: in type_log_level);
-	
+
 end et_package_read_terminal;

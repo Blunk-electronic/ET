@@ -62,38 +62,38 @@ package et_module_read_board_zones is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	procedure read_fill_zone_keepout (
 		line : in type_fields_of_line);
-	
+
 
 	procedure read_keepout_cutout (
 		line : in type_fields_of_line);
-	
-	
+
+
 
 	procedure read_cutout_non_conductor (
-		line : in type_fields_of_line);	
+		line : in type_fields_of_line);
 
-	
+
 	-- Reads cutout zone in conductor layer.
 	-- NOTE: This is about floating conductor zones. Has nothing to
 	-- do with nets and routes.
 	procedure read_cutout_conductor_non_electric (
 		line : in type_fields_of_line);
 
-		
-		
+
+
 	procedure read_fill_zone_non_conductor (
 		line : in type_fields_of_line);
-		
-	
-	
+
+
+
 	procedure read_fill_zone_conductor_non_electric (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_fill_zone_restrict (
 		line	: in type_fields_of_line);
 
@@ -101,7 +101,7 @@ package et_module_read_board_zones is
 	procedure insert_polygon_route_restrict ( -- CS rename to insert_zone_route_restrict
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure insert_zone_via_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -113,7 +113,7 @@ package et_module_read_board_zones is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure insert_polygon ( -- CS rename to insert_zone ?
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
@@ -121,18 +121,18 @@ package et_module_read_board_zones is
 		log_threshold	: in type_log_level);
 
 
-		
+
 
 -- CUTOUT:
-	
+
 	procedure read_cutout_restrict (
 		line	: in type_fields_of_line);
 
-	
+
 	procedure insert_cutout_via_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-		
+
 
 	procedure insert_cutout_route_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -146,22 +146,22 @@ package et_module_read_board_zones is
 		log_threshold	: in type_log_level);
 
 
-	-- This is about cutout zones to trim floating contours in 
+	-- This is about cutout zones to trim floating contours in
 	-- signal layers. No connection to any net.
 	procedure insert_cutout_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 end et_module_read_board_zones;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

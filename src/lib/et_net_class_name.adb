@@ -43,29 +43,29 @@ package body et_net_class_name is
 
 
 	function to_string (
-		net_class_name : in pac_net_class_name.bounded_string) 
-		return string 
+		net_class_name : in pac_net_class_name.bounded_string)
+		return string
 	is begin
 		return pac_net_class_name.to_string (net_class_name);
 	end to_string;
 
-	
-	
-	
+
+
+
 	function to_net_class_name (
 		net_class_name : in string)
 		return pac_net_class_name.bounded_string
 	is begin
 		return to_bounded_string (net_class_name);
 	end to_net_class_name;
-	
-	
-	
+
+
+
 end et_net_class_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

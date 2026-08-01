@@ -41,7 +41,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_conductor_text.packages is
-	
+
 
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
@@ -56,7 +56,7 @@ package body et_conductor_text.packages is
 			next (c);
 		end loop;
 	end iterate;
-	
+
 
 	procedure mirror_texts (
 		texts	: in out pac_conductor_texts.list;
@@ -65,13 +65,13 @@ package body et_conductor_text.packages is
 		pragma unreferenced (axis);
 		result : pac_conductor_texts.list;
 
-		procedure query_text (c : in pac_conductor_texts.cursor) is 
+		procedure query_text (c : in pac_conductor_texts.cursor) is
 			t : type_conductor_text := element (c);
 		begin
 			mirror_text (t);
 			result.append (t);
 		end query_text;
-		
+
 	begin
 		texts.iterate (query_text'access);
 		texts := result;
@@ -84,7 +84,7 @@ package body et_conductor_text.packages is
 	is
 		result : pac_conductor_texts.list;
 
-		procedure query_text (c : in pac_conductor_texts.cursor) is 
+		procedure query_text (c : in pac_conductor_texts.cursor) is
 			t : type_conductor_text := element (c);
 		begin
 			rotate_text (t, angle);
@@ -104,7 +104,7 @@ package body et_conductor_text.packages is
 	is
 		result : pac_conductor_texts.list;
 
-		procedure query_text (c : in pac_conductor_texts.cursor) is 
+		procedure query_text (c : in pac_conductor_texts.cursor) is
 			t : type_conductor_text := element (c);
 		begin
 			move_text (t, offset);
@@ -116,7 +116,7 @@ package body et_conductor_text.packages is
 		texts := result;
 	end move_texts;
 
-	
+
 	function to_polygons (
 		texts		: in pac_conductor_texts.list)
 		return pac_polygon_list.list
@@ -130,19 +130,19 @@ package body et_conductor_text.packages is
 			scratch := get_borders (text.vectors);
 			result.splice (before => pac_polygon_list.no_element, source => scratch);
 		end query_text;
-		
+
 	begin
 		texts.iterate (query_text'access);
 		return result;
 	end to_polygons;
 
-	
-		
+
+
 end et_conductor_text.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

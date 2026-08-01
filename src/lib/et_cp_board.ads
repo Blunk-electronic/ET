@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_logging;				use et_logging;
 with et_generic_modules;		use et_generic_modules;
@@ -47,15 +47,15 @@ package et_cp_board is
 	use pac_generic_modules;
 
 
-	-- Evaluates the exit code of the given 
+	-- Evaluates the exit code of the given
 	-- command and writes helpful messages in the log file:
 	procedure evaluate_command_exit_code (
 		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 	-- Executes a board command.
 	-- Is called by procedure execute_script_command whenever a
 	-- board related command is to be executed:
@@ -65,12 +65,12 @@ package et_cp_board is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_cp_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

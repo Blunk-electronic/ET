@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -84,11 +84,11 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "add device", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 9 =>
@@ -96,16 +96,16 @@ package body et_cp_schematic_device is
 				add_electrical_device (
 					module_cursor 	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
-					destination		=> to_position 
+					destination		=> to_position
 						(
 						sheet => to_sheet (get_field (cmd, 6)),
-						point => set 
+						point => set
 									(
 									x => to_distance (get_field (cmd, 7)),
 									y => to_distance (get_field (cmd, 8))
 									),
 						rotation => to_rotation (get_field (cmd, 9))),
-					
+
 					variant			=> to_variant_name (""),
 
 					-- Depending on the origin of the command,
@@ -113,16 +113,16 @@ package body et_cp_schematic_device is
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when 10 =>
 				-- A real device requires specification of a package variant.
 				add_electrical_device (
 					module_cursor 	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
-					destination		=> to_position 
+					destination		=> to_position
 						(
 						sheet => to_sheet (get_field (cmd, 6)),
-						point => set 
+						point => set
 									(
 									x => to_distance (get_field (cmd, 7)),
 									y => to_distance (get_field (cmd, 8))
@@ -130,20 +130,20 @@ package body et_cp_schematic_device is
 						rotation		=> to_rotation (get_field (cmd, 9))
 						),
 					variant			=> to_variant_name (get_field (cmd, 10)),
-					
+
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
-					commit_design	=> to_commit_design (cmd),					
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-					
-			when 11 .. type_field_count'last => 
+
+			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end add_device;
 
@@ -159,7 +159,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
 	begin
@@ -168,11 +168,11 @@ package body et_cp_schematic_device is
 
 
 		name := to_device_name (get_field (cmd, 5)); -- IC1
-		
+
 		case cmd_field_count is
 			when 6 =>
 				if electrical_device_exists (module, name) then
-					
+
 					rename_electrical_device (
 						module_cursor 		=> module,
 						device_name_before	=> name,
@@ -187,18 +187,18 @@ package body et_cp_schematic_device is
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 
-				
+
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
-			when others => command_incomplete (cmd);
-		end case; 
 
-		
+			when others => command_incomplete (cmd);
+		end case;
+
+
 		log_indentation_down;
 	end rename_device;
 
-	
+
 
 
 
@@ -211,25 +211,25 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		device_name : type_device_name;
 	begin
 		log (text => "delete device", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 5 =>
 				device_name := to_device_name (get_field (cmd, 5));
 
 				-- Proceed if the specified device exists:
 				if electrical_device_exists (module, device_name) then
-				
+
 					delete_electrical_device (
 						module_cursor 	=> module,
 						device_name		=> device_name,
-						
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
@@ -239,24 +239,24 @@ package body et_cp_schematic_device is
 					message_device_not_found (SEVERITY_ERROR, device_name);
 				end if;
 
-				
+
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end delete_device;
 
 
 
-	
 
 
 
-	
+
+
 
 
 	procedure copy_device (
@@ -265,22 +265,22 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name, device_created : type_device_name;
-		
+
 		use et_unit_name;
 	begin
 		log (text => "copy device", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 9 =>
 				name := to_device_name (get_field (cmd, 5));
 
 				if electrical_device_exists (module, name) then
-				
+
 					copy_device (
 						module_cursor 	=> module,
 						device_name		=> name,
@@ -288,7 +288,7 @@ package body et_cp_schematic_device is
 						-- CS: In the future here could be
 						-- an explicit unit name requested by the caller:
 						unit_name_explicit	=> unit_name_default,
-						
+
 						destination		=> to_position (
 							sheet => to_sheet (get_field (cmd, 6)),
 							point => set
@@ -296,7 +296,7 @@ package body et_cp_schematic_device is
 										x => to_distance (get_field (cmd, 7)),
 										y => to_distance (get_field (cmd, 8))),
 							rotation		=> to_rotation (get_field (cmd, 9))),
-							
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
@@ -306,25 +306,25 @@ package body et_cp_schematic_device is
 				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
-				
+
 
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 		log_indentation_down;
 	end copy_device;
 
-	
 
 
 
 
-	
 
-	
+
+
+
 
 	procedure set_device_value (
 		module			: in pac_generic_modules.cursor;
@@ -332,7 +332,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
 
@@ -346,7 +346,7 @@ package body et_cp_schematic_device is
 			when 6 =>
 				name := to_device_name (get_field (cmd, 5)); -- R1
 
-				
+
 				if electrical_device_exists (module, name) then
 
 					-- validate value
@@ -357,7 +357,7 @@ package body et_cp_schematic_device is
 						module_cursor 	=> module,
 						device_name		=> name,
 						value			=> value, -- 470R
-						
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
@@ -366,25 +366,25 @@ package body et_cp_schematic_device is
 				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
-				
+
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end set_device_value;
 
 
 
-	
 
 
 
-	
+
+
 
 
 
@@ -394,7 +394,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
 		purpose : pac_device_purpose.bounded_string; -- brightness_control
@@ -408,15 +408,15 @@ package body et_cp_schematic_device is
 				name := to_device_name (get_field (cmd, 5)); -- R1
 
 				if electrical_device_exists (module, name) then
-					
+
 					purpose := to_purpose (get_field (cmd, 6));
-						
+
 					-- set the purpose
 					set_purpose (
 						module_cursor 	=> module,
 						device_name		=> name,
 						purpose			=> purpose, -- brightness_control
-						
+
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
@@ -425,11 +425,11 @@ package body et_cp_schematic_device is
 				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
-				
+
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -440,7 +440,7 @@ package body et_cp_schematic_device is
 
 
 
-	
+
 
 
 
@@ -452,7 +452,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		name : type_device_name;
@@ -479,23 +479,23 @@ package body et_cp_schematic_device is
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
-						
-				else	
+
+				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
-				
+
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end set_device_partcode;
 
-	
+
 
 
 
@@ -510,7 +510,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
 		variant : pac_package_variant_name.bounded_string; -- N, D
@@ -524,12 +524,12 @@ package body et_cp_schematic_device is
 				name := to_device_name (get_field (cmd, 5)); -- IC1
 
 				if electrical_device_exists (module, name) then
-					
+
 					-- validate variant
 					check_variant_name_length (get_field (cmd, 6));
 					variant := to_variant_name (get_field (cmd, 6));
 					check_variant_name_characters (variant);
-					
+
 					-- set the variant
 					set_package_variant (
 						module_cursor	=> module,
@@ -540,15 +540,15 @@ package body et_cp_schematic_device is
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
-						
+
 				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
-				
+
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -563,7 +563,7 @@ package body et_cp_schematic_device is
 
 
 
-	
+
 
 	procedure renumber_devices (
 		module			: in pac_generic_modules.cursor;
@@ -571,7 +571,7 @@ package body et_cp_schematic_device is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_device_name;
 	begin
@@ -592,7 +592,7 @@ package body et_cp_schematic_device is
 
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -600,15 +600,15 @@ package body et_cp_schematic_device is
 		log_indentation_down;
 	end renumber_devices;
 
-	
-	
+
+
 end et_cp_schematic_device;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

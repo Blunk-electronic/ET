@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -46,8 +46,8 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_netlist_devices is
-	
-	
+
+
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
 		use pac_port_name;
@@ -55,7 +55,7 @@ package body et_netlist_devices is
 	begin
 		if left.device < right.device then
 			result := true;
-			
+
 		elsif left.device = right.device then
 
 			if left.port < right.port then
@@ -63,21 +63,21 @@ package body et_netlist_devices is
 			else
 				result := false;
 			end if;
-			
+
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end;
 
 
-	
+
 end et_netlist_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

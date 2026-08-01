@@ -45,42 +45,42 @@ with ada.containers.doubly_linked_lists;
 
 
 package et_sheets is
-	
+
 	sheet_count_max : constant positive := 100;
 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
-	
+
 	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
 	-- CS rename to type_sheet_id or similar
 
 	sheet_default : constant type_sheet := type_sheet'first;
-	
+
 	function to_string (sheet : in type_sheet) return string;
 	-- CS better:
 	-- function to_string (sheet : in type_sheet_relative) return string;
 	-- to cover the whole range of sheet numbers
-	
+
 	function to_sheet (sheet : in string) return type_sheet;
 
 	function relative_to_string (sheet : in type_sheet_relative) return string;
 	-- CS remove
-	
+
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
-	
+
 
 	procedure add (
 		sheet	: in out type_sheet;
 		offset	: in type_sheet_relative);
-		
-	
+
+
 	package pac_sheet_numbers is new doubly_linked_lists (type_sheet);
 
 	package pac_sheet_sorting is new pac_sheet_numbers.generic_sorting;
-	
+
 end et_sheets;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

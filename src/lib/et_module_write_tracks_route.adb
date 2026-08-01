@@ -69,24 +69,24 @@ package body et_module_write_tracks_route is
 	use pac_file_rw;
 
 
-	
+
 	procedure query_route (
 		net_name	: in pac_net_name.bounded_string;
-		net			: in type_net) 
+		net			: in type_net)
 	is
 		pragma unreferenced (net_name);
 		use et_board_geometry;
 		use pac_contours;
 
 		use et_board_geometry.pac_geometry_2;
-		
+
 		use et_conductor_segment.boards;
 
 		use et_fill_zones;
 		use et_fill_zones.boards;
-		use et_thermal_relief;		
+		use et_thermal_relief;
 
-		
+
 
 
 		procedure write_lines is
@@ -95,7 +95,7 @@ package body et_module_write_tracks_route is
 		begin
 			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
-				
+
 				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor), FORMAT_2));
 				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor), FORMAT_2));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
@@ -110,13 +110,13 @@ package body et_module_write_tracks_route is
 
 
 
-		
+
 
 
 		procedure write_arcs is
 			use pac_conductor_arcs;
 			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
-		begin		
+		begin
 			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
@@ -125,23 +125,23 @@ package body et_module_write_tracks_route is
 				write (keyword => keyword_end   , parameters => to_string (get_B (arc_cursor), FORMAT_2));
 				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
-				
+
 				section_mark (section_arc, FOOTER);
 				next (arc_cursor);
 			end loop;
 		end write_arcs;
 
-		
 
 
 
 
-		
+
+
 		procedure write_zones_solid is
-			use pac_route_solid; 
+			use pac_route_solid;
 			polygon_solid_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
 
-			
+
 			procedure query_zone (zone : in type_route_solid) is
 			begin
 				section_mark (section_zone, HEADER);
@@ -149,60 +149,60 @@ package body et_module_write_tracks_route is
 
 				write (keyword => keyword_easing_style,
 					parameters => to_string (zone.easing.style));
-				
-				write (keyword => keyword_easing_radius, 
+
+				write (keyword => keyword_easing_radius,
 					parameters => to_string (zone.easing.radius));
 
-				
-				
+
+
 				write (keyword => keyword_width,
 					parameters => to_string (zone.linewidth));
 
-				write (keyword => keyword_isolation, 
+				write (keyword => keyword_isolation,
 					parameters => to_string (zone.isolation));
-				
-				write (keyword => keyword_priority , 
+
+				write (keyword => keyword_priority ,
 					parameters => to_string (zone.properties.priority_level));
-				
-				write (keyword => keyword_layer, 
+
+				write (keyword => keyword_layer,
 					parameters => to_string (zone.properties.layer));
 
-				write (keyword => keyword_fill_style, 
+				write (keyword => keyword_fill_style,
 					parameters => to_string (et_primitive_objects.SOLID));
 
-					
+
 				case zone.connection is
-					when THERMAL => 
-						write (keyword => keyword_connection, 
+					when THERMAL =>
+						write (keyword => keyword_connection,
 							parameters => to_string (zone.connection));
-						
+
 						write (keyword => keyword_pad_technology,
 							parameters => to_string (zone.relief_properties.technology));
-						
-						write (keyword => keyword_relief_width_min, 
-							parameters => to_string (zone.relief_properties.width_min));
-						
-						write (keyword => keyword_relief_gap_max,
-							parameters => to_string (zone.relief_properties.gap_max));	
 
-						
-						
+						write (keyword => keyword_relief_width_min,
+							parameters => to_string (zone.relief_properties.width_min));
+
+						write (keyword => keyword_relief_gap_max,
+							parameters => to_string (zone.relief_properties.gap_max));
+
+
+
 					when SOLID =>
 						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));
-						
+
 				end case;
 
 				section_mark (section_contours, HEADER);
 				write_polygon_segments (type_contour (zone));
 				section_mark (section_contours, FOOTER);
-				
+
 				section_mark (section_zone, FOOTER);
 			end query_zone;
 
-			
+
 		begin
 			while polygon_solid_cursor /= pac_route_solid.no_element loop
-				query_element (polygon_solid_cursor, query_zone'access);				
+				query_element (polygon_solid_cursor, query_zone'access);
 				next (polygon_solid_cursor);
 			end loop;
 		end write_zones_solid;
@@ -211,13 +211,13 @@ package body et_module_write_tracks_route is
 
 
 
-		
+
 
 		procedure write_zones_hatched is
 			use pac_route_hatched;
 			polygon_hatched_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 
-			
+
 			procedure query_zone (zone : in type_route_hatched) is
 			begin
 				section_mark (section_zone, HEADER);
@@ -225,47 +225,47 @@ package body et_module_write_tracks_route is
 
 				write (keyword => keyword_easing_style,
 					parameters => to_string (zone.easing.style));
-				
-				write (keyword => keyword_easing_radius, 
+
+				write (keyword => keyword_easing_radius,
 					parameters => to_string (zone.easing.radius));
 
-				
+
 
 				write (keyword => keyword_width,
 					parameters => to_string (zone.linewidth));
 
-				write (keyword => keyword_isolation, 
+				write (keyword => keyword_isolation,
 				   parameters => to_string (zone.isolation));
-				
-				write (keyword => keyword_priority , 
+
+				write (keyword => keyword_priority ,
 					parameters => to_string (zone.properties.priority_level));
-				
-				write (keyword => keyword_layer, 
+
+				write (keyword => keyword_layer,
 					parameters => to_string (zone.properties.layer));
 
-				write (keyword => keyword_fill_style, 
+				write (keyword => keyword_fill_style,
 					parameters => to_string (HATCHED));
 
-				
-				write (keyword => keyword_spacing, 
+
+				write (keyword => keyword_spacing,
 					parameters => to_string (zone.spacing));
 
-					
+
 				case zone.connection is
-					when THERMAL => 
-						write (keyword => keyword_connection, 
+					when THERMAL =>
+						write (keyword => keyword_connection,
 							parameters => to_string (zone.connection));
-						
+
 						write (keyword => keyword_pad_technology,
 							parameters => to_string (zone.relief_properties.technology));
-						
-						write (keyword => keyword_relief_width_min, 
-							parameters => to_string (zone.relief_properties.width_min));
-						
-						write (keyword => keyword_relief_gap_max,
-							parameters => to_string (zone.relief_properties.gap_max));	
 
-		
+						write (keyword => keyword_relief_width_min,
+							parameters => to_string (zone.relief_properties.width_min));
+
+						write (keyword => keyword_relief_gap_max,
+							parameters => to_string (zone.relief_properties.gap_max));
+
+
 					when SOLID =>
 						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));
 
@@ -274,29 +274,29 @@ package body et_module_write_tracks_route is
 				section_mark (section_contours, HEADER);
 				write_polygon_segments (type_contour (zone));
 				section_mark (section_contours, FOOTER);
-				
+
 				section_mark (section_zone, FOOTER);
 			end query_zone;
 
-			
+
 		begin
 			while polygon_hatched_cursor /= pac_route_hatched.no_element loop
 				query_element (polygon_hatched_cursor, query_zone'access);
 				next (polygon_hatched_cursor);
 			end loop;
 		end write_zones_hatched;
-		
 
 
 
 
-		
-		
+
+
+
 		procedure write_vias is
 			use et_vias;
 			use pac_vias;
 
-			
+
 			procedure query_via (c : in pac_vias.cursor) is begin
 				section_mark (section_via, HEADER);
 
@@ -310,33 +310,33 @@ package body et_module_write_tracks_route is
 					when THROUGH =>
 						write (keyword => keyword_restring_outer,
 							parameters => to_string (element (c).restring_outer));
-						
+
 					when BLIND_DRILLED_FROM_TOP =>
 						write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_top));
 						write (keyword => keyword_destination, parameters => to_string (element (c).lower));
-						
+
 					when BLIND_DRILLED_FROM_BOTTOM =>
 						write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_bottom));
 						write (keyword => keyword_destination, parameters => to_string (element (c).upper));
-						
+
 					when BURIED =>
 						write (keyword => keyword_layers, parameters => to_string (element (c).layers));
 				end case;
 
 				write (keyword => keyword_restring_inner,
 					parameters => to_string (element (c).restring_inner));
-				
+
 				section_mark (section_via, FOOTER);
 			end query_via;
 
-			
+
 		begin
 			net.route.vias.iterate (query_via'access);
 		end write_vias;
 
 
-		
-		
+
+
 	begin
 		section_mark (section_route, HEADER);
 
@@ -347,8 +347,8 @@ package body et_module_write_tracks_route is
 		write_zones_solid;
 		write_zones_hatched;
 
-		
-		
+
+
 		-- cutout zones -> now net specific restrict areas
 		-- CS
 		--while cutout_zone_cursor /= pac_cutouts.no_element loop
@@ -358,21 +358,21 @@ package body et_module_write_tracks_route is
 			--section_mark (section_contours, HEADER);
 			--write_polygon_segments (type_contour (element (cutout_zone_cursor)));
 			--section_mark (section_contours, FOOTER);
-			
+
 			--cutout_zone_end;
 			--next (cutout_zone_cursor);
 		--end loop;
-		
+
 		section_mark (section_route, FOOTER);
 	end query_route;
 
 
 end et_module_write_tracks_route;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

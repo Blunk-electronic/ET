@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  ToDo: 
+--  ToDo:
 --  - clean up
 --  - decompose in smaller packages
 
@@ -85,77 +85,77 @@ package et_module is
 
 
 
-	
+
 	type type_clipboard is tagged record -- CS make private
 
 		-- ALL devices of the module independent of the assembly variant:
 		devices			: pac_devices_electrical.map;
-		
+
 		net_classes		: pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
-		
+
 		netchangers		: pac_netchangers.map;
 
 		-- general notes in schematic, not related to drawing frames !
-		texts       	: et_schematic_text.pac_texts.list; 
+		texts       	: et_schematic_text.pac_texts.list;
 
 		-- The nets of the module (incl. routing information for the board)
 		-- containing:
 		-- - strands
 		-- - net segments
 		-- - ports of devices, netchangers and submodules
-		-- On adding, moving or deleting units the structure in 
+		-- On adding, moving or deleting units the structure in
 		-- selector "net" must be updated:
 		nets 	    	: et_nets.pac_nets.map;
-		
+
 		-- The assembly variants of the module:
 		-- - devices that are mounted or not
 		-- - devices which can have a different value, partcode or purpose
 		-- - variants of submodules
 		assembly_variants : type_module_assembly_variants;
 
-		
+
 		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
 		board			: type_board;
-		
-		-- The tree of submodules is stored here. 
+
+		-- The tree of submodules is stored here.
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):
 		submod_tree		: pac_renumber_modules.tree;
 
 		-- The netlists containing nets of top module and submodule instances:
-		-- Provide information on primary nets and their subordinated secondary nets per 
+		-- Provide information on primary nets and their subordinated secondary nets per
 		-- assembly variant.
 		netlists		: et_netlists.pac_module_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric	: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
-		
+
 		-- CS: images
 	end record;
 
 
-	
-	
-	
-		
-	
-	
-	
+
+
+
+
+
+
+
 	type type_generic_module is new type_clipboard with record -- CS make private
 		board_available	: type_board_available := FALSE;
-		
+
 		commit_index	: et_commit.type_commit_index_zero_based := 0;
-		
+
 		meta			: et_meta.type_meta; -- for both schematic and layout
 
 		rules			: type_design_rules; -- design rules, erc rules ...
-		
+
 		description		: pac_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_drawing_frame.schematic.type_frames_schematic;
-		
+
 		grid			: et_schematic_geometry.pac_grid.type_grid; -- the drawing grid of the schematic
 
 		device_commits	: type_devices_undo_redo_stack;
@@ -165,9 +165,9 @@ package et_module is
 		net_commits		: et_nets.type_nets_undo_redo_stack;
 
 		board_commits	: type_board_undo_redo_stack;
-		
+
 		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
-		
+
 		-- CS: image commits
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
 	end record;
@@ -175,44 +175,44 @@ package et_module is
 
 
 
-	
-	
 
 
-	
-	
+
+
+
+
 -- CS: Move this stuff to separate packages:
 
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)
 		return pac_library_paths_schematic.list;
-		
+
 
 	function get_preferred_device_libraries_board (
 		module : in type_generic_module)
 		return pac_library_paths_board.list;
 
-		
+
 
 	-- Returns the design rules (both for schematic and board):
 	function get_design_rules (
 		module : in type_generic_module)
 		return type_design_rules;
-	
+
 
 	-- Returns true if schematic design rules exist:
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean;
 
-		
+
 	-- Returns true if board design rules exist:
 	function design_rules_board_assigned (
 		module : in type_generic_module)
 		return boolean;
 
-		
-		
+
+
 	function get_grid_schematic (
 		module : in type_generic_module)
 		return et_schematic_geometry.pac_grid.type_grid;
@@ -221,7 +221,7 @@ package et_module is
 	function get_grid_board (
 		module : in type_generic_module)
 		return et_board_geometry.pac_grid.type_grid;
-	
+
 
 
 	-- Returns true if the given assembly variant exists:
@@ -242,12 +242,12 @@ package et_module is
 		module	: in type_generic_module)
 		return natural;
 
-	
+
 end et_module;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

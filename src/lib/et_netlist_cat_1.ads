@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   To Do: 
+--   To Do:
 --
 --
 
@@ -61,9 +61,9 @@ package et_netlist_cat_1 is
 	use pac_generic_modules;
 
 
-	-- These constants are used when the netlist 
+	-- These constants are used when the netlist
 	-- is written to a file:
-	
+
 	comment_mark 			: constant string := "#";
 
 	format_version			: constant string := "1.0";
@@ -71,9 +71,9 @@ package et_netlist_cat_1 is
 	identifier_device		: constant string := "device";
 	identifier_submodule	: constant string := "submodule";
 	identifier_netchanger	: constant string := "netchanger";
-	
-	
-	
+
+
+
 	-- A net contains the ports of devices, submodules
 	-- and netchangers:
 	type type_net_ports_cat_1 is record
@@ -82,25 +82,25 @@ package et_netlist_cat_1 is
 		netchangers	: pac_netchanger_ports.set;
 	end record;
 
-	
+
 
 	use pac_net_name;
-	
+
 	-- The key to the netlist is the net name:
 	package pac_netlist_cat_1 is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string, 
+		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net_ports_cat_1);
 
-	
-	
+
+
 	-- Returns the number of nets that the
 	-- given netlist contains:
 	function get_net_count (
 		netlist : in pac_netlist_cat_1.map)
 		return string;
 
-		
-		
+
+
 
 	-- Adds a net to the given netlist:
 	procedure add_net_to_netlist (
@@ -109,13 +109,13 @@ package et_netlist_cat_1 is
 		devices		: in pac_device_ports_extended.set;
 		submodules	: in pac_submodule_ports_extended.set;
 		netchangers	: in pac_netchanger_ports.set);
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	-- Exports the netlist into the export/CAM directory.
 	-- Overwrites an already existing netlist.
 	procedure write_netlist (
@@ -123,14 +123,14 @@ package et_netlist_cat_1 is
 		variant			: in pac_assembly_variant_name.bounded_string; -- low_cost
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level);
-		
-								
+
+
 end et_netlist_cat_1;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

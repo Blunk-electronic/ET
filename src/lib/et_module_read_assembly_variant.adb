@@ -76,7 +76,7 @@ package body et_module_read_assembly_variant is
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
 
 
-	
+
 
 	procedure set_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -86,7 +86,7 @@ package body et_module_read_assembly_variant is
 		pragma unreferenced (log_threshold);
 		kw : constant string := f (line, 1);
 
-		
+
 		procedure set_variant (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
@@ -95,7 +95,7 @@ package body et_module_read_assembly_variant is
 			module.assembly_variants.active := active_assembly_variant;
 		end;
 
-		
+
 	begin
 		if kw = keyword_active then
 			expect_field_count (line, 2);
@@ -120,14 +120,14 @@ package body et_module_read_assembly_variant is
 		use et_device_value;
 		use et_device_partcode;
 		use et_module_instance;
-		
+
 		type type_device_variant_access is access type_device_variant;
 
 		kw : constant string := f (line, 1);
 		device_name		: type_device_name; -- R1
 		device			: type_device_variant_access;
 		device_cursor	: pac_device_variants.cursor;
-		
+
 		submod_name		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		submod_var		: pac_assembly_variant_name.bounded_string; -- low_cost
 		submod_cursor	: pac_submodule_variants.cursor;
@@ -144,16 +144,16 @@ package body et_module_read_assembly_variant is
 			expect_field_count (line, 2);
 
 			assembly_variant_description := et_assembly_variants.to_unbounded_string (f (line, 2));
-			
+
 		-- A line like "device R1 not_mounted" or
-		-- a line like "device R1 value 270R partcode 12345" or		
+		-- a line like "device R1 value 270R partcode 12345" or
 		-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
 		-- tells whether a device is mounted or not.
 		elsif kw = keyword_device then
 
 			-- there must be at least 3 fields:
 			expect_field_count (line, 3, warn => false);
-			
+
 			device_name := to_device_name (f (line, 2));
 
 			-- test whether device exists
@@ -164,12 +164,12 @@ package body et_module_read_assembly_variant is
 				raise constraint_error;
 			end if;
 
-			
+
 			if f (line, 3) = keyword_not_mounted then
 				-- line like "device R1 not_mounted"
 
 				device := new type_device_variant'(mounted => et_assembly_variants.NO);
-				
+
 			elsif f (line, 3) = keyword_value then
 				-- line like "device R1 value 270R partcode 12345"
 
@@ -178,7 +178,7 @@ package body et_module_read_assembly_variant is
 				device := new type_device_variant'(
 					mounted	=> et_assembly_variants.YES,
 					others	=> <>); -- to be assigned later
-				
+
 				-- there must be at least 6 fields:
 				expect_field_count (line, 6, warn => false);
 
@@ -209,15 +209,15 @@ package body et_module_read_assembly_variant is
 						raise constraint_error;
 					end if;
 				end if;
-					
+
 			else -- keyword value not found
 				log (SEVERITY_ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
 						" or keyword " & enclose_in_quotes (keyword_not_mounted) &
 						" after device name !", console => true);
 				raise constraint_error;
-			end if;											
+			end if;
 
-			
+
 			-- Insert the device in the current assembly variant:
 			et_assembly_variants.pac_device_variants.insert (
 				container	=> assembly_variant_devices,
@@ -234,7 +234,7 @@ package body et_module_read_assembly_variant is
 				raise constraint_error;
 			end if;
 
-			
+
 		-- a line like "submodule OSC1 variant low_cost
 		-- tells which assembly variant of a submodule is used:
 		elsif kw = keyword_submodule then
@@ -256,10 +256,10 @@ package body et_module_read_assembly_variant is
 			-- followed by the variant name:
 			if f (line, 3) = keyword_variant then
 				submod_var := to_variant (f (line, 4));
-				
+
 				-- NOTE: A test whether the submodule does provide the variant can
-				-- not be executed at this stage because the submodules have not 
-				-- been read yet. This will be done after procdure 
+				-- not be executed at this stage because the submodules have not
+				-- been read yet. This will be done after procdure
 				-- read_submodule_files has been executed. See far below.
 
 				-- Insert the submodule in the current assembly variant:
@@ -283,14 +283,14 @@ package body et_module_read_assembly_variant is
 						" after instance name !", console => true);
 				raise constraint_error;
 			end if;
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_assembly_variant;
 
 
-	
+
 
 
 
@@ -299,18 +299,18 @@ package body et_module_read_assembly_variant is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
-	
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			inserted : boolean;
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
-			log (text => "assembly variant " & 
+			log (text => "assembly variant " &
 					enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 			-- insert variant in container variants
@@ -326,8 +326,8 @@ package body et_module_read_assembly_variant is
 
 			-- An assembly variant must be unique:
 			if not inserted then
-				log (SEVERITY_ERROR, "assembly variant " & 
-						enclose_in_quotes (to_variant (assembly_variant_name)) 
+				log (SEVERITY_ERROR, "assembly variant " &
+						enclose_in_quotes (to_variant (assembly_variant_name))
 						& " already used !", console => true);
 				raise constraint_error;
 			end if;
@@ -337,48 +337,48 @@ package body et_module_read_assembly_variant is
 			assembly_variant_description := to_unbounded_string ("");
 			assembly_variant_devices := et_assembly_variants.pac_device_variants.empty_map;
 			assembly_variant_submodules := pac_submodule_variants.empty_map;
-			
-		end query_module;
-		
 
-	
+		end query_module;
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor),
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
-		
+
 	end insert_assembly_variant;
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 	procedure test_assembly_variants_of_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 
-	
+
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
-			
-			variant_cursor : pac_assembly_variants.cursor := 
+
+			variant_cursor : pac_assembly_variants.cursor :=
 				module.assembly_variants.variants.first;
-			
+
 			variant_name : pac_assembly_variant_name.bounded_string; -- low_cost
 
-			
+
 			procedure query_submodules (
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant)
@@ -397,10 +397,10 @@ package body et_module_read_assembly_variant is
 					while submod_cursor /= pac_submodule_variants.no_element loop
 						submod_name := key (submod_cursor); -- CLK_GENERATOR
 						submod_variant := element (submod_cursor).variant;
-						
-						log (text => "submodule instance " & 
+
+						log (text => "submodule instance " &
 								enclose_in_quotes (to_string (submod_name)) &
-								" variant " & 
+								" variant " &
 								enclose_in_quotes (to_variant (submod_variant)),
 								level => log_threshold + 2);
 
@@ -413,7 +413,7 @@ package body et_module_read_assembly_variant is
 
 							log (text => "Look up section " & section_assembly_variants (2..section_assembly_variants'last) &
 									" to fix the issue !");
-							
+
 							raise constraint_error;
 						end if;
 
@@ -421,8 +421,8 @@ package body et_module_read_assembly_variant is
 					end loop;
 				end if;
 			end query_submodules;
-			
-			
+
+
 		begin -- query_variants
 			if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
 				log (text => "no variants specified", level => log_threshold);
@@ -441,13 +441,13 @@ package body et_module_read_assembly_variant is
 						process		=> query_submodules'access);
 
 					log_indentation_down;
-					
+
 					next (variant_cursor);
 				end loop;
 			end if;
 		end query_variants;
 
-			
+
 	begin
 		log (text => "verifying assembly variants of submodules ...", level => log_threshold);
 		log_indentation_up;
@@ -459,14 +459,14 @@ package body et_module_read_assembly_variant is
 		log_indentation_down;
 	end test_assembly_variants_of_submodules;
 
-	
-	
+
+
 end et_module_read_assembly_variant;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

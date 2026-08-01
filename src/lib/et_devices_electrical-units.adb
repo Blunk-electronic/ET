@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -60,12 +60,12 @@ with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_
 package body et_devices_electrical.units is
 
 
-	
-	
+
+
 	function get_unit_names_deployed (
 		device : in type_device_electrical)
 		return pac_unit_names.list
-	is 
+	is
 		result : pac_unit_names.list;
 
 		procedure query_unit (c : in pac_units.cursor) is begin
@@ -77,15 +77,15 @@ package body et_devices_electrical.units is
 		return result;
 	end;
 
-	
 
 
 
-	
+
+
 	function get_unit_count (
 		device : in type_device_electrical)
 		return natural
-	is 
+	is
 		result : natural;
 		cursor : pac_device_models.cursor;
 	begin
@@ -99,9 +99,9 @@ package body et_devices_electrical.units is
 		return result;
 	end;
 
-	
 
-	
+
+
 	function get_unit_count_deployed (
 		device : in type_device_electrical)
 		return natural
@@ -111,9 +111,9 @@ package body et_devices_electrical.units is
 
 
 
-	
 
-	
+
+
 
 	function get_first_unit (
 		device : in type_device_electrical)
@@ -124,9 +124,9 @@ package body et_devices_electrical.units is
 
 
 
-	
-	
-	
+
+
+
 
 	function locate_unit (
 		device	: in type_device_electrical;
@@ -137,15 +137,15 @@ package body et_devices_electrical.units is
 	end;
 
 
-	
+
 
 
 	function to_string (
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- C
 		query_result	: in type_unit_query)
-		return string 
-	is 
+		return string
+	is
 		use pac_unit_name;
 	begin
 		if query_result.exists then
@@ -176,16 +176,16 @@ package body et_devices_electrical.units is
 	end;
 
 
-	
-	
 
-	
+
+
+
 	function get_unit_count (
 		device : in pac_devices_electrical.cursor)
 		return type_unit_count
-	is 
+	is
 		result : type_unit_count := 1;
-		
+
 		cursor : pac_device_models.cursor;
 	begin
 		-- Get a cursor to the device in the library.
@@ -194,13 +194,13 @@ package body et_devices_electrical.units is
 
 		-- Get the number of units from the device model:
 		result := get_unit_count (cursor);
-		
+
 		return result;
 	end get_unit_count;
 
 
 
-	
+
 
 	function get_unit_count_deployed (
 		device : in pac_devices_electrical.cursor)
@@ -210,7 +210,7 @@ package body et_devices_electrical.units is
 	end;
 
 
-	
+
 
 
 
@@ -236,19 +236,19 @@ package body et_devices_electrical.units is
 	end get_full_name;
 
 
-	
 
 
-	
+
+
 	function get_full_name (
 		device		: in type_device_name;
 		unit		: in pac_unit_name.bounded_string;
 		unit_count	: in type_unit_count)
-		return string 
+		return string
 	is begin
 		if unit_count > 1 then
-			return to_string (device) 
-				& device_unit_separator 
+			return to_string (device)
+				& device_unit_separator
 				& pac_unit_name.to_string (unit);
 		else
 			return to_string (device);
@@ -260,37 +260,37 @@ package body et_devices_electrical.units is
 
 
 
-	
+
 	function get_position (
 		device	: in type_device_electrical;
 		unit	: in pac_unit_name.bounded_string)
 		return type_object_position
 	is
 		-- Locate the given unit in the device:
-		unit_cursor : constant pac_units.cursor := 
+		unit_cursor : constant pac_units.cursor :=
 			device.units.find (unit);
-	
+
 		result : type_object_position;
-		
-		
+
+
 		procedure query_unit (
 			unit_name	: in pac_unit_name.bounded_string;
 			unit		: in type_unit)
-		is 
+		is
 			pragma unreferenced (unit_name);
 		begin
 			result := get_position (unit);
 		end;
-		
+
 	begin
 		query_element (unit_cursor, query_unit'access);
 		return result;
 	end get_position;
-	
-	
-	
-	
-	
+
+
+
+
+
 
 
 
@@ -301,7 +301,7 @@ package body et_devices_electrical.units is
 	is
 		unit_position : type_object_position;
 
-		
+
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
@@ -311,8 +311,8 @@ package body et_devices_electrical.units is
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
 		end query_unit;
-		
-		
+
+
 	begin
 		query_element (
 			position	=> device,
@@ -329,31 +329,31 @@ package body et_devices_electrical.units is
 		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor) -- A, B, C
 		return type_sheet
-	is 
+	is
 		position : type_object_position;
 	begin
 		position := get_position (device, unit);
 		return get_sheet (position);
 	end get_sheet;
 
-	
 
 
-	
+
+
 	function get_unit_position (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_unit_query
-	is 
+	is
 		exists : boolean := false;
 
 		position : type_object_position;
-		
-		
+
+
 		procedure query_device (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
-		is 
+		is
 			pragma unreferenced (device_name);
 			unit_cursor : pac_units.cursor;
 		begin
@@ -368,11 +368,11 @@ package body et_devices_electrical.units is
 				exists := true;
 			end if;
 		end query_device;
-		
+
 
 	begin
 		query_element (device_cursor, query_device'access);
-		
+
 		if exists then
 			return (exists => true, position => position);
 		else
@@ -382,19 +382,19 @@ package body et_devices_electrical.units is
 
 
 
-	
+
 
 
 	function get_unit_positions (
-		device_cursor : in pac_devices_electrical.cursor) 
-		return pac_unit_positions.map 
+		device_cursor : in pac_devices_electrical.cursor)
+		return pac_unit_positions.map
 	is
 		-- temporarily storage of unit coordinates:
 		positions : pac_unit_positions.map;
-		
+
 		procedure get_positions (
 			device_name : in type_device_name;
-			device		: in type_device_electrical) 
+			device		: in type_device_electrical)
 		is
 			pragma unreferenced (device_name);
 		begin
@@ -409,25 +409,25 @@ package body et_devices_electrical.units is
 		return positions;
 	end;
 
-	
 
 
-	
+
+
 	procedure log_unit_positions (
 		positions 		: in pac_unit_positions.map;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
-		
-		procedure write (cursor : in pac_unit_positions.cursor) is 
+
+		procedure write (cursor : in pac_unit_positions.cursor) is
 			use pac_unit_name;
 		begin
-			log (text => 
+			log (text =>
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
 				to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
-		
+
 	begin
 		log (text => "location(s) in schematic:", level => log_threshold);
 		log_indentation_up;
@@ -444,10 +444,10 @@ package body et_devices_electrical.units is
 		unit	: in pac_units.cursor)
 		return pac_points.list
 	is
-		-- This list of location vectors (x/y-positions) 
+		-- This list of location vectors (x/y-positions)
 		-- will be returned to the caller:
 		result : pac_points.list;
-		
+
 		-- The given device and unit exist in the schematic.
 		-- Both provide information about the name and position
 		-- of device and unit in the schematic and the associated
@@ -469,13 +469,13 @@ package body et_devices_electrical.units is
 		unit_name : constant pac_unit_name.bounded_string := key (unit);
 
 
-		
+
 		procedure query_internal_units (
 			model_name		: in pac_device_model_file.bounded_string;
-			device_model	: in type_device_model) 
+			device_model	: in type_device_model)
 		is
 			pragma unreferenced (model_name);
-			unit_cursor : pac_units_internal.cursor;			
+			unit_cursor : pac_units_internal.cursor;
 		begin
 			-- Locate the given unit in the device model
 			-- among the internal units. If it has been found,
@@ -488,10 +488,10 @@ package body et_devices_electrical.units is
 		end query_internal_units;
 
 
-		
+
 		procedure query_external_units (
 			model_name		: in pac_device_model_file.bounded_string;
-			device_model	: in type_device_model) 
+			device_model	: in type_device_model)
 		is
 			pragma unreferenced (model_name);
 			unit_cursor : pac_units_external.cursor;
@@ -509,9 +509,9 @@ package body et_devices_electrical.units is
 
 		-- Get the position of the given unit in the schematic:
 		unit_position : constant type_object_position := get_position (unit);
-		
+
 	begin
-		-- Locate the given unit among the external units 
+		-- Locate the given unit among the external units
 		-- in the device model. Since it is most likely that
 		-- the unit is among the external units, we do this step first:
 		query_element (device_cursor_lib, query_external_units'access);
@@ -529,31 +529,31 @@ package body et_devices_electrical.units is
 		rotate_points (result, get_rotation (unit_position));
 
 		-- CS mirror ?
-		
-		-- Move the port positions by the position of the unit:		
+
+		-- Move the port positions by the position of the unit:
 		move_points (result, get_place (unit_position));
-		
+
 		return result;
 	end get_port_positions;
 
 
 
-	
-	
+
+
 
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return pac_symbol_ports.map 
+		return pac_symbol_ports.map
 	is
 		ports : pac_symbol_ports.map; -- to be returned
 		device_cursor_lib : pac_device_models.cursor;
 	begin
 		device_cursor_lib := get_device_model (device_cursor);
-		
+
 		ports := get_ports_from_symbol_model (
 			device_cursor_lib, unit_name);
-		
+
 		return ports;
 	end get_ports_from_symbol_model;
 
@@ -574,21 +574,21 @@ package body et_devices_electrical.units is
 		use et_mirroring;
 		mirror : type_mirror;
 	begin
-		-- Get the default positions as described in the 
+		-- Get the default positions as described in the
 		-- symbol model:
 		ports := get_ports_from_symbol_model (
 			device_cursor, key (unit_cursor));
 
-		
+
 		-- Rotate, mirror and move the ports according
 		-- to the actual rotation and position of the unit
 		-- in the schematic:
-		
+
 		position := get_position (unit_cursor);
-		rotation := get_rotation (position);	
+		rotation := get_rotation (position);
 		mirror := get_mirror_status (unit_cursor);
 
-		
+
 		if rotation /= zero_rotation then
 			rotate_ports (ports, rotation);
 		end if;
@@ -596,9 +596,9 @@ package body et_devices_electrical.units is
 		if mirror = MIRROR_ALONG_Y_AXIS then
 			mirror_ports (ports);
 		end if;
-		
+
 		move_ports (ports, position);
-		
+
 		return ports;
 	end get_ports_from_schematic;
 
@@ -622,7 +622,7 @@ package body et_devices_electrical.units is
 
 		unit_position : type_object_position;
 
-		
+
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
@@ -645,10 +645,10 @@ package body et_devices_electrical.units is
 			end case;
 
 			move_by (placeholder_position, unit_position.place);
-			
+
 		end query_unit;
 
-		
+
 	begin
 		query_element (
 			position	=> device,
@@ -665,25 +665,25 @@ package body et_devices_electrical.units is
 -- 		device			: in pac_devices_electrical.cursor; -- IC2
 -- 		log_threshold	: in type_log_level)
 -- 	is
--- 		--- The pointer to the device model:		
+-- 		--- The pointer to the device model:
 -- 		device_cursor_lib : pac_device_models.cursor;
--- 
--- 
+--
+--
 -- 	begin
--- 		log (text => "Add first available unit to device " 
+-- 		log (text => "Add first available unit to device "
 -- 			 & to_string (get_device_name (device),
 -- 			  level => log_threshold);
--- 			
+--
 -- 		-- Locate the device model:
 -- 		device_cursor_lib := get_device_model (device_cursor_sch);
--- 
+--
 -- 	end add_first_available_unit;
 
-	
 
 
-	
-	
+
+
+
 
 
 
@@ -691,14 +691,14 @@ package body et_devices_electrical.units is
 
 
 -- PLACEHOLDERS
-	
+
 
 
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return type_default_text_positions 
-	is		
+		return type_default_text_positions
+	is
 		use pac_device_models;
 
 		device : type_device_electrical renames element (device_cursor);
@@ -706,32 +706,32 @@ package body et_devices_electrical.units is
 
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
-		
+
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_device_models.cursor;
 
 		use et_symbol_text;
 		use pac_symbol_texts;
 
-		
-		procedure query_text (c : in pac_symbol_texts.cursor) is 
+
+		procedure query_text (c : in pac_symbol_texts.cursor) is
 		-- Appends a text position (x/y) the the result.
 			use pac_text_positions;
 		begin
 			append (result.texts, element (c).position);
 		end;
 
-		
+
 		-- Indicates whether the unit is internal or external:
 		unit_status : type_unit_ext_int := EXT;
 
-		
+
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_model) 
+			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
-			use pac_units_internal;			
+			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin
 			-- locate the given unit among the internal units
@@ -740,13 +740,13 @@ package body et_devices_electrical.units is
 			-- if the unit exists among the internal units:
 			if unit_cursor /= pac_units_internal.no_element then
 				unit_status := INT;
-				
+
 				-- Collect the positions of texts and store them in result.text
 				-- in the same order as they are listed in symbol.texts:
 				iterate (element (unit_cursor).symbol.texts, query_text'access);
 				-- CS: constraint_error arises here if unit can not be located.
 
-				-- If it is about a real device, take a copy of the default 
+				-- If it is about a real device, take a copy of the default
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
@@ -761,11 +761,11 @@ package body et_devices_electrical.units is
 			end if;
 		end query_internal_units;
 
-		
-		
+
+
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_model) 
+			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
 			use et_symbol_library;
@@ -773,11 +773,11 @@ package body et_devices_electrical.units is
 			use pac_units_external;
 			unit_cursor	: pac_units_external.cursor;
 			sym_cursor	: pac_symbol_models.cursor;
-			
-			
+
+
 			procedure query_symbol (
 				symbol_name	: in pac_symbol_model_name.bounded_string;
-				symbol		: in type_symbol_model) 
+				symbol		: in type_symbol_model)
 			is
 				pragma unreferenced (symbol_name);
 			begin
@@ -785,7 +785,7 @@ package body et_devices_electrical.units is
 				-- in the same order as they are listed in symbol.texts:
 				iterate (symbol.texts, query_text'access);
 
-				-- If it is about a real device, take a copy of the default 
+				-- If it is about a real device, take a copy of the default
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
@@ -796,7 +796,7 @@ package body et_devices_electrical.units is
 				end case;
 			end query_symbol;
 
-			
+
 		begin -- query_external_units
 			-- locate the given unit among the external units
 			unit_cursor := find (device.units_external, unit_name);
@@ -805,7 +805,7 @@ package body et_devices_electrical.units is
 			-- If unit could not be located then it must be internal.
 			if unit_cursor /= pac_units_external.no_element then
 				unit_status := EXT;
-				
+
 				sym_cursor := element (unit_cursor).model_cursor;
 
 				-- Fetch the ports of the external unit.
@@ -816,12 +816,12 @@ package body et_devices_electrical.units is
 			else
 				unit_status := INT;
 			end if;
-			
+
 		end query_external_units;
 
-		
+
 	begin
-		-- Fetch the model name of the given device. 
+		-- Fetch the model name of the given device.
 		model := get_device_model_file (device);
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
@@ -842,9 +842,9 @@ package body et_devices_electrical.units is
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;
-		
+
 		-- CS raise error if unit could not be located at all.
-			
+
 		return result;
 
 		exception
@@ -852,17 +852,17 @@ package body et_devices_electrical.units is
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
-		
+
 	end get_default_text_positions;
 
 
 
 
-	
 
-	
 
-	
+
+
+
 
 
 
@@ -870,8 +870,8 @@ package body et_devices_electrical.units is
 
 
 -- PROPERTIES QUERIES:
-	
-	
+
+
 
 	function get_unit_properties (
 		unit_cursor	: in pac_units.cursor;
@@ -887,7 +887,7 @@ package body et_devices_electrical.units is
 		-- If linebreaks are requested by the caller, then
 		-- this function returns a linefeed character on each call.
 		-- If no linefeeds are requested, then the return is an empty string:
-		function ins_LF return string is 
+		function ins_LF return string is
 			use ada.characters.latin_1;
 		begin
 			if linebreaks then
@@ -896,8 +896,8 @@ package body et_devices_electrical.units is
 				return "";
 			end if;
 		end;
-		
-		
+
+
 		unit : type_unit renames element (unit_cursor);
 
 	begin
@@ -911,15 +911,15 @@ package body et_devices_electrical.units is
 
 			-- CS symbol model
 		end case;
-				
+
 		return to_string (result);
 	end;
 
 
 
 
-	
-	
+
+
 	function get_device_properties (
 		device		: in type_device_electrical;
 		level		: in type_properties_level;
@@ -927,7 +927,7 @@ package body et_devices_electrical.units is
 		return string
 	is
 		use et_devices_electrical.packages;
-		
+
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
@@ -935,7 +935,7 @@ package body et_devices_electrical.units is
 		-- If linebreaks are requested by the caller, then
 		-- this function returns a linefeed character on each call.
 		-- If no linefeeds are requested, then the return is an empty string:
-		function ins_LF return string is 
+		function ins_LF return string is
 			use ada.characters.latin_1;
 		begin
 			if linebreaks then
@@ -944,21 +944,21 @@ package body et_devices_electrical.units is
 				return "";
 			end if;
 		end;
-		
+
 
 		-- CS: Refinement required about what
 		-- should be output on which level.
 
-		
+
 		procedure get_info_1 is begin
 			if is_real (device) then
 				if has_value (device) then
-					result := to_unbounded_string (" value: " 
+					result := to_unbounded_string (" value: "
 						& get_value (device) & ins_LF);
 				end if;
 
 				if has_purpose (device) then
-					result := result & " purpose: " 
+					result := result & " purpose: "
 						& get_purpose (device) & ins_LF;
 				end if;
 			end if;
@@ -968,7 +968,7 @@ package body et_devices_electrical.units is
 		procedure get_info_2 is begin
 			if is_real (device) then
 				if has_partcode (device) then
-					result := result & " partcode: " 
+					result := result & " partcode: "
 						& get_partcode (device) & ins_LF;
 				end if;
 
@@ -979,29 +979,29 @@ package body et_devices_electrical.units is
 
 
 		procedure get_info_3 is begin
-			result := result & " device model: " 
+			result := result & " device model: "
 				& to_string (get_device_model_file (device)) & ins_LF;
 
 			if is_real (device) then
-				result := result & " package model: " 
-					& to_string (get_package_model_name (device)) & ins_LF; 
+				result := result & " package model: "
+					& to_string (get_package_model_name (device)) & ins_LF;
 			end if;
 		end;
 
 
-		
+
 	begin
 		case level is
 			when DEVICE_PROPERTIES_LEVEL_1 =>
 				get_info_1;
 
 			when DEVICE_PROPERTIES_LEVEL_2 =>
-				get_info_1; 
-				get_info_2; 
+				get_info_1;
+				get_info_2;
 
 			when DEVICE_PROPERTIES_LEVEL_3 =>
-				get_info_1; 
-				get_info_2; 
+				get_info_1;
+				get_info_2;
 				get_info_3;
 		end case;
 
@@ -1009,14 +1009,14 @@ package body et_devices_electrical.units is
 	end get_device_properties;
 
 
-	
 
 
 
 
 
-	
-	
+
+
+
 	-- function get_unit_properties (
 	-- 	device		: in type_device_electrical;
 	-- 	level		: in type_properties_level;
@@ -1029,7 +1029,7 @@ package body et_devices_electrical.units is
 	-- end;
 
 
-	
+
 
 	function get_properties (
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -1048,7 +1048,7 @@ package body et_devices_electrical.units is
 		-- If linebreaks are requested by the caller, then
 		-- this function returns a linefeed character on each call.
 		-- If no linefeeds are requested, then the return is an empty string:
-		function ins_LF return string is 
+		function ins_LF return string is
 			use ada.characters.latin_1;
 		begin
 			if linebreaks then
@@ -1058,7 +1058,7 @@ package body et_devices_electrical.units is
 			end if;
 		end;
 
-		
+
 
 		-- This procedure iterates through the units and collects
 		-- information in units_info:
@@ -1067,27 +1067,27 @@ package body et_devices_electrical.units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
-			is 
+			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 			begin
 				-- Iterate through the units and collect properties:
-				while has_element (unit_cursor) loop					
-					units_info := units_info & " unit: " 
+				while has_element (unit_cursor) loop
+					units_info := units_info & " unit: "
 						& get_unit_properties (unit_cursor, level, linebreaks) & ins_LF;
-					
+
 					next (unit_cursor);
 				end loop;
 			end query_device;
-	
+
 		begin
 			query_element (device_cursor, query_device'access);
 		end get_units_info;
-		
-		
+
+
 	begin
 		if all_units then
-			
+
 			-- Collect information of all units:
 			get_units_info;
 
@@ -1109,15 +1109,15 @@ package body et_devices_electrical.units is
 
 
 
-	
-	
+
+
 
 	function get_port (
 		device		: in pac_devices_electrical.cursor;
 		terminal	: in pac_terminal_name.bounded_string)
 		return type_get_port_result
-	is		
-		-- CS: 
+	is
+		-- CS:
 		-- simplify header as in function get_terminal
 		-- use function et_devices.get_unit_and_port
 
@@ -1125,11 +1125,11 @@ package body et_devices_electrical.units is
 		-- rename parameter "device" to device_cursor
 		d : type_device_electrical renames element (device);
 		-- CS rename d to device
-		
+
 		result : type_get_port_result;
 
 		-- Get the cursor to the full device model in the library:
-		device_model : constant pac_device_models.cursor := 
+		device_model : constant pac_device_models.cursor :=
 			d.model_cursor;
 
 		-- This is the package variant used by the given device:
@@ -1140,7 +1140,7 @@ package body et_devices_electrical.units is
 		use et_device_model;
 		use et_device_model_names;
 
-		
+
 		procedure query_model (
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model)
@@ -1150,10 +1150,10 @@ package body et_devices_electrical.units is
 
 			-- Locate the package variant of the given device
 			-- in the device model:
-			variant_lib : constant pac_package_variants.cursor := 
+			variant_lib : constant pac_package_variants.cursor :=
 				find (device.variants, variant_sch);
 
-			
+
 			procedure query_terminal_port_map (
 				name	: in pac_package_variant_name.bounded_string;
 				variant	: in type_package_variant)
@@ -1169,8 +1169,8 @@ package body et_devices_electrical.units is
 				-- Get the port and unit name (which is what we want):
 				if t /= pac_terminal_port_map.no_element then
 					result := (
-						linked	=> TRUE, 
-						unit	=> element (t).unit, 
+						linked	=> TRUE,
+						unit	=> element (t).unit,
 						port	=> element (t).name);
 				else
 					-- If the terminal can not be found in the map then
@@ -1179,25 +1179,25 @@ package body et_devices_electrical.units is
 				end if;
 			end query_terminal_port_map;
 
-			
+
 		begin
 			query_element (variant_lib, query_terminal_port_map'access);
 
 			-- CS result := get_unit_and_port (variant_lib, terminal);
 		end query_model;
 
-		
+
 	begin
 		pac_device_models.query_element (device_model, query_model'access);
-			
+
 		return result;
 	end get_port;
 
-	
-	
 
 
-	
+
+
+
 
 
 	procedure copy_unit_to_device (
@@ -1210,7 +1210,7 @@ package body et_devices_electrical.units is
 		-- This includes placeholders, position,
 		-- rotation and mirror status:
 		unit : type_unit := get_unit (source_unit_cursor);
-		
+
 		c : pac_units.cursor;
 		inserted : boolean;
 	begin
@@ -1218,23 +1218,23 @@ package body et_devices_electrical.units is
 		-- and the number of given sheets:
 		move_unit (unit, offset);
 		move_unit (unit, sheet);
-	
+
 		-- Insert the unit in the given target device:
 		target_device.units.insert (
 			key			=> key (source_unit_cursor),
 			new_item	=> unit,
 			position	=> c,
 			inserted	=> inserted);
-			
+
 		if not inserted then
 			raise constraint_error; -- CS text message ?
 		end if;
 	end copy_unit_to_device;
 
 
-	
 
-	
+
+
 
 
 
@@ -1247,7 +1247,7 @@ package body et_devices_electrical.units is
 
 
 
-	
+
 
 	procedure select_unit (
 		device		: in out type_device_electrical;
@@ -1256,7 +1256,7 @@ package body et_devices_electrical.units is
 	is
 		unit_cursor : pac_units.cursor := device.units.first;
 
-		
+
 		procedure query_unit (
 			unit_name	: in pac_unit_name.bounded_string;
 			unit		: in out type_unit)
@@ -1266,7 +1266,7 @@ package body et_devices_electrical.units is
 			set_selected (unit);
 		end query_unit;
 
-		
+
 	begin
 		if all_units then
 			-- Iterate though all units and set each of them
@@ -1283,14 +1283,14 @@ package body et_devices_electrical.units is
 		end if;
 	end select_unit;
 
-	
-	
+
+
 end et_devices_electrical.units;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

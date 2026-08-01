@@ -46,30 +46,30 @@ package body et_board_layer_category is
 
 
 	function to_layer_category (
-		cat : in string) 
-		return type_layer_category 
+		cat : in string)
+		return type_layer_category
 	is begin
 		return type_layer_category'value (layer_category_prefix & cat);
 	end to_layer_category;
 
 
-	
+
 	function to_string (
-		cat : in type_layer_category) 
-		return string 
+		cat : in type_layer_category)
+		return string
 	is
 		s : constant string := type_layer_category'image (cat);
 	begin
 		return s (layer_category_prefix'length + 1 .. s'last);
 	end to_string;
 
-	
-	
+
+
 end et_board_layer_category;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

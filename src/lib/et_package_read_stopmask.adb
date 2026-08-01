@@ -54,11 +54,11 @@ with et_package_read_text;				use et_package_read_text;
 package body et_package_read_stopmask is
 
 	use pac_geometry_2;
-	
+
 	stop_line : type_stop_line;
 	stop_arc : type_stop_arc;
 	stop_circle : type_stop_circle;
-	
+
 
 
 
@@ -78,7 +78,7 @@ package body et_package_read_stopmask is
 			p := to_vector_model (line, 2);
 			set_A (stop_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -86,24 +86,24 @@ package body et_package_read_stopmask is
 			p := to_vector_model (line, 2);
 			set_B (stop_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			stop_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_stop_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_stop_arc (
 		line	: in type_fields_of_line)
 	is
@@ -118,22 +118,22 @@ package body et_package_read_stopmask is
 			p := to_vector_model (line, 2);
 			set_A (stop_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (stop_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (stop_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -144,19 +144,19 @@ package body et_package_read_stopmask is
 			expect_field_count (line, 2);
 			stop_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_stop_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_stop_circle (
 		line	: in type_fields_of_line)
 	is
@@ -168,7 +168,7 @@ package body et_package_read_stopmask is
 			-- extract the center position starting at field 2 of line
 			set_center (stop_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -179,7 +179,7 @@ package body et_package_read_stopmask is
 			expect_field_count (line, 2);
 			stop_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -194,88 +194,88 @@ package body et_package_read_stopmask is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stop_lines;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stopmask.top.lines, stop_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stopmask.bottom.lines, stop_line);
 		end case;
 		-- CS use procedure add_line
-				
-		-- clean up for next line
-		reset_line (stop_line);		
-	end insert_stop_line;
-	
 
-	
-	
-	
+		-- clean up for next line
+		reset_line (stop_line);
+	end insert_stop_line;
+
+
+
+
+
 	procedure insert_stop_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stop_arcs;
 	begin
 		-- CS check arc
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stopmask.top.arcs, stop_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stopmask.bottom.arcs, stop_arc);
 		end case;
 		-- CS use procedure add_arc
 
 		-- clean up for next arc
-		reset_arc (stop_arc);		
+		reset_arc (stop_arc);
 	end insert_stop_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_stop_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stop_circles;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stopmask.top.circles, stop_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stopmask.bottom.circles, stop_circle);
 		end case;
 		-- CS use procedure add_circle
 
 		-- clean up for next circle
-		reset_circle (stop_circle);		
+		reset_circle (stop_circle);
 	end insert_stop_circle;
 
 
 
 
 
-	
+
 
 
 	procedure insert_stop_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
@@ -285,7 +285,7 @@ package body et_package_read_stopmask is
 		reset_contour (contour);
 	end insert_stop_zone;
 
-	
+
 
 
 
@@ -293,7 +293,7 @@ package body et_package_read_stopmask is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
@@ -302,6 +302,6 @@ package body et_package_read_stopmask is
 		-- clean up for next text
 		reset_text (pac_text);
 	end insert_stop_text;
-	
-	
+
+
 end et_package_read_stopmask;

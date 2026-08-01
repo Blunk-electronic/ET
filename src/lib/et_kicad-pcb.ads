@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          -- 
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -109,13 +109,13 @@ with et_kicad_packages;			use et_kicad_packages;
 package et_kicad.pcb is
 
 	use pac_geometry_brd;
-	use pac_geometry_2;	
+	use pac_geometry_2;
 	use pac_contours;
-	
+
 	use et_board_text.pac_text_board_vectorized;
 
 	use pac_net_name;
-	
+
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
 	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
@@ -127,39 +127,39 @@ package et_kicad.pcb is
 	function to_layer_id (layer : in string) return type_layer_id;
 	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
 
-	
+
 	layer_top_solder_paste_id	: constant type_layer_id	:= 35;
 	layer_bot_solder_paste_id	: constant type_layer_id 	:= 34;
-	
+
 	layer_top_stop_mask_id		: constant type_layer_id 	:= 39;
-	layer_bot_stop_mask_id		: constant type_layer_id 	:= 38;	
+	layer_bot_stop_mask_id		: constant type_layer_id 	:= 38;
 
 	layer_top_silk_screen_id	: constant type_layer_id 	:= 37;
 	layer_bot_silk_screen_id	: constant type_layer_id 	:= 36;
 
 	layer_top_assy_doc_id		: constant type_layer_id 	:= 49;
 	layer_bot_assy_doc_id		: constant type_layer_id 	:= 48;
-	
+
 	layer_top_keepout_id		: constant type_layer_id 	:= 47;
 	layer_bot_keepout_id		: constant type_layer_id 	:= 46;
-	
+
 	layer_edge_cuts				: constant string := "Edge.Cuts";
 	layer_edge_cuts_id			: constant type_layer_id 	:= 44;
-	
+
 	-- CS other layers like adhes, eco, margin, ...
 
 	keyword_fp_text_mirrored	: constant string := "mirror";
-	
-	text_width_min 				: constant string := "minimum_width";	
+
+	text_width_min 				: constant string := "minimum_width";
 	text_signal_layer 			: constant string := "signal_layer";
-	
-
-	
 
 
 
 
-	
+
+
+
+
 	-- PLOT PARAMETERS (CAM JOB)
 	-- NOTE: plot parameters are directly imprinted in the board. There is no CAM file like in EAGLE.
 
@@ -201,7 +201,7 @@ package et_kicad.pcb is
 	-- hpglpendiameter -- given in mil
 	hpgl_pen_diameter_min : constant type_distance_positive := 0.1;
 	hpgl_pen_diameter_max : constant type_distance_positive := 1.0;
-	subtype type_plot_hpgl_pen_diameter is type_distance_positive 
+	subtype type_plot_hpgl_pen_diameter is type_distance_positive
 		range hpgl_pen_diameter_min .. hpgl_pen_diameter_max;
 
 	-- hpglpenoverlay
@@ -225,7 +225,7 @@ package et_kicad.pcb is
 	-- plotvalue
 	type type_plot_value is new boolean;
 	-- CS function to_plot_value and to_string
-	
+
 	-- plotinvisibletext
 	type type_plot_invisible_text is new boolean;
 	-- CS function to_plot_invisible_text and to_string
@@ -239,21 +239,21 @@ package et_kicad.pcb is
 	-- CS function to_subtract_mask_from_silk and to_string
 
 	-- outputformat
-	type type_plot_output_format is range 0..5; 
+	type type_plot_output_format is range 0..5;
 		-- 0 hpgl
 		-- 1 gerber
 		-- 2 postscript
 		-- 3 dxf
 		-- 4 pdf
 		-- 5 svg
-	
+
 	-- mirror
 	type type_plot_mirror is new boolean;
 	-- CS function to_mirror and to_string
-	
+
 	-- drillshape. NOTE: DO NOT CONFUSE WITH type_drill_shape (see above)
 	type type_plot_drill_shape is range 0..1; -- CS so far nothing more known.
-	
+
 	-- scaleselection
 	type type_plot_scale_selection is range 1..1; -- CS so far nothing more known
 
@@ -292,18 +292,18 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- board contours
 	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.
 	-- Reason: The manufacturer is to cut or mill along these lines and must calculate
-	-- the center of the line. However, as kicad allows line with here, it must 
+	-- the center of the line. However, as kicad allows line with here, it must
 	-- fit in a reasonable range, thus a subtype:
 	edge_cut_line_width_min : constant type_distance_positive := 0.1;
 	edge_cut_line_width_max : constant type_distance_positive := 1.0;
-	subtype type_edge_cut_line_width is type_distance_positive 
+	subtype type_edge_cut_line_width is type_distance_positive
 		range edge_cut_line_width_min .. edge_cut_line_width_max;
 
-	-- The via diameter is the drill size + 2*restring width. 
+	-- The via diameter is the drill size + 2*restring width.
 	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
 	via_diameter_min : constant type_distance_positive := 0.1;
 	via_diameter_max : constant type_distance_positive := 10.0;
@@ -324,7 +324,7 @@ package et_kicad.pcb is
 	-- CS it is not fully clear what aux_axis_origin is good for:
 	aux_axis_origin_min : constant type_distance_positive := zero;
 	aux_axis_origin_max : constant type_distance_positive := 500.0;
-	subtype type_aux_axis_origin is type_distance_positive 
+	subtype type_aux_axis_origin is type_distance_positive
 		range aux_axis_origin_min .. aux_axis_origin_max;
 
 	-- CS meaning not clear yet
@@ -350,13 +350,13 @@ package et_kicad.pcb is
 
 		pcb_text_width		: pac_text_board_vectorized.type_text_line_width;	-- all kinds of texts (no matter what layer)
 		pcb_text_size_x		: pac_text_board.type_text_size;
-		pcb_text_size_y		: pac_text_board.type_text_size;		
+		pcb_text_size_y		: pac_text_board.type_text_size;
 
 		module_edge_width	: type_distance_positive;
 		module_text_size_x	: pac_text_board.type_text_size;
 		module_text_size_y	: pac_text_board.type_text_size;
 		module_text_width	: pac_text_board_vectorized.type_text_line_width; -- line width
-		
+
 		pad_size_x			: type_pad_size;
 		pad_size_y			: type_pad_size;
 		pad_drill			: type_drill_size;
@@ -368,7 +368,7 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- NETLIST ((things like (net 4 /LED_ANODE) ):
 	-- NOTE: this has nothing to do with the kicad netlist file !
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
@@ -380,7 +380,7 @@ package et_kicad.pcb is
 
 	function to_string (net_id : in type_net_id) return string;
 	-- returns the given net id as string.
-	
+
 	type type_netlist_net is record
 		id		: type_net_id;
 		name	: pac_net_name.bounded_string;
@@ -396,7 +396,7 @@ package et_kicad.pcb is
 	-- Returns true if the right net id equals the left net id OR
 	-- if the right net name equals the left net name.
 
-	
+
 	-- Nets are collected in an ordered set, that uses the aforementioned two functions:
 	package type_netlist is new ordered_sets (
 		element_type 	=> type_netlist_net,
@@ -407,7 +407,7 @@ package et_kicad.pcb is
 	-- GENERAL BOARD INFORMATION
 	-- The estimation is that the number of links is about 10 times the
 	-- number of nets. A link is a connection from one terminal to another.
-	general_links_max : constant positive := 10 * net_id_max; 
+	general_links_max : constant positive := 10 * net_id_max;
 	type type_general_links is range 0 .. general_links_max;
 
 	-- CS The meaning of no_connects is not clear yet. However, it
@@ -421,7 +421,7 @@ package et_kicad.pcb is
 	-- The total number of tracks
 	type type_general_tracks is new natural; -- no limit because there can be millions
 
-	-- zones 
+	-- zones
 	-- CS: meaning not clear yet.
 	type type_general_zones is new natural; -- should be limited ot a reasonable value
 
@@ -433,11 +433,11 @@ package et_kicad.pcb is
 
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
 	pcb_thickness_min : constant type_distance_positive := 0.1;
-	pcb_thickness_max : constant type_distance_positive := 20.0;	
-	subtype type_pcb_thickness is type_distance_positive 
+	pcb_thickness_max : constant type_distance_positive := 20.0;
+	subtype type_pcb_thickness is type_distance_positive
 		range pcb_thickness_min .. pcb_thickness_max;
 
-	
+
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
@@ -455,10 +455,10 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- NET CLASSES
 	-- NOTE: net class settings are directly imprinted in the board. There is no net class file.
-	
+
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
 		element_type	=> pac_net_name.bounded_string,
@@ -479,9 +479,9 @@ package et_kicad.pcb is
 
 
 
-	
-	
--- 	-- For packages, temporarily this type is required to handle texts in 
+
+
+-- 	-- For packages, temporarily this type is required to handle texts in
 -- 	-- silk screen, assembly doc, ...
 -- 	-- When inserting the text in the final package, it is decomposed again.
 -- 	type type_text_package is new et_packages.type_text with record
@@ -491,33 +491,33 @@ package et_kicad.pcb is
 -- 	end record;
 
 
-	
+
 	-- For the board, temporarily this type is required to handle texts in
 	-- copper, silk screen, assembly doc, ...
-	-- When inserting the text in the board, it is decomposed again.	
+	-- When inserting the text in the board, it is decomposed again.
 	type type_text_board is new pac_text_board_vectorized.type_text_fab with record
 		content	: pac_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;
 
 
-	
-	
 
 
 
-	
-	
+
+
+
+
 	layer_name_length_max : constant positive := 9;
 	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
-	
+
 	function to_layer_name (name : in string) return type_layer_name.bounded_string;
 	-- converts a layer name given as string to a bounded string
 
 	type type_layer_meaning is (SIGNAL, USER);
 	function to_layer_meaning (meaning : in string) return type_layer_meaning;
 	-- converts a layer meaning given as string to a bounded string
-	
+
 	type type_layer is record
 		name	: type_layer_name.bounded_string;
 		meaning	: type_layer_meaning;
@@ -530,14 +530,14 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- Packages (kicad refers to them as modules) as they are listed in the board file are similar to
 	-- packages in the libraries. However, there are differences:
 	-- - no placeholders for reference and value (here the final component reference and value is)
-	-- - x/y position and angle of the package 
+	-- - x/y position and angle of the package
 	-- - pads with net names
 
-	
+
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
@@ -552,7 +552,7 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
 		silk_screen				: et_silkscreen.packages.type_silkscreen_both_sides;
@@ -571,7 +571,7 @@ package et_kicad.pcb is
 
 
 
-	
+
 	-- For handling inner signal layers we have a prefix and a suffix
 	-- Together with the layer number something like In5.Cu is evaluated.
 	layer_inner_prefix	: constant string := "In";
@@ -583,18 +583,18 @@ package et_kicad.pcb is
 	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
 	-- NOTE: On import, the kicad bottom copper layer becomes the ET signal layer 32 !
 	-- (NOT et_pcb.type_signal_layer'last !!)
-	
+
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id;
 	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
 
-	
+
 	-- This is a hex number for lock information or differential signals:
 	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	segment_status_length_max : constant positive := 8;
 	package type_segment_status is new generic_bounded_length (segment_status_length_max);
 
 	-- CS function to_segment_status and to_string
-	
+
 	type type_segment is new et_conductor_segment.type_conductor_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
@@ -610,15 +610,15 @@ package et_kicad.pcb is
 	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	via_status_length_max : constant positive := 8;
 	package type_via_status is new generic_bounded_length (via_status_length_max);
-	
+
 	type type_via is new type_drill with record
 		net_id			: type_net_id;
 		diameter_total	: type_distance_positive; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
-		layer_end		: type_signal_layer_id;		
+		layer_end		: type_signal_layer_id;
 		status_kicad	: type_via_status.bounded_string;  -- holds lock status and differential status
 	end record;
-	
+
 	-- vias are stored in lists
 	package type_vias is new doubly_linked_lists (type_via);
 
@@ -632,19 +632,19 @@ package et_kicad.pcb is
 		FULL); -- "fully hatched" in gui
 
 	hatch_width_default : constant type_distance_positive := 0.508;
-	
+
 	-- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 	-- Currently there is no need to output this stuff:
 	-- CS function to_string (hatch_style)
 	-- CS function to_hatch_style (hatch_style)
-	
+
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_pad_technology is et_thermal_relief.type_pad_technology 
+	subtype type_pad_technology is et_thermal_relief.type_pad_technology
 		range THT_ONLY .. SMT_AND_THT;
 
 
-	
+
 -- FILL ZONES
 
 	-- Corner points are collected in a simple list.
@@ -659,7 +659,7 @@ package et_kicad.pcb is
 	type type_hatching is record
 		-- the width of the border line
 		border_width : type_distance_positive := 1.0;
-		
+
 		-- the with of the lines inside the area:
 		line_width : type_distance_positive := hatching_line_width_default;
 
@@ -668,7 +668,7 @@ package et_kicad.pcb is
 	end record;
 
 
-	
+
 	type type_polygon is record
 		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id := type_net_id'first; -- if id is 0, the polygon is not connected to any net
@@ -699,14 +699,14 @@ package et_kicad.pcb is
 		cursor			: in pac_floating_solid.cursor;
 		log_threshold 	: in type_log_level);
 
-	
+
 	-- This is the type for the Kicad board design:
 	type type_board is record
-		
+
 		-- In V5 we sometimes have a non-existing board but nevertheless a board file.
 		-- For this reason we need this flag:
 		dummy		: boolean := false;
-		
+
 		general		: type_general_board_info;
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)
@@ -720,7 +720,7 @@ package et_kicad.pcb is
 		assy_doc	: type_assy_doc_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: type_stop_mask_both_sides;
-		keepout		: type_keepout_both_sides;		
+		keepout		: type_keepout_both_sides;
 		contour		: type_board_outline;
 
 		 -- non-electric. used for texts only
@@ -736,7 +736,7 @@ package et_kicad.pcb is
 	end record;
 
 
-	
+
 	procedure read_board (
 		file_name 		: in string;
 		log_threshold	: in type_log_level);
@@ -751,7 +751,7 @@ package et_kicad.pcb is
 	function get_terminal_count (
 		packge : in pac_package_model_file.bounded_string) -- ../lbr/bel_ic/S_SO14
 		return natural;
-	
+
 
 -- 	procedure to_native (log_threshold : in type_log_level);
 -- 	-- Converts the packages (from package_libraries) to native packages.
@@ -762,7 +762,7 @@ package et_kicad.pcb is
 		paper_size	: et_drawing_frame.type_paper_size;
 	end record;
 
-	
+
 	type type_module is record
 		board_available	: et_module.type_board_available := et_module.false;
 
@@ -774,11 +774,11 @@ package et_kicad.pcb is
 
 		-- V5 uses sym-lib-tables and fp-lib-tables to locate libraries:
 		sym_lib_tables		: type_lib_table.list; -- symbols
-		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
-		
+		fp_lib_tables		: type_lib_table.list; -- footprints/packages
+
 		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
 		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
-		
+
 		strands	    		: et_kicad.schematic.type_strands.list;				-- the strands of the module (incl. net names and segments)
 		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
@@ -791,20 +791,20 @@ package et_kicad.pcb is
 
 		-- CS Drawing frames: not completely modelled. Still under construction.
 		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
-		-- Layout also has a template. 
+		-- Layout also has a template.
 		-- So the name of the templates for schematic and layout should suffice.
 		frames      		: et_kicad.schematic.type_frames.list;					-- schematic frames (of both schematic and layout)
-		
+
 		notes       		: et_kicad.schematic.type_texts.list;					-- notes
-	
+
 		sheet_headers		: et_kicad.schematic.type_sheet_headers.map;			-- the list of sheet headers
 		-- CS: images
 
-		-- The nets of the module: net names, class, 
+		-- The nets of the module: net names, class,
 		-- schematic related stuff: strands, segments, labels, junctions
 		-- board related stuff: lines, arcs, vias, polygons
-		nets 	    	: et_kicad.schematic.type_nets.map; 
-		
+		nets 	    	: et_kicad.schematic.type_nets.map;
+
 		-- General non-component related board stuff:
 		-- paper size, silk screen, documentation, ...
 		board			: type_board_with_paper_size;
@@ -817,17 +817,17 @@ package et_kicad.pcb is
 	package type_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
 		key_type 		=> type_submodule_name.bounded_string,
-		"<" 			=> type_submodule_name."<",											 
+		"<" 			=> type_submodule_name."<",
 		element_type 	=> type_module);
 
 	modules : type_modules.map;
-	module_cursor : type_modules.cursor;		
-	
+	module_cursor : type_modules.cursor;
+
 end et_kicad.pcb;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

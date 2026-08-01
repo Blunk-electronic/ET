@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -60,8 +60,8 @@ package body et_cp_board_signal_layer is
 	use pac_geometry_2;
 
 
-	
-	
+
+
 	procedure add_signal_layer (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -70,13 +70,13 @@ package body et_cp_board_signal_layer is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure do_it is
 			layer : type_layer;
 		begin
 			layer.conductor.thickness := to_distance (get_field (cmd, 5));
 			layer.dielectric.thickness := to_distance (get_field (cmd, 6));
-			
+
 			add_layer (
 				module_name 	=> key (module),
 				layer			=> layer,
@@ -86,22 +86,22 @@ package body et_cp_board_signal_layer is
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 		end do_it;
-			
+
 
 	begin
 		log (text => "add signal layer", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 6 =>
 				do_it;
 
-			when 7 .. type_field_count'last => 
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;		
+		end case;
 
 
 		log_indentation_down;
@@ -110,12 +110,12 @@ package body et_cp_board_signal_layer is
 
 
 
-	
-	
 
-	
 
-	
+
+
+
+
 	procedure delete_signal_layer (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -125,7 +125,7 @@ package body et_cp_board_signal_layer is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		procedure do_it is begin		
+		procedure do_it is begin
 			delete_layer (
 				module_name 	=> key (module),
 				layer			=> to_signal_layer (get_field (cmd, 5)),
@@ -137,19 +137,19 @@ package body et_cp_board_signal_layer is
 
 		end do_it;
 
-		
+
 	begin
 		log (text => "delete signal layer", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 5 =>
 				do_it;
-		
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -158,13 +158,13 @@ package body et_cp_board_signal_layer is
 	end delete_signal_layer;
 
 
-	
-	
+
+
 end et_cp_board_signal_layer;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

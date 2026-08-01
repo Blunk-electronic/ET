@@ -48,28 +48,28 @@ package body et_terminal_stopmask is
 
 
 	function to_string (
-		shape : in type_stopmask_expand_mode) 
-		return string 
+		shape : in type_stopmask_expand_mode)
+		return string
 	is begin
 		return to_lower (type_stopmask_expand_mode'image (shape));
 	end;
 
-	
-	
+
+
 	function to_shape (
-		shape : in string) 
-		return type_stopmask_expand_mode 
+		shape : in string)
+		return type_stopmask_expand_mode
 	is begin
 		return type_stopmask_expand_mode'value (shape);
 	end;
 
-	
-	
+
+
 end et_terminal_stopmask;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

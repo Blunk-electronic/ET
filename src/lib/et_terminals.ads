@@ -68,11 +68,11 @@ package et_terminals is
 	-- A SMT pad has stopmask on one side only:
 	subtype type_stopmask_smt is type_stopmask_shape;
 
-	
 
 
 
-	
+
+
 	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
 
@@ -83,42 +83,42 @@ package et_terminals is
 			-- The terminal position (x/y) relative to the package position.
 			-- The rotation is the rotation of the terminal about itself:
 			position : type_position;
-		
+
 			-- For SMT pads this should be the geometical center of the pad.
 			-- The rotation has no meaning for THT pads with round shape.
-			-- The rotation is useful for exotic pad contours. The operator 
-			-- would be drawing the contour with zero rotation 
+			-- The rotation is useful for exotic pad contours. The operator
+			-- would be drawing the contour with zero rotation
 			-- first (which is easier) in the package model. Then, by applying an angle,
 			-- the countour would be rotated to its final position.
 
 			-- CS: When reading a package model, make sure position is inside
 			-- the pad shape.
-			
+
 		case technology is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
-				pad_shape_tht			: type_pad_outline_tht; 
+				pad_shape_tht			: type_pad_outline_tht;
 
 				stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
 				-- CS: The stop mask status applies to both top and bottom of the pad.
 
 				stop_mask_shape_tht		: type_stopmask_tht;
-				
-				-- This is the width of the conductor surrounding the 
+
+				-- This is the width of the conductor surrounding the
 				-- hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about "restring".
 				-- Nevertheless the type_restring_width is used.
-				-- The shape of the conductor area around the hole is the same as 
+				-- The shape of the conductor area around the hole is the same as
 				-- the shape of the hole. No further extra contours possible.
 				width_inner_layers	: type_restring_width;
-				
+
 				case tht_hole is
 					when DRILLED =>
 						-- The hole is just a circular drilling
 						-- with its center at position (see above)
 						-- and this diameter:
 						drill_size	: type_drill_size_tht;
-						
+
 					when MILLED =>
 						-- This structure has a closed circumfence with
 						-- an arbitrary outline (so called "plated millings").
@@ -128,38 +128,38 @@ package et_terminals is
 						millings	: type_contour;
 				end case;
 
-				
+
 			when SMT =>
 				pad_shape_smt			: type_contour;
 
 				-- In the package model, an SMT pad can be placed
 				-- on top or on bottom side:
 				face					: type_face;
-				
+
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
 				stop_mask_shape_smt 	: type_stopmask_smt;
-				
+
 				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
 				stencil_shape			: type_stencil_shape;
 
 		end case;
 
-		-- CS: For the future: 
-		-- Automatically generated thermal reliefs may not suffice 
+		-- CS: For the future:
+		-- Automatically generated thermal reliefs may not suffice
 		-- for large terminals. A flag that determines whether reliefs should be
 		-- automatically computed or user defined origins of spokes should be used.
 		-- There could be user defined points where the spokes start.
 
-		-- CS thermal_relief on/off ?		
+		-- CS thermal_relief on/off ?
 	end record;
 
 
-	
+
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	-- NOTE: This type is used in a package model. It uses fixed point numbers for
 	-- the terminal positions because the package model is man-made.
-	type type_terminal_position (technology	: type_assembly_technology) 
+	type type_terminal_position (technology	: type_assembly_technology)
 	is new pac_geometry_2.type_position with record
 		case technology is
 			when SMT => face : type_face;
@@ -174,14 +174,14 @@ package et_terminals is
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
 		from : in type_field_count_positive)
 		return type_terminal_position;
-	
 
-	
-	
-	-- NOTE: This type is used in the board when inquiring 
+
+
+
+	-- NOTE: This type is used in the board when inquiring
 	-- for absolute terminal positions.
-	-- It uses floating point numbers for the terminal position because: 
-	-- After rotating the package in the board the x/y coordinates 
+	-- It uses floating point numbers for the terminal position because:
+	-- After rotating the package in the board the x/y coordinates
 	-- are machine-made. Fixed point coordinates would not be useful here.
 	type type_terminal_position_fine is record
 		technology	: type_assembly_technology;
@@ -205,32 +205,32 @@ package et_terminals is
 
 	-- If a THT-terminal at a particular position has a drilled hole,
 	-- then this function should be used to get the outline contour
-	-- in inner layers. The outline contour is the area that encircles 
+	-- in inner layers. The outline contour is the area that encircles
 	-- the restring. The returned contour is basically a circle:
 	function get_inner_contour (
 		terminal	: in type_terminal; -- MUST be a THT terminal with drilled hole !
 		position	: in type_vector)
 		return type_contour;
-	
-	
 
-	
-	
+
+
+
+
 	-- Logs the properties of the given terminal.
 	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in type_log_level);
 
-	
+
 	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> pac_terminal_name."<",													 
+		"<"				=> pac_terminal_name."<",
 		element_type	=> type_terminal);
 
 	use pac_terminals;
 
-	
+
 
 	function get_terminal_name (
 		terminal_cursor	: in pac_terminals.cursor)
@@ -241,13 +241,13 @@ package et_terminals is
 		terminal_cursor	: in pac_terminals.cursor)
 		return string;
 
-	
-	
+
+
 	-- Returns the assembly technology of the given terminal:
 	function get_technology (
 		terminal_cursor	: in pac_terminals.cursor)
 		return type_assembly_technology;
-	
+
 
 	-- Iterates the terminate. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -274,12 +274,12 @@ package et_terminals is
 		--to_be_kept	: in pac_terminal_names.list); -- 1, 2, 9, 15
 
 
-	
+
 end et_terminals;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

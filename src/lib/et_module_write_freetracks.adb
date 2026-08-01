@@ -61,9 +61,9 @@ package body et_module_write_freetracks is
 	use pac_geometry_2;
 	use pac_file_rw;
 	-- use pac_signal_layers;
-	
-	
-	
+
+
+
 	procedure write_freetracks (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -71,61 +71,61 @@ package body et_module_write_freetracks is
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 		use pac_conductor_circles;
-			
-			
+
+
 		procedure write_line (
-			c : in pac_conductor_lines.cursor) 
-		is 
+			c : in pac_conductor_lines.cursor)
+		is
 			line : type_conductor_line renames element (c);
 		begin
 			section_mark (section_line, HEADER);
 			write_line (line);
-			
-			write (keyword => keyword_width, 
+
+			write (keyword => keyword_width,
 				parameters => to_string (line.width));
-			
+
 			write (keyword => keyword_layer, parameters => to_string (line.layer));
 			section_mark (section_line, FOOTER);
 		end;
 
-		
+
 		procedure write_arc (
-			c : in pac_conductor_arcs.cursor) 
-		is 
+			c : in pac_conductor_arcs.cursor)
+		is
 			arc : type_conductor_arc renames element (c);
 		begin
 			section_mark (section_arc , HEADER);
 			write_arc (arc);
 
-			write (keyword => keyword_width, 
+			write (keyword => keyword_width,
 				parameters => to_string (arc.width));
-				
+
 			write (keyword => keyword_layer, parameters => to_string (arc.layer));
 			section_mark (section_arc , FOOTER);
 		end;
 
-		
+
 		procedure write_circle (
-			c : in pac_conductor_circles.cursor) 
-		is 
+			c : in pac_conductor_circles.cursor)
+		is
 			circle : type_conductor_circle renames element (c);
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (circle);
 
-			write (keyword => keyword_width, 
+			write (keyword => keyword_width,
 				parameters => to_string (circle.width));
-			
+
 			write (keyword => keyword_layer, parameters => to_string (circle.layer));
-			section_mark (section_circle, FOOTER);			
+			section_mark (section_circle, FOOTER);
 		end;
 
-	
-	
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			tracks : type_conductors_floating renames module.board.conductors_floating;
 		begin
@@ -133,9 +133,9 @@ package body et_module_write_freetracks is
 			iterate (tracks.arcs, write_arc'access);
 			iterate (tracks.circles, write_circle'access);
 		end query_module;
-		
-		
-		
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor),
 			 level => log_threshold);
@@ -144,18 +144,18 @@ package body et_module_write_freetracks is
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
 	end write_freetracks;
-			 
-			 
 
 
-	
+
+
+
 
 end et_module_write_freetracks;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -58,7 +58,7 @@ package body et_pcb_stack is
 	end layer_stacks_equally;
 
 
-	
+
 
 	function layer_stack_contains (
 		stack		: pac_signal_layers.set;
@@ -82,30 +82,30 @@ package body et_pcb_stack is
 
 		return result;
 	end layer_stack_contains;
-	
 
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	function get_deepest_layer (
-		stack : in type_stack) 
+		stack : in type_stack)
 		return type_signal_layer
 	is begin
 		-- Because the bottom layer is always there, we add 1:
 		return stack.layers.last_index + 1;
 	end get_deepest_layer;
 
-	
 
-	
-	
+
+
+
 	-- function signal_layer_valid (
 	-- 	signal_layer 	: in type_signal_layer;
 	-- 	check_layers	: in et_pcb_stack.type_layer_check)
-	-- 	return boolean 
-	-- is 
+	-- 	return boolean
+	-- is
 	-- 	result : boolean := false;
 	-- begin
 	-- 	if check_layers.check = YES then
@@ -114,43 +114,43 @@ package body et_pcb_stack is
 	-- 		else
 	-- 			result := false;
 	-- 		end if;
-	-- 	else 
+	-- 	else
 	-- 		result := true; -- no layer check requested
 	-- 	end if;
- -- 
+ --
 	-- 	return result;
-	-- end signal_layer_valid;	
+	-- end signal_layer_valid;
 
 
 
-	
+
 
 
 -- 	procedure signal_layer_invalid (
 -- 		line			: in type_fields_of_line;
 -- 		signal_layer	: in type_signal_layer;
--- 		check_layers	: in et_pcb_stack.type_layer_check) 
+-- 		check_layers	: in et_pcb_stack.type_layer_check)
 -- 	is begin
 -- 		--log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
 -- 			 --" is deeper than the deepest signal layer " &
 -- 			 --to_string (check_layers.deepest_layer) & " !" &
 -- 		--" Objects in this layer will be ignored !");
--- 		
+--
 -- 		-- CS raise semantic_error_1 with
 -- 		raise constraint_error with
--- 			"ERROR: " & get_affected_line (line) 
--- 			& "Signal layer " & to_string (signal_layer) 
--- 			& " is deeper than the deepest signal layer " 
+-- 			"ERROR: " & get_affected_line (line)
+-- 			& "Signal layer " & to_string (signal_layer)
+-- 			& " is deeper than the deepest signal layer "
 -- 			& to_string (check_layers.deepest_layer) & " !";
 -- 	end signal_layer_invalid;
 
-	
-	
+
+
 end et_pcb_stack;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

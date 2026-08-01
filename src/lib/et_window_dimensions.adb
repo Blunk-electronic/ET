@@ -44,10 +44,10 @@ package body et_window_dimensions is
 		size : in type_window_size)
 		return string
 	is begin
-		return "w/h " & positive'image (size.width) 
+		return "w/h " & positive'image (size.width)
 			& "/" & positive'image (size.height);
 	end to_string;
 
-	
+
 end et_window_dimensions;
 
