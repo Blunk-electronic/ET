@@ -2018,7 +2018,7 @@ package body et_geometry_2a.contours is
 
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_vector;
+			intersection : in type_vector;
 			segment		: in type_intersected_segment)
 			--center		: in type_vector_model := origin;
 			--radius		: in type_distance_positive := zero)

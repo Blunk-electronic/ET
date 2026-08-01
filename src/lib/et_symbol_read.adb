@@ -99,7 +99,7 @@ package body et_symbol_read is
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_appearance then -- appearance sch_pcb
 				expect_field_count (line, 2);
-				appearance := to_appearance (f (line,2));
+				appearance := to_appearance (f (line, 2));
 				-- log (text => "appearance" & to_string (appearance), level => log_threshold + 1);
 
 				-- Create the new symbol:

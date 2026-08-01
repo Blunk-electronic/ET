@@ -323,7 +323,7 @@ package body et_schematic_ops_submodules is
 		return result;
 
 		exception
-			when event: others =>
+			when event : others =>
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
@@ -2305,7 +2305,7 @@ package body et_schematic_ops_submodules is
 				submodule_position_after := submodule.position;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
@@ -2576,7 +2576,7 @@ package body et_schematic_ops_submodules is
 				end case;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
@@ -3496,7 +3496,7 @@ package body et_schematic_ops_submodules is
 				submodule := test_mod;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log_indentation_reset;
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
@@ -3606,7 +3606,7 @@ package body et_schematic_ops_submodules is
 			-- Collect device ports. exception will be raised of port occurs more than once.
 				insert (device_port_collector, port);
 
-				exception when event: others =>
+				exception when event : others =>
 					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" device " & to_string (port.device_name) &
 						" port " & to_string (port.port_name) &
@@ -3633,7 +3633,7 @@ package body et_schematic_ops_submodules is
 			-- Collect submodule ports. exception will be raised of port occurs more than once.
 				insert (submodule_port_collector, port);
 
-				exception when event: others =>
+				exception when event : others =>
 					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" submodule " & to_string (port.module_name) &
 						" port " & to_string (port.port_name) &
@@ -3660,7 +3660,7 @@ package body et_schematic_ops_submodules is
 			-- Collect netchanger ports. exception will be raised of port occurs more than once.
 				insert (netchanger_ports_collector, port);
 
-				exception when event: others =>
+				exception when event : others =>
 					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" netchanger" & to_string (port.index) &
 						" port" & to_string (port.port) &
@@ -4408,7 +4408,7 @@ package body et_schematic_ops_submodules is
 				log_indentation_down;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log_indentation_reset;
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
@@ -4699,7 +4699,7 @@ package body et_schematic_ops_submodules is
 			log_indentation_down;
 
 			exception
-				when event: others =>
+				when event : others =>
 					log_indentation_reset;
 					log (text => ada.exceptions.exception_information (event), console => true);
 					raise;
@@ -4815,7 +4815,7 @@ package body et_schematic_ops_submodules is
 		log_indentation_down;
 
 		exception
-			when event: others =>
+			when event : others =>
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;

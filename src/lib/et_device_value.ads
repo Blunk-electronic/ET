@@ -53,7 +53,7 @@ package et_device_value is
 
 	-- Define the characters that are allowed for a value:
 	value_characters : character_set :=
-		to_set (ranges => (('A','Z'),('a','z'),('0','9')))
+		to_set (ranges => (('A', 'Z'), ('a', 'z'), ('0', '9')))
 		or to_set ('_')
 		or to_set ('-');
 

@@ -158,7 +158,7 @@ package body et_module_read_frames is
 		-- clean up for next sheet description
 		sheet_description_category := schematic_sheet_category_default;
 		sheet_description_number := type_sheet'first;
-		sheet_description_text := to_content("");
+		sheet_description_text := to_content ("");
 	end add_sheet_description;
 
 

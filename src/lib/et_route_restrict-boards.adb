@@ -66,7 +66,7 @@ package body et_route_restrict.boards is
 		-- results in an invalid arc.
 
 		clear (arc.layers);
-		set_direction (arc,CCW);
+		set_direction (arc, CCW);
 	end;
 
 

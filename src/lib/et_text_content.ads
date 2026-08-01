@@ -64,7 +64,7 @@ package et_text_content is
 
 
 	valid_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: ");
+		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("_-+/: ");
 
 
 	-- Tests if the given text contains only valid characters as specified

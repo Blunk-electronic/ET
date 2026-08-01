@@ -1567,7 +1567,7 @@ package body et_geometry_1.et_polygons is
 
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_vector)
+			intersection : in type_vector)
 		is
 			xi : constant type_float := get_x (intersection);
 		begin
@@ -1801,7 +1801,7 @@ package body et_geometry_1.et_polygons is
 		reference		: in type_vector)
 	is
 		type type_item is record
-			intersection: type_intersection_line_edge;
+			intersection : type_intersection_line_edge;
 			distance	: type_float_positive;
 		end record;
 

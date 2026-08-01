@@ -81,19 +81,19 @@ package et_drawing_frame is
 
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
-	type type_rows is new positive range 1..26;
+	type type_rows is new positive range 1 .. 26;
 	rows_default : constant type_rows := 7;
 
 	function to_string (rows : in type_rows) return string;
 	function to_rows (rows : in string) return type_rows;
 
-	type type_columns is new positive range 1..26;
+	type type_columns is new positive range 1 .. 26;
 	columns_default : constant type_columns := 10;
 
 	function to_string (columns : in type_columns) return string;
 	function to_columns (columns : in string) return type_columns;
 
-	row_characters : constant character_set := to_set (span => ('A','Z')); -- CS currently not used
+	row_characters : constant character_set := to_set (span => ('A', 'Z')); -- CS currently not used
 	-- CS row numbers must be mapped to row characters
 
 	type type_sectors is record

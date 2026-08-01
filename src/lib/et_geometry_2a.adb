@@ -50,7 +50,7 @@ with et_keywords;					use et_keywords;
 
 package body et_geometry_2a is
 
-	function get_info (editor: in string)
+	function get_info (editor : in string)
 		return string
 	is
 		use ada.characters.latin_1;
@@ -913,7 +913,7 @@ package body et_geometry_2a is
 
 	procedure set (
 		point	: in out type_vector_model;
-		position: in type_vector_model)
+		position : in type_vector_model)
 	is begin
 		point.x := position.x;
 		point.y := position.y;
@@ -997,7 +997,7 @@ package body et_geometry_2a is
 
 
 	function to_vector_model (
-		x,y : in string)
+		x, y : in string)
 		return type_vector_model
 	is
 		result : type_vector_model;
@@ -3399,7 +3399,7 @@ package body et_geometry_2a is
 
 
 
-	function normalize_arc (arc: in type_arc) return type_arc'class is
+	function normalize_arc (arc : in type_arc) return type_arc'class is
 	begin
 		case arc.direction is
 			when CW  => return reverse_arc (arc);

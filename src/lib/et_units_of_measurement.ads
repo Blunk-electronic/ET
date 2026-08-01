@@ -100,7 +100,7 @@ package et_units_of_measurement is
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
 	-- something like 3.3Ohms since the Ohm character is a special character ?
 	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
-	unit_abbrevation_characters : character_set := to_set (ranges => (('A','Z'),('a','z')));
+	unit_abbrevation_characters : character_set := to_set (ranges => (('A', 'Z'), ('a', 'z')));
 	unit_abbrevation_length_max : constant positive := 2;
 
 

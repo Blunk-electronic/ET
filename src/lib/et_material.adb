@@ -237,7 +237,7 @@ package body et_material is
 		close (bom_handle);
 
 		exception
-			when event: others =>
+			when event : others =>
 				if is_open (bom_handle) then
 					close (bom_handle);
 				end if;

@@ -198,7 +198,7 @@ package body et_geometry_1.et_polygons.union is
 					vertices_tmp_2.clear;
 					expect_return_to_start := false;
 
-					WALK_METHOD_1:
+					WALK_METHOD_1 :
 					loop
 						-- safety measure to prevent forever-looping:
 						increment_safety_counter (safety_counter, safety_counter_limit);
@@ -278,7 +278,7 @@ package body et_geometry_1.et_polygons.union is
 				-- the start point. The polygon is then complete.
 				start_point := element (vertice_A_cursor).position;
 
-				WALK_METHOD_2:
+				WALK_METHOD_2 :
 				loop
 					-- safety measure to prevent forever-looping:
 					increment_safety_counter (safety_counter, safety_counter_limit);
@@ -462,7 +462,7 @@ package body et_geometry_1.et_polygons.union is
 
 
 		-- Convert the polygon specific exception to a constraint error:
-		exception when event: others =>
+		exception when event : others =>
 			--put_line (exception_name (event) & " " & exception_message (event));
 
 			raise constraint_error with
