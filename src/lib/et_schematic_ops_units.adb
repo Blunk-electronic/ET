@@ -4022,7 +4022,9 @@ package body et_schematic_ops_units is
 
 		procedure copy_in_same_device is
 		begin
-			log (text => "copy unit into same device", level => log_threshold + 1);
+			log (text => "copy unit into same device", 
+				 level => log_threshold + 1);
+			
 			log_indentation_up;
 
 			copy_unit (
@@ -4043,7 +4045,9 @@ package body et_schematic_ops_units is
 		
 		procedure copy_in_new_device is
 		begin
-			log (text => "copy unit in new device", level => log_threshold + 1);
+			log (text => "copy unit in new device",
+				 level => log_threshold + 1);
+			
 			log_indentation_up;
 			
 			copy_unit (
