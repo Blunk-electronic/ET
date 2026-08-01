@@ -241,11 +241,11 @@ package body et_geometry_1.et_polygons.offsetting is
 				next (c);
 			end loop;
 
-		--<<skip>>
+			--<<skip>>
 
-		if premature_abort then
-			goto skip2;
-		end if;
+			if premature_abort then
+				goto skip2;
+			end if;
 		
 			
 			--if c = pac_offset_edges.no_element then

@@ -2171,21 +2171,21 @@ package body et_kicad.schematic is
 								containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1
 								name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 								extension				=> file_extension_schematic_lib)) 
-								then
-									log (text => " found", level => log_threshold + 3);
-									library_found := true;
+							then
+								log (text => " found", level => log_threshold + 3);
+								library_found := true;
 
-									-- create empty component library
-									type_device_libraries.insert (
-										container	=> tmp_component_libraries,
-										key 		=> pac_device_model_file.to_bounded_string (compose (
-											containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
-											name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
-											extension				=> file_extension_schematic_lib)),
-										new_item	=> type_components_library.empty_map
-										--inserted	=> library_inserted,
-										--position	=> library_cursor
-										); 
+								-- create empty component library
+								type_device_libraries.insert (
+									container	=> tmp_component_libraries,
+									key			=> pac_device_model_file.to_bounded_string (compose (
+										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
+										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
+										extension				=> file_extension_schematic_lib)),
+									new_item	=> type_components_library.empty_map
+									--inserted	=> library_inserted,
+									--position	=> library_cursor
+									); 
 									
 							end if;
 

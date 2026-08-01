@@ -432,7 +432,7 @@ package body et_canvas.cmd is
 		-- 	propose_arguments;
 		-- end if;
 
-		log_indentation_down;
+				log_indentation_down;
 				
 			
 			when others =>
