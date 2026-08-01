@@ -119,8 +119,7 @@ package et_device_name is
 	function "=" (left, right : in type_device_name) return boolean;
 
 
-	no_name : constant type_device_name := (others => <>); -- CS remove
-	
+	-- The default device name is ?0
 	device_name_default : constant type_device_name := (others => <>);
 
 

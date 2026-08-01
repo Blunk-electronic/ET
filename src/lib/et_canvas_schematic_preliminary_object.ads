@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,7 +59,7 @@ package et_canvas_schematic_preliminary_object is
 
 	object_net_name		: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
 	
-	object_device_name	: type_device_name := et_device_name.no_name; -- IC45, FD2
+	object_device_name	: type_device_name := device_name_default; -- IC45, FD2
 
 	object_unit_name	: pac_unit_name.bounded_string; -- A, B, C
 	
