@@ -44,7 +44,7 @@
 package body et_canvas_board_preliminary_object is
 
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 

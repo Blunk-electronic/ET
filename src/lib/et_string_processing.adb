@@ -348,7 +348,7 @@ package body et_string_processing is
 		else
 			return false;
 		end if;
-	end;
+	end is_number;
 
 
 
@@ -773,7 +773,7 @@ package body et_string_processing is
 		raise constraint_error with
 			"invalid keyword '" & word & "' !";
 		-- raise constraint_error;
-	end;
+	end invalid_keyword;
 
 
 

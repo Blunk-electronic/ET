@@ -85,7 +85,7 @@ package body et_project.configuration is
 		put_line (comment_mark_default & " " & get_date);
 		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
-	end;
+	end write_configuration_header;
 
 
 
@@ -98,7 +98,7 @@ package body et_project.configuration is
 		put_line (comment_mark_default & " " & get_date);
 		put_line (comment_mark_default & " project configuration file end");
 		new_line;
-	end;
+	end write_configuration_footer;
 
 
 

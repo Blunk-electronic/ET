@@ -77,7 +77,7 @@ package body et_module_read_board_contour is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_contour_line;
 
 
 
@@ -140,7 +140,7 @@ package body et_module_read_board_contour is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_contour_circle;
 
 
 
@@ -151,7 +151,7 @@ package body et_module_read_board_contour is
 	procedure insert_contour_line is begin
 		append_segment (contour, (LINE, contour_line));
 		reset_line (contour_line);
-	end;
+	end insert_contour_line;
 
 
 
@@ -161,7 +161,7 @@ package body et_module_read_board_contour is
 
 		append_segment (contour, (ARC, contour_arc));
 		reset_arc (contour_arc);
-	end;
+	end insert_contour_arc;
 
 
 
@@ -179,7 +179,7 @@ package body et_module_read_board_contour is
 		-- Assign the circle to the contour:
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
-	end;
+	end insert_contour_circle;
 
 
 
@@ -201,7 +201,7 @@ package body et_module_read_board_contour is
 		end if;
 
 		log_indentation_down;
-	end;
+	end check_contour;
 
 
 

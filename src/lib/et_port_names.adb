@@ -46,7 +46,7 @@ package body et_port_names is
 		return string
 	is begin
 		return pac_port_name.to_string (port);
-	end;
+	end to_string;
 
 
 
@@ -55,7 +55,7 @@ package body et_port_names is
 		return pac_port_name.bounded_string
 	is begin
 		return pac_port_name.to_bounded_string (name);
-	end;
+	end to_port_name;
 
 
 

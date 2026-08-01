@@ -405,7 +405,7 @@ package body et_module_read_device_electrical is
 						name := to_package_name (base_name (
 							get_package_model_name (element (variant_cursor).model_cursor)));
 					end if;
-				end;
+				end query_variants;
 
 
 			begin

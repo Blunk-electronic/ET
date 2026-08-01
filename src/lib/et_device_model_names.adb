@@ -59,7 +59,7 @@ package body et_device_model_names is
 		return string is
 	begin
 		return pac_device_model_file.to_string (name);
-	end;
+	end to_string;
 
 
 
@@ -67,7 +67,7 @@ package body et_device_model_names is
 		return pac_device_model_file.bounded_string is
 	begin
 		return pac_device_model_file.to_bounded_string (name);
-	end;
+	end to_file_name;
 
 
 

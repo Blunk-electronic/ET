@@ -48,7 +48,7 @@ package body et_colors is
 		return string
 	is begin
 		return color_range'image (col_range);
-	end;
+	end to_string;
 
 
 
@@ -59,7 +59,7 @@ package body et_colors is
 		return "R: " & to_string (color.red)
 		& " G: " & to_string (color.green)
 		& " B: " & to_string (color.blue);
-	end;
+	end to_string;
 
 
 
@@ -86,7 +86,7 @@ package body et_colors is
 		end if;
 
 		return r;
-	end;
+	end to_color;
 
 
 

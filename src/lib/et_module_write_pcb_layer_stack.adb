@@ -83,7 +83,7 @@ package body et_module_write_pcb_layer_stack is
 			& to_string (to_index (cursor))
 			& to_string (layer.dielectric.thickness));
 
-	end;
+	end query_layers;
 
 
 

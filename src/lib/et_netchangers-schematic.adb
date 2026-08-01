@@ -62,7 +62,7 @@ package body et_netchangers.schematic is
 		return type_netchanger_port_name
 	is begin
 		return type_netchanger_port_name'value (name);
-	end;
+	end to_port_name;
 
 
 
@@ -71,7 +71,7 @@ package body et_netchangers.schematic is
 		return string
 	is begin
 		return trim (to_lower (type_netchanger_port_name'image (name)), left);
-	end;
+	end to_string;
 
 
 
@@ -98,7 +98,7 @@ package body et_netchangers.schematic is
 			when MASTER => return SLAVE;
 			when SLAVE  => return MASTER;
 		end case;
-	end;
+	end get_opposide_port;
 
 
 
@@ -108,7 +108,7 @@ package body et_netchangers.schematic is
 		return type_netchanger_direction
 	is begin
 		return netchanger.direction;
-	end;
+	end get_direction;
 
 
 
@@ -117,7 +117,7 @@ package body et_netchangers.schematic is
 		direction	: in type_netchanger_direction)
 	is begin
 		netchanger.direction := direction;
-	end;
+	end set_direction;
 
 
 
@@ -131,7 +131,7 @@ package body et_netchangers.schematic is
 			when BACKWARD =>
 				netchanger.direction := FORWARD;
 		end case;
-	end;
+	end toggle_direction;
 
 
 
@@ -146,7 +146,7 @@ package body et_netchangers.schematic is
 		result.rotation := position.rotation;
 
 		return result;
-	end;
+	end to_position;
 
 
 
@@ -156,7 +156,7 @@ package body et_netchangers.schematic is
 		place		: in type_vector_model)
 	is begin
 		position.place := place;
-	end;
+	end set_place;
 
 
 
@@ -165,7 +165,7 @@ package body et_netchangers.schematic is
 		offset		: in type_vector_model)
 	is begin
 		add (position.place, offset);
-	end;
+	end move_by;
 
 
 
@@ -175,7 +175,7 @@ package body et_netchangers.schematic is
 		return type_vector_model
 	is begin
 		return position.place;
-	end;
+	end get_place;
 
 
 
@@ -185,7 +185,7 @@ package body et_netchangers.schematic is
 		sheet		: in type_sheet)
 	is begin
 		position.sheet := sheet;
-	end;
+	end set_sheet;
 
 
 
@@ -194,7 +194,7 @@ package body et_netchangers.schematic is
 		sheet		: in type_sheet_relative)
 	is begin
 		add (position.sheet, sheet);
-	end;
+	end add_sheet;
 
 
 
@@ -203,7 +203,7 @@ package body et_netchangers.schematic is
 		return type_sheet
 	is begin
 		return position.sheet;
-	end;
+	end get_sheet;
 
 
 
@@ -212,7 +212,7 @@ package body et_netchangers.schematic is
 		offset		: in type_sheet_relative)
 	is begin
 		add (netchanger.position_sch.sheet, offset);
-	end;
+	end move_netchanger;
 
 
 
@@ -222,7 +222,7 @@ package body et_netchangers.schematic is
 		return type_rotation_0_90
 	is begin
 		return position.rotation;
-	end;
+	end get_rotation;
 
 
 
@@ -236,7 +236,7 @@ package body et_netchangers.schematic is
 		result.rotation := get_rotation (position);
 		result.sheet := get_sheet (position);
 		return result;
-	end;
+	end to_netchanger_position;
 
 
 
@@ -247,7 +247,7 @@ package body et_netchangers.schematic is
 		return type_netchanger_position_schematic
 	is begin
 		return (place, rotation, sheet);
-	end;
+	end to_netchanger_position;
 
 
 
@@ -262,7 +262,7 @@ package body et_netchangers.schematic is
 		set_sheet (result, position.sheet);
 
 		return result;
-	end;
+	end to_object_position;
 
 
 
@@ -276,7 +276,7 @@ package body et_netchangers.schematic is
 	begin
 		p := to_object_position (position);
 		return to_string (p);
-	end;
+	end to_string;
 
 
 
@@ -286,7 +286,7 @@ package body et_netchangers.schematic is
 		return type_netchanger_position_schematic
 	is begin
 		return netchanger.position_sch;
-	end;
+	end get_position;
 
 
 
@@ -295,7 +295,7 @@ package body et_netchangers.schematic is
 		position	: in type_netchanger_position_schematic)
 	is begin
 		netchanger.position_sch := position;
-	end;
+	end set_position;
 
 
 
@@ -304,7 +304,7 @@ package body et_netchangers.schematic is
 		place		: in type_vector_model)
 	is begin
 		netchanger.position_sch.place := place;
-	end;
+	end set_place;
 
 
 
@@ -316,7 +316,7 @@ package body et_netchangers.schematic is
 		n : type_netchanger renames element (netchanger_cursor);
 	begin
 		return get_position (n);
-	end;
+	end get_position_schematic;
 
 
 
@@ -327,7 +327,7 @@ package body et_netchangers.schematic is
 		return type_rotation_0_90
 	is begin
 		return netchanger.position_sch.rotation;
-	end;
+	end get_rotation;
 
 
 	procedure set_rotation (
@@ -335,14 +335,14 @@ package body et_netchangers.schematic is
 		rotation	: in type_rotation_0_90)
 	is begin
 		netchanger.position_sch.rotation := rotation;
-	end;
+	end set_rotation;
 
 
 	procedure toggle_rotation (
 		netchanger	: in out type_netchanger)
 	is begin
 		toggle_rotation (netchanger.position_sch.rotation);
-	end;
+	end toggle_rotation;
 
 
 
@@ -352,7 +352,7 @@ package body et_netchangers.schematic is
 		return type_sheet
 	is begin
 		return netchanger.position_sch.sheet;
-	end;
+	end get_sheet;
 
 
 
@@ -361,7 +361,7 @@ package body et_netchangers.schematic is
 		sheet		: in type_sheet)
 	is begin
 		netchanger.position_sch.sheet := sheet;
-	end;
+	end set_sheet;
 
 
 
@@ -374,7 +374,7 @@ package body et_netchangers.schematic is
 		netchanger : type_netchanger renames element (netchanger_cursor);
 	begin
 		return get_rotation (netchanger);
-	end;
+	end get_rotation;
 
 
 
@@ -386,7 +386,7 @@ package body et_netchangers.schematic is
 		netchanger : type_netchanger renames element (netchanger_cursor);
 	begin
 		return get_direction (netchanger);
-	end;
+	end get_direction;
 
 
 
@@ -398,7 +398,7 @@ package body et_netchangers.schematic is
 		n : type_netchanger renames element (netchanger_cursor);
 	begin
 		return n.position_sch.sheet;
-	end;
+	end get_sheet;
 
 
 
@@ -416,7 +416,7 @@ package body et_netchangers.schematic is
 	begin
 		ports.master := ports.slave;
 		ports.slave := master_bak;
-	end;
+	end swap_ports;
 
 
 
@@ -566,7 +566,7 @@ package body et_netchangers.schematic is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -579,7 +579,7 @@ package body et_netchangers.schematic is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -592,7 +592,7 @@ package body et_netchangers.schematic is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -600,14 +600,14 @@ package body et_netchangers.schematic is
 		netchanger : in out type_netchanger)
 	is begin
 		set_moving (netchanger.status_sch);
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
 		netchanger : in out type_netchanger)
 	is begin
 		clear_moving (netchanger.status_sch);
-	end;
+	end clear_moving;
 
 
 
@@ -615,7 +615,7 @@ package body et_netchangers.schematic is
 		netchanger : in out type_netchanger)
 	is begin
 		set_proposed (netchanger.status_sch);
-	end;
+	end set_proposed;
 
 
 
@@ -624,7 +624,7 @@ package body et_netchangers.schematic is
 	is begin
 		set_selected (netchanger.status_sch);
 		set_selected (netchanger.status_brd);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
@@ -632,7 +632,7 @@ package body et_netchangers.schematic is
 	is begin
 		clear_selected (netchanger.status_sch);
 		clear_selected (netchanger.status_brd);
-	end;
+	end clear_selected;
 
 
 
@@ -641,7 +641,7 @@ package body et_netchangers.schematic is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (netchanger.status_sch, operation);
-	end;
+	end modify_status;
 
 
 
@@ -650,7 +650,7 @@ package body et_netchangers.schematic is
 	is begin
 		reset_status (netchanger.status_sch);
 		reset_status (netchanger.status_brd);
-	end;
+	end reset_status;
 
 
 

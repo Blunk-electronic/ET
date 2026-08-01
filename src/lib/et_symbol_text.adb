@@ -94,7 +94,7 @@ package body et_symbol_text is
 	begin
 		c := text.content;
 		return to_string (c);
-	end;
+	end content;
 
 
 end et_symbol_text;

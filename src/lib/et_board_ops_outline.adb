@@ -68,7 +68,7 @@ package body et_board_ops_outline is
 			pragma unreferenced (module_name);
 		begin
 			module.board.board_contour.outline := outline;
-		end;
+		end add;
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -1528,7 +1528,7 @@ package body et_board_ops_outline is
 			use pac_holes;
 		begin
 			append (module.board.board_contour.holes, hole);
-		end;
+		end add;
 
 
 	begin

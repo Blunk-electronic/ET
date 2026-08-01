@@ -66,7 +66,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end reset_nets;
 
 
 		procedure reset_devices is
@@ -76,7 +76,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end reset_devices;
 
 
 		procedure reset_netchangers is
@@ -86,7 +86,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end reset_netchangers;
 
 
 
@@ -130,7 +130,7 @@ package body et_schematic_ops_groups is
 				module_cursor, sheet, area, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end group_units;
 
 
 		procedure group_netchangers is
@@ -143,7 +143,7 @@ package body et_schematic_ops_groups is
 				module_cursor, sheet, area, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end group_netchangers;
 
 
 		procedure group_net_segments is
@@ -156,7 +156,7 @@ package body et_schematic_ops_groups is
 				module_cursor, sheet, area, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end group_net_segments;
 
 
 		procedure copy_to_clipboard is
@@ -222,7 +222,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			delete_segments_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end delete_nets;
 
 
 		procedure delete_devices is
@@ -232,7 +232,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			delete_units_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end delete_devices;
 
 
 		procedure delete_netchangers is
@@ -242,7 +242,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			delete_netchangers_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end delete_netchangers;
 
 
 
@@ -304,7 +304,7 @@ package body et_schematic_ops_groups is
 				offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end drag_units;
 
 
 		procedure drag_netchangers is
@@ -317,7 +317,7 @@ package body et_schematic_ops_groups is
 				offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end drag_netchangers;
 
 
 		procedure drag_net_segments is
@@ -330,7 +330,7 @@ package body et_schematic_ops_groups is
 				offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end drag_net_segments;
 
 
 	begin
@@ -402,7 +402,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_units;
 
 
 		procedure set_netchangers is
@@ -415,7 +415,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_netchangers;
 
 
 		procedure set_net_segments is
@@ -428,7 +428,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_net_segments;
 
 
 	begin
@@ -470,7 +470,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_units;
 
 
 		procedure set_netchangers is
@@ -483,7 +483,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_netchangers;
 
 
 		procedure set_net_segments is
@@ -496,7 +496,7 @@ package body et_schematic_ops_groups is
 				log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end set_net_segments;
 
 
 	begin
@@ -543,7 +543,7 @@ package body et_schematic_ops_groups is
 				sheet, offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end copy_units;
 
 
 		procedure copy_netchangers is
@@ -556,7 +556,7 @@ package body et_schematic_ops_groups is
 				sheet, offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end copy_netchangers;
 
 
 		procedure copy_net_segments is
@@ -569,7 +569,7 @@ package body et_schematic_ops_groups is
 				sheet, offset, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end copy_net_segments;
 
 
 	begin

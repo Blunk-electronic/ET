@@ -412,7 +412,7 @@ package body et_canvas_board_devices is
 
 	procedure reset_device_add is begin
 		device_add := (others => <>);
-	end;
+	end reset_device_add;
 
 
 

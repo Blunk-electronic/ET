@@ -50,7 +50,7 @@ package body et_net_junction is
 			 & to_string (point),
 			 console => true);
 		raise constraint_error;
-	end;
+	end junction_in_sloping_segment;
 
 
 

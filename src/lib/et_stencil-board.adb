@@ -54,7 +54,7 @@ package body et_stencil.board is
 			when BOTTOM =>
 				stencil.bottom.lines.append (line);
 		end case;
-	end;
+	end add_line;
 
 
 
@@ -71,7 +71,7 @@ package body et_stencil.board is
 			when BOTTOM =>
 				stencil.bottom.arcs.append (arc);
 		end case;
-	end;
+	end add_arc;
 
 
 
@@ -87,7 +87,7 @@ package body et_stencil.board is
 			when BOTTOM =>
 				stencil.bottom.circles.append (circle);
 		end case;
-	end;
+	end add_circle;
 
 
 

@@ -48,14 +48,14 @@ package body et_net_labels is
 		label : in out type_net_label_base)
 	is begin
 		set_proposed (label.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		label : in out type_net_label_base)
 	is begin
 		clear_proposed (label.status);
-	end;
+	end clear_proposed;
 
 
 	function is_proposed (
@@ -76,14 +76,14 @@ package body et_net_labels is
 		label : in out type_net_label_base)
 	is begin
 		set_selected (label.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		label : in out type_net_label_base)
 	is begin
 		clear_selected (label.status);
-	end;
+	end clear_selected;
 
 
 	function is_selected (
@@ -104,7 +104,7 @@ package body et_net_labels is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (label.status, operation);
-	end;
+	end modify_status;
 
 
 
@@ -112,7 +112,7 @@ package body et_net_labels is
 		label : in out type_net_label_base)
 	is begin
 		reset_status (label.status);
-	end;
+	end reset_status;
 
 
 
@@ -122,7 +122,7 @@ package body et_net_labels is
 		return type_rotation_documentation
 	is begin
 		return label.rotation;
-	end;
+	end get_rotation;
 
 
 	function get_rotation (
@@ -130,7 +130,7 @@ package body et_net_labels is
 		return string
 	is begin
 		return to_string (label.rotation);
-	end;
+	end get_rotation;
 
 
 
@@ -139,7 +139,7 @@ package body et_net_labels is
 		rotation	: in type_rotation_documentation)
 	is begin
 		label.rotation := rotation;
-	end;
+	end set_rotation;
 
 
 
@@ -150,7 +150,7 @@ package body et_net_labels is
 		return type_vector_model
 	is begin
 		return label.position;
-	end;
+	end get_position;
 
 
 
@@ -159,7 +159,7 @@ package body et_net_labels is
 		position	: in type_vector_model)
 	is begin
 		label.position := position;
-	end;
+	end set_position;
 
 
 
@@ -169,7 +169,7 @@ package body et_net_labels is
 		return string
 	is begin
 		return to_string (label.position);
-	end;
+	end get_position;
 
 
 
@@ -179,7 +179,7 @@ package body et_net_labels is
 		offset	: in type_vector_model)
 	is begin
 		move_by (label.position, offset);
-	end;
+	end move_by;
 
 
 
@@ -189,14 +189,14 @@ package body et_net_labels is
 		label : in out type_net_label)
 	is begin
 		set_moving (label.status);
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
 		label : in out type_net_label)
 	is begin
 		clear_moving (label.status);
-	end;
+	end clear_moving;
 
 
 	function is_moving (
@@ -219,7 +219,7 @@ package body et_net_labels is
 		return type_vector_model
 	is begin
 		return get_position (element (label));
-	end;
+	end get_position;
 
 
 	function get_position (
@@ -227,7 +227,7 @@ package body et_net_labels is
 		return string
 	is begin
 		return to_string (get_position (element (label)));
-	end;
+	end get_position;
 
 
 	function get_rotation (
@@ -235,7 +235,7 @@ package body et_net_labels is
 		return type_rotation_documentation
 	is begin
 		return get_rotation (element (label));
-	end;
+	end get_rotation;
 
 
 	function get_rotation (
@@ -243,7 +243,7 @@ package body et_net_labels is
 		return string
 	is begin
 		return get_rotation (element (label));
-	end;
+	end get_rotation;
 
 
 
@@ -253,7 +253,7 @@ package body et_net_labels is
 		return boolean
 	is begin
 		return is_proposed (element (label));
-	end;
+	end is_proposed;
 
 
 	function is_selected (
@@ -261,7 +261,7 @@ package body et_net_labels is
 		return boolean
 	is begin
 		return is_selected (element (label));
-	end;
+	end is_selected;
 
 
 	function is_moving (
@@ -269,7 +269,7 @@ package body et_net_labels is
 		return boolean
 	is begin
 		return is_moving (element (label));
-	end;
+	end is_moving;
 
 
 
@@ -281,7 +281,7 @@ package body et_net_labels is
 	begin
 		-- Add the secondary list at the end of the primary list:
 		primary.splice (source => secondary, before => pos);
-	end;
+	end merge_labels;
 
 
 
@@ -307,7 +307,7 @@ package body et_net_labels is
 			labels.update_element (cursor, query_label'access);
 			next (cursor);
 		end loop;
-	end;
+	end move_labels_by;
 
 
 end et_net_labels;

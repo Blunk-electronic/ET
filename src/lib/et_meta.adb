@@ -44,56 +44,56 @@ package body et_meta is
 
 	function to_company (company : in string) return pac_company.bounded_string is begin
 		return pac_company.to_bounded_string (company);
-	end;
+	end to_company;
 
 	function to_string (company : in pac_company.bounded_string) return string is begin
 		return pac_company.to_string (company);
-	end;
+	end to_string;
 
 
 	function to_customer (customer : in string) return pac_customer.bounded_string is begin
 		return pac_customer.to_bounded_string (customer);
-	end;
+	end to_customer;
 
 	function to_string (customer : in pac_customer.bounded_string) return string is begin
 		return pac_customer.to_string (customer);
-	end;
+	end to_string;
 
 
 	function to_partcode (partcode : in string) return pac_partcode.bounded_string is begin
 		return pac_partcode.to_bounded_string (partcode);
-	end;
+	end to_partcode;
 
 	function to_string (partcode : in pac_partcode.bounded_string) return string is begin
 		return pac_partcode.to_string (partcode);
-	end;
+	end to_string;
 
 
 	function to_drawing_number (drawing_number : in string) return pac_drawing_number.bounded_string is begin
 		return pac_drawing_number.to_bounded_string (drawing_number);
-	end;
+	end to_drawing_number;
 
 	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string is begin
 		return pac_drawing_number.to_string (drawing_number);
-	end;
+	end to_string;
 
 
 	function to_revision (revision : in string) return pac_revision.bounded_string is begin
 		return pac_revision.to_bounded_string (revision);
-	end;
+	end to_revision;
 
 	function to_string (revision : in pac_revision.bounded_string) return string is begin
 		return pac_revision.to_string (revision);
-	end;
+	end to_string;
 
 
 	function to_person (person : in string) return pac_person.bounded_string is begin
 		return pac_person.to_bounded_string (person);
-	end;
+	end to_person;
 
 	function to_string (person : in pac_person.bounded_string) return string is begin
 		return pac_person.to_string (person);
-	end;
+	end to_string;
 
 
 
@@ -106,7 +106,7 @@ package body et_meta is
 		libs : in pac_library_paths_schematic.list)
 	is begin
 		meta.preferred_libs := libs;
-	end;
+	end set_device_libraries;
 
 
 	procedure add_device_library (
@@ -114,7 +114,7 @@ package body et_meta is
 		lib  : in pac_library_path_schematic.bounded_string)
 	is begin
 		meta.preferred_libs.append (lib);
-	end;
+	end add_device_library;
 
 
 	procedure remove_device_library (
@@ -124,7 +124,7 @@ package body et_meta is
 		null;
 		-- CS
 		-- test whether lib exists, then remove it
-	end;
+	end remove_device_library;
 
 
 	function get_device_libraries (
@@ -132,7 +132,7 @@ package body et_meta is
 		return pac_library_paths_schematic.list
 	is begin
 		return meta.preferred_libs;
-	end;
+	end get_device_libraries;
 
 
 
@@ -144,7 +144,7 @@ package body et_meta is
 		libs : in pac_library_paths_board.list)
 	is begin
 		meta.preferred_libs := libs;
-	end;
+	end set_device_libraries;
 
 
 	procedure add_device_library (
@@ -152,7 +152,7 @@ package body et_meta is
 		lib  : in pac_library_path_board.bounded_string)
 	is begin
 		meta.preferred_libs.append (lib);
-	end;
+	end add_device_library;
 
 
 	procedure remove_device_library (
@@ -162,7 +162,7 @@ package body et_meta is
 		null;
 		-- CS
 		-- test whether lib exists, then remove it
-	end;
+	end remove_device_library;
 
 
 
@@ -172,7 +172,7 @@ package body et_meta is
 		return pac_library_paths_board.list
 	is begin
 		return meta.preferred_libs;
-	end;
+	end get_device_libraries;
 
 
 

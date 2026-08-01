@@ -61,7 +61,7 @@ package body et_net_ports_submodules is
 		else
 			return false;
 		end if;
-	end;
+	end "<";
 
 
 

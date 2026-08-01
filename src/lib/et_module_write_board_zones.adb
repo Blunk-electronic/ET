@@ -122,7 +122,7 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, FOOTER);
 
 			section_mark (section_zone, FOOTER);
-		end;
+		end write_polygon;
 
 
 
@@ -164,7 +164,7 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, FOOTER);
 
 			section_mark (section_zone, FOOTER);
-		end;
+		end write_polygon;
 
 
 
@@ -215,7 +215,7 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, FOOTER); -- CS correct ?
 
 			section_mark (section_cutout_zone, FOOTER);
-		end;
+		end write_cutout;
 
 
 		procedure query_module (
@@ -408,7 +408,7 @@ package body et_module_write_board_zones is
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
 			section_mark (section_cutout_zone, FOOTER);
-		end;
+		end write_cutout;
 
 
 
@@ -604,7 +604,7 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, FOOTER);
 
 			section_mark (section_cutout_zone, FOOTER);
-		end;
+		end write_cutout;
 
 
 		procedure query_module (
@@ -652,7 +652,7 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, FOOTER);
 
 			section_mark (section_cutout_zone, FOOTER);
-		end;
+		end write_cutout;
 
 
 		procedure query_module (

@@ -91,7 +91,7 @@ package body et_module_read_frames is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_frame_template_schematic;
 
 
 
@@ -112,7 +112,7 @@ package body et_module_read_frames is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_frame_template_board;
 
 
 

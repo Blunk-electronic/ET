@@ -74,7 +74,7 @@ package body et_device_partcode is
 		else
 			return true;
 		end if;
-	end;
+	end partcode_length_valid;
 
 
 	function partcode_characters_valid (
@@ -97,7 +97,7 @@ package body et_device_partcode is
 		else
 			return true;
 		end if;
-	end;
+	end partcode_characters_valid;
 
 
 	procedure partcode_invalid (partcode : in string) is

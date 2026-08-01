@@ -60,7 +60,7 @@ package body et_meta_device_libraries_schematic is
 		else
 			return false;
 		end if;
-	end;
+	end library_path_exists;
 
 
 
@@ -70,7 +70,7 @@ package body et_meta_device_libraries_schematic is
 		return pac_library_path_schematic.bounded_string
 	is begin
 		return to_bounded_string (lib);
-	end;
+	end to_library_path;
 
 
 
@@ -80,7 +80,7 @@ package body et_meta_device_libraries_schematic is
 		return string
 	is begin
 		return pac_library_path_schematic.to_string (lib);
-	end;
+	end to_string;
 
 
 
@@ -89,7 +89,7 @@ package body et_meta_device_libraries_schematic is
 		return pac_library_path_schematic.bounded_string
 	is begin
 		return paths.first_element;
-	end;
+	end get_first;
 
 
 
@@ -99,7 +99,7 @@ package body et_meta_device_libraries_schematic is
 		return boolean
 	is begin
 		return pac_library_paths_schematic.is_empty (paths);
-	end;
+	end is_empty;
 
 
 

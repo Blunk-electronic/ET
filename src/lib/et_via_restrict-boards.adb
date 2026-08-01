@@ -42,7 +42,7 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_via_restrict.boards is
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 end et_via_restrict.boards;

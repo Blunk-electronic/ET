@@ -67,7 +67,7 @@ package body et_object_status is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -95,7 +95,7 @@ package body et_object_status is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -123,7 +123,7 @@ package body et_object_status is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -151,7 +151,7 @@ package body et_object_status is
 		else
 			return false;
 		end if;
-	end;
+	end is_locked;
 
 
 
@@ -172,7 +172,7 @@ package body et_object_status is
 		return type_status_operation
 	is begin
 		return (action, flag);
-	end;
+	end to_operation;
 
 
 
@@ -183,7 +183,7 @@ package body et_object_status is
 		return type_action
 	is begin
 		return operation.action;
-	end;
+	end get_action;
 
 
 
@@ -192,7 +192,7 @@ package body et_object_status is
 		return type_flag
 	is begin
 		return operation.flag;
-	end;
+	end get_flag;
 
 
 
@@ -280,7 +280,7 @@ package body et_object_status is
 		return boolean
 	is begin
 		return boolean (status.selected.A);
-	end;
+	end is_A_selected;
 
 
 	function is_B_selected (
@@ -288,35 +288,35 @@ package body et_object_status is
 		return boolean
 	is begin
 		return boolean (status.selected.B);
-	end;
+	end is_B_selected;
 
 
 	procedure set_A_selected (
 		status : in out type_AB_status)
 	is begin
 		status.selected.A := true;
-	end;
+	end set_A_selected;
 
 
 	procedure set_B_selected (
 		status : in out type_AB_status)
 	is begin
 		status.selected.B := true;
-	end;
+	end set_B_selected;
 
 
 	procedure clear_A_selected (
 		status : in out type_AB_status)
 	is begin
 		status.selected.A := false;
-	end;
+	end clear_A_selected;
 
 
 	procedure clear_B_selected (
 		status : in out type_AB_status)
 	is begin
 		status.selected.B := false;
-	end;
+	end clear_B_selected;
 
 
 	procedure clear_AB_selected (
@@ -324,7 +324,7 @@ package body et_object_status is
 	is begin
 		status.selected.A := false;
 		status.selected.B := false;
-	end;
+	end clear_AB_selected;
 
 
 
@@ -336,7 +336,7 @@ package body et_object_status is
 		return boolean
 	is begin
 		return boolean (status.moving.A);
-	end;
+	end is_A_moving;
 
 
 	function is_B_moving (
@@ -344,7 +344,7 @@ package body et_object_status is
 		return boolean
 	is begin
 		return boolean (status.moving.B);
-	end;
+	end is_B_moving;
 
 
 
@@ -354,28 +354,28 @@ package body et_object_status is
 		status : in out type_AB_status)
 	is begin
 		status.moving.A := true;
-	end;
+	end set_A_moving;
 
 
 	procedure set_B_moving (
 		status : in out type_AB_status)
 	is begin
 		status.moving.B := true;
-	end;
+	end set_B_moving;
 
 
 	procedure clear_A_moving (
 		status : in out type_AB_status)
 	is begin
 		status.moving.A := false;
-	end;
+	end clear_A_moving;
 
 
 	procedure clear_B_moving (
 		status : in out type_AB_status)
 	is begin
 		status.moving.B := false;
-	end;
+	end clear_B_moving;
 
 
 	procedure clear_AB_moving (
@@ -383,7 +383,7 @@ package body et_object_status is
 	is begin
 		status.moving.A := false;
 		status.moving.B := false;
-	end;
+	end clear_AB_moving;
 
 
 
@@ -393,7 +393,7 @@ package body et_object_status is
 	is begin
 		clear_AB_selected (status);
 		clear_AB_moving (status);
-	end;
+	end clear_AB;
 
 
 

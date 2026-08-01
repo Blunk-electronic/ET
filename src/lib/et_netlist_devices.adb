@@ -69,7 +69,7 @@ package body et_netlist_devices is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 

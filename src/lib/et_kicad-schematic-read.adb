@@ -1896,7 +1896,7 @@ is
 			log (SEVERITY_WARNING, " text note at "
 				& et_kicad_coordinates.to_string (position => note.position, scope => SHEET)
 				& " might be misplaced !");
-		end;
+		end warn;
 
 	begin -- make_text_note
 		--log (text => "making text note ...", level => log_threshold);

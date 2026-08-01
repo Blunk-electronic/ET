@@ -280,7 +280,7 @@ package body et_module_read_nets is
 	procedure insert_strands is begin
 		net.strands := strands;
 		pac_strands.clear (strands); -- clean up for next strand collection
-	end;
+	end insert_strands;
 
 
 
@@ -359,7 +359,7 @@ package body et_module_read_nets is
 
 		-- clean up for next segment collection
 		pac_net_segments.clear (net_segments);
-	end;
+	end insert_net_segments;
 
 
 
@@ -590,7 +590,7 @@ package body et_module_read_nets is
 
 		-- clean up for next label
 		net_label := (others => <>);
-	end;
+	end insert_net_label;
 
 
 

@@ -75,7 +75,7 @@ package body et_board_ops_route_restrict is
 			append (
 				container	=> module.board.route_restrict.lines,
 				new_item	=> line);
-		end;
+		end draw;
 
 
 	begin
@@ -149,7 +149,7 @@ package body et_board_ops_route_restrict is
 			append (
 				container	=> module.board.route_restrict.arcs,
 				new_item	=> arc);
-		end;
+		end draw;
 
 
 	begin
@@ -221,7 +221,7 @@ package body et_board_ops_route_restrict is
 			append (
 				container	=> module.board.route_restrict.circles,
 				new_item	=> circle);
-		end;
+		end draw;
 
 
 	begin
@@ -395,7 +395,7 @@ package body et_board_ops_route_restrict is
 			pragma unreferenced (module_name);
 		begin
 			module.board.route_restrict.contours.append (zone);
-		end;
+		end query_module;
 
 	begin
 		log (text => "module " & to_string (module_cursor)

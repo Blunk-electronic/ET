@@ -50,7 +50,7 @@ package body et_pcb_placeholders.conductor is
 		reset_text (type_text_fab (placeholder));
 		placeholder.meaning := placeholder_meaning_default;
 		placeholder.layer := signal_layer_default;
-	end;
+	end reset_placeholder;
 
 
 

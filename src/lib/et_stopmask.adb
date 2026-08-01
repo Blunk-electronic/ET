@@ -596,7 +596,7 @@ package body et_stopmask is
 		log (text => "stop mask circle face" & to_string (face) & space
 			& to_string (element (cursor)),
 			level => log_threshold);
-	end;
+	end circle_stop_mask_properties;
 
 
 

@@ -110,7 +110,7 @@ package body et_schematic_ops_units is
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
-	end;
+	end dragging_not_possible;
 
 
 
@@ -124,7 +124,7 @@ package body et_schematic_ops_units is
 			console => true
 			);
 		raise constraint_error;
-	end;
+	end relative_rotation_invalid;
 
 
 
@@ -1357,7 +1357,7 @@ package body et_schematic_ops_units is
 			delete_unit (module_cursor, device_name, name, NO_COMMIT, log_threshold + 2);
 
 			log_indentation_down;
-		end;
+		end query_unit;
 
 
 	begin
@@ -2340,12 +2340,12 @@ package body et_schematic_ops_units is
 						procedure log_segment_before is begin
 							log (text => "segment before: "
 								& to_string (segment), level => log_threshold + 3);
-						end;
+						end log_segment_before;
 
 						procedure log_segment_now is begin
 							log (text => "segment now:    "
 								& to_string (segment), level => log_threshold + 3);
-						end;
+						end log_segment_now;
 
 
 					begin
@@ -2955,7 +2955,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return get_device_name (object.device_cursor);
-	end;
+	end get_device_name;
 
 
 
@@ -2964,7 +2964,7 @@ package body et_schematic_ops_units is
 		return type_device_name
 	is begin
 		return key (object.device_cursor);
-	end;
+	end get_device_name;
 
 
 
@@ -2973,7 +2973,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return get_unit_name (object.unit_cursor);
-	end;
+	end get_unit_name;
 
 
 
@@ -2982,7 +2982,7 @@ package body et_schematic_ops_units is
 		return pac_unit_name.bounded_string
 	is begin
 		return key (object.unit_cursor);
-	end;
+	end get_unit_name;
 
 
 
@@ -3154,7 +3154,7 @@ package body et_schematic_ops_units is
 			if real_only then return "real";
 			else return "";
 			end if;
-		end;
+		end get_real;
 
 
 	begin
@@ -4424,7 +4424,7 @@ package body et_schematic_ops_units is
 		return type_device_name
 	is begin
 		return key (object.device_cursor);
-	end;
+	end get_device_name;
 
 
 	function get_unit_name (
@@ -4432,7 +4432,7 @@ package body et_schematic_ops_units is
 		return pac_unit_name.bounded_string
 	is begin
 		return key (object.unit_cursor);
-	end;
+	end get_unit_name;
 
 
 
@@ -4442,7 +4442,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return get_full_name (object.device_cursor, object.unit_cursor);
-	end;
+	end get_object_name;
 
 
 
@@ -4451,7 +4451,7 @@ package body et_schematic_ops_units is
 		return type_placeholder_meaning
 	is begin
 		return object.meaning;
-	end;
+	end get_meaning;
 
 
 
@@ -4461,7 +4461,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return get_device_name (object.device_cursor);
-	end;
+	end get_device_name;
 
 
 	function get_unit_name (
@@ -4469,7 +4469,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return to_string (object.unit_cursor);
-	end;
+	end get_unit_name;
 
 
 
@@ -4478,7 +4478,7 @@ package body et_schematic_ops_units is
 		return string
 	is begin
 		return to_string (object.meaning);
-	end;
+	end get_meaning;
 
 
 
@@ -5273,7 +5273,7 @@ package body et_schematic_ops_units is
 			-- Reset devices, units and placeholders:
 			reset_status_units (module_cursor, log_threshold + 1);
 			reset_status_placeholders (module_cursor, log_threshold + 1);
-		end;
+		end reset_devices;
 
 
 	begin

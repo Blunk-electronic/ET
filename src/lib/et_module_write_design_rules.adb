@@ -86,7 +86,7 @@ package body et_module_write_design_rules is
 			-- CS schematic rules
 
 			section_mark (section_rules, FOOTER);
-		end;
+		end query_module;
 
 	begin
 		log (text => "module " & to_string (module_cursor)

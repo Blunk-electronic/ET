@@ -359,7 +359,7 @@ procedure et is
 	begin
 		-- CS: log ?
 		projects_root_dir := to_bounded_string (current_directory);
-	end;
+	end backup_projects_root_directory;
 	pragma unreferenced (backup_projects_root_directory);
 
 
@@ -373,7 +373,7 @@ procedure et is
 		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",
 			 level => 1);
 		set_directory (to_string (projects_root_dir));
-	end;
+	end restore_projects_root_directory;
 	pragma unreferenced (restore_projects_root_directory);
 
 
@@ -386,7 +386,7 @@ procedure et is
 			put_line ("creating " & system_name & " work directory " & work_directory & " ...");
 			create_directory (work_directory);
 		end if;
-	end;
+	end create_work_directory;
 
 
 
@@ -395,7 +395,7 @@ procedure et is
 			put_line ("creating report directory ...");
 			create_directory (compose (work_directory, report_directory));
 		end if;
-	end;
+	end create_report_directory;
 
 
 
@@ -474,7 +474,7 @@ procedure et is
 									et_package_library.package_library),
 				log_threshold	=> 0);
 		end if;
-	end;
+	end save_package_as;
 
 
 
@@ -492,7 +492,7 @@ procedure et is
 				symbol			=> pac_symbol_models.last_element (symbol_library),
 				log_threshold	=> 0);
 		end if;
-	end;
+	end save_symbol_as;
 
 
 
@@ -510,7 +510,7 @@ procedure et is
 				device			=> pac_device_models.last_element (device_library),
 				log_threshold	=> 0);
 		end if;
-	end;
+	end save_device_as;
 
 
 

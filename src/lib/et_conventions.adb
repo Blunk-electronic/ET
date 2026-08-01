@@ -1807,7 +1807,7 @@ package body et_conventions is
 		use pac_units_of_measurement;
 	begin
 		return element (pac_units_of_measurement.find (units_of_measurement, unit));
-	end;
+	end to_abbrevation;
 
 
 
@@ -2990,12 +2990,12 @@ package body et_conventions is
 			log (SEVERITY_WARNING, "value " & enclose_in_quotes (to_string (value)) &
 				" invalid ! Check unit of measurement !");
 			result := false;
-		end;
+		end value_invalid;
 
 		procedure no_value is begin
 			log (SEVERITY_WARNING, "no value found !");
 			result := false;
-		end;
+		end no_value;
 
 
 
@@ -3030,7 +3030,7 @@ package body et_conventions is
 					-- unit invalid.
 					return false;
 				end if;
-			end;
+			end valid;
 
 
 			use pac_device_value;

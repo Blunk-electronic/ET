@@ -73,7 +73,7 @@ package body et_netlist_cat_1 is
 	begin
 		ct := netlist.length;
 		return count_type'image (ct);
-	end;
+	end get_net_count;
 
 
 
@@ -91,7 +91,7 @@ package body et_netlist_cat_1 is
 			key			=> name,
 			new_item	=> (devices, submodules, netchangers));
 
-	end;
+	end add_net_to_netlist;
 
 
 

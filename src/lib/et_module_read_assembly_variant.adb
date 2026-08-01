@@ -93,7 +93,7 @@ package body et_module_read_assembly_variant is
 		pragma unreferenced (module_name);
 		begin
 			module.assembly_variants.active := active_assembly_variant;
-		end;
+		end set_variant;
 
 
 	begin

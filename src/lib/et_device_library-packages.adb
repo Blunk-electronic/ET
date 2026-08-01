@@ -98,7 +98,7 @@ package body et_device_library.packages is
 			if pac_package_variants.contains (device.variants, variant) then
 				result := true;
 			end if;
-		end;
+		end query_variants;
 
 	begin
 		pac_device_models.query_element (
@@ -137,7 +137,7 @@ package body et_device_library.packages is
 		device_model : type_device_model renames element (device_cursor);
 	begin
 		return get_first_package_variant (device_model);
-	end;
+	end get_first_package_variant;
 
 
 
@@ -164,7 +164,7 @@ package body et_device_library.packages is
 		begin
 			variant_cursor := pac_package_variants.find (device.variants, variant);
 			package_model := get_package_model_file (element (variant_cursor).model_cursor);
-		end;
+		end query_variants;
 
 	begin
 		pac_device_models.query_element (

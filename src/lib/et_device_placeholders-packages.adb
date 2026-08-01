@@ -57,7 +57,7 @@ package body et_device_placeholders.packages is
 		reset_text (type_text_fab (placeholder));
 		placeholder.meaning := placeholder_meaning_default;
 		placeholder.anchor_mode := anchor_mode_default;
-	end;
+	end reset_placeholder;
 
 
 
@@ -67,7 +67,7 @@ package body et_device_placeholders.packages is
 		mode			: in type_anchor_mode)
 	is begin
 		placeholder.anchor_mode := mode;
-	end;
+	end set_anchor_mode;
 
 
 
@@ -76,7 +76,7 @@ package body et_device_placeholders.packages is
 		return type_anchor_mode
 	is begin
 		return placeholder.anchor_mode;
-	end;
+	end get_anchor_mode;
 
 
 
@@ -85,7 +85,7 @@ package body et_device_placeholders.packages is
 		return string
 	is begin
 		return to_string (placeholder.anchor_mode);
-	end;
+	end get_anchor_mode;
 
 
 
@@ -188,7 +188,7 @@ package body et_device_placeholders.packages is
 		return type_placeholder_meaning
 	is begin
 		return placeholder.meaning;
-	end;
+	end get_meaning;
 
 
 
@@ -200,7 +200,7 @@ package body et_device_placeholders.packages is
 		return "meaning " & to_string (placeholder.meaning)
 			& " place " & to_string (get_place (placeholder))
 			& " rotation " & to_string (get_rotation (placeholder));
-	end;
+	end to_string;
 
 
 
@@ -209,7 +209,7 @@ package body et_device_placeholders.packages is
 		return type_placeholder_index
 	is begin
 		return type_placeholder_index'value (index);
-	end;
+	end to_placeholder_index;
 
 
 
@@ -239,7 +239,7 @@ package body et_device_placeholders.packages is
 		return type_placeholder_meaning
 	is begin
 		return element (placeholder).meaning;
-	end;
+	end get_meaning;
 
 
 
@@ -383,7 +383,7 @@ package body et_device_placeholders.packages is
 		return string
 	is begin
 		return to_lower (type_placeholder_layer'image (layer));
-	end;
+	end to_string;
 
 
 	function to_placeholder_layer (
@@ -391,7 +391,7 @@ package body et_device_placeholders.packages is
 		return type_placeholder_layer
 	is begin
 		return type_placeholder_layer'value (layer);
-	end;
+	end to_placeholder_layer;
 
 
 
@@ -779,7 +779,7 @@ package body et_device_placeholders.packages is
 					end loop;
 				end if;
 			end if;
-		end;
+		end do_silkscreen_top;
 
 
 		procedure do_silkscreen_bottom is begin
@@ -808,7 +808,7 @@ package body et_device_placeholders.packages is
 					end loop;
 				end if;
 			end if;
-		end;
+		end do_silkscreen_bottom;
 
 
 
@@ -838,7 +838,7 @@ package body et_device_placeholders.packages is
 					end loop;
 				end if;
 			end if;
-		end;
+		end do_assy_doc_top;
 
 
 		procedure do_assy_doc_bottom is begin
@@ -867,7 +867,7 @@ package body et_device_placeholders.packages is
 					end loop;
 				end if;
 			end if;
-		end;
+		end do_assy_doc_bottom;
 
 
 	begin
@@ -902,7 +902,7 @@ package body et_device_placeholders.packages is
 		is
 		begin
 			modify_status (p, operation);
-		end;
+		end query_placeholder;
 
 
 
@@ -916,7 +916,7 @@ package body et_device_placeholders.packages is
 					placeholders.silkscreen.bottom.update_element (
 						placeholder_cursor, query_placeholder'access);
 			end case;
-		end;
+		end do_silkscreen;
 
 
 		procedure do_assy_doc is begin
@@ -929,7 +929,7 @@ package body et_device_placeholders.packages is
 					placeholders.assy_doc.bottom.update_element (
 						placeholder_cursor, query_placeholder'access);
 			end case;
-		end;
+		end do_assy_doc;
 
 
 
@@ -955,7 +955,7 @@ package body et_device_placeholders.packages is
 			p : in out type_text_placeholder)
 		is begin
 			reset_status (p);
-		end;
+		end query_placeholder;
 
 
 		procedure do_silkscreen_top is
@@ -968,7 +968,7 @@ package body et_device_placeholders.packages is
 
 				next (c);
 			end loop;
-		end;
+		end do_silkscreen_top;
 
 
 		procedure do_silkscreen_bottom is
@@ -981,7 +981,7 @@ package body et_device_placeholders.packages is
 
 				next (c);
 			end loop;
-		end;
+		end do_silkscreen_bottom;
 
 
 		procedure do_assy_doc_top is
@@ -994,7 +994,7 @@ package body et_device_placeholders.packages is
 
 				next (c);
 			end loop;
-		end;
+		end do_assy_doc_top;
 
 
 		procedure do_assy_doc_bottom is
@@ -1007,7 +1007,7 @@ package body et_device_placeholders.packages is
 
 				next (c);
 			end loop;
-		end;
+		end do_assy_doc_bottom;
 
 
 	begin
@@ -1099,7 +1099,7 @@ package body et_device_placeholders.packages is
 			end loop;
 
 			log_indentation_down;
-		end;
+		end do_silkscreen_top;
 
 
 		procedure do_silkscreen_bottom is begin
@@ -1150,7 +1150,7 @@ package body et_device_placeholders.packages is
 			end if;
 
 			log_indentation_down;
-		end;
+		end do_assy_doc_top;
 
 
 		procedure do_assy_doc_bottom is begin

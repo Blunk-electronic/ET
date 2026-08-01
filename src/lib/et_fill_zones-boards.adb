@@ -49,12 +49,12 @@ package body et_fill_zones.boards is
 
 	function to_string (priority_level : in type_priority) return string is begin
 		return type_priority'image (priority_level);
-	end;
+	end to_string;
 
 
 	function to_priority (priority_level : in string) return type_priority is begin
 		return type_priority'value (priority_level);
-	end;
+	end to_priority;
 
 
 

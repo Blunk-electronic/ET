@@ -51,12 +51,12 @@ package body et_primitive_objects is
 
 	function to_shape (shape : in string) return type_shape is begin
 		return type_shape'value (shape);
-	end;
+	end to_shape;
 
 
 	function to_string (shape : in type_shape) return string is begin
 		return to_lower (type_shape'image (shape));
-	end;
+	end to_string;
 
 
 
@@ -77,11 +77,11 @@ package body et_primitive_objects is
 	-- FILL STYLE
 	function to_string (fill_style : in type_fill_style) return string is begin
 		return to_lower (type_fill_style'image (fill_style));
-	end;
+	end to_string;
 
 	function to_fill_style (fill_style : in string) return type_fill_style is begin
 		return type_fill_style'value (fill_style);
-	end;
+	end to_fill_style;
 
 
 

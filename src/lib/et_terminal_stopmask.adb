@@ -52,7 +52,7 @@ package body et_terminal_stopmask is
 		return string
 	is begin
 		return to_lower (type_stopmask_expand_mode'image (shape));
-	end;
+	end to_string;
 
 
 
@@ -61,7 +61,7 @@ package body et_terminal_stopmask is
 		return type_stopmask_expand_mode
 	is begin
 		return type_stopmask_expand_mode'value (shape);
-	end;
+	end to_shape;
 
 
 

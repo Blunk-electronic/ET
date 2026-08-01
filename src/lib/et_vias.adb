@@ -178,7 +178,7 @@ package body et_vias is
 		return boolean
 	is begin
 		return is_selected (element (via));
-	end;
+	end is_selected;
 
 
 	function is_proposed (
@@ -186,7 +186,7 @@ package body et_vias is
 		return boolean
 	is begin
 		return is_proposed (element (via));
-	end;
+	end is_proposed;
 
 
 	function is_moving (
@@ -194,7 +194,7 @@ package body et_vias is
 		return boolean
 	is begin
 		return is_moving (element (via));
-	end;
+	end is_moving;
 
 
 

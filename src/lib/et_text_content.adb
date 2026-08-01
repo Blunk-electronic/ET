@@ -77,7 +77,7 @@ package body et_text_content is
 		content : in out pac_text_content.bounded_string)
 	is begin
 		content := empty_text_content;
-	end;
+	end clear_content;
 
 
 

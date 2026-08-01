@@ -211,7 +211,7 @@ package body et_module_read_freetracks is
 
 			-- CS use procedure add_line to add a line
 			-- to the floating conductors
-		end;
+		end do_it;
 
 
 	begin
@@ -252,7 +252,7 @@ package body et_module_read_freetracks is
 
 			-- CS use procedure add_arc to add an arc
 			-- to the floating conductors
-		end;
+		end do_it;
 
 
 	begin
@@ -293,7 +293,7 @@ package body et_module_read_freetracks is
 
 			-- CS use procedure add_circle to add a circle
 			-- to the floating conductors of the module
-		end;
+		end do_it;
 
 
 	begin

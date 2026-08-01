@@ -53,7 +53,7 @@ package body et_symbol_shapes is
 		return type_vector_model
 	is begin
 		return get_A (element (line));
-	end;
+	end get_A;
 
 
 	function get_B (
@@ -61,7 +61,7 @@ package body et_symbol_shapes is
 		return type_vector_model
 	is begin
 		return get_B (element (line));
-	end;
+	end get_B;
 
 
 
@@ -81,7 +81,7 @@ package body et_symbol_shapes is
 		return type_vector_model
 	is begin
 		return get_A (element (arc));
-	end;
+	end get_A;
 
 
 	function get_B (
@@ -89,7 +89,7 @@ package body et_symbol_shapes is
 		return type_vector_model
 	is begin
 		return get_B (element (arc));
-	end;
+	end get_B;
 
 
 	function get_center (
@@ -97,7 +97,7 @@ package body et_symbol_shapes is
 		return type_vector_model
 	is begin
 		return get_center (element (arc));
-	end;
+	end get_center;
 
 
 	function get_direction (
@@ -105,7 +105,7 @@ package body et_symbol_shapes is
 		return type_direction_of_rotation
 	is begin
 		return get_direction (element (arc));
-	end;
+	end get_direction;
 
 
 
@@ -126,11 +126,11 @@ package body et_symbol_shapes is
 
 	function to_string (filled : in type_circle_filled) return string is begin
 		return to_lower (type_circle_filled'image (filled));
-	end;
+	end to_string;
 
 	function to_circle_filled (filled : in string) return type_circle_filled is begin
 		return type_circle_filled'value (filled);
-	end;
+	end to_circle_filled;
 
 
 

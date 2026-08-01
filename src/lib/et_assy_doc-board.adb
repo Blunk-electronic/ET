@@ -57,7 +57,7 @@ package body et_assy_doc.board is
 			when BOTTOM =>
 				assy_doc.bottom.lines.append (line);
 		end case;
-	end;
+	end add_line;
 
 
 
@@ -74,7 +74,7 @@ package body et_assy_doc.board is
 			when BOTTOM =>
 				assy_doc.bottom.arcs.append (arc);
 		end case;
-	end;
+	end add_arc;
 
 
 
@@ -90,7 +90,7 @@ package body et_assy_doc.board is
 			when BOTTOM =>
 				assy_doc.bottom.circles.append (circle);
 		end case;
-	end;
+	end add_circle;
 
 
 

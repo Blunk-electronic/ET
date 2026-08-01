@@ -88,7 +88,7 @@ package body et_package_write_keepout is
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
 			section_mark (section_cutout_zone, FOOTER);
-		end;
+		end write_cutout;
 
 
 

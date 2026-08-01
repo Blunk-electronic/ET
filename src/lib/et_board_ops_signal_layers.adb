@@ -127,7 +127,7 @@ package body et_board_ops_signal_layers is
 		use package_layers;
 	begin
 		return last_index (element (module_cursor).board.stack.layers) + 1;
-	end;
+	end get_layer_count;
 
 
 
@@ -146,7 +146,7 @@ package body et_board_ops_signal_layers is
 				 console => true);
 			raise constraint_error;
 		end if;
-	end;
+	end test_layer;
 
 
 
@@ -253,11 +253,11 @@ package body et_board_ops_signal_layers is
 		procedure query_layer (cursor : in pac_signal_layers.cursor) is
 		begin
 			test_layer (module_cursor, element (cursor));
-		end;
+		end query_layer;
 
 	begin
 		iterate (layers, query_layer'access);
-	end;
+	end test_layers;
 
 
 

@@ -76,13 +76,13 @@ package body et_kicad_libraries is
 
 	function to_string (meaning : in type_placeholder_meaning) return string is begin
 		return to_lower (type_placeholder_meaning'image (meaning));
-	end;
+	end to_string;
 
 
 
 	function to_meaning (meaning : in string) return type_placeholder_meaning is begin
 		return type_placeholder_meaning'value (meaning);
-	end;
+	end to_meaning;
 
 
 

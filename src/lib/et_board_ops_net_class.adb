@@ -160,7 +160,7 @@ package body et_board_ops_net_class is
 				pragma unreferenced (net_name);
 			begin
 				result := get_class_name (net);
-			end;
+			end query_net;
 
 		begin
 			query_element (net_cursor, query_net'access);

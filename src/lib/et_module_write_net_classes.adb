@@ -92,7 +92,7 @@ package body et_module_write_net_classes is
 			write (keyword => keyword_micro_via_restring_min, parameters => to_string (net_class.micro_via_restring_min));
 
 			section_mark (section_net_class, FOOTER);
-		end;
+		end query_class;
 
 
 

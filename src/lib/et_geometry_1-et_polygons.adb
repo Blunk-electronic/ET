@@ -332,7 +332,7 @@ package body et_geometry_1.et_polygons is
 		return natural
 	is begin
 		return natural (polygons.length);
-	end;
+	end get_count;
 
 
 
@@ -341,7 +341,7 @@ package body et_geometry_1.et_polygons is
 		return string
 	is begin
 		return natural'image (natural (polygons.length));
-	end;
+	end get_count;
 
 
 
@@ -354,7 +354,7 @@ package body et_geometry_1.et_polygons is
 		s : pac_polygon_list.list := source;
 	begin
 		target.splice (before => pac_polygon_list.no_element, source => s);
-	end;
+	end append;
 
 
 
@@ -741,7 +741,7 @@ package body et_geometry_1.et_polygons is
 			return string
 		is begin
 			return to_lower (get_field (v_fields, p));
-		end;
+		end f;
 
 
 		-- The place in vertices which we fetch a field from:
@@ -1812,7 +1812,7 @@ package body et_geometry_1.et_polygons is
 			else
 				return false;
 			end if;
-		end;
+		end "<";
 
 
 		package pac_items is new doubly_linked_lists (type_item);
@@ -2450,7 +2450,7 @@ package body et_geometry_1.et_polygons is
 			else
 				return false;
 			end if;
-		end;
+		end "<";
 
 
 		package pac_items is new doubly_linked_lists (type_item);

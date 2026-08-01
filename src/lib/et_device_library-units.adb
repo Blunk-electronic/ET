@@ -134,7 +134,7 @@ package body et_device_library.units is
 				end loop;
 				-- no unit found. return no_element:
 				return pac_units_internal.no_element;
-			end;
+			end first_internal;
 
 
 			function first_external (add_level : in type_add_level)
@@ -152,7 +152,7 @@ package body et_device_library.units is
 				end loop;
 				-- no unit found. return no_element:
 				return pac_units_external.no_element;
-			end;
+			end first_external;
 
 
 		begin -- query_units
@@ -407,7 +407,7 @@ package body et_device_library.units is
 				cursor_internal := find (device.units_internal, unit_name);
 				status := INT;
 			end if;
-		end;
+		end query_units;
 
 	begin -- locate_unit
 		--put_line (to_string (pac_device_models.key (device_cursor)));
@@ -513,7 +513,7 @@ package body et_device_library.units is
 					pragma unreferenced (file);
 				begin
 					port_cursor := find (symbol.ports, port_name);
-				end;
+				end query_ports;
 
 			begin
 				symbol_cursor := unit.model_cursor;

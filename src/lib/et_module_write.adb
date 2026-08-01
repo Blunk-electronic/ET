@@ -330,7 +330,7 @@ package body et_module_write is
 				write_placeholders_conductor (module_cursor, log_threshold + 2);
 
 				section_mark (section_conductor, FOOTER);
-			end;
+			end write_conductors_floating;
 
 
 		begin -- query_board

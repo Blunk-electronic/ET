@@ -99,7 +99,7 @@ package body et_device_model_unit_external is
 	is begin
 		return pac_symbol_model_name.to_string (
 			get_symbol_model_file (unit));
-	end;
+	end get_symbol_model_name;
 
 
 
@@ -118,7 +118,7 @@ package body et_device_model_unit_external is
 
 		get_symbol_model (symbol_file, result);
 		return result;
-	end;
+	end get_symbol;
 
 
 

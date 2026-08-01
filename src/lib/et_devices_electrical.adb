@@ -56,7 +56,7 @@ package body et_devices_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_real;
 
 
 
@@ -66,7 +66,7 @@ package body et_devices_electrical is
 		return et_board_coordinates.type_package_position
 	is begin
 		return device.position;
-	end;
+	end get_position;
 
 
 
@@ -92,7 +92,7 @@ package body et_devices_electrical is
 		use pac_device_models;
 	begin
 		return to_string (key (device.model_cursor));
-	end;
+	end get_device_model_name;
 
 
 
@@ -145,7 +145,7 @@ package body et_devices_electrical is
 		is begin
 			-- Insert the device name in the resulting list:
 			result.insert (key (c));
-		end;
+		end query_device;
 
 	begin
 		-- Iterate through the devices:
@@ -164,7 +164,7 @@ package body et_devices_electrical is
 		return natural
 	is begin
 		return natural (devices.length);
-	end;
+	end get_count;
 
 
 
@@ -173,7 +173,7 @@ package body et_devices_electrical is
 		return string
 	is begin
 		return count_type'image (devices.length);
-	end;
+	end get_count;
 
 
 
@@ -235,7 +235,7 @@ package body et_devices_electrical is
 		return pac_device_prefix.bounded_string
 	is begin
 		return get_prefix (key (device));
-	end;
+	end get_prefix;
 
 
 
@@ -268,7 +268,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			set_selected (device.status);
 		end if;
-	end;
+	end set_selected;
 
 
 
@@ -279,7 +279,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			clear_selected (device.status);
 		end if;
-	end;
+	end clear_selected;
 
 
 
@@ -296,7 +296,7 @@ package body et_devices_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -307,7 +307,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			set_proposed (device.status);
 		end if;
-	end;
+	end set_proposed;
 
 
 
@@ -317,7 +317,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			clear_proposed (device.status);
 		end if;
-	end;
+	end clear_proposed;
 
 
 
@@ -334,7 +334,7 @@ package body et_devices_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -344,7 +344,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			set_moving (device.status);
 		end if;
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
@@ -353,7 +353,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			clear_moving (device.status);
 		end if;
-	end;
+	end clear_moving;
 
 
 
@@ -370,7 +370,7 @@ package body et_devices_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -396,7 +396,7 @@ package body et_devices_electrical is
 		if is_real (device) then
 			reset_status (device.status);
 		end if;
-	end;
+	end reset_status;
 
 
 

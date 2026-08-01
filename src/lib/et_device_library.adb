@@ -69,7 +69,7 @@ package body et_device_library is
 		return pac_device_prefix.bounded_string
 	is begin
 		return element (cursor).prefix;
-	end;
+	end get_prefix;
 
 
 
@@ -79,7 +79,7 @@ package body et_device_library is
 		return pac_device_model_file.bounded_string
 	is begin
 		return key (cursor);
-	end;
+	end get_device_model_file;
 
 
 
@@ -130,7 +130,7 @@ package body et_device_library is
 		cursor : constant pac_device_models.cursor := find (device_library, model);
 	begin
 		return cursor;
-	end;
+	end get_device_model;
 
 
 
@@ -142,7 +142,7 @@ package body et_device_library is
 		return pac_device_model_file.bounded_string
 	is begin
 		return key (device_cursor);
-	end;
+	end get_device_model_name;
 
 
 
@@ -151,7 +151,7 @@ package body et_device_library is
 		return string
 	is begin
 		return to_string (key (device_cursor));
-	end;
+	end get_device_model_name;
 
 
 
@@ -183,7 +183,7 @@ package body et_device_library is
 		device_model : type_device_model renames element (device_cursor);
 	begin
 		return get_default_value (device_model);
-	end;
+	end get_default_value;
 
 
 

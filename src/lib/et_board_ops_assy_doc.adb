@@ -88,7 +88,7 @@ package body et_board_ops_assy_doc is
 						container	=> module.board.assy_doc.bottom.lines,
 						new_item	=> line);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -823,7 +823,7 @@ package body et_board_ops_assy_doc is
 						container	=> module.board.assy_doc.bottom.arcs,
 						new_item	=> arc);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -1383,7 +1383,7 @@ package body et_board_ops_assy_doc is
 						new_item	=> circle);
 
 			end case;
-		end;
+		end add;
 
 
 	begin

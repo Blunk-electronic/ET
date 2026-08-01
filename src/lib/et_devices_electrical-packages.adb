@@ -62,7 +62,7 @@ package body et_devices_electrical.packages is
 		value	: in pac_device_value.bounded_string)
 	is begin
 		device.value := value;
-	end;
+	end set_value;
 
 
 	function get_value (
@@ -70,7 +70,7 @@ package body et_devices_electrical.packages is
 		return pac_device_value.bounded_string
 	is begin
 		return device.value;
-	end;
+	end get_value;
 
 
 	function get_value (
@@ -78,7 +78,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_value (device));
-	end;
+	end get_value;
 
 
 	function get_value (
@@ -99,7 +99,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_value;
 
 
 
@@ -111,7 +111,7 @@ package body et_devices_electrical.packages is
 		partcode	: in pac_device_partcode.bounded_string)
 	is begin
 		device.partcode := partcode;
-	end;
+	end set_partcode;
 
 
 	function get_partcode (
@@ -119,7 +119,7 @@ package body et_devices_electrical.packages is
 		return pac_device_partcode.bounded_string
 	is begin
 		return device.partcode;
-	end;
+	end get_partcode;
 
 
 	function get_partcode (
@@ -127,7 +127,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_partcode (device));
-	end;
+	end get_partcode;
 
 
 
@@ -149,7 +149,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_partcode;
 
 
 
@@ -161,7 +161,7 @@ package body et_devices_electrical.packages is
 		purpose	: in pac_device_purpose.bounded_string)
 	is begin
 		device.purpose := purpose;
-	end;
+	end set_purpose;
 
 
 	function get_purpose (
@@ -169,7 +169,7 @@ package body et_devices_electrical.packages is
 		return pac_device_purpose.bounded_string
 	is begin
 		return device.purpose;
-	end;
+	end get_purpose;
 
 
 	function get_purpose (
@@ -177,7 +177,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_purpose (device));
-	end;
+	end get_purpose;
 
 
 
@@ -199,7 +199,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_purpose;
 
 
 
@@ -211,7 +211,7 @@ package body et_devices_electrical.packages is
 		return pac_package_variant_name.bounded_string
 	is begin
 		return device.variant;
-	end;
+	end get_package_variant;
 
 
 
@@ -252,7 +252,7 @@ package body et_devices_electrical.packages is
 		d : type_device_electrical renames element (device);
 	begin
 		return get_available_package_variants (d);
-	end;
+	end get_available_package_variants;
 
 
 
@@ -265,7 +265,7 @@ package body et_devices_electrical.packages is
 		position	: in type_package_position)
 	is begin
 		device.position := position;
-	end;
+	end set_position;
 
 
 	function get_position (
@@ -273,7 +273,7 @@ package body et_devices_electrical.packages is
 		return type_package_position
 	is begin
 		return device.position;
-	end;
+	end get_position;
 
 
 
@@ -283,7 +283,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (device.position, format);
-	end;
+	end get_position;
 
 
 
@@ -292,7 +292,7 @@ package body et_devices_electrical.packages is
 		return type_rotation_model
 	is begin
 		return get_rotation (device.position);
-	end;
+	end get_rotation;
 
 
 	procedure set_rotation (
@@ -300,7 +300,7 @@ package body et_devices_electrical.packages is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation (device.position, rotation);
-	end;
+	end set_rotation;
 
 
 	procedure set_rotation_relative (
@@ -308,7 +308,7 @@ package body et_devices_electrical.packages is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation_relative (device.position, rotation);
-	end;
+	end set_rotation_relative;
 
 
 
@@ -317,7 +317,7 @@ package body et_devices_electrical.packages is
 		face	: in type_face)
 	is begin
 		set_face (device.position, face);
-	end;
+	end set_face;
 
 
 
@@ -325,7 +325,7 @@ package body et_devices_electrical.packages is
 		device	: in out type_device_electrical)
 	is begin
 		toggle_face (device.position);
-	end;
+	end toggle_face;
 
 
 
@@ -336,7 +336,7 @@ package body et_devices_electrical.packages is
 		return type_face
 	is begin
 		return get_face (device.position);
-	end;
+	end get_face;
 
 
 
@@ -345,7 +345,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_face (device.position));
-	end;
+	end get_face;
 
 
 
@@ -354,7 +354,7 @@ package body et_devices_electrical.packages is
 		place	: in type_vector_model)
 	is begin
 		set_place (device.position, place);
-	end;
+	end set_place;
 
 
 
@@ -363,7 +363,7 @@ package body et_devices_electrical.packages is
 		offset	: in type_vector_model)
 	is begin
 		set_place_relative (device.position, offset);
-	end;
+	end set_place_relative;
 
 
 
@@ -372,7 +372,7 @@ package body et_devices_electrical.packages is
 		return type_vector_model
 	is begin
 		return get_place (device.position);
-	end;
+	end get_place;
 
 
 
@@ -383,7 +383,7 @@ package body et_devices_electrical.packages is
 	is begin
 		return et_board_geometry.pac_geometry_2.to_string (
 			get_place (device.position), format);
-	end;
+	end get_place;
 
 
 
@@ -405,7 +405,7 @@ package body et_devices_electrical.packages is
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
 		end if;
-	end;
+	end log_package_position;
 
 
 

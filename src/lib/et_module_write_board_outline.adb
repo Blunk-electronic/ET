@@ -80,7 +80,7 @@ package body et_module_write_board_outline is
 			section_mark (section_hole, HEADER);
 			write_polygon_segments (hole);
 			section_mark (section_hole, FOOTER);
-		end;
+		end query_hole;
 
 
 		procedure query_module (

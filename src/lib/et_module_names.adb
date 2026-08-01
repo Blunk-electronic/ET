@@ -47,11 +47,11 @@ package body et_module_names is
 
 	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
 		return pac_module_file_name.to_bounded_string (name);
-	end;
+	end to_module_file_name;
 
 	function to_string (name : in pac_module_file_name.bounded_string) return string is begin
 		return pac_module_file_name.to_string (name);
-	end;
+	end to_string;
 
 
 
@@ -72,7 +72,7 @@ package body et_module_names is
 	-- the return would be templates/clock_generator.mod .
 	begin
 		return file_name & '.' & module_file_name_extension;
-	end;
+	end append_extension;
 
 
 
@@ -80,12 +80,12 @@ package body et_module_names is
 
 	function to_string (name : in pac_module_name.bounded_string) return string is begin
 		return pac_module_name.to_string (name);
-	end;
+	end to_string;
 
 
 	function to_module_name (name : in string) return pac_module_name.bounded_string is begin
 		return pac_module_name.to_bounded_string (name);
-	end;
+	end to_module_name;
 
 
 

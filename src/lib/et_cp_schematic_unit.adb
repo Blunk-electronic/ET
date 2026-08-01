@@ -128,7 +128,7 @@ package body et_cp_schematic_unit is
 					module_cursor	=> module,
 					device_name		=> device,
 					unit_name		=> unit);
-			end;
+			end locate_unit;
 
 
 

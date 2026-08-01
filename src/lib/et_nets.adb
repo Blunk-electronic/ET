@@ -61,7 +61,7 @@ package body et_nets is
 		return pac_net_class_name.bounded_string
 	is begin
 		return net.class;
-	end;
+	end get_class_name;
 
 
 
@@ -70,7 +70,7 @@ package body et_nets is
 		return string
 	is begin
 		return to_string (net.class);
-	end;
+	end get_class_name;
 
 
 
@@ -81,7 +81,7 @@ package body et_nets is
 		return type_net_scope
 	is begin
 		return net.scope;
-	end;
+	end get_net_scope;
 
 
 
@@ -90,7 +90,7 @@ package body et_nets is
 		scope	: in type_net_scope)
 	is begin
 		net.scope := scope;
-	end;
+	end set_net_scope;
 
 
 
@@ -101,14 +101,14 @@ package body et_nets is
 		net : in out type_net)
 	is begin
 		set_proposed (net.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		net : in out type_net)
 	is begin
 		clear_proposed (net.status);
-	end;
+	end clear_proposed;
 
 
 	function is_proposed (
@@ -129,14 +129,14 @@ package body et_nets is
 		net : in out type_net)
 	is begin
 		set_selected (net.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		net : in out type_net)
 	is begin
 		clear_selected (net.status);
-	end;
+	end clear_selected;
 
 
 	function is_selected (
@@ -159,7 +159,7 @@ package body et_nets is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (net.status, operation);
-	end;
+	end modify_status;
 
 
 
@@ -169,7 +169,7 @@ package body et_nets is
 		net			: in out type_net)
 	is begin
 		reset_status (net.status);
-	end;
+	end reset_status;
 
 
 
@@ -202,7 +202,7 @@ package body et_nets is
 		else
 			return false;
 		end if;
-	end;
+	end has_strands;
 
 
 
@@ -614,7 +614,7 @@ package body et_nets is
 		return boolean
 	is begin
 		return is_proposed (element (net));
-	end;
+	end is_proposed;
 
 
 	function is_selected (
@@ -622,7 +622,7 @@ package body et_nets is
 		return boolean
 	is begin
 		return is_selected (element (net));
-	end;
+	end is_selected;
 
 
 
@@ -635,7 +635,7 @@ package body et_nets is
 		return pac_net_name.bounded_string
 	is begin
 		return key (net_cursor);
-	end;
+	end get_net_name;
 
 
 
@@ -661,7 +661,7 @@ package body et_nets is
 		else
 			return true;
 		end if;
-	end;
+	end net_exists;
 
 
 
@@ -762,7 +762,7 @@ package body et_nets is
 		return boolean
 	is begin
 		return has_strands (element (net));
-	end;
+	end has_strands;
 
 
 
@@ -859,7 +859,7 @@ package body et_nets is
 		return pac_netchanger_ports.set
 	is begin
 		return get_net_ports (net_cursor).netchangers;
-	end;
+	end get_netchanger_ports;
 
 
 
@@ -871,7 +871,7 @@ package body et_nets is
 		return pac_net_name.bounded_string
 	is begin
 		return key (object.net_cursor);
-	end;
+	end get_net_name;
 
 
 
@@ -883,7 +883,7 @@ package body et_nets is
 		return "net " & get_net_name (object.net_cursor)
 			-- & " strand " & get_position (object.strand_cursor)
 			& " segment " & to_string (object.segment_cursor);
-	end;
+	end to_string;
 
 
 
@@ -894,7 +894,7 @@ package body et_nets is
 		segment : type_net_segment;
 	begin
 		return get_sheet (object.strand_cursor);
-	end;
+	end get_sheet;
 
 
 
@@ -924,7 +924,7 @@ package body et_nets is
 		return pac_net_name.bounded_string
 	is begin
 		return key (strand.net_cursor);
-	end;
+	end get_net_name;
 
 
 
@@ -960,7 +960,7 @@ package body et_nets is
 		s : constant type_object_strand := element (strand);
 	begin
 		return key (s.net_cursor);
-	end;
+	end get_net_name;
 
 
 
@@ -1033,7 +1033,7 @@ package body et_nets is
 		return "net " & get_net_name (object.net_cursor)
 			& " label at " & get_position (object.label_cursor);
 			-- CS other properties ?
-	end;
+	end to_string;
 
 
 
@@ -1047,7 +1047,7 @@ package body et_nets is
 		-- & " segment " & to_string (object.segment_cursor)
 		-- & to_string (object.start_end) & " point";
 		-- CS direction, rotation
-	end;
+	end to_string;
 
 
 

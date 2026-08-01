@@ -48,12 +48,12 @@ package body et_net_connectors is
 
 	function to_string (direction : in type_connector_direction) return string is begin
 		return to_lower (type_connector_direction'image (direction));
-	end;
+	end to_string;
 
 
 	function to_direction (direction : in string) return type_connector_direction is begin
 		return type_connector_direction'value (direction);
-	end;
+	end to_direction;
 
 
 
@@ -70,7 +70,7 @@ package body et_net_connectors is
 			return string
 		is begin
 			return to_lower (get_field (arguments, place));
-		end;
+		end f;
 
 	begin
 		error := false;
@@ -112,7 +112,7 @@ package body et_net_connectors is
 		else
 			return "inactive";
 		end if;
-	end;
+	end to_string;
 
 
 
@@ -123,7 +123,7 @@ package body et_net_connectors is
 		return type_connector_direction
 	is begin
 		return connector.direction;
-	end;
+	end get_direction;
 
 
 	function get_direction (
@@ -131,7 +131,7 @@ package body et_net_connectors is
 		return string
 	is begin
 		return to_string (get_direction (connector));
-	end;
+	end get_direction;
 
 
 
@@ -145,7 +145,7 @@ package body et_net_connectors is
 		if connector.active then
 			modify_status (connector.status, operation);
 		end if;
-	end;
+	end modify_status;
 
 
 
@@ -159,7 +159,7 @@ package body et_net_connectors is
 		if labels.B.active then
 			reset_status (labels.B.status);
 		end if;
-	end;
+	end reset_status;
 
 
 
@@ -169,14 +169,14 @@ package body et_net_connectors is
 		return boolean
 	is begin
 		return connector.active;
-	end;
+	end is_active;
 
 
 	procedure set_active (
 		connector : in out type_net_connector)
 	is begin
 		connector := (active => true, others => <>);
-	end;
+	end set_active;
 
 
 
@@ -189,7 +189,7 @@ package body et_net_connectors is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -199,7 +199,7 @@ package body et_net_connectors is
 		if connector.active then
 			set_proposed (connector.status);
 		end if;
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
@@ -208,7 +208,7 @@ package body et_net_connectors is
 		if connector.active then
 			clear_proposed (connector.status);
 		end if;
-	end;
+	end clear_proposed;
 
 
 
@@ -223,7 +223,7 @@ package body et_net_connectors is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -233,7 +233,7 @@ package body et_net_connectors is
 		if connector.active then
 			set_selected (connector.status);
 		end if;
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
@@ -242,7 +242,7 @@ package body et_net_connectors is
 		if connector.active then
 			clear_selected (connector.status);
 		end if;
-	end;
+	end clear_selected;
 
 
 
@@ -256,7 +256,7 @@ package body et_net_connectors is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 	procedure set_moving (
@@ -265,7 +265,7 @@ package body et_net_connectors is
 		if connector.active then
 			set_moving (connector.status);
 		end if;
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
@@ -274,7 +274,7 @@ package body et_net_connectors is
 		if connector.active then
 			clear_moving (connector.status);
 		end if;
-	end;
+	end clear_moving;
 
 
 
@@ -282,7 +282,7 @@ package body et_net_connectors is
 		connector : in out type_net_connector)
 	is begin
 		connector := (active => false);
-	end;
+	end reset_connector;
 
 
 

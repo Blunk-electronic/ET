@@ -78,7 +78,7 @@ package body et_script_processor is
 			log (text => get_line_number (cmd) & "cmd: "
 				& enclose_in_quotes (get_all_fields (cmd)),
 				level => log_threshold);
-		end;
+		end log_command;
 
 
 	begin
