@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -44,23 +44,23 @@ with ada.strings;
 
 
 package body et_netlist_name is
-	
+
 	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
 		return pac_netlist_file_name.to_string (name);
 	end;
 
-	
+
 	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
 		return pac_netlist_file_name.to_bounded_string (name);
 	end;
 
 
-	
+
 end et_netlist_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

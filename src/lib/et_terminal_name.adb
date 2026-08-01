@@ -43,28 +43,28 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_terminal_name is
 
-	
+
 	function to_string (
-		terminal : in pac_terminal_name.bounded_string) 
+		terminal : in pac_terminal_name.bounded_string)
 	return string is begin
 		return pac_terminal_name.to_string (terminal);
 	end;
 
-	
-	
+
+
 	function to_terminal_name (
-		terminal : in string) 
-		return pac_terminal_name.bounded_string 
+		terminal : in string)
+		return pac_terminal_name.bounded_string
 	is begin
 		return pac_terminal_name.to_bounded_string (terminal);
 	end;
 
-	
+
 end et_terminal_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

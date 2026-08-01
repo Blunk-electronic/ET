@@ -50,17 +50,17 @@ package et_conductor_text is
 
 	use pac_geometry_2;
 
-	
+
 	use pac_geometry_brd;
 	use pac_polygons;
 
-	
+
 	use pac_text_board_vectorized;
 
 
 
 
-	type type_conductor_text 
+	type type_conductor_text
 		is new type_text_fab_with_content with
 	record
 		vectors	: type_vector_text; -- CS rename to text ?
@@ -73,9 +73,9 @@ package et_conductor_text is
 	-- linewidth, content and vectors to default:
 	overriding procedure reset_text (
 		text : in out type_conductor_text);
-	
-	
-	
+
+
+
 	-- Mirrors a text along the given axis:
 	procedure mirror_text (
 		text	: in out type_conductor_text;
@@ -93,19 +93,19 @@ package et_conductor_text is
 		text	: in out type_conductor_text;
 		offset	: in type_vector_model);
 
-		
+
 
 	---- Logs the properties of the given text.
 	--procedure text_conductor_properties (
 		--cursor			: in pac_conductor_texts_board.cursor;
 		--log_threshold 	: in type_log_level);
 
-	
+
 end et_conductor_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

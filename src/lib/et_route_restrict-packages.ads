@@ -43,8 +43,8 @@ with et_pcb_sides;				use et_pcb_sides;
 package et_route_restrict.packages is
 
 	use pac_polygons;
-	
-	
+
+
 	type type_one_side is record
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
@@ -52,8 +52,8 @@ package et_route_restrict.packages is
 		zones		: pac_route_restrict_zones.list;
 		cutouts		: pac_route_restrict_cutouts.list;
 		-- CS not sure whether this is really required.
-		
-		-- CS texts : 
+
+		-- CS texts :
 		-- This must not be derived from from conductor text because
 		-- it is not fabrication relevant.
 		-- It should contain notes of the designer exclusively.
@@ -64,7 +64,7 @@ package et_route_restrict.packages is
 	procedure mirror_route_restrict_objects (
 		restrict	: in out type_one_side;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates the given route restrict objects by the given angle
 	-- about the origin:
 	procedure rotate_route_restrict_objects (
@@ -82,8 +82,8 @@ package et_route_restrict.packages is
 		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
-	
-	
+
+
 	type type_route_restrict is record -- CS rename to type_route_restrict_both_sides ?
 		top		: type_one_side;
 		bottom	: type_one_side;
@@ -91,8 +91,8 @@ package et_route_restrict.packages is
 
 
 	-- CS procedures add_circle, line, arc
-	
-	
+
+
 	procedure add_zone (
 		route_restrict	: in out type_route_restrict;
 		zone			: in type_route_restrict_zone;
@@ -105,12 +105,12 @@ package et_route_restrict.packages is
 		face			: in type_face);
 
 
-	
+
 end et_route_restrict.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -51,8 +51,8 @@ package et_schematic_ops_netlists_2 is
 
 	use pac_generic_modules;
 
-		
-		
+
+
 	-- Adds further properties to the given device ports.
 	-- Ignores ports of virtual devices (like GND symbols).
 	-- Additional properties are electrical characteristics
@@ -62,16 +62,16 @@ package et_schematic_ops_netlists_2 is
 		ports 			: in pac_device_ports.set)
 		return pac_device_ports_extended.set;
 
-		
+
 	-- Adds further properties to the given submodule ports:
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_net_submodule_ports.set)
 		return pac_submodule_ports_extended.set;
-		
-		
-		
-		
+
+
+
+
 	-- Generates for the given assembly variant of a
 	-- generic module a netlist of category 1:
 	procedure make_netlist_cat_1 (
@@ -80,13 +80,13 @@ package et_schematic_ops_netlists_2 is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_schematic_ops_netlists_2;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

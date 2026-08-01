@@ -60,14 +60,14 @@ with et_directions;					use et_directions;
 
 generic
 	with package pac_geometry_1 is new et_geometry_1 (<>);
-	
+
 	type type_distance is delta <> digits <>;
 
 	axis_min, axis_max : type_distance;
 
 	type type_rotation is delta <> digits <>;
-	
-	
+
+
 package et_geometry_2a is
 
 	use pac_geometry_1;
@@ -77,15 +77,15 @@ package et_geometry_2a is
 	far_left	: constant type_distance := axis_min;
 	far_right	: constant type_distance := axis_max;
 
-	
+
 
 	function get_info (editor: in string)
 		return string;
 
-	
-	
 
-		
+
+
+
 -- DISTANCE:
 
 	-- For collecting and sorting distances:
@@ -95,10 +95,10 @@ package et_geometry_2a is
 
 	-- Tests whether the given value is in the given range.
 	-- 1. If include_limits is true then:
-	--    Returns true if the given value is greater or equal than lower 
+	--    Returns true if the given value is greater or equal than lower
 	--    AND if less or equal upper.
 	-- 2. If include_limits is false then:
-	--    Returns true if the given value is greater than lower 
+	--    Returns true if the given value is greater than lower
 	--    AND if less than upper.
 	function in_range (
 		lower, upper	: in type_distance;
@@ -106,25 +106,25 @@ package et_geometry_2a is
 		include_limits	: in boolean)
 		return boolean;
 
-	
-	
-	-- Returns the greatest of the given distances. 
+
+
+	-- Returns the greatest of the given distances.
 	-- If both are equal then "right" will be returned.
 	function get_greatest (
 		left, right : in type_distance)
 		return type_distance;
 
-	
-	-- Returns the smallest of the given distances. 
+
+	-- Returns the smallest of the given distances.
 	-- If both are equal then "right" will be returned.
 	function get_smallest (
 		left, right : in type_distance)
 		return type_distance;
 
 
-	
+
 	-- Limits a distance to a given maximum.
-	-- Examples: 
+	-- Examples:
 	-- 1. distance = 100.0, maximum = 80.0 -> distance becomes 80.0
 	-- 2. distance =  70.0, maximum = 80.0 -> distance remains 70.0
 	procedure limit_to_maximum (
@@ -132,7 +132,7 @@ package et_geometry_2a is
 		maximum		: in type_distance);
 
 	-- Limits a distance to a given minimum.
-	-- Examples: 
+	-- Examples:
 	-- 1. distance =  80.0, minimum = 70.0 -> distance remains 80.0
 	-- 2. distance =  60.0, minimum = 70.0 -> distance becomes 70.0
 	procedure limit_to_minimum (
@@ -148,22 +148,22 @@ package et_geometry_2a is
 		distance	: in out type_distance;
 		minimum		: in type_distance;
 		maximum		: in type_distance);
-	
 
-	-- Converts a mil number (given as a string) to millimeters.	
+
+	-- Converts a mil number (given as a string) to millimeters.
 	function mil_to_distance (
-		mil : in string) 
+		mil : in string)
 		return type_distance;
 
 
-	
+
 	function distance_to_mil (
-		distance : in type_distance) 
+		distance : in type_distance)
 		return string;
 
 
 
-	
+
 	-- Use this type for distances, lengths, ...
 	-- Because those things require positive numbers:
 	subtype type_distance_positive is type_distance
@@ -182,16 +182,16 @@ package et_geometry_2a is
 
 
 
-		
-	
-	-- This function returns the given distance as string:	
+
+
+	-- This function returns the given distance as string:
 	function to_string (
 		distance : in type_distance)
 		return string;
 
 
 	-- The position along an axis:
-	subtype type_position_axis is type_distance 
+	subtype type_position_axis is type_distance
 		range axis_min .. axis_max;
 
 
@@ -202,37 +202,37 @@ package et_geometry_2a is
 		return type_distance;
 
 
-	function to_distance (dd : in string) 
-		return type_distance;		
+	function to_distance (dd : in string)
+		return type_distance;
 
 
 
 	function clip_distance (d : in type_distance)
 		return type_position_axis;
 
-	
+
 	procedure clip_distance (d : in out type_distance);
 
-	
-	
-	
 
-	
+
+
+
+
 
 -- ROTATION / ANGLE:
-	
+
 	zero_rotation : constant type_rotation := 0.0;
 
 	subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
-	
+
 
 	-- Toggles between 0 and 90 degrees.
 	-- If the given rotation is neither 0 or 90 degrees,
 	-- then nothing happens:
 	procedure toggle_rotation (
 		rotation : in out type_rotation_0_90);
-	
-	
+
+
 	-- Converts the given rotation/angle to a string:
 	function to_string (
 		rotation : in type_rotation)
@@ -240,7 +240,7 @@ package et_geometry_2a is
 
 
 	function to_rotation (
-		rotation : in string) 
+		rotation : in string)
 		return type_rotation;
 
 
@@ -256,13 +256,13 @@ package et_geometry_2a is
 		a : in type_rotation)
 		return type_float;
 
-	
-	
+
+
 	-- Adds two angles.
 	-- If result greater 360 degree then 360 degree is subtracted from result.
 	-- If result less than 360 degree then 360 degree is added to the result.
 	function add (
-		left, right : in type_rotation) 
+		left, right : in type_rotation)
 		return type_rotation;
 
 
@@ -270,9 +270,9 @@ package et_geometry_2a is
 	procedure add (
 		rotation	: in out type_rotation;
 		offset		: in type_rotation);
-	
 
-	
+
+
 	-- Returns true if the given rotation is zero or
 	-- a multiple of 90 degrees:
 	function is_orthogonal (
@@ -280,27 +280,27 @@ package et_geometry_2a is
 		return boolean;
 
 
-		
+
 	-- Returns true if the given rotation is zero or
 	-- 90 degrees:
 	function is_0_or_90 (
 		rotation : in type_rotation)
 		return boolean;
 
-		
-		
-		
-		
-		
-		
-	
+
+
+
+
+
+
+
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
-	
+
 	type type_vector_model is record
 		x, y : type_distance := 0.0;
 	end record;
 
-	
+
 	-- The origin is a small cross at model position (0;0).
 	origin : constant type_vector_model := (0.0, 0.0);
 
@@ -308,11 +308,11 @@ package et_geometry_2a is
 	far_upper_right	: constant type_vector_model;
 	far_lower_left	: constant type_vector_model;
 	far_lower_right	: constant type_vector_model;
-	
+
 
 	-- This function returns the given vector
 	-- as string formatted as follows:
-	-- FORMAT_1 : "x/y 4.5 / 5.6" 
+	-- FORMAT_1 : "x/y 4.5 / 5.6"
 	-- FORMAT_2 : x 4.5 y 5.6
 	-- FORMAT_3 : 4.5 5.6
 	function to_string (
@@ -332,19 +332,19 @@ package et_geometry_2a is
 		from : in type_field_count_positive)
 		return type_vector_model;
 
-	
+
 
 	-- Moves the given point to the origin (0/0).
 	procedure reset (
 		point : in out type_vector_model);
-	
+
 
 	-- This function inverts a vector by multiplying
 	-- its components by -1:
 	function invert (
 		point	: in type_vector_model)
 		return type_vector_model;
-	
+
 
 	-- Inverts the point on the given axis.
 	function invert (
@@ -357,27 +357,27 @@ package et_geometry_2a is
 	function "+" (
 		left, right : in type_vector_model)
 		return type_vector_model;
-	
+
 
 	procedure add (
 		v1 : in out type_vector_model;
 		v2 : in type_vector_model);
-	
+
 
 	-- Computes left - right:
 	function "-" (
 		left, right : in type_vector_model)
 		return type_vector_model;
 
-	
-	
+
+
 	-- Moves a location vector by the given offset:
 	procedure move_by (
 		point	: in out type_vector_model;
 		offset	: in type_vector_model);
 
 
-	-- Rotates the given point BY the given angle about the 
+	-- Rotates the given point BY the given angle about the
 	-- given center (default is origin):
 	procedure rotate_by (
 		point		: in out type_vector_model;
@@ -390,11 +390,11 @@ package et_geometry_2a is
 	procedure rotate_to (
 		point		: in out type_vector_model;
 		rotation	: in type_rotation);
-	
 
-	
 
-	-- Returns the distance of point_two to point_one.	
+
+
+	-- Returns the distance of point_two to point_one.
 	-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 	-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
 	--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
@@ -411,25 +411,25 @@ package et_geometry_2a is
 		point	: in type_vector_model;
 		vector	: in type_vector)
 		return type_distance_polar;
-	
-	
+
+
 	-- Returns the absolute distance between the given
 	-- model points. Uses internally a float type:
 	function get_distance (
 		p1, p2 : in type_vector_model)
 		return type_distance_positive;
-	
+
 
 	-- Returns the distance along the given axis between the given points.
 	function get_distance (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
-		axis	: in type_axis_2d) 
+		axis	: in type_axis_2d)
 		return type_distance;
 
 
-	
-	-- Returns the angle of direection from the given 
+
+	-- Returns the angle of direection from the given
 	-- point p1 to the point p2. Uses internally a float type:
 	function get_angle (
 		p1, p2 : in type_vector_model)
@@ -444,12 +444,12 @@ package et_geometry_2a is
 		return type_rotation;
 
 
-	
+
 
 	function set (
-		x, y : in type_position_axis) 
+		x, y : in type_position_axis)
 		return type_vector_model;
-	
+
 
 	procedure set (
 		point	: in out type_vector_model;
@@ -462,17 +462,17 @@ package et_geometry_2a is
 		position: in type_vector_model);
 
 
-	
+
 	function get_x (
 		point : in type_vector_model)
 		return type_position_axis;
 
-	
+
 	function get_y (
 		point : in type_vector_model)
-		return type_position_axis;	
+		return type_position_axis;
 
-	
+
 	function to_vector (
 		point	: in type_vector_model)
 		return type_vector;
@@ -487,27 +487,27 @@ package et_geometry_2a is
 		d 		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model;
-	
-	
+
+
 	function to_vector_model (
 		x,y : in string)
 		return type_vector_model;
 
 
-	
-	
+
+
 
 	function to_offset (
 		p : in type_vector_model)
 		return type_offset;
 
-	
+
 	function to_offset (
 		x, y : in type_distance)
 		return type_offset;
 
 
-	
+
 
 	function get_distance_absolute (
 		point	: in type_vector_model;
@@ -515,7 +515,7 @@ package et_geometry_2a is
 		return type_float_positive;
 
 
-	-- Returns the relative distance of point_two to point_one.	
+	-- Returns the relative distance of point_two to point_one.
 	-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
 	-- returns	d.x := point_two.x - point_one.x
 	--			d.y := point_two.y - point_one.y;
@@ -524,8 +524,8 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
-	
-	-- Computes the absolute distance between 
+
+	-- Computes the absolute distance between
 	-- two location vectors:
 	function get_distance_absolute (
 		point_one, point_two : in type_vector_model)
@@ -538,10 +538,10 @@ package et_geometry_2a is
 	function get_distance_absolute (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
-		axis	: in type_axis_2d) 
+		axis	: in type_axis_2d)
 		return type_distance_positive;
-	
-	
+
+
 
 	-- Moves a point into the given direction
 	-- by the given distance:
@@ -549,8 +549,8 @@ package et_geometry_2a is
 		point		: in out type_vector_model;
 		direction	: in type_direction_RLUD;
 		distance	: in type_distance_positive);
-	
-	
+
+
 	-- Moves a point to the given destination:
 	procedure move_to (
 		point		: in out type_vector_model;
@@ -566,34 +566,34 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
-	
+
 	-- If axis is Y then it swaps right x with left x.
 	-- If axis is X then it swaps upper y with lower y.
 	procedure mirror_point (
 		point	: in out type_vector_model;
-		axis	: in type_mirror);	
+		axis	: in type_mirror);
 
-	
+
 
 	-- Compares two points by their distance to the origin:
 	function "<" (left, right : in type_vector_model) return boolean;
 
-	
+
 	-- Use this package when lists of points must be handled:
 	package pac_points is new doubly_linked_lists (type_vector_model);
 
 
 
-	
+
 	-- Sorts points by their distance to the reference point:
 	procedure sort_by_distance (
 		points		: in out pac_points.list;
 		reference	: in type_vector_model;
 		mode		: in type_sort_mode := SORT_ASCENDING);
 		-- CS currently mode is ignored. sort ascending is default.
-	
-	
-	
+
+
+
 	-- Returns the number of points that the given list contains:
 	function get_length (
 		points : in pac_points.list)
@@ -602,20 +602,20 @@ package et_geometry_2a is
 
 	procedure move_points (
 		points 	: in out pac_points.list;
-		offset	: in type_vector_model);						
+		offset	: in type_vector_model);
 
-	
+
 	procedure rotate_points (
 		points 		: in out pac_points.list;
-		rotation	: in type_rotation);						
-	
+		rotation	: in type_rotation);
+
 
 	procedure mirror_points (
 		points 	: in out pac_points.list;
-		mirror	: in type_mirror);						
+		mirror	: in type_mirror);
 
-	
-	
+
+
 	-- Returns from a list of point the one that is closest to
 	-- the given reference point:
 	function get_nearest (
@@ -623,7 +623,7 @@ package et_geometry_2a is
 		reference	: in type_vector_model := origin)
 		return type_vector_model;
 
-	
+
 	-- Converts a list of points to vectors:
 	function to_vectors (
 		points : in pac_points.list)
@@ -635,7 +635,7 @@ package et_geometry_2a is
 		vectors : in pac_vectors.list)
 		return pac_points.list;
 
-	
+
 	-- Removes points which are stored multiple times
 	-- from the given list:
 	procedure remove_redundant_points (
@@ -643,16 +643,16 @@ package et_geometry_2a is
 
 
 
-	
+
 -- AREA (rectangular):
-	
+
 	type type_area is record -- CS: make private
 		width		: type_distance_positive := 0.0;
 		height		: type_distance_positive := 0.0;
 		position	: type_vector_model; -- lower left corner
 	end record;
 
-	
+
 	-- Returns the position and dimensions of the given area as string:
 	function to_string (
 		box : in type_area)
@@ -663,7 +663,7 @@ package et_geometry_2a is
 	procedure set_position (
 		area 		: in out type_area;
 		position	: in type_vector_model);
-		
+
 
 	-- Sets the width of the area:
 	procedure set_width (
@@ -676,11 +676,11 @@ package et_geometry_2a is
 		area 	: in out type_area;
 		height	: in type_distance_positive);
 
-		
+
 	-- Swaps width and height of the given area:
 	procedure swap_edges (
 		area : in out type_area);
-	
+
 
 	-- In order to handle the four corners of an
 	-- area this type is required:
@@ -695,21 +695,21 @@ package et_geometry_2a is
 		area	: in type_area)
 		return type_area_corners;
 
-	
+
 	-- Returns the center of the given area:
 	function get_center (
 		area	: in type_area)
 		return type_vector_model;
-	
+
 
 	-- Returns the diagonal of the given area:
 	function get_diagonal (
 		area	: in type_area)
 		return type_distance_positive;
-		
-	
+
+
 	-- Returns true if the given point lies inside the given
-	-- area or on its border. 
+	-- area or on its border.
 	function in_area (
 		point	: in type_vector_model;
 		area	: in type_area)
@@ -740,39 +740,39 @@ package et_geometry_2a is
 		K1, K2	: in type_vector_model; -- the corners
 		area	: in out type_area;
 		valid	: out boolean);
-							
-		
-		
-		
+
+
+
+
 
 -- BOUNDING-BOX:
 
 	-- This is the bounding-box of the model. It is a rectangle
-	-- that encloses all objects of the model and the margins 
+	-- that encloses all objects of the model and the margins
 	-- around the model:
 	-- CS bounding_box : type_area;
 	bounding_box : type_area := (
 		width => 300.0,
-		height	=> 200.0,							
+		height	=> 200.0,
 		others => <>);
-	
-	
+
+
 	-- These are the system limits for the width and height
 	-- of the bounding-box of the model:
-	bounding_box_width_max  : constant 
+	bounding_box_width_max  : constant
 		type_distance_positive := 2_000.0;
-	
-	bounding_box_height_max : constant 
+
+	bounding_box_height_max : constant
 		type_distance_positive := 1_000.0;
 
 
-	
-	-- Indicates that the bounding_box has changed after calling procedure 
+
+	-- Indicates that the bounding_box has changed after calling procedure
 	-- compute_bounding_box:
 	bounding_box_changed : boolean := false;
 
-	
-	-- In order to handle bouding-box related errors this 
+
+	-- In order to handle bouding-box related errors this
 	-- composite type is required:
 	type type_bounding_box_error is record
 		size_exceeded	: boolean := false;
@@ -789,14 +789,14 @@ package et_geometry_2a is
 
 
 
-	
+
 
 -- OBJECT ORIGINAL POSITION AND DISPLACEMENT:
 
 
-	-- If an object being dragged, then we backup 
+	-- If an object being dragged, then we backup
 	-- here its original position.
-	-- It is used in order to calculate 
+	-- It is used in order to calculate
 	-- the displacement of other attached objects
 	-- (like net segments, track segments):
 	object_original_position : type_vector_model := origin;
@@ -812,9 +812,9 @@ package et_geometry_2a is
 
 
 
-	
 
--- START AND END POINT OF LINES AND ARCS:	
+
+-- START AND END POINT OF LINES AND ARCS:
 
 	type type_start_end_point is (A, B); -- CS rename to type_AB_end
 
@@ -823,34 +823,34 @@ package et_geometry_2a is
 	function get_opposide_end (
 		AB_end	: in type_start_end_point)
 		return type_start_end_point;
-	
-	
+
+
 	function to_string (
 		point : in type_start_end_point)
 		return string;
 
-	
+
 	function to_start_end_point (
 		point : in string)
 		return type_start_end_point;
 
-	
-	
+
+
 -- LINE
 
-	
+
 	type type_line_base is abstract tagged record
 		A, B 		: type_vector_model; -- start and end point
 		status		: type_object_status;
 		status_AB	: type_AB_status;
 	end record;
 
-	
+
 	type type_line is tagged private;
 
 	type type_line_array is array (natural range <>) of type_line;
 
-	
+
 
 	-- Sets A and B to origin:
 	procedure reset_line (
@@ -860,12 +860,12 @@ package et_geometry_2a is
 	function to_line (
 		A, B : in type_vector_model)
 		return type_line'class;
-						 
-	
-	-- Returns the start and end point of the given 
+
+
+	-- Returns the start and end point of the given
 	-- line as string in the form "A: x/y B: x/y":
 	function to_string (
-		line : in type_line) 
+		line : in type_line)
 		-- CS: parameter for format
 		return string;
 
@@ -881,20 +881,20 @@ package et_geometry_2a is
 	-- Returns for a given direction the end of a line.
 	-- IMPORTANT: The orientation of the line must be known beforehand.
 	-- If the line orientation is horizontal:
-	-- 1. If side is west, then it returns the end point that 
+	-- 1. If side is west, then it returns the end point that
 	--    is on the west end of the line.
-	-- 2. If side is east, then it returns the end point that 
+	-- 2. If side is east, then it returns the end point that
 	--    is on the east end of the line.
-	-- 3. Only west or east end can be inquired. 
+	-- 3. Only west or east end can be inquired.
 	--    Otherwise an exception is raised because a horizontal line
 	--    has no north or south end.
 	--
 	-- If the line orientation is vertical:
-	-- 3. If side is north, then it returns the end point that 
+	-- 3. If side is north, then it returns the end point that
 	--    is on the north end of the line.
-	-- 4. If side is south, then it returns the end point that 
+	-- 4. If side is south, then it returns the end point that
 	--    is on the south end of the line.
-	-- 5. Only north or south end can be inquired. 
+	-- 5. Only north or south end can be inquired.
 	--    Otherwise an exception is raised because a vertical line
 	--    has no west or east end.
 	--
@@ -904,9 +904,9 @@ package et_geometry_2a is
 		line		: in type_line;
 		NSWE_end	: in type_direction_NSWE)
 		return type_start_end_point;
-	
 
-	-- This is the reverse of to_AB_end. 
+
+	-- This is the reverse of to_AB_end.
 	-- This function maps from a given A/B end to the
 	-- north, south, west east end.
 	-- If the line is horizontal, then the return is west or east.
@@ -921,7 +921,7 @@ package et_geometry_2a is
 
 	-- Returns the x-compoent of the west end
 	-- of the given line. The line orientation
-	-- must be horizontal or sloping. Otherwise 
+	-- must be horizontal or sloping. Otherwise
 	-- the x-component of the A end will be returned:
 	function get_x_of_west_end (
 		line	: in type_line)
@@ -929,7 +929,7 @@ package et_geometry_2a is
 
 	-- Returns the x-compoent of the east end
 	-- of the given line. The line orientation
-	-- must be horizontal or sloping. Otherwise 
+	-- must be horizontal or sloping. Otherwise
 	-- the x-component of the A end will be returned:
 	function get_x_of_east_end (
 		line	: in type_line)
@@ -937,7 +937,7 @@ package et_geometry_2a is
 
 	-- Returns the y-compoent of the north end
 	-- of the given line. The line orientation
-	-- must be vertical or sloping. Otherwise 
+	-- must be vertical or sloping. Otherwise
 	-- the y-component of the A end will be returned:
 	function get_y_of_north_end (
 		line	: in type_line)
@@ -945,14 +945,14 @@ package et_geometry_2a is
 
 	-- Returns the y-compoent of the south end
 	-- of the given line. The line orientation
-	-- must be vertical or sloping. Otherwise 
+	-- must be vertical or sloping. Otherwise
 	-- the y-component of the A end will be returned:
 	function get_y_of_south_end (
 		line	: in type_line)
 		return type_distance;
 
-	
-	
+
+
 	-- Maps from the A/B end of a line to a rotation.
 	-- The rotation is a multiple of 90 degrees.
 	-- It bases on the function to_NSWE_end and translates
@@ -961,14 +961,14 @@ package et_geometry_2a is
 		line		: in type_line;
 		AB_end		: in type_start_end_point)
 		return type_rotation;
-							 
+
 
 	-- Returns the start point of the given line:
 	function get_A (
 		line : in type_line)
 		return type_vector_model;
 
-	
+
 	-- Returns the end point of the given line:
 	function get_B (
 		line : in type_line)
@@ -981,35 +981,35 @@ package et_geometry_2a is
 		line : in type_line)
 		return type_vector_model;
 
-	
+
 	-- Sets the start point of a line:
 	procedure set_A (
 		line	: in out type_line;
 		A		: in type_vector_model);
 
-	
+
 	-- Sets the end point of a line:
 	procedure set_B (
 		line	: in out type_line;
 		B		: in type_vector_model);
 
 
-	
+
 	procedure move_A_by (
 		line	: in out type_line;
 		offset	: in type_vector_model);
 
-	
+
 	procedure move_B_by (
 		line	: in out type_line;
 		offset	: in type_vector_model);
 
 
-	
+
 	function is_selected (
 		line : in type_line)
 		return boolean;
-	
+
 	procedure set_selected (
 		line : in out type_line);
 
@@ -1018,24 +1018,24 @@ package et_geometry_2a is
 
 
 
-	
-	-- Returns true if the start point of the 
+
+	-- Returns true if the start point of the
 	-- given line is set as "selected":
 	function is_A_selected (
 		line : in type_line)
 		return boolean;
 
-	
-	-- Returns true if the end point of the 
+
+	-- Returns true if the end point of the
 	-- given line is set as "selected":
 	function is_B_selected (
 		line : in type_line)
 		return boolean;
 
-	
+
 	procedure set_A_selected (
 		line : in out type_line);
-	
+
 	procedure set_B_selected (
 		line : in out type_line);
 
@@ -1046,19 +1046,19 @@ package et_geometry_2a is
 	procedure clear_B_selected (
 		line	: in out type_line);
 
-	
+
 	function is_proposed (
 		line : in type_line)
 		return boolean;
 
 	procedure set_proposed (
 		line : in out type_line);
-	
+
 	procedure clear_proposed (
 		line : in out type_line);
 
 
-	
+
 	function is_moving (
 		line : in type_line)
 		return boolean;
@@ -1077,31 +1077,31 @@ package et_geometry_2a is
 
 
 
-	-- Returns true if the start point of the 
+	-- Returns true if the start point of the
 	-- given line is set as "moving":
 	function is_A_moving (
 		line : in type_line)
 		return boolean;
 
-	
-	-- Returns true if the end point of the 
+
+	-- Returns true if the end point of the
 	-- given line is set as "moving":
 	function is_B_moving (
 		line : in type_line)
 		return boolean;
 
 
-	-- Sets the start point of the 
+	-- Sets the start point of the
 	-- given line as "moving":
 	procedure set_A_moving (
 		line	: in out type_line);
-	
+
 	procedure clear_A_moving (
 		line	: in out type_line);
 
 
-	
-	-- Sets the end point of the 
+
+	-- Sets the end point of the
 	-- given line as "moving":
 	procedure set_B_moving (
 		line	: in out type_line);
@@ -1110,7 +1110,7 @@ package et_geometry_2a is
 		line	: in out type_line);
 
 
-	
+
 	-- Sets the "selected"-flags of a line
 	-- depending on the area it is crossing.
 	-- 1. If only the A-end of the line is
@@ -1123,14 +1123,14 @@ package et_geometry_2a is
 	procedure set_selected (
 		line	: in out type_line;
 		area	: in type_area);
-		
-	
+
+
 	-- Resets all status flags to default:
 	procedure reset_status (
 		line 	: in out type_line);
-	
-	
-	-- Moves a line by the given offset. 
+
+
+	-- Moves a line by the given offset.
 	-- This moves both start and end point by the given offset:
 	procedure move_by (
 		line	: in out type_line;
@@ -1138,18 +1138,18 @@ package et_geometry_2a is
 
 
 
-	-- Moves the start point of a line by the given offset. 
+	-- Moves the start point of a line by the given offset.
 	procedure move_start_by (
 		line	: in out type_line;
 		offset	: in type_vector_model);
 
-	
-	-- Moves the end point of a line by the given offset. 
+
+	-- Moves the end point of a line by the given offset.
 	procedure move_end_by (
 		line	: in out type_line;
 		offset	: in type_vector_model);
 
-	
+
 
 	-- Mirrors a line along the given axis.
 	procedure mirror_line (
@@ -1163,10 +1163,10 @@ package et_geometry_2a is
 		line		: in out type_line;
 		rotation	: in type_rotation);
 
-	
+
 	-- Converts a "coarse line" as defined in this package
 	-- to a "fine line" as defined in package pac_geometry_1.
-	-- Discards the status of the given line and 
+	-- Discards the status of the given line and
 	-- applies default value to the status of the result:
 	function to_line_fine (
 		line : in type_line)
@@ -1178,39 +1178,39 @@ package et_geometry_2a is
 	function to_line_coarse (
 		line : in type_line_fine)
 		return type_line'class;
-	
 
-	-- Computes the shortest distance (perpendicular) of a 
-	-- location vector to a line. 
+
+	-- Computes the shortest distance (perpendicular) of a
+	-- location vector to a line.
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
 		line		: in type_line;
-		vector		: in type_vector; 
+		vector		: in type_vector;
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
-	
+
 	-- Computes the shortest distance (perpendicular) of a
-	-- point to a line. 		
+	-- point to a line.
 	function get_distance (
 		line		: in type_line;
-		point		: in type_vector_model; 
+		point		: in type_vector_model;
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
 
 
-	
-	
-	-- Returns true if the given location vector 
+
+
+	-- Returns true if the given location vector
 	-- lies on the given line. The A and B ends
 	-- are included in the test:
 	function on_line (
 		line	: in type_line;
 		vector	: in type_vector)
-		return boolean; 
+		return boolean;
 
-	
+
 	-- Returns true if the given point lies on the given line.
 	-- The A and B ends are included in the test:
 	function on_line (
@@ -1218,7 +1218,7 @@ package et_geometry_2a is
 		point	: in type_vector_model)
 		return boolean;
 
-	
+
 	-- Returns true if the given point lies on the
 	-- given line AND between A and B. If the point lies
 	-- either on A or B then result is false:
@@ -1226,15 +1226,15 @@ package et_geometry_2a is
 		line	: in type_line;
 		point	: in type_vector_model)
 		return boolean;
-	
-	
+
+
 
 	-- Returns the location vector of the start point of a line:
 	function get_start_vector (
 		line	: in type_line)
 		return type_vector;
 
-	
+
 	-- Returns the location vector of the end point of a line:
 	function get_end_vector (
 		line	: in type_line)
@@ -1245,12 +1245,12 @@ package et_geometry_2a is
 	function get_direction_vector (
 		line	: in type_line)
 		return type_vector;
-	
+
 
 	-- Converts a line (consisting of start and end point)
 	-- to a line vector consisting of start vector and
 	-- direction vector.
-	-- The start vector of the result will be directly derived 
+	-- The start vector of the result will be directly derived
 	--  from the start point of the given line.
 	-- The direction vector of the result will be computed as:
 	--  dx = line.B.x - line.A.x
@@ -1260,7 +1260,7 @@ package et_geometry_2a is
 		line	: in type_line)
 		return type_line_vector;
 
-	
+
 
 	-- Returns the shortest distance from the given point to the
 	-- given line:
@@ -1269,7 +1269,7 @@ package et_geometry_2a is
 		point	: in type_vector_model)
 		return type_float_positive;
 
-	
+
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_vector)
@@ -1282,8 +1282,8 @@ package et_geometry_2a is
 		line	: in type_line_fine;
 		point	: in type_vector_model)
 		return type_vector_model;
-	
-		
+
+
 	-- Returns the bounding-box of the given line.
 	-- It respects the linewidth and assumes that the line ends
 	-- have round caps:
@@ -1292,16 +1292,16 @@ package et_geometry_2a is
 		width	: in type_distance_positive)
 		return type_area;
 
-	
 
-	-- Tests whether the given line_vector intersects the given 
+
+	-- Tests whether the given line_vector intersects the given
 	-- candidate line.
 	-- If there is an intersection between start and end point
 	-- of the candidate line (start and end point included),
 	-- then returns the location vector of the intersection.
 	-- If the intersection is before start point or
 	-- beyond end point of the given line, return NOT_EXISTENT.
-	-- NOTE: The angle of intersection is measured between the 
+	-- NOTE: The angle of intersection is measured between the
 	-- start points of the two lines. It is always positive.
 	function get_intersection (
 		line		: in type_line;
@@ -1315,12 +1315,12 @@ package et_geometry_2a is
 		ORIENT_HORIZONTAL,
 		ORIENT_VERTICAL,
 		ORIENT_SLOPING);
-	
+
 
 
 	-- Returns the orientation of a line.
 	function get_orientation (
-		line : in type_line) 
+		line : in type_line)
 		return type_line_orientation;
 
 
@@ -1338,8 +1338,8 @@ package et_geometry_2a is
 		line_1, line_2	: in type_line;
 		test_touch		: in boolean := false)
 		return boolean;
-	
-	
+
+
 
 	-- When a line is to be split in two or more
 	-- fragments, then this type should be used for
@@ -1354,10 +1354,10 @@ package et_geometry_2a is
 
 
 	-- This function splits a line at the given point.
-	-- The result is two new lines which join each 
+	-- The result is two new lines which join each
 	-- other at the given point.
-	-- Since the given point is not required to be on 
-	-- the given line, the resulting lines may run in 
+	-- Since the given point is not required to be on
+	-- the given line, the resulting lines may run in
 	-- to different directions.
 	-- If either A or B of the given line is the same
 	-- as the given split point, then the result is
@@ -1367,13 +1367,13 @@ package et_geometry_2a is
 		point	: in type_vector_model)
 		return type_split_line;
 
-	
+
 
 	-- This function splits a line into two or more
 	-- shorter segments. The given list of points
 	-- specifies the places where the line is to be split.
-	-- Since the given points are not required to be on 
-	-- the given line, the resulting line fragments may run in 
+	-- Since the given points are not required to be on
+	-- the given line, the resulting line fragments may run in
 	-- to different directions.
 	-- CS: Currently it is assumed that none of the given
 	-- split points is equal to the A or B end of the line:
@@ -1409,7 +1409,7 @@ package et_geometry_2a is
 		primary			: in type_line;
 		secondary		: in type_line)
 		return type_line'class;
-	
+
 
 	-- This function returns true if the given line
 	-- is in the given area.
@@ -1422,14 +1422,14 @@ package et_geometry_2a is
 	-- CS: an additional parameter could be used
 	-- to test if the line crosses the area
 
-	
+
 	-- Converts the borders of an area
 	-- to an array of 4 lines:
 	function to_line_array (
 		area	: in type_area)
 		return type_line_array;
 
-	
+
 -- ARC
 
 
@@ -1441,24 +1441,24 @@ package et_geometry_2a is
 		-- CS status_AB	: type_AB_status;
 	end record;
 
-	
+
 	type type_arc is tagged private;
 
 
 
 	function to_arc (
 		center		: in type_vector_model;
-		A			: in type_vector_model;			
+		A			: in type_vector_model;
 		B			: in type_vector_model;
 		direction	: in type_direction_of_rotation)
 		return type_arc'class;
-	
+
 
 	-- Sets A, B and center to origin.
 	-- Sets direction to CCW:
 	procedure reset_arc (
 		arc		: in out type_arc);
-	
+
 
 	-- Sets the center of the given arc:
 	procedure set_center (
@@ -1471,8 +1471,8 @@ package et_geometry_2a is
 		arc	: in out type_arc;
 		A	: in type_vector_model);
 
-	
-	-- Sets the end point of the given arc:	
+
+	-- Sets the end point of the given arc:
 	procedure set_B (
 		arc	: in out type_arc;
 		B	: in type_vector_model);
@@ -1483,19 +1483,19 @@ package et_geometry_2a is
 		arc			: in out type_arc;
 		direction	: in type_direction_of_rotation);
 
-	
+
 	-- Returns the center of the given arc:
 	function get_center (
 		arc : in type_arc)
 		return type_vector_model;
-	
+
 
 	-- Returns the start point of the given arc:
 	function get_A (
 		arc : in type_arc)
 		return type_vector_model;
 
-	
+
 	-- Returns the end point of the given arc:
 	function get_B (
 		arc : in type_arc)
@@ -1508,28 +1508,28 @@ package et_geometry_2a is
 		return type_direction_of_rotation;
 
 
-	
-	
+
+
 	function to_arc_fine (
 		arc : in type_arc)
 		return pac_geometry_1.type_arc_fine;
 
-	
+
 	function to_arc_coarse (
 		arc : in pac_geometry_1.type_arc_fine)
 		return type_arc'class;
 
 
-	
+
 	-- Returns the start, end point and angle of the given arc as string
 	-- in the form "A: x/y B: x/y" C: x/y D: x/y).
 	-- C is the center, D is the direction:
 	function to_string (
-		arc : in type_arc) 
+		arc : in type_arc)
 		-- CS: parameter for format
 		return string;
 
-	
+
 
 	function get_intersection (
 		arc		: in type_arc;
@@ -1537,12 +1537,12 @@ package et_geometry_2a is
 		return type_intersection_of_line_and_circle;
 
 
-	
+
 
 	function is_selected (
 		arc : in type_arc)
 		return boolean;
-	
+
 	procedure set_selected (
 		arc : in out type_arc);
 
@@ -1550,19 +1550,19 @@ package et_geometry_2a is
 		arc : in out type_arc);
 
 
-	
+
 	function is_proposed (
 		arc : in type_arc)
 		return boolean;
 
 	procedure set_proposed (
 		arc : in out type_arc);
-	
+
 	procedure clear_proposed (
 		arc : in out type_arc);
 
 
-	
+
 	function is_moving (
 		arc : in type_arc)
 		return boolean;
@@ -1584,12 +1584,12 @@ package et_geometry_2a is
 		arc 		: in out type_arc);
 
 
-	
+
 	-- Swaps start and end point of an arc. Reverses the direction of the arc:
 	function reverse_arc (arc : in type_arc) return type_arc'class;
 	procedure reverse_arc (arc : in out type_arc);
 
-	
+
 	-- Changes the direction of an arc to CCW (mathematical sense)
 	-- by swapping start and end point. If direction is already CCW
 	-- then nothing happens.
@@ -1598,19 +1598,19 @@ package et_geometry_2a is
 	-- Returns true if start and end point of arc are equal:
 	function zero_length (arc : in type_arc) return boolean;
 
-	
-	
-	-- Moves an arc by the given offset. 
+
+
+	-- Moves an arc by the given offset.
 	procedure move_by (
 		arc		: in out type_arc;
 		offset	: in type_vector_model);
 
 
-	-- Moves an arc to the given position. 
+	-- Moves an arc to the given position.
 	procedure move_to (
 		arc			: in out type_arc;
 		position	: in type_vector_model);
-	
+
 
 	-- Mirrors an arc along the given axis.
 	procedure mirror_arc (
@@ -1624,19 +1624,19 @@ package et_geometry_2a is
 		rotation	: in type_rotation);
 
 
-	
-	
-	-- Returns the distance between the start point 
+
+
+	-- Returns the distance between the start point
 	-- and the center of the arc.
 	function get_radius_start (
-		arc : in type_arc) 
+		arc : in type_arc)
 		return type_float_positive;
-	
-	
-	-- Returns the distance between the end point 
+
+
+	-- Returns the distance between the end point
 	-- and the center of the arc.
 	function get_radius_end (
-		arc : in type_arc) 
+		arc : in type_arc)
 		return type_float_positive;
 
 
@@ -1649,7 +1649,7 @@ package et_geometry_2a is
 		return boolean;
 
 
-	
+
 
 	-- Computes the end point of an arc
 	-- based on a given center and start point:
@@ -1659,62 +1659,62 @@ package et_geometry_2a is
 		angle 	: in type_angle) -- CS: type_angle_positive ?
 		return type_vector_model;
 
-	
 
 
-	
+
+
 
 	-- Returns the start and end angles of an arc.
 	function to_arc_angles (
-		arc : in type_arc) 
+		arc : in type_arc)
 		return type_arc_angles;
 
-	
 
 
 
-	
+
+
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector_model)
 		return type_distance_polar;
 
-	
+
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector)
 		return type_float_positive;
 
-	
+
 
 
 	function on_arc (
 		arc		: in type_arc;
 		point	: in type_vector_model)
-		return boolean; 
+		return boolean;
 
-	
+
 
 	-- Returns the bounding-box of the given circle.
 	-- It respects the linewidth of the circumfence.
 	-- CS: For simlicity the given arc is theated like a circle.
 	function get_bounding_box (
 		arc 	: in type_arc;
-		width	: in type_distance_positive)				  
+		width	: in type_distance_positive)
 		return type_area;
 
 
-		
+
 
 -- CIRCLE
-	
+
 	type type_circle_base is abstract tagged record
 		center	: type_vector_model;
 		radius  : type_distance_positive := 0.0;
 		status	: type_object_status;
 	end record;
 
-	
+
 	type type_circle is tagged private;
 
 
@@ -1728,40 +1728,40 @@ package et_geometry_2a is
 	-- and radius to zero:
 	procedure reset_circle (
 		c : in out type_circle);
-		
+
 
 	procedure set_center (
 		c : in out type_circle;
 		e : in type_vector_model);
-	
+
 
 	procedure set_radius (
 		c : in out type_circle;
 		r : in type_distance_positive);
 
-	
+
 
 	function get_center (
 		c : in type_circle)
 		return type_vector_model;
-	
+
 
 	function get_radius (
 		c : in type_circle)
 		return type_distance_positive;
 
-	
-		
+
+
 	function to_circle_fine (
 		circle : in type_circle)
 		return type_circle_fine;
 
-	
+
 
 	-- Returns the center and radius of the given circle as string
 	-- in the form "C: x/y R: r". C is the center, R is the radius:
 	function to_string (
-		circle : in type_circle) 
+		circle : in type_circle)
 		-- CS: parameter for format
 		return string;
 
@@ -1772,13 +1772,13 @@ package et_geometry_2a is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle;
 
-	
 
-	
+
+
 	function is_selected (
 		circle : in type_circle)
 		return boolean;
-	
+
 	procedure set_selected (
 		circle : in out type_circle);
 
@@ -1786,19 +1786,19 @@ package et_geometry_2a is
 		circle : in out type_circle);
 
 
-	
+
 	function is_proposed (
 		circle : in type_circle)
 		return boolean;
 
 	procedure set_proposed (
 		circle : in out type_circle);
-	
+
 	procedure clear_proposed (
 		circle : in out type_circle);
 
 
-	
+
 	function is_moving (
 		circle : in type_circle)
 		return boolean;
@@ -1821,18 +1821,18 @@ package et_geometry_2a is
 
 
 
-	
+
 	function to_radius (
 		r : in string)
 		return type_distance_positive;
-	
+
 
 	function to_radius (
 		r : in type_distance_positive)
 		return type_float_positive;
 
-	
-	-- Moves a circle by the given offset. 
+
+	-- Moves a circle by the given offset.
 	procedure move_by (
 		circle	: in out type_circle;
 		offset	: in type_vector_model);
@@ -1842,14 +1842,14 @@ package et_geometry_2a is
 	procedure mirror_circle (
 		circle		: in out type_circle;
 		axis		: in type_mirror);
-	
+
 
 	-- Rotates the center of acirlce about the origin:
 	procedure rotate_circle_by (
 		circle		: in out type_circle;
 		rotation	: in type_rotation);
 
-	
+
 
 
 
@@ -1864,8 +1864,8 @@ package et_geometry_2a is
 		point	: in type_vector)
 		return type_float_positive;
 
-	
-	
+
+
 	-- Returns the bounding-box of the given circle.
 	-- It respects the linewidth of the circumfence:
 	function get_bounding_box (
@@ -1875,10 +1875,10 @@ package et_geometry_2a is
 
 
 
-	
+
 
 -- POSITION:
-	
+
 
 
 	-- The position of an object is a composite
@@ -1897,7 +1897,7 @@ package et_geometry_2a is
 	-- Resets the position to default place and rotation:
 	procedure reset_position (
 		position : in out type_position);
-	
+
 
 	-- This function returns the given object position
 	-- as string formatted as follows:
@@ -1910,12 +1910,12 @@ package et_geometry_2a is
 		return string;
 
 
-	
+
 
 	-- A position at the greatest distance in
 	-- x and y from the origin:
 	far_upper_right_zero_rotation : constant type_position;
-	
+
 
 
 
@@ -1924,7 +1924,7 @@ package et_geometry_2a is
 		from : in type_field_count_positive)
 		return type_position;
 
-	
+
 
 
 
@@ -1944,32 +1944,32 @@ package et_geometry_2a is
 		position : in type_position)
 		return type_vector_model;
 
-	
+
 	procedure set_place (
 		position	: in out type_position;
 		place		: in type_vector_model);
-	
+
 
 	-- Moves a position by the given offset:
 	procedure set_place_relative (
 		position	: in out type_position;
 		offset		: in type_vector_model);
 
-	
+
 	function get_x (
 		position : in type_position)
 		return type_distance;
-	
+
 
 	function get_y (
 		position : in type_position)
 		return type_distance;
-	
 
-	
+
+
 
 	function get_rotation (
-		position : in type_position) 
+		position : in type_position)
 		return type_rotation;
 
 
@@ -1977,8 +1977,8 @@ package et_geometry_2a is
 		position	: in out type_position;
 		rotation	: in type_rotation);
 
-	
-	
+
+
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
 	procedure set_rotation_relative (
@@ -1987,43 +1987,43 @@ package et_geometry_2a is
 
 
 
-	-- This is more than just adding 
+	-- This is more than just adding
 	-- location vectors (place) and rotation.
 	-- This function does the follwing:
 	-- If mirror is MIRROR_NO, then
-	--  1. Rotates the given position.place about its 
+	--  1. Rotates the given position.place about its
 	--     own origin by the offset.rotation.
 	--  2. Adds position.place and offset.place.
 	--  3. Adds position.rotation and offset.rotation.
 	--
 	-- If mirror is MIRROR_ALONG_Y_AXIS, then
 	--  1. Mirrors position.place along Y-axis.
-	--  2. Rotates the given position.place about its 
+	--  2. Rotates the given position.place about its
 	--     own origin by the negative offset.rotation.
 	--  3. Adds position.place and offset.place.
 	--  4. Adds position.rotation and offset.rotation.
-	-- 
+	--
 	-- If mirror is something else, then nothing happens:
 	procedure add (
 		position	: in out type_position;
 		offset		: in type_position;
 		mirror		: in type_mirror := MIRROR_NO);
 
-	
-	
+
+
 -- CATCH ZONE:
 
-	-- When searching objects within a circular zone 
+	-- When searching objects within a circular zone
 	-- around a certain point the concept of a catch zone
 	-- is required:
-	
+
 	subtype type_zone_radius is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 
 
 	type type_catch_zone is private;
-	
-	
+
+
 	function set_catch_zone (
 		center	: in type_vector_model;
 		radius	: in type_zone_radius)
@@ -2033,40 +2033,40 @@ package et_geometry_2a is
 	function get_center (
 		zone	: in type_catch_zone)
 		return type_vector_model;
-	
+
 
 	function get_radius (
 		zone	: in type_catch_zone)
 		return type_zone_radius;
 
-	
+
 	function to_string (
 		zone : in type_catch_zone)
 		return string;
 
-	
+
 	function to_zone_radius (
 		c : in string)
 		return type_zone_radius;
 
 
 
-	
 
-	-- Returns true if the given distance is 
+
+	-- Returns true if the given distance is
 	-- less or equal the given zone radius:
 	function in_radius (
 		distance : in type_float_positive;
 		radius	 : in type_zone_radius)
 		return boolean;
-							   
-	
+
+
 	-- Returns true if point is inside the given catch zone:
 	function in_catch_zone (
 		zone	: in type_catch_zone;
 		point	: in type_vector_model)
 		return boolean;
-	
+
 
 	-- Returns true if the given line is in the given catch zone.
 	-- Optionally the linewidth can be specified so that it
@@ -2079,7 +2079,7 @@ package et_geometry_2a is
 		return boolean;
 
 
-	
+
 	-- Returns true if the given arc is in the given catch zone.
 	-- Optionally the linewidth can be specified so that it
 	-- is taken into account. If a linewidth greater zero
@@ -2101,22 +2101,22 @@ package et_geometry_2a is
 		return boolean;
 
 
-	
+
 	procedure nothing_found (
-		zone	: in type_catch_zone); 
+		zone	: in type_catch_zone);
 
 
 
 
 
-	
-	
+
+
 
 -- ZONES OF A LINE:
 
 	-- A line is divided into three zones. Their width is the ratio
 	-- of line length and the zone_division_factor.
-	-- 
+	--
 	--    S---|---center---|---E
 	--
 	-- The position of the bar (|) in this drawing depends on the zone_division_factor.
@@ -2124,13 +2124,13 @@ package et_geometry_2a is
 	type type_line_zone is (START_POINT, END_POINT, CENTER); -- CS rename to ZONE_A, ZONE_B, ZONE_CENTER
 	line_zone_division_factor : constant positive := 4;
 
-	
+
 
 	function to_string (
 		zone : in type_line_zone)
 		return string;
-	
-		
+
+
 	-- Calculates the zone of the line where point is nearest.
 	-- Point is not required to sit exactly on the line.
 	function get_zone (
@@ -2159,14 +2159,14 @@ package et_geometry_2a is
 		arc		: in type_arc;
 		point	: in type_vector_model)
 		return type_line_zone;
-	
-	
+
+
 	procedure attack (
 		arc				: in out type_arc;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);
 
-	
+
 
 -- EXTENDED BOUNDING BOX COMPUTATIONS:
 
@@ -2179,7 +2179,7 @@ package et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
 
 
@@ -2192,10 +2192,10 @@ package et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
 
-	
+
 	-- Computes the bounding-box of a given circle
 	-- taking into account the given offsets, rotation
 	-- and mirror style:
@@ -2205,10 +2205,10 @@ package et_geometry_2a is
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
-		mirror		: in type_mirror := MIRROR_NO)	
+		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
 
-	
+
 
 
 	-- Whenever objects are to be dragged, then this
@@ -2223,7 +2223,7 @@ package et_geometry_2a is
 	function to_string (
 		drag : in type_drag)
 		return string;
-	
+
 
 private
 
@@ -2231,7 +2231,7 @@ private
 	far_upper_left : constant type_vector_model :=
 		(x => type_position_axis'first,
 			y => type_position_axis'last);
-	
+
 	far_upper_right : constant type_vector_model :=
 		(x => type_position_axis'last,
 			y => type_position_axis'last);
@@ -2239,14 +2239,14 @@ private
 	far_lower_left : constant type_vector_model :=
 		(x => type_position_axis'first,
 			y => type_position_axis'first);
-	
+
 	far_lower_right : constant type_vector_model :=
 		(x => type_position_axis'last,
 			y => type_position_axis'first);
-	
-	
+
+
 	origin_zero_rotation : constant type_position := (others => <>);
- 
+
 	far_upper_right_zero_rotation : constant type_position :=
 		(far_upper_right, zero_rotation);
 
@@ -2254,19 +2254,19 @@ private
 	-- boundaries_default : constant type_boundaries := (others => <>);
 
 	type type_line is new type_line_base with null record;
-	
-	type type_arc is new type_arc_base with null record;
-	
-	type type_circle is new type_circle_base with null record;
-	
 
-	
+	type type_arc is new type_arc_base with null record;
+
+	type type_circle is new type_circle_base with null record;
+
+
+
 
 	type type_catch_zone is record
 		center	: type_vector_model;
 		radius	: type_zone_radius;
 	end record;
 
-	
+
 end et_geometry_2a;
 

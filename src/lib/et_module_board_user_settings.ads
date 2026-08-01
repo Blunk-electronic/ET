@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,11 +47,11 @@ with et_fill_zones.boards;				-- use et_fill_zones.boards;
 
 package et_module_board_user_settings is
 
-	
+
 	type type_user_settings is record
 		vias		: type_user_settings_vias;
 		-- CS auto set drill and track width ?
-		
+
 		polygons_conductor	: et_fill_zones.boards.type_user_settings;
 		-- CS rename to zones_conductor
 
@@ -62,12 +62,12 @@ package et_module_board_user_settings is
 	end record;
 
 
-	
+
 end et_module_board_user_settings;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

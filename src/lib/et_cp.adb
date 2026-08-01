@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -64,21 +64,21 @@ package body et_cp is
 	-- 	raise constraint_error;
 	-- end;
 
-	
+
 	-- procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
 	-- 	log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
 	-- 		 " expected in field no. " & count_type'image (field) & " !" , console => true);
 	-- 	raise constraint_error;
 	-- end;
 
-	
+
 	-- procedure expect_value_center_x (field : in count_type) is begin
 	-- 	log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
 	-- 		 console => true);
 	-- 	raise constraint_error;
 	-- end;
 
-	
+
 	-- procedure expect_keyword_filled (field : in count_type) is begin
 	-- 	log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
 	-- 		" in field no." & count_type'image (field) & " !",
@@ -87,11 +87,11 @@ package body et_cp is
 	-- end;
 
 
-	
 
 
-	
-	
+
+
+
 	procedure execute_script_command (
 		script_name		: in pac_script_name.bounded_string;
 		cmd				: in out type_single_cmd;
@@ -103,31 +103,31 @@ package body et_cp is
 		field_count : constant natural := get_field_count (cmd);
 
 
-		-- This procedure is a shortcut. 
+		-- This procedure is a shortcut.
 		-- Call it in case the given command is incomplete:
 		procedure command_incomplete is begin
 			command_incomplete (cmd);
 		end;
 
-		
+
 		use et_domains;
 
-		
+
 		domain	: type_domain; -- DOM_SCHEMATIC
 		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 		verb_project	: type_verb_project;
 		noun_project	: type_noun_project;
 
-		
-		
+
+
 	begin
 		log (text => "execute script command: " & enclose_in_quotes (get_all_fields (cmd)),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
-		
+
+
 		-- The command must have at least two fields:
 		if field_count >= 2 then
 
@@ -138,7 +138,7 @@ package body et_cp is
 			case domain is
 				when DOM_SCHEMATIC =>
 					-- CS put the following stuff in a procedure:
-					
+
 					module := to_module_name (get_field (cmd, 2));
 					-- CS character and length check
 
@@ -148,13 +148,13 @@ package body et_cp is
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
 					read_module (
-						file_name		=> append_extension (to_string (module)), 
-						log_threshold	=> log_threshold + 4); 
+						file_name		=> append_extension (to_string (module)),
+						log_threshold	=> log_threshold + 4);
 
-					
+
 					-- The command must have at least three fields.
 					if field_count >= 3 then
-						
+
 						execute_schematic_command (
 							module_cursor	=> locate_module (module),
 							cmd				=> cmd,
@@ -165,10 +165,10 @@ package body et_cp is
 						command_incomplete;
 					end if;
 
-					
+
 				when DOM_BOARD =>
 					-- CS put the following stuff in a procedure:
-					
+
 					module := to_module_name (get_field (cmd, 2));
 					-- CS character and length check
 
@@ -178,13 +178,13 @@ package body et_cp is
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
 					read_module (
-						file_name		=> append_extension (to_string (module)), 
-						log_threshold	=> log_threshold + 4); 
+						file_name		=> append_extension (to_string (module)),
+						log_threshold	=> log_threshold + 4);
 
-					
+
 					-- The command must have at least three fields.
 					if field_count >= 3 then
-						
+
 						execute_board_command (
 							module_cursor	=> locate_module (module),
 							cmd				=> cmd,
@@ -195,15 +195,15 @@ package body et_cp is
 						command_incomplete;
 					end if;
 
-					
+
 				when DOM_PROJECT =>
 					-- CS put the following stuff in a procedure:
-					
+
 					-- CS test minimum field count
-					
+
 					verb_project := to_verb (get_field (cmd, 2));
 					noun_project := to_noun (get_field (cmd, 3));
-					
+
 					-- execute project command
 					execute_project_command (cmd, verb_project, noun_project, log_threshold + 3);
 			end case;
@@ -222,26 +222,26 @@ package body et_cp is
 
 		-- CS exception handler if command is incomplete
 		-- and if it was executed from inside a script
-		
+
 		log_indentation_down;
 
 
 		-- log (text => "done", level => log_threshold);
-		
-		-- exception when event: others => 
-  -- 
+
+		-- exception when event: others =>
+  --
 		-- 	log_indentation_down;
 		-- 	raise;
-		
+
 	end execute_script_command;
 
 
-	
+
 end et_cp;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -42,7 +42,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_symbol_library is
-	
+
 
 
 	function get_symbol_model_name (
@@ -51,7 +51,7 @@ package body et_symbol_library is
 	is begin
 		return key (symbol_cursor);
 	end;
-	
+
 
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
@@ -62,16 +62,16 @@ package body et_symbol_library is
 
 
 
-	
+
 	procedure create_symbol (
 		symbol_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is begin
 		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
-		
+
 		-- Test if symbol already exists. If already exists, issue warning and exit.
 		if contains (symbol_library, symbol_name) then
 			log (SEVERITY_WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
@@ -90,16 +90,16 @@ package body et_symbol_library is
 						key			=> symbol_name,
 						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
-			end case;					
+			end case;
 		end if;
 
 		log_indentation_down;
 	end create_symbol;
 
 
-	
 
-	
+
+
 	procedure get_symbol_model (
 		model_file	: in pac_symbol_model_name.bounded_string;
 		cursor		: in out pac_symbol_models.cursor)
@@ -107,7 +107,7 @@ package body et_symbol_library is
 		cursor := symbol_library.find (model_file);
 	end;
 
-	
+
 
 	function get_symbol_model (
 		model_name : in pac_symbol_model_name.bounded_string)
@@ -116,9 +116,9 @@ package body et_symbol_library is
 		return symbol_library.find (model_name);
 	end;
 
-	
-	
-	
+
+
+
 	function is_real (
 		symbol : in pac_symbol_models.cursor)
 		return boolean
@@ -144,7 +144,7 @@ package body et_symbol_library is
 	function get_placeholders (
 		symbol : in pac_symbol_models.cursor)
 		return type_text_placeholders
-	is 
+	is
 		sym : type_symbol_model renames element (symbol);
 	begin
 		if is_real (sym) then
@@ -156,29 +156,29 @@ package body et_symbol_library is
 
 
 
-	
+
 	function get_default_placeholders (
 		symbol_cursor	: in pac_symbol_models.cursor;
 		destination		: in type_object_position)
 		return type_text_placeholders
 	is
 		sym : type_symbol_model renames element (symbol_cursor);
-		
+
 		r : type_text_placeholders; -- to be returned
 	begin
 		r.name		:= sym.placeholders.name;
 		r.value		:= sym.placeholders.value;
 		r.purpose	:= sym.placeholders.purpose;
 
-		-- Rotate the positions of placeholders 
+		-- Rotate the positions of placeholders
 		-- according to rotation given by destination:
 		rotate_placeholders (r, get_rotation (destination));
-		
+
 		return r;
 	end get_default_placeholders;
 
 
-	
+
 
 
 	function get_symbol (
@@ -190,14 +190,14 @@ package body et_symbol_library is
 
 
 
-	
-	
+
+
 end et_symbol_library;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

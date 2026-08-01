@@ -53,7 +53,7 @@
 --
 -- 3. they do not have a height. Means there is no z-component.
 --
--- The fact that a packge has no real device implies that such a 
+-- The fact that a packge has no real device implies that such a
 -- device never appears in material lists (BOM - Bill Of Material).
 --
 -- So in this package the types and subprograms required to
@@ -64,43 +64,43 @@
 package et_package_bom_relevance is
 
 	keyword_bom_relevant : constant string := "bom_relevant";
-	
+
 
 	bom_relevant_prefix : constant string := "BOM_RELEVANT_";
 
-	
+
 	type type_bom_relevant is (
-								  
+
 		-- Real packages with x,y,z dimension:
-		BOM_RELEVANT_YES,	
+		BOM_RELEVANT_YES,
 
 		-- For packages that do not appear in
-		-- material lists, which do not have a real package 
-		-- (like testpoints, edge connectors, 
+		-- material lists, which do not have a real package
+		-- (like testpoints, edge connectors,
 		-- mounting holes, fiducials, ...):
-		BOM_RELEVANT_NO);	
+		BOM_RELEVANT_NO);
 
-	
-	
+
+
 	bom_relevant_default : constant type_bom_relevant := BOM_RELEVANT_YES;
 
-	
+
 	function to_string (
-		bom_relevant : in type_bom_relevant) 
+		bom_relevant : in type_bom_relevant)
 		return string;
 
-	
+
 	function to_bom_relevant (
-		bom_relevant : in string) 
+		bom_relevant : in string)
 		return type_bom_relevant;
 
-	
-	
+
+
 end et_package_bom_relevance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

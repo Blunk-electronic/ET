@@ -52,7 +52,7 @@ package body et_netlist_category is
 
 
 
-	
+
 	function to_netlist_category (
 		category	: in string)
 		return type_netlist_category
@@ -64,17 +64,17 @@ package body et_netlist_category is
 		elsif category = "2" then
 			result := NETLIST_CAT_2;
 		end if;
-		
+
 		return result;
-	end;		
-		
-	
+	end;
+
+
 end et_netlist_category;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

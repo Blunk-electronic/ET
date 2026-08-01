@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
@@ -53,7 +53,7 @@ package et_board_ops_route_restrict is
 
 
 	use pac_generic_modules;
-	
+
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -65,7 +65,7 @@ package et_board_ops_route_restrict is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a route restrict arc.
 	procedure draw_route_restrict_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -73,15 +73,15 @@ package et_board_ops_route_restrict is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Draws a route restrict circle.
 	procedure draw_route_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level);	
+		log_threshold	: in type_log_level);
 
-	
+
 	-- Deletes the segment of route restrict that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
@@ -90,7 +90,7 @@ package et_board_ops_route_restrict is
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- Draws a route restrict zone:
 	procedure draw_zone (
@@ -100,12 +100,12 @@ package et_board_ops_route_restrict is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_board_ops_route_restrict;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

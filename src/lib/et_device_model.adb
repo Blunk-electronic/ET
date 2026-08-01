@@ -56,55 +56,55 @@ package body et_device_model is
 		end if;
 	end;
 
-	
-	
+
+
 
 
 	function has_internal_unit (
 		units : in type_device_units)
 		return boolean
-	is 
+	is
 		use pac_units_internal;
 	begin
 		return has_element (units.int);
 	end;
 
-	
+
 
 	function has_external_unit (
 		units : in type_device_units)
 		return boolean
-	is 
+	is
 		use pac_units_external;
 	begin
 		return has_element (units.ext);
 	end;
 
 
-	
+
 
 	function get_name_internal (
 		units : in type_device_units)
 		return pac_unit_name.bounded_string
-	is 
+	is
 		use pac_units_internal;
 	begin
 		return key (units.int);
 	end;
-	
+
 
 	function get_name_external (
 		units : in type_device_units)
 		return pac_unit_name.bounded_string
-	is 
+	is
 		use pac_units_external;
 	begin
 		return key (units.ext);
 	end;
 
 
-	
-	
+
+
 	procedure locate_internal (
 		model	: in type_device_model;
 		unit	: in pac_unit_name.bounded_string;
@@ -123,8 +123,8 @@ package body et_device_model is
 		cursor := model.units_external.find (unit);
 	end locate_external;
 
-	
-	
+
+
 
 	function get_unit_count (
 		device_model : in type_device_model)
@@ -135,7 +135,7 @@ package body et_device_model is
 		result := type_unit_count (
 			natural (device_model.units_internal.length)
 			+ natural (device_model.units_external.length));
-		
+
 		return result;
 	end get_unit_count;
 
@@ -163,13 +163,13 @@ package body et_device_model is
 		end if;
 	end;
 
-	
-	
+
+
 end et_device_model;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

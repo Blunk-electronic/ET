@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - add commit operations
 
 
@@ -64,10 +64,10 @@ package et_schematic_ops_assembly_variant is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-	
 
-	
-	
+
+
+
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string);
@@ -87,30 +87,30 @@ package et_schematic_ops_assembly_variant is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_assembly_variant_name.bounded_string;
 
-	
-	-- Returns a cursor to the active assembly variant of the given module:	
+
+	-- Returns a cursor to the active assembly variant of the given module:
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
 		return et_assembly_variants.pac_assembly_variants.cursor;
 
 
-	
 
-	
+
+
 	-- Creates a new assembly variant.
 	procedure create_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Deletes an assembly variant.
 	procedure delete_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Describes an assembly variant. Overwrites the previous description.
 	procedure describe_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -118,19 +118,19 @@ package et_schematic_ops_assembly_variant is
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
 
-	
 
 
 
-	-- Returns true if the given module and assembly variant 
+
+	-- Returns true if the given module and assembly variant
 	-- provides the given device.
-	-- Assumptions: 
+	-- Assumptions:
 	-- - The module being searched in must be in the rig already.
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device	: in type_device_name)
 		return boolean;
 
@@ -139,7 +139,7 @@ package et_schematic_ops_assembly_variant is
 
 	-- Returns a cursor to the alternative device in the given module
 	-- and given assembly variant.
-	-- Assumptions: 
+	-- Assumptions:
 	-- - The module being searched in must be in the rig already.
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
@@ -147,14 +147,14 @@ package et_schematic_ops_assembly_variant is
 	--   otherwise the return is no_element.
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device	: in type_device_name)
 		return pac_device_variants.cursor;
 
 
 
 
-	-- Sets the value, partcode and (optionally the purpose) of a device in 
+	-- Sets the value, partcode and (optionally the purpose) of a device in
 	-- An already existing device will be overwritten without warning.
 	procedure mount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -165,9 +165,9 @@ package et_schematic_ops_assembly_variant is
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the given device as not mounted in the given assembly variant.
-	-- Sets the gvien device as not mounted in 
+	-- Sets the gvien device as not mounted in
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 	procedure unmount_device (
@@ -176,7 +176,7 @@ package et_schematic_ops_assembly_variant is
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Removes the given device from the given assembly variant.
 	procedure remove_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -185,12 +185,12 @@ package et_schematic_ops_assembly_variant is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_schematic_ops_assembly_variant;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

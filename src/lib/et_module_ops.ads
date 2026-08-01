@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 with et_module_names;			use et_module_names;
@@ -44,7 +44,7 @@ with et_logging;				use et_logging;
 
 
 package et_module_ops is
-		
+
 
 	-- Creates an empty generic module in container modules.
 	-- Does not create the actual module file if the module
@@ -55,18 +55,18 @@ package et_module_ops is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Deletes a generic module (from container generic_modules) and
 	-- the module file (*.mod) itself.
 	procedure delete_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
-		
 
 
 
-	
-	-- Saves a generic module (from container generic_modules) in a file inside 
+
+
+	-- Saves a generic module (from container generic_modules) in a file inside
 	-- the current project directory.
 	-- The module must be inside the current project. If it is outside
 	-- the project, a warning will be issued and it will NOT be saved.
@@ -75,13 +75,13 @@ package et_module_ops is
 	procedure save_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
-	
-	
+
+
 end et_module_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -53,30 +53,30 @@ package et_netlist_category is
 		-- and netchanger nams as they have been drawn
 		-- and named by the operator:
 		NETLIST_CAT_1,
-		
+
 		NETLIST_CAT_2);
 		-- CS: others ?
-		
-		
+
+
 	function to_string (
 		category	: in type_netlist_category)
 		return string;
-		
-		
-	-- Converts from a string like 1, 2, 3, to 
+
+
+	-- Converts from a string like 1, 2, 3, to
 	-- a type_netlist_category:
 	function to_netlist_category (
 		category	: in string)
 		return type_netlist_category;
-		
-		
-	
+
+
+
 end et_netlist_category;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

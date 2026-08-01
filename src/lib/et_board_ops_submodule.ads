@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - rework subprograms so that a module cursor
 --   is taken instead of a module name.
 --
@@ -69,25 +69,25 @@ package et_board_ops_submodule is
 
 
 
-	
-	-- Moves a submodule instance within the parent module layout 
+
+	-- Moves a submodule instance within the parent module layout
 	-- in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_board_ops_submodule;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

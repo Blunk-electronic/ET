@@ -65,9 +65,9 @@ package body et_module_read_text_schematic is
 
 
 	schematic_text : et_schematic_text.type_text;
-	
-	
-	
+
+
+
 	procedure read_schematic_text (
 		line : in type_fields_of_line)
 	is
@@ -79,7 +79,7 @@ package body et_module_read_text_schematic is
 
 			declare
 				-- extract position of schematic_text starting at field 2
-				pos : constant type_object_position := 
+				pos : constant type_object_position :=
 					to_position (line, 2);
 			begin
 				schematic_text.position := pos.place;
@@ -108,27 +108,27 @@ package body et_module_read_text_schematic is
 
 			-- extract alignment starting at field 2
 			schematic_text.alignment := to_alignment (line, 2);
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_schematic_text;
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_schematic_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
-	
+
+
 		procedure insert_schematic_text (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -136,35 +136,35 @@ package body et_module_read_text_schematic is
 			pac_texts.append (module.texts, schematic_text);
 		end insert_schematic_text;
 
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert_schematic_text",
 			level => log_threshold);
-			
-		log_indentation_up;		
+
+		log_indentation_up;
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> insert_schematic_text'access);
 
-			
+
 		schematic_text := (others => <>);
-						
+
 		log_indentation_down;
 	end insert_schematic_text;
-	
-	
-	
-				
+
+
+
+
 end et_module_read_text_schematic;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

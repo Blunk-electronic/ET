@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 package et_display.schematic is
 
@@ -53,7 +53,7 @@ package et_display.schematic is
 	-- This global variable is read whenever things are displayed in a schematic:
 	layers : type_layers;
 
-	
+
 	-- Returns true if device names layer is enabled:
 	function device_names_enabled return boolean;
 
@@ -62,22 +62,22 @@ package et_display.schematic is
 
 	-- Returns true if device purposes layer is enabled:
 	function device_purposes_enabled return boolean;
-	
+
 	-- Returns true if port layer is enabled:
 	function ports_enabled return boolean;
-	
+
 	-- Returns true if net layer is enabled:
 	function nets_enabled return boolean;
 
 	-- Returns true if text layer is enabled:
 	function texts_enabled return boolean;
 
-	
+
 end et_display.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

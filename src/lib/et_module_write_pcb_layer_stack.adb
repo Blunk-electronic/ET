@@ -65,30 +65,30 @@ package body et_module_write_pcb_layer_stack is
 	use pac_geometry_2;
 
 	use package_layers;
-	
 
-	
+
+
 	procedure query_layers (cursor : in package_layers.cursor) is
 		layer : constant type_layer := element (cursor);
 	begin
 		-- write: "conductor   1 0.035"
 		write (keyword => keyword_conductor,
 			parameters => "  "
-			& to_string (to_index (cursor)) 
+			& to_string (to_index (cursor))
 			& to_string (layer.conductor.thickness));
 
 		-- write "dielectric  1 0.200"
-		write (keyword => keyword_dielectric, 
+		write (keyword => keyword_dielectric,
 			parameters => " "
-			& to_string (to_index (cursor)) 
+			& to_string (to_index (cursor))
 			& to_string (layer.dielectric.thickness));
 
 	end;
 
 
-	
 
-	
+
+
 
 	procedure write_layer_stack (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -97,13 +97,13 @@ package body et_module_write_pcb_layer_stack is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			bottom_layer : type_signal_layer;
 			bottom_layer_thickness : type_conductor_thickness;
 		begin
-			
+
 			section_mark (section_board_layer_stack, HEADER);
 
 			-- iterate layers starting at top layer (1) until the deepest inner layer.
@@ -120,13 +120,13 @@ package body et_module_write_pcb_layer_stack is
 			write (keyword => keyword_conductor,
 				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
 				space & comment_mark_default & " bottom signal layer");
-			
+
 			section_mark (section_board_layer_stack, FOOTER);
 		end query_module;
 
 
-		
-	begin	
+
+	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write layer stack",
 			 level => log_threshold);
@@ -137,13 +137,13 @@ package body et_module_write_pcb_layer_stack is
 	end write_layer_stack;
 
 
-	
+
 end et_module_write_pcb_layer_stack;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

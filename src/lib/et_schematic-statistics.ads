@@ -34,13 +34,13 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 package et_schematic.statistics is
 
 	-- Whenever we deal with statistic file this type should be used:
 	statistic_file_name_length : constant positive := 100; -- CS: should suffice for now
-	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length); 
+	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length);
 
 	extension_statistics : constant string := "stat";
 
@@ -51,7 +51,7 @@ package et_schematic.statistics is
 		COMPONENTS_REAL,
 		COMPONENTS_TOTAL,
 		COMPONENTS_VIRTUAL,
-		
+
 		NETS_TOTAL,
 		-- CS: nets_global, nets_hierarchic
 		JUNCTIONS,
@@ -71,7 +71,7 @@ package et_schematic.statistics is
 		TRANSISTORS
 		-- CS: no_connection_flags
 		);
-	
+
 	procedure statistics_set (
 		cat			: in type_statistics_category;
 		increment	: in boolean := true;
@@ -79,19 +79,19 @@ package et_schematic.statistics is
 
 	function statistics_query (cat : in type_statistics_category) return count_type;
 	-- Returns the number objects as specified by given category.
-	
+
 	function statistics_query (cat : in type_statistics_category) return string;
 	-- Returns the number objects as specified by given category.
-	
-	
+
+
 	private
-	
+
 		type type_statistics is record
 			components_mounted	: count_type := 0;
 			components_real		: count_type := 0;
 			components_total	: count_type := 0;
 			components_virtual	: count_type := 0;
-			
+
 			nets_total			: count_type := 0;
 			junctions			: count_type := 0;
 			ports_total			: count_type := 0;
@@ -99,7 +99,7 @@ package et_schematic.statistics is
 			capacitors			: count_type := 0;
 			connectors			: count_type := 0;
 			diodes				: count_type := 0;
-			inductors			: count_type := 0;			
+			inductors			: count_type := 0;
 			integrated_circuits	: count_type := 0;
 			jumpers				: count_type := 0;
 			leds				: count_type := 0;
@@ -110,17 +110,17 @@ package et_schematic.statistics is
 			transistors			: count_type := 0;
 -- CS		ports_virtual		: count_type := 0;
 -- CS		ports_real			: count_type := 0;
-		end record;	
+		end record;
 
 		statistics : type_statistics;
-		
 
-		
+
+
 end et_schematic.statistics;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

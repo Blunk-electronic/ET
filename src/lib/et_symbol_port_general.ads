@@ -58,7 +58,7 @@ package et_symbol_port_general is
 
 	use pac_geometry_2;
 
-	
+
 	port_length_default : constant type_port_length := 2.5;
 
 
@@ -73,7 +73,7 @@ package et_symbol_port_general is
 	--  to the right if rotation is 180 degree. net attached from the left.
 	--  downwards if the rotation is 90 degree. net attached from above.
 	--  upwards if the rotation is 270 degree. net attached from below.
-	
+
 	type type_port_general is tagged record -- CS make private ?
 		-- This is the place where a net is connected:
 		position	: type_vector_model;
@@ -81,8 +81,8 @@ package et_symbol_port_general is
 		-- From the position a line starts.
 		-- This line represents a port.
 		-- The linewidth is the global constant net_linewidth:
-		length		: type_port_length := port_length_default; 
-		
+		length		: type_port_length := port_length_default;
+
 		--rotation	: et_schematic_coordinates.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?
 		rotation	: type_rotation_relative := 0.0;
 		--  90.0 -- to be connected with a net from above,
@@ -91,21 +91,21 @@ package et_symbol_port_general is
 		--   0.0 -- from the right
 	end record;
 
-	
 
 
-	
+
+
 	function get_place (
 		port 		: in type_port_general)
 		return type_vector_model;
 
-		
+
 	procedure set_place (
 		port		: in out type_port_general;
 		place		: in type_vector_model);
-	
 
-	
+
+
 	function get_rotation (
 		port		: in type_port_general)
 		return type_rotation_relative;
@@ -115,19 +115,19 @@ package et_symbol_port_general is
 		port		: in out type_port_general;
 		rotation	: in type_rotation_relative);
 
-	
-	
+
+
 	function get_length (
 		port		: in type_port_general)
 		return type_port_length;
-		
-		
-	
+
+
+
 end et_symbol_port_general;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

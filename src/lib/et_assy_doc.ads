@@ -53,14 +53,14 @@ package et_assy_doc is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_text_board_vectorized;
-	
+
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	linewidth_default : constant type_linewidth := 0.2;
-	
 
-	
+
+
 -- LINES:
-	
+
 	type type_doc_line is new pac_geometry_2.type_line with record
 		width	: type_linewidth := linewidth_default;
 	end record;
@@ -68,13 +68,13 @@ package et_assy_doc is
 
 	overriding procedure reset_line (
 		line : in out type_doc_line);
-	
-	
+
+
 	function to_string (
 		line	: in type_doc_line)
 		return string;
 
-	
+
 	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
 	use pac_doc_lines;
 
@@ -93,45 +93,45 @@ package et_assy_doc is
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean;
 
-	
+
 	-- Returns true if the "selected-flag" of the given line is set:
 	function is_selected (
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean;
 
 
-	
+
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
 		lines	: in out pac_doc_lines.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_doc_lines.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-		
-		
-	
+
+
+
 -- ARCS:
-	
+
 	type type_doc_arc is new pac_geometry_2.type_arc with record
 		width	: type_linewidth := linewidth_default;
 	end record;
 
-	
+
 	overriding procedure reset_arc (
 		arc : in out type_doc_arc);
 
-	
-	
+
+
 	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
 	use pac_doc_arcs;
 
@@ -145,18 +145,18 @@ package et_assy_doc is
 
 
 
-	
+
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_doc_arcs.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given arc is set:
 	function is_selected (
 		arc_cursor	: in pac_doc_arcs.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
@@ -165,44 +165,44 @@ package et_assy_doc is
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
-	
 
-	
+
+
 -- CIRCLES:
 
 	type type_doc_circle is new pac_geometry_2.type_circle with record
 		width	: type_linewidth := linewidth_default;
 	end record;
-	
-	
+
+
 	overriding procedure reset_circle (
 		circle : in out type_doc_circle);
 
-		
-	
+
+
 	package pac_doc_circles is new doubly_linked_lists (type_doc_circle);
 	use pac_doc_circles;
-	
+
 
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
 		circle_cursor	: in pac_doc_circles.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given circle is set:
 	function is_selected (
 		circle_cursor	: in pac_doc_circles.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_doc_circles.list;
@@ -211,15 +211,15 @@ package et_assy_doc is
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
 		circles	: in out pac_doc_circles.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_doc_circles.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-	
+
 -- ZONES:
 
 	type type_doc_zone is new type_contour with null record;
@@ -231,8 +231,8 @@ package et_assy_doc is
 	function is_circular (
 		zone	: in pac_doc_zones.cursor)
 		return boolean;
-	
-	
+
+
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -241,7 +241,7 @@ package et_assy_doc is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Mirrors a list of zones along the given axis:
 	procedure mirror_zones (
 		zones	: in out pac_doc_zones.list;
@@ -250,20 +250,20 @@ package et_assy_doc is
 	-- Rotates a list of zones by the given angle:
 	procedure rotate_zones (
 		zones	: in out pac_doc_zones.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of zones by the given offset:
 	procedure move_zones (
 		zones	: in out pac_doc_zones.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
-	
-	
-	
+
+
+
 -- TEXTS:
 
-	type type_doc_text is new type_text_fab_with_content with null record;	
-	
+	type type_doc_text is new type_text_fab_with_content with null record;
+
 	package pac_doc_texts is new doubly_linked_lists (type_doc_text);
 	use pac_doc_texts;
 
@@ -272,20 +272,20 @@ package et_assy_doc is
 	function is_proposed (
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given text is set:
 	function is_selected (
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean;
 
 
-	
+
 	-- Returns the position, linewidth and content
 	-- of the given text:
 	function to_string (
 		text : in pac_doc_texts.cursor)
 		return string;
-	
+
 
 	-- Iterates the texts.
 	-- Aborts the process when the proceed-flag goes false:
@@ -294,7 +294,7 @@ package et_assy_doc is
 		process	: not null access procedure (position : in pac_doc_texts.cursor);
 		proceed	: not null access boolean);
 
-	
+
 
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
@@ -304,15 +304,15 @@ package et_assy_doc is
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (
 		texts	: in out pac_doc_texts.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (
 		texts	: in out pac_doc_texts.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
-	
-	
+
+
 	-- This is the base type for assy doc objects in general:
 	type type_assy_doc is tagged record
 		lines 	: pac_doc_lines.list;
@@ -346,13 +346,13 @@ package et_assy_doc is
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_doc_texts.cursor;
 	-- 	log_threshold 	: in type_log_level);
-	
-	
+
+
 end et_assy_doc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

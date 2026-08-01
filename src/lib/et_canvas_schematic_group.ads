@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 
@@ -51,22 +51,22 @@ package et_canvas_schematic_group is
 
 
 
-	
--- DRAG:	
-	
-	status_drag_group : constant string := 
-		status_click_left 
+
+-- DRAG:
+
+	status_drag_group : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to drag the group." 
+		& "to drag the group."
 		& status_hint_for_abort;
 
 
-		
+
 	-- This procedure is to be called twice:
 	-- 1. When the operator sets that point at which
 	--    the group is being attacked.
-	-- 2. When the operator sets the point at 
+	-- 2. When the operator sets the point at
 	--    which the group is to be dropped.
 	-- From the point-of-attack to the drop-point
 	-- we calculate the offset by which the group
@@ -81,23 +81,23 @@ package et_canvas_schematic_group is
 
 
 -- COPY:
-	
-	status_copy_group : constant string := 
-		status_click_left 
+
+	status_copy_group : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to copy the group." 
+		& "to copy the group."
 		& status_hint_for_abort;
 
 
-		
+
 	-- This procedure is to be called twice:
 	-- 1. When the operator sets that point at which
 	--    the group is being attacked.
-	-- 2. When the operator sets the point at 
+	-- 2. When the operator sets the point at
 	--    which the copy of the group is to be dropped.
 	-- From the point-of-attack to the drop-point
-	-- we calculate the offset by which the copy 
+	-- we calculate the offset by which the copy
 	-- of the group is to be dropped:
 	procedure copy_group (
 		tool	: in type_tool;
@@ -107,12 +107,12 @@ package et_canvas_schematic_group is
 
 
 -- PASTE:
-	
-	status_paste_group : constant string := 
-		status_click_left 
+
+	status_paste_group : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to paste the group." 
+		& "to paste the group."
 		& status_hint_for_abort;
 
 
@@ -120,12 +120,12 @@ package et_canvas_schematic_group is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
+
 end et_canvas_schematic_group;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

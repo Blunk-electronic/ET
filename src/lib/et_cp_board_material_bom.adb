@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,8 +53,8 @@ with et_schematic_ops_submodules;
 package body et_cp_board_material_bom is
 
 	use pac_generic_modules;
-	
-	
+
+
 
 	procedure export_bom (
 		module			: in pac_generic_modules.cursor;
@@ -62,12 +62,12 @@ package body et_cp_board_material_bom is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		use et_schematic_ops_submodules;
 	begin
 		-- CS log message
-	
+
 		case cmd_field_count is
 			when 4 =>
 				make_boms -- a BOM for each variant
@@ -77,20 +77,20 @@ package body et_cp_board_material_bom is
 
 			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;		
-		
+		end case;
+
 	end export_bom;
 
 
-	
-		
+
+
 end et_cp_board_material_bom;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

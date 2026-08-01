@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -80,25 +80,25 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_sheets;
 		use et_submodules;
 	begin
 		log (text => "add submodule", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		case cmd_field_count is
 			when 11 =>
 				add_submodule (
 					module_name 	=> key (module), -- parent module (where the submodule is to be inserted)
 					file			=> to_submodule_path (get_field (cmd, 5)),
 					instance		=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
-					position		=> to_position 
+					position		=> to_position
 						(
 						sheet => to_sheet (get_field (cmd, 7)),
-						point => set 
+						point => set
 									(
 									x => to_distance (get_field (cmd, 8)),
 									y => to_distance (get_field (cmd, 9))
@@ -115,9 +115,9 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 12 .. type_field_count'last => 
+			when 12 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -127,12 +127,12 @@ package body et_cp_schematic_submodule is
 
 
 
-	
-
-	
 
 
-	
+
+
+
+
 
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
@@ -140,14 +140,14 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_sheets;
 	begin
 		log (text => "move submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 9 =>
 				move_submodule (
@@ -165,9 +165,9 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 10 .. type_field_count'last => 
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -177,11 +177,11 @@ package body et_cp_schematic_submodule is
 
 
 
-	
-	
 
 
-	
+
+
+
 
 
 	procedure drag_submodule (
@@ -190,12 +190,12 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "drag submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 8 =>
 				drag_submodule (
@@ -212,9 +212,9 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 9 .. type_field_count'last => 
+			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -224,7 +224,7 @@ package body et_cp_schematic_submodule is
 
 
 
-	
+
 
 
 
@@ -236,7 +236,7 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_sheets;
 	begin
@@ -250,7 +250,7 @@ package body et_cp_schematic_submodule is
 					module_name 	=> key (module), -- parent module (where the submodule is to be copied)
 					instance_origin	=> to_instance_name (get_field (cmd, 5)), -- submodule instance name
 					instance_new	=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
-					destination		=> to_position 
+					destination		=> to_position
 						(
 						sheet => to_sheet (get_field (cmd, 7)),
 						point => set
@@ -266,11 +266,11 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 10 .. type_field_count'last => 
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;		
+		end case;
 
 
 		log_indentation_down;
@@ -278,12 +278,12 @@ package body et_cp_schematic_submodule is
 
 
 
-	
 
 
-	
 
-	
+
+
+
 
 	procedure delete_submodule (
 		module			: in pac_generic_modules.cursor;
@@ -291,7 +291,7 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "delete submodule", level => log_threshold);
@@ -312,7 +312,7 @@ package body et_cp_schematic_submodule is
 
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -320,27 +320,27 @@ package body et_cp_schematic_submodule is
 		log_indentation_down;
 	end delete_submodule;
 
-	
 
 
 
-	
 
 
-	
+
+
+
 	procedure rename_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "rename submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 6 =>
 				rename_submodule (
@@ -355,7 +355,7 @@ package body et_cp_schematic_submodule is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -369,7 +369,7 @@ package body et_cp_schematic_submodule is
 
 
 
-		
+
 
 
 	procedure mount_submodule (
@@ -383,7 +383,7 @@ package body et_cp_schematic_submodule is
 		log (text => "mount submodule", level => log_threshold);
 		log_indentation_up;
 
-	
+
 		case cmd_field_count is
 			when 7 =>
 				mount_submodule (
@@ -399,15 +399,15 @@ package body et_cp_schematic_submodule is
 
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 
 		end case;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end mount_submodule;
 
-	
+
 
 
 
@@ -442,18 +442,18 @@ package body et_cp_schematic_submodule is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end remove_submodule;
 
 
 
 
-	
+
 
 
 
@@ -464,14 +464,14 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_submodules;
 	begin
 		log (text => "set submodule file", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 6 =>
 				set_submodule_file (
@@ -487,22 +487,22 @@ package body et_cp_schematic_submodule is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
-		log_indentation_down;		
+
+		log_indentation_down;
 	end set_submodule_file;
 
 
 
 
-	
 
 
 
-	
+
+
 
 	procedure build_submodules_tree (
 		module			: in pac_generic_modules.cursor;
@@ -510,12 +510,12 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "build submodule tree", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 4 =>
 				build_submodules_tree (
@@ -524,11 +524,11 @@ package body et_cp_schematic_submodule is
 
 			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end build_submodules_tree;
 
@@ -548,7 +548,7 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "check submodules integrity", level => log_threshold);
 		log_indentation_up;
@@ -562,7 +562,7 @@ package body et_cp_schematic_submodule is
 
 			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -573,35 +573,35 @@ package body et_cp_schematic_submodule is
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 
 -- PORTS:
-	
-	
+
+
 	procedure add_port_to_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "add port to submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 9 =>
 				add_port (
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
-					position		=> set 
+					position		=> set
 								(
 								x => to_distance (get_field (cmd, 7)),
 								y => to_distance (get_field (cmd, 8))
@@ -614,9 +614,9 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 10 .. type_field_count'last => 
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -630,7 +630,7 @@ package body et_cp_schematic_submodule is
 
 
 
-	
+
 
 	procedure drag_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
@@ -638,13 +638,13 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "drag port of submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 9 =>
 				drag_port (
@@ -662,9 +662,9 @@ package body et_cp_schematic_submodule is
 					log_threshold	=> log_threshold + 1
 					);
 
-			when 10 .. type_field_count'last => 
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -672,7 +672,7 @@ package body et_cp_schematic_submodule is
 		log_indentation_down;
 	end drag_port_of_submodule;
 
-	
+
 
 
 
@@ -688,13 +688,13 @@ package body et_cp_schematic_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "delete port of submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 6 =>
 				delete_port (
@@ -707,9 +707,9 @@ package body et_cp_schematic_submodule is
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-			when 7 .. type_field_count'last => 
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -718,26 +718,26 @@ package body et_cp_schematic_submodule is
 	end delete_port_of_submodule;
 
 
-	
 
 
 
 
 
-	
+
+
 	procedure move_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "move port of submodule", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 9 =>
 				move_port (
@@ -757,24 +757,24 @@ package body et_cp_schematic_submodule is
 
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
 
 		log_indentation_down;
 	end move_port_of_submodule;
-		
 
-	
-	
+
+
+
 end et_cp_schematic_submodule;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

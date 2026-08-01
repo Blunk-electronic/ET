@@ -44,7 +44,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 package et_package_name is
 
 
-	-- A package name is something like "SOT32" or "NDIP14". 
+	-- A package name is something like "SOT32" or "NDIP14".
 	-- It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component.
 	--
@@ -53,31 +53,31 @@ package et_package_name is
 	-- a transistor can also come in an SOT23.
 
 	-- Package names like "SOT23" or "TO220" are stored in bounded strings:
-	package_name_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) 
+	package_name_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9')))
 		or to_set('.')
 		or to_set('-')
-		or to_set('_'); 
+		or to_set('_');
 
-	
+
 	package_name_length_max : constant positive := 100;
-	
+
 	package pac_package_name is new generic_bounded_length (package_name_length_max);
 
-	
+
 	function to_string (packge : in pac_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
-	
+
 	function to_package_name (package_name : in string) return pac_package_name.bounded_string;
 	-- Converts a string to a pac_package_name.
 
-	
+
 	procedure check_package_name_length (packge : in string);
 	-- Tests if the given package name is longer than allowed.
 
-	
+
 	procedure check_package_name_characters (
 		packge		: in pac_package_name.bounded_string;
 		characters	: in character_set := package_name_characters);
@@ -86,13 +86,13 @@ package et_package_name is
 	-- Raises exception if invalid character found.
 
 
-	
-	
+
+
 end et_package_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

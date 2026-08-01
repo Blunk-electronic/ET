@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,20 +54,20 @@ with et_modes.schematic;				use et_modes.schematic;
 
 package body et_cp_schematic_display is
 
-	
+
 
 	procedure display (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
-		procedure do_it ( 
+
+		procedure do_it (
 			layer	: in type_noun;
-			status	: in string := "") 
+			status	: in string := "")
 		is
 			ls : type_layer_status;
 		begin
@@ -78,11 +78,11 @@ package body et_cp_schematic_display is
 			else
 				ls := to_layer_status (status);
 			end if;
-			
-			log (text => "display " & to_lower (to_string (layer)) 
+
+			log (text => "display " & to_lower (to_string (layer))
 					& space & to_string (ls),
 					level => log_threshold + 1);
-			
+
 			case layer is
 				when NOUN_NAMES		=> layers.device_names := ls;
 				when NOUN_NETS		=> layers.nets := ls;
@@ -90,37 +90,37 @@ package body et_cp_schematic_display is
 				when NOUN_PURPOSES	=> layers.device_purposes := ls;
 				when NOUN_TEXTS		=> layers.texts := ls;
 				when NOUN_VALUES	=> layers.device_values := ls;
-				
-				when others => 
+
+				when others =>
 					log (SEVERITY_ERROR, "invalid layer !", console => true);
 			end case;
 
 			-- CS exception handler if status is invalid
 		end do_it;
 
-		
+
 	begin
 		-- CS log message
-		
+
 		case cmd_field_count is
 			when 4 => do_it (noun); -- if status is omitted
-			
+
 			when 5 => do_it (noun, get_field (cmd, 5));
-			
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end display;
 
-	
-		
+
+
 end et_cp_schematic_display;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

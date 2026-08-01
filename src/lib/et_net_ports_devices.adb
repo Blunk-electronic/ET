@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -45,10 +45,10 @@ with et_keywords;				use et_keywords;
 package body et_net_ports_devices is
 
 
-	
+
 	function "<" (
-		left, right : in type_device_port) 
-		return boolean 
+		left, right : in type_device_port)
+		return boolean
 	is
 		use pac_port_name;
 		use pac_unit_name;
@@ -56,14 +56,14 @@ package body et_net_ports_devices is
 		-- compare device names:
 		if left.device_name < right.device_name then
 			return true;
-			
+
 		elsif left.device_name = right.device_name then
 
-			
+
 			-- compare unit names:
 			if left.unit_name < right.unit_name then
 				return true;
-				
+
 			elsif left.unit_name = right.unit_name then
 
 
@@ -78,7 +78,7 @@ package body et_net_ports_devices is
 				return false;
 			end if;
 
-			
+
 		else
 			return false;
 		end if;
@@ -87,13 +87,13 @@ package body et_net_ports_devices is
 
 
 
-	
+
 	function to_device_port (
 		device	: in type_device_name;
 		unit	: in pac_unit_name.bounded_string;
 		port	: in pac_port_name.bounded_string)
 		return type_device_port
-	is 
+	is
 		result : type_device_port;
 	begin
 		result.device_name := device;
@@ -106,30 +106,30 @@ package body et_net_ports_devices is
 
 
 
-	
+
 
 	procedure make_device_port (
 		arguments	: in type_fields_of_line; -- device IC1 unit C port I1
 		error		: out boolean;
 		port		: out type_device_port)
 	is
-		
-		function f (place : in type_field_count_positive) 
-			return string 
+
+		function f (place : in type_field_count_positive)
+			return string
 		is begin
 			return get_field (arguments, place);
 		end;
-		
+
 	begin
 		error := false;
-		
+
 		-- Iterate all fields of given list of arguments:
-		-- P points to the place in arguments at which we 
+		-- P points to the place in arguments at which we
 		-- fetch a field from.
 		-- If something goes wrong, then the error-flag is
 		-- set and the iteration cancelled:
 		for p in 1 .. get_field_count (arguments) loop
-			
+
 			case p is
 				when 1 => -- device
 					if f (p) /= keyword_device then
@@ -161,7 +161,7 @@ package body et_net_ports_devices is
 					port.port_name := to_port_name (f (p));
 					-- CS check existence of port in model
 
-				when others =>					
+				when others =>
 					error := true;
 					exit;
 			end case;
@@ -169,14 +169,14 @@ package body et_net_ports_devices is
 	end make_device_port;
 
 
-	
 
-	
-	
+
+
+
 	function to_string (
-		port : in type_device_port) 
-		return string 
-	is 
+		port : in type_device_port)
+		return string
+	is
 		use pac_unit_name;
 	begin
 		return "device " & to_string (port.device_name)
@@ -185,12 +185,12 @@ package body et_net_ports_devices is
 	end to_string;
 
 
-	
+
 
 	function to_string (
-		port : in pac_device_ports.cursor) 
-		return string 
-	is 
+		port : in pac_device_ports.cursor)
+		return string
+	is
 		p : type_device_port renames element (port);
 	begin
 		return to_string (p);
@@ -199,38 +199,38 @@ package body et_net_ports_devices is
 
 
 
-	
+
 	procedure rename_device_ports (
 		ports		: in out pac_device_ports.set;
 		device_old	: in type_device_name;
 		device_new	: in type_device_name)
-	is 
+	is
 		cursor : pac_device_ports.cursor := ports.first;
 
 		-- A temporarily port:
 		port : type_device_port;
-				
+
 	begin
 		-- Iterate the given list of device ports.
 		-- If a port named after device_old has been found,
 		-- then overwrite the name by device_new:
 		while has_element (cursor) loop
 			port := element (cursor);
-			
+
 			if port.device_name = device_old then
 				port.device_name := device_new;
 			end if;
-			
+
 			ports.replace_element (cursor, port);
 			next (cursor);
 		end loop;
 	end rename_device_ports;
-	
 
-	
 
-	
-	
+
+
+
+
 	procedure iterate (
 		ports	: in pac_device_ports.set;
 		process	: not null access procedure (position : in pac_device_ports.cursor);
@@ -244,13 +244,13 @@ package body et_net_ports_devices is
 			next (c);
 		end loop;
 	end iterate;
-	
-	
+
+
 end et_net_ports_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

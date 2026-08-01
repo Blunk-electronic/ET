@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,8 +41,8 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_drawing_frame.schematic is
 
-	
-	
+
+
 	procedure apply_defaults_schematic (frame : in out type_frame_schematic) is
 
 		-- LINES OF TITLE BLOCK
@@ -63,7 +63,7 @@ package body et_drawing_frame.schematic is
 			(( 89, 20),(220, 20)), -- horizontal
 			(( 89, 25),(220, 25))  -- horizontal
 			);
-		
+
 
 		-- Collects the lines of the given array and returns them as a list:
 		function make_lines (lines : in type_lines) return pac_lines.list is
@@ -101,7 +101,7 @@ package body et_drawing_frame.schematic is
 			(position => ( 90, 21), size => 3, content => to_content ("CAT:"))
 			);
 
-		
+
 		-- Collects the texts of the given array and returns them as a list:
 		function make_texts (texts : in type_texts) return pac_static_texts.list is
 			use pac_static_texts;
@@ -112,8 +112,8 @@ package body et_drawing_frame.schematic is
 			end loop;
 			return result;
 		end make_texts;
-		
-		
+
+
 	begin -- apply_defaults_schematic
 		-- type_title_bock (basic stuff):
 		frame.title_block_schematic.position										:= ( 55,  6);
@@ -136,14 +136,14 @@ package body et_drawing_frame.schematic is
 		frame.title_block_schematic.placeholders_additional.drawn_date.position 	:= (120, 11);
 		frame.title_block_schematic.placeholders_additional.checked_date.position 	:= (120,  6);
 		frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
-	
+
 		frame.title_block_schematic.placeholders_additional.sheet_number.position 		:= (210, 21);
 		frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
 		frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
 
 	end apply_defaults_schematic;
 
-	
+
 
 
 
@@ -159,21 +159,21 @@ package body et_drawing_frame.schematic is
 	end make_default_frame_schematic;
 
 
-	
-	
+
+
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
 	end;
 
 
-	
+
 	function to_category (cat : in string) return type_schematic_sheet_category is begin
 		return type_schematic_sheet_category'value (cat);
 	end;
 
 
-	
-	
+
+
 	function get_sheet_count (
 		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet
@@ -182,8 +182,8 @@ package body et_drawing_frame.schematic is
 	end;
 
 
-	
-	
+
+
 	function sheet_exists (
 		frames	: in type_frames_schematic;
 		sheet	: in type_sheet)
@@ -197,14 +197,14 @@ package body et_drawing_frame.schematic is
 
 		return has_element (cursor);
 	end;
-	
 
-	
-	
+
+
+
 	function get_sheet (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string
-	is 
+	is
 		sheet : type_sheet;
 		use pac_schematic_descriptions;
 	begin
@@ -212,9 +212,9 @@ package body et_drawing_frame.schematic is
 		return to_string (sheet);
 	end;
 
-	
 
-	
+
+
 	function get_category (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string
@@ -225,10 +225,10 @@ package body et_drawing_frame.schematic is
 		category := element (sheet_cursor).category;
 		return to_string (category);
 	end;
-	
-	
 
-	
+
+
+
 	function get_content (
 		sheet_cursor : in pac_schematic_descriptions.cursor)
 		return string
@@ -240,11 +240,11 @@ package body et_drawing_frame.schematic is
 		return to_string (content);
 	end;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	function get_sheet_count (
 		frames	: in type_frames_schematic)
 		return type_sheet
@@ -253,31 +253,31 @@ package body et_drawing_frame.schematic is
 	begin
 		return type_sheet (frames.descriptions.length);
 	end;
-		
-		
-	
-	
-	
+
+
+
+
+
 	procedure delete_sheet (
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet) -- CS rename to target
-	is 
+	is
 		use pac_schematic_descriptions;
-		
+
 		total : constant type_sheet := get_sheet_count (frames);
-		
-		
+
+
 		procedure do_it is
 			cursor : pac_schematic_descriptions.cursor;
 		begin
 			-- Locate the targeted sheet:
 			cursor := frames.descriptions.to_cursor (sheet);
-			
+
 			-- Delete the sheet:
 			frames.descriptions.delete (cursor);
 		end;
-		
-		
+
+
 	begin
 		if sheet > total then
 			-- The given sheet number is greater
@@ -288,11 +288,11 @@ package body et_drawing_frame.schematic is
 		end if;
 	end delete_sheet;
 
-	
-	
-		
-	
-	
+
+
+
+
+
 	procedure set_category (
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet;
@@ -300,29 +300,29 @@ package body et_drawing_frame.schematic is
 	is
 		use pac_schematic_descriptions;
 
-		
-		-- Assigns the given category to the sheet:		
+
+		-- Assigns the given category to the sheet:
 		procedure query_sheet (
 			description	: in out type_schematic_description)
 		is begin
 			description.category := cat;
 		end;
-		
-		
+
+
 	begin
 		frames.descriptions.update_element (
 			sheet, query_sheet'access);
-			
+
 	end set_category;
 
 
-	
-	
+
+
 end et_drawing_frame.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

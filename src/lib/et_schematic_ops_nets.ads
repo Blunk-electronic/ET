@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;         			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -72,8 +72,8 @@ package et_schematic_ops_nets is
 	use pac_generic_modules;
 	use pac_net_name;
 
-	
-	
+
+
 	-- This function returns the total number
 	-- of nets of the given module:
 	function get_net_count (
@@ -87,21 +87,21 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_nets.cursor;
 
-	
 
-	-- Returns lists of device, netchanger and 
+
+	-- Returns lists of device, netchanger and
 	-- submodule ports at the given place:
-	function get_ports ( 
+	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
-		log_threshold	: in type_log_level)		
-		return type_net_ports;	
-	
+		log_threshold	: in type_log_level)
+		return type_net_ports;
 
-	
+
+
 
 -- SEGMENTS:
-	
+
 
 	-- Sets the start or end points of
 	-- net segments which start or end
@@ -110,7 +110,7 @@ package et_schematic_ops_nets is
 	-- If a segment ends an the given position then B will be set as "moving".
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position;							  
+		position		: in type_object_position;
 		log_threshold	: in type_log_level);
 
 
@@ -121,7 +121,7 @@ package et_schematic_ops_nets is
 
 
 
-	
+
 	-- Modifies the status flag of a net segment:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -129,7 +129,7 @@ package et_schematic_ops_nets is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Sets the proposed-flag of all segments which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of segments that have been found:
@@ -157,7 +157,7 @@ package et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Deletes the first net segment found
 	-- in the given zone:
 	procedure delete_segment (
@@ -173,40 +173,40 @@ package et_schematic_ops_nets is
 	-- at the given point_of_attack.
 	-- Whether the A or B end (or both) are affected
 	-- is determined according to the given point of attack.
-	-- If the related segment is connected with a port of 
+	-- If the related segment is connected with a port of
 	-- any device, netchanger or submodule, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		point_of_attack	: in type_object_position;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 		return boolean;
 
-	
+
 	-- Tests whether the given segment is movable
 	-- at the given end point (A or B).
-	-- If the given end point is connected with a port of 
+	-- If the given end point is connected with a port of
 	-- any device, netchanger or submodule, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
 		AB_end			: in type_start_end_point;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 		return boolean;
 
 
 	-- Tests whether the given segment is movable
 	-- at the given zone.
-	-- If the given end point is connected with a port of 
+	-- If the given end point is connected with a port of
 	-- any device, netchanger or submodule, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
 		zone			: in type_line_zone;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 		return boolean;
 
 
@@ -227,15 +227,15 @@ package et_schematic_ops_nets is
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-		
-										  
-	-- Returns true if at the given place 
+
+
+	-- Returns true if at the given place
 	-- a net segment starts or ends:
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position)
 		return boolean;
-	
+
 
 	-- Returns a list of net segments which cross
 	-- the given catch zone:
@@ -247,7 +247,7 @@ package et_schematic_ops_nets is
 		return pac_object_segments.list;
 
 
-	
+
 	-- This procedure moves a given primary net segment
 	-- which is attacked by the point of attack (POA).
 	-- It computes the zone that is being attcked
@@ -260,22 +260,22 @@ package et_schematic_ops_nets is
 		primary_segment	: in type_object_segment;
 		POA				: in type_vector_model;
 		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model; -- x/y, the new position 
+		destination		: in type_vector_model; -- x/y, the new position
 		zone			: out type_line_zone;
 		displacement	: out type_vector_model;
 		segment_old		: in out type_net_segment;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Drags a segment of a net. The segment to be modified
 	-- is searched for in the given catch zone on the given sheet.
 	-- If more than one segment has been found in the given zone,
 	-- then the first of them will be selected.
-	-- The point at which the segment is grabbed is called 
+	-- The point at which the segment is grabbed is called
 	-- the "point-of-attack" (POA). If the segment is attacked
 	-- on the A or B end, then the end point is snapped to the
 	-- POA. If the segment is attacked at its center then, the segment
-	-- will be dragged from the POA to the given destination.	
+	-- will be dragged from the POA to the given destination.
 	-- We call the selected segment "primary segment". Other segments which
 	-- might be connected with it are called "secondary segments".
 	-- The secondary segments will be dragged along with the primary segment.
@@ -283,9 +283,9 @@ package et_schematic_ops_nets is
 	--    the connected end of the segment is tied to the port
 	--    and will not be dragged.
 	-- 2. If the primary segment is dragged to a place where it meets a port
-	--    of a device, netchanger or submodule, then the segment will be 
+	--    of a device, netchanger or submodule, then the segment will be
 	--    connected with that port.
-	-- 3. If the segment meets another net, then these 
+	-- 3. If the segment meets another net, then these
 	--    two nets will NOT be connected.
 	--    CS: The resulting overlapping segments should be detected by the ERC
 	--    or better the drag operation should be rejected.
@@ -314,7 +314,7 @@ package et_schematic_ops_nets is
 	--    then the port will be connected with the net.
 	-- 3. If the segment meets another net, then these
 	--    two nets will NOT be connected.
-	--    CS: The resulting overlapping segments should be 
+	--    CS: The resulting overlapping segments should be
 	--    detected by the ERC.
 	-- 4. Other segments, which are connected with the given
 	--    primary segment, are called secondary segments.
@@ -331,20 +331,20 @@ package et_schematic_ops_nets is
 
 
 
-	
+
 -- GROUPS:
 
-	-- Sets "selected" flag of all segments that 
+	-- Sets "selected" flag of all segments that
 	-- are on the given sheet and in the given area.
 	-- 1. If only the A or the B-end of a segment is
-	--    in the area, then the corresponding end is set as 
+	--    in the area, then the corresponding end is set as
 	--    "selected".
 	-- 2. If a segment is completely inside the given area,
 	--    then both ends are set as "selected" and
 	--    the segment as a whole is set as "selected".
 	procedure group_segments_in_rectangular_area (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;							  
+		sheet			: in type_sheet;
 		area			: in type_area;
 		log_threshold	: in type_log_level);
 
@@ -354,7 +354,7 @@ package et_schematic_ops_nets is
 	-- "selected"-flag set.
 	-- This procedure does not do any commit operations,
 	-- because this is part of a group call.
-	-- It is up to the caller of this procedure to care for 
+	-- It is up to the caller of this procedure to care for
 	-- the commit actions:
 	procedure delete_segments_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -362,7 +362,7 @@ package et_schematic_ops_nets is
 
 
 
-	-- Moves all selected net segments by the 
+	-- Moves all selected net segments by the
 	-- given offset.
 	-- This is a relative movement by the given offset:
 	procedure drag_selected_net_segments (
@@ -376,11 +376,11 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure set_selected_net_segments_as_not_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- This procedure clears the "moving" flag of all
 	-- net segments (regardless whether they are selcted or not):
@@ -392,15 +392,15 @@ package et_schematic_ops_nets is
 	-- This procedure copies selected net segments:
 	procedure copy_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;		
+		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
-	
 
-	
-	
+
+
+
 -- STRANDS:
 
 
@@ -411,7 +411,7 @@ package et_schematic_ops_nets is
 		net_cursor		: in pac_nets.cursor;
 		strand			: in type_strand;
 		log_threshold	: in type_log_level);
-	
+
 
 
 	-- Moves all strands of a given net by the
@@ -441,7 +441,7 @@ package et_schematic_ops_nets is
 		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Returns for a given net a list of strands
 	-- that cross the given place:
@@ -453,7 +453,7 @@ package et_schematic_ops_nets is
 		return pac_strand_cursors.list;
 
 
-	
+
 	-- Returns for a given primary net segment a list of strands
 	-- having a segment that ends between A and B of the given segment:
 	function get_strands (
@@ -464,8 +464,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_strand_segment_cursors.list;
 
-	
-	
+
+
 	-- Returns a list of strands which cross
 	-- the given catch zone:
 	function get_strands (
@@ -474,7 +474,7 @@ package et_schematic_ops_nets is
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list;
-	
+
 
 	-- Returns a list of strands which are on the given sheet:
 	function get_strands (
@@ -484,14 +484,14 @@ package et_schematic_ops_nets is
 		return pac_object_strands.list;
 
 
-	
+
 
 	-- Resets the status flags of all strands:
 	procedure reset_status_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 	-- Sets the proposed-flag of all strands which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of strands that have been found:
@@ -527,7 +527,7 @@ package et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Deletes the first strand found in the given zone.
 	-- If the affected net has no strands anymore,
 	-- then the whole net will be deleted:
@@ -538,7 +538,7 @@ package et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- After moving, dragging, deleting, adding of nets
 	-- or net segments, the positions of strands must be updated.
@@ -548,10 +548,10 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 -- NETS:
-	
+
 
 
 	-- Resets the status flags of all nets;
@@ -559,9 +559,9 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
 
-	
+
+
 	-- Modifies the status flag of a complete net:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -569,7 +569,7 @@ package et_schematic_ops_nets is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Returns the first net according to the given flag.
 	-- If no net has been found, then the return is no_element:
@@ -579,8 +579,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_net;
 
-	
-	
+
+
 	-- Sets the proposed-flag of all nets which have a segment in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of nets that have been found:
@@ -591,8 +591,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
-		
+
+
 	-- Returns a cursor to the requested net in the given module.
 	-- If the net could not be found, returns no_element:
 	function locate_net (
@@ -601,14 +601,14 @@ package et_schematic_ops_nets is
 		return pac_nets.cursor;
 
 
-	-- Returns true if the given net exists in 
+	-- Returns true if the given net exists in
 	-- the given module:
 	function net_exists (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string)
 		return boolean;
 
-	
+
 
 	-- Creates a new net. If the net does not exist already,
 	-- then it will be created and the flag "created" is set.
@@ -625,7 +625,7 @@ package et_schematic_ops_nets is
 
 
 	-- Merges net source with net target.
-	-- - If "target_master" is true, then the scope and class 
+	-- - If "target_master" is true, then the scope and class
 	--   of the target net are kept,
 	--   while scope and class of the source net are discarded.
 	-- - If "target_master" is false, then scope and class of
@@ -643,8 +643,8 @@ package et_schematic_ops_nets is
 		source			: in pac_nets.cursor;
 		target_master	: in boolean;
 		log_threshold	: in type_log_level);
-							 
-	
+
+
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
 	-- the lowest available name would be N$3.
@@ -657,7 +657,7 @@ package et_schematic_ops_nets is
 	-- This flag indicates whether an operation
 	-- on a net affects the active sheet or all sheets:
 	modify_net_on_all_sheets : boolean := false;
-	
+
 
 
 	-- Renames a strand. A strand exists on a particular sheet only.
@@ -673,7 +673,7 @@ package et_schematic_ops_nets is
 
 
 
-	
+
 	-- Renames a strand of a given net on a given sheet
 	-- in a given catch zone.
 	-- Assumes that the given net exists. Otherwise an
@@ -681,13 +681,13 @@ package et_schematic_ops_nets is
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 
 	-- Renames a net on the given sheet. If all_sheets is
 	-- true, then all nets on all sheets are renamed:
@@ -701,27 +701,27 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Renames a net. Assumes that the net named after
 	-- net_name_before exists. Otherwise an exception will be
 	-- raised.
 	-- 1. If all_sheets is true, then all strands
 	--    on all sheets are renamed. So the whole net is renamed.
 	--    The argument "sheet" is ignored.
-	-- 2. If all_sheets is false, then the argument "sheet" 
+	-- 2. If all_sheets is false, then the argument "sheet"
 	--    specifies the single sheet where the renaming is to take place:
 	procedure rename_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N
 		all_sheets		: in boolean := false;
 		sheet			: in type_sheet := 1;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
 
-	
-	
+
+
+
 
 	-- Deletes a net on the given sheet. If all_sheets is
 	-- true, then all nets on all sheets are deleted:
@@ -753,8 +753,8 @@ package et_schematic_ops_nets is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Shows/highlights a complete net by just
 	-- setting the status of the whole net as "selected":
 	procedure show_net (
@@ -762,7 +762,7 @@ package et_schematic_ops_nets is
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Shows/highlights a complete net by just
 	-- setting the status of the whole net as "selected".
 	-- Assumes that the specified net exsits. Otherwise
@@ -773,14 +773,14 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Returns the name of the first net of the given module.
 	-- Net names are sorted alphabetically:
 	function get_first_net (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string;
-	
+
 
 
 	-- Returns a cursor to the net that is connected with the given device and terminal.
@@ -792,9 +792,9 @@ package et_schematic_ops_nets is
 		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
 		return pac_nets.cursor;
 
-	
-	
-	
+
+
+
 	-- Returns the names of all nets of the given module
 	-- sorted alphabetically:
 	function get_nets (
@@ -803,7 +803,7 @@ package et_schematic_ops_nets is
 		return pac_net_names.list;
 
 
-	
+
 	-- Returns for the given net a unique index.
 	-- If the given net has not been found, raises exception:
 	function get_net_index (
@@ -812,8 +812,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_net_index;
 
-	
-	
+
+
 	-- Returns a lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -824,7 +824,7 @@ package et_schematic_ops_nets is
 
 	-- Before inserting net segments into a net, it must
 	-- be ensured, that none of them collides with a foreign net.
-	-- This function returns true if any of the given segments of 
+	-- This function returns true if any of the given segments of
 	-- the given net on the given sheet touches a foreign net.
 	-- Only matching A and B ends of segments are tested.
 	-- Segments that cross each other between their A or B ends
@@ -836,7 +836,7 @@ package et_schematic_ops_nets is
 		segments		: in pac_net_segments.list; -- the segments to be inserted
 		log_threshold	: in type_log_level)
 		return boolean;
-	
+
 
 	-- Inserts a list of net segments in the given net.
 	-- Connects the segments with strands and ports of
@@ -849,9 +849,9 @@ package et_schematic_ops_nets is
 		sheet			: in type_sheet;
 		segments		: in pac_net_segments.list;
 		log_threshold	: in type_log_level);
-	
 
-	
+
+
 	-- Inserts the given net segment in the given net
 	-- on the given sheet. If the segment runs across the
 	-- ends of other segments (of the same strand) then
@@ -864,13 +864,13 @@ package et_schematic_ops_nets is
 		sheet			: in type_sheet;
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level);
-	
-	
-	
-	-- Inserts a net segment to a given net. 
+
+
+
+	-- Inserts a net segment to a given net.
 	-- If the given net does
 	-- not exist, then the net will be created.
-	-- Find more details in description of procedure 
+	-- Find more details in description of procedure
 	-- insert_net_segment above.
 	-- Updates strand positions and the ratsnest:
 	procedure insert_net_segment (
@@ -881,16 +881,16 @@ package et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure copy_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_segment	: in type_object_segment;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
-		
-		
-	
+
+
+
 	-- Sets the scope of a net.
 	-- Assumes that the given net exists. Otherwise
 	-- an exception will be raised:
@@ -911,11 +911,11 @@ package et_schematic_ops_nets is
 		return type_net_scope;
 
 
-	
-	
+
+
 
 -- LABELS:
-		
+
 
 	-- Resets the status flags of all net labels:
 	procedure reset_status_labels (
@@ -959,24 +959,24 @@ package et_schematic_ops_nets is
 	-- If the segment is a slope, then no label will be placed:
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
+		segment			: in type_object_segment;
 		position		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
-	
-	
+
+
+
 	-- Places a label next to a segment at position.
 	-- This procedure is meant to be called via the command processor:
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		
+
 		-- The reference point at the segment:
 		position		: in type_object_position; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- This procedure deletes a net label:
 	procedure delete_net_label (
@@ -986,7 +986,7 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Deletes a net label.
 	-- This procedure is intended to be called via the command processor:
 	procedure delete_net_label (
@@ -1006,26 +1006,26 @@ package et_schematic_ops_nets is
 		destination		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-										  
-	
+
+
 	-- CS procedure move_net_label to be called via
 	-- script processor
 
 
 
-	-- Shows/highlights a simple label by setting its 
+	-- Shows/highlights a simple label by setting its
 	-- status to "selected":
 	procedure show_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
-	
+
+
+
+
 -- CONNECTORS:
-	
+
 	-- Resets the status flags of all net connectors:
 	procedure reset_status_connectors (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1038,7 +1038,7 @@ package et_schematic_ops_nets is
 		label			: in type_object_net_connector; -- CS rename to connector
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure propose_connectors (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1046,7 +1046,7 @@ package et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	function get_first_connector (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1055,13 +1055,13 @@ package et_schematic_ops_nets is
 		return type_object_net_connector;
 
 
-	
+
 
 	-- Places a net connector at the given net segment
 	-- at the given position:
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
+		segment			: in type_object_segment;
 		position		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		-- CS direction ?
@@ -1087,17 +1087,17 @@ package et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
-	-- Shows/highlights a connector by setting its 
+
+
+
+	-- Shows/highlights a connector by setting its
 	-- status to "selected":
 	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		connector		: in type_object_net_connector;
 		log_threshold	: in type_log_level);
 
-	
+
 
 ------------------------------------------------------------------------------------------
 
@@ -1118,16 +1118,16 @@ package et_schematic_ops_nets is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_SEGMENT =>
 				segment : type_object_segment;
 
 			when CAT_STRAND =>
 				strand : type_object_strand;
-				
+
 			when CAT_NET =>
 				net : type_object_net;
-				
+
 			when CAT_LABEL =>
 				label : type_object_net_label;
 
@@ -1136,8 +1136,8 @@ package et_schematic_ops_nets is
 		end case;
 	end record;
 
-	
-	
+
+
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 	use pac_objects;
 
@@ -1146,7 +1146,7 @@ package et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return string;
 
-	
+
 
 	-- Returns the number of items stored in the given list:
 	function get_count (
@@ -1161,7 +1161,7 @@ package et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_nets.cursor;
 
-	
+
 	-- Returns the cursor to the strand of the given
 	-- object. The object must be of CAT_SEGMENT:
 	function get_strand (
@@ -1177,24 +1177,24 @@ package et_schematic_ops_nets is
 
 
 
-	
+
 
 	-- Returns the first object
 	-- according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
-	
 
-	-- Collects all objects 
+
+	-- Collects all objects
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
@@ -1219,7 +1219,7 @@ package et_schematic_ops_nets is
 
 
 	-- This is a collective procedure that resets
-	-- the status flags of of all 
+	-- the status flags of of all
 	-- objects (nets, net labels, devices, units, placeholders):
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1227,7 +1227,7 @@ package et_schematic_ops_nets is
 
 
 
-	-- Sets the start or end points of net segments which are 
+	-- Sets the start or end points of net segments which are
 	-- connected with selected net segments to "moving":
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1237,8 +1237,8 @@ package et_schematic_ops_nets is
 	-- Sets the start or/and end point (A/B) of the given net segment
 	-- as moving according to the given point of attack.
 	-- Sets the global variable object_original_position.
-	-- In case the primary segment is to be dragged, then 
-	-- the object_original_position serves as a reference for other 
+	-- In case the primary segment is to be dragged, then
+	-- the object_original_position serves as a reference for other
 	-- net segments which are attached to the primary segment.
 	-- - If a net segment is attacked at its start point (A), then
 	--   the object_original_position assumes A.
@@ -1262,9 +1262,9 @@ package et_schematic_ops_nets is
 
 
 	-- Starting with a given primary segment (indicated by object_cursor),
-	-- Start/end points (A/B) of secondary segments which are 
+	-- Start/end points (A/B) of secondary segments which are
 	-- connected with the primary segment are marked as "moving"
-	-- via this procedure:	
+	-- via this procedure:
 	procedure set_secondary_segments_AB_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor; -- must point to a primary net segment
@@ -1279,8 +1279,8 @@ package et_schematic_ops_nets is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -1304,19 +1304,19 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 end et_schematic_ops_nets;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

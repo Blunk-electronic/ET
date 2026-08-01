@@ -55,7 +55,7 @@ with et_domains;
 with et_directions;					use et_directions;
 with et_cp_board;
 with et_modes;
-with et_modes.board;				
+with et_modes.board;
 with et_modes.schematic;
 with et_module_names;				use et_module_names;
 
@@ -107,21 +107,21 @@ package body et_canvas_board is
 	procedure set_title_bar (
 		-- CS project name
 		module		: in pac_generic_modules.cursor)
-	is 
+	is
 		use et_system_info;
 	begin
 		main_window.set_title (
-			system_name 
-			& " - BOARD - " 
-			-- CS project name					  
+			system_name
+			& " - BOARD - "
+			-- CS project name
 			& to_string (key (module)));
 	end set_title_bar;
 
-	
 
-	procedure update_mode_display is 
+
+	procedure update_mode_display is
 		use et_modes.board;
-		
+
 		-- Get the current drawing mode
 		v : constant string := to_string (verb);
 		n : constant string := to_string (noun);
@@ -131,15 +131,15 @@ package body et_canvas_board is
 		gtk_entry (mode_display.cbox_mode_noun.get_child).set_text (n);
 	end update_mode_display;
 
-	
+
 
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;
 		ignore_errors			: in boolean := false;
-		test_only				: in boolean := false)		
+		test_only				: in boolean := false)
 	is separate;
 
-	
+
 
 	procedure zoom_to_fit_all is
 		-- debug : boolean := true;
@@ -149,7 +149,7 @@ package body et_canvas_board is
 
 		-- Reset the translate-offset:
 		T := (0.0, 0.0);
-		
+
 		-- Compute the new bounding-box. Update global
 		-- variable bounding_box:
 		compute_bounding_box;
@@ -170,8 +170,8 @@ package body et_canvas_board is
 		-- fit all objects into the scrolled window:
 		S := get_ratio (bounding_box);
 
-		
-		
+
+
 		if debug then
 			put_line (" S: " & type_zoom_factor'image (S));
 		end if;
@@ -184,7 +184,7 @@ package body et_canvas_board is
 		center_to_visible_area (bounding_box);
 
 		backup_visible_area (bounding_box);
-		
+
 		-- Schedule a redraw of the canvas:
 		refresh;
 	end zoom_to_fit_all;
@@ -211,7 +211,7 @@ package body et_canvas_board is
 	is
 		pragma unreferenced (button);
 		use et_modes.board;
-		
+
 		-- debug : boolean := true;
 		debug : boolean := false;
 	begin
@@ -219,27 +219,27 @@ package body et_canvas_board is
 
 		reset_verb_and_noun;
 		update_mode_display;
-		
+
 		zoom_area.active := true;
 	end cb_zoom_area;
 
-	
+
 
 	procedure set_up_command_buttons is
 	begin
 		put_line ("set_up_command_buttons (board)");
 
 		-- Connect button signals with subprograms:
-		
+
 		button_zoom_fit.on_clicked (cb_zoom_to_fit'access);
-		-- button_zoom_fit.on_clicked (access_cb_zoom_to_fit);		
+		-- button_zoom_fit.on_clicked (access_cb_zoom_to_fit);
 
 		button_zoom_area.on_clicked (cb_zoom_area'access);
-		
+
 	end set_up_command_buttons;
 
-	
-	
+
+
 
 	function cb_window_key_pressed (
 		window	: access gtk_widget_record'class;
@@ -253,10 +253,10 @@ package body et_canvas_board is
 		-- this event is not passed further
 		-- to widgets down the chain.
 		-- Prosssing the event stops here.
-		
-		use gdk.types;		
+
+		use gdk.types;
 		use gdk.types.keysyms;
-		
+
 		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: constant gdk_key_type := event.keyval;
@@ -280,17 +280,17 @@ package body et_canvas_board is
 			set_status ("enter command");
 		end focus_console;
 
-		
-		
+
+
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		
+
 		put_line ("cb_window_key_pressed (board)"
 			& " key " & gdk_key_type'image (event.keyval));
 
 
-		if key_ctrl = control_mask then 
+		if key_ctrl = control_mask then
 			case key is
 
 				when others => null;
@@ -301,7 +301,7 @@ package body et_canvas_board is
 
 				-- If the operator presses F2 then change the primary tool:
 				when GDK_F2 =>
-					change_primary_tool;					
+					change_primary_tool;
 					event_handled := true; -- event handled
 
 
@@ -309,13 +309,13 @@ package body et_canvas_board is
 				when GDK_F3 =>
 					focus_console;
 					event_handled := true;
-					
+
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					focus_canvas;
 					status_clear;
 					event_handled := true;
-					
+
 
 				when GDK_F5 =>
 					zoom_to_fit_all;
@@ -330,7 +330,7 @@ package body et_canvas_board is
 				when GDK_F11 =>
 					et_canvas_schematic.switch_module (et_canvas_schematic.PREVIOUS);
 					event_handled := true;
-					
+
 				when GDK_F12 =>
 					et_canvas_schematic.switch_module (et_canvas_schematic.NEXT);
 					event_handled := true;
@@ -338,19 +338,19 @@ package body et_canvas_board is
 
 
 				when GDK_ESCAPE =>
-					reset;			
+					reset;
 
 					-- No more actions required:
 					event_handled := true;
 
-					
+
 				-- Other key events are propagated further:
 				when others =>
 					event_handled := false;
 
 			end case;
 		end if;
-		
+
 		return event_handled;
 	end cb_window_key_pressed;
 
@@ -372,7 +372,7 @@ package body et_canvas_board is
 	procedure draw_text_being_placed (
 		face		: in type_face;
 		category	: in type_layer_category)
-	is 
+	is
 		use et_canvas_board_preliminary_object;
 		use et_canvas_board_texts;
 		use et_modes.board;
@@ -380,7 +380,7 @@ package body et_canvas_board is
 		point : type_vector_model;
 	begin
 		-- put_line ("draw_text_being_placed");
-		
+
 		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then
 
 			if object_layer_category = category and object_face = face then
@@ -389,7 +389,7 @@ package body et_canvas_board is
 				-- while the operator is moving the tool:
 				point := get_primary_tool_position;
 
-				preliminary_text.text.position := 
+				preliminary_text.text.position :=
 					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
@@ -402,24 +402,24 @@ package body et_canvas_board is
 
 
 	procedure draw_path (
-		cat : in type_layer_category) 
+		cat : in type_layer_category)
 	is
 		use et_colors.board;
 		use pac_path_and_bend;
 		use et_modes.board;
 		use et_canvas_board_preliminary_object;
-		
-		-- PL : type_preliminary_object renames preliminary_object;	
+
+		-- PL : type_preliminary_object renames preliminary_object;
 
 
 		-- Computes the path from given start to given end point.
 		-- Takes the bend style given in preliminary_object into account.
 		-- Draws the path.
 		procedure compute_and_draw (
-			A, B : in type_vector_model) 
+			A, B : in type_vector_model)
 		is
 			use et_colors;
-			
+
 			line : type_line;
 
 			-- Do the actual path calculation.
@@ -430,7 +430,7 @@ package body et_canvas_board is
 				case cat is
 					when LAYER_CAT_ROUTE_RESTRICT =>
 						-- Lines in route restrict have zero width:
-						draw_line (line => line, width => zero, 
+						draw_line (line => line, width => zero,
 								   stroke => DO_STROKE);
 
 					when others =>
@@ -438,14 +438,14 @@ package body et_canvas_board is
 								   stroke => DO_STROKE);
 				end case;
 			end draw;
-			
-			
+
+
 		begin
 			-- The calculated path may require a bend point.
 			-- Set/clear the "bended" flag of the line being drawn.
 			live_path.bended := path.bended;
 
-			-- set linewidth:			
+			-- set linewidth:
 			set_linewidth (object_linewidth);
 
 			-- If we are drawing a path in a conductor layer then
@@ -454,11 +454,11 @@ package body et_canvas_board is
 				set_color_conductor (object_signal_layer, NORMAL);
 			end if;
 
-			
+
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
 			if path.bended = NO then
-				
+
 				set_A (line, path.A);
 				set_B (line, path.B);
 
@@ -472,39 +472,39 @@ package body et_canvas_board is
 
 				set_A (line, path.A);
 				set_B (line, path.bend_point);
-				
+
 				draw;
 
 				set_A (line, path.bend_point);
 				set_B (line, path.B);
-				
+
 				draw;
-				
+
 			end if;
 		end compute_and_draw;
 
-		
+
 	begin -- draw_path
-		-- put_line ("draw_path");		
-		
+		-- put_line ("draw_path");
+
 		if verb = VERB_DRAW and noun = NOUN_LINE and edit_process_running
 		and object_layer_category = cat then
-			
+
 			compute_and_draw (
 				A	=> live_path.A, -- start of path
 				B	=> get_object_tool_position);	-- end of route
-					
-			
+
+
 		end if;
 	end draw_path;
-	
+
 
 
 
 
 
 	procedure draw_live_zone (
-		cat : in type_layer_category) 
+		cat : in type_layer_category)
 	is
 		use pac_path_and_bend;
 		use et_modes.board;
@@ -515,10 +515,10 @@ package body et_canvas_board is
 		-- Takes the bend style given in preliminary_zone into account.
 		-- Draws the path.
 		procedure compute_and_draw (
-			A, B : in type_vector_model) 
+			A, B : in type_vector_model)
 		is
 			-- use et_colors;
-			
+
 			line : type_line;
 
 			-- Do the actual path calculation.
@@ -527,21 +527,21 @@ package body et_canvas_board is
 			-- Draws the line:
 			procedure draw is begin
 				-- Lines in of contours have zero width:
-				draw_line (line => line, width => zero, 
+				draw_line (line => line, width => zero,
 						   stroke => DO_STROKE);
 			end draw;
-			
-			
+
+
 		begin
 			-- The calculated path may require a bend point.
 			-- Set/clear the "bended" flag of the line being drawn.
 			live_path.bended := path.bended;
 
-			
+
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
 			if path.bended = NO then
-				
+
 				set_A (line, path.A);
 				set_B (line, path.B);
 
@@ -555,26 +555,26 @@ package body et_canvas_board is
 
 				set_A (line, path.A);
 				set_B (line, path.bend_point);
-				
+
 				draw;
 
 				set_A (line, path.bend_point);
 				set_B (line, path.B);
-				
+
 				draw;
-				
+
 			end if;
 		end compute_and_draw;
 
-		
+
 	begin
-		-- put_line ("draw_live_zone");		
-		
+		-- put_line ("draw_live_zone");
+
 		if verb = VERB_DRAW and edit_process_running
-		and object_layer_category = cat 
-			
-		-- and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
-		
+		and object_layer_category = cat
+
+		-- and (noun = NOUN_ZONE or noun = NOUN_OUTLINE)
+
 		then
 			compute_and_draw (
 				A	=> live_path.A, -- start of path
@@ -588,50 +588,50 @@ package body et_canvas_board is
 
 
 
-	
 
 
 
-	
+
+
 	use et_pcb_signal_layers;
 
 	-- The top conductor layer 1 is always there:
 	top_layer : constant type_signal_layer := type_signal_layer'first;
-	
-	-- The deepest conductor layer towards bottom 
+
+	-- The deepest conductor layer towards bottom
 	-- is defined by the layer stack.
 	-- The bottom layer will be set when the board is redrawn:
 	bottom_layer : type_signal_layer;
 
 
-	function is_double_layer_board 
+	function is_double_layer_board
 		return boolean
 	is begin
 		if bottom_layer = 2 then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_double_layer_board;
 
-	
-	
+
+
 	function is_inner_layer (
-		layer : in type_signal_layer) 
-		return boolean 
+		layer : in type_signal_layer)
+		return boolean
 	is begin
 		if layer > top_layer and layer < bottom_layer then
 			return true;
 		else
 			return false;
 		end if;
-	end is_inner_layer;	
-	
+	end is_inner_layer;
 
-	
+
+
 	-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
 	function face_to_layer (
-		f : in type_face) 
+		f : in type_face)
 		return type_signal_layer
 	is begin
 		case f is
@@ -640,12 +640,12 @@ package body et_canvas_board is
 		end case;
 	end face_to_layer;
 
-	
-
-	
 
 
-	
+
+
+
+
 	-- This procedure draws a single terminal.
 	-- Due to the complexity of the code, this procedure
 	-- is separate. It is called by procedure draw_packages:
@@ -658,16 +658,16 @@ package body et_canvas_board is
 		flip				: in boolean)
 		is separate;
 
-		
+
 	procedure draw_packages is separate;
 
 
-	
+
 	procedure draw_conductors is separate;
 	procedure draw_netchangers is separate;
 	procedure draw_route_restrict is separate;
 	procedure draw_via_restrict is separate;
-	
+
 	procedure draw_outline is separate;
 
 	procedure draw_silkscreen (
@@ -684,89 +684,89 @@ package body et_canvas_board is
 
 	procedure draw_stencil (
 		face	: in type_face) is separate;
-	
+
 	procedure draw_drawing_frame is separate;
-	
-	
-	procedure draw_board is 
+
+
+	procedure draw_board is
 		use et_display.board;
 
-		
+
 		procedure draw_conductor_layers is begin
 			draw_route_restrict;
 			draw_via_restrict;
 			draw_conductors;
 			draw_netchangers;
 		end draw_conductor_layers;
-		
-		
+
+
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
 				draw_silkscreen (BOTTOM);
 			end if;
-   
+
 			if silkscreen_enabled (TOP) then
 				draw_silkscreen (TOP);
 			end if;
 		end draw_silkscreen;
 
-		
+
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
 				draw_assy (BOTTOM);
 			end if;
-   
+
 			if assy_doc_enabled (TOP) then
 				draw_assy (TOP);
 			end if;
 		end draw_assy_doc;
 
-		
+
 		procedure draw_keepout is begin
 			if keepout_enabled (BOTTOM) then
 				draw_keepout (BOTTOM);
 			end if;
-   
+
 			if keepout_enabled (TOP) then
 				draw_keepout (TOP);
 			end if;
 		end draw_keepout;
 
-		
+
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
 				draw_stop (BOTTOM);
 			end if;
-   
+
 			if stop_mask_enabled (TOP) then
 				draw_stop (TOP);
 			end if;
 		end draw_stop_mask;
 
-		
+
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
 				draw_stencil (BOTTOM);
 			end if;
-   
+
 			if stencil_enabled (TOP) then
 				draw_stencil (TOP);
 			end if;
 		end draw_stencil;
 
-		
+
 		procedure draw_board_contour is begin
-			if board_contour_enabled then		
+			if board_contour_enabled then
 				draw_outline;
 			end if;
 		end draw_board_contour;
-		
+
 
 	begin
 		-- Set the bottom layer:
-		bottom_layer := 
+		bottom_layer :=
 			et_board_ops_signal_layers.get_deepest_conductor_layer (active_module);
-		
+
 		draw_conductor_layers;
 		draw_packages;
 		draw_silkscreen;
@@ -775,16 +775,16 @@ package body et_canvas_board is
 		draw_stop_mask;
 		draw_stencil;
 		draw_board_contour;
-		
-		-- CS draw_submodules			
+
+		-- CS draw_submodules
 	end draw_board;
-	
 
 
 
 
 
-	
+
+
 
 	function cb_draw (
 		canvas		: access gtk_widget_record'class;
@@ -792,12 +792,12 @@ package body et_canvas_board is
 		return boolean
 	is
 		use cairo;
-		
+
 		event_handled : constant boolean := true;
 	begin
 		-- new_line;
 		-- put_line ("cb_draw (board) " & image (clock));
-		
+
 		-- Update the global context:
 		context := context_in;
 
@@ -809,44 +809,44 @@ package body et_canvas_board is
 		-- set_operator (context, cairo_operator_saturate); -- nogo
 		-- set_operator (context, cairo_operator_dest_over); -- nogo
 		-- See www.cairographics.org/operators
-		
+
 		-- Update the global visible_area:
 		visible_area := get_visible_area (canvas);
 		-- put_line (" visible " & to_string (visible_area));
 
 
-		
+
 		-- Set the background color:
-		set_source_rgb (context, 
+		set_source_rgb (context,
 			color_background.red, color_background.green, color_background.blue);
 
 		paint (context);
 
-		
-		
+
+
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		draw_grid;		
-		
+		draw_grid;
+
 		draw_drawing_origin;
-		draw_drawing_frame;		
-		
+		draw_drawing_frame;
+
 		draw_board;
 
 		draw_cursor;
 		draw_zoom_area;
-		
+
 		return event_handled;
 	end cb_draw;
 
 
 
 
-	
--- UNDO / REDO:	
 
-	procedure undo is 
+-- UNDO / REDO:
+
+	procedure undo is
 		use et_undo_redo;
 		use pac_undo_message;
 		message : pac_undo_message.bounded_string;
@@ -856,13 +856,13 @@ package body et_canvas_board is
 
 		-- Show the undo-message in the status bar:
 		set_status (to_string (message));
-		
+
 		redraw;
 	end undo;
 
 
-	
-	procedure redo is 
+
+	procedure redo is
 		use et_undo_redo;
 		use pac_redo_message;
 		message : pac_redo_message.bounded_string;
@@ -872,20 +872,20 @@ package body et_canvas_board is
 
 		-- Show the redo-message in the status bar:
 		set_status (to_string (message));
-		
+
 		redraw;
 	end redo;
 
 
 
 
-	
 
-	
+
+
 
 -- RESET:
-	
-	procedure reset is 
+
+	procedure reset is
 		use et_modes;
 		use et_modes.board;
 
@@ -899,7 +899,7 @@ package body et_canvas_board is
 		-- Do a level 1 reset. This is a partly reset:
 		procedure level_1 is begin
 			log (text => "level 1", level => log_threshold + 1);
-			
+
 			reset_edit_process_running;
 			reset_request_clarification;
 			reset_finalizing_granted;
@@ -910,13 +910,13 @@ package body et_canvas_board is
 			-- and board editor:
 			et_schematic_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
-			
+
 			et_board_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
-			
+
 			device_add.valid := false;
-			
+
 			reset_preliminary_text; -- after placing a text
 
 			reset_zoom_area; -- abort zoom-to-area operation
@@ -928,18 +928,18 @@ package body et_canvas_board is
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
 			log (text => "level 2", level => log_threshold + 1);
-			
+
 			level_1;
-			
+
 			reset_verb_and_noun;
 			update_mode_display;
-			
+
 			status_enter_verb;
 			clear_out_properties_box;
 			reset_editing_process;
 		end level_2;
-	
-	
+
+
 	begin
 		log (text => "RESET (board)", level => log_threshold + 1);
 		log_indentation_up;
@@ -949,13 +949,13 @@ package body et_canvas_board is
 		-- Count the number of ESC hits:
 		escape_key_pressed;
 
-		
+
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
 
 		case get_escape_counter is
 			when 0 => null;
-			
+
 			when 1 =>
 				case verb is
 					when VERB_PLACE =>
@@ -963,30 +963,30 @@ package body et_canvas_board is
 
 					when others => level_1;
 				end case;
-				
+
 			when 2 =>
 				level_2;
 
 		end case;
 
 		log_indentation_down;
-		
+
 		redraw_board;
 		redraw_schematic;
 	end reset;
-	
 
 
 
 
-	
-	
+
+
+
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
 	is separate;
 
-	
+
 
 	function cb_canvas_key_pressed (
 		canvas	: access gtk_widget_record'class;
@@ -996,9 +996,9 @@ package body et_canvas_board is
 		pragma unreferenced (canvas);
 		event_handled : constant boolean := true;
 
-		use gdk.types;		
+		use gdk.types;
 		use gdk.types.keysyms;
-		
+
 		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
 		key_shift	: constant gdk_modifier_type := event.state and shift_mask;
 		key			: constant gdk_key_type := event.keyval;
@@ -1017,26 +1017,26 @@ package body et_canvas_board is
 
 				when others => null;
 			end case;
-			
+
 			update_grid_display;
 			refresh;
 		end set_grid;
 
-		
+
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		
+
 		put_line ("cb_canvas_key_pressed (board)"
 			& " key " & gdk_key_type'image (event.keyval));
 
-		
-		if key_ctrl = control_mask then 
+
+		if key_ctrl = control_mask then
 			case key is
 				when GDK_KP_ADD | GDK_PLUS =>
 					zoom_on_cursor (ZOOM_IN);
 
-					
+
 				when GDK_KP_SUBTRACT | GDK_MINUS =>
 					zoom_on_cursor (ZOOM_OUT);
 
@@ -1045,8 +1045,8 @@ package body et_canvas_board is
 				when GDK_Shift_L | GDK_Shift_R => -- CS: ALT key ?
 					set_grid;
 
-					
-					
+
+
 				-- Undo the last operation on ctrl-z
 				when GDK_LC_z =>
 					undo;
@@ -1059,8 +1059,8 @@ package body et_canvas_board is
 				when GDK_LC_s | GDK_s =>
 					et_canvas_schematic.save_module;
 
-					
-					
+
+
 				when others => null;
 			end case;
 
@@ -1068,7 +1068,7 @@ package body et_canvas_board is
 			case key is
 				when GDK_ESCAPE =>
 					reset;
-					
+
 				when GDK_Right =>
 					move_cursor (DIR_RIGHT);
 
@@ -1088,23 +1088,23 @@ package body et_canvas_board is
 					move_cursor (snap_to_grid (get_center (visible_area)));
 					refresh;
 
-					
+
 				when others =>
 					key_pressed (key, key_shift);
 			end case;
 		end if;
-		
+
 		return event_handled;
 	end cb_canvas_key_pressed;
 
 
-	
+
 -- MOUSE BUTTON PRESSED
-	
+
 	procedure button_pressed (
 		event	: in type_mouse_event)
 	is separate;
-	
+
 
 	function cb_canvas_button_pressed (
 		canvas	: access gtk_widget_record'class;
@@ -1121,15 +1121,15 @@ package body et_canvas_board is
 		mouse_event := get_mouse_button_pressed_event (event);
 
 		button_pressed (mouse_event);
-		
+
 		return event_handled;
 	end cb_canvas_button_pressed;
 
-	
 
-	
+
+
 -- MOUSE BUTTON RELEASED
-	
+
 	-- CS procedure button_released (
 	-- 	event	: in type_mouse_event)
 	-- is separate;
@@ -1144,27 +1144,27 @@ package body et_canvas_board is
 		event_handled : constant boolean := true;
 
 		unused_mouse_event : type_mouse_event;
-		
+
 		debug : boolean := false;
 	begin
 		-- put_line ("cb_canvas_button_released (board)");
-		
+
 		unused_mouse_event := get_mouse_button_released_event (event);
 
 		 -- CS button_released (mouse_event);
-		
+
 		return event_handled;
 	end cb_canvas_button_released;
 
 
 
-	
+
 -- MOUSE MOVED
-	
+
 	procedure mouse_moved (
-		point	: in type_vector_model) 
+		point	: in type_vector_model)
 	is separate;
-	
+
 
 	function cb_canvas_mouse_moved (
 		canvas	: access gtk_widget_record'class;
@@ -1182,13 +1182,13 @@ package body et_canvas_board is
 		mp := get_mouse_moved_event (event);
 
 		mouse_moved (mp);
-		
+
 		return event_handled;
 	end cb_canvas_mouse_moved;
-	
 
 
-	
+
+
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (board)");
 
@@ -1207,13 +1207,13 @@ package body et_canvas_board is
 	end set_up_canvas;
 
 
-	
-	-- This procedure should be called each time after the current 
-	-- active module changes. 
+
+	-- This procedure should be called each time after the current
+	-- active module changes.
 	-- It removes all property bars (if being displayed) and
-	-- calls other procedures that initialize the values used in 
+	-- calls other procedures that initialize the values used in
 	-- property bars for vias, tracks, ...
-	procedure init_property_bars is 
+	procedure init_property_bars is
 	begin
 		null;
 		-- CS reset_preliminary_via;
@@ -1224,21 +1224,21 @@ package body et_canvas_board is
 	end init_property_bars;
 
 
-	
 
-	
+
+
 
 -- REDRAW / REFRESH:
-	
+
 	procedure redraw_board is begin
 		refresh;
 	end redraw_board;
 
-	
+
 	procedure redraw_schematic is begin
 		et_canvas_schematic.pac_canvas.refresh;
 	end redraw_schematic;
-	
+
 
 	procedure redraw is begin
 		redraw_schematic;
@@ -1250,16 +1250,16 @@ package body et_canvas_board is
 
 -- MODULE SELECT:
 
-	procedure update_board_editor is 
+	procedure update_board_editor is
 		use et_board_ops_grid;
 	begin
-		-- Show the module name in the title bar of 
+		-- Show the module name in the title bar of
 		-- the board editor:
 		set_title_bar (active_module);
 
-		pac_canvas.grid := 
+		pac_canvas.grid :=
 			get_grid (active_module, log_threshold + 1);
-		
+
 		pac_canvas.update_grid_display;
 
 		-- Init defaults of property bars in board:
@@ -1271,25 +1271,25 @@ package body et_canvas_board is
 		-- displayed objects, layers, ... ?
 	end update_board_editor;
 
-	
 
-	
+
+
 
 	procedure connect_console is begin
-		-- Connect to the on_activate signal of the 
+		-- Connect to the on_activate signal of the
 		-- entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate 
+		gtk_entry (console.get_child).on_activate
 			(execute_command'access); -- on hitting enter
 
 	end connect_console;
 
-	
 
 
-	
+
+
 
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string) 
+		script : in pac_script_name.bounded_string)
 	is
 		use ada.directories;
 		use et_project_name;
@@ -1300,34 +1300,34 @@ package body et_canvas_board is
 
 		-- We assemble a command that executes a script
 		-- like "board motor_driver execute script my_script.scr:
-		line_as_typed_by_operator : constant string := 
+		line_as_typed_by_operator : constant string :=
 			to_lower (to_string (DOM_BOARD)) & space &
 			get_active_module & space &
 			"execute" & space & "script" & space &
 			to_string (script); -- "my_script.scr"
-		
+
 		fields : et_string_processing.type_fields_of_line;
 
 		-- The command to be executed:
 		single_cmd : type_single_cmd;
-		
-		-- The command launches a script. Change into the project directory. 
-		-- The current directory is the parent directory of the active project. 
+
+		-- The command launches a script. Change into the project directory.
+		-- The current directory is the parent directory of the active project.
 		-- Example: The current directory is /home/user/my_projects . The directory
 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
 		--  Executing a script requires changing into the project directory blood_sample_analyzer.
 
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
-		
+
 	begin
-		
-		log (text => "executing script (in board domain) " 
-			 & enclose_in_quotes (line_as_typed_by_operator), 
+
+		log (text => "executing script (in board domain) "
+			 & enclose_in_quotes (line_as_typed_by_operator),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		-- Store the command in the command history:
 		console.prepend_text (line_as_typed_by_operator);
 
@@ -1341,7 +1341,7 @@ package body et_canvas_board is
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
 		set_directory (to_string (active_project));
-		
+
 		-- Execute the board command. Since it is launched from
 		-- inside the board editor, its origin must be set accordingly:
 		set_fields (single_cmd, fields);
@@ -1350,14 +1350,14 @@ package body et_canvas_board is
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
-		
+
 		-- The majority of commands requires refreshing the schematic and board drawing.
-		
+
 		-- refresh board and schematic
 		-- CS redraw;
 		--redraw (canvas);
 		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
-		
+
 		-- CS output error message in gui
 
 		-- Once the script has been executed, reset
@@ -1368,21 +1368,21 @@ package body et_canvas_board is
 		-- CS other domains ?
 
 		log_indentation_down;
-		
+
 
 	exception when others =>
-		
+
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
-	
+
 		log_indentation_down;
 	end execute_script_console;
 
 
 
-	
-	
-	procedure execute_command (self : access gtk_entry_record'class) is 
+
+
+	procedure execute_command (self : access gtk_entry_record'class) is
 		use ada.directories;
 		use et_project_name;
 		use et_string_processing;
@@ -1390,17 +1390,17 @@ package body et_canvas_board is
 		use et_domains;
 		use et_project;
 		use et_cmd_sts;
-		
+
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.
 		-- Since we are editing a board, the domain and module name itelf
-		-- are known. By prepending domain and module name here the full 
-		-- command after this declaration will be "board led_driver rename device R1 R2".		
-		line_as_typed_by_operator : constant string := 
+		-- are known. By prepending domain and module name here the full
+		-- command after this declaration will be "board led_driver rename device R1 R2".
+		line_as_typed_by_operator : constant string :=
 			to_lower (to_string (DOM_BOARD)) & space &
 			get_active_module & space &
 			get_text (self);
-		
+
 		fields : et_string_processing.type_fields_of_line;
 
 		-- The command to be executed:
@@ -1408,7 +1408,7 @@ package body et_canvas_board is
 
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
-		-- of the active project. 
+		-- of the active project.
 		-- Example: The curreent directory is /home/user/my_projects . The directory
 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
 		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
@@ -1422,7 +1422,7 @@ package body et_canvas_board is
 
 		-- Store the latest command in the command history:
 		console.prepend_text (get_text (self));
-		
+
 		fields := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1, -- this is the one and only line
@@ -1435,23 +1435,23 @@ package body et_canvas_board is
 		log (text => "changing to directory " &
 				enclose_in_quotes (to_string (active_project)) & " ...",
 			level => log_threshold + 1);
-		
+
 		set_directory (to_string (active_project));
-		
+
 		-- Compose and execute the board command.
 		-- Since it is launched from inside the board editor
 		-- its origin is set accordingly:
 		set_fields (single_cmd, fields);
 		set_origin (single_cmd, ORIGIN_CONSOLE);
 		execute_board_command (active_module, single_cmd, log_threshold);
-		
+
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
 			level => log_threshold + 1);
 
 		set_directory (cur_dir_bak);
-		
-		-- The majority of commands requires refreshing both 
+
+		-- The majority of commands requires refreshing both
 		-- the schematic and board:
 		redraw;
 
@@ -1473,12 +1473,12 @@ package body et_canvas_board is
 
 
 
-	
+
 end et_canvas_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

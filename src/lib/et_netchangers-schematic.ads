@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -60,24 +60,24 @@ package et_netchangers.schematic is
 	use et_schematic_coordinates;
 	use pac_geometry_2;
 
-	
-		
 
-		
+
+
+
 -- PORT NAMES:
 
 	type type_netchanger_port_name is (MASTER, SLAVE);
 	-- CS: use prefix ?
-	
-	
+
+
 	function to_port_name (
-		name : in string) 
+		name : in string)
 		return type_netchanger_port_name;
-		
+
 
 	function to_string (
 		name : in type_netchanger_port_name)
-		return string;	
+		return string;
 
 
 
@@ -86,41 +86,41 @@ package et_netchangers.schematic is
 	port_short_master : constant string := "M";
 	port_short_slave  : constant string := "S";
 
-	
+
 
 	-- Returns the short name of the given port name:
 	function to_short_name (
-		direction : in type_netchanger_port_name) 
+		direction : in type_netchanger_port_name)
 		return string;
 
-	
 
-	
+
+
 	function get_opposide_port (
-		port : in type_netchanger_port_name) 
+		port : in type_netchanger_port_name)
 		return type_netchanger_port_name;
 
 
-	
-		
 
-	
+
+
+
 	function get_direction (
 		netchanger : in type_netchanger)
 		return type_netchanger_direction;
-		
-		
+
+
 	procedure set_direction (
 		netchanger	: in out type_netchanger;
 		direction	: in type_netchanger_direction);
 
-	
+
 	procedure toggle_direction (
 		netchanger	: in out type_netchanger);
 
-		
 
-	
+
+
 
 	-- Converts a netchanger position type to
 	-- the position type (containing x/y/rotation):
@@ -128,22 +128,22 @@ package et_netchangers.schematic is
 		position : in type_netchanger_position_schematic)
 		return type_position;
 
-		
+
 	procedure set_place (
 		position	: in out type_netchanger_position_schematic;
 		place		: in type_vector_model);
-		
+
 
 	procedure move_by (
 		position	: in out type_netchanger_position_schematic;
 		offset		: in type_vector_model);
 
-	
+
 	function get_place (
 		position	: in type_netchanger_position_schematic)
 		return type_vector_model;
 
-		
+
 	procedure set_sheet (
 		position	: in out type_netchanger_position_schematic;
 		sheet		: in type_sheet);
@@ -153,7 +153,7 @@ package et_netchangers.schematic is
 		position	: in out type_netchanger_position_schematic;
 		sheet		: in type_sheet_relative);
 
-	
+
 	function get_sheet (
 		position : in type_netchanger_position_schematic)
 		return type_sheet;
@@ -163,15 +163,15 @@ package et_netchangers.schematic is
 	procedure move_netchanger (
 		netchanger	: in out type_netchanger;
 		offset		: in type_sheet_relative);
-	
+
 
 	function get_rotation (
 		position : in type_netchanger_position_schematic)
 		return type_rotation_0_90;
 
 
-	
-		
+
+
 	function get_position (
 		netchanger : in type_netchanger)
 		return type_netchanger_position_schematic;
@@ -180,19 +180,19 @@ package et_netchangers.schematic is
 	procedure set_position (
 		netchanger 	: in out type_netchanger;
 		position	: in type_netchanger_position_schematic);
-	
-		
+
+
 	procedure set_place (
 		netchanger	: in out type_netchanger;
 		place		: in type_vector_model);
 
-		
+
 
 	function get_rotation (
 		netchanger	: in type_netchanger)
 		return type_rotation_0_90;
-		
-		
+
+
 	procedure set_rotation (
 		netchanger	: in out type_netchanger;
 		rotation	: in type_rotation_0_90);
@@ -200,14 +200,14 @@ package et_netchangers.schematic is
 
 	procedure toggle_rotation (
 		netchanger	: in out type_netchanger);
-		
-		
+
+
 
 	function get_sheet (
 		netchanger	: in type_netchanger)
 		return type_sheet;
 
-		
+
 	procedure set_sheet (
 		netchanger	: in out type_netchanger;
 		sheet		: in type_sheet);
@@ -217,15 +217,15 @@ package et_netchangers.schematic is
 		position : in type_object_position)
 		return type_netchanger_position_schematic;
 
-	
+
 	function to_netchanger_position (
 		sheet		: in et_sheets.type_sheet;
 		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
 		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
 		return type_netchanger_position_schematic;
 
-	
-		
+
+
 	function to_object_position (
 		position : in type_netchanger_position_schematic)
 		return type_object_position;
@@ -235,18 +235,18 @@ package et_netchangers.schematic is
 		position	: in type_netchanger_position_schematic)
 		return string;
 
-	
 
-		
 
-	
 
-		
+
+
+
+
 	function get_position_schematic (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_position_schematic;
 
-		
+
 	function get_rotation (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_rotation_0_90;
@@ -255,18 +255,18 @@ package et_netchangers.schematic is
 	function get_direction (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_direction;
-	
+
 
 	function get_sheet (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_sheet;
 
-		
+
 
 
 -- PORTS:
-	
-	
+
+
 	type type_netchanger_ports is record
 		master	: type_vector_model := position_master_port_default;
 		slave	: type_vector_model := position_slave_port_default;
@@ -276,10 +276,10 @@ package et_netchangers.schematic is
 
 	procedure swap_ports (
 		ports : in out type_netchanger_ports);
-	 
 
-	
-	-- Returns the absolute port positions of 
+
+
+	-- Returns the absolute port positions of
 	-- the given netchanger.
 	-- The position, direction and rotation
 	-- the the netchanger in the schematic is taken into account:
@@ -287,17 +287,17 @@ package et_netchangers.schematic is
 		netchanger : in type_netchanger)
 		return type_netchanger_ports;
 
-		
+
 	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_ports;
 
-	
-	
-	
-	
+
+
+
+
 -- CATCH ZONE:
-	
+
 	-- Returns true if the given netchanger is in
 	-- the given catch zone:
 	function in_catch_zone (
@@ -305,9 +305,9 @@ package et_netchangers.schematic is
 		zone		: in type_catch_zone;
 		sheet		: in type_sheet)
 		return boolean;
-	
 
-	
+
+
 -- AREA:
 
 	-- Returns true if the given netchanger is
@@ -318,8 +318,8 @@ package et_netchangers.schematic is
 		area		: in type_area)
 		return boolean;
 
-	
-	
+
+
 -- STATUS:
 
 
@@ -337,7 +337,7 @@ package et_netchangers.schematic is
 		netchanger : in type_netchanger)
 		return boolean;
 
-		
+
 	procedure set_proposed (
 		netchanger : in out type_netchanger);
 
@@ -349,7 +349,7 @@ package et_netchangers.schematic is
 	procedure clear_moving (
 		netchanger : in out type_netchanger);
 
-	
+
 	-- Sets the selected flag in both schematic
 	-- and board symbol:
 	procedure set_selected (
@@ -359,24 +359,24 @@ package et_netchangers.schematic is
 	procedure clear_selected (
 		netchanger : in out type_netchanger);
 
-	
-	
+
+
 	procedure modify_status (
 		netchanger	: in out type_netchanger;
 		operation	: in type_status_operation);
-		
+
 
 	-- Resets the status flags in both schematic
 	-- and board symbol:
 	procedure reset_status (
 		netchanger	: in out type_netchanger);
 
-	
+
 end et_netchangers.schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

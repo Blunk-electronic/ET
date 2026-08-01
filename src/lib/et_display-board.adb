@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 -- with ada.text_io;			use ada.text_io;
 with ada.strings;
@@ -43,32 +43,32 @@ with ada.strings.unbounded;
 
 package body et_display.board is
 
-	
+
 	function board_contour_enabled return boolean is begin
-		if layers.outline = ON then 
+		if layers.outline = ON then
 			return true;
 		else
 			return false;
 		end if;
 	end board_contour_enabled;
 
-	
+
 
 	procedure enable_board_contour is begin
 		layers.outline := ON;
 	end;
 
 
-	
+
 	procedure disable_board_contour is begin
 		layers.outline := OFF;
 	end;
 
 
-	
-	
+
+
 	function plated_millings_enabled return boolean is begin
-		if layers.plated_millings = ON then 
+		if layers.plated_millings = ON then
 			return true;
 		else
 			return false;
@@ -77,11 +77,11 @@ package body et_display.board is
 
 
 
-	
-	
+
+
 	function silkscreen_enabled (
-		face : in type_face) 
-		return boolean 
+		face : in type_face)
+		return boolean
 	is begin
 		case face is
 			when TOP =>
@@ -93,7 +93,7 @@ package body et_display.board is
 	end silkscreen_enabled;
 
 
-	
+
 	procedure enable_silkscreen (
 		face : in type_face)
 	is begin
@@ -107,11 +107,11 @@ package body et_display.board is
 
 
 
-	
-	
+
+
 	function assy_doc_enabled (
-		face : in type_face) 
-		return boolean 
+		face : in type_face)
+		return boolean
 	is begin
 		case face is
 			when TOP =>
@@ -123,7 +123,7 @@ package body et_display.board is
 	end assy_doc_enabled;
 
 
-	
+
 	procedure enable_assy_doc (
 		face : in type_face)
 	is begin
@@ -136,11 +136,11 @@ package body et_display.board is
 
 
 
-	
-	
+
+
 	function keepout_enabled (
-		face : in type_face) 
-		return boolean 
+		face : in type_face)
+		return boolean
 	is begin
 		case face is
 			when TOP =>
@@ -151,7 +151,7 @@ package body et_display.board is
 		return false;
 	end keepout_enabled;
 
-	
+
 
 	procedure enable_keepout (
 		face : in type_face)
@@ -165,14 +165,14 @@ package body et_display.board is
 
 
 
-	
 
 
 
-	
+
+
 	function stop_mask_enabled (
-		face : in type_face) 
-		return boolean 
+		face : in type_face)
+		return boolean
 	is begin
 		case face is
 			when TOP =>
@@ -183,8 +183,8 @@ package body et_display.board is
 		return false;
 	end stop_mask_enabled;
 
-	
-	
+
+
 	procedure enable_stopmask (
 		face : in type_face)
 	is begin
@@ -196,13 +196,13 @@ package body et_display.board is
 
 
 
-	
 
 
-	
+
+
 	function stencil_enabled (
-		face : in type_face) 
-		return boolean 
+		face : in type_face)
+		return boolean
 	is begin
 		case face is
 			when TOP =>
@@ -214,7 +214,7 @@ package body et_display.board is
 	end stencil_enabled;
 
 
-	
+
 	procedure enable_stencil (
 		face : in type_face)
 	is begin
@@ -228,8 +228,8 @@ package body et_display.board is
 
 
 
-	
-	
+
+
 	function device_origins_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
@@ -244,12 +244,12 @@ package body et_display.board is
 	function ratsnest_enabled return boolean is begin
 		if layers.ratsnest = ON then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end ratsnest_enabled;
-	
-	
+
+
 	function vias_enabled return boolean is begin
 		if layers.vias = ON then
 			return true;
@@ -262,7 +262,7 @@ package body et_display.board is
 
 
 
-	
+
 
 	function conductors_enabled return boolean is begin
 		for r in type_conductors'first .. type_conductors'last loop
@@ -274,10 +274,10 @@ package body et_display.board is
 		return false;
 	end conductors_enabled;
 
-	
+
 	function inner_conductors_enabled (
 		deepest_layer : in type_signal_layer) -- the deepest conductor layer of the board
-		return boolean is 
+		return boolean is
 	begin
 		for r in type_conductors'first + 1 .. deepest_layer - 1 loop
 			if layers.conductors (r) = ON then
@@ -289,9 +289,9 @@ package body et_display.board is
 	end inner_conductors_enabled;
 
 
-	
+
 	function conductor_enabled (
-		layer : in type_signal_layer) 
+		layer : in type_signal_layer)
 	return boolean is begin
 		if layers.conductors (layer) = ON then
 			return true;
@@ -306,15 +306,15 @@ package body et_display.board is
 	is begin
 		layers.conductors (layer) := ON;
 	end enable_conductor;
-	
-	
 
-	
 
-	
-	
-	function route_restrict_enabled 
-		return boolean 
+
+
+
+
+
+	function route_restrict_enabled
+		return boolean
 	is begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
 			if layers.route_restrict (r) = ON then
@@ -325,10 +325,10 @@ package body et_display.board is
 		return false;
 	end route_restrict_enabled;
 
-	
+
 	function route_restrict_layer_enabled (
-		layer : in type_signal_layer) 
-		return boolean 
+		layer : in type_signal_layer)
+		return boolean
 	is begin
 		if layers.route_restrict (layer) = ON then
 			return true;
@@ -337,11 +337,11 @@ package body et_display.board is
 		end if;
 	end route_restrict_layer_enabled;
 
-	
-	
+
+
 	function route_restrict_layer_enabled (
 		layers : in pac_signal_layers.set)
-		return boolean 
+		return boolean
 	is
 		result : boolean := false;
 	begin
@@ -353,14 +353,14 @@ package body et_display.board is
 					exit; -- no need to probe remaining layers
 				end if;
 			end if;
-			
+
 		end loop;
 
 		return result;
 	end route_restrict_layer_enabled;
 
 
-	
+
 	function route_restrict_enabled (
 		face 			: in type_face;
 		deepest_layer	: in type_signal_layer)
@@ -376,7 +376,7 @@ package body et_display.board is
 	end route_restrict_enabled;
 
 
-	
+
 	procedure enable_route_restrict (
 		layer : in type_signal_layer)
 	is begin
@@ -387,8 +387,8 @@ package body et_display.board is
 
 
 
-	
-	
+
+
 
 	function via_restrict_enabled return boolean is begin
 		for r in type_via_restrict'first .. type_via_restrict'last loop
@@ -400,10 +400,10 @@ package body et_display.board is
 		return false;
 	end via_restrict_enabled;
 
-	
+
 	function via_restrict_layer_enabled (
-		layer : in type_signal_layer) 
-		return boolean 
+		layer : in type_signal_layer)
+		return boolean
 	is begin
 		if layers.via_restrict (layer) = ON then
 			return true;
@@ -413,7 +413,7 @@ package body et_display.board is
 	end via_restrict_layer_enabled;
 
 
-	
+
 	procedure enable_via_restrict (
 		layer : in type_signal_layer)
 	is begin
@@ -421,7 +421,7 @@ package body et_display.board is
 	end enable_via_restrict;
 
 
-	
+
 	function via_restrict_layer_enabled (layers : in pac_signal_layers.set)
 		return boolean is
 		result : boolean := false;
@@ -434,7 +434,7 @@ package body et_display.board is
 					exit; -- no need to probe remaining layers
 				end if;
 			end if;
-			
+
 		end loop;
 
 		return result;
@@ -455,9 +455,9 @@ package body et_display.board is
 		return false;
 	end via_restrict_enabled;
 
-	
 
-	
+
+
 	function enabled_conductor_layers return string is
 		use ada.strings;
 		use ada.strings.unbounded;
@@ -476,7 +476,7 @@ package body et_display.board is
 					min := l;
 					in_range := true;
 				end if;
-								
+
 			else -- OFF
 				if in_range then
 					max := l - 1;
@@ -488,22 +488,22 @@ package body et_display.board is
 						ly := ly & to_unbounded_string (to_string (min) &
 								separator_2 & to_string (max) & separator_1);
 					end if;
-					
+
 				end if;
 			end if;
-			
+
 		end loop;
 
 		-- Remove the trailing separator_1:
 		return slice (ly, 1, length (ly) - 1);
 	end enabled_conductor_layers;
 
-	
+
 end et_display.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

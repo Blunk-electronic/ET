@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,7 +44,7 @@ with ada.strings;
 
 package body et_module_names is
 
-	
+
 	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
 		return pac_module_file_name.to_bounded_string (name);
 	end;
@@ -54,7 +54,7 @@ package body et_module_names is
 	end;
 
 
-	
+
 	function remove_extension (file_name : in string) return string is
 	-- Removes from a string like templates/clock_generator.mod the extension so that
 	-- the return would be templates/clock_generator .
@@ -66,36 +66,36 @@ package body et_module_names is
 	end remove_extension;
 
 
-	
+
 	function append_extension (file_name : in string) return string is
 	-- Appends to a string like templates/clock_generator the extension "mod" so that
 	-- the return would be templates/clock_generator.mod .
 	begin
 		return file_name & '.' & module_file_name_extension;
 	end;
-	
 
-	
 
-	
+
+
+
 	function to_string (name : in pac_module_name.bounded_string) return string is begin
 		return pac_module_name.to_string (name);
 	end;
 
-	
+
 	function to_module_name (name : in string) return pac_module_name.bounded_string is begin
 		return pac_module_name.to_bounded_string (name);
 	end;
-	
 
-	
-	
-	
+
+
+
+
 end et_module_names;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

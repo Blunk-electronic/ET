@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,14 +46,14 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 package et_silkscreen.board is
 
 
-	-- Such objects are lines, arcs, circles, contours and 
+	-- Such objects are lines, arcs, circles, contours and
 	-- placeholders for board revision, name, misc ... :
 	type type_silkscreen_board is new type_silkscreen with record
 		placeholders : pac_placeholders_non_conductor.list;
 	end record;
-		
-	-- Because silkscreen is about two sides of the board this 
-	-- composite is required:	
+
+	-- Because silkscreen is about two sides of the board this
+	-- composite is required:
 	type type_silkscreen_both_sides is record
 		top 	: type_silkscreen_board;
 		bottom	: type_silkscreen_board;
@@ -66,13 +66,13 @@ package et_silkscreen.board is
 		line		: in type_silk_line;
 		face		: in type_face);
 
-		
+
 	procedure add_arc (
 		silkscreen	: in out type_silkscreen_both_sides;
 		arc			: in type_silk_arc;
 		face		: in type_face);
 
-		
+
 	procedure add_circle (
 		silkscreen	: in out type_silkscreen_both_sides;
 		circle		: in type_silk_circle;
@@ -81,12 +81,12 @@ package et_silkscreen.board is
 
 
 	-- CS procedure add_zone, add_text, add_placeholder
-	
+
 end et_silkscreen.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

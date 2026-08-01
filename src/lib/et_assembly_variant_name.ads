@@ -43,19 +43,19 @@ with ada.strings.bounded;       	use ada.strings.bounded;
 
 
 package et_assembly_variant_name is
-	
-	-- The name of an assembly variant is a text like "low_cost" 
+
+	-- The name of an assembly variant is a text like "low_cost"
 	-- or "with temperature sensor" or just a number like V345:
 	variant_name_length_max : constant positive := 100;
 
-	
-	package pac_assembly_variant_name is new 
+
+	package pac_assembly_variant_name is new
 		generic_bounded_length (variant_name_length_max);
-	
+
 	use pac_assembly_variant_name;
 
-	
-	-- default : constant pac_assembly_variant_name.bounded_string := 
+
+	-- default : constant pac_assembly_variant_name.bounded_string :=
 		-- pac_assembly_variant_name.to_bounded_string ("");
 	-- CS rename to default_assembly_variant
 	-- CS remove ?
@@ -63,33 +63,33 @@ package et_assembly_variant_name is
 	default_assembly_variant : constant pac_assembly_variant_name.bounded_string :=
 		to_bounded_string ("default");
 
-	
-	
-	-- Returns true if the given variant name is 
+
+
+	-- Returns true if the given variant name is
 	-- the default variant:
 	function is_default (
-		variant : in pac_assembly_variant_name.bounded_string) 
+		variant : in pac_assembly_variant_name.bounded_string)
 		return boolean;
 
-	
+
 	function to_variant (
-		variant : in pac_assembly_variant_name.bounded_string) 
+		variant : in pac_assembly_variant_name.bounded_string)
 		return string;
 	-- CS rename to to_string
 
-	
+
 	function to_variant (
-		variant : in string) 
+		variant : in string)
 		return pac_assembly_variant_name.bounded_string;
 
 
-	
-	
+
+
 end et_assembly_variant_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

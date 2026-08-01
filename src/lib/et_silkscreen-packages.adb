@@ -88,43 +88,43 @@ package body et_silkscreen.packages is
 		silkscreen	: in out type_silkscreen_both_sides;
 		zone		: in type_silk_zone;
 		face		: in type_face)
-	is 
+	is
 		use pac_silk_zones;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (silkscreen.top.zones, zone);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (silkscreen.bottom.zones, zone);
 		end case;
 	end;
 
-	
 
 
-	
+
+
 
 	procedure add_text (
 		silkscreen	: in out type_silkscreen_both_sides;
 		text		: in type_silk_text;
 		face		: in type_face)
-	is 
+	is
 		use pac_silk_texts;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (silkscreen.top.texts, text);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (silkscreen.bottom.texts, text);
 		end case;
 	end;
 
 
-	
+
 
 
 	procedure add_placeholder (
@@ -135,23 +135,23 @@ package body et_silkscreen.packages is
 		use pac_text_placeholders;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (silkscreen.top.placeholders, placeholder);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (silkscreen.bottom.placeholders, placeholder);
 		end case;
 	end;
 
-	
-	
-	
+
+
+
 end et_silkscreen.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

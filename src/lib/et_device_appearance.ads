@@ -41,17 +41,17 @@ package et_device_appearance is
 
 	appearance_prefix	: constant string := ("APPEARANCE_");
 
-	
+
 	type type_appearance is (
 		APPEARANCE_VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
 		APPEARANCE_PCB			-- a device that exists in both schematic and soldered on a pcb
-		-- CS: cable 
+		-- CS: cable
 		-- CS: wire
 		-- ...
 		);
 
 
-	
+
 	-- Returns the given device appearance as string.
 	function to_string (
 		appearance	: in type_appearance;
@@ -59,19 +59,19 @@ package et_device_appearance is
 		return string;
 
 
-	
-	function to_appearance (
-		appearance : in string) 
-		return type_appearance;
-	
 
-	
-		
+	function to_appearance (
+		appearance : in string)
+		return type_appearance;
+
+
+
+
 end et_device_appearance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

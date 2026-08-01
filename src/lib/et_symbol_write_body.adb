@@ -52,21 +52,21 @@ with et_keywords;					use et_keywords;
 
 
 package body et_symbol_write_body is
-	
+
 	use pac_geometry_2;
 
 
-	
-	
-	procedure write_body_lines ( 
+
+
+	procedure write_body_lines (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
 	is
 		use pac_symbol_lines;
-		
-		
+
+
 		procedure write_line (
-			cursor : in pac_symbol_lines.cursor) 
+			cursor : in pac_symbol_lines.cursor)
 		is begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => to_string (get_A (cursor), FORMAT_2));
@@ -75,7 +75,7 @@ package body et_symbol_write_body is
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
+
 	begin
 		log (text => "write body lines", level => log_threshold);
 		log_indentation_up;
@@ -86,20 +86,20 @@ package body et_symbol_write_body is
 	end write_body_lines;
 
 
-	
-	
-	
-	
-	
-	procedure write_body_arcs ( 
+
+
+
+
+
+	procedure write_body_arcs (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
 	is
 		use pac_symbol_arcs;
-		
-		
+
+
 		procedure write_arc (
-			cursor : in pac_symbol_arcs.cursor) 
+			cursor : in pac_symbol_arcs.cursor)
 		is begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (cursor), FORMAT_2));
@@ -110,7 +110,7 @@ package body et_symbol_write_body is
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
-		
+
 	begin
 		log (text => "write body arcs", level => log_threshold);
 		log_indentation_up;
@@ -120,23 +120,23 @@ package body et_symbol_write_body is
 		log_indentation_down;
 	end write_body_arcs;
 
-	
 
-	
-	
-	
 
-	
-	
-	procedure write_body_circles ( 
+
+
+
+
+
+
+	procedure write_body_circles (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
 	is
 		use pac_symbol_circles;
-		
-		
+
+
 		procedure write_circle (
-			cursor : in pac_symbol_circles.cursor) 
+			cursor : in pac_symbol_circles.cursor)
 		is begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
@@ -146,7 +146,7 @@ package body et_symbol_write_body is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
+
 	begin
 		log (text => "write body circles", level => log_threshold);
 		log_indentation_up;
@@ -155,14 +155,14 @@ package body et_symbol_write_body is
 
 		log_indentation_down;
 	end write_body_circles;
-	
-	
+
+
 end et_symbol_write_body;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

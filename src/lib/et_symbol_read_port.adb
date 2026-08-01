@@ -105,7 +105,7 @@ package body et_symbol_read_port is
 		elsif kw = keyword_rotation then -- rotation 90.0
 			expect_field_count (line, 2);
 			port.rotation := to_rotation (f (line, 2));
-			
+
 		elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
 			expect_field_count (line, 2);
 			port.port_name_visible := to_port_name_visible (f (line, 2));
@@ -149,21 +149,21 @@ package body et_symbol_read_port is
 		elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
 			expect_field_count (line, 2);
 			port_output_weakness := to_output_weakness (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_port;
-	
-		
-		
-		
-		
-		
+
+
+
+
+
+
 	procedure insert_port (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		inserted	: boolean;
 		cursor		: pac_symbol_ports.cursor;
 
@@ -176,8 +176,8 @@ package body et_symbol_read_port is
 	begin
 		log (text => "insert port", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		case port_direction is
 			when PASSIVE =>
 				pac_symbol_ports.insert (
@@ -185,7 +185,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> PASSIVE)
 					);
 
@@ -195,7 +195,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> INPUT_ANALOG)
 					);
 
@@ -205,7 +205,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> INPUT_DIGITAL,
 						sensitivity_edge		=> port_sensitivity_edge,
 						sensitivity_level		=> port_sensitivity_level)
@@ -217,7 +217,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> OUTPUT_ANALOG,
 						output_analog_tristate	=> port_output_tristate,
 						output_analog_weakness	=> port_output_weakness)
@@ -229,7 +229,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> OUTPUT_DIGITAL,
 						output_digital_inverted	=> port_output_inverted,
 						output_digital_tristate	=> port_output_tristate,
@@ -242,7 +242,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> BIDIR_DIGITAL,
 						output_inverted			=> port_output_inverted,
 						output_tristate			=> port_output_tristate,
@@ -257,7 +257,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> POWER_OUT,
 						level					=> port_power_level)
 					);
@@ -268,7 +268,7 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> POWER_IN,
 						level					=> port_power_level)
 					);
@@ -279,18 +279,18 @@ package body et_symbol_read_port is
 					key			=> port_name,
 					inserted	=> inserted,
 					position	=> cursor,
-					new_item	=> (port with 
+					new_item	=> (port with
 						direction				=> NOT_CONNECTED)
 					);
 		end case;
 
-		
+
 		-- abort if port name already used:
 		if not inserted then
 			log (SEVERITY_ERROR, "port " & to_string (port_name) & " already in use !", console => true);
 			raise constraint_error;
 		end if;
-		
+
 		-- reset port parameters for next port
 		port					:= (others => <>);
 		port_name				:= to_port_name ("");
@@ -304,15 +304,15 @@ package body et_symbol_read_port is
 
 		log_indentation_down;
 	end insert_port;
-	
 
-	
+
+
 end et_symbol_read_port;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

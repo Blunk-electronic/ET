@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -58,7 +58,7 @@ package body et_board_ops_netchangers is
 
 
 	use pac_netchangers;
-	
+
 
 
 	function get_netchanger_position (
@@ -71,15 +71,15 @@ package body et_board_ops_netchangers is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
 			netchanger_cursor : pac_netchangers.cursor;
-			
-			
+
+
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
-				netchanger	: in type_netchanger) 
+				netchanger	: in type_netchanger)
 			is
 				pragma unreferenced (index);
 			begin
@@ -95,18 +95,18 @@ package body et_board_ops_netchangers is
 			query_element (netchanger_cursor, query_netchanger'access);
 		end query_module;
 
-		
+
 	begin
 		query_element (module_cursor, query_module'access);
-		
+
 		return result;
 	end get_netchanger_position;
 
-	
 
 
-	
-	
+
+
+
 
 	procedure move_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -114,40 +114,40 @@ package body et_board_ops_netchangers is
 		coordinates		: in type_coordinates;
 		point			: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
-			
-			
+
+
 			procedure move (
 				index		: in type_netchanger_id;
-				netchanger	: in out type_netchanger) 
-			is 
+				netchanger	: in out type_netchanger)
+			is
 				pragma unreferenced (index);
 				place : type_vector_model;
 			begin
-				-- calculate the new position 
+				-- calculate the new position
 				case coordinates is
 					when ABSOLUTE =>
-						-- The absolute position is defined 
+						-- The absolute position is defined
 						-- by the given point (x/y):
 						set_place (netchanger, point);
 
 					when RELATIVE =>
-						-- The relative position is the 
-						-- netchanger position BEFORE 
-						-- the move operation shifted by 
+						-- The relative position is the
+						-- netchanger position BEFORE
+						-- the move operation shifted by
 						-- the given point (x/y):
 						place := get_place (netchanger);
 						add (place, point);
@@ -155,8 +155,8 @@ package body et_board_ops_netchangers is
 				end case;
 			end move;
 
-			
-			use et_schematic_ops_netchangers;			
+
+			use et_schematic_ops_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -169,57 +169,57 @@ package body et_board_ops_netchangers is
 
 		end query_module;
 
-		
+
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move netchanger " & to_string (index) 
+					& " move netchanger " & to_string (index)
 					& " to " & to_string (point),
 					 level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " move netchanger " & to_string (index) 
+					& " move netchanger " & to_string (index)
 					& " by " & to_string (point),
 					level => log_threshold);
 		end case;
 
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
 
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-		
+
 		log_indentation_down;
 	end move_netchanger;
 
 
 
 
-	
 
 
 
-	
+
+
 
 
 	procedure set_netchanger_layer (
@@ -234,25 +234,25 @@ package body et_board_ops_netchangers is
 		use et_undo_redo;
 		use et_modes.board;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			netchanger_cursor : pac_netchangers.cursor;
-			
-			
+
+
 			procedure set_layer (
 				index		: in type_netchanger_id;
-				netchanger	: in out type_netchanger) 
+				netchanger	: in out type_netchanger)
 			is
 				pragma unreferenced (index);
 			begin
 				set_layer (netchanger, layer);
 			end set_layer;
 
-			
+
 			use et_schematic_ops_netchangers;
 		begin
 			-- Locate given netchanger in the module:
@@ -266,43 +266,43 @@ package body et_board_ops_netchangers is
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " set netchanger " & to_string (index) 
+			& " set netchanger " & to_string (index)
 			& " signal layer to " & to_string (layer),
 			level => log_threshold);
 
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
-		
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
 
 
-		log_indentation_down;		
+		log_indentation_down;
 	end set_netchanger_layer;
 
 
-	
 
 
-	
-	
+
+
+
 
 	function get_object_name (
 		object : in type_object_netchanger)
@@ -311,8 +311,8 @@ package body et_board_ops_netchangers is
 		return get_netchanger_name (object.netchanger_cursor);
 	end;
 
-	
-	
+
+
 	function get_object_id (
 		object : in type_object_netchanger)
 		return type_netchanger_id
@@ -321,7 +321,7 @@ package body et_board_ops_netchangers is
 	end;
 
 
-	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -332,10 +332,10 @@ package body et_board_ops_netchangers is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is	
+			module		: in out type_generic_module)
+		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_netchanger (
 				name	: in type_netchanger_id;
 				nc		: in out type_netchanger)
@@ -354,13 +354,13 @@ package body et_board_ops_netchangers is
 				end if;
 			end query_netchanger;
 
-			
+
 		begin
 			module.netchangers.update_element (
 				netchanger.netchanger_cursor, query_netchanger'access);
-				
+
 		end query_module;
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -371,9 +371,9 @@ package body et_board_ops_netchangers is
 
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -383,7 +383,7 @@ package body et_board_ops_netchangers is
 
 
 
-	
+
 
 	procedure propose_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -394,47 +394,47 @@ package body et_board_ops_netchangers is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
-			
+
 			procedure query_netchanger (
 				name		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
 			is begin
 				if in_catch_zone (netchanger, catch_zone) then
 					log (text => to_string (name), level => log_threshold + 1);
-					
+
 					set_proposed (netchanger);
 					count := count + 1;
 				end if;
 			end query_netchanger;
 
-			
+
 		begin
 			-- Iterate through the netchangers:
 			while has_element (netchanger_cursor) loop
 				module.netchangers.update_element (
 					netchanger_cursor, query_netchanger'access);
-					
+
 				next (netchanger_cursor);
 			end loop;
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " propose netchangers in " & to_string (catch_zone),
 			level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -445,24 +445,24 @@ package body et_board_ops_netchangers is
 
 
 
-	
+
 
 
 	procedure reset_status_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 		pragma unreferenced (module_name);
-		
+
 			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
 
-			
+
 			procedure query_netchanger (
 				name		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
@@ -471,26 +471,26 @@ package body et_board_ops_netchangers is
 				reset_status (netchanger);
 			end query_netchanger;
 
-			
+
 		begin
 			-- Iterate through the netchangers:
 			while has_element (netchanger_cursor) loop
 				module.netchangers.update_element (
 					netchanger_cursor, query_netchanger'access);
-					
+
 				next (netchanger_cursor);
 			end loop;
 		end query_module;
-		
-		
-		
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " reset status of all netchangers", 
+			& " reset status of all netchangers",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -504,7 +504,7 @@ package body et_board_ops_netchangers is
 
 
 
-	
+
 
 	function get_first_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -514,10 +514,10 @@ package body et_board_ops_netchangers is
 	is
 		result : type_object_netchanger;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_netchangers;
@@ -525,19 +525,19 @@ package body et_board_ops_netchangers is
 
 			proceed : boolean := true;
 
-			
+
 			procedure query_netchanger (
 				name		: in type_netchanger_id;
 				netchanger	: in type_netchanger)
-			is 
-			
+			is
+
 				procedure set_result is begin
 					log (text => " found " & to_string (name), level => log_threshold + 2);
 					result.netchanger_cursor := netchanger_cursor;
 					proceed := false; -- no further probing required
 				end set_result;
 
-			
+
 			begin
 				log (text => to_string (name), level => log_threshold + 1);
 				case flag is
@@ -545,17 +545,17 @@ package body et_board_ops_netchangers is
 						if is_proposed (netchanger) then
 							set_result;
 						end if;
-	
+
 					when SELECTED =>
 						if is_selected (netchanger) then
 							set_result;
 						end if;
-	
+
 					when others => null; -- CS
 				end case;
 			end query_netchanger;
 
-	
+
 		begin
 			-- Iterate through the netchangers:
 			while has_element (netchanger_cursor) and proceed loop
@@ -567,16 +567,16 @@ package body et_board_ops_netchangers is
 				log (text => "nothing found", level => log_threshold);
 			end if;
 		end query_module;
-		
-		
-	
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first netchanger / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -596,7 +596,7 @@ package body et_board_ops_netchangers is
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -604,16 +604,16 @@ package body et_board_ops_netchangers is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
 
 
 
 
-	
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -628,9 +628,9 @@ package body et_board_ops_netchangers is
 
 		log_indentation_up;
 
-		
+
 		-- SEARCH FOR A NETCHANGER:
-		
+
 		-- If a netchanger has been found, then go to the end of this procedure:
 		result_netchanger := get_first_netchanger (module_cursor, flag, log_threshold + 1);
 
@@ -638,10 +638,10 @@ package body et_board_ops_netchangers is
 			-- A netchanger has been found.
 			log (text => get_object_name (result_netchanger),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_NETCHANGER;
 		end if;
-		
+
 		-- If nothing has been found then the category is CAT_VOID.
 		if result_category /= CAT_VOID then
 			goto end_of_search;
@@ -651,29 +651,29 @@ package body et_board_ops_netchangers is
 
 
 	<<end_of_search>>
-		
+
 		-- If nothing has been found then the category is CAT_VOID.
 		log_indentation_down;
 
-		
-		
+
+
 		case result_category is
 			when CAT_VOID =>
 				return (cat => CAT_VOID);
 
 			when CAT_NETCHANGER =>
 				return (CAT_NETCHANGER, result_netchanger);
-				
+
 		end case;
 	end get_first_object;
 
-	
-	
 
 
 
-	
-	
+
+
+
+
 
 
 
@@ -688,43 +688,43 @@ package body et_board_ops_netchangers is
 		-- Here the objects are collected:
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			-- This procedure queries the netchangers
-			-- and collects those which have the given flag set:			
+			-- and collects those which have the given flag set:
 			procedure query_netchangers is
 				use pac_netchangers;
 				netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
-				
+
 
 				-- Queries a unit for its status flag
 				-- and appends it to the result:
 				procedure query_netchanger (
 					name		: in type_netchanger_id;
-					netchanger	: in type_netchanger) 
-				is 
+					netchanger	: in type_netchanger)
+				is
 
 					-- This procedure appends the matching
 					-- netchanger to the result:
 					procedure collect is begin
 						log (text => to_string (name), level => log_threshold + 4);
-						
+
 						result.append ((
 							cat			=> CAT_NETCHANGER,
 							netchanger	=> (netchanger_cursor => netchanger_cursor)));
 
 					end collect;
-						
-					
+
+
 				begin
 					log (text => to_string (name), level => log_threshold + 2);
 					log_indentation_up;
-					
+
 					case flag is
 						when PROPOSED =>
 							if is_proposed (netchanger) then
@@ -737,16 +737,16 @@ package body et_board_ops_netchangers is
 							end if;
 
 						when others => null; -- CS
-					end case;					
+					end case;
 
 					log_indentation_down;
 				end query_netchanger;
 
-				
+
 			begin
 				log (text => "query_netchangers", level => log_threshold + 1);
 				log_indentation_up;
-				
+
 				-- Iterate the netchangers of the module:
 				while has_element (netchanger_cursor) loop
 					query_element (netchanger_cursor, query_netchanger'access);
@@ -755,30 +755,30 @@ package body et_board_ops_netchangers is
 
 				log_indentation_down;
 			end query_netchangers;
-			
-			
+
+
 		begin
 			query_netchangers;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
 
-	
+
 
 
 
@@ -798,12 +798,12 @@ package body et_board_ops_netchangers is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_NETCHANGER =>
 				modify_status (module_cursor, object.netchanger,
 					operation, log_threshold + 1);
-			
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -811,16 +811,16 @@ package body et_board_ops_netchangers is
 		log_indentation_down;
 	end modify_status;
 
-	
-	
-	
-	
+
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -829,13 +829,13 @@ package body et_board_ops_netchangers is
 
 
 
-	
+
 
 
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 
 		procedure reset_devices is begin
 			-- Reset netchangers:
@@ -843,25 +843,25 @@ package body et_board_ops_netchangers is
 			-- CS notes, properties, ...
 		end;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& " reset objects",
 			level => log_threshold);
 
 		log_indentation_up;
-		reset_devices;		
+		reset_devices;
 		log_indentation_down;
 	end reset_status_objects;
 
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -869,7 +869,7 @@ package body et_board_ops_netchangers is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move object " 
+			& " move object "
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -885,13 +885,13 @@ package body et_board_ops_netchangers is
 					coordinates		=> absolute,
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
-				
+
 
 			--when CAT_VOID =>
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
 
@@ -899,14 +899,14 @@ package body et_board_ops_netchangers is
 
 
 
-	
-	
+
+
 
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		error : boolean := false;
 
 		use et_schematic_ops_netchangers;
@@ -926,20 +926,20 @@ package body et_board_ops_netchangers is
 					index			=> get_object_id (object.netchanger),
 					log_threshold	=> log_threshold + 1);
 
-						
+
 			when others =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end show_object;
-	
+
 
 end et_board_ops_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

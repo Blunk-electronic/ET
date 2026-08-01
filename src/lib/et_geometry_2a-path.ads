@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -39,7 +39,7 @@
 generic
 
 package et_geometry_2a.path is
-	
+
 -- PATH FROM POINT TO POINT
 
 	type type_bend_style is (
@@ -52,11 +52,11 @@ package et_geometry_2a.path is
 
 	type type_bended is (NO, YES);
 
-	
+
 	-- When creating a path from one point to another use this type.
 	-- NOTE: This is general stuff. This does apply to all kinds of lines
 	-- from one point to another (nets, documentation, tracks, ...) !
-	-- If no bend, then we have just a start and an end point which 
+	-- If no bend, then we have just a start and an end point which
 	--  will result in a direct line between the two points.
 	-- If bended, then we get an extra point where the bending takes place
 	--  which will result in two lines that connect the two points:
@@ -75,7 +75,7 @@ package et_geometry_2a.path is
 		A, B	: in type_vector_model;
 		style	: in type_bend_style)
 		return type_path;
-	
+
 
 
 	-- When a path is being drawn from one point to another
@@ -93,18 +93,18 @@ package et_geometry_2a.path is
 		bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
 	end record;
 
-	
+
 
 	-- Switches to the next bend style of the given live path:
 	procedure next_bend_style (
 		path : in out type_path_live);
 
-	
+
 end et_geometry_2a.path;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

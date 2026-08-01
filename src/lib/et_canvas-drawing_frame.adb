@@ -50,7 +50,7 @@ with et_text_content;				use et_text_content;
 package body et_canvas.drawing_frame is
 
 
-	
+
 	function to_distance (
 		d : in et_drawing_frame.type_distance)
 		return pac_geometry.type_distance
@@ -59,7 +59,7 @@ package body et_canvas.drawing_frame is
 	end to_distance;
 
 
-	
+
 	function to_vector (
 		p : in et_drawing_frame.type_position)
 		return type_vector_model
@@ -68,7 +68,7 @@ package body et_canvas.drawing_frame is
 	begin
 		r.x := to_distance (p.x);
 		r.y := to_distance (p.y);
-		
+
 		return r;
 	end to_vector;
 
@@ -86,8 +86,8 @@ package body et_canvas.drawing_frame is
 	end to_line;
 
 
-	
-	
+
+
 	procedure draw_frame (
 		frame : in type_frame_general'class)
 	is
@@ -96,11 +96,11 @@ package body et_canvas.drawing_frame is
 		l : pac_geometry.type_line;
 
 		-- Get the width of the frame:
-		w : constant pac_geometry.type_distance_positive := 
+		w : constant pac_geometry.type_distance_positive :=
 			to_distance (frame.size.x);
 
 		-- Get the height of the frame:
-		h : constant pac_geometry.type_distance_positive := 
+		h : constant pac_geometry.type_distance_positive :=
 			to_distance (frame.size.y);
 
 		-- Get the position of the lower-left corner
@@ -110,14 +110,14 @@ package body et_canvas.drawing_frame is
 			rotation => zero_rotation);
 
 		-- Get the width of the border of the frame:
-		b : constant pac_geometry.type_distance_positive := 
+		b : constant pac_geometry.type_distance_positive :=
 			to_distance (frame.border_width);
 
-		
+
 		-- Draws the temporarily line. Takes into account
 		-- the position of the lower-left corner of the frame:
 		procedure draw_line is begin
-			-- The width of 0.0 has no meaning because 
+			-- The width of 0.0 has no meaning because
 			-- the argument do_stroke is false by default
 			-- (see specs of draw_line):
 			draw_line (
@@ -181,21 +181,21 @@ package body et_canvas.drawing_frame is
 		end inner_border;
 
 
-		
+
 		procedure sector_delimiters is
 
-			sector_width  : constant pac_geometry.type_distance_positive := 
+			sector_width  : constant pac_geometry.type_distance_positive :=
 				(w - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.columns);
-			
-			sector_height : constant pac_geometry.type_distance_positive := 
-				(h - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.rows);
-			
 
-			
+			sector_height : constant pac_geometry.type_distance_positive :=
+				(h - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.rows);
+
+
+
 			procedure draw_index (
 				content	: in pac_text_content.bounded_string;
-				pos		: in type_vector_model) 
-			is 
+				pos		: in type_vector_model)
+			is
 				use pac_draw_text;
 				use et_alignment;
 			begin
@@ -207,23 +207,23 @@ package body et_canvas.drawing_frame is
 					-- The anchor point is offset by the position
 					-- of the frame:
 					anchor		=> pos + p.place,
-					
+
 					origin		=> false,
 					rotation	=> 0.0,
 					alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 			end draw_index;
 
-			
+
 			x, y  	: pac_geometry.type_distance_positive;
 			xo, yo	: pac_geometry.type_distance;
-			
 
-			
+
+
 		begin -- draw_sector_delimiters
-			
+
 			set_linewidth (linewidth_1);
 
-			
+
 			-- COLUMN DELIMITERS:
 			-- The lines are drawn upwards, from bottom to top.
 			for i in 1 .. frame.sectors.columns - 1 loop
@@ -233,7 +233,7 @@ package body et_canvas.drawing_frame is
 					+ b; -- offset to the right
 
 				-- LOWER BORDER
-				
+
 				-- draw the line bottom-up:
 				-- lower end:
 				set_A (l, set (
@@ -248,7 +248,7 @@ package body et_canvas.drawing_frame is
 				draw_line;
 
 
-				
+
 				-- UPPER BORDER
 				-- draw the line bottom-up:
 				-- lower end:
@@ -260,11 +260,11 @@ package body et_canvas.drawing_frame is
 				set_B (l, set (
 					x => x,
 					y => h));
-				
+
 				draw_line;
 			end loop;
 
-			
+
 			-- ROW DELIMITERS:
 			-- The lines are drawn from the left to the right.
 			for i in 1 .. frame.sectors.rows - 1 loop
@@ -274,7 +274,7 @@ package body et_canvas.drawing_frame is
 					+ b; -- offset upwards
 
 				-- LEFT BORDER
-				
+
 				-- draw the line from the left to the right:
 				-- left end:
 				set_A (l, set (
@@ -287,7 +287,7 @@ package body et_canvas.drawing_frame is
 					y => y));
 
 				draw_line;
-				
+
 				-- RIGHT BORDER
 				-- draw the line from the left to the right:
 				-- left end:
@@ -299,25 +299,25 @@ package body et_canvas.drawing_frame is
 				set_B (l, set (
 					x => w,
 					y => y));
-				
+
 				draw_line;
 			end loop;
 
 			stroke;
 
-			
-			
+
+
 			-- COLUMN INDEX:
 			y := b / 2;
 
 			-- x requires offset to the right
 			xo := b - (sector_width / 2);
-			
+
 			for i in 1 .. frame.sectors.columns loop
 
 				-- compute x coordinate
 				x := pac_geometry.type_distance_positive (i) * sector_width + xo;
-				
+
 				-- draw index in lower border
 				draw_index (
 					content	=> to_content (to_string (i)),
@@ -329,21 +329,21 @@ package body et_canvas.drawing_frame is
 					pos		=> set (
 								x => x,
 								y => h - y));
-				
+
 			end loop;
 
-			
+
 			-- ROW INDEX:
 			x := b / 2;
 
 			-- y requires offset upwards
 			yo := b - (sector_height / 2);
-			
+
 			for i in 1 .. frame.sectors.rows loop
 
 				-- compute y coordinate
 				y := pac_geometry.type_distance_positive (i) * sector_height + yo;
-				
+
 				-- draw index in left border
 				draw_index (
 					content	=> to_content (to_string (i)),
@@ -355,12 +355,12 @@ package body et_canvas.drawing_frame is
 					pos		=> set (
 								x => w - x,
 								y => y));
-				
+
 			end loop;
-			
+
 		end sector_delimiters;
-		
-		
+
+
 	begin
 		outer_border;
 		inner_border;
@@ -369,7 +369,7 @@ package body et_canvas.drawing_frame is
 
 
 
-	
+
 
 	procedure draw_common_placeholders (
 		placeholders			: in type_placeholders_common;
@@ -384,26 +384,26 @@ package body et_canvas.drawing_frame is
 		-- A temporarily storage place for the
 		-- position of a placeholder:
 		pos : type_vector_model;
-		
+
 	begin
-		-- PROJECT NAME:		
+		-- PROJECT NAME:
 		pos := to_vector (placeholders.project_name.position);
 
 		draw_text (
-			content		=> to_content (to_string (active_project)),					  
+			content		=> to_content (to_string (active_project)),
 			size		=> to_distance (placeholders.project_name.size),
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
-		
-		-- MODULE FILE NAME:		
+
+		-- MODULE FILE NAME:
 		pos := to_vector (placeholders.module_file_name.position);
 
 		draw_text (
@@ -413,14 +413,14 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
-		-- ASSEMBLY VARIANT:		
+		-- ASSEMBLY VARIANT:
 		pos := to_vector (placeholders.active_assembly_variant.position);
 
 		draw_text (
@@ -431,11 +431,11 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
-		
+
 	end draw_common_placeholders;
 
 
@@ -446,19 +446,19 @@ package body et_canvas.drawing_frame is
 	is
 		use et_alignment;
 		use pac_draw_text;
-		
+
 		-- A temporarily storage place for the
 		-- position of a text:
 		pos : type_vector_model;
 
 		use pac_static_texts;
 
-		
+
 		procedure query_text (c : in pac_static_texts.cursor) is
 			text : type_static_text renames element (c);
 		begin
 			pos := to_vector (text.position);
-			
+
 			draw_text (
 				content		=> text.content,
 				size		=> to_distance (text.size),
@@ -466,36 +466,36 @@ package body et_canvas.drawing_frame is
 
 				-- The anchor point is offset by the position of the title block:
 				anchor		=> pos + title_block_position.place,
-				
+
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end query_text;
-		
+
 	begin
 		iterate (texts, query_text'access);
 	end draw_static_texts;
 
 
-	
+
 
 	procedure draw_basic_meta_information (
 		meta					: in type_meta_basic;
-		placeholders			: in type_placeholders_basic;									  
+		placeholders			: in type_placeholders_basic;
 		title_block_position	: in pac_geometry.type_position)
 	is
 		use et_time;
 		use et_alignment;
 		use pac_draw_text;
-		
+
 		-- A temporarily storage place for the
 		-- position of a text:
 		pos : type_vector_model;
-		
+
 	begin
 		-- COMPANY NAME:
 		pos := to_vector (placeholders.company.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.company)),
 			size		=> to_distance (placeholders.company.size),
@@ -503,7 +503,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -512,7 +512,7 @@ package body et_canvas.drawing_frame is
 
 		-- CUSTOMER NAME:
 		pos := to_vector (placeholders.customer.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.customer)),
 			size		=> to_distance (placeholders.customer.size),
@@ -520,7 +520,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -529,7 +529,7 @@ package body et_canvas.drawing_frame is
 
 		-- PARTCODE:
 		pos := to_vector (placeholders.partcode.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.partcode)),
 			size		=> to_distance (placeholders.partcode.size),
@@ -537,7 +537,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -546,7 +546,7 @@ package body et_canvas.drawing_frame is
 
 		-- DRAWING NUMBER:
 		pos := to_vector (placeholders.drawing_number.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.drawing_number)),
 			size		=> to_distance (placeholders.drawing_number.size),
@@ -554,16 +554,16 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
-		
+
 
 		-- REVISION:
 		pos := to_vector (placeholders.revision.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.revision)),
 			size		=> to_distance (placeholders.revision.size),
@@ -571,7 +571,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -580,7 +580,7 @@ package body et_canvas.drawing_frame is
 
 		-- DRAWN BY:
 		pos := to_vector (placeholders.drawn_by.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.drawn_by)),
 			size		=> to_distance (placeholders.drawn_by.size),
@@ -588,7 +588,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -597,7 +597,7 @@ package body et_canvas.drawing_frame is
 
 		-- CHECKED BY:
 		pos := to_vector (placeholders.checked_by.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.checked_by)),
 			size		=> to_distance (placeholders.checked_by.size),
@@ -605,7 +605,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -615,7 +615,7 @@ package body et_canvas.drawing_frame is
 
 		-- APPROVED BY:
 		pos := to_vector (placeholders.approved_by.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string (meta.approved_by)),
 			size		=> to_distance (placeholders.approved_by.size),
@@ -623,7 +623,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -633,7 +633,7 @@ package body et_canvas.drawing_frame is
 
 		-- DRAWN DATE:
 		pos := to_vector (placeholders.drawn_date.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string_YMD (meta.drawn_date)),
 			size		=> to_distance (placeholders.drawn_date.size),
@@ -641,7 +641,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -651,7 +651,7 @@ package body et_canvas.drawing_frame is
 
 		-- CHECKED DATE:
 		pos := to_vector (placeholders.checked_date.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string_YMD (meta.checked_date)),
 			size		=> to_distance (placeholders.checked_date.size),
@@ -659,7 +659,7 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -668,7 +668,7 @@ package body et_canvas.drawing_frame is
 
 		-- APPROVED DATE:
 		pos := to_vector (placeholders.approved_date.position);
-		
+
 		draw_text (
 			content		=> to_content (to_string_YMD (meta.approved_date)),
 			size		=> to_distance (placeholders.approved_date.size),
@@ -676,20 +676,20 @@ package body et_canvas.drawing_frame is
 
 			-- The anchor point is offset by the position of the title block:
 			anchor		=> pos + title_block_position.place,
-			
+
 			origin		=> false,
 			rotation	=> 0.0,
 			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
-		
+
 	end draw_basic_meta_information;
 
 
-	
+
 end et_canvas.drawing_frame;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

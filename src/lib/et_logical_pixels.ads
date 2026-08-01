@@ -43,9 +43,9 @@ package et_logical_pixels is
 	-- GTK3 uses the type gdouble for primitive draw operations
 	-- on the canvas. It also uses gdouble for scrollbar settings.
 	-- A point, a vector or a distance is expressed in
-	-- so called "logical pixels".	
+	-- so called "logical pixels".
 
-	-- We derive a new type from glib.gdouble in order to 
+	-- We derive a new type from glib.gdouble in order to
 	-- get a clear separation from things defined in glib:
 	type type_logical_pixels is new glib.gdouble;
 
@@ -54,36 +54,36 @@ package et_logical_pixels is
 	function to_string (
 		lp : in type_logical_pixels)
 		return string;
-	
-	
+
+
 	-- This function converts a gdouble number
 	-- to logical pixels:
 	function to_lp (
 		gd : in glib.gdouble)
 		return type_logical_pixels;
 
-	
+
 	-- This function converts logical pixels
 	-- to a gdouble number:
 	function to_gdouble (
 		lp : in type_logical_pixels)
 		return glib.gdouble;
 
-	
-	-- Use this type for distances, lengths, scrollbar settings, 
+
+	-- Use this type for distances, lengths, scrollbar settings,
 	-- primitive draw operations, ...
 	-- because such things are always positive numbers:
 	subtype type_logical_pixels_positive is type_logical_pixels
 		range 0.0 .. type_logical_pixels'last;
 
-	
+
 	-- This function converts positive logical pixels
 	-- to a positive gdouble number:
 	function to_gdouble_positive (
 		lp : in type_logical_pixels_positive)
 		return glib.gdouble;
 
-	
+
 	-- A point, a location vector or a distance vector is
 	-- defined by this type:
 	type type_logical_pixels_vector is record
@@ -99,14 +99,14 @@ package et_logical_pixels is
 
 
 
-	
+
 	-- Clips the given value by the given limit.
 	-- If the given value is less or equal the limit,
 	-- then value remains unchanged:
 	procedure clip_max (
 		value	: in out type_logical_pixels;
 		limit	: in type_logical_pixels);
-	
+
 	-- Clips the given value by the given limit.
 	-- If the given value is greater or equal the limit,
 	-- then value remains unchanged:
@@ -114,6 +114,6 @@ package et_logical_pixels is
 		value	: in out type_logical_pixels;
 		limit	: in type_logical_pixels);
 
-	
+
 end et_logical_pixels;
 

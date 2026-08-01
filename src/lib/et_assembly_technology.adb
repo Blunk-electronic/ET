@@ -43,22 +43,22 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_assembly_technology is
 
-	
+
 	function to_string (technology : in type_assembly_technology) return string is begin
 		return type_assembly_technology'image (technology);
 	end;
 
-	
+
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
 		return type_assembly_technology'value (technology);
-	end;	
+	end;
 
-	
+
 end et_assembly_technology;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -58,7 +58,7 @@ package body et_stencil is
 	end iterate;
 
 
-	
+
 	function is_proposed (
 		line_cursor	: in pac_stencil_lines.cursor)
 		return boolean
@@ -70,7 +70,7 @@ package body et_stencil is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		line_cursor	: in pac_stencil_lines.cursor)
@@ -84,7 +84,7 @@ package body et_stencil is
 	end is_selected;
 
 
-	
+
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -97,14 +97,14 @@ package body et_stencil is
 			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
 
-	
-	
+
+
 	procedure rotate_lines (
 		lines	: in out pac_stencil_lines.list;
 		angle	: in type_rotation_model)
@@ -117,14 +117,14 @@ package body et_stencil is
 			rotate_line_by (line, angle);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end rotate_lines;
 
-	
-	
+
+
 	procedure move_lines (
 		lines	: in out pac_stencil_lines.list;
 		offset	: in type_vector_model)
@@ -137,17 +137,17 @@ package body et_stencil is
 			move_by (line, offset);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
-	end move_lines;	
+	end move_lines;
 
 
 
 
-	
-	
+
+
 -- ARCS
 
 	procedure iterate (
@@ -164,7 +164,7 @@ package body et_stencil is
 	end iterate;
 
 
-	
+
 	function is_proposed (
 		arc_cursor	: in pac_stencil_arcs.cursor)
 		return boolean
@@ -175,7 +175,7 @@ package body et_stencil is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		arc_cursor	: in pac_stencil_arcs.cursor)
@@ -188,7 +188,7 @@ package body et_stencil is
 		end if;
 	end is_selected;
 
-	
+
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -201,14 +201,14 @@ package body et_stencil is
 			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
-	
-	
+
+
 	procedure rotate_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		angle	: in type_rotation_model)
@@ -221,14 +221,14 @@ package body et_stencil is
 			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end rotate_arcs;
 
-	
-	
+
+
 	procedure move_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		offset	: in type_vector_model)
@@ -241,7 +241,7 @@ package body et_stencil is
 			move_by (arc, offset);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
@@ -249,8 +249,8 @@ package body et_stencil is
 
 
 
-	
-	
+
+
 -- CIRCLES
 
 	procedure iterate (
@@ -267,7 +267,7 @@ package body et_stencil is
 	end iterate;
 
 
-	
+
 	function is_proposed (
 		circle_cursor	: in pac_stencil_circles.cursor)
 		return boolean
@@ -278,7 +278,7 @@ package body et_stencil is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		circle_cursor	: in pac_stencil_circles.cursor)
@@ -291,8 +291,8 @@ package body et_stencil is
 		end if;
 	end is_selected;
 
-	
-	
+
+
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -305,14 +305,14 @@ package body et_stencil is
 			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
 	end mirror_circles;
-	
 
-	
+
+
 	procedure rotate_circles (
 		circles	: in out pac_stencil_circles.list;
 		angle	: in type_rotation_model)
@@ -331,8 +331,8 @@ package body et_stencil is
 		circles := result;
 	end rotate_circles;
 
-	
-	
+
+
 	procedure move_circles (
 		circles	: in out pac_stencil_circles.list;
 		offset	: in type_vector_model)
@@ -345,7 +345,7 @@ package body et_stencil is
 			move_by (circle, offset);
 			result.append (circle);
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -353,8 +353,8 @@ package body et_stencil is
 
 
 
-	
-	
+
+
 -- ZONES:
 
 
@@ -370,9 +370,9 @@ package body et_stencil is
 		end if;
 	end is_circular;
 
-	
 
-	
+
+
 	procedure iterate (
 		zones	: in pac_stencil_zones.list;
 		process	: not null access procedure (position : in pac_stencil_zones.cursor);
@@ -386,7 +386,7 @@ package body et_stencil is
 		end loop;
 	end iterate;
 
-	
+
 
 
 	function get_first_open (
@@ -404,13 +404,13 @@ package body et_stencil is
 				result := c;
 			end if;
 		end query_contour;
-			
-	begin		
+
+	begin
 		iterate (zones, query_contour'access, proceed'access);
 		return result;
 	end get_first_open;
 
-	
+
 
 
 	function get_open_zones (
@@ -424,18 +424,18 @@ package body et_stencil is
 		begin
 			if not status.closed then
 				result.append (c);
-			end if;			
+			end if;
 		end query_zone;
-		
+
 	begin
 		zones.iterate (query_zone'access);
 		return result;
 	end get_open_zones;
 
 
-	
-	
-	
+
+
+
 	procedure mirror_contours (
 		contours	: in out pac_stencil_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -448,12 +448,12 @@ package body et_stencil is
 			mirror (contour, axis);
 			result.append (contour);
 		end query_contour;
-		
+
 	begin
 		contours.iterate (query_contour'access);
 		contours := result;
 	end mirror_contours;
-	
+
 
 	procedure rotate_contours (
 		contours	: in out pac_stencil_zones.list;
@@ -473,7 +473,7 @@ package body et_stencil is
 		contours := result;
 	end rotate_contours;
 
-	
+
 	procedure move_contours (
 		contours	: in out pac_stencil_zones.list;
 		offset		: in type_vector_model)
@@ -497,12 +497,6 @@ package body et_stencil is
 
 
 
-	
-
-
-
-
-	
 
 
 
@@ -510,8 +504,14 @@ package body et_stencil is
 
 
 
-	
-	
+
+
+
+
+
+
+
+
 	procedure mirror_stencil_objects (
 		stencil	: in out type_stencil;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -523,7 +523,7 @@ package body et_stencil is
 		mirror_circles (stencil.circles);
 		mirror_contours (stencil.zones);
 	end mirror_stencil_objects;
-	
+
 
 	procedure rotate_stencil_objects (
 		stencil	: in out type_stencil;
@@ -547,40 +547,40 @@ package body et_stencil is
 	end move_stencil_objects;
 
 
-	
+
 	procedure arc_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stencil_arcs;
 		arc : type_stencil_arc;
 	begin
 		arc := element (cursor);
-		log (text => "solder paste (stencil) arc face" & to_string (face) & space 
+		log (text => "solder paste (stencil) arc face" & to_string (face) & space
 			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width),
 			 level => log_threshold);
 	end arc_stencil_properties;
 
-	
+
 	procedure circle_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stencil_circles;
 	begin
-		log (text => "solder paste (stencil) circle face" & to_string (face) & space 
+		log (text => "solder paste (stencil) circle face" & to_string (face) & space
 			& to_string (element (cursor)),
 			level => log_threshold);
 	end;
 
-	
+
 	procedure line_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stencil_lines;
 		line : type_stencil_line;
@@ -592,12 +592,12 @@ package body et_stencil is
 			 level => log_threshold);
 	end line_stencil_properties;
 
-	
+
 end et_stencil;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -37,7 +37,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- This is general stuff used for operations on the
 -- canvas of the schematic.
 -- This related to individual objects like nets, texts, ...
@@ -58,32 +58,32 @@ package et_canvas_schematic_preliminary_object is
 	-- collect preliminary information here.
 
 	object_net_name		: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
-	
+
 	object_device_name	: type_device_name := device_name_default; -- IC45, FD2
 
 	object_unit_name	: pac_unit_name.bounded_string; -- A, B, C
-	
+
 	-- If an object is being moved from one sheet to another.
 	-- This flag notifies the GUI that the object is to be
 	-- drawn on the current visible sheet. This way the
 	-- original sheet number is ignored:
 	object_sheet_changes : boolean := false;
 
-	
+
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the preliminary object at once in a single procedure
-	-- like reset_preliminary_object. 
+	-- like reset_preliminary_object.
 	-- Instead individual small procedures could be useful
 	-- like reset_object_face or reset_object_layer_category.
 
-	
+
 	procedure dummy;
-	
+
 end et_canvas_schematic_preliminary_object;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -45,7 +45,7 @@
 package body et_silkscreen.board is
 
 
-	
+
 	procedure add_line (
 		silkscreen	: in out type_silkscreen_both_sides;
 		line		: in type_silk_line;
@@ -59,7 +59,7 @@ package body et_silkscreen.board is
 				silkscreen.bottom.lines.append (line);
 		end case;
 	end;
-	
+
 
 
 
@@ -94,12 +94,12 @@ package body et_silkscreen.board is
 	end;
 
 
-	
+
 end et_silkscreen.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

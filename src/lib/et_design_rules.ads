@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,13 +35,13 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_design_rules_board;
 
 
 package et_design_rules is
-	
+
 	-- For the design rules we simply refer to the file where the rules are
 	-- written like JLP_ML4_standard.dru.
 	type type_design_rules is record
@@ -55,19 +55,19 @@ package et_design_rules is
 	function schematic_rules_assigned (
 		rules : in type_design_rules)
 		return boolean;
-	
+
 
 	-- Returns true if rules for the board are set:
 	function board_rules_assigned (
 		rules : in type_design_rules)
 		return boolean;
 
-	
+
 end et_design_rules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

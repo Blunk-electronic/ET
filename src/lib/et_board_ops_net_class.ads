@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 --
 
 with et_generic_modules;			use et_generic_modules;
@@ -52,7 +52,7 @@ package et_board_ops_net_class is
 
 	use pac_generic_modules;
 
-	
+
 
 	-- Returns the settings of the required net class
 	-- of the given module.
@@ -82,7 +82,7 @@ package et_board_ops_net_class is
 		net_cursor		: in pac_nets.cursor)  -- GND, RESET_N, ...
 		return pac_net_class_name.bounded_string;
 
-	
+
 
 	-- Sets the net class of a net.
 	-- 1. Assumes that the specified net exists. Otherwise
@@ -97,12 +97,12 @@ package et_board_ops_net_class is
 
 
 
-	
+
 end et_board_ops_net_class;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

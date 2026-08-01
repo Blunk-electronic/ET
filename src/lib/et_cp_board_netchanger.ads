@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -64,10 +64,10 @@ package et_cp_board_netchanger is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- This procedure parses a command that moves a netchanger.
-	-- Example: "board demo move netchanger 1 absolute 210 100"	
-	-- If the netchanger does not exist, then nothing 
+	-- Example: "board demo move netchanger 1 absolute 210 100"
+	-- If the netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -81,11 +81,11 @@ package et_cp_board_netchanger is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
 	-- This procedure parses a command that sets the
 	-- signal layer of a netchanger.
-	-- Example: "board demo set netchanger 1 layer 3"	
-	-- If the netchanger does not exist, then nothing 
+	-- Example: "board demo set netchanger 1 layer 3"
+	-- If the netchanger does not exist, then nothing
 	-- happens and a warning is output:
 	procedure set_netchanger_layer (
 		module			: in pac_generic_modules.cursor;
@@ -93,12 +93,12 @@ package et_cp_board_netchanger is
 		log_threshold	: in type_log_level);
 
 
-		
+
 end et_cp_board_netchanger;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

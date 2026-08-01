@@ -44,22 +44,22 @@ with ada.characters.handling;		use ada.characters.handling;
 
 
 package body et_coordinates_abs_rel is
-	
+
 
 
 
 	function to_string (
-		coordinates : in type_coordinates) 
-		return string 
+		coordinates : in type_coordinates)
+		return string
 	is begin
 		return space & to_lower (type_coordinates'image (coordinates));
 	end;
 
 
-	
+
 	function to_coordinates (
 		coordinates : in string)
-		return type_coordinates 
+		return type_coordinates
 	is begin
 		return type_coordinates'value (coordinates);
 
@@ -70,7 +70,7 @@ package body et_coordinates_abs_rel is
 	end;
 
 
-	
-	
+
+
 end et_coordinates_abs_rel;
 

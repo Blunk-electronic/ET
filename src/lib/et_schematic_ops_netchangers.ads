@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -67,9 +67,9 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_netchangers is
 
 	use pac_generic_modules;
-	
 
-	
+
+
 	procedure netchanger_not_found (
 		index : in type_netchanger_id);
 
@@ -79,7 +79,7 @@ package et_schematic_ops_netchangers is
 	function get_netchangers (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_netchanger_ids.list;
-		
+
 
 	-- Returns a cursor to the first netchanger
 	-- of the module:
@@ -87,8 +87,8 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_netchangers.cursor;
 
-		
-								 
+
+
 	-- Locates the given netchanger in the module.
 	-- If the netchanger does not exist, then no_element
 	-- is returned:
@@ -96,7 +96,7 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id)
 		return pac_netchangers.cursor;
-		
+
 
 
 	-- Returns the sheet and x/y coordinates of the given
@@ -106,16 +106,16 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id) -- 1,2,3,...
 		return type_object_position;
 
-	
-	
-	-- Returns true if given port of netchanger 
+
+
+	-- Returns true if given port of netchanger
 	-- is connected with any net:
 	function port_connected (
-		module_cursor	: in pac_generic_modules.cursor;	
+		module_cursor	: in pac_generic_modules.cursor;
 		port			: in type_port_netchanger)
 		return boolean;
 
-	
+
 
 	-- Deletes ports of the given netchanger in nets:
 	procedure delete_ports (
@@ -124,7 +124,7 @@ package et_schematic_ops_netchangers is
 		sheet			: in type_sheet;		-- the sheet where the netchanger is
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure insert_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;
@@ -133,9 +133,9 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-	
 
-	
+
+
 	-- Drags the net segments according to the given netchanger ports.
 	-- Changes the position of start or end points of segments.
 	-- Does NOT create new connections with segments if a port
@@ -148,28 +148,28 @@ package et_schematic_ops_netchangers is
 		ports_after		: in type_netchanger_ports;	-- the new port positions
 		sheet			: in type_sheet;			-- the sheet to look at
 		log_threshold	: in type_log_level);
-	
 
 
 
 
-	-- Returns the next available netchanger index in 
+
+	-- Returns the next available netchanger index in
 	-- the module:
 	function get_next_netchanger_index (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_netchanger_id;
 
-	
-	
-	
-	-- Returns true if given netchanger exists in 
+
+
+
+	-- Returns true if given netchanger exists in
 	-- the given module:
 	function netchanger_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
 
-	
+
 
 	-- Returns the cursor to the net that is connected
 	-- with the given port.
@@ -180,8 +180,8 @@ package et_schematic_ops_netchangers is
 		port			: in type_netchanger_port_name) -- SLAVE/MASTER
 		return pac_nets.cursor;
 
-	
-	
+
+
 	-- Returns the sheet/x/y position of the given netchanger port:
 	-- CS: This function is currently not used.
 	function get_netchanger_port_position (
@@ -191,7 +191,7 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 		return type_object_position;
 
-	
+
 
 	-- Adds a netchanger to the schematic.
 	-- CS: add parameter for explicitly given index
@@ -200,12 +200,12 @@ package et_schematic_ops_netchangers is
 		place			: in type_object_position; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
-	
 
-	
-	-- Tests whether the given netchanger ports of 
-	-- the netchanger at location are movable. 
+
+
+
+	-- Tests whether the given netchanger ports of
+	-- the netchanger at location are movable.
 	-- The criteria for movement are: no device, no submodule ports there.
 	-- The ports allowed here are the ports-to-be-dragged itself.
 	procedure movable_test (
@@ -215,7 +215,7 @@ package et_schematic_ops_netchangers is
 		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
 		log_threshold		: in type_log_level);
 
-	
+
 	-- Drags the given netchanger within the schematic.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
@@ -234,12 +234,12 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- Moves the given netchanger. 
+	-- Moves the given netchanger.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
 	-- then an exception is raised.
-	-- Disconnects the netchanger from start or end points of net segments 
-	-- BEFORE the move. Connects netchanger ports with 
+	-- Disconnects the netchanger from start or end points of net segments
+	-- BEFORE the move. Connects netchanger ports with
 	-- segment end or start points AFTER the move:
 	procedure move_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -251,9 +251,9 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-		
-		
-	-- Moves all netchangers given number of sheets. 
+
+
+	-- Moves all netchangers given number of sheets.
 	-- Moves only those netchangers which are on the sheet_old.
 	-- IMPORTAT: This procedure only changes the coordinates
 	-- of affected netchangers ! It does not care about ports and
@@ -264,13 +264,13 @@ package et_schematic_ops_netchangers is
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 	-- This procedure is to be used in connection with
-	-- deleting sheets. 
+	-- deleting sheets.
 	--
 	-- IMPORTANT: It should only be called after:
-	-- 1. all strands have been moved via procedure 
+	-- 1. all strands have been moved via procedure
 	--    et_schematic_ops_nets.move_strands_on_sheet_delete
 	--    because this operation has moved the ports of netchangers already.
 	-- 2. all netchangers have been deleted on the sheet to be deleted.
@@ -284,10 +284,10 @@ package et_schematic_ops_netchangers is
 	-- sheets to move anything:
 	procedure move_netchangers_on_sheet_delete (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet_delete	: in type_sheet;	
+		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level);
 
-		
+
 
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
@@ -309,7 +309,7 @@ package et_schematic_ops_netchangers is
 	-- a new netchanger at the given destination.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
-	-- then an exception will be raised.	
+	-- then an exception will be raised.
 	-- The component "rotation" of the given destination
 	-- has no meaning. Only sheet, x/y matters:
 	procedure copy_netchanger (
@@ -325,7 +325,7 @@ package et_schematic_ops_netchangers is
 	-- to index_new.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
-	-- then an exception will be raised.	
+	-- then an exception will be raised.
 	-- If a netchanger with the new index already exists,
 	-- then a warning is output and nothing else happens:
 	procedure rename_netchanger (
@@ -335,13 +335,13 @@ package et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Deletes the netchanger indicated by index.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
 	-- then an exception will be raised.
-	-- Deletes also the ports of the netchanger 
+	-- Deletes also the ports of the netchanger
 	-- in connected net segments:
 	procedure delete_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -351,19 +351,19 @@ package et_schematic_ops_netchangers is
 
 
 	-- Deletes all netchangers on the given sheet:
-	-- Deletes also the portss of the netchangers 
+	-- Deletes also the portss of the netchangers
 	-- in connected net segments:
 	procedure delete_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Dissolves the netchanger indicated by index.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
-	-- then an exception will be raised.	
+	-- then an exception will be raised.
 	-- This operation requires that the netchanger is connected
 	-- with a net on both MASTER and SLAVE port respectively.
 	-- Otherwise a warning is output and nothing else happens:
@@ -373,8 +373,8 @@ package et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Marks the netchanger indicated by index as "selected":
 	procedure show_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -382,12 +382,12 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Changes the direction of the given netchanger
 	-- by swapping MASTER and SLAVE port.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
-	-- then an exception will be raised.	
+	-- then an exception will be raised.
 	-- If toggle is true, then the direction
 	-- toggels between FORWARD and BACKWARD,
 	-- regardless of the given direction:
@@ -398,14 +398,14 @@ package et_schematic_ops_netchangers is
 		direction		: in type_netchanger_direction;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
 
-	
-	
+
+
+
 	type type_object_netchanger is record
 		netchanger_cursor : pac_netchangers.cursor;
 	end record;
-	
+
 
 	-- Returns the full name of the object netchanger:
 	function get_object_name (
@@ -422,14 +422,14 @@ package et_schematic_ops_netchangers is
 	function get_rotation (
 		object : in type_object_netchanger)
 		return type_rotation_0_90;
-	
-	
+
+
 	function get_direction (
 		object : in type_object_netchanger)
 		return type_netchanger_direction;
 
-		
-	
+
+
 	-- Modifies the status flag of a netchanger.
 	-- If the netchanger is set as moving, then its
 	-- original position will be backup
@@ -440,8 +440,8 @@ package et_schematic_ops_netchangers is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Sets the proposed-flag of all netchangers which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of netchangers that have been found:
@@ -451,14 +451,14 @@ package et_schematic_ops_netchangers is
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Resets the status flags of netchanger:
 	procedure reset_status_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Returns the first netchanger according to the given flag.
 	-- If no netchanger has been found,
 	-- then the return is no_element:
@@ -470,16 +470,16 @@ package et_schematic_ops_netchangers is
 
 
 
-	
+
 
 
 -- GROUPS:
 
-	-- Sets "selected" flag of all netchangers that 
+	-- Sets "selected" flag of all netchangers that
 	-- are on the given sheet and in the given area:
 	procedure group_netchangers_in_rectangular_area (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;							  
+		sheet			: in type_sheet;
 		area			: in type_area;
 		log_threshold	: in type_log_level);
 
@@ -489,7 +489,7 @@ package et_schematic_ops_netchangers is
 	-- "selected"-flag set.
 	-- This procedure does not do any commit operations,
 	-- because this is part of a group call.
-	-- It is up to the caller of this procedure to care for 
+	-- It is up to the caller of this procedure to care for
 	-- the commit actions:
 	procedure delete_netchangers_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -520,7 +520,7 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- This procedure clears the "moving" flag of all
 	-- netchangers (regardless whether they are selcted or not):
 	procedure set_all_netchangers_as_not_moving (
@@ -532,12 +532,12 @@ package et_schematic_ops_netchangers is
 	-- Each netchanger that has been found, will be deselected:
 	procedure copy_selected_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;		
+		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
-	
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
@@ -554,7 +554,7 @@ package et_schematic_ops_netchangers is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_NETCHANGER =>
 				netchanger : type_object_netchanger;
 
@@ -562,40 +562,40 @@ package et_schematic_ops_netchangers is
 	end record;
 
 
-	
-	
+
+
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 
-	
+
 	-- Returns the number of items stored in the given list:
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
 
-	
-	
-	
+
+
+
 	-- Returns the first object
 	-- according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
-	
-	
-	-- Collects all objects 
+
+
+	-- Collects all objects
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
-		
-		
+
+
 	-- Modifies the status flag of an object:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -603,8 +603,8 @@ package et_schematic_ops_netchangers is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -612,17 +612,17 @@ package et_schematic_ops_netchangers is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- This is a collective procedure that resets
-	-- the status flags of all 
+	-- the status flags of all
 	-- objects (netchangers, notes, properties, ...):
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Moves an object to the given destination:
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -630,36 +630,36 @@ package et_schematic_ops_netchangers is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Rotates an object by 90 degrees:
 	procedure rotate_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
 
-	-- Sets the start or end points of net segments which are 
+
+	-- Sets the start or end points of net segments which are
 	-- connected with ports of selected netchangers to "moving":
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure dissolve_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -671,32 +671,32 @@ package et_schematic_ops_netchangers is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		new_name		: in type_netchanger_id;
 		-- CS add argument for new names of other kinds of objects
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;		
+		destination		: in type_position;
 		log_threshold	: in type_log_level);
 
 end et_schematic_ops_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

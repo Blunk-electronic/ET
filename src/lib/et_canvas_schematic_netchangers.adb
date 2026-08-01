@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -67,7 +67,7 @@ package body et_canvas_schematic_netchangers is
 
 	procedure show_selected_object (
 		object		: in type_object)
-	is 
+	is
 		praeamble : constant string := "selected object: ";
 	begin
 		case object.cat is
@@ -75,72 +75,72 @@ package body et_canvas_schematic_netchangers is
 				set_status (praeamble & get_object_name (object.netchanger)
 					& ". " & status_next_object_clarification);
 
-				
+
 			when CAT_VOID => null; -- CS
 		end case;
 	end show_selected_object;
 
-	
 
 
 
-	
-	procedure clarify_object is 
+
+
+	procedure clarify_object is
 
 		procedure do_it is
 			use pac_objects;
-			
+
 			-- Gather all proposed objects:
-			proposed_objects : constant pac_objects.list := 
+			proposed_objects : constant pac_objects.list :=
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
 			proposed_object : pac_objects.cursor;
 
 			-- We start with the first object that is currently selected:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 		begin
-			log (text => "proposed objects total " 
+			log (text => "proposed objects total "
 				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
-			
+
 			-- Locate the selected object among the proposed objects:
 			proposed_object := proposed_objects.find (selected_object);
 
 			-- Deselect the the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (CLEAR, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
-			-- If end of list reached, then proceed at 
+			-- If end of list reached, then proceed at
 			-- the begin of the list:
 			if proposed_object = pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
-			
+
 			-- Select the proposed object:
 			modify_status (
-				module_cursor	=> active_module, 
+				module_cursor	=> active_module,
 				operation		=> to_operation (SET, SELECTED),
-				object_cursor	=> proposed_object, 
+				object_cursor	=> proposed_object,
 				log_threshold	=> log_threshold + 1);
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "clarify_object", level => log_threshold + 1);
-		log_indentation_up;		
-		do_it;		
+		log_indentation_up;
+		do_it;
 		log_indentation_down;
 	end clarify_object;
 
@@ -148,15 +148,15 @@ package body et_canvas_schematic_netchangers is
 
 
 
-	
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		
+
 		procedure do_it is
 			-- Get the first selected object:
-			selected_object : constant type_object := 
+			selected_object : constant type_object :=
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
 			-- Gather all selected objects:
@@ -168,11 +168,11 @@ package body et_canvas_schematic_netchangers is
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
-			
+
 			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set_first_selected_object_moving", level => log_threshold);
 		log_indentation_up;
@@ -182,15 +182,15 @@ package body et_canvas_schematic_netchangers is
 
 
 
-	
-	
+
+
 
 
 	procedure find_objects (
 		point : in type_vector_model)
-	is 
+	is
 		use et_modes.schematic;
-		
+
 		-- The total number of objects that have
 		-- been proposed:
 		count_total : natural := 0;
@@ -227,32 +227,32 @@ package body et_canvas_schematic_netchangers is
 
 			-- Propose objects according to current verb and noun:
 			case verb is
-				when VERB_COPY | VERB_DELETE | VERB_DISSOLVE | VERB_DRAG 
-					| VERB_FETCH | VERB_MOVE 
+				when VERB_COPY | VERB_DELETE | VERB_DISSOLVE | VERB_DRAG
+					| VERB_FETCH | VERB_MOVE
 					| VERB_RENAME | VERB_ROTATE | VERB_SET | VERB_SHOW =>
-					
+
 					case noun is
 						when NOUN_NETCHANGER =>
-							
+
 							-- Propose netchangers in the vicinity of the given point:
 							propose_netchangers (
 								module_cursor	=> active_module,
 								catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
-							
+
 						when others =>
 							null; -- CS
 					end case;
-					
-							
+
+
 				when others =>
-					null; -- CS 
+					null; -- CS
 
 			end case;
 		end propose;
-		
-		
+
+
 	begin
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
@@ -262,12 +262,12 @@ package body et_canvas_schematic_netchangers is
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
 
-		
+
 		-- Evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				null; -- nothing to do
-				
+
 			when 1 =>
 				set_edit_process_running;
 				select_first_proposed;
@@ -276,7 +276,7 @@ package body et_canvas_schematic_netchangers is
 					when VERB_MOVE =>
 						set_first_selected_object_moving;
 						-- CS ? set_status (status_move);
-						
+
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
 
@@ -289,30 +289,30 @@ package body et_canvas_schematic_netchangers is
 
 					when others => null; -- CS
 				end case;
-				
+
 				reset_request_clarification;
-				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;
 		end case;
-		
+
 		log_indentation_down;
 	end find_objects;
 
 
-	
 
 
 
-	
+
+
 
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
@@ -327,10 +327,10 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				move_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 
@@ -339,51 +339,51 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
-			
+
+			log_indentation_down;
+
 			set_status (status_move_netchanger);
 			-- CS clear status bar ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to the given point and 
+				-- will be drawn according to the given point and
 				-- the tool position.
 				set_first_selected_object_moving;
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
-				
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
-			
+
 		else
 			-- Finally move the selected device:
 			finalize;
@@ -393,15 +393,15 @@ package body et_canvas_schematic_netchangers is
 
 
 
-	
 
-	
-	
-	
+
+
+
+
 	procedure rotate_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -415,10 +415,10 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rotate_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a netchanger has been rotated, then the board
@@ -426,12 +426,12 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar
 			-- set_status (status_rotate);
@@ -439,7 +439,7 @@ package body et_canvas_schematic_netchangers is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -447,7 +447,7 @@ package body et_canvas_schematic_netchangers is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then rotate the object immediatley.
 			if edit_process_running then
 				finalize;
@@ -469,8 +469,8 @@ package body et_canvas_schematic_netchangers is
 
 	procedure dissolve_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -484,11 +484,11 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the dissolve operation:
 				dissolve_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a netchanger has been deleted, then the board
@@ -496,12 +496,12 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -509,7 +509,7 @@ package body et_canvas_schematic_netchangers is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -517,7 +517,7 @@ package body et_canvas_schematic_netchangers is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then delete the object immediateley.
 			if edit_process_running then
 				finalize;
@@ -530,17 +530,17 @@ package body et_canvas_schematic_netchangers is
 		end if;
 	end dissolve_object;
 
-	
 
-	
-	
-	
+
+
+
+
 
 
 	procedure delete_object (
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -554,11 +554,11 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the delete operation:
 				delete_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a netchanger has been deleted, then the board
@@ -566,12 +566,12 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
@@ -579,7 +579,7 @@ package body et_canvas_schematic_netchangers is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -587,7 +587,7 @@ package body et_canvas_schematic_netchangers is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then delete the object immediateley.
 			if edit_process_running then
 				finalize;
@@ -601,17 +601,17 @@ package body et_canvas_schematic_netchangers is
 	end delete_object;
 
 
-	
-	
 
 
 
-	
-	
+
+
+
+
 	procedure set_netchanger_direction (
 		point	: in type_vector_model)
-	is 
-	
+	is
+
 		-- Changes the direction of the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -625,29 +625,29 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the set-direction operation:
 				set_object_direction (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- This operation does not affect the board.
 				-- No board redrawing required.
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-	
-	
+
+
 	begin
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
@@ -655,7 +655,7 @@ package body et_canvas_schematic_netchangers is
 			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_objects has found only one object,				
+			-- If find_objects has found only one object,
 			-- then delete the object immediateley.
 			if edit_process_running then
 				finalize;
@@ -668,24 +668,24 @@ package body et_canvas_schematic_netchangers is
 		end if;
 
 	end set_netchanger_direction;
-		
 
 
 
 
-	
 
-	
+
+
+
 
 
 -- RENAME:
 
 	procedure cb_rename_new_name_entered (
-		self : access gtk_entry_record'class) 
-	is 
+		self : access gtk_entry_record'class)
+	is
 		name_new : type_netchanger_id;
 
-		
+
 		-- Renames the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -699,32 +699,32 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				rename_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					new_name		=> name_new,
 					log_threshold	=> log_threshold + 1);
 
 				redraw_board;
 				-- CS redraw schematic ?
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
-		
+
+
 	begin
 		name_new := to_netchanger_id (self.get_text); -- 1, 2, 3, ..
 
 		-- CS: Precheck netchanger index ?
 		-- put_line ("new name entered: " & to_string (name_new));
-		
+
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
@@ -738,13 +738,13 @@ package body et_canvas_schematic_netchangers is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
+
 	end cb_rename_new_name_entered;
 
 
-	
 
-	
+
+
 
 
 	procedure cb_rename_window_destroy (
@@ -758,9 +758,9 @@ package body et_canvas_schematic_netchangers is
 
 
 
-	
-	
-	
+
+
+
 
 	procedure show_rename_window is
 
@@ -774,7 +774,7 @@ package body et_canvas_schematic_netchangers is
 		begin
 			-- Get the id of the selected netchanger:
 			netchanger_id := get_object_id (object.netchanger);
-			
+
 			build_rename_window;
 
 			-- Connect the "destroy" signal.
@@ -786,15 +786,15 @@ package body et_canvas_schematic_netchangers is
 			-- Connect the "on_activate" signal (emitted when ENTER pressed)
 			-- of the entry field for the new name:
 			rename_new.on_activate (cb_rename_new_name_entered'access);
-			
+
 			rename_new.grab_focus;
-			
+
 			rename_window.show_all;
 
-			rename_window_open := true;			
+			rename_window_open := true;
 		end do_it;
-		
-		
+
+
 	begin
 		case object.cat is
 			when CAT_NETCHANGER =>
@@ -806,24 +806,24 @@ package body et_canvas_schematic_netchangers is
 	end show_rename_window;
 
 
-	
 
 
 
-	
-	
+
+
+
 	procedure rename_object (
 		point	: in type_vector_model)
 	is begin
 		if not rename_window_open then
-		
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then delete the object immediateley.
 				if edit_process_running then
 					show_rename_window;
@@ -836,19 +836,19 @@ package body et_canvas_schematic_netchangers is
 			end if;
 		end if;
 	end rename_object;
-	
-
-	
-
-	
 
 
-	
+
+
+
+
+
+
 
 	procedure drag_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
+	is
 
 		-- Drags the selected object:
 		procedure finalize is
@@ -866,10 +866,10 @@ package body et_canvas_schematic_netchangers is
 				-- netchangers and connected net segments, a reset
 				-- is required for netchangers and net segments:
 				et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
-				
+
 				drag_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 
@@ -878,12 +878,12 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if; -- CS really required ? Redraw the schematic instead ?
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- clear status bar
 			status_clear;
@@ -891,14 +891,14 @@ package body et_canvas_schematic_netchangers is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
-			
+
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
@@ -906,17 +906,17 @@ package body et_canvas_schematic_netchangers is
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to the given point and 
+				-- will be drawn according to the given point and
 				-- the tool position.
 				set_first_selected_object_moving;
-				
+
 				-- Set the net segments which are
 				-- connected with the selected netchanger as "moving":
 				set_segments_moving (active_module, log_threshold + 1);
@@ -933,16 +933,16 @@ package body et_canvas_schematic_netchangers is
 		end if;
 	end drag_object;
 
-	
+
 
 
 
 
 	procedure set_name_netchanger_add is begin
-		netchanger_add.name_pre := 
+		netchanger_add.name_pre :=
 			get_next_netchanger_index (active_module);
 	end;
-	
+
 
 
 
@@ -952,34 +952,34 @@ package body et_canvas_schematic_netchangers is
 		toggle_rotation (netchanger_add.rotation);
 	end;
 
-	
+
 
 	procedure toggle_direction_netchanger_add is begin
 		toggle_direction (netchanger_add.direction);
 	end;
-		
 
-	
+
+
 	procedure reset_netchanger_add is begin
 		netchanger_add := (others => <>);
 	end;
 
 
-	
-	
-	
 
 
 
 
-	
-	
+
+
+
+
+
 	procedure add_netchanger (
 		place : in type_vector_model)
 	is begin
 		log (text => "add_netchanger", level => log_threshold);
 		log_indentation_up;
-	
+
 		add_netchanger (
 			module_cursor	=> active_module,
 			place			=> to_position (place, active_sheet, netchanger_add.rotation),
@@ -992,21 +992,21 @@ package body et_canvas_schematic_netchangers is
 		-- In case further netchangers are to be added,
 		-- assign the prospective next name:
 		netchanger_add.name_pre := get_next_netchanger_index (active_module);
-		
+
 		log_indentation_down;
 	end add_netchanger;
 
 
 
-	
 
-	
+
+
 
 	procedure copy_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		
+	is
+
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
@@ -1020,11 +1020,11 @@ package body et_canvas_schematic_netchangers is
 			if object.cat /= CAT_VOID then
 
 				reset_status_objects (active_module, log_threshold + 1);
-				
+
 				-- Do the copy operation:
 				copy_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					destination		=> type_position (
 						to_position (point, netchanger_add.rotation)),
 					log_threshold	=> log_threshold + 1);
@@ -1034,25 +1034,25 @@ package body et_canvas_schematic_netchangers is
 				if object.cat = CAT_NETCHANGER then
 					redraw_board;
 				end if;
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			-- clear status bar
 			status_clear;
 
 			-- The preview-object is no longer required:
 			reset_netchanger_add;
-			
+
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
-		
-		-- After the original object has been selected, and the operator is moving 
+
+		-- After the original object has been selected, and the operator is moving
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is
@@ -1067,43 +1067,43 @@ package body et_canvas_schematic_netchangers is
 
 					-- Build the preview of the netchanger that is going to
 					-- be added:
-					netchanger_add.name_pre := 
+					netchanger_add.name_pre :=
 						get_next_netchanger_index (active_module);
 
 					-- Copy the rotation of the selected netchanger
 					-- to the preview:
 					netchanger_add.rotation :=
 						get_rotation (object.netchanger);
-					
+
 					-- Copy the direction of the selected netchanger
 					-- to the preview:
-					netchanger_add.direction := 
+					netchanger_add.direction :=
 						get_direction (object.netchanger);
-					
+
 					-- Signal to the draw procedure that
 					-- the preview of the copy is valid:
 					netchanger_add.valid := true;
-					
+
 				when others => null;
 			end case;
 		end build_preview;
 
-		
-		
+
+
 	begin
 		-- Initially the editing process is not running:
 		if not edit_process_running then
-		
+
 			-- Set the tool being used:
 			object_tool := tool;
-			
+
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
 				find_objects (point);
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_objects has found only one object,				
+				-- If find_objects has found only one object,
 				-- then the flag edit_process_running is set true.
 
 				-- Build the floating "preview-object" that is attached
@@ -1111,7 +1111,7 @@ package body et_canvas_schematic_netchangers is
 				if edit_process_running then
 					build_preview;
 				end if;
-				
+
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
@@ -1126,27 +1126,27 @@ package body et_canvas_schematic_netchangers is
 
 		else
 			finalize;
-		end if;			
+		end if;
 	end copy_object;
 
 
-	
 
 
 
 
 
 
-	
+
+
 
 
 	procedure show_object (
 		position : in type_vector_model)
-	is 
+	is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
-			
+
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1161,8 +1161,8 @@ package body et_canvas_schematic_netchangers is
 
 				-- Show the netchanger:
 				show_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
+					module_cursor	=> active_module,
+					object			=> object,
 					log_threshold	=> log_threshold + 1);
 
 				-- Highlight the netchanger in the board editor:
@@ -1178,26 +1178,26 @@ package body et_canvas_schematic_netchangers is
 						null;
 						-- set_status (get_properties (
 						-- 	device_cursor	=> object.unit.device_cursor,
-						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1,
 						-- 	all_units		=> false,
 						-- 	unit_cursor		=> object.unit.unit_cursor));
 
 					when others =>
 						status_clear;
-				end case;					
+				end case;
 
-				
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
-			log_indentation_down;			
+
+			log_indentation_down;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-		
 
-	begin		
+
+	begin
 		if not clarification_pending then
 
 			-- Locate all objects in the vicinity of the given point:
@@ -1210,7 +1210,7 @@ package body et_canvas_schematic_netchangers is
 			if edit_process_running then
 			 	finalize;
 			end if;
-			
+
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected via procedure clarify_object.
@@ -1218,15 +1218,15 @@ package body et_canvas_schematic_netchangers is
 			finalize;
 		end if;
 	end show_object;
-	
 
-	
-	
+
+
+
 end et_canvas_schematic_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

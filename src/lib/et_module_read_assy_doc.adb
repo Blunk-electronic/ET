@@ -59,11 +59,11 @@ package body et_module_read_assy_doc is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-	
+
 	doc_line : type_doc_line;
 	doc_arc : type_doc_arc;
 	doc_circle : type_doc_circle;
-	
+
 
 
 
@@ -83,7 +83,7 @@ package body et_module_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_A (doc_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -91,24 +91,24 @@ package body et_module_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_B (doc_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			doc_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_doc_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_doc_arc (
 		line	: in type_fields_of_line)
 	is
@@ -123,22 +123,22 @@ package body et_module_read_assy_doc is
 			p := to_vector_model (line, 2);
 			set_A (doc_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (doc_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (doc_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -149,19 +149,19 @@ package body et_module_read_assy_doc is
 			expect_field_count (line, 2);
 			doc_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_doc_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_doc_circle (
 		line	: in type_fields_of_line)
 	is
@@ -173,7 +173,7 @@ package body et_module_read_assy_doc is
 			-- extract the center position starting at field 2 of line
 			set_center (doc_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -184,28 +184,28 @@ package body et_module_read_assy_doc is
 			expect_field_count (line, 2);
 			doc_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_doc_circle;
-	
-	
 
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure insert_doc_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -213,7 +213,7 @@ package body et_module_read_assy_doc is
 			add_line (module.board.assy_doc, doc_line, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -225,21 +225,21 @@ package body et_module_read_assy_doc is
 	end insert_doc_line;
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure insert_doc_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -247,7 +247,7 @@ package body et_module_read_assy_doc is
 			add_arc (module.board.assy_doc, doc_arc, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
@@ -258,23 +258,23 @@ package body et_module_read_assy_doc is
 		reset_arc (doc_arc);
 	end insert_doc_arc;
 
-	
-	
-	
-	
-	
 
-		
+
+
+
+
+
+
 	procedure insert_doc_circle (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -282,25 +282,25 @@ package body et_module_read_assy_doc is
 			add_circle (module.board.assy_doc, doc_circle, face);
 		end do_it;
 
-					
+
 	begin
 		-- CS log messages
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
-		reset_circle (doc_circle);		
+
+		reset_circle (doc_circle);
 	end insert_doc_circle;
-	
-	
-	
+
+
+
 end et_module_read_assy_doc;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

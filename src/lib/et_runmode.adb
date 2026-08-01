@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -41,12 +41,12 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_runmode is
 
-	
+
 	function to_runmode (mode : in string) return type_runmode is begin
 		return type_runmode'value (runmode_prefix & mode);
 	end;
 
-	function to_string (mode : in type_runmode) return string is 
+	function to_string (mode : in type_runmode) return string is
 		s : constant string := type_runmode'image (mode);
 	begin
 		return s (runmode_prefix'length + 1 .. s'last);
@@ -61,12 +61,12 @@ package body et_runmode is
 
 
 
-	
+
 end et_runmode;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

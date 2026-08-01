@@ -48,27 +48,27 @@ with et_commit;
 
 package body et_board_ops_route_restrict is
 
-	
-	
+
+
 	procedure draw_route_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_lines;
 
-		
+
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -77,59 +77,59 @@ package body et_board_ops_route_restrict is
 				new_item	=> line);
 		end;
 
-		
-	begin 
-		log (text => "module " & to_string (module_name) 
-			& " draw route restrict line in layer(s) " 
-			& to_string (line.layers) 
+
+	begin
+		log (text => "module " & to_string (module_name)
+			& " draw route restrict line in layer(s) "
+			& to_string (line.layers)
 			& to_string (line),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- Make sure the targeted layers are available 
+		-- Make sure the targeted layers are available
 		-- according to current layer stack:
 		test_layers (module_cursor, line.layers);
 
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end draw_route_restrict_line;
 
 
 
-	
 
 
-	
 
-	
-	
+
+
+
+
 	procedure draw_route_restrict_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
@@ -139,10 +139,10 @@ package body et_board_ops_route_restrict is
 
 		use pac_route_restrict_arcs;
 
-		
+
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -151,16 +151,16 @@ package body et_board_ops_route_restrict is
 				new_item	=> arc);
 		end;
 
-		
-	begin 
-		log (text => "module " & to_string (module_name) 
-			 & " draw route restrict arc in layer(s) " 
-			 & to_string (arc.layers) 
+
+	begin
+		log (text => "module " & to_string (module_name)
+			 & " draw route restrict arc in layer(s) "
+			 & to_string (arc.layers)
 			 & to_string (arc),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -172,31 +172,31 @@ package body et_board_ops_route_restrict is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end draw_route_restrict_arc;
 
 
 
-	
 
 
 
-	
 
-	
+
+
+
 	procedure draw_route_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
@@ -211,10 +211,10 @@ package body et_board_ops_route_restrict is
 
 		use pac_route_restrict_circles;
 
-		
+
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -223,16 +223,16 @@ package body et_board_ops_route_restrict is
 				new_item	=> circle);
 		end;
 
-		
-	begin 
+
+	begin
 		log (text => "module " & to_string (module_name)
-			 & " draw route restrict circle in layer(s) " 
-			 & to_string (circle.layers) 
+			 & " draw route restrict circle in layer(s) "
+			 & to_string (circle.layers)
 			 & to_string (circle),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -240,35 +240,35 @@ package body et_board_ops_route_restrict is
 		-- available according to current layer stack:
 		test_layers (module_cursor, circle.layers);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end draw_route_restrict_circle;
 
 
-	
 
 
 
 
-	
-	
+
+
+
 	procedure delete_route_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		catch_zone		: in type_catch_zone;
@@ -279,7 +279,7 @@ package body et_board_ops_route_restrict is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -308,7 +308,7 @@ package body et_board_ops_route_restrict is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= pac_route_restrict_arcs.no_element loop					
+				while arc_cursor /= pac_route_restrict_arcs.no_element loop
 					if in_catch_zone (catch_zone, element (arc_cursor)) then
 						delete (module.board.route_restrict.arcs, arc_cursor);
 						deleted := true;
@@ -333,18 +333,18 @@ package body et_board_ops_route_restrict is
 			if not deleted then
 				nothing_found (catch_zone);
 			end if;
-			
+
 		end delete;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_name) 
-			 & " delete route restrict segment" 
+		log (text => "module " & to_string (module_name)
+			 & " delete route restrict segment"
 			 & " in" & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -352,7 +352,7 @@ package body et_board_ops_route_restrict is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
+
 
 		update_element (
 			container	=> generic_modules,
@@ -363,7 +363,7 @@ package body et_board_ops_route_restrict is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_route_restrict;
@@ -373,8 +373,8 @@ package body et_board_ops_route_restrict is
 
 
 
-	
-	
+
+
 
 
 	procedure draw_zone (
@@ -382,12 +382,12 @@ package body et_board_ops_route_restrict is
 		zone			: in type_route_restrict_contour;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -398,18 +398,18 @@ package body et_board_ops_route_restrict is
 		end;
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			& "draw route restrict zone",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -419,19 +419,19 @@ package body et_board_ops_route_restrict is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end draw_zone;
 
 
-	
+
 end et_board_ops_route_restrict;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

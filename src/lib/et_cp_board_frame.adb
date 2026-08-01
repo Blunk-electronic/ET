@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,7 +53,7 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_board_frame is
 
-	
+
 
 	procedure move_drawing_frame (
 		module			: in pac_generic_modules.cursor;
@@ -61,19 +61,19 @@ package body et_cp_board_frame is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		p : et_drawing_frame.type_position;
 		c : type_coordinates;
 	begin
 		log (text => "move drawing frame", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		case cmd_field_count is
 			when 7 => -- board led_driver move frame absolute -20 -50
 				c := to_coordinates (get_field (cmd, 5));   -- relative/absolute
-				
+
 				p.x := et_drawing_frame.to_distance (get_field (cmd, 6));
 				p.y := et_drawing_frame.to_distance (get_field (cmd, 7));
 
@@ -84,13 +84,13 @@ package body et_cp_board_frame is
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
-					commit_design	=> to_commit_design (cmd),					
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others =>
 				command_incomplete (cmd);
 		end case;
@@ -100,12 +100,12 @@ package body et_cp_board_frame is
 	end move_drawing_frame;
 
 
-	
+
 end et_cp_board_frame;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

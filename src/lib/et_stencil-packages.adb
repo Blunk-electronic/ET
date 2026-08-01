@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,25 +48,25 @@ package body et_stencil.packages is
 		stencil	: in out type_stencil_both_sides;
 		zone	: in type_stencil_zone;
 		face	: in type_face)
-	is 
+	is
 		use pac_stencil_zones;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (stencil.top.zones, zone);
 
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (stencil.bottom.zones, zone);
 		end case;
 	end;
 
-	
+
 end et_stencil.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

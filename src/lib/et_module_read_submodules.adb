@@ -73,17 +73,17 @@ package body et_module_read_submodules is
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 
-	
-	
 
-		
+
+
+
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
 		from : in type_field_count_positive)
-		return et_submodules.type_submodule_size 
+		return et_submodules.type_submodule_size
 	is
 		use et_schematic_geometry.pac_geometry_2;
-		
+
 		size : type_submodule_size; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
@@ -102,18 +102,18 @@ package body et_module_read_submodules is
 			else
 				invalid_keyword (f (line, place));
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return size;
 	end to_size;
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure read_submodule (
 		line : in type_fields_of_line)
 	is
@@ -156,10 +156,10 @@ package body et_module_read_submodules is
 	end read_submodule;
 
 
-	
-	
-	
-	
+
+
+
+
 	procedure read_submodule_port (
 		line : in type_fields_of_line)
 	is
@@ -187,10 +187,10 @@ package body et_module_read_submodules is
 	end read_submodule_port;
 
 
-	
 
-	
-	
+
+
+
 	procedure insert_submodule_port (
 		line : in type_fields_of_line)
 	is
@@ -202,7 +202,7 @@ package body et_module_read_submodules is
 	begin
 		-- Test whether the port sits at the edge of the submodule box:
 		if et_submodules.at_edge (submodule_port.position, submodule.size) then
-			
+
 			-- append port to collection of submodule ports
 			et_submodules.pac_submodule_ports.insert (
 				container	=> submodule_ports,
@@ -213,7 +213,7 @@ package body et_module_read_submodules is
 				);
 
 			if not inserted then
-				log (SEVERITY_ERROR, "port " & 
+				log (SEVERITY_ERROR, "port " &
 					to_string (submodule_port_name) & " already used !",
 					console => true
 					);
@@ -223,20 +223,20 @@ package body et_module_read_submodules is
 		else
 			log (SEVERITY_ERROR, "port " & to_string (submodule_port_name)
 				& " is not on the edge of the submodule !");
-			
+
 			raise constraint_error;
 		end if;
 
 		-- clean up for next port
 		submodule_port_name := to_net_name ("");
 		submodule_port := (others => <>);
-		
+
 	end insert_submodule_port;
 
 
-	
-	
-	
+
+
+
 	-- copy collection of ports to submodule
 	procedure assign_submodule_ports is	begin
 		submodule.ports := submodule_ports;
@@ -244,19 +244,19 @@ package body et_module_read_submodules is
 		-- clean up for next collection of ports
 		et_submodules.pac_submodule_ports.clear (submodule_ports);
 	end;
-	
-	
 
-	
+
+
+
 
 	procedure insert_submodule (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure insert_submodule (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			inserted : boolean;
@@ -266,7 +266,7 @@ package body et_module_read_submodules is
 
 			-- CS: notify about missing parameters (by reading the parameter-found-flags)
 			-- If a parameter is missing, the default is assumed. See type_submodule spec.
-			
+
 			pac_submodules.insert (
 				container	=> module.submods,
 				key			=> submodule_name,	-- the instance name like MOT_DRV_3
@@ -275,41 +275,41 @@ package body et_module_read_submodules is
 				position	=> cursor);
 
 			if not inserted then
-				log (SEVERITY_ERROR, "submodule '" & to_string (submodule_name) 
+				log (SEVERITY_ERROR, "submodule '" & to_string (submodule_name)
 					& "' already exists !", console => true);
 				raise constraint_error;
 			end if;
 
-			-- The submodule/template (kept in submodule.file) will be read later once the 
+			-- The submodule/template (kept in submodule.file) will be read later once the
 			-- parent module has been read completely.
-			
+
 			-- clean up for next submodule
 			submodule_name := to_instance_name ("");
-			submodule := (others => <>);			
+			submodule := (others => <>);
 		end insert_submodule;
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert submodule",
 		level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		generic_modules.update_element (module_cursor, insert_submodule'access);
-		log_indentation_down;		
+		log_indentation_down;
 	end insert_submodule;
-	
-	
-		
-	
-	
+
+
+
+
+
 end et_module_read_submodules;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

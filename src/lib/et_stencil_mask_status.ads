@@ -42,7 +42,7 @@
 
 package et_stencil_mask_status is
 
-	
+
 	-- The solder paste status is for compatibility with other CAE systems
 	-- to account for virtual devices like net-ties or netchangers.
 	type type_solder_paste_status is (NONE, APPLIED);
@@ -53,13 +53,13 @@ package et_stencil_mask_status is
 
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
 
-	
-	
+
+
 end et_stencil_mask_status;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

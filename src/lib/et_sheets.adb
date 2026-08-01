@@ -40,7 +40,7 @@
 
 
 package body et_sheets is
-	
+
 	function to_string (sheet : in type_sheet) return string is begin
 		return type_sheet'image (sheet);
 	end;
@@ -52,7 +52,7 @@ package body et_sheets is
 	function relative_to_string (sheet : in type_sheet_relative) return string is begin
 		return type_sheet_relative'image (sheet);
 	end;
-	
+
 	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
 		return type_sheet_relative'value (sheet);
 	end;
@@ -66,12 +66,12 @@ package body et_sheets is
 		sheet := sheet + offset;
 	end;
 
-	
+
 end et_sheets;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

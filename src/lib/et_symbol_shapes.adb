@@ -64,7 +64,7 @@ package body et_symbol_shapes is
 	end;
 
 
-	
+
 
 
 	procedure set_width (
@@ -74,7 +74,7 @@ package body et_symbol_shapes is
 		arc.width := width;
 	end set_width;
 
-	
+
 
 	function get_A (
 		arc : in pac_symbol_arcs.cursor)
@@ -106,21 +106,21 @@ package body et_symbol_shapes is
 	is begin
 		return get_direction (element (arc));
 	end;
-	
+
 
 
 
 
 	procedure reset_arc (
 		arc	: in out type_symbol_arc)
-	is 
+	is
 		a : type_arc;
 	begin
 		arc := (a with type_line_width'first);
 	end reset_arc;
 
-	
-	
+
+
 
 
 
@@ -141,13 +141,13 @@ package body et_symbol_shapes is
 		circle.width := width;
 	end set_width;
 
-	
-	
+
+
 end et_symbol_shapes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -47,45 +47,45 @@ package et_project.configuration is
 	file_length_max : constant positive := 100;
 	package pac_file_name is new generic_bounded_length (file_length_max);
 	use pac_file_name;
-	
+
 	file_extension : constant string := "prj";
-		
+
 
 
 
 	type type_rules is record
 		conventions	: et_conventions.pac_file_name.bounded_string; -- conventions.txt
 	end record;
-	
+
 	type type_configuration is record
 		rules	: type_rules;
-		-- CS evironment_variables 
+		-- CS evironment_variables
 		-- CS last_opened
 	end record;
 
 
 
-	
+
 	-- Here we store the configuration of the current project:
 	project : type_configuration;
-	
+
 
 	-- Returns true if a conventions file has been specified for the project:
 	function conventions_specified return boolean;
 
-	
+
 	-- Reads the project configuration file.
 	-- The current working directory is assumed to be the project directory:
 	procedure read_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
-	
+
 	procedure write_configuration_header;
 	procedure write_configuration_footer;
 
 
-	
+
 	-- Saves the project configuration in the project configuration file.
 	-- The current working directory is assumed to be the parent directory
 	-- of the current project. Call this procedure when saving a whole project.
@@ -95,12 +95,12 @@ package et_project.configuration is
 		log_threshold 	: in type_log_level);
 
 
-	
+
 end et_project.configuration;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

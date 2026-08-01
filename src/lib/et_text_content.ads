@@ -43,8 +43,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_text_content is
 
-	
-	
+
+
 	-- A text may have up to 200 characters which seems sufficient for now.
 	text_length_max : constant natural := 200;
 	package pac_text_content is new generic_bounded_length (text_length_max);
@@ -54,24 +54,24 @@ package et_text_content is
 
 	empty_text_content : constant pac_text_content.bounded_string :=
 		pac_text_content.to_bounded_string ("");
-	
+
 	function is_empty (content : in pac_text_content.bounded_string) return boolean;
 
 
 	-- Clears the given content:
 	procedure clear_content (
 		content : in out pac_text_content.bounded_string);
-	
-	
-	valid_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: "); 
+
+
+	valid_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: ");
 
 
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	function characters_valid (
 		content		: in pac_text_content.bounded_string;
-		characters	: in character_set := valid_characters) 
+		characters	: in character_set := valid_characters)
 		-- CS log_threshold : in type_log_level)
 		return boolean;
 
@@ -83,7 +83,7 @@ package et_text_content is
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters);
 
-	
+
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content is not longer than allowed.
 
@@ -94,7 +94,7 @@ end et_text_content;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

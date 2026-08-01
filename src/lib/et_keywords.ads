@@ -35,14 +35,14 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
 package et_keywords is
-	
-	
-	keyword_active					: constant string := "active";	
+
+
+	keyword_active					: constant string := "active";
 	keyword_add_level				: constant string := "add_level";
 	keyword_alignment				: constant string := "alignment";
 	keyword_anchor					: constant string := "anchor";
@@ -59,7 +59,7 @@ package et_keywords is
 	keyword_center					: constant string := "center";
 	keyword_class					: constant string := "class";
 	keyword_clearance				: constant string := "clearance";
-	keyword_columns					: constant string := "columns";	
+	keyword_columns					: constant string := "columns";
 	keyword_conductor				: constant string := "conductor";
 	keyword_conductor_to_board_edge	: constant string := "conductor_to_board_edge";
 	keyword_connection				: constant string := "connection";
@@ -69,11 +69,11 @@ package et_keywords is
 
 	keyword_default					: constant string := "default";
 	keyword_delta					: constant string := "delta";
-	keyword_description				: constant string := "description";	
+	keyword_description				: constant string := "description";
 	keyword_destination				: constant string := "destination";
-	keyword_device 					: constant string := "device";	
+	keyword_device 					: constant string := "device";
 	keyword_diameter				: constant string := "diameter";
-	keyword_dielectric				: constant string := "dielectric";	
+	keyword_dielectric				: constant string := "dielectric";
 	keyword_direction 				: constant string := "direction";
 	keyword_domain					: constant string := "domain";
 	keyword_dots					: constant string := "dots";
@@ -82,39 +82,39 @@ package et_keywords is
 	keyword_dru						: constant string := "dru";
 
 	keyword_easing					: constant string := "easing";
-	keyword_easing_radius 			: constant string := "easing_radius";	
+	keyword_easing_radius 			: constant string := "easing_radius";
 	keyword_easing_style  			: constant string := "easing_style";
 	keyword_edge_to_edge			: constant string := "edge_to_edge";
 	keyword_end						: constant string := "end";
 	keyword_expansion_min			: constant string := "expansion_min";
-	
-	keyword_face					: constant string := "face";	
+
+	keyword_face					: constant string := "face";
 	keyword_file					: constant string := "file";
 	keyword_fill					: constant string := "fill";
 	keyword_filled 					: constant string := "filled";
-	keyword_fill_style 				: constant string := "fill_style";	
+	keyword_fill_style 				: constant string := "fill_style";
 	keyword_flipped					: constant string := "flipped";
 	keyword_from					: constant string := "from";
 
 	keyword_generic_name			: constant string := "generic_name";
 
-	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_hatching_border_width	: constant string := "hatching_border_width";
+	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";
 	keyword_hatching_line_width		: constant string := "hatching_line_width";
-	keyword_height					: constant string := "height";	
+	keyword_height					: constant string := "height";
 	keyword_horizontal				: constant string := "horizontal";
 
 	keyword_inner					: constant string := "inner";
 	keyword_instance_A				: constant string := "instance_A";
-	keyword_instance_B				: constant string := "instance_B";		
+	keyword_instance_B				: constant string := "instance_B";
 	keyword_instance_name			: constant string := "instance_name";
 	keyword_isolation				: constant string := "isolation"; -- CS rename
-	
+
 	keyword_junction				: constant string := "junction";
 
-	keyword_layer					: constant string := "layer";	
+	keyword_layer					: constant string := "layer";
 	keyword_layers					: constant string := "layers";
-	keyword_layout					: constant string := "layout";	
+	keyword_layout					: constant string := "layout";
 	keyword_length					: constant string := "length";
 	keyword_lines					: constant string := "lines";
 	keyword_linewidth				: constant string := "linewidth";
@@ -122,16 +122,16 @@ package et_keywords is
 
 	keyword_meaning					: constant string := "meaning";
 	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
-	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
+	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";
 	keyword_mirrored				: constant string := "mirrored";
-	keyword_model					: constant string := "model";				
+	keyword_model					: constant string := "model";
 
 	keyword_name					: constant string := "name";
-	keyword_netchanger				: constant string := "netchanger";		
+	keyword_netchanger				: constant string := "netchanger";
 	keyword_net_comparator			: constant string := "net_comparator";
 	keyword_net_comparator_warn_only: constant string := "warn_only";
 	keyword_not_mounted				: constant string := "not_mounted";
-	
+
 	keyword_off						: constant string := "off";
 	keyword_on						: constant string := "on";
 	keyword_on_off					: constant string := "on_off";
@@ -140,22 +140,22 @@ package et_keywords is
 	keyword_outer					: constant string := "outer";
 
 	keyword_package_model 			: constant string := "package_model";
-	keyword_pad_shape				: constant string := "pad_shape";	
+	keyword_pad_shape				: constant string := "pad_shape";
 	keyword_paper_size				: constant string := "paper_size";
-	keyword_partcode 				: constant string := "partcode";	
+	keyword_partcode 				: constant string := "partcode";
 	keyword_path					: constant string := "path";
 	keyword_port					: constant string := "port";
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_position				: constant string := "position";
 	keyword_position_in_board		: constant string := "position_in_board";
-	keyword_position_in_schematic	: constant string := "position_in_schematic";	
+	keyword_position_in_schematic	: constant string := "position_in_schematic";
 	keyword_prefix					: constant string := "prefix";
 	keyword_priority				: constant string := "priority";
 	keyword_purpose_A				: constant string := "purpose_A";
-	keyword_purpose_B				: constant string := "purpose_B";	
+	keyword_purpose_B				: constant string := "purpose_B";
 
-	
-	keyword_radius					: constant string := "radius";	
+
+	keyword_radius					: constant string := "radius";
 	keyword_relief					: constant string := "relief";
 	keyword_restring_inner 			: constant string := "restring_inner";
 	keyword_restring_outer 			: constant string := "restring_outer";
@@ -165,9 +165,9 @@ package et_keywords is
 	keyword_route					: constant string := "route";
 	keyword_rows					: constant string := "rows";
 
-	keyword_scope					: constant string := "scope";	
+	keyword_scope					: constant string := "scope";
 	keyword_sectors					: constant string := "sectors";
-	keyword_sheet					: constant string := "sheet";	
+	keyword_sheet					: constant string := "sheet";
 	keyword_sheet_category			: constant string := "category";
 	keyword_sheet_description		: constant string := "text";
 	keyword_sheet_number			: constant string := "number";
@@ -178,7 +178,7 @@ package et_keywords is
 	keyword_spacing					: constant string := "spacing";
 	keyword_start					: constant string := "start";
 	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
-	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
+	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";
 	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
 	keyword_stop_mask_status		: constant string := "stop_mask_status";
 	keyword_style					: constant string := "style";
@@ -189,7 +189,7 @@ package et_keywords is
 	keyword_template				: constant string := "template";
 	keyword_terminal				: constant string := "terminal";
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
-	keyword_tht_hole				: constant string := "hole";	
+	keyword_tht_hole				: constant string := "hole";
 	keyword_to						: constant string := "to";
 	keyword_tracks					: constant string := "tracks";
 	keyword_track_width_min			: constant string := "track_width_min";
@@ -199,18 +199,18 @@ package et_keywords is
 	keyword_value					: constant string := "value";
 	keyword_variant					: constant string := "variant";
 	keyword_vertical				: constant string := "vertical";
-	keyword_version					: constant string := "version";		
+	keyword_version					: constant string := "version";
 	keyword_via						: constant string := "via";
 	keyword_via_category 			: constant string := "category";
 	keyword_via_drill				: constant string := "drill";
 	keyword_via_drill_min			: constant string := "via_drill_min";
-	keyword_via_restring_min		: constant string := "via_restring_min";	
+	keyword_via_restring_min		: constant string := "via_restring_min";
 	keyword_view_mode				: constant string := "view_mode";
 
 	keyword_width					: constant string := "width";
 	keyword_width_inner_layers		: constant string := "width_inner_layers";
 	keyword_x 						: constant string := "x";
-	keyword_y 						: constant string := "y";		
+	keyword_y 						: constant string := "y";
 
 	keyword_zone					: constant string := "zone";
 
@@ -218,13 +218,13 @@ package et_keywords is
 	-- keyword_via_restring_outer	: constant string := "restring_outer";
 
 
-	
-	
+
+
 end et_keywords;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

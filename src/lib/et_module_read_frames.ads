@@ -56,44 +56,44 @@ package et_module_read_frames is
 	-- Reads the name of the schematic frame template.
 	procedure read_frame_template_schematic (
 		line : in type_fields_of_line);
-		
-		
-		
+
+
+
 	-- Reads the name of the board frame template.
 	-- Reads the position of the frame:
 	procedure read_frame_template_board (
 		line : in type_fields_of_line);
-	
-	
+
+
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description (
 		line : in type_fields_of_line);
-		
+
 
 	procedure add_sheet_description;
-	
-	
-		
-		
+
+
+
+
 	procedure set_frame_schematic (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
+
 	procedure set_frame_board  (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 end et_module_read_frames;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

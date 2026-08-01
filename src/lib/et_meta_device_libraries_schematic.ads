@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -54,18 +54,18 @@ package et_meta_device_libraries_schematic is
 	-- device models (*.dev) live.
 	-- Device models can be everywhere.
 	-- In graphical mode, when adding a device in the schematic
-	-- the operator selects a model. A menu just proposes the 
+	-- the operator selects a model. A menu just proposes the
 	-- paths of preferred libraries.
 	-- The operator is not restricted to those library paths and is
 	-- free to store models wherever it suits her/him.
-	
+
 	-- A preferred directory that contains devices (*.dev)
 	-- like "$HOME/git/BEL/ET_component_library/devices":
 	library_path_length_max : constant positive := 100;
-	
-	package pac_library_path_schematic is new 
+
+	package pac_library_path_schematic is new
 		generic_bounded_length (library_path_length_max);
-	
+
 	use pac_library_path_schematic;
 
 
@@ -73,37 +73,37 @@ package et_meta_device_libraries_schematic is
 	function library_path_exists (
 		lib : in pac_library_path_schematic.bounded_string)
 		return boolean;
-		
-	
+
+
 	function to_library_path (
 		lib : in string)
 		return pac_library_path_schematic.bounded_string;
 
-	
+
 	function to_string (
 		lib : in pac_library_path_schematic.bounded_string)
 		return string;
 
-	
-	package pac_library_paths_schematic is new 
+
+	package pac_library_paths_schematic is new
 		doubly_linked_lists (pac_library_path_schematic.bounded_string);
-	
-	
+
+
 	function get_first (
 		paths : in pac_library_paths_schematic.list)
 		return pac_library_path_schematic.bounded_string;
-		
+
 
 	function is_empty (
 		paths : in pac_library_paths_schematic.list)
 		return boolean;
-		
-	
+
+
 end et_meta_device_libraries_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

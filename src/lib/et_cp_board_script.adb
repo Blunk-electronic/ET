@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,14 +49,14 @@ with et_script_processor;				use et_script_processor;
 
 package body et_cp_board_script is
 
-	
+
 
 	procedure execute_script (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		-- This procedure is to be called when the command is complete.
@@ -79,22 +79,22 @@ package body et_cp_board_script is
 		end command_complete;
 
 
-		
+
 	begin
 		-- CS log message
 
 		case get_origin (cmd) is
 			when ORIGIN_CONSOLE =>
-				
+
 				case cmd_field_count is
-					when 4 => 
+					when 4 =>
 						-- Command is incomplete like "execute script"
 						command_incomplete (cmd);
-						
+
 					when 5 =>
 						-- Command is complete like "execute script demo.scr"
 						command_complete;
-								
+
 					when 6 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
 
@@ -102,33 +102,33 @@ package body et_cp_board_script is
 					when others => null;
 						-- CS should never happen
 						raise constraint_error;
-						
+
 				end case;
 
-				
+
 			when ORIGIN_SCRIPT =>
 				case cmd_field_count is
-					when 5 => 
+					when 5 =>
 						-- Command is complete like "execute script demo.scr"
 						command_complete;
-						
+
 					when 6 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
 
 					when others =>
 						command_incomplete (cmd);
-						
+
 				end case;
 		end case;
 	end execute_script;
 
 
-		
+
 end et_cp_board_script;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

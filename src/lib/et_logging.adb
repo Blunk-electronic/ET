@@ -55,13 +55,13 @@ package body et_logging is
 		return type_log_category'image (cat);
 	end to_string;
 
-	
+
 	function to_log_category (cat : in string) return type_log_category is begin
 		return type_log_category'value (cat);
 	end to_log_category;
 
 
-	
+
 	function to_string (
 		log_level	: in type_log_level;
 		preamble	: in boolean := true) -- if true -> prepend preamble
@@ -77,42 +77,42 @@ package body et_logging is
 
 
 
-	
+
 	procedure log_indentation_up is begin
 		log_indentation := log_indentation + 1;
-		
+
 		exception
 			when constraint_error =>
 				put_line (report_handle, "WARNING ! Maximum log indentation reached !");
 				log_indentation := type_indentation_level'last;
-				
+
 			when others => null;
 	end log_indentation_up;
 
 
-	
 
-	
+
+
 	procedure log_indentation_down is begin
 		log_indentation := log_indentation - 1;
-		
+
 		exception
-			when constraint_error =>				
+			when constraint_error =>
 				put_line (report_handle, "WARNING ! Minimum log indentation reached !");
 				log_indentation := type_indentation_level'first;
-				
+
 			when others => null;
 	end log_indentation_down;
 
 
 
-	
+
 	procedure log_indentation_reset is
 	begin
 		log_indentation := type_indentation_level'first;
 	end log_indentation_reset;
 
-	
+
 -- 	procedure log_indentation_operation (operation : in type_log_identation_operation) is
 -- 	begin
 -- 		null;
@@ -120,7 +120,7 @@ package body et_logging is
 
 
 
-	
+
 	function indent (width : in type_indentation_level) return string is
 	begin
 		return (natural(width) * latin_1.space);
@@ -128,17 +128,17 @@ package body et_logging is
 
 
 
-	
+
 	procedure log (
 		importance	: in type_message_severity := SEVERITY_NORMAL;
 		text		: in string;
 		level		: in type_log_level := type_log_level'first;
-		console		: in boolean := false) 
+		console		: in boolean := false)
 	is
 
 		function to_importance (
 			importance : in type_message_severity)
-			return string 
+			return string
 		is begin
 			case importance is
 				when SEVERITY_NORMAL => return "";
@@ -146,10 +146,10 @@ package body et_logging is
 			end case;
 		end;
 
-		
-		function write_text (indentation_on : in boolean := true) 
-			return string 
-		is 
+
+		function write_text (indentation_on : in boolean := true)
+			return string
+		is
 			fill : constant string := natural (log_indentation) * latin_1.space;
 		begin
 			if indentation_on then
@@ -158,14 +158,14 @@ package body et_logging is
 				return to_importance (importance) & text;
 			end if;
 		end;
-		
+
 	begin -- log
 		-- 		if level < no_logging then
 
 		if importance = SEVERITY_WARNING then
-			increment_warning_counter;			
+			increment_warning_counter;
 		end if;
-		
+
 			if log_level >= level then
 
 				case importance is
@@ -196,16 +196,16 @@ package body et_logging is
 						if console then
 							put_line (standard_output, write_text (false)); -- indentation off
 						end if;
-						
+
 				end case;
-				
+
 			end if;
 
--- 		end if;	
+-- 		end if;
 	end log;
 
-	
-	
+
+
 	function message_warning return string is
 		warning : constant string (1..9) := "WARNING #";
 	begin
@@ -213,40 +213,40 @@ package body et_logging is
 		return warning & trim (warning_count, left) & " : ";
 	end message_warning;
 
-	
+
 	function message_note return string is
 	begin
 		return "NOTE : ";
 	end message_note;
-	
 
 
 
-		
+
+
 	procedure write_message (
 		file_handle : in ada.text_io.file_type;
 		identation : in natural := 0;
-		text : in string; 
-		lf   : in boolean := true;		
+		text : in string;
+		lf   : in boolean := true;
 		file : in boolean := true;
 		console : in boolean := false) is
 	begin
 		if file then
 			put(file_handle, identation * ' ' & text);
-			if lf then 
+			if lf then
 				new_line(file_handle);
 			end if;
 		end if;
 
 		if console then
 			put(standard_output,identation * ' ' & text);
-			if lf then 
+			if lf then
 				new_line(standard_output);
 			end if;
 		end if;
 	end write_message;
 
-	
+
 
 
 
@@ -254,47 +254,47 @@ package body et_logging is
 		warning_counter := warning_counter + 1;
 	end increment_warning_counter;
 
-	
+
 	function warning_count return type_warning_counter is begin
 		return warning_counter;
 	end warning_count;
 
-	
+
 	function no_warnings return boolean is begin
 		if warning_counter = 0 then return true;
 		else return false;
 		end if;
 	end no_warnings;
 
-	
+
 	function warning_count return string is begin
 		return type_warning_counter'image (warning_counter);
 	end warning_count;
 
 
-	
+
 	function log_file_name return string is
 		use et_directory_and_file_ops;
 	begin
-		return compose ( 
+		return compose (
 			containing_directory 	=> compose (work_directory, report_directory),
 			name					=> "messages",
 			extension				=> report_extension
 			);
 	end log_file_name;
 
-	
-	
+
+
 	procedure create_report is
 		use et_system_info;
 		previous_output : ada.text_io.file_type renames current_output;
 	begin
 		create (file => report_handle,
-				mode => out_file, 
+				mode => out_file,
 				name => log_file_name);
 
 		set_output (report_handle);
-		
+
 		put_line (system_name & " " & version & " messages log");
 		put_line (get_date);
 		put_line (metric_system);
@@ -304,55 +304,55 @@ package body et_logging is
 		set_output (previous_output);
 	end create_report;
 
-	
+
 	procedure close_report is
 		use et_system_info;
 	begin
 		if is_open (report_handle) then
 
 			set_output (report_handle);
-			
+
 			put_line (row_separator_double);
 
 			if no_warnings then
 				put_line ("No warnings");
 			else
-				put_line ("Warnings" & warning_count 
+				put_line ("Warnings" & warning_count
 					& ". Increase log level to see hidden warnings and details.");
 			end if;
-			
+
 			put_line (row_separator_single);
-			
+
 			put_line (get_date);
 			put_line (system_name & " log messages end");
 
 			set_output (standard_output);
-			
+
 			close (report_handle);
 
 			if not no_warnings then -- means if there are warnings
 				put_line (standard_output, "WARNING ! "
 					& "Read log file " & log_file_name & " for warnings and error messages !");
 			end if;
-			
+
 		end if;
 	end close_report;
 
 
 	procedure show_line (
 		file : string; -- the file name like et_kicad.adb
-		line : natural) is -- the line number 
+		line : natural) is -- the line number
 	begin
 		log_indentation_reset;
 		log (text => "source file " & file & " line" & natural'image (line), console => true);
 	end;
 
-	
+
 end et_logging;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

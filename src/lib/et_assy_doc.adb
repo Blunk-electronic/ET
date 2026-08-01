@@ -55,7 +55,7 @@ package body et_assy_doc is
 	end;
 
 
-	
+
 	function to_string (
 		line	: in type_doc_line)
 		return string
@@ -64,7 +64,7 @@ package body et_assy_doc is
 	end to_string;
 
 
-	
+
 	procedure iterate (
 		lines	: in pac_doc_lines.list;
 		process	: not null access procedure (position : in pac_doc_lines.cursor);
@@ -79,7 +79,7 @@ package body et_assy_doc is
 	end iterate;
 
 
-	
+
 	function is_proposed (
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean
@@ -91,7 +91,7 @@ package body et_assy_doc is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		line_cursor	: in pac_doc_lines.cursor)
@@ -105,8 +105,8 @@ package body et_assy_doc is
 	end is_selected;
 
 
-	
-	
+
+
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -119,14 +119,14 @@ package body et_assy_doc is
 			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
 
 
-	
+
 
 	procedure rotate_lines (
 		lines	: in out pac_doc_lines.list;
@@ -149,7 +149,7 @@ package body et_assy_doc is
 
 
 
-	
+
 	procedure move_lines (
 		lines	: in out pac_doc_lines.list;
 		offset	: in type_vector_model)
@@ -170,8 +170,8 @@ package body et_assy_doc is
 
 
 
-	
-	
+
+
 
 
 -- ARCS:
@@ -184,8 +184,8 @@ package body et_assy_doc is
 		arc.width := linewidth_default;
 	end;
 
-	
-	
+
+
 	procedure iterate (
 		arcs	: in pac_doc_arcs.list;
 		process	: not null access procedure (position : in pac_doc_arcs.cursor);
@@ -200,7 +200,7 @@ package body et_assy_doc is
 	end iterate;
 
 
-	
+
 
 
 	function is_proposed (
@@ -213,7 +213,7 @@ package body et_assy_doc is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		arc_cursor	: in pac_doc_arcs.cursor)
@@ -226,9 +226,9 @@ package body et_assy_doc is
 		end if;
 	end is_selected;
 
-	
 
-	
+
+
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -241,14 +241,14 @@ package body et_assy_doc is
 			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
 
-	
+
 
 	procedure rotate_arcs (
 		arcs	: in out pac_doc_arcs.list;
@@ -269,11 +269,11 @@ package body et_assy_doc is
 	end rotate_arcs;
 
 
-	
+
 
 	procedure move_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_doc_arcs.list;
 
@@ -291,8 +291,8 @@ package body et_assy_doc is
 
 
 
-	
-	
+
+
 
 -- CIRCLES:
 
@@ -302,7 +302,7 @@ package body et_assy_doc is
 		reset_circle (type_circle (circle));
 		circle.width := linewidth_default;
 	end;
-	
+
 
 
 	function is_proposed (
@@ -315,7 +315,7 @@ package body et_assy_doc is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		circle_cursor	: in pac_doc_circles.cursor)
@@ -341,7 +341,7 @@ package body et_assy_doc is
 			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
@@ -350,7 +350,7 @@ package body et_assy_doc is
 
 	procedure rotate_circles (
 		circles	: in out pac_doc_circles.list;
-		angle	: in type_rotation_model)		
+		angle	: in type_rotation_model)
 	is
 		result : pac_doc_circles.list;
 
@@ -362,15 +362,15 @@ package body et_assy_doc is
 		end query_circle;
 
 	begin
-		circles.iterate (query_circle'access);		
+		circles.iterate (query_circle'access);
 		circles := result;
-	end rotate_circles;			
+	end rotate_circles;
 
-	
+
 
 	procedure move_circles (
 		circles	: in out pac_doc_circles.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_doc_circles.list;
 
@@ -386,7 +386,7 @@ package body et_assy_doc is
 		circles := result;
 	end move_circles;
 
-	
+
 
 
 
@@ -403,7 +403,7 @@ package body et_assy_doc is
 
 
 
-	
+
 
 -- ZONES:
 
@@ -419,9 +419,9 @@ package body et_assy_doc is
 			next (c);
 		end loop;
 	end iterate;
-	
 
-	
+
+
 
 	procedure mirror_zones (
 		zones	: in out pac_doc_zones.list;
@@ -435,7 +435,7 @@ package body et_assy_doc is
 			mirror (contour, axis);
 			result.append (contour);
 		end query_contour;
-		
+
 	begin
 		zones.iterate (query_contour'access);
 		zones := result;
@@ -443,10 +443,10 @@ package body et_assy_doc is
 
 
 
-	
+
 	procedure rotate_zones (
 		zones	: in out pac_doc_zones.list;
-		angle	: in type_rotation_model)		
+		angle	: in type_rotation_model)
 	is
 		result : pac_doc_zones.list;
 
@@ -458,17 +458,17 @@ package body et_assy_doc is
 		end query_contour;
 
 	begin
-		zones.iterate (query_contour'access);		
+		zones.iterate (query_contour'access);
 		zones := result;
-	end rotate_zones;			
+	end rotate_zones;
 
 
 
 
-	
+
 	procedure move_zones (
 		zones	: in out pac_doc_zones.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_doc_zones.list;
 
@@ -485,7 +485,7 @@ package body et_assy_doc is
 	end move_zones;
 
 
-	
+
 
 	function is_proposed (
 		text_cursor	: in pac_doc_texts.cursor)
@@ -498,7 +498,7 @@ package body et_assy_doc is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		text_cursor	: in pac_doc_texts.cursor)
@@ -510,10 +510,10 @@ package body et_assy_doc is
 			return false;
 		end if;
 	end is_selected;
-		
 
 
-	
+
+
 
 	function to_string (
 		text : in pac_doc_texts.cursor)
@@ -521,10 +521,10 @@ package body et_assy_doc is
 	is begin
 		return to_string (element (text));
 	end to_string;
-	
 
 
-	
+
+
 
 	procedure iterate (
 		texts	: in pac_doc_texts.list;
@@ -540,7 +540,7 @@ package body et_assy_doc is
 	end iterate;
 
 
-	
+
 
 	procedure mirror_texts (
 		texts	: in out pac_doc_texts.list;
@@ -554,14 +554,14 @@ package body et_assy_doc is
 			mirror_text (text, axis);
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end mirror_texts;
 
 
-	
+
 
 	procedure rotate_texts (
 		texts	: in out pac_doc_texts.list;
@@ -575,16 +575,16 @@ package body et_assy_doc is
 			rotate_text_by (text, angle);
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end rotate_texts;
 
 
 
 
-	
+
 	procedure move_texts (
 		texts	: in out pac_doc_texts.list;
 		offset	: in type_vector_model)
@@ -597,16 +597,16 @@ package body et_assy_doc is
 			move_text_to (text, offset); -- CS should be move_text_by ?
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end move_texts;
 
-	
 
 
-	
+
+
 	procedure line_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_lines.cursor;
@@ -622,7 +622,7 @@ package body et_assy_doc is
 	end line_assy_doc_properties;
 
 
-	
+
 	procedure arc_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_arcs.cursor;
@@ -632,14 +632,14 @@ package body et_assy_doc is
 		arc : type_doc_arc;
 	begin
 		arc := element (cursor);
-		log (text => "assembly doc arc face" & to_string (face) & space 
+		log (text => "assembly doc arc face" & to_string (face) & space
 			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_assy_doc_properties;
 
 
-	
-	
+
+
 	procedure circle_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_circles.cursor;
@@ -647,37 +647,37 @@ package body et_assy_doc is
 	is
 		use pac_doc_circles;
 	begin
-		log (text => "assembly doc circle face" & to_string (face) & space 
+		log (text => "assembly doc circle face" & to_string (face) & space
 			 & to_string (element (cursor)),
 			level => log_threshold);
 	end;
 
 
 
-	
+
 	-- procedure text_assy_doc_properties (
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_doc_texts.cursor;
-	-- 	log_threshold 	: in type_log_level) 
+	-- 	log_threshold 	: in type_log_level)
 	-- is
 	-- 	use et_text.pac_text_content;
 	-- 	text : type_doc_text renames element (cursor);
 	-- begin
 	-- 	log (text => "assembly doc text face" & to_string (face) & space
 	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
- -- 
+ --
 	-- 	log_indentation_up;
 	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
 	-- 	log_indentation_down;
 	-- end text_assy_doc_properties;
 
 
-	
+
 end et_assy_doc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

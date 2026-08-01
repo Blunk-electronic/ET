@@ -55,13 +55,13 @@ with et_package_read_text;				use et_package_read_text;
 
 package body et_package_read_silkscreen is
 
-	use pac_geometry_2;	
-	
-	
+	use pac_geometry_2;
+
+
 	silk_line : type_silk_line;
 	silk_arc : type_silk_arc;
 	silk_circle : type_silk_circle;
-	
+
 
 
 
@@ -81,7 +81,7 @@ package body et_package_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_A (silk_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -89,24 +89,24 @@ package body et_package_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_B (silk_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			silk_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_silk_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_silk_arc (
 		line	: in type_fields_of_line)
 	is
@@ -121,22 +121,22 @@ package body et_package_read_silkscreen is
 			p := to_vector_model (line, 2);
 			set_A (silk_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (silk_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (silk_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -147,19 +147,19 @@ package body et_package_read_silkscreen is
 			expect_field_count (line, 2);
 			silk_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_silk_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_silk_circle (
 		line	: in type_fields_of_line)
 	is
@@ -171,7 +171,7 @@ package body et_package_read_silkscreen is
 			-- extract the center position starting at field 2 of line
 			set_center (silk_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -182,7 +182,7 @@ package body et_package_read_silkscreen is
 			expect_field_count (line, 2);
 			silk_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -197,91 +197,91 @@ package body et_package_read_silkscreen is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_silk_lines;
 	begin
 		-- CS log message
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.silkscreen.top.lines, silk_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.silkscreen.bottom.lines, silk_line);
 		end case;
 		-- CS use procedure add_line
-			
-		-- clean up for next line
-		reset_line (silk_line);		
-	end insert_silk_line;
-	
 
-	
-	
-	
+		-- clean up for next line
+		reset_line (silk_line);
+	end insert_silk_line;
+
+
+
+
+
 	procedure insert_silk_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_silk_arcs;
 	begin
 		-- CS log message
 		-- CS check arc
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.silkscreen.top.arcs, silk_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.silkscreen.bottom.arcs, silk_arc);
 		end case;
 		-- CS use procedure add_arc
-		
+
 		-- clean up for next arc
-		reset_arc (silk_arc);		
+		reset_arc (silk_arc);
 	end insert_silk_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_silk_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_silk_circles;
 	begin
 		-- CS log message
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.silkscreen.top.circles, silk_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.silkscreen.bottom.circles, silk_circle);
 		end case;
 		-- CS use procedure add_circle
-		
+
 		-- clean up for next circle
-		reset_circle (silk_circle);		
+		reset_circle (silk_circle);
 	end insert_silk_circle;
 
 
 
 
-	
-	
-	
+
+
+
 	procedure insert_silk_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
@@ -292,15 +292,15 @@ package body et_package_read_silkscreen is
 		reset_contour (contour);
 	end insert_silk_zone;
 
-	
-	
+
+
 
 
 	procedure insert_silk_text (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use et_board_text.pac_text_board_vectorized;
 	begin
@@ -312,14 +312,14 @@ package body et_package_read_silkscreen is
 	end insert_silk_text;
 
 
-	
-	
-	
+
+
+
 	procedure insert_silk_placeholder (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use et_device_placeholders.packages;
 	begin
@@ -329,8 +329,8 @@ package body et_package_read_silkscreen is
 		-- clean up for next placeholder
 		reset_placeholder (pac_text_placeholder);
 	end insert_silk_placeholder;
-	
-	
-	
-	
+
+
+
+
 end et_package_read_silkscreen;

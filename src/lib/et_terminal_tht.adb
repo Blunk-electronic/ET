@@ -54,19 +54,19 @@ package body et_terminal_tht is
 -- 		use type_pcb_contour_lines;
 -- 		use type_pcb_contour_arcs;
 -- 		use type_pcb_contour_circles;
--- 		
+--
 -- 		procedure line (cursor : in type_pcb_contour_lines.cursor) is begin
 -- 			line_pcb_contour_properties (cursor, log_threshold);
 -- 		end;
--- 
+--
 -- 		procedure arc (cursor : in type_pcb_contour_arcs.cursor) is begin
 -- 			arc_pcb_contour_properties (cursor, log_threshold);
 -- 		end;
--- 
+--
 -- 		procedure circle (cursor : in type_pcb_contour_circles.cursor) is begin
 -- 			circle_pcb_contour_properties (cursor, log_threshold);
 -- 		end;
-		
+
 	begin -- log_plated_millings
 		null;
 -- CS
@@ -75,15 +75,15 @@ package body et_terminal_tht is
 -- 		iterate (millings.circles, circle'access);
 	end log_plated_millings;
 
-	
 
-	
-	
+
+
+
 end et_terminal_tht;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

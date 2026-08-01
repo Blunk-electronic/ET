@@ -64,7 +64,7 @@ package et_symbol_library is
 	-- At the same time a
 	-- symbol name (like "libraries/symbols/nand.sym")
 	-- is also the key to the symbol library:
-	
+
 	package pac_symbol_models is new indefinite_ordered_maps (
 		key_type		=> pac_symbol_model_name.bounded_string,
 		"<"				=> pac_symbol_model_name."<",
@@ -74,10 +74,10 @@ package et_symbol_library is
 
 
 
-	
-	
+
+
 	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS MODELS:
-	
+
 	symbol_library : pac_symbol_models.map;
 
 
@@ -85,13 +85,13 @@ package et_symbol_library is
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
 		return pac_symbol_model_name.bounded_string;
-	
+
 
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
 		return string;
 
-	
+
 
 	-- Creates a symbol and stores it in symbol library:
 	procedure create_symbol (
@@ -100,8 +100,8 @@ package et_symbol_library is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 	-- Returns for a given symbol model file name
 	-- (like ../libraries/symbols/nand.sym)
 	-- the symbol model in the symbol library.
@@ -121,8 +121,8 @@ package et_symbol_library is
 		model_name : in pac_symbol_model_name.bounded_string)
 		return pac_symbol_models.cursor;
 
-	
-		
+
+
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
 		symbol : in pac_symbol_models.cursor)
@@ -158,17 +158,17 @@ package et_symbol_library is
 		return type_text_placeholders;
 
 
-	
+
 	function get_symbol (
 		symbol	: in pac_symbol_models.cursor)
 		return type_symbol_model;
 
-							
+
 end et_symbol_library;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

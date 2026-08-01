@@ -43,11 +43,11 @@ with et_pcb_stack;
 
 
 package et_device_read is
-	
-	
+
+
 	-- Opens the device and stores it in container et_libraries.devices.
 	-- If check_layers.check is YES, then a check will be done that tests
-	-- whether all conductor layers are are in 
+	-- whether all conductor layers are are in
 	-- range type_signal_layer'first .. deepest conductor layer.
 	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
@@ -56,5 +56,5 @@ package et_device_read is
 		-- CS device_curosr : out pac_devices_lib.cursor;
 		log_threshold	: in type_log_level);
 	-- CS rename to read_device_model
-	
+
 end et_device_read;

@@ -55,13 +55,13 @@ with et_commit;
 package body et_board_ops_signal_layers is
 
 
-	
-	
+
+
 	procedure add_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
@@ -72,7 +72,7 @@ package body et_board_ops_signal_layers is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_pcb_stack.package_layers;
@@ -80,7 +80,7 @@ package body et_board_ops_signal_layers is
 			append (module.board.stack.layers, layer);
 		end add;
 
-		
+
 	begin -- add_layer
 		log (text => "module " & to_string (module_name) &
 			" add signal layer. thickness" & to_string (layer.conductor.thickness) &
@@ -91,13 +91,13 @@ package body et_board_ops_signal_layers is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -107,7 +107,7 @@ package body et_board_ops_signal_layers is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_layer;
@@ -117,12 +117,12 @@ package body et_board_ops_signal_layers is
 
 
 
-	
-	
-	
+
+
+
 	function get_layer_count (
-		module_cursor	: in pac_generic_modules.cursor) 
-		return type_signal_layer 
+		module_cursor	: in pac_generic_modules.cursor)
+		return type_signal_layer
 	is
 		use package_layers;
 	begin
@@ -131,12 +131,12 @@ package body et_board_ops_signal_layers is
 
 
 
-	
 
-	
+
+
 	procedure test_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in type_signal_layer) 
+		layer			: in type_signal_layer)
 	is
 		layers_used : constant type_signal_layer := get_layer_count (module_cursor);
 	begin
@@ -150,27 +150,27 @@ package body et_board_ops_signal_layers is
 
 
 
-	
 
 
-	
+
+
 	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in type_signal_layer;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use package_layers;
@@ -202,7 +202,7 @@ package body et_board_ops_signal_layers is
 			end if;
 		end delete;
 
-		
+
 	begin -- delete_layer
 		log (text => "module " & to_string (module_name) &
 			" delete signal layer" & to_string (layer),
@@ -213,13 +213,13 @@ package body et_board_ops_signal_layers is
 
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -229,47 +229,47 @@ package body et_board_ops_signal_layers is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_layer;
-	
-
-
-	
 
 
 
 
 
-	
-	
+
+
+
+
+
+
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
 		layers 			: in pac_signal_layers.set)
 	is
 		use pac_signal_layers;
-		
+
 		procedure query_layer (cursor : in pac_signal_layers.cursor) is
 		begin
 			test_layer (module_cursor, element (cursor));
 		end;
-		
+
 	begin
 		iterate (layers, query_layer'access);
 	end;
 
 
 
-	
 
-	
+
+
 	function get_deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor)
-		return type_signal_layer 
-	is 
+		return type_signal_layer
+	is
 		result : type_signal_layer;
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -278,8 +278,8 @@ package body et_board_ops_signal_layers is
 		begin
 			result := get_deepest_layer (module.board.stack);
 		end query_module;
-		
-		
+
+
 	begin
 		query_element (module, query_module'access);
 		return result;
@@ -287,14 +287,14 @@ package body et_board_ops_signal_layers is
 
 
 
-		
+
 
 end et_board_ops_signal_layers;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

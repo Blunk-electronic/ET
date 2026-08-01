@@ -38,29 +38,29 @@
 
 
 package et_axes is
-	
+
 	axis_prefix : constant string := "AXIS_";
-	
+
 	type type_axis is (AXIS_X, AXIS_Y, AXIS_Z);
-	
+
 	subtype type_axis_2d is type_axis range AXIS_X .. AXIS_Y;
 
-	
+
 	function to_string (
-		axis : in type_axis) 
+		axis : in type_axis)
 		return string;
 
-	
+
 	function to_axis (
 		axis : in string)
 		return type_axis;
 
-		
+
 end et_axes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

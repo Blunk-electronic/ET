@@ -36,13 +36,13 @@
 --   history of changes:
 --
 --   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
+--		1. Warning if virtual component pins apply for all units. Usually
 --			virtual components (such as power flags) have only one unit. If the
 --			check "common to all units in component" is set, ET generates an
 --			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
 --			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
 --		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
+--			Example: Power symbol "P3V3" must have pin direction power_out.
 
 
 with et_object_status;				use et_object_status;
@@ -59,18 +59,18 @@ function read (
 is
 	hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
 	name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
-	
+
 	use pac_lines_of_file;
-	
+
 	line		: type_fields_of_line; -- the line of the schematic file being processed
 	lines		: pac_lines_of_file.list;
-	line_cursor	: pac_lines_of_file.cursor;			
+	line_cursor	: pac_lines_of_file.cursor;
 
 	sheet_file : type_schematic_file_name.bounded_string;
 
 	net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
-	
-	-- This is the total number of sheets as it is given in the sheet header. 
+
+	-- This is the total number of sheets as it is given in the sheet header.
 	-- A line like "Sheet 1 7" gives the sheet number (1), which is meaningless,
 	-- and the total number of sheet of the design (7).
 	use et_sheets;
@@ -84,17 +84,17 @@ is
 	-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 	-- Later they will be sorted and connected by their coordinates (start and and points)
 	segment_count	: count_type := 0; -- holds the total number of segments within a sheet
-	
+
 	anonymous_strand : type_anonymous_strand;
 
-	-- The list of anonymous strands. Procedure add_strand_to_anonymous_strands uses 
+	-- The list of anonymous strands. Procedure add_strand_to_anonymous_strands uses
 	-- this container for temporarily storage of anonymous strands.
-	anonymous_strands : type_anonymous_strands.list; 
+	anonymous_strands : type_anonymous_strands.list;
 
 	procedure error_in_schematic_file (line : in type_fields_of_line) is
 	begin
-		log (SEVERITY_ERROR, "in schematic file '" 
-			& to_string (current_schematic.sheet.file) & "' " 
+		log (SEVERITY_ERROR, "in schematic file '"
+			& to_string (current_schematic.sheet.file) & "' "
 			& get_affected_line (line)
 			& to_string (line),
 			console => true);
@@ -107,13 +107,13 @@ is
 		--scratch : type_net_segment_base;
 		scratch : type_net_segment;
 
-		procedure set_picked (segment : in out type_wild_net_segment ) 
-		is begin 
+		procedure set_picked (segment : in out type_wild_net_segment )
+		is begin
 			segment.picked := true;
 		end set_picked;
-		
+
 	begin
-		-- If segment already picked and added to anonymous_strand, do nothing with this segment. 
+		-- If segment already picked and added to anonymous_strand, do nothing with this segment.
 		-- Otherwise set the "picked" flag of that segment, output the coordinates of the segment, add it to anonymous net.
 		if type_wild_segments.element (segment_cursor).picked then
 			null;
@@ -122,15 +122,15 @@ is
 			-- log (text => "  segment" & positive'image(id) & ":");
 			-- log (text => "segment" & positive'image(id) & ":");
 			-- log (text => "  segment" & positive'image(id) & ":");
-			
+
 			type_wild_segments.update_element (
 				container	=> wild_segments,
 				position	=> segment_cursor,
 				process		=> set_picked'access);
 
--- 					write_coordinates_of_segment (segment => 
+-- 					write_coordinates_of_segment (segment =>
 -- 						type_net_segment (type_wild_segments.element (segment_cursor)));
-			
+
 			log (text => to_string (
 					segment	=> type_wild_segments.element (segment_cursor),
 					scope	=> et_kicad_coordinates.XY),
@@ -142,14 +142,14 @@ is
 	end add_segment_to_anonymous_strand;
 
 	function search_for_same_coordinates (
-	-- Starting from a segment indicated by id and the end point (given by side), 
+	-- Starting from a segment indicated by id and the end point (given by side),
 	-- search in wild_segments for a segment with matching start or end point.
 	-- In general untouched segments are preferred in the search. "Half" processed segments are of secondary relevance.
-	-- Once a suitable segment was found, sc is assigned with neccessary data to be returned to the parent unit. The search for 
+	-- Once a suitable segment was found, sc is assigned with neccessary data to be returned to the parent unit. The search for
 	-- a suitable segment excludes fully processed segments and the given segment (id).
 		segment_cursor : in type_wild_segments.cursor;
 		seg_in : in type_wild_net_segment;
-		side : in type_segment_side) 
+		side : in type_segment_side)
 		return type_same_coord_result is
 
 		sc : type_same_coord_result;
@@ -157,35 +157,35 @@ is
 		s, e : boolean; -- indicate the end point, that has been processed already
 		untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
-		-- Prodcedures that set the s,e or picked flag in a wild net segment. 
+		-- Prodcedures that set the s,e or picked flag in a wild net segment.
 		procedure set_e (segment : in out type_wild_net_segment ) is begin segment.e := true; end set_e;
 		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
-		
+
 		use type_wild_segments;
 		cursor : type_wild_segments.cursor;
 
 	begin -- search_for_same_coordinates
 		-- Set E/S flag:
 		-- If we start the search from the B of a segment, the e-flag is to be set. This indicates the B has been processed.
-		-- If we start the search from the A of a segment, the s-flag is to be set. This indicates the A has been processed.				
+		-- If we start the search from the A of a segment, the s-flag is to be set. This indicates the A has been processed.
 		case side is
 			when B =>
-				
--- 						log (text => "--> origin of search   (END): " 
+
+-- 						log (text => "--> origin of search   (END): "
 -- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
 -- 							 level => 1);
-				
+
 				type_wild_segments.update_element(
 						container => wild_segments,
 						position => segment_cursor,
 						process => set_e'access);
-				
+
 			when A =>
-				
--- 						log (text => "--> origin of search (START): " 
+
+-- 						log (text => "--> origin of search (START): "
 -- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
 -- 							 level => 1);
-				
+
 				type_wild_segments.update_element(
 						container => wild_segments,
 						position => segment_cursor,
@@ -205,70 +205,9 @@ is
 				e  := type_wild_segments.element (cursor).e;
 				untouched := not (s or e); -- neither s nor e set
 
-				if untouched then 
+				if untouched then
 					--put(et_import.report_handle,"probe untouched segment: ");
-					
-					case side is
-						-- If the search starts from the B of the given net, find a segment whose start or end point matches.
-						when B =>
-							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
-							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
-								sc.valid := true;
-								sc.side := A;
-								sc.cursor := cursor;
-								goto matching_segment_coordinates_found;
-							end if;
 
-							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
-							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
-								sc.valid := true;
-								sc.side := B;
-								sc.cursor := cursor;
-								goto matching_segment_coordinates_found;
-							end if;
-
-						-- If the search starts from the A of the given net, find a segment whose start or end point matches.									
-						when A =>
-							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
-							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
-								sc.valid := true;
-								sc.side := A;
-								sc.cursor := cursor;
-								goto matching_segment_coordinates_found;
-							end if;
-
-							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
-							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
-								sc.valid := true;
-								sc.side := B;
-								sc.cursor := cursor;
-								goto matching_segment_coordinates_found;
-							end if;
-					end case;
-				end if;
-			end if;
-
-			next (cursor);
-		end loop;
-
-		-- No untouched segment found.
-		-- Now, search half_processed segments (they have either e or s flag (BUT NOT BOTH AT THE SAME TIME!) set).
-		-- If the search starts from the B of the given net, find a segment whose start or end point matches.
-		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
-		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
-		cursor := wild_segments.first;
-		while cursor /= type_wild_segments.no_element loop
-			if cursor /= segment_cursor then -- skip the given segment
-				line_start := type_wild_segments.element (cursor).coordinates_start;
-				line_end   := type_wild_segments.element (cursor).coordinates_end;
-				s  := type_wild_segments.element (cursor).s;
-				e  := type_wild_segments.element (cursor).e;
-				half_processed := s xor e;
-
-				if half_processed then
-					--put(et_import.report_handle,"probe half-processed segment: ");
-					--write_coordinates_of_segment(type_net_segment(type_wild_segments.element(wild_segments,i)));
-					
 					case side is
 						-- If the search starts from the B of the given net, find a segment whose start or end point matches.
 						when B =>
@@ -311,64 +250,125 @@ is
 
 			next (cursor);
 		end loop;
-		
+
+		-- No untouched segment found.
+		-- Now, search half_processed segments (they have either e or s flag (BUT NOT BOTH AT THE SAME TIME!) set).
+		-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
+		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
+		cursor := wild_segments.first;
+		while cursor /= type_wild_segments.no_element loop
+			if cursor /= segment_cursor then -- skip the given segment
+				line_start := type_wild_segments.element (cursor).coordinates_start;
+				line_end   := type_wild_segments.element (cursor).coordinates_end;
+				s  := type_wild_segments.element (cursor).s;
+				e  := type_wild_segments.element (cursor).e;
+				half_processed := s xor e;
+
+				if half_processed then
+					--put(et_import.report_handle,"probe half-processed segment: ");
+					--write_coordinates_of_segment(type_net_segment(type_wild_segments.element(wild_segments,i)));
+
+					case side is
+						-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+						when B =>
+							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
+							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
+								sc.valid := true;
+								sc.side := A;
+								sc.cursor := cursor;
+								goto matching_segment_coordinates_found;
+							end if;
+
+							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
+							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
+								sc.valid := true;
+								sc.side := B;
+								sc.cursor := cursor;
+								goto matching_segment_coordinates_found;
+							end if;
+
+						-- If the search starts from the A of the given net, find a segment whose start or end point matches.
+						when A =>
+							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
+							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
+								sc.valid := true;
+								sc.side := A;
+								sc.cursor := cursor;
+								goto matching_segment_coordinates_found;
+							end if;
+
+							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
+							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
+								sc.valid := true;
+								sc.side := B;
+								sc.cursor := cursor;
+								goto matching_segment_coordinates_found;
+							end if;
+					end case;
+				end if;
+			end if;
+
+			next (cursor);
+		end loop;
+
 		sc.valid := false;
 		sc.cursor := cursor;
 		return sc;
-		
+
 	<<matching_segment_coordinates_found>>
 		add_segment_to_anonymous_strand (sc.cursor);
 		--log (text => "match", level => 1);
-		
+
 		return sc;
 	end search_for_same_coordinates;
-	
-	
+
+
 	procedure associate_net_labels_with_anonymous_strands (log_threshold : in type_log_level) is
 	-- All anonymous strands must be given a name. The name is enforced by net labels.
-		
+
 	-- The first label found on the strand dictates the strand name.
-	-- Other labels on the strand are checked for their name only. 
+	-- Other labels on the strand are checked for their name only.
 	-- If the name differs from the strand name set earlier, an error is output.
 	-- If scope of strands are contradicting, error is output.
 
 	-- The kind of net label (simple, hierarchic, global) defines the scope of the strand.
 	-- Net labels sitting on a segment, are added to the list of labels of that segment.
-	
-	-- Strands without label are named by using the notation "N$". 
+
+	-- Strands without label are named by using the notation "N$".
 
 		ls  	: type_net_label_simple;
-		lt  	: type_net_label_tag;				
+		lt  	: type_net_label_tag;
 		anon_strand_a, anon_strand_b : type_anonymous_strand;
 		--segment	: type_net_segment_base;
 		segment	: type_net_segment;
 		lls		: type_simple_labels.list;
 		llt		: type_tag_labels.list;
-	
+
 		strand 		: type_strand;
 		net_name	: pac_net_name.bounded_string;
 
-		
+
 		function label_sits_on_segment (
 			label	: in type_net_label;
-			segment	: in type_net_segment) 
-			return boolean 
+			segment	: in type_net_segment)
+			return boolean
 		is
 			line : constant type_line := type_line (to_line (
-				A	=> get_point (segment.coordinates_start), 
+				A	=> get_point (segment.coordinates_start),
 				B	=> get_point (segment.coordinates_end)));
-			
+
 		begin
 			return line.on_line (label.coordinates);
 		end label_sits_on_segment;
 
-		
+
 		use type_net_segments;
 		-- the segment cursor points to the segment being processed
-		segment_cursor : type_net_segments.cursor; 
+		segment_cursor : type_net_segments.cursor;
 
 		use type_anonymous_strands;
-		
+
 		-- the strand cursor points to the anonymous strand being processed
 		strand_cursor	: type_anonymous_strands.cursor := anonymous_strands.first;
 		strand_cursor_b	: type_anonymous_strands.cursor;
@@ -379,20 +379,20 @@ is
 		use type_tag_labels;
 		tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
-		
+
 		procedure output_net_label_conflict is begin
 			log (SEVERITY_ERROR, "Net label conflict !", console => true);
 		end output_net_label_conflict;
 
-		
+
 	begin -- associate_net_labels_with_anonymous_strands
 		log_indentation_up;
-		
+
 		-- This does only make sense if there are strands at all:
 		if not is_empty (anonymous_strands) then
 			log (text => "associating net labels with strands ...", level => log_threshold);
-			
-			-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
+
+			-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and
 			-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
 			--  - assume label text as name of strand (and check other labels of the anonymous strand)
 			--  - set scope of strand according to the net label
@@ -405,7 +405,7 @@ is
 			--  - update/replace anonymous strand in anonymous_strands
 			while strand_cursor /= type_anonymous_strands.no_element loop -- cursor already reset on declaration (see above)
 				anon_strand_a := element (strand_cursor); -- get anonymous strand
-				
+
 				--put_line(et_import.report_handle,"anonymous net #" & trim(count_type'image(n),left) & ": "); -- CS: log ?
 				if not anon_strand_a.processed then -- skip already processed nets
 
@@ -414,15 +414,15 @@ is
 					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
 						segment := anon_strand_a.segments (segment_cursor);
 						--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
-						
+
 						-- Loop in list of simple labels:
 						if not is_empty (wild_simple_labels) then -- do it if there are simple labels at all
 							--put_line(" simple labels ..."); -- CS: log ?
-							
+
 							simple_label_cursor := wild_simple_labels.first; -- reset label cursor
 							while simple_label_cursor /= type_simple_labels.no_element loop
 								ls := element (simple_label_cursor); -- get simple label
-								
+
 								if not ls.processed then
 									--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
 									if label_sits_on_segment (label => type_net_label (ls), segment => segment) then
@@ -446,8 +446,8 @@ is
 											when hierarchic => -- strand has been marked as "hierarchic" already. no local label allowed !
 												output_net_label_conflict;
 												log (SEVERITY_ERROR,
-													"hierarchic net " & to_string (anon_strand_a.name) 
-													& " has a local label at" 
+													"hierarchic net " & to_string (anon_strand_a.name)
+													& " has a local label at"
 													--& to_string (position => ls.coordinates) & " !");
 													& to_string (ls.coordinates) & " !");
 												raise constraint_error;
@@ -455,28 +455,28 @@ is
 											when global => -- strand has been marked as "global" already. no local label allowed !
 												output_net_label_conflict;
 												log (SEVERITY_ERROR,
-													"global net " & to_string (anon_strand_a.name) 
-													& " has a local label at" 
+													"global net " & to_string (anon_strand_a.name)
+													& " has a local label at"
 													--& to_string (position => ls.coordinates) & " !");
 													& to_string (ls.coordinates) & " !");
 													raise constraint_error;
 										end case;
 
-										
-										-- The first matching simple label dictates the strand name. 
+
+										-- The first matching simple label dictates the strand name.
 										-- If other labels with text differing from strand name found, output warning.
 										if pac_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
 
 											-- assume the label text as strand name.
-											anon_strand_a.name := ls.text; 
+											anon_strand_a.name := ls.text;
 										else
 											-- If label text is different from previously assigned strand name:
 											if not pac_net_name."=" (anon_strand_a.name, ls.text) then
 												output_net_label_conflict;
 
 												-- for the log, some more information
-												log (SEVERITY_ERROR, 
-														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
+												log (SEVERITY_ERROR,
+														"Net " & to_string (anon_strand_a.name) & " has contradicting label "
 														--& "at" & to_string (position => ls.coordinates) & " !");
 														& "at" & to_string (ls.coordinates) & " !");
 												raise constraint_error;
@@ -503,13 +503,13 @@ is
 
 							-- Copy list of simple labels (lls) to current segment (s).
 							segment.label_list_simple := lls;
-							
+
 							-- Update/replace segment in current anonymous strand.
 							type_net_segments.replace_element (
 								container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 								position => segment_cursor,
 								new_item => segment); -- the updated segment
-							
+
 							-- Clean up: Purge temporarily list of simple labels for next spin.
 							type_simple_labels.clear (lls);
 
@@ -519,7 +519,7 @@ is
 								position => strand_cursor,
 								new_item => anon_strand_a); -- the updated anonymous net
 						end if;
-						
+
 						-- Loop in list of tag labels:
 						if not is_empty (wild_tag_labels) then -- do if if there are tag labels at all
 							--put_line(" hierarchic and global labels ...");	 -- CS: log ?
@@ -527,8 +527,8 @@ is
 							tag_label_cursor := wild_tag_labels.first; -- reset label cursor
 							while tag_label_cursor /= type_tag_labels.no_element loop
 								lt := element (tag_label_cursor); -- get tag label
-								
-								if not lt.processed then								
+
+								if not lt.processed then
 									if label_sits_on_segment (label => type_net_label (lt), segment => segment) then
 
 										if log_level >= log_threshold + 1 then
@@ -542,10 +542,10 @@ is
 										-- Otherwise, set scope according to the label just found.
 										case anon_strand_a.scope is
 											when unknown => -- find. no label found so far. set scope of strand
-												if lt.global then 
+												if lt.global then
 													anon_strand_a.scope := global;
 												end if;
-												if lt.hierarchic then 
+												if lt.hierarchic then
 													anon_strand_a.scope := hierarchic;
 												end if;
 
@@ -553,19 +553,19 @@ is
 												if lt.global or lt.hierarchic then
 													output_net_label_conflict;
 													log (SEVERITY_ERROR,
-														"local net " & to_string (anon_strand_a.name) 
-														& " has a hierarchic or global label at" 
+														"local net " & to_string (anon_strand_a.name)
+														& " has a hierarchic or global label at"
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
-												
+
 											when hierarchic => -- strand has been marked as "hierarchic" already. no global label allowed !
 												if lt.global then
 													output_net_label_conflict;
 													log (SEVERITY_ERROR,
-														"hierarchic net " & to_string (anon_strand_a.name) 
-														& " has a global label at" 
+														"hierarchic net " & to_string (anon_strand_a.name)
+														& " has a global label at"
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
@@ -575,23 +575,23 @@ is
 												if lt.hierarchic then
 													output_net_label_conflict;
 													log (SEVERITY_ERROR,
-														"global net " & to_string (anon_strand_a.name) 
-														& " has a hierarchic label at" 
+														"global net " & to_string (anon_strand_a.name)
+														& " has a hierarchic label at"
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
 										end case;
 
-										-- The first matching label dictates the net name and scope. 
+										-- The first matching label dictates the net name and scope.
 										-- If other labels with text differing from net name found, output warning.
 										if length (anon_strand_a.name) = 0 then -- If this is the first matching label
 											anon_strand_a.name := lt.text; -- assume the label text as net name.
 										else
 											-- If label text is different from previously assigned net name:
-											if anon_strand_a.name /= lt.text then 
-												log (SEVERITY_ERROR, 
-														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
+											if anon_strand_a.name /= lt.text then
+												log (SEVERITY_ERROR,
+														"Net " & to_string (anon_strand_a.name) & " has contradicting label "
 														--& "at" & to_string (position => lt.coordinates) & " !");
 														& "at" & to_string (lt.coordinates) & " !");
 												raise constraint_error;
@@ -608,7 +608,7 @@ is
 										-- Collect tag label (lt) in temporarily list of simple labels (llt).
 										type_tag_labels.append (llt,lt);
 
-										-- Mark anonymous net as processed.												
+										-- Mark anonymous net as processed.
 										anon_strand_a.processed := true;
 									end if;
 								end if;
@@ -618,7 +618,7 @@ is
 
 							-- Copy list of tag labels (llt) to current segment (s).
 							segment.label_list_tag := llt;
-							
+
 							-- Update/replace segment in current anonymous net.
 							type_net_segments.replace_element (
 								container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
@@ -667,31 +667,31 @@ is
 						anonymous_net_name_prefix & trim (natural'image (net_id), left));
 
 					log (text => to_string (net_name), level => 2);
-					
+
 					strand.name := net_name;
 					strand.scope := local;
 
 					log_indentation_up;
 					log (text => "scope " & to_string (strand.scope) & " with segments", level => 2);
-					
+
 					-- fetch net segments from anonymous strand and append them to the new name-less strand:
 					segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 						segment := element (segment_cursor); -- get segment
 						type_net_segments.append (container => strand.segments, new_item => segment);
-						
+
 						if log_level >= 2 then
 							--write_coordinates_of_segment (segment => segment);
 							log_indentation_up;
 							log (text => to_string (segment => segment, scope => xy));
 							log_indentation_down;
 						end if;
-						
+
 						next (segment_cursor);
 					end loop;
 
 					log_indentation_down;
-					
+
 					-- assign coordinates
 					set_path (strand.position, path_to_sheet);
 					set_sheet (strand.position, sheet_number);
@@ -705,15 +705,15 @@ is
 
 				next (strand_cursor); -- advance strand cursor
 			end loop;
-			
+
 			log_indentation_down;
-			
+
 			-- Build named strands with label. Those strands have the "processed" flag set.
 			-- NOTE: Even if a strand has a dedicated name at this stage, it may get a dedicated name later on netlist generation.
 			-- Power-out ports may overwrite the strand name (which would be regarded as design error and is handled on netlist generation)
 			log (text => "building named strands ...", level => log_threshold);
 			log_indentation_up;
-			
+
 			strand_cursor := anonymous_strands.first; -- reset strand cursor
 			while strand_cursor /= type_anonymous_strands.no_element loop
 				anon_strand_a := element (strand_cursor);  -- get a strand
@@ -721,7 +721,7 @@ is
 				if anon_strand_a.processed then -- it must have a name
 
 					log (text => to_string (anon_strand_a.name), level => 2);
-					
+
 					strand.name := anon_strand_a.name;
 					strand.scope := anon_strand_a.scope;
 
@@ -733,12 +733,12 @@ is
 					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous_strand "a"
 						segment := element (segment_cursor); -- get segment
 						type_net_segments.append (container => strand.segments, new_item => segment);
-						
+
 						if log_level >= 2 then
 							--write_coordinates_of_segment (segment => segment);
 							log (text => to_string (segment => segment, scope => xy));
 						end if;
-						
+
 						next (segment_cursor);
 					end loop;
 
@@ -759,7 +759,7 @@ is
 			end loop;
 
 			log_indentation_down;
-			
+
 		else
 			log (SEVERITY_NOTE,
 				"The schematic does not contain nets to associate net labels with !");
@@ -767,52 +767,52 @@ is
 
 		log_indentation_down;
 	end associate_net_labels_with_anonymous_strands;
-	
+
 	procedure process_junctions (log_threshold : in type_log_level) is
-	-- Breaks down all net segments where a junction sits on. 
+	-- Breaks down all net segments where a junction sits on.
 	-- In the end, the number of net segments may increase.
 
 	-- NOTE: The junction to be tested is taken from the wild list of net junctions. This
 	-- list contains the junction of the current sheet exclusively.
-	
+
 	-- Loops in wild_segments and tests if a junction sits on a segment.
-	-- Then splits the segment where the junction sits. If there are junctions left on 
-	-- the remaining fragments, they will be detected in the next spin. 
+	-- Then splits the segment where the junction sits. If there are junctions left on
+	-- the remaining fragments, they will be detected in the next spin.
 	-- The flag segment_smashed indicates there are no more segments left with a junction.
 		segment : type_wild_net_segment;
 		junction : type_net_junction;
-	
+
 		use type_junctions;
 		junction_cursor : type_junctions.cursor; -- points to the junction being processed
 
-		procedure change_segment_start_coordinates (segment : in out type_wild_net_segment) is 
+		procedure change_segment_start_coordinates (segment : in out type_wild_net_segment) is
 		begin
 			segment.coordinates_start := junction.coordinates;
 		end change_segment_start_coordinates;
-		
+
 		segment_smashed : boolean := true; -- indicates whether a segment has been broken down
 
 		use type_wild_segments;
 		segment_cursor : type_wild_segments.cursor; -- points to the current segment
-		
+
 	begin -- process_junctions
 		log_indentation_up;
-		
+
 		-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 		-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
 		-- CS NOTE: In this process, segments may evolve, which have junctions not sitting at the segment. A clean up would be useful.
-		if not is_empty (wild_junctions) then 
+		if not is_empty (wild_junctions) then
 			log (text => "processing" & count_type'image (length (wild_junctions)) & " net junctions ...", level => log_threshold);
 			log_indentation_up;
-			
+
 			-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 			-- does not increase anymore, all segments are processed.
 			while segment_smashed loop
-				
+
 				segment_cursor := wild_segments.first;
 				loop_s:
 				while segment_cursor /= type_wild_segments.no_element loop
-				
+
 					segment := type_wild_segments.element (segment_cursor); -- get a segment
 					log (text => "probing segment" & to_string (segment => segment, scope => xy), level => log_threshold);
 
@@ -822,7 +822,7 @@ is
 
 						-- fetch junction from current cursor position
 						junction := type_junctions.element (junction_cursor);
-						
+
 						if junction_sits_on_segment (junction, type_net_segment_base (segment)) then -- match
 
 							if log_level >= log_threshold + 1 then
@@ -842,7 +842,7 @@ is
 							-- replace end coord. of segment by pos. of junction
 							segment.coordinates_end := junction.coordinates;
 
-							-- If the junction has not been appended to the segment yet, 
+							-- If the junction has not been appended to the segment yet,
 							-- append junction to the segment:
 							-- NOTE: junctions may be appended twice if they sit on net crossings.
 							-- For this reason we first test if the junction has already been appended.
@@ -851,7 +851,7 @@ is
 									container	=> segment.junctions,
 									new_item	=> junction);
 							end if;
-							
+
 							-- append new segment to list of wild segments
 							type_wild_segments.append (
 								container	=> wild_segments,
@@ -874,7 +874,7 @@ is
 					-- update segment_count (should increment by 1)
 					segment_count := type_wild_segments.length (wild_segments);
 				else
-					segment_smashed := false;							
+					segment_smashed := false;
 				end if;
 			end loop;
 
@@ -890,7 +890,7 @@ is
 	-- From the wild segments and junctions assemble net segments to anonymous strands.
 
 		procedure add_strand_to_anonymous_strands is
-		-- Once an anonymous strand is complete, it gets appended to a list of anonymous strands. 
+		-- Once an anonymous strand is complete, it gets appended to a list of anonymous strands.
 		-- Afterward the anonymous strand is deleted. It is a list of net segments which must be purged so that the list
 		-- "anonymous_strand" can be filled with net segments of the next anonymous strand.
 		begin
@@ -908,29 +908,29 @@ is
 
 		-- the result of a segment search
 		search_result : type_same_coord_result;
-		
+
 	begin -- build_anonymous_strands
 		log_indentation_up;
-		
+
 		-- Build anonymous nets:
-		-- We are processing the net segments of a sheet here. The net segments have been collected in 
+		-- We are processing the net segments of a sheet here. The net segments have been collected in
 		-- a wild collection of net segments earlier.
 		-- This wild collection of segments does not reveal the actual nets where the segments belong to.
 		-- The segments are inspected
-		-- in the following by looking at the coordinates of their start and end points. 
+		-- in the following by looking at the coordinates of their start and end points.
 		-- Segments whose start or end points match other segments are considered
 		-- as connected to each other (means they belong to the same strand).
 		-- The net name is unknown yet. So the outcome of the following is a list of anonymous strands.
-		
+
 		-- CS: handle circlular strands, currently they cause a forever-loop here
-		
+
 		segment_count := type_wild_segments.length (wild_segments); -- get number of segments on the current sheet
 
 		log (text => "processing" & count_type'image (segment_count) & " net segments ...", level => log_threshold);
 
 		-- It may happen that a sheet has no nets, for example the top level sheet of a design.
 		-- If there are no net segments at all, nothing happens.
-		if segment_count > 0 then 
+		if segment_count > 0 then
 
 			-- Segments where a junction sits on, must be broken down. This results in more segments than calculated earlier.
 			-- The outcome of process_junctions might be a greater number of net segments than currently being held in segment_count.
@@ -938,15 +938,15 @@ is
 			-- segment_count now has been updated
 
 			log_indentation_up;
-			
-			-- We inspect one segment after another. segment_cursor_a points to the first segment to be processed. 
+
+			-- We inspect one segment after another. segment_cursor_a points to the first segment to be processed.
 			-- A segment, whose "e" AND "s" flag has been set, is to be skipped (because this segment has been processed already).
 			-- Variable side_scratch points to the side of the segment (start or end point) where another matching segment
 			-- is to be searched for.
 			-- If a matching segment is found, it gets appended to the current anonymous strand.
 
 			-- set primary segment cursor to begin of wild segment collection
-			segment_cursor_a := wild_segments.first; 
+			segment_cursor_a := wild_segments.first;
 
 			-- The primary segment cursor advances once an anonymous stand is complete (when all connected segments have been found).
 			-- Each time a connected segment has been found, the secondary segment cursor points to that segment.
@@ -954,22 +954,22 @@ is
 				segment_cursor_b := segment_cursor_a;
 
 				-- Already processed segments are skipped. (Processed segments have the "s" and "e" flag set.)
-				if not type_wild_segments.element (segment_cursor_b).s and 
-					not type_wild_segments.element (segment_cursor_b).e then 
+				if not type_wild_segments.element (segment_cursor_b).s and
+					not type_wild_segments.element (segment_cursor_b).e then
 
 					-- We initiate a new strand and start looking for a matching segment on the B:
-					--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
+					--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":");
 					log (text => "assembling strand with segments", level => log_threshold + 1);
 					log_indentation_up;
 
 					-- The first segment is to be added to the anonymous strand.
-					add_segment_to_anonymous_strand (segment_cursor_b); 
+					add_segment_to_anonymous_strand (segment_cursor_b);
 					side := B;
 
 					loop -- A
 						--put_line(et_import.report_handle,"  --> A"); -- CS: log ?
-						
-						-- Search for a segment connected to the current segment. 
+
+						-- Search for a segment connected to the current segment.
 						-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment
 						-- to current anonymous strand.
 						-- Search_for_same_coordinates sets the "e" or "s" flag of the segment in order to indicate
@@ -991,17 +991,17 @@ is
 								-- put_line(et_import.report_handle,"  --> D1"); -- CS: log ?
 								side := A;
 							end if;
-							
+
 							if type_wild_segments.element (segment_cursor_b).s then
 								-- put_line(et_import.report_handle,"  --> D2"); -- CS: log ?
-								side := B;	
+								side := B;
 							end if;
 
 							-- C
 							--put_line(et_import.report_handle,"  --> C"); -- CS: log ?
-							
+
 							-- Search for a segment connected to the current side of the segment.
-							-- If function search_for_same_coordinates discovers a suitable segment, 
+							-- If function search_for_same_coordinates discovers a suitable segment,
 							-- it adds the segment to current anonymous strand.
 							-- Search_for_same_coordinates sets the "e" or "s" flag of the segment in order to
 							-- indicate which end point has been processed.
@@ -1011,34 +1011,34 @@ is
 								segment_cursor	=> segment_cursor_b,
 								seg_in			=> type_wild_segments.element (segment_cursor_b),
 								side			=> side);
-							
+
 							if search_result.valid then
 								--put_line(et_import.report_handle,"  --> F"); -- CS: log ?
 								null;
 							else
 								--put_line(et_import.report_handle,"  done"); -- CS: log ?
-								
+
 								-- All collected segments belong to the same net.
 								-- This net is to be added to the list of anonymous nets.
-								add_strand_to_anonymous_strands; 	
-																	
+								add_strand_to_anonymous_strands;
+
 								exit;	-- no further segment search required.
 							end if;
 						end if;
 
 						-- B
 						--put_line(et_import.report_handle,"  --> B"); -- CS: log ?
-						
-						-- Update secondary segment_cursor with the cursor of the segment just found 
+
+						-- Update secondary segment_cursor with the cursor of the segment just found
 						-- by search_for_same_coordinates. So the secondary segment cursor now points to the next
-						-- connected segment. 
+						-- connected segment.
 						-- Same_coord_result contains the end point of the segment that has just been found.
 						-- Depending on the end point of the matching segment, side must be set so that the
 						-- search can continue on the opposide of the new segment.
 						segment_cursor_b := search_result.cursor;
-						
+
 						case search_result.side is
-							when B => 
+							when B =>
 								side := A;
 							when A =>
 								side := B;
@@ -1077,7 +1077,7 @@ is
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
-							log (SEVERITY_ERROR, "schematic version" 
+							log (SEVERITY_ERROR, "schematic version"
 									& positive'image (schematic_version_v4) & " required.",
 								console => true);
 							raise constraint_error;
@@ -1089,24 +1089,24 @@ is
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
-							log (SEVERITY_ERROR, "schematic version" 
+							log (SEVERITY_ERROR, "schematic version"
 									& positive'image(schematic_version_v5) & " required.",
 								console => true);
 							raise constraint_error;
 						end if;
 
 					when others => raise constraint_error;
-						
+
 				end case;
 		end if;
 	end check_header;
-	
+
 	procedure make_sheet_header (lines : in pac_lines_of_file.list) is
 	-- Builds the sheet header.
 	-- The sheet header mainly contains the used libraries.
 
 		sheet_header : type_sheet_header; -- the header being built
-	
+
 		--	LIBS:nucleo_core-rescue
 		--	LIBS:power
 		-- 	LIBS:bel_connectors_and_jumpers
@@ -1117,17 +1117,17 @@ is
 		--	EELAYER END
 
 		-- This data goes into a the sheet_header. When the schematic file has been
-		-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
+		-- read completely, the sheet_header is appended to global list_of_sheet_headers.
 		-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
 		-- NOTE: The library entries in the header are not used by kicad. However, they must be read
 		-- and stored in sheet_header.libraries.
-						
+
 	begin -- make_sheet_header
 		line_cursor := first (lines);
 		while line_cursor /= pac_lines_of_file.no_element loop
 
 			--log ("---> C " & to_string (line));
-			
+
 			-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
 			if get_field_from_line (f (element (line_cursor), 1), 1, latin_1.colon) = schematic_library then
 
@@ -1146,7 +1146,7 @@ is
 			end if;
 
 			-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
-			-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
+			-- CS: we do not read the line "EELAYER END" and assume it is always there.
 			if f (element (line_cursor), 1) = schematic_eelayer then
 				if f (element (line_cursor), 2) = schematic_eelayer_end then
 					null;
@@ -1172,7 +1172,7 @@ is
 	end make_sheet_header;
 
 
-	
+
 	procedure make_drawing_frame (
 	-- Builds the drawing frame.
 	-- CS: Read lines and position of text placeholders from
@@ -1182,9 +1182,9 @@ is
 		log_threshold	: in type_log_level) is
 
 		use et_drawing_frame;
-		
+
 		frame : type_frame; -- a single drawing frame. see type in et_kicad.ads
-	
+
 		-- If the description reveals that there is more than one sheet, we have a hierarchic design. Means we
 		-- need to read follwing sheet sections.
 		-- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
@@ -1206,11 +1206,11 @@ is
 		-- NOTE: The problem with the attributes title, date, rev, comp is that they apply for individual sheets and
 		-- are thus not project wide.
 		-- CS: These attributes are currently lost during conversion.
-		
+
 	begin
 		log (text => "making drawing frame ...", level => log_threshold);
 		log_indentation_up;
-	
+
 		line_cursor := first (lines);
 
 		-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
@@ -1218,13 +1218,13 @@ is
 		frame.paper := to_paper_size (f (element (line_cursor), 2));
 
 		-- The sheet size seems to be ignored by kicad. Only the paper_size matters.
--- 				frame.size_x		:= mil_to_distance (f (element (line_cursor), 3)); 
--- 				frame.size_y 		:= mil_to_distance (f (element (line_cursor), 4)); 
-		
+-- 				frame.size_x		:= mil_to_distance (f (element (line_cursor), 3));
+-- 				frame.size_y 		:= mil_to_distance (f (element (line_cursor), 4));
+
 		--frame.coordinates.path := path_to_submodule;
 		set_path (frame.coordinates, path_to_sheet);
 
-		-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
+		-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are
 		-- kicad built-in things and remain unassigned here.
 
 		next (line_cursor);
@@ -1237,7 +1237,7 @@ is
 		if f (element (line_cursor), 1) = schematic_keyword_encoding then
 			-- CS test field count
 			if f (element (line_cursor), 2) /= encoding_default then
-				log (SEVERITY_WARNING, "non-default endcoding '" 
+				log (SEVERITY_WARNING, "non-default endcoding '"
 						& f (element (line_cursor), 2) & "' found !");
 			end if;
 		end if;
@@ -1245,7 +1245,7 @@ is
 		next (line_cursor);
 
 		-- Log sheet number on encountering a line like "Sheet 1 7"
-		-- NOTE: The sheet number written here (field 2) has no meaning. The real sheet number is 
+		-- NOTE: The sheet number written here (field 2) has no meaning. The real sheet number is
 		-- obtained by reading the value of sheet_number. sheet_number is has been incremented
 		-- before function read_schematic was called.
 		if f (element (line_cursor), 1) = schematic_keyword_sheet then
@@ -1256,12 +1256,12 @@ is
 			-- Instead we log the global sheet_number:
 			log (text => "sheet number" & to_string (sheet_number), level => log_threshold + 1);
 
-			-- Get the total number of sheet of this design. 
+			-- Get the total number of sheet of this design.
 			sheet_count_total := to_sheet (f (element (line_cursor), 3));
-			
+
 			-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 			if sheet_count_total > 1 then
-				-- Set in the hierarchic_sheet_file_names (to be returned) the parent_sheet name. The schematic file 
+				-- Set in the hierarchic_sheet_file_names (to be returned) the parent_sheet name. The schematic file
 				-- being processed (see input parameters of read_schematic) becomes the parent sheet
 				-- of the sheet here.
 				hierarchic_sheet_file_names.parent_sheet := to_submodule_name (
@@ -1271,27 +1271,27 @@ is
 
 			-- Our temporarily drawing frame gets the current sheet number assigned.
 			set_sheet (frame.coordinates, sheet_number);
-		end if;						
+		end if;
 
 		next (line_cursor);
 
 		-- read sheet title from a line like "Title "abc""
 		if f (element (line_cursor), 1) = schematic_keyword_title then
 			log (text => "sheet title", level => log_threshold + 1);
-			
+
 			-- CS test field count
 			-- x := to_content ((f (element (line_cursor), 2)));
-			
+
 			-- CS set sheet specific description
 		end if;
 
 		next (line_cursor);
-		
+
 		-- read date from a line like "Date "1981-01-23""
 		if f (element (line_cursor), 1) = schematic_keyword_date then
 			log (text => "sheet date", level => log_threshold + 1);
-			
-			-- CS test field count					
+
+			-- CS test field count
 			-- x := to_content (f (element (line_cursor), 2));
 
 			-- CS What shall we do with the sheet date ? Since we do a conversion from kicad to ET
@@ -1299,14 +1299,14 @@ is
 		end if;
 
 		next (line_cursor);
-		
+
 		-- read revision from a line like "Rev "9.7.1"
 		if f (element (line_cursor), 1) = schematic_keyword_revision then
 			log (text => "sheet revision", level => log_threshold + 1);
-			
-			-- CS test field count					
+
+			-- CS test field count
 			-- x := to_content (f (element (line_cursor), 2));
-			
+
 			-- CS set the module revision
 		end if;
 
@@ -1315,8 +1315,8 @@ is
 		-- read company name
 		if f (element (line_cursor), 1) = schematic_keyword_company then
 			log (text => "sheet company name", level => log_threshold + 1);
-			
-			-- CS test field count					
+
+			-- CS test field count
 			-- x := to_content (f (element (line_cursor), 2));
 
 			-- CS set the module company name
@@ -1327,11 +1327,11 @@ is
 		-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
 		if  f (element (line_cursor), 1) = schematic_keyword_comment_1 or
 			f (element (line_cursor), 1) = schematic_keyword_comment_2 or
-			f (element (line_cursor), 1) = schematic_keyword_comment_3 or 
+			f (element (line_cursor), 1) = schematic_keyword_comment_3 or
 			f (element (line_cursor), 1) = schematic_keyword_comment_4 then
 
 			log (text => "sheet comment", level => log_threshold + 1);
-			
+
 			-- CS test field count
 			-- x := to_content (f (element (line_cursor), 2));
 
@@ -1339,7 +1339,7 @@ is
 		end if;
 
 
-		-- CS: x/y coordinates and list of lines of a title block are kicad built-in things and 
+		-- CS: x/y coordinates and list of lines of a title block are kicad built-in things and
 		-- thus not available here. -> x/y assume default values (0/0).
 		-- See comment above in header of this procedure.
 
@@ -1355,14 +1355,14 @@ is
 					log_indentation_reset;
 					log (text => ada.exceptions.exception_message (event));
 					raise;
-		
+
 	end make_drawing_frame;
 
 
 	procedure make_gui_sheet (
 	-- Builds the hierachic sheet.
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		sheet		: type_hierarchic_sheet; -- the hierarchical sheet being built
 		sheet_name	: type_hierarchic_sheet_name; -- incl. file name and sheet name
@@ -1375,16 +1375,16 @@ is
 
 		text_size : et_kicad_libraries.pac_text.type_text_size; -- temporarily storage of a text size before being checked
 
-		
+
 		-- Converts a string to type_port_direction.
-		function to_direction (dir_in : in string) 
-			return et_kicad_libraries.type_port_direction 
+		function to_direction (dir_in : in string)
+			return et_kicad_libraries.type_port_direction
 		is
 			result : et_kicad_libraries.type_port_direction;
 			dir : type_sheet_port_direction; -- see et_kicad.ads
 		begin
 			dir := type_sheet_port_direction'value (dir_in);
-			
+
 			case dir is
 				when I => result := INPUT;
 				when O => result := OUTPUT;
@@ -1396,12 +1396,12 @@ is
 			log_indentation_up;
 			log (text => to_string (result), level => log_threshold + 2);
 			log_indentation_down;
-			
+
 			return result;
 
 			exception
 				when constraint_error =>
-					log (SEVERITY_ERROR, "invalid port direction '" 
+					log (SEVERITY_ERROR, "invalid port direction '"
 							& dir_in & "' !");
 					-- CS: provide more details
 					raise;
@@ -1409,10 +1409,10 @@ is
 		end to_direction;
 
 
-		
+
 		-- Converts a string to type_rotation
 		function to_orientation (
-			or_in : in string) 
+			or_in : in string)
 			return et_schematic_geometry.type_rotation_model
 		is
 			result : et_schematic_geometry.type_rotation_model;
@@ -1424,24 +1424,24 @@ is
 				when R => result := et_schematic_geometry.type_rotation_model (0.0);
 				when L => result := et_schematic_geometry.type_rotation_model (180.0);
 			end case;
-			
+
 			return result;
 
 			exception
 				when constraint_error =>
-					log (SEVERITY_ERROR, "invalid port orientation '" 
+					log (SEVERITY_ERROR, "invalid port orientation '"
 							& or_in & "' !");
 					-- CS: provide more details
 					raise;
 
 		end to_orientation;
 
-		
-		
+
+
 	begin -- make_gui_sheet
 		log (text => "making gui sheet ...", level => log_threshold);
 		log_indentation_up;
-		
+
 		line_cursor := pac_lines_of_file.first (lines);
 -- 				log (text => to_string (line), level => log_threshold + 1);
 
@@ -1451,28 +1451,28 @@ is
 			set_path (sheet.coordinates, path_to_sheet);
 			--log (text => "path " & to_string (path (sheet.coordinates)));
 			set_sheet (sheet.coordinates, sheet_number);
-			
+
 			set (sheet.coordinates, AXIS_X, mil_to_distance (f (element (line_cursor), 2)));
 			set (sheet.coordinates, AXIS_Y, mil_to_distance (f (element (line_cursor), 3)));
 
 			sheet.size_x := mil_to_distance (f (element (line_cursor), 4));
-			sheet.size_y := mil_to_distance (f (element (line_cursor), 5));                                
+			sheet.size_y := mil_to_distance (f (element (line_cursor), 5));
 		end if;
 
 		next (line_cursor);
 -- 				log (text => to_string (line), level => log_threshold + 1);
-		
+
 		-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
-		if f (element (line_cursor), 1) = schematic_keyword_sheet_timestamp then 
-			-- CS test field count					
+		if f (element (line_cursor), 1) = schematic_keyword_sheet_timestamp then
+			-- CS test field count
 			sheet.timestamp := type_timestamp (f (element (line_cursor), 2));
 		end if;
 
 		next (line_cursor);
-		
+
 		-- Read sheet name from a line like "F0 "mcu_stm32f030" 60"
 		if f (element (line_cursor), 1) = schematic_keyword_sheet_name then
-			-- CS test field count					
+			-- CS test field count
 			sheet_name.name := to_submodule_name (f (element (line_cursor), 2));
 
 			-- set text size of sheet name and test for excessive text size.
@@ -1483,19 +1483,19 @@ is
 		end if;
 
 		next (line_cursor);
-		
+
 		-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 		if f (element (line_cursor), 1) = schematic_keyword_sheet_file then
-			-- CS test field count					
+			-- CS test field count
 			sheet_name.file := to_schematic_file_name (f (element (line_cursor), 2));
-			
+
 			-- set text size of file name and test for excessive text size
 			sheet.text_size_of_file := et_kicad_libraries.pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 3)));
 
 			-- Test text size by category.
 			check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
-			
-			-- Append sheet file name to hierarchic_sheet_file_names. 
+
+			-- Append sheet file name to hierarchic_sheet_file_names.
 			-- This list will be returned by this function (we are in read_schematic) to the calling
 			-- parent unit (import_design).
 			type_hierarchic_sheet_file_names.append (
@@ -1506,7 +1506,7 @@ is
 		end if;
 
 		log (text => "hierarchic sheet " & to_string (submodule => sheet_name.name), level => log_threshold + 1);
-		
+
 		-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
 		-- The index after the F is a successive number that increments on every port:
 		-- So the next port would be "F3 "SENSOR_VCC" I R 2250 3300 60" ...
@@ -1515,13 +1515,13 @@ is
 		-- Read ports of hierachic sheet if any. Otherwise output a warning.
 		-- If no ports available, the line cursor points to a no_element.
 		if line_cursor /= pac_lines_of_file.no_element then
-			
+
 			-- Test of excessive text size.
 			text_size := et_kicad_libraries.pac_text.to_text_size (mil_to_distance (f (element (line_cursor),  7)));
 
 			-- Test text size by category.
 			check_schematic_text_size (category => PORT_NAME, size => text_size);
-			
+
 			while line_cursor /= pac_lines_of_file.no_element loop
 				log_indentation_up;
 				log (text => "port " & strip_quotes (f (element (line_cursor),  2)), level => log_threshold + 2);
@@ -1545,7 +1545,7 @@ is
 					log (SEVERITY_ERROR, "multiple usage of port " & f (element (line_cursor), 2) & " !");
 					raise constraint_error;
 				end if;
-				
+
 				log_indentation_down;
 				next (line_cursor);
 			end loop;
@@ -1558,7 +1558,7 @@ is
 		add_hierarchic_sheet (sheet_name, sheet);
 
 		log_indentation_down;
-		
+
 		exception
 			when event:
 				others =>
@@ -1570,7 +1570,7 @@ is
 	end make_gui_sheet;
 
 
-	
+
 	function net_segment_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a net segment header like "Wire Wire Line"
 		result : boolean := false;
@@ -1587,28 +1587,28 @@ is
 	end net_segment_header;
 
 
-	
-	
+
+
 	procedure make_net_segment (
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
 	-- Builds a net segment and appends it to the collection of wild segments.
 
 		-- After the segment heaser "Wire Wire Line" the next line like
-		-- "2250 3100 2400 3100" is read here. It contains start and end points 
+		-- "2250 3100 2400 3100" is read here. It contains start and end points
 		-- of a net segment.
-	
+
 		segment : type_wild_net_segment; -- the segment being built
 	begin
 		--log (text => "making net segment ...", level => log_threshold);
 		--log_indentation_up;
 
 		line_cursor := pac_lines_of_file.first (lines);
-		
+
 		-- Build a temporarily net segment with fully specified coordinates:
 		set_path (segment.coordinates_start, path_to_sheet);
 		set_path (segment.coordinates_end, path_to_sheet);
-		
+
 		-- The sheet number.
 		set_sheet (segment.coordinates_start, sheet_number);
 		set_sheet (segment.coordinates_end, sheet_number);
@@ -1621,11 +1621,11 @@ is
 
 		-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 		-- If a net segment has zero length, issue a warning.
-		if length (segment) > zero then 
+		if length (segment) > zero then
 
 			-- The net segments are to be collected in a wild list of segments for later sorting.
 			log (text => "net segment" & to_string (segment => segment, scope => xy), level => log_threshold);
-			
+
 			type_wild_segments.append (wild_segments, segment);
 		else -- segment has zero length
 			log (SEVERITY_WARNING, get_affected_line (line) & "Net segment with zero length found -> ignored !");
@@ -1635,8 +1635,8 @@ is
 	end make_net_segment;
 
 
-	
-	
+
+
 	function junction_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 		result : boolean := false;
@@ -1652,13 +1652,13 @@ is
 	end junction_header;
 
 
-	
-	
+
+
 	procedure make_junction (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level) is
-	-- Builds a net junction and stores it both in the 
-	-- junction list of the module (for statistics, ERC, ...) 
+	-- Builds a net junction and stores it both in the
+	-- junction list of the module (for statistics, ERC, ...)
 	-- AND in the wild list junctions.
 	-- The wild list is needed when the anonymous strands of
 	-- the sheet are built (see procedure build_anonymous_strands).
@@ -1668,7 +1668,7 @@ is
 		procedure append_junction (
 		-- add junction to module.junctions
 			module_name : in type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) 
+			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -1676,14 +1676,14 @@ is
 				container	=> module.junctions,
 				new_item	=> junction);
 		end append_junction;
-		
+
 	begin -- make_junction
 		--log (text => "making net junction ...", level => log_threshold);
 		--log_indentation_up;
-		
+
 		set_path (junction.coordinates, path_to_sheet);
 		set_sheet (junction.coordinates, sheet_number);
-		
+
 		set (junction.coordinates, AXIS_X, mil_to_distance (f (line,3)));
 		set (junction.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
 
@@ -1704,14 +1704,14 @@ is
 
 
 
-	
+
 	function simple_label_header (line : in type_fields_of_line) return boolean is
-	-- Returns true if given line is a header of a simple label like 
+	-- Returns true if given line is a header of a simple label like
 	-- "Text Label 2350 3250 0 60 ~ 0"
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 8 then
-			if 	f (line,1) = schematic_keyword_text and 
+			if 	f (line,1) = schematic_keyword_text and
 				f (line,2) = schematic_keyword_label_simple then
 					result := true;
 			end if;
@@ -1721,10 +1721,10 @@ is
 
 
 
-	
+
 	procedure make_simple_label (
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 	-- Builds a simple net label and appends it to the collection of wild simple labels.
 
@@ -1732,18 +1732,18 @@ is
 		-- "net_name_abc" is read here. It contains the supposed net name.
 
 		use et_conventions;
-		
+
 		label : type_net_label_simple; -- the label being built
 	begin
 		--log (text => "simple label", level => log_threshold + 1);
 		--log_indentation_up;
-		
+
 		line_cursor := pac_lines_of_file.first (lines);
 
 		-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 		set (label.coordinates, AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
 		set (label.coordinates, AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
-		
+
 		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.size := mil_to_distance (f (element (line_cursor), 6));
 		--label.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
@@ -1754,13 +1754,13 @@ is
 		-- Make sure the label text (later this will be a net name) is not longer
 		-- than allowed.
 		check_net_name_length (f (element (line_cursor), 1));
-		
+
 		-- get label text and put it to temporarily simple label
 		label.text := to_net_name (f (element (line_cursor), 1));
 
 		-- Make sure there are no forbidden characters in the net name.
 		check_net_name_characters (label.text);
-		
+
 		-- for the log
 		--log (text => "simple label" & to_string (label => type_net_label (label), scope => xy), level => log_threshold);
 		log (text => "simple label" & to_string (label => type_net_label (label)), level => log_threshold);
@@ -1768,7 +1768,7 @@ is
 		check_schematic_text_size (category => net_label, size => label.size);
 		-- CS: check label style
 		-- CS: check label line width
-		
+
 		-- The simple labels are to be collected in a wild list of simple labels.
 		type_simple_labels.append (wild_simple_labels, label);
 
@@ -1777,15 +1777,15 @@ is
 
 
 
-	
+
 	function tag_label_header (line : in type_fields_of_line) return boolean is
-	-- Returns true if given line is a header of a global or hierarchic label like 
+	-- Returns true if given line is a header of a global or hierarchic label like
 	-- "Text HLabel 2700 2000 0 60 Input ~ 0" or
 	-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 9 then
-			if f (line,1) = schematic_keyword_text and 
+			if f (line,1) = schematic_keyword_text and
 				(f (line,2) = schematic_keyword_label_hierarchic or
 				f (line,2) = schematic_keyword_label_global) then
 					result := true;
@@ -1795,18 +1795,18 @@ is
 	end tag_label_header;
 
 
-	
-	
+
+
 	-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
 	procedure make_tag_label (
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
 		-- "net_name_abc" is read here. It contains the supposed net name.
 
 		use et_conventions;
-		
+
 		label : type_net_label_tag; -- the label being built
 	begin
 		--log (text => "making tag label ...", level => log_threshold);
@@ -1840,10 +1840,10 @@ is
 		-- Make sure the label text (later this will be a net name) is not longer
 		-- than allowed.
 		check_net_name_length (f (element (line_cursor), 1));
-		
+
 		-- get label text
 		label.text := to_net_name (f (element (line_cursor), 1));
-		
+
 		-- Make sure there are no forbidden characters in the net name.
 		check_net_name_characters (label.text);
 
@@ -1853,7 +1853,7 @@ is
 
 		check_schematic_text_size (category => net_label, size => label.size);
 		-- CS: check style and line width
-		
+
 		-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 		type_tag_labels.append (wild_tag_labels, label);
 
@@ -1861,8 +1861,8 @@ is
 	end make_tag_label;
 
 
-	
-	
+
+
 	function text_note_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a text note like
 	-- Text Notes 7100 6700 0 67 Italic 13
@@ -1870,7 +1870,7 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 8 then
-			if f (line,1) = schematic_keyword_text and 
+			if f (line,1) = schematic_keyword_text and
 				f (line,2) = schematic_keyword_note then
 					result := true;
 			end if;
@@ -1880,7 +1880,7 @@ is
 
 
 
-	
+
 	-- Builds a text note and appends it to the collection of text notes.
 	procedure make_text_note (
 		lines			: in pac_lines_of_file.list;
@@ -1888,20 +1888,20 @@ is
 	is
 		-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 		-- "ERC32 Test Board" is read here. It contains the actual text.
-		
+
 		note : type_text; -- the text note being built
 		rotation : et_schematic_geometry.type_rotation_relative;
 
-		procedure warn is begin 
-			log (SEVERITY_WARNING, " text note at " 
-				& et_kicad_coordinates.to_string (position => note.position, scope => SHEET) 
+		procedure warn is begin
+			log (SEVERITY_WARNING, " text note at "
+				& et_kicad_coordinates.to_string (position => note.position, scope => SHEET)
 				& " might be misplaced !");
 		end;
-		
+
 	begin -- make_text_note
 		--log (text => "making text note ...", level => log_threshold);
 		--log_indentation_up;
-		
+
 		line_cursor := pac_lines_of_file.first (lines);
 
 		-- set coordinates
@@ -1910,7 +1910,7 @@ is
 
 		set (note.position, AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
 		set (note.position, AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
-		
+
 		rotation := to_relative_rotation (f (element (line_cursor), 5));
 
 		-- Notes might be upside down or readable from the left. So we must fit the rotation
@@ -1921,7 +1921,7 @@ is
 		--elsif rotation > 90.0 and rotation < 270.0 then
 		elsif rotation > 90.0 then
 			note.rotation := 0.0;
-			warn;					
+			warn;
 		--elsif rotation > 270.0 then
 		--	note.rotation := 90.0;
 		--	warn;
@@ -1929,7 +1929,7 @@ is
 
 		-- set text size and check for excessive size
 		note.size := et_kicad_libraries.pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 6)));
-		
+
 		--note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
 -- 				-- If the line width is too small, assume default and issue warning:
@@ -1948,7 +1948,7 @@ is
 		note.content := to_content (to_string (line));
 
 		write_note_properties (note, log_threshold);
-		
+
 		-- the notes are to be collected in the list of notes
 		add_note (note);
 
@@ -1957,15 +1957,15 @@ is
 
 
 
-	
+
 	function component_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a component.
-	-- The header is "$Comp"	
+	-- The header is "$Comp"
 	begin
 		if get_field_count (line) = 1 then
 			if f (line,1) = schematic_component_header then
 				return true;
-			else 
+			else
 				return false;
 			end if;
 		else
@@ -1974,7 +1974,7 @@ is
 	end component_header;
 
 
-	
+
 	function component_footer (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a footer of a component.
 	-- The footer is "$EndComp"
@@ -1982,7 +1982,7 @@ is
 		if get_field_count (line) = 1 then
 			if f (line,1) = schematic_component_footer then
 				return true;
-			else 
+			else
 				return false;
 			end if;
 		else
@@ -1991,39 +1991,39 @@ is
 	end component_footer;
 
 
-	
+
 	procedure make_component (
 		lines 			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
-	-- Builds a unit or a component and inserts it in the component list of 
+	-- Builds a unit or a component and inserts it in the component list of
 	-- current module. The information required to make a component is provided
 	-- in parameter "lines".
 
 	-- Some entries of the component section are relevant for the whole component.
 	-- Some entries are unit specific.
 	-- The component section looks like this example:
-	
+
 	-- V4: L 74LS00 U1				-- component specific
 	-- V5: L bel_logic:74LS00 U1	-- component specific
 	-- U 4 1 5965E676	-- unit 1 of 4, link to package in board file
 	-- P 4100 4000		-- unit position x/y
 	-- AR Path="/59F17F77/5A991798" Ref="LED1"  Part="1" -- alternative reference
-	-- AR Path="/5B7E59F3/5A991798" Ref="LED50"  Part="1" 
+	-- AR Path="/5B7E59F3/5A991798" Ref="LED50"  Part="1"
 	-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
-	-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
+	-- F 1 "74LS00" H 4100 3900 50  0000 C CNN
 	-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 	-- F 3 "" H 4100 4000 50  0001 C CNN
 	-- 	4    4100 4000		-- same as x/y pos
 
 	--  1    0    0  -1  -- orientation 0,   mirror normal
 	--  0   -1   -1   0  -- orientation 90,  mirror normal
-	-- -1    0    0   1  -- orientation 180, mirror normal 
-	-- 	0    1    1   0  -- orientation -90, mirror normal  
+	-- -1    0    0   1  -- orientation 180, mirror normal
+	-- 	0    1    1   0  -- orientation -90, mirror normal
 
 	-- 	1    0    0   1  -- orientation 0,   mirror --
-	--  0   -1    1   0  -- orientation 90,  mirror -- 
-	-- -1    0    0  -1  -- orientation 180, mirror -- 
-	--  0    1   -1   0  -- orientation -90, mirror -- 
+	--  0   -1    1   0  -- orientation 90,  mirror --
+	-- -1    0    0  -1  -- orientation 180, mirror --
+	--  0    1   -1   0  -- orientation -90, mirror --
 
 	-- -1    0    0  -1  -- orientation 0,   mirror |
 	--  0    1   -1   0  -- orientation 90,  mirror |
@@ -2031,13 +2031,13 @@ is
 	--  1    0    0   1  -- orientation -90, mirror |
 
 
-		reference					: type_device_name;	-- like IC5	
+		reference					: type_device_name;	-- like IC5
 		appearance					: type_appearance := APPEARANCE_VIRTUAL; -- CS: why this default ?
 		generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 		-- V5:
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
-		
+
 		alternative_references		: type_alternative_references.list;
 		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
@@ -2045,7 +2045,7 @@ is
 		mirror						: type_mirror;
 		timestamp					: type_timestamp; -- 59F202F2
 		alternative_representation	: type_de_morgan_representation;
-	
+
 		-- These are the "field found flags". They signal if a particular text field has been found.
 		-- They are evaluated once the given lines are read completely.
 		field_reference_found		: boolean := false;
@@ -2060,7 +2060,7 @@ is
 		field_package		: type_text_placeholder (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
 		field_datasheet		: type_text_placeholder (meaning => DATASHEET); -- might be useful for some special components
 
-		
+
 		function to_field return type_text_placeholder is
 		-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
 			text_position : type_vector_model;
@@ -2069,7 +2069,7 @@ is
 		begin
 			-- test if the field content is longer than allowed:
 			check_text_content_length (f (element (line_cursor), 3));
-			
+
 			set (text_position, AXIS_X, mil_to_distance (f (element (line_cursor), 5)));
 			set (text_position, AXIS_Y, mil_to_distance (f (element (line_cursor), 6)));
 
@@ -2080,12 +2080,12 @@ is
 
 			text_position := get_distance_relative (text_position, get_point (unit_position));
 
-			
+
 			size := mil_to_distance (f (element (line_cursor), 7));
 
 			return (
 				status		=> status,
-					   
+
 				-- read text field meaning
 				meaning 	=> to_text_meaning (line => element (line_cursor), schematic => true),
 
@@ -2097,7 +2097,7 @@ is
 
 				-- read coordinates
 				position	=> text_position,
-								
+
 				size		=> size,
 				--style		=> to_text_style (style_in => f (element (line_cursor), 10), text => false),
 				--line_width	=> text_line_width_default,
@@ -2115,38 +2115,38 @@ is
 		end to_field;
 
 
-		
-		procedure check_text_fields (log_threshold : in type_log_level) is 
+
+		procedure check_text_fields (log_threshold : in type_log_level) is
 		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
-		-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to 
+		-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to
 		-- assemble and insert the component into the component list of the module.
 
 			use et_conventions;
-		
+
 			procedure missing_field (m : in type_placeholder_meaning) is begin
 				log (SEVERITY_ERROR,
-						"component " & to_string (reference) 
+						"component " & to_string (reference)
 						& latin_1.space
 						& to_string (position => unit_position)
 						& latin_1.lf
 						& "text field " & to_string (m) & " missing !",
 					console => true);
-				
+
 				raise constraint_error;
 			end missing_field;
 
-			
+
 			procedure process_alternative_references is
 			-- Looks up alternative_references. The are provided in the schematic file in lines like:
-			-- AR Path="/5B7CFC57/5A991D18" Ref="RPH19"  Part="1" 
-			-- AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
+			-- AR Path="/5B7CFC57/5A991D18" Ref="RPH19"  Part="1"
+			-- AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1"
 			-- The line with prenultimate timestamp (59F17FDE) that matches the current_schematic.timestamp
 			-- dictates the new component reference (RPH1).
 				use type_alternative_references;
 				alt_ref_cursor : type_alternative_references.cursor := alternative_references.first;
 				suitable_reference_found : boolean := false;
 
-				
+
 				procedure query_path (alt_ref : in type_alternative_reference) is
 				-- queries paths like /59F17FDE/5A991D18 and compares the prenultimate timestamp
 				-- with the current_schematic.timestamp. Sets the suitable_reference_found flag on match.
@@ -2156,18 +2156,18 @@ is
 				begin
 					timestamp_cursor := previous (timestamp_cursor);
 					if element (timestamp_cursor) = current_schematic.timestamp then
-						
+
 						reference := alt_ref.reference;
 						field_reference.content := to_content (to_string (alt_ref.reference));
 						suitable_reference_found := true;
 
 						log (text => "update due to hierachic structure: " &
-								to_string (reference), 
+								to_string (reference),
 								level => make_component.log_threshold);
 					end if;
 				end query_path;
 
-				
+
 			begin -- process_alternative_references
 				-- loop in list of alternative references and exit once a suitable one was found.
 				while alt_ref_cursor /= type_alternative_references.no_element loop
@@ -2177,19 +2177,19 @@ is
 						process		=> query_path'access);
 
 					if suitable_reference_found then exit; end if;
-					
+
 					next (alt_ref_cursor);
 				end loop;
 			end process_alternative_references;
 
-			
+
 		begin -- check_text_fields
 			log_indentation_up;
 
 -- 					-- write precheck preamble
 			log (text => "prechecking fields ...", level => log_threshold);
 			log_indentation_up;
-			
+
 			-- reference
 			-- NOTE: the reference prefix has been checked already in main of procedure make_component
 			log (text => "reference", level => log_threshold + 1);
@@ -2209,10 +2209,10 @@ is
 
 				if type_alternative_references.is_empty (alternative_references) then -- no alternative references
 					log (text => "reference " & to_string (reference), level => log_threshold + 1);
-					
+
 					if to_string (reference) /= content (field_reference) then
-						log (SEVERITY_ERROR, "reference mismatch ! Header reads " 
-							& to_string (reference) & " but field contains " 
+						log (SEVERITY_ERROR, "reference mismatch ! Header reads "
+							& to_string (reference) & " but field contains "
 							& content (field_reference),
 							console => true);
 						raise constraint_error;
@@ -2233,12 +2233,12 @@ is
 				check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
 			end if;
 
-			-- If we are checking fields of a real component there are more 
-			-- fields to be checked. If it is about a virtual component, those 
+			-- If we are checking fields of a real component there are more
+			-- fields to be checked. If it is about a virtual component, those
 			-- fields are ignored and thus NOT checked:
 			case appearance is
 				when APPEARANCE_PCB =>
-						
+
 					-- package
 					log (text => "package/footprint", level => log_threshold + 1);
 					if not field_package_found then
@@ -2263,17 +2263,17 @@ is
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						-- CS: check content of field_datasheet
 					end if;
-					
+
 				when others => null; -- CS ?
 			end case;
 
 			log_indentation_down;
 			log_indentation_down;
-			
+
 			exception
 				when event:
 					others =>
-						log (SEVERITY_ERROR, 
+						log (SEVERITY_ERROR,
 							"invalid field in component " & to_string (reference)
 							& to_string (position => unit_position),
 							console => true);
@@ -2285,9 +2285,9 @@ is
 
 
 
-		
+
 		-- Returns the full name of the library where given generic component is contained.
-		-- The given reference serves to provide a helpful error message on the affected 
+		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function generic_name_to_library (
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
@@ -2297,18 +2297,18 @@ is
 		is
 			use type_device_libraries;
 			-- use pac_device_model_file;
-		
+
 			component_found : boolean := false; -- goes true once the given component was found in any library
-			
+
 			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
 			library : pac_device_model_file.bounded_string; -- the full library name to be returned
 
-			
-			-- Queries the components in the current library. Exits prematurely once the 
+
+			-- Queries the components in the current library. Exits prematurely once the
 			-- given generic component was found.
 			procedure query_components (
 				lib_name 	: in pac_device_model_file.bounded_string;
-				components 	: in type_components_library.map) 
+				components 	: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
 				use type_components_library;
@@ -2317,7 +2317,7 @@ is
 			begin
 				log_indentation_up;
 				while component_cursor /= type_components_library.no_element loop
-					
+
 					log (text => to_string (key (component_cursor)), level => log_threshold + 2);
 
 					-- Sometimes generic names in the library start with a tilde. it must
@@ -2331,17 +2331,17 @@ is
 				end loop;
 				log_indentation_down;
 			end query_components;
-			
-			
+
+
 		begin -- generic_name_to_library
 			log_indentation_up;
 			log (text => "locating library containing generic component " & to_string (component) & " ...", level => log_threshold);
-			
+
 			-- loop in libraries and exit prematurely once a library with the given component was found
 			while lib_cursor /= type_device_libraries.no_element loop
 				log_indentation_up;
-				log (text => "probing " 
-						& to_string (key (lib_cursor)) 
+				log (text => "probing "
+						& to_string (key (lib_cursor))
 						& " ...", level => log_threshold + 1);
 
 				query_element (
@@ -2349,57 +2349,57 @@ is
 					process		=> query_components'access);
 
 				log_indentation_down;
-				
+
 				-- Exit BEFORE advancing the lib_cursor because lib_cursor position must be kept fore
 				-- return value. See below. component_found MUST NOT be parameter of this loop.
 				if component_found then
 					exit;
 				end if;
-				
+
 				next (lib_cursor);
 
 			end loop;
 			log_indentation_down;
-			
+
 			-- After a successful search return the name of the library where lib_cursor is pointing to.
 			-- Otherwise send error messagen and abort.
 			if component_found then
 				return key (lib_cursor);
 			else
-				log (SEVERITY_ERROR, "for component "  
+				log (SEVERITY_ERROR, "for component "
 					& to_string (reference)
 					& " no generic model in any library found !",
 					console => true);
 				raise constraint_error;
 			end if;
-			
-		end generic_name_to_library;
-		
 
-		
-		-- The given reference serves to provide a helpful error message on the affected 
+		end generic_name_to_library;
+
+
+
+		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function full_name_of_component_library (
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
-			log_threshold 	: in type_log_level) 
-			return pac_device_model_file.bounded_string 
+			log_threshold 	: in type_log_level)
+			return pac_device_model_file.bounded_string
 		is
 			use type_lib_table;
 			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 
 			lib_cursor : type_device_libraries.cursor;
-			
+
 			use type_library_name;
-			
+
 			full_name : pac_device_model_file.bounded_string;
 			component_found : boolean := false;
 
-			
+
 			-- Seaches a component library for the given generic component.
 			procedure search_component (
 				lib_name	: in pac_device_model_file.bounded_string;
-				lib			: in type_components_library.map) 
+				lib			: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
 				use type_components_library;
@@ -2408,11 +2408,11 @@ is
 					component_found := true;
 				end if;
 			end search_component;
-			
-			
+
+
 		begin -- full_name_of_component_library
 			log_indentation_up;
-			log (text => "locating library '" & et_kicad_general.to_string (component_library_name) & "' containing generic component '" 
+			log (text => "locating library '" & et_kicad_general.to_string (component_library_name) & "' containing generic component '"
 					& to_string (component) & "' ...", level => log_threshold);
 
 			-- Search in the sym-lib-table for the first an entry having the component_library_name (uri)
@@ -2422,31 +2422,31 @@ is
 
 					-- locate component library by full_name
 					lib_cursor := type_device_libraries.find (tmp_component_libraries, full_name);
-					
+
 					-- Test if library contains the given generic component.
 					type_device_libraries.query_element (
 						position	=> lib_cursor,
 						process		=> search_component'access);
-					
+
 				end if;
 
 				-- Cancel search once the given generic component has been found. Otherwise
 				-- proceed with next same named library in sym-lib-table.
 				if component_found then exit; end if;
-				
+
 				next (sym_lib_cursor);
 			end loop;
 
 			log_indentation_down;
-			
+
 			-- After a successful search return the name of the library where lib_cursor is pointing to.
 			-- Otherwise send error messagen and abort.
 			if component_found then
 				return full_name;
 			else
-				log (SEVERITY_ERROR, "for component "  
+				log (SEVERITY_ERROR, "for component "
 					& to_string (reference)
-					& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name) 
+					& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name)
 					& "' found !",
 					console => true);
 				raise constraint_error;
@@ -2456,7 +2456,7 @@ is
 
 
 
-		
+
 		function remove_leading_hash (reference : in type_device_name) return
 		-- Removes from a reference like #PWR04 the leading hash character.
 		-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
@@ -2474,29 +2474,29 @@ is
 		end remove_leading_hash;
 
 
-		
 
-		
+
+
 		procedure insert_component is
 		-- Inserts the component in the component list of the module (indicated by module_cursor).
 		-- Components may occur multiple times, which implies they are
 		-- split into units (EAGLE refers to them as "gates").
 		-- Only the first occurence of the component leads to appending it to the component list of the module.
-		
+
 		-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 		-- Tests if a footprint has been associated with the component.
 
 			full_component_library_name : pac_device_model_file.bounded_string;
 
 			use et_import;
-			
+
 		begin -- insert_component
 
 			case cad_format is
 				when KICAD_V4 =>
 					-- KiCad V4 does not provide an exact name of the library where the generic component
 					-- model can be found. It only provides the generic name of the model.
-					-- The library is determined by the order of the library names in the 
+					-- The library is determined by the order of the library names in the
 					-- project file. It is the first library in this list that contains the model.
 					-- The function generic_name_to_library does the job and sets the full_component_library_name
 					-- here right away:
@@ -2506,7 +2506,7 @@ is
 							log_threshold	=> log_threshold + 3);
 
 				when KICAD_V5 =>
-					-- KiCad V5 provides a simple name for the component library along with the generic 
+					-- KiCad V5 provides a simple name for the component library along with the generic
 					-- component name. From the library name we must deduce the full library name.
 					full_component_library_name := full_name_of_component_library (
 							component		=> generic_name_in_lbr,	-- 7400
@@ -2515,19 +2515,19 @@ is
 
 				when others => raise constraint_error;
 			end case;
-			
+
 			log_indentation_up;
 
-			
+
 			-- The component is inserted into the components list of the module according to its appearance.
 			-- If the component has already been inserted, it will not be inserted again.
 			-- CS: Even if the component is not inserted again, all the operations that form its elements
 			-- like power_flag, library_name, ... are executed which is a waste of computing time.
-			
+
 			case appearance is
-				
+
 				when APPEARANCE_VIRTUAL => -- we have a line like "L P3V3 #PWR07"
-			
+
 					add_component (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 						component	=> (
@@ -2539,22 +2539,22 @@ is
 							library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 							generic_name	=> generic_name_in_lbr,
 							alt_references	=> alternative_references,
-							
+
 							value 			=> to_value_with_check (
 												value => content (field_value),
 												error_on_invalid_character => false),
 								-- For the operators convenice no error is raised if invalid
 								-- character found. This was the design gets imported but with
 								-- (lots of) warnings.
-							
+
 							-- At this stage we do not know if and how many units there are. So the unit list is empty.
 							units 			=> type_units_schematic.empty_map),
 						log_threshold => log_threshold + 2);
 
-					
+
 				when APPEARANCE_PCB => -- we have a line like "L 74LS00 U1"
 
-					add_component ( 
+					add_component (
 						reference => reference,
 						component => (
 							appearance		=> APPEARANCE_PCB,
@@ -2562,7 +2562,7 @@ is
 							library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 							generic_name	=> generic_name_in_lbr,
 							alt_references	=> alternative_references,
-							
+
 							value 			=> to_value_with_check (
 												value => content (field_value),
 												error_on_invalid_character => false),
@@ -2584,7 +2584,7 @@ is
 							-- This is layout related and will be filled on layout import later (much later):
 							position			=> et_board_coordinates.package_position_default, -- the position of the package in the layout
 							text_placeholders	=> (others => <>),  -- placeholders for reference, value, purpose in the layout
-							
+
 							-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 							units => type_units_schematic.empty_map),
 
@@ -2592,7 +2592,7 @@ is
 
 						-- Test if footprint has been associated with the component.
 						if content (field_package)'size = 0 then
-							log (SEVERITY_ERROR, "component " & to_string (reference) 
+							log (SEVERITY_ERROR, "component " & to_string (reference)
 									& " footprint not specified !",
 								console => true);
 							raise constraint_error;
@@ -2601,23 +2601,23 @@ is
 			end case;
 
 			log_indentation_down;
-			
+
 			exception
 				when constraint_error =>
 					log (SEVERITY_ERROR, "component " & to_string (reference)
 							& " " & to_string (position => unit_position),
 						console => true);
 					raise constraint_error;
-			
+
 		end insert_component;
 
 
 
 
-		
+
 		-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 		-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
-		-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
+		-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic)
 		-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 		-- of meta-data. See procedure insert_component.
 		-- Raises constraint error if unit already in unit list of component.
@@ -2625,13 +2625,13 @@ is
 			status : type_object_status;
 		begin
 			log_indentation_up;
-			
+
 			case appearance is
 				when APPEARANCE_VIRTUAL =>
 
 					add_unit (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
-						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
+						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...
 						unit 		=> (
 							appearance		=> APPEARANCE_VIRTUAL,
 							position		=> unit_position,
@@ -2659,17 +2659,17 @@ is
 									size		=> field_value.size,
 									alignment	=> field_value.alignment)
 									),
-						
+
 						log_threshold => log_threshold + 2);
-										
+
 
 				when APPEARANCE_PCB =>
 
-					add_unit 
+					add_unit
 						(
 						reference	=> reference,
-						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
-						unit 		=> 
+						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...
+						unit 		=>
 							(
 							appearance		=> APPEARANCE_PCB,
 							position		=> unit_position,
@@ -2679,7 +2679,7 @@ is
 							alt_repres		=> alternative_representation,
 
 							-- The kicad placeholders are now converted to ET native placeholders:
-						
+
 							reference		=> (
 								status		=> status,
 								meaning		=> et_device_placeholders.NAME,
@@ -2706,24 +2706,24 @@ is
 			log_indentation_down;
 		end insert_unit;
 
-		
 
 
-		
+
+
 		-- Checks if the x/y position of the unit matches that provided in given line.
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
 			use pac_unit_name;
-		begin			
+		begin
 			if to_string (unit_name) /= f (line,1) then
 				log (SEVERITY_ERROR, "invalid unit name '" & f (line,1) & "'", console => true);
 				raise constraint_error;
 			end if;
-			
+
 			if get_x (unit_position) /= mil_to_distance (f (line,2)) then
--- 					log (text => "position invalid. expected '" & to_string (position.x) 
--- 						& "' found '" 
+-- 					log (text => "position invalid. expected '" & to_string (position.x)
+-- 						& "' found '"
 -- 						& field (line,2)
 -- 						& "'");
 				raise constraint_error; -- CS: write useful message
@@ -2734,26 +2734,26 @@ is
 			end if;
 		end verify_unit_name_and_position;
 
-		
+
 
 		procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
 		-- Builds from a line (see below) the component orientation and mirror style:
 
-			-- Angles in Kicad are to be interpreted as: 
+			-- Angles in Kicad are to be interpreted as:
 			-- positive angle -> counter clock wise
 			-- negative angle -> clock wise
 
 			-- The order of operations: FIRST rotate THEN mirror
-			
+
 			--  1    0    0  -1  -- orientation 0,   mirror normal
 			--  0   -1   -1   0  -- orientation 90,  mirror normal
-			-- -1    0    0   1  -- orientation 180, mirror normal 
-			-- 	0    1    1   0  -- orientation -90, mirror normal  
+			-- -1    0    0   1  -- orientation 180, mirror normal
+			-- 	0    1    1   0  -- orientation -90, mirror normal
 
 			-- 	1    0    0   1  -- orientation 0,   mirror --
-			--  0   -1    1   0  -- orientation 90,  mirror -- 
-			-- -1    0    0  -1  -- orientation 180, mirror -- 
-			--  0    1   -1   0  -- orientation -90, mirror -- 
+			--  0   -1    1   0  -- orientation 90,  mirror --
+			-- -1    0    0  -1  -- orientation 180, mirror --
+			--  0    1   -1   0  -- orientation -90, mirror --
 
 			-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
 			--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
@@ -2762,7 +2762,7 @@ is
 
 			orient_1, orient_2 : type_schematic_unit_orientation;
 			mirror_1, mirror_2 : type_schematic_unit_mirror_style;
-		
+
 		begin -- CS: provide useful log messages via exception handler
 
 			-- compute unit orientation
@@ -2791,17 +2791,17 @@ is
 							-- invalid mirror style
 							raise constraint_error;
 						end if;
-						
+
 					else
 						-- invalid orientation
 						raise constraint_error;
 					end if;
-						
+
 				when  0 =>
 					case orient_2 is
-						when -1 => 
+						when -1 =>
 							orientation := 90.0;
-							
+
 							-- compute unit mirror style
 							case mirror_1 is
 								when -1 =>
@@ -2851,7 +2851,7 @@ is
 									end if;
 							end case;
 
-						when others => 
+						when others =>
 							-- invalid orientation
 							raise constraint_error;
 					end case;
@@ -2875,20 +2875,20 @@ is
 							-- invalid mirror style
 							raise constraint_error;
 						end if;
-						
+
 					else
 						-- invalid orientation
 						raise constraint_error;
 					end if;
 			end case;
 		end build_unit_orientation_and_mirror_style;
-		
+
 
 		procedure add_alternative_reference (line : in type_fields_of_line) is
-		-- Adds the alternative reference given in a line like 
-		-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1" 
+		-- Adds the alternative reference given in a line like
+		-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1"
 		-- to the list alternative_references.
-		
+
 			path	: type_fields_of_line; -- 59F17F77 5A991798
 			ref		: type_device_name; -- #PWR03
 			unit	: pac_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
@@ -2898,17 +2898,17 @@ is
 		begin
 			log (text => "alternative reference " & to_string (line), level => log_threshold + 3); -- Path="/59F17F77/5A991798
 			--log (text => field (line, 2) (8 .. field (line, 2)'last), level => log_threshold + 1);
-			
-			-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
+
+			-- extract the path segments from field 2: example: Path="/59F17F77/5A991798
 			path := read_line (
 				line			=> trim (f (line, 2) (8 .. f (line, 2)'last), both), -- 59F17F77/5A991798
 				-- NOTE: the trailing double quote is already gone.
-				
+
 				comment_mark	=> "", -- no comment marks
 				ifs				=> hierarchy_separator (1)); -- hierarchy_separator is a string
 
 			--log (text => to_string (path), level => log_threshold + 1);
-			
+
 			-- Transfer the path segments to alt_ref_path.
 			-- "path" contains a list of strings.
 			-- alt_ref_path is a list of timestamps
@@ -2918,13 +2918,13 @@ is
 				path_segment := type_timestamp (f (path, place));
 
 				-- append the segment
-				type_alternative_reference_path.append (	
+				type_alternative_reference_path.append (
 					container	=> alt_ref_path,
 					new_item	=> path_segment);
 			end loop;
 
 -- 					log (text => "new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", level => log_threshold + 1);  -- #PWR03
-			
+
 			-- extract the reference from field 3: example: Ref="#PWR03
 			-- NOTE: the trailing double quote is already gone.
 			ref := to_component_reference (
@@ -2933,7 +2933,7 @@ is
 
 -- 					log (text => "test", level => log_threshold + 1);
 -- 					log (text => "new reference " & et_libraries.to_string (ref), level => log_threshold + 1);  -- #PWR03
-			
+
 			-- extract the part name (CS unit name ?) from field 4: example Part="1
 			-- NOTE: the trailing double quote is already gone.
 			unit := to_unit_name (f (line, 4) (7 .. (f (line, 4)'last)));
@@ -2947,10 +2947,10 @@ is
 								reference	=> ref,
 								part		=> unit
 								));
-			
+
 		end add_alternative_reference;
 
-		
+
 		function generic_name (text : in string) return type_component_generic_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
 			ifs : constant string (1..1) := ":";
@@ -2964,7 +2964,7 @@ is
 			return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
 		end generic_name;
 
-		
+
 		function extract_library_name (text : in string) return type_library_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
 			ifs : constant string (1..1) := ":";
@@ -2979,7 +2979,7 @@ is
 		end extract_library_name;
 
 
-		
+
 	begin -- make_component (schematic)
 		log (text => "making component ...", level => log_threshold);
 		log_indentation_up;
@@ -2990,12 +2990,12 @@ is
 
 			log (text => "component line: " & to_string (element (line_cursor)), level => log_threshold + 6);
 
-			-- V4: 
+			-- V4:
 			--	- Read component generic name and annotation from a line like "L NetChanger N1".
 			-- V5:
-			--	- Read library name, component generic name and annotation from a line like "L bel_logic:7400 IC1". 
-			
-			-- From this entry we reason the component appearance. 
+			--	- Read library name, component generic name and annotation from a line like "L bel_logic:7400 IC1".
+
+			-- From this entry we reason the component appearance.
 			-- The appearance is important for contextual validation of the fields.
 			-- It is also required for validation of the reference (like R12 or C4).
 			if f (element (line_cursor), 1) = schematic_component_identifier_name then -- "L"
@@ -3011,52 +3011,52 @@ is
 
 					when others => raise constraint_error;
 				end case;
-						
+
 				log (text => "generic name " & to_string (generic_name_in_lbr), level => log_threshold + 1);
-				
+
 				check_generic_name_characters (
 					name => generic_name_in_lbr, -- "SN74LS00"
 					-- NOTE: We do not allow tilde characters here. they occur ONLY in the library:
-					characters => component_generic_name_characters); 
+					characters => component_generic_name_characters);
 
 				appearance := to_appearance (line => element (line_cursor), schematic => true);
 				log (text => to_string (appearance, verbose => true), level => log_threshold + 3);
 
-				
+
 				-- Depending on the appearance of the component the reference is built and checked.
 				-- IMPORTANT: The reference is preliminary. Due to possible hierarchic design, it
 				-- might be overwritten once alternative references are found in this sheet.
-				case appearance is				
-					when APPEARANCE_VIRTUAL => 
+				case appearance is
+					when APPEARANCE_VIRTUAL =>
 						-- We have a line like "L P3V3 #PWR07".
 						-- Build a reference type from the given reference string.
 						-- Afterward we validate the prefix of the reference. It must be
 						-- a power symbol or a power flag (#PWR or #FLG).
 						reference := to_component_reference (
 							text_in			=> f (element (line_cursor), 3),
-							leading_hash	=> true); 
+							leading_hash	=> true);
 
 						log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 						validate_prefix (reference);
 
-						
+
 					when APPEARANCE_PCB =>
 						-- we have a line like "L 74LS00 IC13"
 						-- -- Build a reference type from the given reference string.
-						-- Afterward we validate the prefix of the reference. 
-						-- It is about a REAL component. Its prefix must be one 
+						-- Afterward we validate the prefix of the reference.
+						-- It is about a REAL component. Its prefix must be one
 						-- of those defined in the configuration file (see et_conventions).
 						reference := to_component_reference ( -- character check included
 							text_in			=> f (element (line_cursor), 3),
 							leading_hash	=> false);
 
 						log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
-						
+
 				end case;
-							
+
 				-- CS: check proper annotation
 
-			-- read line like "U 2 1 4543D4D3F" 
+			-- read line like "U 2 1 4543D4D3F"
 			-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag.
 			-- Last field is the link to the package in the board file.
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_unit then -- "U"
@@ -3075,7 +3075,7 @@ is
 
 			-- Read unit coordinates from a line like "P 3200 4500".
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_coord then -- "P"
-			
+
 				set (unit_position, AXIS_X, mil_to_distance (f (element (line_cursor), 2))); -- "3200"
 				set (unit_position, AXIS_Y, mil_to_distance (f (element (line_cursor), 3))); -- "4500"
 
@@ -3097,15 +3097,15 @@ is
 			elsif f (element (line_cursor), 1) = component_field_identifier then -- "F"
 
 				--log (text => "unit field A: " & to_string (line));
-				
+
 				case type_component_field_id'value (f (element (line_cursor), 2)) is
-					
+
 					when component_field_reference =>
 						field_reference_found := true;
 						field_reference := to_field;
 						-- NOTE: This is a redundant field. Its content must match the reference (see above).
 						-- This test is performed in procedure check_text_fields.
-						
+
 					when component_field_value =>
 						field_value_found := true;
 						field_value := to_field;
@@ -3122,7 +3122,7 @@ is
 							-- (lots of) warnings.
 						end;
 
-						
+
 					when component_field_package =>
 						field_package_found := true;
 						field_package := to_field;
@@ -3130,19 +3130,19 @@ is
 						check_package_name_characters (
 							packge		=> pac_package_name.to_bounded_string (content (field_package)),
 							characters	=> component_package_name_characters);
-						
+
 					when component_field_datasheet =>
 						field_datasheet_found := true;
 						field_datasheet := to_field;
 						check_datasheet_length (content (field_datasheet));
 						check_datasheet_characters (
 							datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
-						
+
 					when others => null; -- ignore other fields
 				end case;
 
 				--log (text => "unit field B: " & to_string (line));
-				
+
 			else
 				-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
 				-- "2    6000 4000"
@@ -3153,11 +3153,11 @@ is
 					when 3 => -- we have the unit name and its x/y position.
 						-- We verify if unit name and position match the values read earlier:
 						verify_unit_name_and_position (element (line_cursor));
-					
+
 					when 4 => -- we have the unit mirror style and orientation
 						build_unit_orientation_and_mirror_style (element (line_cursor));
-					
-					when others => 
+
+					when others =>
 						raise constraint_error; -- CS: write useful message
 				end case;
 
@@ -3170,7 +3170,7 @@ is
 		-- Check whether all required text fields have been found.
 		-- Check content of text fields for syntax and plausibility.
 		check_text_fields (log_threshold + 1);
-		
+
 		-- Insert component in component list of module. If a component is split
 		-- in units, only the first occurence of it leads to inserting the component.
 		-- Nevertheless there are some checks on the unit (see insert_component).
@@ -3180,17 +3180,17 @@ is
 		insert_unit;
 
 		log_indentation_down;
-		
+
 		exception
 			when
 				others =>
 					if line_cursor /= pac_lines_of_file.no_element then
 						error_in_schematic_file (line);
 					end if;
-						
+
 					--log (text => ada.exceptions.exception_message (event), console => true);
 					raise;
-		
+
 	end make_component;
 
 	function no_connection_header (line : in type_fields_of_line) return boolean is
@@ -3206,14 +3206,14 @@ is
 		return result;
 	end no_connection_header;
 
-	
+
 	procedure make_no_connection (line : in type_fields_of_line) is
 	-- Builds a no-connect flag and stores it a wild list of no-connection-flags
 	-- A line that specifies such a flag loops like "NoConn ~ 5000 3900"
 		no_connection_flag : type_no_connection_flag;
 
 		use type_modules;
-	
+
 		procedure append_no_connect_flag (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
@@ -3223,15 +3223,15 @@ is
 			append (
 				container => module.no_connections,
 				new_item => no_connection_flag);
-		end append_no_connect_flag;				
-	
+		end append_no_connect_flag;
+
 	begin -- make_no_connection
 		set_path (no_connection_flag.coordinates, path_to_sheet);
 		set_sheet (no_connection_flag.coordinates, sheet_number);
-		
+
 		set (no_connection_flag.coordinates, AXIS_X, mil_to_distance (f (line,3)));
 		set (no_connection_flag.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
-		
+
 		-- for the log
 		log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
 				level => log_threshold + 1);
@@ -3241,12 +3241,12 @@ is
 			container	=> modules,
 			position	=> module_cursor,
 			process		=> append_no_connect_flag'access);
-		
+
 	end make_no_connection;
 
-	
+
 begin -- read
-	
+
 	log_indentation_reset;
 	log_indentation_up;
 
@@ -3260,7 +3260,7 @@ begin -- read
 		-- log module path as recorded by parent unit
 		log_indentation_up;
 		log (text => "path " & to_string (path_to_sheet), level => log_threshold);
-		
+
 		open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.sheet.file));
 		set_input (schematic_handle);
 
@@ -3276,7 +3276,7 @@ begin -- read
 				ifs 			=> latin_1.space); -- fields are separated by space
 			-- CS: If read_line exits with an exception, the exception handler of read_schematic
 			-- outputs the line BEFORE the faulty line. Thus misleading the operator.
-			
+
 			case get_field_count (line) is
 				when 0 => null; -- we skip empty lines
 				when others =>
@@ -3288,9 +3288,9 @@ begin -- read
 					-- READ SCHEMATIC HEADLINE:
 
 					-- EESchema Schematic File Version x
-					
+
 					if not schematic_version_valid then
-						check_header (line); 
+						check_header (line);
 						-- sets schematic_version_valid true.
 						-- aborts program if version not supported
 					end if;
@@ -3314,7 +3314,7 @@ begin -- read
 						end if;
 					else -- we are inside the sheet header and wait for the footer
 						if get_field_count (line) = 2 then
-							if f (line,1) = schematic_eelayer 
+							if f (line,1) = schematic_eelayer
 								and f (line,2) = schematic_eelayer_end then
 									sheet_header_entered := false;
 									lines.append (line);
@@ -3325,7 +3325,7 @@ begin -- read
 							end if;
 						end if;
 					end if;
-					
+
 					-- READ DESCRIPTION:
 
 					-- $Descr A4 11693 8268
@@ -3340,7 +3340,7 @@ begin -- read
 					-- Comment3 ""
 					-- Comment4 ""
 					-- $EndDescr
-					
+
 					if not description_entered then
 						if f (line,1) = schematic_description_header then -- $Descr A4 11693 8268
 							description_entered := true; -- we are entering the sheet description
@@ -3362,17 +3362,17 @@ begin -- read
 					-- Read hierarchical GUI sheets (if there has been a total sheet count greater 1 detected earlier).
 					-- A hierachical GUI sheet displays a hierarchical sheet as a black box with its ports.
 					-- It serves as link between a hierachical net and the parent module.
-					-- Rightly said this is the black box representation of a submodule. 
+					-- Rightly said this is the black box representation of a submodule.
 					-- So in the following we refer to them as "submodule".
 					-- A submodule (sheet) section example:
-					
+
 					-- $Sheet
-					-- S 4050 5750 1050 650 
+					-- S 4050 5750 1050 650
 					-- U 58A73B5D
 					-- F0 "Sheet58A73B5C" 58
 					-- F1 "morpho_test.sch" 58
-					-- F2 "SENSOR_GND" U R 2250 3100 60 
-					-- F3 "SENSOR_VCC" I L 1350 3250 60 
+					-- F2 "SENSOR_GND" U R 2250 3100 60
+					-- F3 "SENSOR_VCC" I L 1350 3250 60
 					-- $EndSheet
 
 					if sheet_count_total > 1 then -- read hierarchical GUI sheets
@@ -3394,11 +3394,11 @@ begin -- read
 
 					-- Further parts of the file can be read IF the description has been processed before (see above)
 					if description_processed then
-						
+
 						-- READ NET SEGMENTS
 
 						-- Wire Wire Line
-						-- 2250 3100 2400 3100 
+						-- 2250 3100 2400 3100
 
 						if not net_segment_entered then
 							if net_segment_header (line) then
@@ -3411,15 +3411,15 @@ begin -- read
 							clear (lines);
 						end if;
 
-						-- READ NET JUNCTIONS 
-						
+						-- READ NET JUNCTIONS
+
 						-- Connection ~ 4650 4600
 
 						if junction_header (line) then
 							make_junction (line, log_threshold + 1);
 						end if;
-							
-						-- READ SIMPLE NET LABELS (they do not have a tag, but just a text) 
+
+						-- READ SIMPLE NET LABELS (they do not have a tag, but just a text)
 
 						-- Text Label 2350 3250 0 60 ~ 0
 						-- TOP_VCC
@@ -3435,7 +3435,7 @@ begin -- read
 							make_simple_label (lines, log_threshold + 1);
 							clear (lines);
 						end if;
-						
+
 						-- READ TAG NET-LABELS (global or hierarchical)
 
 						-- Text GLabel 4700 3200 1    60   UnSpc ~ 0
@@ -3453,48 +3453,48 @@ begin -- read
 							pac_lines_of_file.clear (lines);
 						end if;
 
-						-- READ NOTES 
+						-- READ NOTES
 
 						-- "Text Notes 3400 2800 0 60 Italic 12"
 						-- "ERC32 Test Board"
-						
+
 						if not note_entered then
 							if text_note_header (line) then
 								note_entered := true; -- we are entering a note
 								lines.append (line);
 							end if;
-						else 
+						else
 							note_entered := false; -- we are leaving a note
 							lines.append (line);
 							make_text_note (lines, log_threshold + 1);
 							clear (lines);
 						end if;
-						
+
 						-- READ COMPONENTS
 						-- Once a component header ($Comp) found, set component_entered flag. This indicates we are inside a component section.
 						-- Inside the component section, we process its content until the component footer ($EndComp) is found.
 						-- Some entries of the component section are relevant for the whole component. Some entries are unit specific.
 						-- The component section looks like this example:
-						
+
 						-- $Comp
 						-- L 74LS00 U1		-- component specific
 						-- U 4 1 5965E676	-- unit specific
 						-- P 4100 4000		-- unit specific
 						-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
-						-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
+						-- F 1 "74LS00" H 4100 3900 50  0000 C CNN
 						-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 						-- F 3 "" H 4100 4000 50  0001 C CNN
 						-- 	4    4100 4000		-- CS: same as x/y pos ?
 
 						--  1    0    0  -1  -- orientation 0,   mirror normal
 						--  0   -1   -1   0  -- orientation 90,  mirror normal
-						-- -1    0    0   1  -- orientation 180, mirror normal 
-						-- 	0    1    1   0  -- orientation -90, mirror normal  
+						-- -1    0    0   1  -- orientation 180, mirror normal
+						-- 	0    1    1   0  -- orientation -90, mirror normal
 
 						-- 	1    0    0   1  -- orientation 0,   mirror --
-						--  0   -1    1   0  -- orientation 90,  mirror -- 
-						-- -1    0    0  -1  -- orientation 180, mirror -- 
-						--  0    1   -1   0  -- orientation -90, mirror -- 
+						--  0   -1    1   0  -- orientation 90,  mirror --
+						-- -1    0    0  -1  -- orientation 180, mirror --
+						--  0    1   -1   0  -- orientation -90, mirror --
 
 						-- -1    0    0  -1  -- orientation 0,   mirror |
 						--  0    1   -1   0  -- orientation 90,  mirror |
@@ -3515,13 +3515,13 @@ begin -- read
 							else -- read lines of unit/component
 								lines.append (line);
 							end if;
-						
+
 						end if;
 
 						-- READ NO-CONNECT-FLAGS
 
 						-- NoConn ~ 5000 3900
-						
+
 						if no_connection_header (line) then
 							make_no_connection (line);
 						end if;
@@ -3542,9 +3542,9 @@ begin -- read
 
 		-- All anonymous strands must be given a name. The name is enforced by the a net label.
 		-- (The fact that power-put ports enforce a name also, is cared for later on netlist generation.)
-		-- The first label found on the strand sets the strand name and scope. 
-		-- Other labels on the strand are checked for their name only. 
-		-- If the name differs from the net name set earlier, a warning is output. 
+		-- The first label found on the strand sets the strand name and scope.
+		-- Other labels on the strand are checked for their name only.
+		-- If the name differs from the net name set earlier, a warning is output.
 		-- Strands without label remain anonymous. Their name is assigned by using the notation "N$".
 		-- The strands are finally appended to the strands of the current module (see spec. of type_module.strands).
 		associate_net_labels_with_anonymous_strands (log_threshold + 1);
@@ -3560,13 +3560,13 @@ begin -- read
 	exception
 		when others =>
 			error_in_schematic_file (line);
-			raise;					
+			raise;
 
 end read;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -68,8 +68,8 @@ package body et_cp_board_via is
 	use pac_geometry_2;
 
 
-	
-	
+
+
 	procedure set_via_properties (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -86,18 +86,18 @@ package body et_cp_board_via is
 		kw_outer	: constant string := "outer";
 		kw_dru		: constant string := "dru";
 
-		
+
 		procedure expect_keywords is begin
-			raise syntax_error_1 with 
+			raise syntax_error_1 with
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (kw_drill) & " or "
-				& enclose_in_quotes (kw_restring) 
+				& enclose_in_quotes (kw_restring)
 				& " after " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
 
-		
 
-		
+
+
 		procedure deactivate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -107,7 +107,7 @@ package body et_cp_board_via is
 			module.board.user_settings.vias.drill.active := false;
 		end deactivate_drill;
 
-		
+
 		procedure activate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -118,7 +118,7 @@ package body et_cp_board_via is
 			module.board.user_settings.vias.drill.size := to_distance (get_field (cmd, 6));
 		end activate_drill;
 
-		
+
 		procedure deactivate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -128,7 +128,7 @@ package body et_cp_board_via is
 			module.board.user_settings.vias.restring_inner.active := false;
 		end deactivate_inner_restring;
 
-		
+
 		procedure activate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -139,7 +139,7 @@ package body et_cp_board_via is
 			module.board.user_settings.vias.restring_inner.width := to_distance (get_field (cmd, 7));
 		end activate_inner_restring;
 
-		
+
 		procedure deactivate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -149,7 +149,7 @@ package body et_cp_board_via is
 			module.board.user_settings.vias.restring_outer.active := false;
 		end deactivate_outer_restring;
 
-		
+
 		procedure activate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -161,14 +161,14 @@ package body et_cp_board_via is
 		end activate_outer_restring;
 
 
-		
+
 	begin -- set_via_properties
 		log (text => "set via properties", level => log_threshold);
 		log_indentation_up;
 
-		
-		case cmd_field_count is			
-			when 6 => 
+
+		case cmd_field_count is
+			when 6 =>
 				-- board demo set via drill 0.3/dru
 				if get_field (cmd, 5) = kw_drill then
 					if get_field (cmd, 6) = kw_dru then
@@ -182,8 +182,8 @@ package body et_cp_board_via is
 					expect_keywords;
 				end if;
 
-				
-			when 7 => 
+
+			when 7 =>
 				-- board demo set via restring inner/outer 0.2
 				if get_field (cmd, 5) = kw_restring then
 
@@ -194,8 +194,8 @@ package body et_cp_board_via is
 							update_element (generic_modules, module, deactivate_inner_restring'access);
 						else
 							update_element (generic_modules, module, activate_inner_restring'access);
-							
-							-- CS validate against dru settings	
+
+							-- CS validate against dru settings
 						end if;
 
 					-- board demo set via restring outer 0.2
@@ -208,21 +208,21 @@ package body et_cp_board_via is
 
 							-- CS validate against dru settings
 						end if;
-						
+
 					else
 						raise syntax_error_1 with
-							"ERROR: Expect keywords " 
+							"ERROR: Expect keywords "
 							& enclose_in_quotes (kw_inner) & " or "
-							& enclose_in_quotes (kw_outer) 
+							& enclose_in_quotes (kw_outer)
 							& " after keyword " & enclose_in_quotes (kw_restring) & " !";
-					
+
 					end if;
 				else
 					expect_keywords;
 				end if;
-				
-				
-			when 8 .. type_field_count'last => 
+
+
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 
 			when others => command_incomplete (cmd);
@@ -233,12 +233,12 @@ package body et_cp_board_via is
 	end set_via_properties;
 
 
-		
 
 
 
 
-	
+
+
 
 	procedure place_via (
 		module			: in pac_generic_modules.cursor;
@@ -249,8 +249,8 @@ package body et_cp_board_via is
 		use et_drills;
 		use et_vias;
 		use et_design_rules_board;
-		
-		
+
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
@@ -265,13 +265,13 @@ package body et_cp_board_via is
 		lower_layer		: type_via_layer;
 		upper_layer		: type_via_layer;
 
-		
+
 		procedure set_net_name is begin
 			-- CS check net name: characters, length, existence of net
 			net_name := to_net_name (get_field (cmd, 5));
 		end set_net_name;
 
-		
+
 		procedure set_position is begin
 			drill.position := to_vector_model (get_field (cmd, 6), get_field (cmd, 7));
 
@@ -285,7 +285,7 @@ package body et_cp_board_via is
 		keyword_top		: constant string := "top";
 		keyword_bottom	: constant string := "bottom";
 
-		
+
 		procedure through is
 			via : type_via (THROUGH);
 		begin
@@ -293,11 +293,11 @@ package body et_cp_board_via is
 				category		=> THROUGH,
 				restring_inner	=> restring_inner,
 				restring_outer	=> restring_outer);
-					
+
 			et_board_ops_vias.place_via (
-				module_cursor	=> module, 
-				net_name		=> net_name, 
-				via				=> via, 
+				module_cursor	=> module,
+				net_name		=> net_name,
+				via				=> via,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -305,7 +305,7 @@ package body et_cp_board_via is
 				log_threshold	=> log_threshold + 1);
 		end through;
 
-		
+
 		procedure blind_top is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
@@ -314,11 +314,11 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				restring_top	=> restring_top,
 				lower			=> lower_layer);
-					
+
 			et_board_ops_vias.place_via (
-				module_cursor	=> module, 
-				net_name		=> net_name, 
-				via				=> via, 
+				module_cursor	=> module,
+				net_name		=> net_name,
+				via				=> via,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -326,7 +326,7 @@ package body et_cp_board_via is
 				log_threshold	=> log_threshold + 1);
 		end blind_top;
 
-		
+
 		procedure blind_bottom is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
@@ -335,11 +335,11 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				restring_bottom	=> restring_bottom,
 				upper			=> upper_layer);
-					
+
 			et_board_ops_vias.place_via (
-				module_cursor	=> module, 
-				net_name		=> net_name, 
-				via				=> via, 
+				module_cursor	=> module,
+				net_name		=> net_name,
+				via				=> via,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -347,7 +347,7 @@ package body et_cp_board_via is
 				log_threshold	=> log_threshold + 1);
 		end blind_bottom;
 
-		
+
 		procedure buried is
 			via : type_via (BURIED);
 		begin
@@ -355,11 +355,11 @@ package body et_cp_board_via is
 				category		=> BURIED,
 				restring_inner	=> restring_inner,
 				layers			=> buried_layers);
-					
+
 			et_board_ops_vias.place_via (
-				module_cursor	=> module, 
-				net_name		=> net_name, 
-				via				=> via, 
+				module_cursor	=> module,
+				net_name		=> net_name,
+				via				=> via,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -367,20 +367,20 @@ package body et_cp_board_via is
 				log_threshold	=> log_threshold + 1);
 		end buried;
 
-		
+
 		rules : constant type_design_rules_board := get_pcb_design_rules (module);
 
 		-- get the user specific settings of the board
-		settings : constant type_user_settings := 
+		settings : constant type_user_settings :=
 			get_user_settings (module);
 
 
-		
+
 	begin -- place_via
 		log (text => "place via", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		-- Set the drill size and restring according to a user specific values:
 		-- If user has not specified defaults, use values given in DRU data set:
 
@@ -394,18 +394,18 @@ package body et_cp_board_via is
 		-- CS: take minimum drill diameter as defined in net class into account
 		-- Requres a command like "set via drill class"
 
-		
+
 		-- set outer restring:
 		if settings.vias.restring_outer.active then
 			restring_outer	:= settings.vias.restring_outer.width;
 		else
 			restring_outer	:= auto_set_restring (OUTER, drill.diameter);
 		end if;
-		
+
 		restring_top	:= restring_outer; -- for blind via drilled from top
 		restring_bottom	:= restring_outer; -- for blind via drilled from bottom
 
-		
+
 		-- set inner restring:
 		if settings.vias.restring_inner.active then
 			restring_inner	:= settings.vias.restring_inner.width;
@@ -413,27 +413,27 @@ package body et_cp_board_via is
 			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 
-		
+
 		case cmd_field_count is
-			when 7 => 
+			when 7 =>
 				-- example: board demo place via RESET_N 10 14
 				set_net_name;
 				set_position;
 				through;
 
-				
-			when 10 =>				
+
+			when 10 =>
 				if get_field (cmd, 8) = keyword_buried then
-					-- example: board demo place via RESET_N 10 14 buried 2 15					
+					-- example: board demo place via RESET_N 10 14 buried 2 15
 					set_net_name;
 					set_position;
 					buried_layers := to_buried_layers (
-								upper	=> get_field (cmd, 9), 
+								upper	=> get_field (cmd, 9),
 								lower	=> get_field (cmd, 10),
 								bottom	=> get_deepest_conductor_layer (module));
 					buried;
 
-					
+
 				elsif get_field (cmd, 8) = keyword_blind then
 					-- example: board demo place via RESET_N 10 14 blind top 5
 					-- example: board demo place via RESET_N 10 14 blind bottom 2
@@ -443,44 +443,44 @@ package body et_cp_board_via is
 					if get_field (cmd, 9) = keyword_top then
 						lower_layer := to_signal_layer (get_field (cmd, 10));
 						blind_top;
-						
+
 					elsif get_field (cmd, 9) = keyword_bottom then
 						upper_layer := to_signal_layer (get_field (cmd, 10));
 						blind_bottom;
-						
+
 					else
-						raise syntax_error_1 with 
-							"ERROR: Expect keywords " 
+						raise syntax_error_1 with
+							"ERROR: Expect keywords "
 							& enclose_in_quotes (keyword_top)
-							& " or " 
+							& " or "
 							& enclose_in_quotes (keyword_bottom)
-							& " after keyword " 
+							& " after keyword "
 							& enclose_in_quotes (keyword_blind)
-							& " !";							
+							& " !";
 					end if;
-						
+
 				else
-					raise syntax_error_1 with 
+					raise syntax_error_1 with
 						"ERROR: Expect keywords " & enclose_in_quotes (keyword_blind)
 						& " or " & enclose_in_quotes (keyword_buried)
 						& " after y position !";
 				end if;
 
-				
-			when 11 .. type_field_count'last => 
+
+			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end place_via;
 
 
 
 
-	
+
 
 
 
@@ -493,7 +493,7 @@ package body et_cp_board_via is
 		-- CS
 	end move_via;
 
-	
+
 
 
 
@@ -507,15 +507,15 @@ package body et_cp_board_via is
 	end delete_via;
 
 
-	
 
-	
-	
+
+
+
 end et_cp_board_via;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

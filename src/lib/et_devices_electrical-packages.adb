@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -54,7 +54,7 @@ with et_device_library.packages;	use et_device_library.packages;
 package body et_devices_electrical.packages is
 
 
-	
+
 -- VALUE:
 
 	procedure set_value (
@@ -83,7 +83,7 @@ package body et_devices_electrical.packages is
 
 	function get_value (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_value.bounded_string 
+		return pac_device_value.bounded_string
 	is begin
 		return pac_devices_electrical.element (device).value;
 	end get_value;
@@ -101,9 +101,9 @@ package body et_devices_electrical.packages is
 		end if;
 	end;
 
-	
-	
-	
+
+
+
 -- PARTCODE:
 
 	procedure set_partcode (
@@ -130,7 +130,7 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 	function get_partcode (
 		device : in pac_devices_electrical.cursor)
 		return pac_device_partcode.bounded_string
@@ -150,9 +150,9 @@ package body et_devices_electrical.packages is
 			return true;
 		end if;
 	end;
-	
 
-	
+
+
 
 -- PURPOSE:
 
@@ -188,7 +188,7 @@ package body et_devices_electrical.packages is
 		return pac_devices_electrical.element (device).purpose;
 	end get_purpose;
 
-	
+
 
 	function has_purpose (
 		device	: in type_device_electrical)
@@ -202,10 +202,10 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 
 -- PACKAGE VARIANTS:
-	
+
 	function get_package_variant (
 		device : in type_device_electrical)
 		return pac_package_variant_name.bounded_string
@@ -213,7 +213,7 @@ package body et_devices_electrical.packages is
 		return device.variant;
 	end;
 
-	
+
 
 	function get_available_package_variants (
 		device : in type_device_electrical)
@@ -237,7 +237,7 @@ package body et_devices_electrical.packages is
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
 		return pac_package_variant_name.bounded_string
-	is 
+	is
 		d : type_device_electrical renames element (device);
 	begin
 		return get_package_variant (d);
@@ -255,7 +255,7 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 
 
 -- POSITION:
@@ -285,7 +285,7 @@ package body et_devices_electrical.packages is
 		return to_string (device.position, format);
 	end;
 
-	
+
 
 	function get_rotation (
 		device	: in out type_device_electrical)
@@ -294,14 +294,14 @@ package body et_devices_electrical.packages is
 		return get_rotation (device.position);
 	end;
 
-	
+
 	procedure set_rotation (
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation (device.position, rotation);
 	end;
-	
+
 
 	procedure set_rotation_relative (
 		device		: in out type_device_electrical;
@@ -311,14 +311,14 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 	procedure set_face (
 		device	: in out type_device_electrical;
 		face	: in type_face)
 	is begin
 		set_face (device.position, face);
 	end;
-	
+
 
 
 	procedure toggle_face (
@@ -326,10 +326,10 @@ package body et_devices_electrical.packages is
 	is begin
 		toggle_face (device.position);
 	end;
-							  
 
 
-	
+
+
 
 	function get_face (
 		device	: in type_device_electrical)
@@ -347,7 +347,7 @@ package body et_devices_electrical.packages is
 		return to_string (get_face (device.position));
 	end;
 
-	
+
 
 	procedure set_place (
 		device	: in out type_device_electrical;
@@ -357,7 +357,7 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 	procedure set_place_relative (
 		device	: in out type_device_electrical;
 		offset	: in type_vector_model)
@@ -366,7 +366,7 @@ package body et_devices_electrical.packages is
 	end;
 
 
-	
+
 	function get_place (
 		device	: in type_device_electrical)
 		return type_vector_model
@@ -374,11 +374,11 @@ package body et_devices_electrical.packages is
 		return get_place (device.position);
 	end;
 
-	
+
 
 	function get_place (
 		device	: in type_device_electrical;
-		format	: in type_output_format := FORMAT_1)		   
+		format	: in type_output_format := FORMAT_1)
 		return string
 	is begin
 		return et_board_geometry.pac_geometry_2.to_string (
@@ -393,54 +393,54 @@ package body et_devices_electrical.packages is
 
 	procedure log_package_position (
 		device_cursor	: in pac_devices_electrical.cursor;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
-		use et_pcb_sides;		
+		use et_pcb_sides;
 		use pac_devices_electrical;
 	begin
 		if is_real (device_cursor) then
-			log (text => "location in board:" & 
+			log (text => "location in board:" &
 				to_string (element (device_cursor).position.place) &
-				" face" & 
+				" face" &
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
 		end if;
 	end;
 
 
-	
 
 
 
-	
+
+
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_coordinates.type_package_position
-	is 
+	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
 		return get_position (device);
 	end get_position;
 
 
-	
+
 	function get_place (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_geometry.pac_geometry_2.type_vector_model
-	is 
+	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
 		return get_place (device);
 	end get_place;
 
-	
 
-	
-	
+
+
+
 	function get_face (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return type_face
-	is 
+	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
 		return get_face (device);
@@ -450,14 +450,14 @@ package body et_devices_electrical.packages is
 
 
 
-	
+
 
 -- PLACEHOLDERS:
 
-	
+
 	procedure reset_placeholder_positions (
 		device		: in out type_device_electrical)
-	is 
+	is
 		-- cursor_lib : pac_device_models.cursor;
 		default_placeholders : type_text_placeholders;
 	begin
@@ -470,17 +470,17 @@ package body et_devices_electrical.packages is
 			device.model_cursor, get_package_variant (device));
 
 		-- Assign the default placeholders to the given device:
-		device.placeholders := default_placeholders;		
+		device.placeholders := default_placeholders;
 	end reset_placeholder_positions;
-	
 
 
-	
-	
-	
+
+
+
+
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;					 
+		meaning		: in type_placeholder_meaning;
 		layer		: in type_placeholder_layer;
 		face		: in type_face;
 		index		: in type_placeholder_index;
@@ -493,10 +493,10 @@ package body et_devices_electrical.packages is
 	end move_placeholder;
 
 
-	
 
-	
-	
+
+
+
 	procedure rotate_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;
@@ -508,19 +508,19 @@ package body et_devices_electrical.packages is
 	is begin
 		rotate_placeholder (device.placeholders, meaning, layer,
 			face, index, coordinates, rotation);
-		
+
 	end rotate_placeholder;
-	
-
-
-	
 
 
 
-	
+
+
+
+
+
 
 -- CONDUCTOR OBJECTS:
-	
+
 
 	function get_conductor_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -550,12 +550,12 @@ package body et_devices_electrical.packages is
 				move_conductor_objects (conductors, device.position.place);
 			end if;
 		end if;
-		
+
 		return conductors;
 	end get_conductor_objects;
-	
 
-	
+
+
 
 
 
@@ -567,7 +567,7 @@ package body et_devices_electrical.packages is
 	is
 		use et_board_geometry.pac_polygons;
 		result : pac_polygon_list.list;
-		
+
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		conductors : type_conductor_objects; -- non-electrical
@@ -594,24 +594,24 @@ package body et_devices_electrical.packages is
 				result := to_polygons (conductors, fill_tolerance);
 			end if;
 		end if;
-		
+
 		return result;
 	end get_conductor_polygons;
 
 
-	
-	
-	
 
 
-	
+
+
+
+
 -- ROUTE RESTRICT
-	
+
 	function get_route_restrict_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side
-	is	
+	is
 		use et_route_restrict.packages;
 		restrict : type_one_side; -- to be returned
 		device : type_device_electrical renames element (device_cursor);
@@ -620,7 +620,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-				
+
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
 				case get_face (device_cursor) is
 					when TOP =>
@@ -640,15 +640,15 @@ package body et_devices_electrical.packages is
 	end get_route_restrict_objects;
 
 
-	
-	
+
+
 
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_board_geometry.pac_polygons.pac_polygon_list.list
 	is
-		
+
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
@@ -661,7 +661,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-				
+
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
 				case get_face (device_cursor) is
 					when TOP =>
@@ -679,33 +679,33 @@ package body et_devices_electrical.packages is
 				result := to_polygons (restrict, fill_tolerance);
 			end if;
 		end if;
-		
+
 		return result;
 	end get_route_restrict_polygons;
-	
 
 
 
 
 
-	
+
+
 -- VIA RESTRICT
-	
+
 	function get_via_restrict_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side
-	is		
+	is
 		use et_via_restrict.packages;
 		restrict : type_one_side; -- to be returned
-		
+
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-				
+
 			if layer_category /= INNER then -- via restrict objects exist in outer layers only
 				case get_face (device_cursor) is
 					when TOP =>
@@ -726,13 +726,13 @@ package body et_devices_electrical.packages is
 	end get_via_restrict_objects;
 
 
-	
 
 
 
-	
+
+
 -- KEEPOUT
-	
+
 	function get_keepout_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
@@ -747,7 +747,7 @@ package body et_devices_electrical.packages is
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
-			
+
 			case face is
 				when TOP =>
 					case get_face (device_cursor) is
@@ -774,7 +774,7 @@ package body et_devices_electrical.packages is
 					end case;
 			end case;
 		end if;
-		
+
 		move_keepout_objects (result, device.position.place);
 		return result;
 	end get_keepout_objects;
@@ -782,13 +782,13 @@ package body et_devices_electrical.packages is
 
 
 
-	
 
 
-	
-	
+
+
+
 -- STENCIL
-	
+
 	function get_stencil_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
@@ -802,7 +802,7 @@ package body et_devices_electrical.packages is
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
-			
+
 			case face is
 				when TOP =>
 					case get_face (device_cursor) is
@@ -827,18 +827,18 @@ package body et_devices_electrical.packages is
 					end case;
 			end case;
 		end if;
-		
+
 		move_stencil_objects (result, device.position.place);
 		return result;
 	end get_stencil_objects;
 
-	
-
-	
 
 
 
-	
+
+
+
+
 
 -- STOPMASK:
 
@@ -864,7 +864,7 @@ package body et_devices_electrical.packages is
 						when TOP =>
 							result := get_stopmask_objects (packge, TOP);
 							rotate_stopmask_objects (result, + rotation);
-							
+
 						when BOTTOM =>
 							result := get_stopmask_objects (packge, BOTTOM);
 							mirror_stopmask_objects (result);
@@ -884,7 +884,7 @@ package body et_devices_electrical.packages is
 					end case;
 			end case;
 
-			move_stopmask_objects (result, device.position.place);			
+			move_stopmask_objects (result, device.position.place);
 		end if;
 
 		return result;
@@ -901,7 +901,7 @@ package body et_devices_electrical.packages is
 		face			: in type_face)
 		return type_silkscreen
 	is
-		
+
 		result : type_silkscreen;
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
@@ -910,13 +910,13 @@ package body et_devices_electrical.packages is
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
 
-		
+
 		-- Converts the placeholders to a list of regular texts
 		-- and appends them to the silkscreen.texts:
 		procedure convert_placeholders_to_texts is
 			use pac_text_placeholders;
 
-			
+
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 				use et_board_text.pac_text_board_vectorized;
@@ -930,12 +930,12 @@ package body et_devices_electrical.packages is
 				end if;
 			end query_placeholder;
 
-			
+
 		begin
-			silkscreen.placeholders.iterate (query_placeholder'access);		
+			silkscreen.placeholders.iterate (query_placeholder'access);
 		end convert_placeholders_to_texts;
 
-		
+
 	begin -- get_silkscreen_objects
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
@@ -951,10 +951,10 @@ package body et_devices_electrical.packages is
 							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, + rotation);
-							
+
 						when BOTTOM =>
 							silkscreen := get_silkscreen_objects (packge, BOTTOM);
-							
+
 							-- overwrite the default placeholders: -- CS see spec of this function
 							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
@@ -962,20 +962,20 @@ package body et_devices_electrical.packages is
 							rotate_silkscreen_objects (silkscreen, - rotation);
 					end case;
 
-					
+
 				when BOTTOM =>
 					case get_face (device_cursor) is
 						when TOP =>
 						   silkscreen := get_silkscreen_objects (packge, BOTTOM);
-						
+
 							-- overwrite the default placeholders: -- CS see spec of this function
 							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, + rotation);
-							
+
 						when BOTTOM =>
 							silkscreen := get_silkscreen_objects (packge, TOP);
-							
+
 							-- overwrite the default placeholders: -- CS see spec of this function
 							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
@@ -987,17 +987,17 @@ package body et_devices_electrical.packages is
 			move_silkscreen_objects (silkscreen, device.position.place);
 		end if;
 
-		result := type_silkscreen (silkscreen);		
+		result := type_silkscreen (silkscreen);
 		return result;
 	end get_silkscreen_objects;
-	
 
-	
+
+
 
 
 
 -- ASSEMBLY DOCUMENTATION:
-	
+
 	function get_assy_doc_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
@@ -1018,7 +1018,7 @@ package body et_devices_electrical.packages is
 		procedure convert_placeholders_to_texts is
 			use pac_text_placeholders;
 
-			
+
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 				use et_board_text.pac_text_board_vectorized;
@@ -1032,12 +1032,12 @@ package body et_devices_electrical.packages is
 				end if;
 			end query_placeholder;
 
-			
+
 		begin
-			assy_doc.placeholders.iterate (query_placeholder'access);		
+			assy_doc.placeholders.iterate (query_placeholder'access);
 		end convert_placeholders_to_texts;
 
-		
+
 	begin -- get_assy_doc_objects
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
@@ -1048,7 +1048,7 @@ package body et_devices_electrical.packages is
 					case get_face (device_cursor) is
 						when TOP =>
 							assy_doc := get_assy_doc_objects (packge, TOP);
-							
+
 							-- overwrite the default placeholders: -- CS see spec of this function
 							assy_doc.placeholders := device.placeholders.assy_doc.top;
 							convert_placeholders_to_texts;
@@ -1056,7 +1056,7 @@ package body et_devices_electrical.packages is
 
 						when BOTTOM =>
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
-							
+
 							-- overwrite the default placeholders: -- CS see spec of this function
 							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
 							convert_placeholders_to_texts;
@@ -1091,19 +1091,19 @@ package body et_devices_electrical.packages is
 		result := type_assy_doc (assy_doc);
 		return result;
 	end get_assy_doc_objects;
-	
+
 
 
 
 
 -- HOLES
-	
+
 	function get_holes (
 		device_cursor	: in pac_devices_electrical.cursor)
 		return pac_holes.list
 	is
 		holes : pac_holes.list; -- to be returned
-		
+
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
@@ -1112,49 +1112,49 @@ package body et_devices_electrical.packages is
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
-			
+
 			holes := get_hole_contours (packge);
-					
+
 			case get_face (device_cursor) is
 				when TOP =>
 					mirror_holes (holes);
 					rotate_holes (holes, - rotation);
-					
+
 				when BOTTOM =>
 					rotate_holes (holes, + rotation);
 			end case;
-		
+
 			move_holes (holes, device.position.place);
 		end if;
-		
-		return holes;		
+
+		return holes;
 	end get_holes;
 
 
-	
 
-	
+
+
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_electrical.cursor)
 		return et_board_geometry.pac_polygons.pac_polygon_list.list
 	is
 		holes : pac_holes.list;
-		
+
 		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		
+
 		use et_board_geometry.pac_polygons;
 
 		rotation : et_board_geometry.type_rotation_model;
-		
+
 		result : pac_polygon_list.list;
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
-			
+
 			holes := get_hole_contours (packge);
-		
+
 			case get_face (device_cursor) is
 				when TOP =>
 					mirror_holes (holes);
@@ -1163,14 +1163,14 @@ package body et_devices_electrical.packages is
 				when BOTTOM =>
 					rotate_holes (holes, + rotation);
 			end case;
-			
+
 			move_holes (holes, device.position.place);
-		
+
 			result := to_polygons (holes, fill_tolerance);
 		end if;
 		return result;
 	end get_hole_polygons;
-	
+
 
 
 
@@ -1194,10 +1194,10 @@ package body et_devices_electrical.packages is
 
 		-- Get full information about the package variant:
 		use pac_package_variants;
-		variant_lib : constant pac_package_variants.cursor := 
+		variant_lib : constant pac_package_variants.cursor :=
 			get_package_variant (device_model_lib, variant_sch);
 
-		terminal_name : constant pac_terminal_name.bounded_string := 
+		terminal_name : constant pac_terminal_name.bounded_string :=
 			get_terminal (variant_lib, unit, port);
 
 		use pac_package_models;
@@ -1206,7 +1206,7 @@ package body et_devices_electrical.packages is
 	begin
 		-- Get a cursor to the package model:
 		package_cursor := element (variant_lib).model_cursor;
-		
+
 		-- Get the cursor to the actual terminal:
 		return get_terminal (package_cursor, terminal_name);
 	end get_terminal;
@@ -1221,7 +1221,7 @@ package body et_devices_electrical.packages is
 		return pac_terminals.map
 	is
 		result : pac_terminals.map;
-		
+
 		use pac_package_models;
 		package_model : pac_package_models.cursor;
 	begin
@@ -1229,19 +1229,19 @@ package body et_devices_electrical.packages is
 			package_model := get_package_model (device_cursor);
 			result := element (package_model).terminals;
 		end if;
-		
+
 		return result;
 	end get_all_terminals;
 
-	
-	
-	
+
+
+
 end et_devices_electrical.packages;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

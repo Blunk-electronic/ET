@@ -48,16 +48,16 @@ package body et_device_placeholders.symbols is
 
 	function in_catch_zone (
 		placeholder		: in type_text_placeholder;
-		unit_position	: in type_vector_model;					   
+		unit_position	: in type_vector_model;
 		zone			: in type_catch_zone)
 		return boolean
-	is 
+	is
 		point : type_vector_model := placeholder.position;
 	begin
 		move_by (point, unit_position);
-		
+
 		-- put_line ("pos " & to_string (point));
-		
+
 		if in_catch_zone (zone, point) then
 			return true;
 		else
@@ -75,12 +75,12 @@ package body et_device_placeholders.symbols is
 		reset_status (placeholders.value);
 		reset_status (placeholders.purpose);
 	end;
-	
 
 
 
 
-	
+
+
 
 	procedure rotate_placeholders (
 		placeholders	: in out type_text_placeholders;
@@ -93,19 +93,19 @@ package body et_device_placeholders.symbols is
 		rotate_by (placeholders.purpose.position, rotation);
 
 		-- Rotate the placeholders about THEIR OWN ORIGIN.
-		-- The resulting angle is the sum of the initial 
+		-- The resulting angle is the sum of the initial
 		-- rotation (given by the symbol model) and the rotation
 		-- of the unit.
 		-- After summing up the rotation must be snapped to either
 		-- HORIZONTAL or VERTICAL so that the text is readable
 		-- from the right or from the front of the drawing.
-		placeholders.name.rotation := 
+		placeholders.name.rotation :=
 			to_rotation_doc (to_rotation (placeholders.name.rotation) + rotation);
 
-		placeholders.value.rotation := 
+		placeholders.value.rotation :=
 			to_rotation_doc (to_rotation (placeholders.value.rotation) + rotation);
 
-		placeholders.purpose.rotation := 
+		placeholders.purpose.rotation :=
 			to_rotation_doc (to_rotation (placeholders.purpose.rotation) + rotation);
 	end rotate_placeholders;
 
@@ -123,19 +123,19 @@ package body et_device_placeholders.symbols is
 		rotate_placeholders (result, rotation);
 		return result;
 	end;
-	
 
-	
-	
-	
+
+
+
+
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is begin
 		-- meaning
 		log (text => to_string (placeholder.meaning), level => log_threshold);
 		log_indentation_up;
-		
+
 		-- position
 		log (text => to_string (placeholder.position), level => log_threshold);
 
@@ -143,7 +143,7 @@ package body et_device_placeholders.symbols is
 		log (text => to_string (placeholder.size), level => log_threshold);
 
 		-- rotation
-		log (text => to_string (placeholder.rotation), level => log_threshold); 
+		log (text => to_string (placeholder.rotation), level => log_threshold);
 
 		-- visible
 		--log (text => "visible "
@@ -156,12 +156,12 @@ package body et_device_placeholders.symbols is
 		log_indentation_down;
 	end write_placeholder_properties;
 
-	
+
 end et_device_placeholders.symbols;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

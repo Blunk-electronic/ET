@@ -47,7 +47,7 @@ package body et_canvas.text is
 
 	function to_points (size : in pac_text.type_text_size)
 		return type_logical_pixels
-	is 
+	is
 		conversion_factor_mm_to_pt : constant := 1.53; -- CS use exact factor
 	begin
 		return to_distance (size) * conversion_factor_mm_to_pt;
@@ -57,26 +57,26 @@ package body et_canvas.text is
 	function to_cairo_angle (
 		angle : in type_rotation)
 		return glib.gdouble
-	is 
+	is
 		use pac_geometry_1;
 		use glib;
 	begin
 		-- In cairo all angles increase in clockwise direction.
 		-- Since our angles increase in counterclockwise direction (mathematically)
-		-- the angle must change the sign.		
+		-- the angle must change the sign.
 		return gdouble (to_radians (- type_angle (angle)));
 	end to_cairo_angle;
 
-	
-	
+
+
 	function get_text_extents (
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in type_font)
-		return cairo.cairo_text_extents 
+		return cairo.cairo_text_extents
 	is
 		use cairo;
-		
+
 		result : aliased cairo_text_extents; -- to be returned
 
 		--use interfaces.c.strings;
@@ -90,10 +90,10 @@ package body et_canvas.text is
 		text_extents (cr => context, utf8 => text, extents => result'access);
 		return result;
 	end get_text_extents;
-	
 
-	
-	
+
+
+
 	function to_area (
 		extents : in cairo.cairo_text_extents)
 		return type_area
@@ -101,16 +101,16 @@ package body et_canvas.text is
 		a : type_area;
 	begin
 		a.width  := to_distance (to_lp (extents.width));
-		a.height := to_distance (to_lp (extents.height));		
+		a.height := to_distance (to_lp (extents.height));
 		return a;
 	end to_area;
 
-	
 
 
 
 
-	
+
+
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
 		alignment	: in type_text_alignment;
@@ -136,15 +136,15 @@ package body et_canvas.text is
 		-- The area occupied by the text has a width and a height:
 		width  : constant type_logical_pixels := to_lp (extents.width);
 		height : constant type_logical_pixels := to_lp (extents.height);
-		
+
 	begin
 		--put_line ("x_bearing " & to_string (x_bearing));
 		--put_line ("y_bearing " & to_string (y_bearing));
 
-		
+
 		-- HORIZONTAL ALIGNMENT:
 		case alignment.horizontal is
-			when ALIGN_LEFT => 
+			when ALIGN_LEFT =>
 				sp.x := anchor.x;
 
 			when ALIGN_CENTER =>
@@ -166,7 +166,7 @@ package body et_canvas.text is
 						sp.y := anchor.y;
 				end case;
 
-				
+
 			when ALIGN_CENTER =>
 				case mode_v is
 					when MODE_ALIGN_BY_USED_SPACE =>
@@ -176,7 +176,7 @@ package body et_canvas.text is
 						sp.y := anchor.y + to_distance (size) / 2.0;
 				end case;
 
-				
+
 			when ALIGN_TOP =>
 				case mode_v is
 					when MODE_ALIGN_BY_USED_SPACE =>
@@ -203,7 +203,7 @@ package body et_canvas.text is
 		size		: in pac_text.type_text_size;
 		font		: in type_font;
 		anchor		: in type_vector_model;
-		origin		: in boolean;		
+		origin		: in boolean;
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment)
 	is
@@ -212,23 +212,23 @@ package body et_canvas.text is
 
 		-- The extents of the text on the canvas:
 		text_area : aliased cairo_text_extents;
-		
+
 		use gtkada.types;
 		text : constant gtkada.types.chars_ptr := new_string (to_string (content));
-		
+
 		-- The bounding-box of the given text (in the model domain):
 		b : type_area;
-  
+
 		-- The diagonal of the bounding-box of the text:
 		d : type_distance_positive;
-		
+
 		-- The start point where we will start drawing the text
 		-- on the canvas:
 		sp : type_logical_pixels_vector;
-		
+
 		-- The given anchor point of the text is in the model domain.
-		-- Convert it to a canvas point (according to current zoom-factor): 
-		anchor_canvas : constant type_logical_pixels_vector := 
+		-- Convert it to a canvas point (according to current zoom-factor):
+		anchor_canvas : constant type_logical_pixels_vector :=
 			real_to_canvas (anchor, S);
 
 		-- This flag indicates that rotation of the text is required.
@@ -236,17 +236,17 @@ package body et_canvas.text is
 		-- there is no rotation required. For this reason its
 		-- default is false:
 		rotation_required : boolean := false;
-		
+
 	begin
-		-- Draw the origin (or the anchor point) of the 
+		-- Draw the origin (or the anchor point) of the
 		-- text if requested by the caller:
 		if origin then
 			-- The origin is never rotated. For this reason
 			-- an angle of 0 degrees is passed here:
 			draw_origin ((anchor, 0.0));
 		end if;
-		
-		
+
+
 		-- Set the font:
 		select_font_face (context, to_string (font.family), font.slant, font.weight);
 
@@ -255,7 +255,7 @@ package body et_canvas.text is
 
 		-- Set the text extents:
 		text_extents (cr => context, utf8 => text, extents => text_area'access);
-		
+
 		-- put_line ("length " & gdouble'image (abs (text_area.width)));
 		-- put_line ("height " & gdouble'image (abs (text_area.height)));
 
@@ -267,14 +267,14 @@ package body et_canvas.text is
 				anchor		=> anchor_canvas,
 				mode_v		=> MODE_ALIGN_RELATIVE_TO_BASELINE,
 				size		=> size);
-		
-		-- Build a bounding-box of the text using the 
+
+		-- Build a bounding-box of the text using the
 		-- canvas area (in logical pixels) occupied by the text:
 		b.width  := to_distance (to_lp (text_area.width));
 		b.height := to_distance (to_lp (text_area.height));
 
 		-- put_line ("b " & to_string (b));
-		
+
 		-- Since the text can be rotated and aligned in various
 		-- ways, we extend the bounding-box so that it encloses the
 		-- text in any case. Because we need a fast and coarse solution,
@@ -295,7 +295,7 @@ package body et_canvas.text is
 		b.height := 2.0 * d;
 
 		-- put_line ("b " & to_string (b));
-		
+
 		-- Do the area check. If the bounding-box of the text
 		-- is inside the visible area then draw the text. Otherwise
 		-- nothing will be drawn:
@@ -314,9 +314,9 @@ package body et_canvas.text is
 			if rotation /= 0.0 then
 				rotation_required := true;
 			end if;
-			
 
-			-- If rotation is required, then 
+
+			-- If rotation is required, then
 			-- the current context must
 			-- be saved, translated by the anchor coordinates, rotated,
 			-- moved back by the anchor coordinates and finally restored.
@@ -324,22 +324,22 @@ package body et_canvas.text is
 			-- is required:
 
 			if rotation_required then
-				save (context);			
-				translate (context, 
+				save (context);
+				translate (context,
 					to_gdouble (anchor_canvas.x), to_gdouble (anchor_canvas.y));
-				
+
 				rotate (context, to_cairo_angle (rotation));
-				
-				translate (context, 
+
+				translate (context,
 					- to_gdouble (anchor_canvas.x), - to_gdouble (anchor_canvas.y));
 			end if;
 
-			
+
 			-- draw the text. start at calculated start position
 			move_to (context, to_gdouble (sp.x), to_gdouble (sp.y));
 			show_text (context, to_string (content));
 
-			
+
 			if rotation_required then
 				restore (context);
 			end if;
@@ -352,7 +352,7 @@ package body et_canvas.text is
 
 
 
-	
+
 	procedure draw_vector_text (
 		text			: in pac_text_vectorized.type_text_fab_with_content'class;
 		mirror			: in type_mirror := MIRROR_NO;
@@ -365,7 +365,7 @@ package body et_canvas.text is
 		-- Drawing a vector-text is just a matter of
 		-- drawing many lines. So we iterate the given
 		-- lines of the text and draw them one by one.
-		
+
 		procedure query_line (
 			c : in pac_character_lines.cursor)
 		is
@@ -382,15 +382,15 @@ package body et_canvas.text is
 				width	=> 0.0); -- don't care
 
 		end query_line;
-		
 
-		-- Here we store the actual lines the text 
+
+		-- Here we store the actual lines the text
 		-- consists of:
 		vectors	: type_vector_text;
 
 		-- Take a copy of the given text position:
 		pos_final : type_position := text.position;
-		
+
 	begin
 		-- If absolute placement is required, then pos_final
 		-- is left as it is. Otherwise the parent position (and rotation)
@@ -401,12 +401,12 @@ package body et_canvas.text is
 			-- Add the text position and the position of the
 			-- parent object (adds both x/y and rotation):
 			add (
-				position	=> pos_final, 
-				offset		=> parent_position, 
+				position	=> pos_final,
+				offset		=> parent_position,
 				mirror		=> mirror);
 		end if;
 
-		
+
 		-- If the text is being moved, then pos_final will
 		-- be overwritten by the tool position:
 		if is_moving (text) then
@@ -415,11 +415,11 @@ package body et_canvas.text is
 
 		-- Draw the origin of the text:
 		draw_origin ((pos_final.place, zero_rotation));
-		-- CS draw the origin rotated by 45 degrees 
+		-- CS draw the origin rotated by 45 degrees
 		-- if the text is locked ?
 
 		if not is_empty (text.content) then
-			
+
 			vectors := vectorize_text (
 				content			=> text.content,
 				size			=> text.size,
@@ -429,12 +429,12 @@ package body et_canvas.text is
 				line_width		=> text.line_width,
 				alignment		=> text.alignment, -- right, bottom
 				log_threshold	=> type_log_level'last); -- CS
-			
+
 			-- set_line_join (context.cr, cairo_line_join_miter); -- CS
 
 			-- The linewidth applies to all character lines:
 			set_linewidth (text.line_width);
-			
+
 			iterate (vectors, query_line'access);
 
 			-- Do a final stroke:
@@ -444,13 +444,13 @@ package body et_canvas.text is
 
 
 
-	
+
 end et_canvas.text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
 

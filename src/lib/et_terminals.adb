@@ -58,7 +58,7 @@ package body et_terminals is
 		position : in type_terminal_position_fine)
 		return string
 	is begin
-		return 
+		return
 			"place: " & to_string (position.place)
 			& " rotation: " & to_string (position.rotation)
 			& " face: " & to_string (position.face)
@@ -67,8 +67,8 @@ package body et_terminals is
 
 
 
-	
-	
+
+
 	function get_inner_contour (
 		terminal	: in type_terminal;
 		position	: in type_vector)
@@ -80,14 +80,14 @@ package body et_terminals is
 	begin
 		set_center (result.contour.circle, to_vector_model (position));
 		set_radius (result.contour.circle, 0.5 * terminal.drill_size + terminal.width_inner_layers);
-		
+
 		return result;
 	end get_inner_contour;
 
 
-	
 
-	
+
+
 	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
@@ -98,35 +98,35 @@ package body et_terminals is
 -- 		use type_pad_lines;
 -- 		use type_pad_arcs;
 -- 		use type_pad_circles;
--- 		use type_pad_polygons;		
-		
+-- 		use type_pad_polygons;
+
 -- 		procedure line (cursor : in type_pad_lines.cursor) is begin
 -- 			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
 -- 		end line;
--- 
+--
 -- 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
 -- 			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
 -- 		end arc;
--- 		
+--
 -- 		procedure circle (cursor : in type_pad_circles.cursor) is begin
 -- 			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
 -- 		end circle;
--- 
--- 		procedure polygon (cursor : in type_pad_polygons.cursor) is 
+--
+-- 		procedure polygon (cursor : in type_pad_polygons.cursor) is
 -- 			use type_polygon_points;
 -- 			points : type_polygon_points.set := element (cursor).corners;
--- 
+--
 -- 			procedure point (cursor : in type_polygon_points.cursor) is begin
--- 				log (text => to_string (element (cursor)), level => log_threshold + 1);	
+-- 				log (text => to_string (element (cursor)), level => log_threshold + 1);
 -- 			end point;
--- 	
+--
 -- 		begin -- polygon
 -- 			log (text => "polygon with corners", level => log_threshold + 1);
 -- 			log_indentation_up;
 -- 			iterate (points, point'access);
 -- 			log_indentation_down;
 -- 		end polygon;
-			
+
 	begin -- terminal_properties
 		log (text => "terminal name " & to_string (name)
 			& " technology" & to_string (terminal.technology)
@@ -137,8 +137,8 @@ package body et_terminals is
 		log_indentation_up;
 
 		case terminal.technology is
-			when THT => 
-				
+			when THT =>
+
 				-- log pad_shape_top/bottom
 				log (text => "pad contour top", level => log_threshold + 1);
 -- 				iterate (terminal.pad_shape_tht.top.lines, line'access);
@@ -151,12 +151,12 @@ package body et_terminals is
 -- 				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
 -- 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
 -- 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
-				
+
 				log (text => "conductor width in inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
 
 				case terminal.tht_hole is
 					when DRILLED =>
-						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1); 
+						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1);
 					when MILLED =>
 						if log_level >= log_threshold_1 then
 							log (text => "plated milling contour ");
@@ -165,16 +165,16 @@ package body et_terminals is
 							log_indentation_down;
 						end if;
 				end case;
-				
-			when SMT => 
-				
+
+			when SMT =>
+
 				-- log pad_shape
 				log (text => "pad contour", level => log_threshold + 1);
 -- 				iterate (terminal.pad_shape.lines, line'access);
 -- 				iterate (terminal.pad_shape.arcs, arc'access);
 -- 				iterate (terminal.pad_shape.circles, circle'access);
 -- 				iterate (terminal.pad_shape.polygons, polygon'access);
-				
+
 				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
 				log (text => "stop mask status" & to_string (terminal.stop_mask_status_smt), level => log_threshold_1);
 				log (text => "solder paste status" & to_string (terminal.solder_paste_status), level => log_threshold_1);
@@ -185,7 +185,7 @@ package body et_terminals is
 
 
 
-	
+
 
 	function get_terminal_name (
 		terminal_cursor	: in pac_terminals.cursor)
@@ -205,18 +205,18 @@ package body et_terminals is
 
 
 
-	
+
 
 	function get_technology (
 		terminal_cursor	: in pac_terminals.cursor)
 		return type_assembly_technology
-	is 
+	is
 		use pac_terminals;
 	begin
 		return element (terminal_cursor).technology;
 	end get_technology;
 
-	
+
 
 	procedure iterate (
 		terminals	: in pac_terminals.map;
@@ -232,7 +232,7 @@ package body et_terminals is
 		end loop;
 	end iterate;
 
-	
+
 
 	procedure remove_terminals (
 		terminals		: in out pac_terminals.map;
@@ -240,7 +240,7 @@ package body et_terminals is
 	is
 		use pac_terminal_names;
 
-		
+
 		procedure query_name (name : in pac_terminal_names.cursor) is
 			use pac_terminals;
 			--t_cursor : pac_terminals.cursor := find (terminals, element (name));
@@ -259,31 +259,31 @@ package body et_terminals is
 
 			exception
 				when constraint_error =>
-					--raise semantic_error_1 with "Terminal " 
-					--& enclose_in_quotes (to_string (element (name))) 
+					--raise semantic_error_1 with "Terminal "
+					--& enclose_in_quotes (to_string (element (name)))
 					--& " not found !";
 
-					put_line ("WARNING: Terminal " 
-						& enclose_in_quotes (to_string (element (name))) 
+					put_line ("WARNING: Terminal "
+						& enclose_in_quotes (to_string (element (name)))
 						& " not found !");
 
 					-- CS better a log message ?
 
 		end query_name;
 
-		
+
 	begin
 		to_be_removed.iterate (query_name'access);
 		null;
 	end remove_terminals;
 
 
-	
+
 end et_terminals;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

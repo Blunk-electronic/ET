@@ -35,17 +35,17 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 with et_logging;				use et_logging;
 
 
 package et_module_read is
-		
 
-	
+
+
 	-- Reads a module file and stores its content as generic module.
 	-- The file name may contain environment variables.
 	-- The file must exist, must be visible from the current working directory.
@@ -55,13 +55,13 @@ package et_module_read is
 		-- CS error : out boolean;
 		-- CS module_curosr : out pac_generic_modules.cursor;
 
-	
-	
+
+
 end et_module_read;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

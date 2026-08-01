@@ -48,7 +48,7 @@ package et_assy_doc.packages is
 		placeholders : pac_text_placeholders.vector;
 	end record;
 
-	
+
 	-- Assembly documentation is about two sides of the board:
 	type type_assy_doc_both_sides is record
 		top		: type_assy_doc_package;
@@ -74,7 +74,7 @@ package et_assy_doc.packages is
 
 
 	-- CS procedure add_line, add_arc, add_circle
-	
+
 
 	procedure add_zone (
 		assy_doc	: in out type_assy_doc_both_sides;
@@ -82,7 +82,7 @@ package et_assy_doc.packages is
 		face		: in type_face);
 
 
-	
+
 	procedure add_text (
 		assy_doc	: in out type_assy_doc_both_sides;
 		text		: in type_doc_text;
@@ -94,13 +94,13 @@ package et_assy_doc.packages is
 		placeholder	: in type_text_placeholder;
 		face		: in type_face);
 
-	
-	
+
+
 end et_assy_doc.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

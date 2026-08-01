@@ -36,7 +36,7 @@
 --
 --
 --  description:
--- 	This package and its child packages base on the Weiler-Atherton algorithm. 
+-- 	This package and its child packages base on the Weiler-Atherton algorithm.
 --  Find basics here:
 -- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
@@ -58,13 +58,13 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 
 generic
-	
+
 package et_geometry_1.et_polygons is
 
 
 	--pragma suppress (all_checks);
-	
-	
+
+
 	-- As system wide default for all polygons.
 	winding_default : constant type_direction_of_rotation := CCW;
 
@@ -72,19 +72,19 @@ package et_geometry_1.et_polygons is
 	-- IMPORTANT: For all other subprograms here the winding
 	-- of a given polygon MUST BE CCW !
 
-	
+
 	subtype type_edge is type_line_fine;
 
 
 	edge_length_min : constant type_float_positive := 0.1;
-	
 
 
-	
+
+
 	package pac_edges is new doubly_linked_lists (type_edge);
 	use pac_edges;
 
-	
+
 	-- Iterates the edges. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		edges	: in pac_edges.list;
@@ -96,13 +96,13 @@ package et_geometry_1.et_polygons is
 	type type_approximation_mode is (
 		-- The edges are inside, between arc and arc center.
 		-- The start and end points of the edges are on the given arc:
-		SHRINK,		
+		SHRINK,
 
 		-- The edges are outside.
 		-- The start and end points of the edges are on a virtual
 		-- outer arc. The outer arc radius equals to arc.radius + tolerance:
-		EXPAND);	
-	
+		EXPAND);
+
 
 	-- Converts an arc to a list of edges.
 	-- Approximates the arc by many edges according to the given mode.
@@ -115,10 +115,10 @@ package et_geometry_1.et_polygons is
 		arc			: in type_arc_fine;
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode;
-		debug		: in boolean := false)				  
+		debug		: in boolean := false)
 		return pac_edges.list;
 
-	
+
 
 	-- A polygon in this world is a list of edges.
 	-- For fast and rough tests (overlapping, inside, outside status)
@@ -135,8 +135,8 @@ package et_geometry_1.et_polygons is
 	procedure update_boundaries (
 		polygon	: in out type_polygon);
 
-	
-	
+
+
 
 	-- Rotates the edges of a polygon according to the given direction.
 	-- NOTE: The polygon does not change its appearance. Only the order
@@ -148,8 +148,8 @@ package et_geometry_1.et_polygons is
 
 
 	type type_clean_up is new boolean;
-	
-	
+
+
 	-- Merges successive edges that have the same direction
 	-- to a single edge:
 	procedure optimize_edges (
@@ -172,7 +172,7 @@ package et_geometry_1.et_polygons is
 	procedure merge_overlapping_edges (
 		polygon : in out type_polygon;
 		debug	: in boolean := false);
-	
+
 	function merge_overlapping_edges (
 		polygon : in type_polygon;
 		debug	: in boolean := false)
@@ -182,30 +182,30 @@ package et_geometry_1.et_polygons is
 	-- If polygons are to be stored, then use this package:
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 	use pac_polygon_list;
-	
+
 
 	-- Returns the number of polygons in
 	-- the given list:
 	function get_count (
 		polygons : in pac_polygon_list.list)
 		return natural;
-	
+
 	function get_count (
 		polygons : in pac_polygon_list.list)
 		return string;
 
-	
-	
+
+
 	-- Appends the source list to the target list:
 	procedure append (
 		target	: in out pac_polygon_list.list;
 		source	: in pac_polygon_list.list);
-		
-	
+
+
 	-- Updates the boundaries of the given list of polygons:
 	procedure update_boundaries (
 		polygons : in out pac_polygon_list.list);
-		
+
 
 	-- Returns true if:
 	-- - number of polygons in left equals those in right AND
@@ -216,27 +216,27 @@ package et_geometry_1.et_polygons is
 		return boolean;
 
 
-	
-	
+
+
 	-- Iterates the polygons. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		holes	: in pac_polygon_list.list;
 		process	: not null access procedure (position : in pac_polygon_list.cursor);
 		proceed	: not null access boolean);
-	
-	
 
-	-- A polygon requires at least 3 vertices. 
-	-- Use this string when outputting error messages related to 
+
+
+	-- A polygon requires at least 3 vertices.
+	-- Use this string when outputting error messages related to
 	-- this requirement:
 	error_message_too_few_vertices : constant string := "At least 3 vertices required to create a polygon !";
-	
+
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
 	-- The vertices must be given in a form like:
 	-- "0.0 0.0   1.0 0.0   1.0 1.0   0.0 1.0" (This example describes a square);
-	-- Successive redundant vertices will be ignored. 
+	-- Successive redundant vertices will be ignored.
 	-- So "0.0 0.0   7.0 0.0  7.0 0.0   1.0 1.0   0.0 1.0" will be handled like
 	-- "0.0 0.0   7.0 0.0   1.0 1.0   0.0 1.0"
 	-- Raises exception if less than 3 vertices are given.
@@ -247,7 +247,7 @@ package et_geometry_1.et_polygons is
 		clean_up	: in type_clean_up := true)
 		return type_polygon;
 
-	
+
 	-- Converts a list of location vectors to a polygon.
 	-- Successive redundant vertices will be ignored:
 	-- Raises exception if less than 3 vertices are given.
@@ -255,7 +255,7 @@ package et_geometry_1.et_polygons is
 	-- into the same or opposide direction will be merged:
 	function to_polygon (
 		vectors		: in pac_vectors.list;
-		clean_up	: in type_clean_up := true)					
+		clean_up	: in type_clean_up := true)
 		return type_polygon;
 
 
@@ -264,7 +264,7 @@ package et_geometry_1.et_polygons is
 		return pac_vectors.list;
 
 
-	
+
 	-- Mirrors a polygon along the given axis:
 	procedure mirror_polygon (
 		polygon	: in out type_polygon;
@@ -276,7 +276,7 @@ package et_geometry_1.et_polygons is
 		axis		: in type_mirror);
 
 
-	
+
 	-- Rotates a polygon by the given angle about the origin:
 	procedure rotate_polygon (
 		polygon	: in out type_polygon;
@@ -288,7 +288,7 @@ package et_geometry_1.et_polygons is
 		angle		: in type_angle);
 
 
-	
+
 	-- Rotates a polygon about the given center by the given angle:
 	function rotate (
 		polygon	: in type_polygon;
@@ -297,7 +297,7 @@ package et_geometry_1.et_polygons is
 		return type_polygon;
 
 
-	
+
 	-- Moves a polygon by the given offset:
 	procedure move_polygon (
 		polygon	: in out type_polygon;
@@ -309,14 +309,14 @@ package et_geometry_1.et_polygons is
 		offset		: in type_offset);
 
 
-	
+
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
 		polygon : in type_polygon)
 		return type_boundaries;
 
-	
-	-- Returns the winding of a polygon. 
+
+	-- Returns the winding of a polygon.
 	-- This function works with concave polygons and uses the approach discussed in
 	-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
 	-- and http://blog.element84.com/polygon-winding.html
@@ -324,13 +324,13 @@ package et_geometry_1.et_polygons is
 		polygon : in type_polygon)
 		return type_direction_of_rotation;
 
-	
+
 	-- This procedure changes the winding of a polygon:
 	procedure set_winding (
 		polygon : in out type_polygon;
 		winding	: in type_direction_of_rotation := winding_default);
-		
-	
+
+
 	-- Returns true if the given two polygons are congruent,
 	-- means if they are equal in outline and size.
 	-- The start points of the two polygons do not matter.
@@ -339,8 +339,8 @@ package et_geometry_1.et_polygons is
 		polygon_B 	: in type_polygon;
 		debug		: in boolean := false)
 		return boolean;
-	
-	
+
+
 	-- Returns the cursor to the given edge of the
 	-- given polygon. If the edge does not exist, then the
 	-- return is no_element.
@@ -354,7 +354,7 @@ package et_geometry_1.et_polygons is
 	function get_shortest_edge (
 		polygon	: in type_polygon)
 		return pac_edges.cursor;
-	
+
 
 	-- Returns the length of the shortest edge of the given polygon:
 	function get_shortest_edge (
@@ -367,9 +367,9 @@ package et_geometry_1.et_polygons is
 	-- to the current output:
 	procedure check_length (
 		polygon	: in type_polygon);
-	
-		
-	
+
+
+
 
 	type type_neigboring_edges is record
 		-- The edge segment before a vertex.
@@ -382,31 +382,31 @@ package et_geometry_1.et_polygons is
 	end record;
 
 
-	
-	
+
+
 	-- Returns the vertices of a polygon in human readable form.
 	-- If lower_left_only is true, then only the lowest left vertex
-	-- is output:	
+	-- is output:
 	function to_string (
 		polygon			: in type_polygon;
-		lower_left_only	: in boolean := false)				   
+		lower_left_only	: in boolean := false)
 		return string;
 
 
-		
+
 	function get_edges_total (
 		polygon : in type_polygon)
 		return count_type;
 
 
-			   
-		
+
+
 	function get_shortest_distance (
 		polygon	: in type_polygon;
 		point	: in type_vector)
 		return type_float;
 
-		
+
 	function is_vertex (
 		polygon	: in type_polygon;
 		point	: in type_vector)
@@ -419,7 +419,7 @@ package et_geometry_1.et_polygons is
 		point	: in type_vector)
 		return pac_edges.cursor;
 
-	
+
 	function get_neigboring_edges (
 		polygon	: in type_polygon;
 		vertex	: in type_vector)
@@ -432,7 +432,7 @@ package et_geometry_1.et_polygons is
 		INSIDE,
 		OUTSIDE,
 		ON_VERTEX);
-	
+
 	function to_string (status : in type_location) return string;
 
 
@@ -441,7 +441,7 @@ package et_geometry_1.et_polygons is
 	type type_point_status (location : type_location) is record
 		-- The point where the probe line has started.
 		-- It is the point that was passed to function get_point_status.
-		start			: type_vector; 
+		start			: type_vector;
 
 		-- The intersections of the probe line with the polygon edges.
 		-- If the probe line starts on an edge or on a vertex, then the
@@ -453,7 +453,7 @@ package et_geometry_1.et_polygons is
 				-- The shortest distance of the start point (of the probe line)
 				-- to the polygon:
 				distance : type_float; -- CS type_float_positive ?
-				
+
 			when ON_EDGE =>
 				edge : pac_edges.cursor;
 
@@ -463,15 +463,15 @@ package et_geometry_1.et_polygons is
 		end case;
 	end record;
 
-	
-	
+
+
 	-- Returns the query result as a human readable string:
 	function to_string (
 		i : in type_point_status)
 		return string;
 
 
-	-- Returns the intersections of the probe line with the 
+	-- Returns the intersections of the probe line with the
 	-- polygon edges. Since the probe line is a horizontal line, that runs
 	-- toward the right infinitely, all y-values are equal. The y-value
 	-- assumes the y-value of the start point.
@@ -486,83 +486,83 @@ package et_geometry_1.et_polygons is
 		before	: in type_float := type_float'last)
 		return pac_vectors.list;
 
-	
+
 
 	-- Detects whether the given point is inside or outside
 	-- the polygon or whether the point lies on an edge.
 	-- See details in body of this function:
 	function get_point_status (
-		polygon	: in type_polygon;	
+		polygon	: in type_polygon;
 		point	: in type_vector;
 		debug	: in boolean := false)
 		return type_point_status;
 
-		
 
 
-		
+
+
 	-- Detects whether the given point is inside or outside
 	-- the polygon or whether the point lies on an edge.
 	-- Similar to get_point_status but the result is reduced
 	-- to just INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
 	function get_location (
-		polygon	: in type_polygon;	
+		polygon	: in type_polygon;
 		point	: in type_vector)
 		return type_location;
 
-	
 
-	
+
+
 	type type_intersection_direction is (
-		-- The edge of the clipped polygon (A) 
+		-- The edge of the clipped polygon (A)
 		-- enters the clipping polygon (B):
-		ENTERING, 
+		ENTERING,
 
 		-- The edge of the clipped polygon (A)
-		-- leaves the clipping polygon (B): 
+		-- leaves the clipping polygon (B):
 		LEAVING);
 
-	
+
 	procedure toggle_direction (
 		d : in out type_intersection_direction);
 
-	
 
-	
+
+
 	type type_intersection_base is tagged record
 		position	: type_vector;
 		direction	: type_intersection_direction := ENTERING;
 	end record;
 
-	
+
 	type type_intersection_line_edge is new type_intersection_base with record
 		-- The intersected edge of the polygon.
 		-- If intersection is on a vertex, then this is the edge after the vertex.
-		edge : pac_edges.cursor; --  CS really required ?		
+		edge : pac_edges.cursor; --  CS really required ?
 	end record;
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
 
 	-- CS iterator procedure for pac_line_edge_intersections
-	
-	
+
+
 	-- Returns true if the given list of line-edge-intersections contains
 	-- a line-edge-intersection that lies on the given place:
 	function contains (
 		intersections	: in pac_line_edge_intersections.list;
 		place			: in type_vector)
 		return boolean;
-	
-		
+
+
 	-- Sorts the list of intersections by the distance of the intersections
 	-- to the given reference point. Nearest comes first:
 	procedure sort_by_distance (
 		intersections	: in out pac_line_edge_intersections.list;
 		reference		: in type_vector);
-	
 
 
-	
+
+
 	-- When a line runs through a polygon, then the start and end point
 	-- can lie inside, outside, on a vertex or on an edge. Depending
 	-- on this location the start or end point gets more properties.
@@ -571,13 +571,13 @@ package et_geometry_1.et_polygons is
 	type type_line_end (location : type_location := OUTSIDE) is record
 		case location is
 			when OUTSIDE | INSIDE => null;
-			
+
 			when ON_EDGE =>
 				-- The edge where the line starts or ends:
 				edge				: pac_edges.cursor; -- CS really required ?
 
 			when ON_VERTEX =>
-				-- The two neigboring edges that are 
+				-- The two neigboring edges that are
 				-- connected by the start or end point:
 				edges				: type_neigboring_edges;  -- CS really required ?
 
@@ -588,12 +588,12 @@ package et_geometry_1.et_polygons is
 	function to_string (
 		line_end : in type_line_end)
 		return string;
-	
-		
+
+
 	type type_edge_status is record
 		-- The affected edge itself:
 		edge	: type_edge;
-		
+
 		-- The properties of the start and end point of the line:
 		A	: type_line_end;
 		B	: type_line_end;
@@ -601,15 +601,15 @@ package et_geometry_1.et_polygons is
 		-- The intersections (incl position, intersected edge and direction)
 		-- with the polygon BETWEEN start and end point of the line.
 		-- Edges that overlap the line are ignored.
-		intersections : pac_line_edge_intersections.list; 
+		intersections : pac_line_edge_intersections.list;
 	end record;
 
-	
+
 	function to_string (
 		status	: in type_edge_status)
 		return string;
 
-	
+
 	package pac_edge_status_list is new doubly_linked_lists (type_edge_status);
 
 
@@ -620,39 +620,39 @@ package et_geometry_1.et_polygons is
 		status_list	: in pac_edge_status_list.list;
 		candidate	: in pac_edge_status_list.cursor)
 		return pac_edge_status_list.cursor;
-	
+
 
 	function get_next_status (
 		status_list	: in pac_edge_status_list.list;
 		candidate	: in pac_edge_status_list.cursor)
 		return pac_edge_status_list.cursor;
 
-	
+
 	-- Returns the first edge that
-	-- - starts outside or 
+	-- - starts outside or
 	-- - enters the outside:
 	-- CS: incomplete, probably no need ?
 	--function get_first_outside (
 		--polygon	: in type_polygon;
-		--edges	: in pac_edge_status_list.list)		
+		--edges	: in pac_edge_status_list.list)
 		--return pac_edge_status_list.cursor;
-	
 
-	
+
+
 	type type_section is (FIRST, LAST);
 
 	-- Returns the location of the first or last
 	-- section of the given edge-status. If the status does not
-	-- contain any intersections then just the section between 
+	-- contain any intersections then just the section between
 	-- start and end point is investigated:
 	function get_section_location (
 		polygon			: in type_polygon;
 		status_cursor	: in pac_edge_status_list.cursor;
-		section			: in type_section)		
+		section			: in type_section)
 		return type_location;
 
 
-	
+
 	function get_edge_status (
 		polygon	: in type_polygon;
 		edge	: in type_edge)
@@ -673,11 +673,11 @@ package et_geometry_1.et_polygons is
 		edge_B		: type_edge;
 	end record;
 
-	
+
 	function to_string (intersection : in type_intersection)
 		return string;
 
-	
+
 	package pac_intersections is new doubly_linked_lists (type_intersection);
 	use pac_intersections;
 
@@ -688,21 +688,21 @@ package et_geometry_1.et_polygons is
 		process			: not null access procedure (position : in pac_intersections.cursor);
 		proceed			: not null access boolean);
 
-	
-	
+
+
 	-- Returns true if x/y of the given two intersections are equal:
 	function same_position (
 		intersection_1, intersection_2 : in pac_intersections.cursor)
 		return boolean;
 
-	
+
 	-- Removes from the given list of intersections those where
 	-- polygon A touches polygon B. The result are those nodes where
 	-- the polygon edges truly intersect each other:
 	--function get_real_intersections (
 		--intersections	: in pac_intersections.list)
 		--return pac_intersections.list;
-	
+
 
 	-- Returns true if the given intersection have equal
 	-- position and direction:
@@ -711,8 +711,8 @@ package et_geometry_1.et_polygons is
 		return boolean;
 
 
-	
-	
+
+
 	-- Returns true if all vertices of polygon A lie
 	-- inside polygon B. If a vertex lies on an edge
 	-- of polygon A then it is regarded as inside.
@@ -723,7 +723,7 @@ package et_geometry_1.et_polygons is
 
 
 
-	
+
 	-- The category of a vertex:
 	type type_category is (
 		-- A vertex as it is a part of the original polygon:
@@ -732,9 +732,9 @@ package et_geometry_1.et_polygons is
 		-- The vertex is an intersection of two edges of the A and B polygon:
 		INTERSECTION);
 
-	
+
 	-- In connection with polygon operation like clipping or union
-	-- there are always two polygons we are operating with. In this package 
+	-- there are always two polygons we are operating with. In this package
 	-- we refer to them as polygon A and polygon B.
 	-- A vertex of a polygon can be described as follows:
 	type type_vertex (category : type_category) is record
@@ -759,12 +759,12 @@ package et_geometry_1.et_polygons is
 	function to_string (vertex : in type_vertex)
 		return string;
 
-	
+
 	package pac_vertices is new indefinite_doubly_linked_lists (type_vertex);
 	use pac_vertices;
 
 
-	function to_string (vertices : in pac_vertices.list) 
+	function to_string (vertices : in pac_vertices.list)
 		return string;
 
 
@@ -772,24 +772,24 @@ package et_geometry_1.et_polygons is
 		vertices	: in out pac_vertices.list;
 		reference	: in type_vector);
 
-	
+
 
 	function is_entering (v : pac_vertices.cursor) return boolean;
 	function is_leaving (v : pac_vertices.cursor) return boolean;
 	function is_regular (v : pac_vertices.cursor) return boolean;
 	function is_inside (v : pac_vertices.cursor) return boolean;
 	function is_outside (v : pac_vertices.cursor) return boolean;
-	
 
-	
+
+
 
 	-- Removes successive vertices which have the same x/y position.
-	-- Example: 
+	-- Example:
 	-- given vertices: 0/0 0/0 3/4 -4/9 -4/9
 	-- result        : 0/0 4/4 -4/9
 	procedure remove_redundant_positions (vertices : in out pac_vertices.list);
 
-	
+
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
@@ -801,7 +801,7 @@ package et_geometry_1.et_polygons is
 		return type_polygon;
 
 
-	
+
 	-- Searches for intersections of the given two polygons.
 	-- An intersection is where the edge of polygon A intersects
 	-- an edge of polygon B. The intersection has direction "entering"
@@ -813,15 +813,15 @@ package et_geometry_1.et_polygons is
 		polygon_B	: in type_polygon;
 		debug		: in boolean := false)
 		return pac_intersections.list;
-	
 
-	
+
+
 	type type_overlap_status is (
 		CONGRUENT,
 		A_INSIDE_B,
-		B_INSIDE_A,							
+		B_INSIDE_A,
 
-		A_OVERLAPS_B, 
+		A_OVERLAPS_B,
 		-- NOTE: This includes the case when edges overlap each other.
 		--       The polygons just touch each other via a common edge.
 
@@ -831,17 +831,17 @@ package et_geometry_1.et_polygons is
 	-- For lists of overlap statuses:
 	package pac_overlap_status is new ordered_sets (type_overlap_status);
 	use pac_overlap_status;
-	
 
-	
-	overlap_mode_1 : constant pac_overlap_status.set := 
+
+
+	overlap_mode_1 : constant pac_overlap_status.set :=
 		union (to_set (B_INSIDE_A), to_set (A_OVERLAPS_B));
-	
+
 	-- CS other modes ?
-	
-	
-	
-	
+
+
+
+
 	-- Returns the overlap status of polygon A and B.
 	-- Use function get_intersections to generate the required
 	-- intersections of edges.
@@ -862,7 +862,7 @@ package et_geometry_1.et_polygons is
 		debug					: in boolean := false)
 		return type_overlap_status;
 
-		
+
 	-- Returns true if one of these conditions is true:
 	-- 1. the given polygon is inside the given area
 	-- 2. the given polygon overlaps the given area
@@ -870,14 +870,14 @@ package et_geometry_1.et_polygons is
 		area		: in type_polygon;
 		polygon		: in type_polygon)
 		return boolean;
-		
-	
+
+
 	-- Returns from the given list of polygons those which
 	-- have a given overlap status relative to the area.
 	-- The overlap status here is a set of statuses.
 	-- Removes the affected polygons from the given list
 	-- if argument "delete" is true.
-	-- If "delete" is true, then the function requires more 
+	-- If "delete" is true, then the function requires more
 	-- time to complete:
 	function get_polygons (
 		area		: in type_polygon; -- polygon A
@@ -885,7 +885,7 @@ package et_geometry_1.et_polygons is
 		status		: in pac_overlap_status.set; -- B_INSIDE_A, A_OVERLAPS_B, ...
 		delete		: in boolean := true)
 		return pac_polygon_list.list;
-	
+
 
 	-- Deletes from the given list of polygons all which
 	-- do not touch the given area.
@@ -895,7 +895,7 @@ package et_geometry_1.et_polygons is
 		area		: in type_polygon;
 		polygons	: in out pac_polygon_list.list);
 
-	
+
 	-- Returns a list of vertices of the given primary
 	-- polygon merged with the intersections (leaving or entering) with the secondary
 	-- polygon. The returned vertices are ordered counter-clockwise.
@@ -904,7 +904,7 @@ package et_geometry_1.et_polygons is
 	-- The required list of intersections should be generated by function
 	-- get_intersections (see above).
 	-- NOTE: The solely purpose of the argument "polygon_secondary" is to help
-	-- figuring out whether a certain vertex of the primary polygon is inside, 
+	-- figuring out whether a certain vertex of the primary polygon is inside,
 	-- outside, on an edge or on a vertex of the secondary polygon.
 	function get_vertices (
 		polygon_primary 	: in type_polygon;
@@ -913,7 +913,7 @@ package et_geometry_1.et_polygons is
 		AB					: in type_AB_polygon)
 		return pac_vertices.list;
 
-	
+
 	-- Returns a cursor to the first entering/leaving intersection in
 	-- given list of vertices.
 	-- If no entering intersection found, returns no_element:
@@ -939,12 +939,12 @@ package et_geometry_1.et_polygons is
 		vertices	: in pac_vertices.list)
 		return pac_vertices.list;
 
-	
+
 	-- Returns the vertices (of given list of vertices) after
-	-- the given start vertex 
-	-- to (and including) the next leaving/entering vertex. 
+	-- the given start vertex
+	-- to (and including) the next leaving/entering vertex.
 	-- If argument "delete_visited" is true then all
-	-- these vertices and the given start vertex 
+	-- these vertices and the given start vertex
 	-- are removed from vertices so that they won't be visited again.
 	-- CS: Not implemented yet: Delete visited when direction of search is CW.
 	function get_until (
@@ -957,7 +957,7 @@ package et_geometry_1.et_polygons is
 
 
 
-	
+
 	-- Polygon operations may get stuck in infinite loops.
 	-- In connection with the overflow of a safety counter
 	-- this exception is raised:
@@ -967,7 +967,7 @@ package et_geometry_1.et_polygons is
 	-- CS: Increase if necessary.
 	subtype type_safety_count is natural range 0 .. 10000;
 
-	-- Increments the given counter by 1 first. 
+	-- Increments the given counter by 1 first.
 	-- Then, if the count has reached or exceeded the given limit,
 	-- the exception safety_counter_overflow is raised:
 	procedure increment_safety_counter (
@@ -976,14 +976,14 @@ package et_geometry_1.et_polygons is
 
 	-- First, if the count is greater then the given limit,
 	-- the exception safety_counter_overflow is raised.
-	-- After comparing, the given counter is incremented by 1: 
+	-- After comparing, the given counter is incremented by 1:
 	procedure increment_safety_counter_2 (
 		counter	: in out type_safety_count;
 		limit	: in type_safety_count);
 
 
-	
-	
+
+
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
@@ -992,7 +992,7 @@ package et_geometry_1.et_polygons is
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
 		return type_polygon;
-	
+
 
 	-- Converts an arc with a given width to a polygon
 	-- with round caps on the arc ends:
@@ -1004,25 +1004,25 @@ package et_geometry_1.et_polygons is
 		return type_polygon;
 
 
-	-- Returns the distance of a given point in given 
+	-- Returns the distance of a given point in given
 	-- direction to the border. The function assumes
 	-- that the point is INSIDE the polygon !
 	-- If the point is outside of the polygon, then an exception
 	-- will be raised.
 	-- The function builds a ray that starts at point and runs
-	-- into the given direction. The iteration stops at the first 
+	-- into the given direction. The iteration stops at the first
 	-- edge that intersects the ray.
 	function get_distance_to_border (
 		polygon		: in type_polygon;
 		point		: in type_vector;
 		direction	: in type_angle)
 		return type_float_positive;
-	
+
 end et_geometry_1.et_polygons;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

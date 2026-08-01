@@ -49,16 +49,16 @@ with et_file_sections;			use et_file_sections;
 
 
 package body et_file_write is
-	
+
 
 	procedure tab_depth_up is begin
 		if tab_depth < type_tab_depth'last then
-			tab_depth := tab_depth + 1; 
+			tab_depth := tab_depth + 1;
 		end if;
 	end tab_depth_up;
 
 
-	
+
 	procedure tab_depth_down is begin
 		if tab_depth > type_tab_depth'first then
 			tab_depth := tab_depth - 1;
@@ -67,15 +67,15 @@ package body et_file_write is
 
 
 
-	
-	procedure reset_tab_depth is begin 
-		tab_depth := type_tab_depth'first; 
+
+	procedure reset_tab_depth is begin
+		tab_depth := type_tab_depth'first;
 	end;
 
 
 
 
-	
+
 	procedure section_mark (section : in string; mark : in type_section_mark) is begin
 	-- Make sure the current_output is set properly.
 		case mark is
@@ -91,7 +91,7 @@ package body et_file_write is
 
 
 
-	
+
 
 	procedure write (
 		keyword 	: in string;
@@ -107,20 +107,20 @@ package body et_file_write is
 			else return "";
 			end if;
 		end comment;
-		
+
 	begin -- write
 		if wrap then
 			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
 		end if;
-					
+
 		if wrap then
 			-- If wrapping required, a space is always between keyword and parameters
 			put_line (tab_depth * tab & comment & keyword & space & parameters_wrapped);
 		else
 			put_line (tab_depth * tab & comment & keyword & space & parameters);
 		end if;
-	end write;	
+	end write;
 
 
-	
+
 end et_file_write;

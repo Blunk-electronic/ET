@@ -76,11 +76,11 @@ package body et_module_write_assembly_variants is
 	is
 		use pac_assembly_variants;
 
-		
-		
+
+
 		procedure query_devices (
 			variant_name	: in pac_assembly_variant_name.bounded_string;
-			variant			: in type_assembly_variant) 
+			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
 			use et_device_partcode;
@@ -88,8 +88,8 @@ package body et_module_write_assembly_variants is
 			use pac_device_variants;
 			device_cursor : pac_device_variants.cursor := variant.devices.first;
 
-			
-			function purpose return string is 
+
+			function purpose return string is
 				use et_device_purpose;
 			begin
 				if get_length (element (device_cursor).purpose) > 0 then
@@ -102,20 +102,20 @@ package body et_module_write_assembly_variants is
 				end if;
 			end;
 
-			
+
 		begin -- query_devices
 			while device_cursor /= pac_device_variants.no_element loop
 				case element (device_cursor).mounted is
 					when NO =>
 						write (
 							keyword		=> keyword_device,
-							parameters	=> to_string (key (device_cursor)) & 
+							parameters	=> to_string (key (device_cursor)) &
 											space & keyword_not_mounted);
 
 					when YES =>
 						write (
 							keyword		=> keyword_device,
-							parameters	=> to_string (key (device_cursor)) & 
+							parameters	=> to_string (key (device_cursor)) &
 								space &
 								keyword_value & space &
 								to_string (element (device_cursor).value) &
@@ -124,18 +124,18 @@ package body et_module_write_assembly_variants is
 								purpose);
 
 				end case;
-				
+
 				next (device_cursor);
 			end loop;
 		end query_devices;
 
 
 
-		
-		
+
+
 		procedure query_submodules (
 			variant_name	: in pac_assembly_variant_name.bounded_string;
-			variant			: in type_assembly_variant) 
+			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
 			use et_module_instance;
@@ -148,7 +148,7 @@ package body et_module_write_assembly_variants is
 					parameters	=> to_string (key (submodule_cursor)) &
 									space & keyword_variant & space &
 									to_variant (element (submodule_cursor).variant));
-				
+
 				next (submodule_cursor);
 			end loop;
 		end query_submodules;
@@ -156,9 +156,9 @@ package body et_module_write_assembly_variants is
 
 
 
-		
-		
-		procedure write (variant_cursor : in pac_assembly_variants.cursor) is 
+
+
+		procedure write (variant_cursor : in pac_assembly_variants.cursor) is
 		begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
@@ -173,18 +173,18 @@ package body et_module_write_assembly_variants is
 			query_element (
 				position	=> variant_cursor,
 				process		=> query_submodules'access);
-			
+
 			section_mark (section_assembly_variant, FOOTER);
 			new_line;
 		end write;
 
 
-	
 
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -204,34 +204,34 @@ package body et_module_write_assembly_variants is
 
 			end if;
 
-			
+
 			section_mark (section_assembly_variants, FOOTER);
 		end query_module;
-		
 
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write assembly variants",
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		query_element (module_cursor, query_module'access);
-		
+
 	end write_assembly_variants;
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 end et_module_write_assembly_variants;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,8 +50,8 @@ package body et_file_sections is
 
 
 	function to_string (
-		section : in type_file_section) 
-		return string 
+		section : in type_file_section)
+		return string
 	is
 		s : constant string := type_file_section'image (section);
 	begin
@@ -66,27 +66,27 @@ package body et_file_sections is
 	function write_enter_section return string is begin return "entering section "; end;
 	function write_return_to_section return string is begin return "returning to section "; end;
 
-	function write_missing_begin_end return string is begin 
-		return "missing section begin or section end after section name !"; 
+	function write_missing_begin_end return string is begin
+		return "missing section begin or section end after section name !";
 	end;
 
 	function write_section_stack_not_empty return string is begin
 		return "section stack not empty !";
 	end;
-	
+
 	procedure invalid_section is begin
 		log (SEVERITY_ERROR, "invalid section name !", console => true);
 		raise constraint_error;
 	end;
-	
 
 
 
-	
+
+
 
 
 -- GENERICS
-	
+
 	package body gen_pac_sections_stack is
 		s : array (1..max) of item;
 		top : natural range 0..max;
@@ -101,7 +101,7 @@ package body et_file_sections is
 		begin
 			top := top - 1;
 		end pop;
-		
+
 		function pop return item is
 		begin
 			top := top - 1;
@@ -124,19 +124,19 @@ package body et_file_sections is
 			else return false;
 			end if;
 		end empty;
-		
-		function current return item is 
+
+		function current return item is
 		begin
 			return s (top);
 		end current;
-		
+
 		function parent (degree : in natural := 1) return item is
 		begin
 			--return s (top - 1);
 			return s (top - degree);
 		end parent;
-		
+
 	end gen_pac_sections_stack;
-	
-	
+
+
 end et_file_sections;

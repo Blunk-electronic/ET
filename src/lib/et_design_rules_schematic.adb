@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,21 +35,21 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
 
 -- with ada.text_io;			use ada.text_io;
 package body et_design_rules_schematic is
-	
+
 	procedure dummy is begin null; end;
-	
+
 end et_design_rules_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -50,7 +50,7 @@
 package body et_symbol_port_general is
 
 
-	
+
 	function get_place (
 		port 		: in type_port_general)
 		return type_vector_model
@@ -59,17 +59,17 @@ package body et_symbol_port_general is
 	end;
 
 
-		
+
 	procedure set_place (
 		port		: in out type_port_general;
 		place		: in type_vector_model)
 	is begin
 		port.position := place;
 	end;
-	
 
 
-	
+
+
 	function get_rotation (
 		port		: in type_port_general)
 		return type_rotation_relative
@@ -86,7 +86,7 @@ package body et_symbol_port_general is
 		port.rotation := rotation;
 	end;
 
-	
+
 
 
 	function get_length (
@@ -95,15 +95,15 @@ package body et_symbol_port_general is
 	is begin
 		return port.length;
 	end;
-		
 
-	
-	
+
+
+
 end et_symbol_port_general;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -46,11 +46,11 @@ with et_directory_and_file_ops;
 
 package body et_meta_device_libraries_schematic is
 
-	
+
 
 	function library_path_exists (
 		lib : in pac_library_path_schematic.bounded_string)
-		return boolean 
+		return boolean
 	is
 		use ada.directories;
 		use et_directory_and_file_ops;
@@ -61,10 +61,10 @@ package body et_meta_device_libraries_schematic is
 			return false;
 		end if;
 	end;
-	
 
 
-	
+
+
 	function to_library_path (
 		lib : in string)
 		return pac_library_path_schematic.bounded_string
@@ -74,7 +74,7 @@ package body et_meta_device_libraries_schematic is
 
 
 
-	
+
 	function to_string (
 		lib : in pac_library_path_schematic.bounded_string)
 		return string
@@ -92,7 +92,7 @@ package body et_meta_device_libraries_schematic is
 	end;
 
 
-	
+
 
 	function is_empty (
 		paths : in pac_library_paths_schematic.list)
@@ -102,12 +102,12 @@ package body et_meta_device_libraries_schematic is
 	end;
 
 
-	
+
 end et_meta_device_libraries_schematic;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

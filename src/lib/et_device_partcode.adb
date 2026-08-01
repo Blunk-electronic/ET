@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -48,7 +48,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_device_partcode is
 
-	
+
 	function get_length (
 		partcode : in pac_device_partcode.bounded_string)
 		return natural
@@ -58,17 +58,17 @@ package body et_device_partcode is
 
 
 
-	
+
 	function to_string (partcode : in pac_device_partcode.bounded_string) return string is begin
 		return pac_device_partcode.to_string (partcode);
 	end to_string;
 
-	
+
 	function partcode_length_valid (partcode : in string) return boolean is
-		-- Returns true if length of given partcode is ok. Issues warning if not.	
+		-- Returns true if length of given partcode is ok. Issues warning if not.
 	begin
 		if partcode'length > partcode_length_max then
-			log (SEVERITY_WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than" 
+			log (SEVERITY_WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than"
 				 & positive'image (partcode_length_max) & " characters !");
 			return false;
 		else
@@ -76,7 +76,7 @@ package body et_device_partcode is
 		end if;
 	end;
 
-	
+
 	function partcode_characters_valid (
 		partcode	: in pac_device_partcode.bounded_string;
 		characters	: in character_set := partcode_characters) return boolean is
@@ -99,8 +99,8 @@ package body et_device_partcode is
 		end if;
 	end;
 
-	
-	procedure partcode_invalid (partcode : in string) is 
+
+	procedure partcode_invalid (partcode : in string) is
 	begin
 		--log (SEVERITY_ERROR, "partcode " & enclose_in_quotes (partcode) &
 			 --" invalid !", console => true);
@@ -109,7 +109,7 @@ package body et_device_partcode is
 			"ERROR: Partcode " & enclose_in_quotes (partcode) & " invalid !";
 	end partcode_invalid;
 
-	
+
 	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean is begin
 		if pac_device_partcode.length (partcode) = 0 then
 			return true;
@@ -118,11 +118,11 @@ package body et_device_partcode is
 		end if;
 	end is_empty;
 
-	
+
 	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
+	-- Tests the given value for length and invalid characters.
 		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
+		error_on_invalid_character	: in boolean := true)
 		return pac_device_partcode.bounded_string is
 			pragma unreferenced (error_on_invalid_character);
 
@@ -145,13 +145,13 @@ package body et_device_partcode is
 		return partcode_out;
 	end to_partcode;
 
-	
-	
+
+
 end et_device_partcode;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

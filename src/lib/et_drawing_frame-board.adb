@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,14 +39,14 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_drawing_frame.board is
-	
+
 
 	procedure apply_defaults_board (frame : in out type_frame_pcb_pre) is
 
 		-- LINES OF TITLE BLOCK
 		type type_lines is array (positive range <>) of type_line;
 
-		
+
 		lines_pcb : constant type_lines (1 .. 8) := (
 			-- outer lines
 			((  0,  0),(220,  0)),
@@ -62,7 +62,7 @@ package body et_drawing_frame.board is
 			--(( 89, 20),(220, 20)) -- horizontal
 			);
 
-		
+
 		-- Collects the lines of the given array and returns them as a list:
 		function make_lines (lines : in type_lines) return pac_lines.list is
 			use pac_lines;
@@ -78,7 +78,7 @@ package body et_drawing_frame.board is
 		-- TEXTS IN TITLE BLOCK
 		type type_texts is array (positive range <>) of type_static_text;
 
-		
+
 		texts_pcb : constant type_texts (1 .. 11) := (
 			(position => (  2, 36), size => 3, content => to_content ("Company:")),
 			(position => (  2, 31), size => 3, content => to_content ("Project:")),
@@ -96,7 +96,7 @@ package body et_drawing_frame.board is
 			(position => ( 90,  1), size => 3, content => to_content ("approved"))
 			);
 
-		
+
 		-- Collects the texts of the given array and returns them as a list:
 		function make_texts (texts : in type_texts) return pac_static_texts.list is
 			use pac_static_texts;
@@ -107,8 +107,8 @@ package body et_drawing_frame.board is
 			end loop;
 			return result;
 		end make_texts;
-		
-		
+
+
 	begin -- apply_defaults_board
 
 		-- type_title_bock (basic stuff):
@@ -139,11 +139,11 @@ package body et_drawing_frame.board is
 		-- cam markers
 		frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 46);
 		frame.title_block_pcb.cam_markers.signal_layer.position 					:= ( 90, 41);
-		
+
 		frame.title_block_pcb.cam_markers.silk_screen.position 						:= (120, 36);
 		frame.title_block_pcb.cam_markers.assy_doc.position 						:= (155, 36);
 		frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 36);
-		
+
 		frame.title_block_pcb.cam_markers.stop_mask.position 						:= (120, 31);
 		frame.title_block_pcb.cam_markers.stencil.position 							:= (155, 31);
 
@@ -157,7 +157,7 @@ package body et_drawing_frame.board is
 
 
 
-	
+
 	function make_default_frame_pcb
 		return type_frame_pcb_pre
 	is
@@ -166,13 +166,13 @@ package body et_drawing_frame.board is
 		apply_defaults_board (f);
 		return f;
 	end make_default_frame_pcb;
-	
-	
+
+
 end et_drawing_frame.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

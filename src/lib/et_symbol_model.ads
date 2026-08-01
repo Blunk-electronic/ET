@@ -59,38 +59,38 @@ package et_symbol_model is
 	use pac_geometry_2;
 
 
-	
+
 	type type_symbol_base is tagged record -- CS really needed ?
 		texts : pac_symbol_texts.list; -- the collection of texts
 	end record;
 
-	
-	
+
+
 	type type_symbol_model (
-		appearance : type_appearance) 
+		appearance : type_appearance)
 	is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
 		ports	: pac_symbol_ports.map;
-		
+
 		case appearance is
 			when APPEARANCE_PCB =>
-				-- Placeholders to be filled with content when 
+				-- Placeholders to be filled with content when
 				-- a symbol is instantiated:
 				placeholders : type_text_placeholders;
 
-			when APPEARANCE_VIRTUAL => null;				
+			when APPEARANCE_VIRTUAL => null;
 		end case;
 	end record;
 
-	
+
 
 	-- This access type is required for reading a
 	-- symbol model from a file:
 	type type_symbol_model_access is access type_symbol_model;
 
-	
 
-	
+
+
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
 		symbol : in type_symbol_model)
@@ -98,27 +98,27 @@ package et_symbol_model is
 
 
 
-	
+
 	-- Retrurns x/y-positions the the ports of the given symbol:
 	function get_port_positions (
 		symbol	: in type_symbol_model)
 		return pac_points.list;
 
 
-	
+
 	-- Returns the placeholders of the symbol.
 	-- If the symbol represents a virtual device,
 	-- then default placeholders are returned:
 	function get_placeholders (
 		symbol	: in type_symbol_model)
 		return type_text_placeholders;
-	
+
 
 end et_symbol_model;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

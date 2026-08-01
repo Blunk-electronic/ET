@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,11 +46,11 @@ with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 
 package et_conductors_floating_board is
 
-	
+
 	-- Type for NON ELECTRIC !! conductor objects.
 	-- All these objects are not connected to any net,
 	-- means they are floating.
-	-- NON ELECTRIC conductor objects of a pcb may also 
+	-- NON ELECTRIC conductor objects of a pcb may also
 	-- include text placeholders:
 	type type_conductors_floating is record
 		lines 			: pac_conductor_lines.list;
@@ -63,7 +63,7 @@ package et_conductors_floating_board is
 
 		-- global cutout areas:
 		cutouts			: pac_cutouts.list;
-		
+
 		texts			: pac_conductor_texts_board.list;
 		placeholders	: pac_placeholders_conductor.list;
 	end record;
@@ -71,12 +71,12 @@ package et_conductors_floating_board is
 
 	-- CS procedures add_line, add_arc, add_circle, add_zone, add_text, add_placeholder
 
-	
+
 end et_conductors_floating_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

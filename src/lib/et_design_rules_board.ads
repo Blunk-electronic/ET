@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - separate package for dru file name
 -- - clean up
 
@@ -53,14 +53,14 @@ with et_drills;						use et_drills;
 
 
 package et_design_rules_board is
-	
+
 
  	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
 	use pac_file_name;
 
 	function is_empty (rules : in pac_file_name.bounded_string) return boolean;
-	
+
 	function to_file_name (file : in string) return pac_file_name.bounded_string;
 	function to_string (file : in pac_file_name.bounded_string) return string;
 
@@ -68,7 +68,7 @@ package et_design_rules_board is
 
 
 	conductor_width_min : constant type_distance_positive := 0.05;
-	
+
 	conductor_clearance_min : constant type_distance_positive := conductor_width_min;
 
 	-- The clearance between two conductor objects:
@@ -78,10 +78,10 @@ package et_design_rules_board is
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 	procedure validate_track_clearance (clearance : in type_distance_model);
 
-	
+
 
 	subtype type_clearance_conductors_of_same_net is type_distance_positive range zero .. type_track_clearance'last;
-	
+
 	subtype type_clearance_conductor_to_edge is type_distance_positive range zero .. 0.5;
 
 	subtype type_clearance_edge_to_edge is type_distance_positive range 0.2 .. 1.0;
@@ -94,27 +94,27 @@ package et_design_rules_board is
 	end record;
 
 
-	dru_parameter_clearance_conductor_to_board_edge : constant string := 
+	dru_parameter_clearance_conductor_to_board_edge : constant string :=
 		"clearance conductor to board edge [mm]";
 
 	-- CS: other clearances. see above
 
 
-	
-	
+
+
 -- RESTRING
-	
+
 	restring_width_max : constant type_distance_positive := 5.0;
-	subtype type_restring_width is type_distance_positive 
+	subtype type_restring_width is type_distance_positive
 		range conductor_width_min .. restring_width_max;
 
-	
+
 	-- Some PCB manufacturers make the inner restring slightly
 	-- wider than the outer. So we require a type for the
 	-- delta between inner an outer restring:
 	subtype type_restring_delta_inner_outer is type_distance_positive
 		range 0.0 .. type_restring_width'last;
-	
+
 	type type_restring is record
 		outer		: type_restring_width := 0.15;
 		delta_size	: type_restring_delta_inner_outer := 0.0;
@@ -125,7 +125,7 @@ package et_design_rules_board is
 
 
 	drill_to_restring_multiplier : constant type_distance_positive := 0.5;
-	
+
 	-- Calculates the width of the restring as follows:
 	-- If category is OUTER then the formula is:
 	--  restring : drill_size * drill_to_restring_multiplier
@@ -138,33 +138,33 @@ package et_design_rules_board is
 		delta_size	: in type_restring_delta_inner_outer := zero)
 		return type_restring_width;
 
-	
+
 	-- Checks whether the given restring width is in range of type_restring_width.
 	procedure validate_restring_width (
 		restring_width : in type_distance_model);
 
 
-	
-	
+
+
 	track_width_max : constant type_distance_positive := 100.0;
-	
-	subtype type_track_width is type_distance_positive 
+
+	subtype type_track_width is type_distance_positive
 		range conductor_width_min .. track_width_max;
 
-	
+
 	-- Checks whether the given track width is in range of type_track_width.
 	procedure validate_track_width (
 		track_width : in type_distance_model);
 
-	
-	
+
+
 	type type_sizes is record
 		tracks		: type_track_width := 0.15;
 		drills		: type_drill_size := 0.3;
 		restring	: type_restring;
 	end record;
 
-	
+
 
 	stop_mask_expansion_min : constant type_distance_positive := 0.01;
 	stop_mask_expansion_max : constant type_distance_positive := 0.2;
@@ -172,13 +172,13 @@ package et_design_rules_board is
 		range stop_mask_expansion_min .. stop_mask_expansion_max;
 	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
 
-	
+
 	type type_stop_mask is record
 		expansion_min	: type_stop_mask_expansion := 0.075;
 	end record;
 
 
-	
+
 	type type_design_rules_board is record
 		clearances	: type_clearances;
 		sizes		: type_sizes;
@@ -187,7 +187,7 @@ package et_design_rules_board is
 
 	design_rules_default : constant type_design_rules_board := (others => <>);
 
-	
+
 	package pac_design_rules_board is new ordered_maps (
 		key_type		=> pac_file_name.bounded_string, -- JLP_ML4_standard.dru
 		element_type	=> type_design_rules_board);
@@ -195,7 +195,7 @@ package et_design_rules_board is
 	-- Here we collect all sets of design rules of the project:
 	design_rules : pac_design_rules_board.map;
 
-	
+
 	-- Reads the design rules specified in the given file
 	-- and inserts the data set in list "design_rules" (see above):
 	procedure read_rules (
@@ -210,12 +210,12 @@ package et_design_rules_board is
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
 		return type_design_rules_board;
 
-	
+
 end et_design_rules_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

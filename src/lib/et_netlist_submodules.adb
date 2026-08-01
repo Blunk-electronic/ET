@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -47,22 +47,22 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_netlist_submodules is
-	
 
-	
-	
+
+
+
 	function "<" (
-		left, right : in type_submodule_port_extended) 
+		left, right : in type_submodule_port_extended)
 		return boolean
 	is
 		use pac_module_instance_name;
 		use pac_net_name;
-		
+
 		result : boolean := false;
 	begin
 		if left.submodule < right.submodule then
 			result := true;
-			
+
 		elsif left.submodule = right.submodule then
 
 			if left.port < right.port then
@@ -70,23 +70,23 @@ package body et_netlist_submodules is
 			else
 				result := false;
 			end if;
-			
+
 		else
 			result := false;
 		end if;
-		
+
 		return result;
 	end;
 
 
 
 
-	
+
 end et_netlist_submodules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

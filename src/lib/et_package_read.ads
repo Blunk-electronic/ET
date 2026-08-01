@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,11 +48,11 @@ with et_logging;						use et_logging;
 
 package et_package_read is
 
-	
-	
+
+
 	-- Opens the package file and stores the package in container et_packages.packages.
 	-- If check_layers.check is YES, then a check will be done that tests
-	-- whether all conductor layers are are in 
+	-- whether all conductor layers are are in
 	-- range type_signal_layer'first .. deepest conductor layer.
 	procedure read_package (
 		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
@@ -63,6 +63,6 @@ package et_package_read is
 
 	-- CS rename to read_package_model
 
-	
-	
+
+
 end et_package_read;

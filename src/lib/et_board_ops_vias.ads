@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -60,8 +60,8 @@ package et_board_ops_vias is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	-- Returns the positions (x/y) of all vias of the given net.
 	-- The list of returned points uses fixed point coordinates
 	-- as the vias are placed by the operator (their positions are man-made):
@@ -71,7 +71,7 @@ package et_board_ops_vias is
 
 
 
-	
+
 	-- When a via is to be modified or deleted in the board, then
 	-- it must be clearly identified. Since vias have no name, a useful
 	-- means to identify a via is the associated net:
@@ -81,17 +81,17 @@ package et_board_ops_vias is
 	end record;
 
 
-	-- When vias are selected among others then we collect them in 
+	-- When vias are selected among others then we collect them in
 	-- a list:
 	package pac_proposed_vias is new indefinite_doubly_linked_lists (type_proposed_via);
 
-	
+
 	-- Returns the position and net name of a proposed via:
 	function to_string (
 		via	: in pac_proposed_vias.cursor)
 		return string;
-	
-	
+
+
 	-- Returns all vias in the vicinity of the given point:
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -127,8 +127,8 @@ package et_board_ops_vias is
 	function get_net_name (
 		object : in pac_objects.cursor)
 		return pac_net_name.bounded_string;
-	
-	
+
+
 
 	-- Returns the number of items stored in the given list:
 	function get_count (
@@ -147,12 +147,12 @@ package et_board_ops_vias is
 		log_threshold	: in type_log_level)
 		return type_object_via;
 
-	
+
 	-- Collects all vias
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
@@ -174,8 +174,8 @@ package et_board_ops_vias is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 	-- Places a via in the given net:
 	procedure place_via (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -191,13 +191,13 @@ package et_board_ops_vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_via)
 		return pac_net_name.bounded_string;
-	
-	
+
+
 	-- Moves an object:
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object_via;
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
@@ -208,12 +208,12 @@ package et_board_ops_vias is
 		object			: in type_object_via;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_board_ops_vias;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

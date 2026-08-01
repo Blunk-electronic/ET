@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,13 +55,13 @@ package body et_schematic_ops_meta is
 	end get_basic_meta_information;
 
 
-	
 
-	
+
+
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
 		return pac_library_paths_schematic.list
-	is 
+	is
 		m : type_generic_module renames element (module);
 	begin
 		return get_preferred_device_libraries_schematic (m);
@@ -69,7 +69,7 @@ package body et_schematic_ops_meta is
 
 
 
-	
+
 
 	procedure add_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -79,16 +79,16 @@ package body et_schematic_ops_meta is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			add_device_library (module.meta.schematic, path);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " add library path to schematic: "
 			 & to_string (path),
 			 level => log_threshold);
@@ -96,7 +96,7 @@ package body et_schematic_ops_meta is
 		log_indentation_up;
 
 		-- CS test whether the given path exists
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
@@ -105,7 +105,7 @@ package body et_schematic_ops_meta is
 
 
 
-	
+
 
 
 
@@ -118,16 +118,16 @@ package body et_schematic_ops_meta is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			remove_device_library (module.meta.schematic, path);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " remove library path from schematic: "
 			 & to_string (path),
 			 level => log_threshold);
@@ -135,19 +135,19 @@ package body et_schematic_ops_meta is
 		log_indentation_up;
 
 		-- CS test whether the given path exists
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end remove_library_path;
 
-	
+
 end et_schematic_ops_meta;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -41,7 +41,7 @@
 with ada.strings;				use ada.strings;
 package body et_stopmask is
 
-	
+
 	procedure iterate (
 		lines	: in pac_stop_lines.list;
 		process	: not null access procedure (position : in pac_stop_lines.cursor);
@@ -57,7 +57,7 @@ package body et_stopmask is
 
 
 
-	
+
 	function is_proposed (
 		line_cursor	: in pac_stop_lines.cursor)
 		return boolean
@@ -69,7 +69,7 @@ package body et_stopmask is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		line_cursor	: in pac_stop_lines.cursor)
@@ -83,7 +83,7 @@ package body et_stopmask is
 	end is_selected;
 
 
-	
+
 	procedure mirror_lines (
 		lines	: in out pac_stop_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -96,14 +96,14 @@ package body et_stopmask is
 			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
-		
+
 	begin
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
 
 
-	
+
 	procedure rotate_lines (
 		lines	: in out pac_stop_lines.list;
 		angle	: in type_rotation_model)
@@ -123,7 +123,7 @@ package body et_stopmask is
 	end rotate_lines;
 
 
-	
+
 	procedure move_lines (
 		lines	: in out pac_stop_lines.list;
 		offset	: in type_vector_model)
@@ -160,8 +160,8 @@ package body et_stopmask is
 			next (c);
 		end loop;
 	end iterate;
-	
-	
+
+
 
 
 	function is_proposed (
@@ -174,7 +174,7 @@ package body et_stopmask is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		arc_cursor	: in pac_stop_arcs.cursor)
@@ -188,8 +188,8 @@ package body et_stopmask is
 	end is_selected;
 
 
-	
-	
+
+
 	procedure mirror_arcs (
 		arcs	: in out pac_stop_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -202,13 +202,13 @@ package body et_stopmask is
 			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
-		
+
 	begin
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
 
-	
+
 
 	procedure rotate_arcs (
 		arcs	: in out pac_stop_arcs.list;
@@ -229,10 +229,10 @@ package body et_stopmask is
 	end rotate_arcs;
 
 
-	
+
 	procedure move_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_stop_arcs.list;
 
@@ -249,7 +249,7 @@ package body et_stopmask is
 	end move_arcs;
 
 
-	
+
 
 
 -- CIRCLES:
@@ -266,8 +266,8 @@ package body et_stopmask is
 			next (c);
 		end loop;
 	end iterate;
-	
-	
+
+
 
 	function is_proposed (
 		circle_cursor	: in pac_stop_circles.cursor)
@@ -279,7 +279,7 @@ package body et_stopmask is
 			return false;
 		end if;
 	end is_proposed;
-	
+
 
 	function is_selected (
 		circle_cursor	: in pac_stop_circles.cursor)
@@ -293,7 +293,7 @@ package body et_stopmask is
 	end is_selected;
 
 
-	
+
 
 	procedure mirror_circles (
 		circles	: in out pac_stop_circles.list;
@@ -307,17 +307,17 @@ package body et_stopmask is
 			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
-		
+
 	begin
 		circles.iterate (query_circle'access);
 		circles := result;
 	end mirror_circles;
 
 
-	
+
 	procedure rotate_circles (
 		circles	: in out pac_stop_circles.list;
-		angle	: in type_rotation_model)		
+		angle	: in type_rotation_model)
 	is
 		result : pac_stop_circles.list;
 
@@ -329,15 +329,15 @@ package body et_stopmask is
 		end query_circle;
 
 	begin
-		circles.iterate (query_circle'access);		
+		circles.iterate (query_circle'access);
 		circles := result;
-	end rotate_circles;			
+	end rotate_circles;
 
 
-	
+
 	procedure move_circles (
 		circles	: in out pac_stop_circles.list;
-		offset	: in type_vector_model)		
+		offset	: in type_vector_model)
 	is
 		result : pac_stop_circles.list;
 
@@ -371,7 +371,7 @@ package body et_stopmask is
 
 
 
-	
+
 
 	procedure iterate (
 		zones	: in pac_stop_zones.list;
@@ -385,8 +385,8 @@ package body et_stopmask is
 			next (c);
 		end loop;
 	end iterate;
-	
-	
+
+
 
 	procedure mirror_contours (
 		contours	: in out pac_stop_zones.list;
@@ -400,17 +400,17 @@ package body et_stopmask is
 			mirror (contour, axis);
 			result.append (contour);
 		end query_contour;
-		
+
 	begin
 		contours.iterate (query_contour'access);
 		contours := result;
 	end mirror_contours;
 
-	
+
 
 	procedure rotate_contours (
 		contours	: in out pac_stop_zones.list;
-		angle		: in type_rotation_model)		
+		angle		: in type_rotation_model)
 	is
 		result : pac_stop_zones.list;
 
@@ -422,15 +422,15 @@ package body et_stopmask is
 		end query_contour;
 
 	begin
-		contours.iterate (query_contour'access);		
+		contours.iterate (query_contour'access);
 		contours := result;
-	end rotate_contours;			
+	end rotate_contours;
 
 
-	
+
 	procedure move_contours (
 		contours	: in out pac_stop_zones.list;
-		offset		: in type_vector_model)		
+		offset		: in type_vector_model)
 	is
 		result : pac_stop_zones.list;
 
@@ -462,7 +462,7 @@ package body et_stopmask is
 		end if;
 	end is_proposed;
 
-	
+
 
 	function is_selected (
 		text_cursor	: in pac_stop_texts.cursor)
@@ -474,10 +474,10 @@ package body et_stopmask is
 			return false;
 		end if;
 	end is_selected;
-		
 
 
-	
+
+
 
 	function to_string (
 		text : in pac_stop_texts.cursor)
@@ -485,10 +485,10 @@ package body et_stopmask is
 	is begin
 		return to_string (element (text));
 	end to_string;
-	
 
 
-	
+
+
 
 	procedure iterate (
 		texts	: in pac_stop_texts.list;
@@ -506,9 +506,9 @@ package body et_stopmask is
 
 
 
-	
 
-	
+
+
 	procedure mirror_texts (
 		texts	: in out pac_stop_texts.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -521,14 +521,14 @@ package body et_stopmask is
 		begin
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end mirror_texts;
 
 
-	
+
 	procedure rotate_texts (
 		texts	: in out pac_stop_texts.list;
 		angle	: in type_rotation_model)
@@ -541,14 +541,14 @@ package body et_stopmask is
 			rotate_text_by (text, angle);
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end rotate_texts;
 
 
-	
+
 	procedure move_texts (
 		texts	: in out pac_stop_texts.list;
 		offset	: in type_vector_model)
@@ -561,49 +561,49 @@ package body et_stopmask is
 			move_text_to (text, offset); -- CS should be move_text_by
 			result.append (text);
 		end query_text;
-		
+
 	begin
-		texts.iterate (query_text'access);		
+		texts.iterate (query_text'access);
 		texts := result;
 	end move_texts;
-	
 
-	
+
+
 	procedure arc_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stop_arcs;
 		arc : type_stop_arc;
 	begin
 		arc := element (cursor);
-		log (text => "stop mask arc face" & to_string (face) & space 
+		log (text => "stop mask arc face" & to_string (face) & space
 			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width),
 			 level => log_threshold);
 	end arc_stop_mask_properties;
 
 
-	
+
 	procedure circle_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stop_circles;
 	begin
-		log (text => "stop mask circle face" & to_string (face) & space 
+		log (text => "stop mask circle face" & to_string (face) & space
 			& to_string (element (cursor)),
 			level => log_threshold);
 	end;
 
 
-	
+
 	procedure line_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	is
 		use pac_stop_lines;
 		line : type_stop_line;
@@ -615,12 +615,12 @@ package body et_stopmask is
 			 level => log_threshold);
 	end line_stop_mask_properties;
 
-	
+
 
 	-- procedure text_stop_mask_properties (
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_stop_texts.cursor;
-	-- 	log_threshold 	: in type_log_level) 
+	-- 	log_threshold 	: in type_log_level)
 	-- is
 	-- 	use et_text;
 	-- 	text : type_stop_text;
@@ -628,18 +628,18 @@ package body et_stopmask is
 	-- 	text := element (cursor);
 	-- 	log (text => "stop mask text face" & to_string (face) & space
 	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
- -- 
+ --
 	-- 	log_indentation_up;
 	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
 	-- 	log_indentation_down;
 	-- end text_stop_mask_properties;
 
-	
+
 end et_stopmask;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

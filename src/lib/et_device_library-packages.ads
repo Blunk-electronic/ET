@@ -63,23 +63,23 @@ package et_device_library.packages is
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return pac_package_variants.cursor;
 
-	
-	
-	-- Returns true if given device provides the given package variant.								   
+
+
+	-- Returns true if given device provides the given package variant.
 	-- The given device must be real. Means appearance SCH_PCB.
 	function is_variant_available (
 		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean;
 
-	
-	
+
+
 	-- Returns a list of available variants of the given device.
 	-- If the device is virtual, then an empty list will be returned.
 	function get_available_variants (
 		device_cursor	: in pac_device_models.cursor)
 		return pac_package_variants.map;
-	
+
 
 	-- Returns the name of the first package variant
 	-- of the given device model.
@@ -91,26 +91,26 @@ package et_device_library.packages is
 
 
 
-		
-	
+
+
 	-- Returns the name of the package model of the given
 	-- device according to the given variant.
-	-- The given device must be real. Means appearance SCH_PCB.							  
+	-- The given device must be real. Means appearance SCH_PCB.
 	function get_package_model (
 		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 		return pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
-	
+
 	-- 	function terminal_name (
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.
--- 	-- The given device must be real. Means appearance SCH_PCB.							  
+-- 	-- The given device must be real. Means appearance SCH_PCB.
 -- 		device_cursor	: in pac_device_models.cursor;
 -- 		port_name		: in pac_port_name.bounded_string;
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
 
-	
+
 
 
 	-- Returns the default placeholders of the package of a device
@@ -124,12 +124,12 @@ package et_device_library.packages is
 
 
 
-	
+
 end et_device_library.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

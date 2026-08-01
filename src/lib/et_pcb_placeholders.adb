@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,31 +42,31 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_pcb_placeholders is
-	
+
 
 
 	function to_string (
-		meaning : in type_placeholder_meaning) 
-		return string 
+		meaning : in type_placeholder_meaning)
+		return string
 	is begin
 		return type_placeholder_meaning'image (meaning);
 	end to_string;
 
 
-	
+
 	function to_meaning (
-		meaning : in string) 
-		return type_placeholder_meaning 
+		meaning : in string)
+		return type_placeholder_meaning
 	is begin
 		return type_placeholder_meaning'value (meaning);
 	end to_meaning;
-	
-	
+
+
 end et_pcb_placeholders;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

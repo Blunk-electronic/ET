@@ -52,18 +52,18 @@ package body et_erc is
 			when short_circuit		=> return preamble & "SHORT CIRCUIT OR OVERLOAD !";
 			when no_power_supply	=> return preamble & "COMPONENT DAMAGE !";
 			when not_predictable	=> return preamble & "UNPREDICTABLE HARM !";
-		end case;	
+		end case;
 	end show_danger;
 
-	
 
-	
-	
+
+
+
 end et_erc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 -- - rework procedures so that they take a module cursor
 --   instead of a module name
 -- - add commit operations (commit_design	: in type_commit_design := DO_COMMIT;)
@@ -61,46 +61,46 @@ package et_board_ops_signal_layers is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	-- Adds a signal layer to the board.
-	-- Renumbers the signal layers.							
+	-- Renumbers the signal layers.
 	procedure add_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Returns the total number of signal layers used by the given module.
 	function get_layer_count (
-		module_cursor	: in pac_generic_modules.cursor) 
+		module_cursor	: in pac_generic_modules.cursor)
 		return type_signal_layer;
 
-	
+
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
 	procedure test_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in type_signal_layer);
 
-	
+
 	-- Deletes a signal layer in the board.
-	-- Renumbers the signal layers.							   
+	-- Renumbers the signal layers.
 	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in type_signal_layer;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 	-- Tests the given set of signal layers whether each of them is available
 	-- according to the current layer stack of the given module.
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in pac_signal_layers.set);	
+		layers 			: in pac_signal_layers.set);
 
 
 
@@ -110,12 +110,12 @@ package et_board_ops_signal_layers is
 		return type_signal_layer;
 
 
-	
+
 end et_board_ops_signal_layers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

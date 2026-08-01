@@ -46,47 +46,47 @@ with et_fonts;					use et_fonts;
 
 package et_terminal_name is
 
-	
+
 	-- A terminal is the physical point where electrical energy comes in or out of the device.
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
 	-- we further-on speak about "terminals".
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
 	-- CS: character set, length check, charcter check
 	terminal_name_length_max : constant natural := 10;
-	
-	package pac_terminal_name is new 
+
+	package pac_terminal_name is new
 		generic_bounded_length (terminal_name_length_max);
-		
+
 	use pac_terminal_name;
 
-	
+
 	function to_string (
-		terminal : in pac_terminal_name.bounded_string) 
+		terminal : in pac_terminal_name.bounded_string)
 		return string;
-		
-		
+
+
 	function to_terminal_name (
-		terminal : in string) 
+		terminal : in string)
 		return pac_terminal_name.bounded_string;
 
 
 	package pac_terminal_names is new
 		doubly_linked_lists (pac_terminal_name.bounded_string);
-	
 
-	
+
+
 	-- GUI relevant only:
 	terminal_name_font : constant type_font :=
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	terminal_name_size : constant pac_text_board.type_text_size := 0.5;
-	
-	
+
+
 end et_terminal_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

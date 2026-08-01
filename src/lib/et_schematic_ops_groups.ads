@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -57,8 +57,8 @@ package et_schematic_ops_groups is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 
 	-- This procedure resets nets, devices and units:
 	procedure reset_objects (
@@ -95,7 +95,7 @@ package et_schematic_ops_groups is
 		offset			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- This procedure sets the "moving" flag of all
 	-- objects which are selected (which are in the group):
@@ -111,7 +111,7 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- This procedure copies a group of objects
 	-- This affects all objects whose "selected"-flag is set:
 	procedure copy_group (
@@ -132,12 +132,12 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

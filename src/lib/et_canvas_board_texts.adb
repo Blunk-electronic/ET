@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 -- with ada.text_io;			use ada.text_io;
 with et_pcb_sides;						use et_pcb_sides;
@@ -64,8 +64,8 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk.widget;					use gtk.widget;
 
-with gtk.cell_renderer_text;		
-with gtk.list_store;				
+with gtk.cell_renderer_text;
+with gtk.list_store;
 with gtk.tree_model;
 
 with gtk.gentry;					use gtk.gentry;
@@ -108,18 +108,18 @@ package body et_canvas_board_texts is
 		layer_categories.append (LAYER_CAT_STOPMASK);
 	end make_affected_layer_categories;
 
-	
+
 
 	procedure reset_preliminary_text is
 	begin
 		-- CS reset content only ?
 		null;
-		
-	end reset_preliminary_text;
-		
 
-	
-	
+	end reset_preliminary_text;
+
+
+
+
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use gtk.tree_model;
 
@@ -136,13 +136,13 @@ package body et_canvas_board_texts is
 		--put_line ("cat " & to_string (object_layer_category));
 
 		et_canvas_board.redraw_board;
-		
+
 		-- CS display layer ?
 	end layer_category_changed;
 
 
-	
-	
+
+
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -159,12 +159,12 @@ package body et_canvas_board_texts is
 		object_face := to_face (values.get_string (item_text));
 		--put_line ("face " & to_string (object_face));
 
-		
+
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
 				enable_assy_doc (object_face);
-			
+
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (object_face);
 
@@ -174,15 +174,15 @@ package body et_canvas_board_texts is
 			when others => null;
 		end case;
 
-		
-		et_canvas_board.redraw_board;		
+
+		et_canvas_board.redraw_board;
 	end face_changed;
 
 
 
 
-	
-	
+
+
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -192,7 +192,7 @@ package body et_canvas_board_texts is
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
 		item_text : glib.values.gvalue;
-		
+
 	begin
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
@@ -202,15 +202,15 @@ package body et_canvas_board_texts is
 
 		-- Auto-enable the selected conductor layer:
 		enable_conductor (object_signal_layer);
-		
+
 		et_canvas_board.redraw_board;
 	end signal_layer_changed;
 
 
 
-	
 
-	
+
+
 	procedure apply_size (text : in string) is
 		size : type_text_size;
 	begin
@@ -224,16 +224,16 @@ package body et_canvas_board_texts is
 
 
 
-	
-	
-	
+
+
+
 	function size_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
-		
+
 		use gdk.types;
 		key : constant gdk_key_type := event.keyval;
 
@@ -243,22 +243,22 @@ package body et_canvas_board_texts is
 		case key is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
-			
-			when GDK_TAB => 
+
+			when GDK_TAB =>
 				--put_line ("size via tab " & text);
 				apply_size (text);
-				
+
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end size_key_pressed;
 
 
-	
 
-	
-	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+	procedure size_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("size " & text);
@@ -266,9 +266,9 @@ package body et_canvas_board_texts is
 	end size_entered;
 
 
-	
 
-	
+
+
 	procedure apply_line_width (text : in string) is
 		width : type_text_line_width;
 	begin
@@ -281,16 +281,16 @@ package body et_canvas_board_texts is
 	end apply_line_width;
 
 
-	
-	
-	
+
+
+
 	function line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
-		
+
 		use gdk.types;
 		key : constant gdk_key_type := event.keyval;
 
@@ -301,21 +301,21 @@ package body et_canvas_board_texts is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
 
-			when GDK_TAB => 
+			when GDK_TAB =>
 				--put_line ("line width via tab " & text);
 				apply_line_width (text);
 
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end line_width_key_pressed;
 
-	
 
-	
-	
-	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+
+	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("line width " & text);
@@ -324,8 +324,8 @@ package body et_canvas_board_texts is
 
 
 
-	
-	
+
+
 	procedure apply_rotation (text : in string) is
 		rotation : type_rotation_model;
 	begin
@@ -340,16 +340,16 @@ package body et_canvas_board_texts is
 
 
 
-	
 
-	
+
+
 	function rotation_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
+		event		: gdk_event_key)
+		return boolean
 	is
 		event_handled : constant boolean := false;
-		
+
 		use gdk.types;
 		key : constant gdk_key_type := event.keyval;
 
@@ -359,22 +359,22 @@ package body et_canvas_board_texts is
 		case key is
 			when GDK_ESCAPE =>
 				et_canvas_board.reset;
-				
-			when GDK_TAB => 
+
+			when GDK_TAB =>
 				--put_line ("rotation via tab " & text);
 				apply_rotation (text);
 
 			when others => null;
 		end case;
-		
+
 		return event_handled;
 	end rotation_key_pressed;
 
 
-	
-	
-	
-	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
+
+
+
+	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("rotation " & text);
@@ -383,14 +383,14 @@ package body et_canvas_board_texts is
 
 
 
-	
-	
+
+
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
 		pragma unreferenced (button);
 		use gtk.text_view;
 		use gtk.text_buffer;
 		use gtk.text_iter;
-		
+
 		text_buffer : constant gtk_text_buffer := get_buffer (preliminary_text.entry_content);
 		lower_bound, upper_bound : gtk_text_iter;
 	begin
@@ -398,13 +398,13 @@ package body et_canvas_board_texts is
 		get_bounds (text_buffer, lower_bound, upper_bound);
 		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
 		preliminary_text.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
-		-- CS check characters				
+		-- CS check characters
 	end button_apply_clicked;
 
 
 
-	
-	
+
+
 
 	procedure show_text_properties is
 		use gtk.cell_renderer_text;
@@ -413,45 +413,45 @@ package body et_canvas_board_texts is
 		use gtk.text_view;
 
 		use et_canvas_board.pac_canvas;
-		
 
-		box_layer_category, box_face, 
+
+		box_layer_category, box_face,
 		box_signal_layer, box_content, box_button,
 		box_size, box_line_width, box_rotation : gtk_vbox;
 
-		label_layer_category, label_face, 
+		label_layer_category, label_face,
 		label_signal_layer, label_content,
 		label_size, label_line_width, label_rotation : gtk_label;
-		
+
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 		-- Operator can choose between fixed menu entries.
-		
+
 		cbox_line_width, cbox_size, cbox_rotation : gtk_combo_box_text;
 		-- Operator may enter an additional value in the menu.
-		
+
 		button_apply : gtk_button;
 
 
 
 		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
+		-- characters that can be entered in the fields for
 		-- text size and line width:
 		text_size_length_min : constant gint := 1;
-		text_size_length_max : constant gint := 6; 
-		-- CS: adjust if necessary. see parameters 
+		text_size_length_max : constant gint := 6;
+		-- CS: adjust if necessary. see parameters
 		-- of et_board_shapes_and_text.pac_text_fab.
-		
+
 		line_width_length_min : constant gint := 1;
 		line_width_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see parameters
 		-- of et_board_shapes_and_text.pac_text_fab.
-		
+
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
-		
 
-		
+
+
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
 
@@ -461,7 +461,7 @@ package body et_canvas_board_texts is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 
 
@@ -470,8 +470,8 @@ package body et_canvas_board_texts is
 			procedure collect_layer_cats is
 
 				procedure query_category (
-					c : in pac_layer_categories.cursor) 
-				is 
+					c : in pac_layer_categories.cursor)
+				is
 					use pac_layer_categories;
 				begin
 					storage_model.append (iter);
@@ -479,14 +479,14 @@ package body et_canvas_board_texts is
 						to_string (element (c)));
 
 				end query_category;
-				
+
 			begin
-				make_affected_layer_categories;				
+				make_affected_layer_categories;
 				layer_categories.iterate (query_category'access);
 			end collect_layer_cats;
 
 
-			
+
 			procedure set_category_used_last is
 				c : pac_layer_categories.cursor;
 				use pac_layer_categories;
@@ -497,8 +497,8 @@ package body et_canvas_board_texts is
 			end set_category_used_last;
 
 
-			
-			
+
+
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
 			pack_start (box_v4, box_layer_category, padding => box_properties_spacing);
@@ -506,12 +506,12 @@ package body et_canvas_board_texts is
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the layer categories in the storage model:
-			collect_layer_cats;			
+			collect_layer_cats;
 
 			-- Create the combo box:
 			gtk.combo_box.gtk_new_with_model (
@@ -532,7 +532,7 @@ package body et_canvas_board_texts is
 
 
 
-		
+
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
 
@@ -542,16 +542,16 @@ package body et_canvas_board_texts is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_face, homogeneous => false);
 			pack_start (box_v4, box_face, padding => box_properties_spacing);
-			
+
 			gtk_new (label_face, "FACE");
 			pack_start (box_face, label_face, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -582,9 +582,9 @@ package body et_canvas_board_texts is
 
 		end make_combo_for_face;
 
-		
 
-		
+
+
 		procedure make_combo_for_signal_layer is
 			storage_model : gtk_list_store;
 
@@ -594,26 +594,26 @@ package body et_canvas_board_texts is
 			-- The single column is to contain strings:
 			entry_structure : constant glib.gtype_array := (column_0 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
+			iter : gtk_tree_iter;
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
 			pack_start (box_v4, box_signal_layer, padding => box_properties_spacing);
-			
+
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => box_properties_spacing);
 
-			
+
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available signal layers in the storage model:
-			for choice in 
+			for choice in
 				-- The top layer is always available:
-				type_signal_layer'first .. 
+				type_signal_layer'first ..
 
 				-- The deepest available layer depends on the stack configuration:
-				get_deepest_conductor_layer (active_module) 
+				get_deepest_conductor_layer (active_module)
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -642,11 +642,11 @@ package body et_canvas_board_texts is
 		end make_combo_for_signal_layer;
 
 
-		
+
 		procedure make_combo_for_size is begin
 			gtk_new_vbox (box_size, homogeneous => false);
 			pack_start (box_v4, box_size, padding => box_properties_spacing);
-			
+
 			gtk_new (label_size, "SIZE");
 			pack_start (box_size, label_size, padding => box_properties_spacing);
 
@@ -657,14 +657,14 @@ package body et_canvas_board_texts is
 
 			-- Set the text size according to the value used last:
 			gtk_entry (cbox_size.get_child).set_text (trim (to_string (preliminary_text.text.size), left));
-			
+
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_size.get_child).on_key_press_event (size_key_pressed'access);
 			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
 		end make_combo_for_size;
 
-		
-		
+
+
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
 			pack_start (box_v4, box_line_width, padding => box_properties_spacing);
@@ -679,14 +679,14 @@ package body et_canvas_board_texts is
 
 			-- Set the line width according to the value used last:
 			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_text.text.line_width), left));
-			
+
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 		end make_combo_for_line_width;
 
 
-		
+
 		procedure make_combo_for_rotation is begin
 			gtk_new_vbox (box_rotation, homogeneous => false);
 			pack_start (box_v4, box_rotation, padding => box_properties_spacing);
@@ -701,14 +701,14 @@ package body et_canvas_board_texts is
 
 			-- Set the text size according to the value used last:
 			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (preliminary_text.text.position)), left));
-			
+
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
 			gtk_entry (cbox_rotation.get_child).on_activate (rotation_entered'access);
 		end make_combo_for_rotation;
 
 
-		
+
 		procedure make_view_for_content is begin
 			gtk_new_vbox (box_content, homogeneous => false);
 			pack_start (box_v4, box_content, padding => box_properties_spacing);
@@ -722,7 +722,7 @@ package body et_canvas_board_texts is
 		end make_view_for_content;
 
 
-		
+
 		procedure make_apply_button is begin
 			gtk_new_vbox (box_button, homogeneous => false);
 			pack_start (box_v4, box_button, padding => box_properties_spacing);
@@ -733,7 +733,7 @@ package body et_canvas_board_texts is
 		end make_apply_button;
 
 
-		
+
 	begin -- show_text_properties
 		-- put_line ("show_text_properties");
 
@@ -741,7 +741,7 @@ package body et_canvas_board_texts is
 		-- must be cleared:
 		clear_out_properties_box;
 
-		
+
 		-- Build the elements of the properties bar:
 		make_combo_category;
 		make_combo_for_face;
@@ -757,17 +757,17 @@ package body et_canvas_board_texts is
 	end show_text_properties;
 
 
-	
-	
-	
-	
+
+
+
+
 -- PLACE:
-	
+
 	procedure place_text (
-		point : in type_vector_model) 
+		point : in type_vector_model)
 	is begin
 		move_to (preliminary_text.text.position.place, point);
-		
+
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
 
@@ -777,7 +777,7 @@ package body et_canvas_board_texts is
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 
 			when LAYER_CAT_SILKSCREEN =>
 
@@ -789,16 +789,16 @@ package body et_canvas_board_texts is
 
 
 			when LAYER_CAT_STOPMASK =>
-				
+
 				et_board_ops_stopmask.add_text (
 					module_cursor 	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when LAYER_CAT_CONDUCTOR =>
-			
+
 				et_board_ops_conductors.add_text (
 					module_cursor 	=> active_module,
 					signal_layer	=> object_signal_layer,
@@ -809,13 +809,13 @@ package body et_canvas_board_texts is
 		end case;
 
 	end place_text;
-	
-	
+
+
 end et_canvas_board_texts;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

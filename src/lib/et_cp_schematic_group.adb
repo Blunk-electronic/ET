@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,19 +66,19 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure rectangular_group is
 			sheet : type_sheet;
-			area : type_area;			
+			area : type_area;
 		begin
 			-- Get the targeted sheet:
 			sheet := to_sheet (get_field (cmd, 5));
 
 			-- Set the position (lower-left corner) of
 			-- the rectangular area:
-			set_position (area, 
+			set_position (area,
 				to_vector_model (get_field (cmd, 6), get_field (cmd, 7))); -- x y
 
 			-- Set the width of the area:
@@ -91,37 +91,37 @@ package body et_cp_schematic_group is
 
 			define_group_rectangular (
 				module, sheet, area, log_threshold + 1);
-			
+
 		end rectangular_group;
 
-		
+
 	begin
 		log (text => "define group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 9 =>
 				rectangular_group;
 
 			-- CS circular group ?
-				
-			when 10 .. type_field_count'last => 
+
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end define_group;
 
 
 
-	
 
 
-	
+
+
 
 	procedure clear_group (
 		module			: in pac_generic_modules.cursor;
@@ -129,33 +129,33 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "clear group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 4 =>
 				reset_objects (module, log_threshold + 1);
 
-			when 5 .. type_field_count'last => 
+			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end clear_group;
 
-	
 
 
-	
 
-	
+
+
+
 
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
@@ -163,42 +163,42 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 	begin
 		log (text => "delete group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 4 =>
 				delete_group (
-					module_cursor	=> module, 
+					module_cursor	=> module,
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
-			when 5 .. type_field_count'last => 
+			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end delete_group;
 
 
-	
 
 
 
 
 
 
-	
+
+
 
 	procedure drag_group (
 		module			: in pac_generic_modules.cursor;
@@ -206,9 +206,9 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure do_it is
 			offset : type_vector_model;
 		begin
@@ -219,35 +219,35 @@ package body et_cp_schematic_group is
 			drag_group (
 				module_cursor	=> module,
 				offset			=> offset,
-				
+
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
 
 				log_threshold	=> log_threshold + 1);
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "drag group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 6 =>
 				do_it;
 
-			when 7 .. type_field_count'last => 
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end drag_group;
-	
-	
+
+
 
 
 
@@ -263,58 +263,58 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure do_it is
-			sheet		: type_sheet_relative;		
+			sheet		: type_sheet_relative;
 			offset		: type_vector_model;
 		begin
 			sheet := to_sheet_relative (get_field (cmd, 5));
-			
+
 			offset := to_vector_model (
 				x => get_field (cmd, 6),
 				y => get_field (cmd, 7));
 
-				
+
 			copy_group (
 				module_cursor	=> module,
 				sheet			=> sheet,
 				offset			=> offset,
-								
+
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
-				
+
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "copy group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 7 =>
 				do_it;
 
-			when 8 .. type_field_count'last => 
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end copy_group;
-	
 
 
 
 
 
-	
+
+
 
 
 
@@ -325,61 +325,61 @@ package body et_cp_schematic_group is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure do_it is
-			sheet		: type_sheet_relative;		
+			sheet		: type_sheet_relative;
 			offset		: type_vector_model;
 		begin
 			sheet := to_sheet_relative (get_field (cmd, 5));
-			
+
 			offset := to_vector_model (
 				x => get_field (cmd, 6),
 				y => get_field (cmd, 7));
 
-				
+
 			paste_group (
 				module_cursor	=> module,
 				sheet			=> sheet,
 				offset			=> offset,
-								
+
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
-				
+
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "paste group", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 7 =>
 				do_it;
 
-			when 8 .. type_field_count'last => 
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end paste_group;
 
 
-	
+
 end et_cp_schematic_group;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

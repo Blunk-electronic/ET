@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 --
@@ -61,7 +61,7 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_board_ops_netchangers is
 
 	use pac_generic_modules;
-	
+
 
 	-- Returns the x/y coordinates of the given
 	-- netchanger:
@@ -69,10 +69,10 @@ package et_board_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id) -- 1,2,3,...
 		return type_vector_model;
-		
 
 
-	-- Moves the given netchanger. 
+
+	-- Moves the given netchanger.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
 	-- then an exception is raised.
@@ -86,7 +86,7 @@ package et_board_ops_netchangers is
 
 
 
-	-- Sets the signal layer of the given netchanger. 
+	-- Sets the signal layer of the given netchanger.
 	-- It is assumed that the netchanger indicated by index
 	-- exists in the module. If the netchanger does not exist,
 	-- then an exception is raised.
@@ -97,7 +97,7 @@ package et_board_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- CS show_netchanger
 
 
@@ -105,7 +105,7 @@ package et_board_ops_netchangers is
 	type type_object_netchanger is record
 		netchanger_cursor : pac_netchangers.cursor;
 	end record;
-	
+
 
 	-- Returns the full name of the object netchanger:
 	function get_object_name (
@@ -118,7 +118,7 @@ package et_board_ops_netchangers is
 		object : in type_object_netchanger)
 		return type_netchanger_id;
 
-	
+
 
 	-- Modifies the status flag of a netchanger.
 	-- If the netchanger is set as moving, then its
@@ -141,7 +141,7 @@ package et_board_ops_netchangers is
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Resets the status flags of netchanger:
 	procedure reset_status_netchangers (
@@ -179,7 +179,7 @@ package et_board_ops_netchangers is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_NETCHANGER =>
 				netchanger : type_object_netchanger;
 
@@ -187,11 +187,11 @@ package et_board_ops_netchangers is
 	end record;
 
 
-	
-	
+
+
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 
-	
+
 	-- Returns the number of items stored in the given list:
 	function get_count (
 		objects : in pac_objects.list)
@@ -205,23 +205,23 @@ package et_board_ops_netchangers is
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
 
 
 
-	-- Collects all objects 
+	-- Collects all objects
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
 
-	
+
 
 
 	-- Modifies the status flag of an object:
@@ -231,8 +231,8 @@ package et_board_ops_netchangers is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Modifies the status flag of an object indicated by a cursor:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -243,14 +243,14 @@ package et_board_ops_netchangers is
 
 
 	-- This is a collective procedure that resets
-	-- the status flags of all 
+	-- the status flags of all
 	-- objects (netchangers, notes, properties, ...):
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Moves an object to the given destination:
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -265,12 +265,12 @@ package et_board_ops_netchangers is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_board_ops_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

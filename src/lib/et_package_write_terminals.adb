@@ -69,23 +69,23 @@ package body et_package_write_terminals is
 	use pac_geometry_2;
 	use pac_file_rw;
 	use pac_contours;
-	
+
 	use pac_terminals;
-	
+
 
 	procedure write_terminals (
 		packge			: in type_package_model;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
 
-		
-		procedure write_stop_mask_tht is 
-			
+
+		procedure write_stop_mask_tht is
+
 			function user_specific_contours return boolean is begin
-				if element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC 
+				if element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC
 				or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC then
 					return true;
 				else
@@ -93,15 +93,15 @@ package body et_package_write_terminals is
 				end if;
 			end user_specific_contours;
 
-			
+
 		begin -- write_stop_mask_tht
-			write (keyword => keyword_stop_mask_status, 
+			write (keyword => keyword_stop_mask_status,
 					parameters => to_string (element (terminal_cursor).stop_mask_status_tht)); -- stop_mask_status open
-					
-			write (keyword => keyword_stop_mask_shape_top, 
+
+			write (keyword => keyword_stop_mask_shape_top,
 					parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode));
 
-			write (keyword => keyword_stop_mask_shape_bottom, 
+			write (keyword => keyword_stop_mask_shape_bottom,
 					parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode));
 
 			-- If user specified contours in either top or bottom required, write the header
@@ -115,7 +115,7 @@ package body et_package_write_terminals is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
 					section_mark (section_top, HEADER);
-					
+
 					write_polygon_segments (type_contour (
 						element (terminal_cursor).stop_mask_shape_tht.top.contour));
 
@@ -127,27 +127,27 @@ package body et_package_write_terminals is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
 					section_mark (section_bottom, HEADER);
-					
+
 					write_polygon_segments (type_contour (
 						element (terminal_cursor).stop_mask_shape_tht.bottom.contour));
 
 					section_mark (section_bottom, FOOTER);
 			end case;
-			
+
 			-- If user specified contours in either top or bottom required, write the footer
 			-- for stop mask contours:
 			if user_specific_contours then
 				section_mark (section_stopmask_contours_tht, FOOTER);
 			end if;
-			
+
 		end write_stop_mask_tht;
 
 
 
-		
-		
-		procedure write_stop_mask_smt is 
-			
+
+
+		procedure write_stop_mask_smt is
+
 			function user_specific_contours return boolean is begin
 				if element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC then
 					return true;
@@ -156,12 +156,12 @@ package body et_package_write_terminals is
 				end if;
 			end user_specific_contours;
 
-			
+
 		begin -- write_stop_mask_smt
-			write (keyword => keyword_stop_mask_status, 
+			write (keyword => keyword_stop_mask_status,
 					parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
-			
-			write (keyword => keyword_stop_mask_shape, 
+
+			write (keyword => keyword_stop_mask_shape,
 					parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.expand_mode)); -- stop_mask_shape as_pad/expand_pad/user_specific
 
 			-- If user specified contours required, write the header for stop mask contours:
@@ -173,7 +173,7 @@ package body et_package_write_terminals is
 			case element (terminal_cursor).stop_mask_shape_smt.expand_mode is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
-	
+
 					write_polygon_segments (type_contour (
 						element (terminal_cursor).stop_mask_shape_smt.contour));
 
@@ -183,15 +183,15 @@ package body et_package_write_terminals is
 			if user_specific_contours then
 				section_mark (section_stopmask_contours_smt, FOOTER);
 			end if;
-			
+
 		end write_stop_mask_smt;
 
 
 
-		
-		
+
+
 		procedure write_plated_millings (
-			millings : in type_contour) 
+			millings : in type_contour)
 		is begin
 			section_mark (section_pad_millings, HEADER);
 			write_polygon_segments (millings);
@@ -200,10 +200,10 @@ package body et_package_write_terminals is
 
 
 
-		
-		
+
+
 		procedure write_stencil is
-			
+
 			function user_specific_contours return boolean is begin
 				if element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC then
 					return true;
@@ -212,24 +212,24 @@ package body et_package_write_terminals is
 				end if;
 			end user_specific_contours;
 
-			
+
 		begin
 			write (keyword => keyword_solder_paste_status,
-					parameters => to_string (element (terminal_cursor).solder_paste_status)); 
+					parameters => to_string (element (terminal_cursor).solder_paste_status));
 				-- solder_paste_status applied
-			
+
 			write (keyword => keyword_solder_paste_shape,
-					parameters => to_string (element (terminal_cursor).stencil_shape.shrink_mode)); 
+					parameters => to_string (element (terminal_cursor).stencil_shape.shrink_mode));
 				-- solder_paste_shape as_pad/shrink_pad/user_specific
 
 			-- If user specified contours required, write the header for stencil contours:
 			if user_specific_contours then
 				section_mark (section_stencil_contours, HEADER);
 			end if;
-			
+
 			case element (terminal_cursor).stencil_shape.shrink_mode is
 				when AS_PAD => null;
-				
+
 				when SHRINK_PAD	=>
 					write (
 						keyword		=> keyword_solder_paste_shrink_factor,
@@ -246,27 +246,27 @@ package body et_package_write_terminals is
 			if user_specific_contours then
 				section_mark (section_stencil_contours, FOOTER);
 			end if;
-			
+
 		end write_stencil;
 
 
 
-		
+
 	begin
 		section_mark (section_terminals, HEADER);
-		
+
 		while terminal_cursor /= pac_terminals.no_element loop
 			section_mark (section_terminal, HEADER);
 			write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
 			write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
 			write (keyword => keyword_position, parameters => to_string (element (terminal_cursor).position));
 			-- CS change format to x 12 y 45 rotation 90
-			
+
 			case element (terminal_cursor).technology is
 				when THT =>
 					-- pad contour top
 					section_mark (section_pad_contours_tht, HEADER);
-					
+
 					section_mark (section_top, HEADER);
 					write_polygon_segments (element (terminal_cursor).pad_shape_tht.top);
 					section_mark (section_top, FOOTER);
@@ -275,34 +275,34 @@ package body et_package_write_terminals is
 					section_mark (section_bottom, HEADER);
 					write_polygon_segments (element (terminal_cursor).pad_shape_tht.bottom);
 					section_mark (section_bottom, FOOTER);
-					
+
 					section_mark (section_pad_contours_tht, FOOTER);
 
 					-- stop mask
 					write_stop_mask_tht;
-					
+
 					-- conductor width in inner layers
-					write (keyword => keyword_width_inner_layers, 
+					write (keyword => keyword_width_inner_layers,
 							parameters => to_string (element (terminal_cursor).width_inner_layers));
-					
+
 					-- A THT terminal can have a drilled or a milled hole:
 					write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
 
 					case element (terminal_cursor).tht_hole is
-						when DRILLED => 
+						when DRILLED =>
 							write (keyword_drill_size, parameters => to_string (element (terminal_cursor).drill_size));
-							
-						when MILLED => 
+
+						when MILLED =>
 							write_plated_millings (element (terminal_cursor).millings);
 					end case;
-					
+
 				when SMT =>
 					-- pad contour
 					section_mark (section_pad_contours_smt, HEADER);
 					write_polygon_segments (element (terminal_cursor).pad_shape_smt);
 					section_mark (section_pad_contours_smt, FOOTER);
-					
-					write (keyword => keyword_face, 
+
+					write (keyword => keyword_face,
 							parameters => to_string (element (terminal_cursor).face));
 
 					-- stop mask
@@ -315,13 +315,13 @@ package body et_package_write_terminals is
 			section_mark (section_terminal, FOOTER);
 			next (terminal_cursor);
 		end loop;
-		
+
 		section_mark (section_terminals, FOOTER);
 
-		
-	end write_terminals;
-	
 
-	
-	
+	end write_terminals;
+
+
+
+
 end et_package_write_terminals;

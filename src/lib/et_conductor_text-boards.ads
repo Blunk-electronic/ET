@@ -44,7 +44,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 package et_conductor_text.boards is
 
 
-	type type_conductor_text_board is new type_conductor_text 
+	type type_conductor_text_board is new type_conductor_text
 	with record
 		layer : type_signal_layer := signal_layer_default;
 	end record;
@@ -57,15 +57,15 @@ package et_conductor_text.boards is
 
 
 	-- CS procedure set_layer
-	
+
 	function get_layer (
 		text : in type_conductor_text_board)
 		return type_signal_layer;
-	
-		
+
+
 	package pac_conductor_texts_board is new doubly_linked_lists (
 		type_conductor_text_board);
-	
+
 	use pac_conductor_texts_board;
 
 
@@ -95,7 +95,7 @@ package et_conductor_text.boards is
 		return type_signal_layer;
 
 
-	
+
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts_board.list;
@@ -103,18 +103,18 @@ package et_conductor_text.boards is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Logs the properties of the given text.
 	-- procedure text_conductor_properties (
 	-- 	cursor			: in pac_conductor_texts_board.cursor;
 	-- 	log_threshold 	: in type_log_level);
 
-	
+
 end et_conductor_text.boards;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

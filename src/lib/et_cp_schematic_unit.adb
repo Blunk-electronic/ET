@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -83,14 +83,14 @@ package body et_cp_schematic_unit is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_device_property_level;
-	
+
 		-- The degree of how much information is to be inqured:
 		properties_level : type_properties_level;
 
-		
+
 		-- Selects the device so that a certain unit or all its units become
 		-- highlighted in the canvas.
 		-- Sets the sheet where the unit is.
@@ -116,22 +116,22 @@ package body et_cp_schematic_unit is
 			unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 			mode	: in type_device_search_mode := SEARCH_MODE_FIRST_UNIT)
 		is
-			
+
 			-- This small function performs a unit query:
 			-- From its output we can tell whether the specified
 			-- unit exists and - more important - where it is located
 			-- in the drawing:
-			function locate_unit (unit : in pac_unit_name.bounded_string) 
+			function locate_unit (unit : in pac_unit_name.bounded_string)
 				return type_unit_query
 			is begin
 				return get_unit_position (
 					module_cursor	=> module,
 					device_name		=> device,
-					unit_name		=> unit);				
+					unit_name		=> unit);
 			end;
 
 
-			
+
 
 			-- If no unit was specified by the caller, then this
 			-- procedure searches for the first unit of the given device:
@@ -143,12 +143,12 @@ package body et_cp_schematic_unit is
 			begin
 				log (text => "show_first_unit", level => log_threshold + 3);
 				log_indentation_up;
-				
+
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
 					update_sheet_number_display;
-					
+
 					-- Center on the first unit and leave the
 					-- zoom factor as it is. If the runmode is
 					-- headless, then nothing happens here:
@@ -156,16 +156,16 @@ package body et_cp_schematic_unit is
 
 					-- Highlight all units:
 					show_device (
-						module_cursor	=> module, 
-						device_name		=> device, 
+						module_cursor	=> module,
+						device_name		=> device,
 						all_units		=> true,
 						unit_name		=> unit_name_default,
 						log_threshold	=> log_threshold + 4);
-					
+
 					-- Show some basic information in the staus bar:
 					set_status (get_device_properties (
-						module_cursor	=> module, 
-						device_name		=> device, 
+						module_cursor	=> module,
+						device_name		=> device,
 						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						log_threshold	=> log_threshold + 4));
 
@@ -176,28 +176,28 @@ package body et_cp_schematic_unit is
 						when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 						when others =>
-							
+
 							pac_device_ops.show_properties_window (
 								device	=> device,
 								text	=> get_device_properties (
-									module_cursor	=> module, 
-									device_name		=> device, 
+									module_cursor	=> module,
+									device_name		=> device,
 									linebreaks		=> true,
 									level			=> properties_level,
 									log_threshold	=> log_threshold + 4));
 					end case;
-					
+
 				else
 					-- The device and the first unit exist.
 					-- So this should never happen:
-					raise constraint_error; 
+					raise constraint_error;
 				end if;
-				
+
 				log_indentation_down;
 			end show_first_unit;
 
 
-			
+
 			-- If a unit was specified by the caller, then this
 			-- procedure searches for the given unit of the given device:
 			procedure show_by_unit_name is
@@ -208,12 +208,12 @@ package body et_cp_schematic_unit is
 			begin
 				log (text => "show_by_unit_name", level => log_threshold + 3);
 				log_indentation_up;
-			
+
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
 					update_sheet_number_display;
-					
+
 					-- Center on the first unit and leave the
 					-- zoom factor as it is. If the runmode is
 					-- headless, then nothing happens here:
@@ -221,16 +221,16 @@ package body et_cp_schematic_unit is
 
 					-- Highlight the given unit only:
 					show_device (
-						module_cursor	=> module, 
-						device_name		=> device, 
-						all_units		=> false, 
+						module_cursor	=> module,
+						device_name		=> device,
+						all_units		=> false,
 						unit_name		=> unit,
 						log_threshold	=> log_threshold + 4);
-					
+
 					-- Show some basic information in the staus bar:
 					set_status (get_device_properties (
-						module_cursor	=> module, 
-						device_name		=> device, 
+						module_cursor	=> module,
+						device_name		=> device,
 						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						all_units		=> false,
 						unit_name		=> unit,
@@ -243,12 +243,12 @@ package body et_cp_schematic_unit is
 						when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 						when others =>
-							
+
 							pac_device_ops.show_properties_window (
 								device	=> device,
 								text	=> get_device_properties (
-									module_cursor	=> module, 
-									device_name		=> device, 
+									module_cursor	=> module,
+									device_name		=> device,
 									linebreaks		=> true,
 									level			=> properties_level,
 									all_units		=> false,
@@ -257,13 +257,13 @@ package body et_cp_schematic_unit is
 
 					end case;
 
-					
+
 				else
 					-- The device and the specified unit exist.
 					-- So this should never happen:
-					raise constraint_error; 
+					raise constraint_error;
 				end if;
-				
+
 				log_indentation_down;
 			end show_by_unit_name;
 
@@ -282,7 +282,7 @@ package body et_cp_schematic_unit is
 
 				if unit_query.exists then
 					if get_sheet (unit_query.position) = active_sheet then
-						
+
 						-- Center on the first unit and leave the
 						-- zoom factor as it is. If the runmode is
 						-- headless, then nothing happens here:
@@ -290,16 +290,16 @@ package body et_cp_schematic_unit is
 
 						-- Highlight all units:
 						show_device (
-							module_cursor	=> module, 
-							device_name		=> device, 
-							all_units		=> true, 
+							module_cursor	=> module,
+							device_name		=> device,
+							all_units		=> true,
 							unit_name		=> unit_name_default,
 							log_threshold	=> log_threshold + 4);
 
 						-- Show some basic information in the staus bar:
 						set_status (get_device_properties (
-							module_cursor	=> module, 
-							device_name		=> device, 
+							module_cursor	=> module,
+							device_name		=> device,
 							level			=> DEVICE_PROPERTIES_LEVEL_1,
 							log_threshold	=> log_threshold + 4));
 
@@ -310,21 +310,21 @@ package body et_cp_schematic_unit is
 							when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 							when others =>
-								
+
 								pac_device_ops.show_properties_window (
 									device	=> device,
 									text	=> get_device_properties (
-										module_cursor	=> module, 
-										device_name		=> device, 
+										module_cursor	=> module,
+										device_name		=> device,
 										linebreaks		=> true,
 										level			=> properties_level,
-										log_threshold	=> log_threshold + 4));	   
+										log_threshold	=> log_threshold + 4));
 
 						end case;
-						
-						
+
+
 					else
-						-- log (SEVERITY_WARNING, " Device " & to_string (device) 
+						-- log (SEVERITY_WARNING, " Device " & to_string (device)
 						--   & " is not on this sheet !");
 						message_device_not_found (SEVERITY_ERROR, device);
 					end if;
@@ -332,88 +332,88 @@ package body et_cp_schematic_unit is
 				else
 					-- The device and a first unit exist.
 					-- So this should never happen:
-					raise constraint_error; 
+					raise constraint_error;
 				end if;
-				
+
 				log_indentation_down;
 			end show_first_unit_on_active_sheet;
-			
-			
+
+
 		begin
 			case mode is
 				when SEARCH_MODE_FIRST_UNIT =>
-					show_first_unit;					
-					
+					show_first_unit;
+
 				when SEARCH_MODE_BY_UNIT_NAME =>
 					show_by_unit_name;
-					
+
 				when SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET =>
 					show_first_unit_on_active_sheet;
-								
+
 			end case;
 		end do_it;
 
 
-		
-		
+
+
 		-- This procedure pre-processes the given command.
 		-- Depending on the length of the command the sub-procedures
 		-- show_mode_1 or show_mode_2 are called for in depth
 		-- processing:
-		procedure preprocess_command is 
-			
+		procedure preprocess_command is
+
 			procedure show_mode_1 is
 				error : boolean := false;
-				device_name : type_device_name;			
+				device_name : type_device_name;
 			begin
 				log (text => "show_mode_1", level => log_threshold + 2);
 				log_indentation_up;
-				
+
 				-- Get the properties level:
 				properties_level := to_properties_level (
 					get_field (cmd, 5), error); -- L1
-				
+
 				-- Proceed if no error occured:
 				if not error then
 					-- Get the name of the target device:
 					device_name := to_device_name (get_field (cmd, 6)); -- R1, IC1
-					
+
 					-- Proceed if the device exists:
 					if electrical_device_exists (module, device_name) then
-					
+
 						do_it (
 							device	=> device_name,
 							mode	=> SEARCH_MODE_FIRST_UNIT);
-							
+
 					else
 						message_device_not_found (SEVERITY_ERROR, device_name);
 					end if;
 				end if;
-				
+
 				log_indentation_down;
 			end show_mode_1;
 
-			
+
 
 			procedure show_mode_2 is
 				error : boolean := false;
 				device_name : type_device_name;
-				unit_name : pac_unit_name.bounded_string;			
-				
-				-- In order to tell the command processor that 
+				unit_name : pac_unit_name.bounded_string;
+
+				-- In order to tell the command processor that
 				-- an operation is meant to apply to the current sheet,
 				-- we use the UNIX-bash-like period character:
 				here : constant string := ".";
 			begin
 				log (text => "show_mode_2", level => log_threshold + 2);
 				log_indentation_up;
-			
+
 				-- Get the properties level:
 				properties_level := to_properties_level (
 					get_field (cmd, 5), error); -- L1
-					
-					
-				-- Proceed if no error occured:					
+
+
+				-- Proceed if no error occured:
 				if not error then
 					-- The 7th field may be a period, which means
 					-- the unit is to be shown on the current active sheet.
@@ -426,7 +426,7 @@ package body et_cp_schematic_unit is
 
 						-- Proceed if the device exists:
 						if electrical_device_exists (module, device_name) then
-					
+
 							do_it ( -- show device L1 IC1 .
 								device	=> device_name,
 								mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
@@ -434,7 +434,7 @@ package body et_cp_schematic_unit is
 						else
 							message_device_not_found (SEVERITY_ERROR, device_name);
 						end if;
-				
+
 
 					else
 						-- Get the name of the target device:
@@ -445,15 +445,15 @@ package body et_cp_schematic_unit is
 
 							-- Get the name of the target unit:
 							unit_name := to_unit_name (get_field (cmd, 7)); -- A
-							
+
 							-- Proceed if the unit exists:
 							if unit_exists (module, device_name, unit_name) then
-							
+
 								do_it ( -- show device L1 IC1 A
 									device	=> device_name,
 									unit	=> unit_name,
 									mode	=> SEARCH_MODE_BY_UNIT_NAME);
-									
+
 							else
 								message_unit_not_found (SEVERITY_ERROR, unit_name);
 							end if;
@@ -461,53 +461,53 @@ package body et_cp_schematic_unit is
 						else
 							message_device_not_found (SEVERITY_ERROR, device_name);
 						end if;
-								
+
 					end if;
 				end if;
-				
+
 				log_indentation_down;
 			end show_mode_2;
-			
-			
+
+
 		begin
 			case cmd_field_count is
-				when 6 => 
+				when 6 =>
 					-- show device L1 R1
 					show_mode_1;
-									
+
 				when 7 =>
 					-- show device L1 IC1 .
 					-- show device L1 IC1 A
-					show_mode_2;	
-					
-				when 8 .. type_field_count'last => 
+					show_mode_2;
+
+				when 8 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-					
+
 				when others => command_incomplete (cmd);
 			end case;
 		end preprocess_command;
 
-		
+
 	begin
 		log (text => "show device", level => log_threshold);
 		log_indentation_up;
-	
+
 		-- Show operations are only useful and possible in graphical
 		-- runmode. So we start preprocessing the given command
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-			
+
 				-- Deselect all objects in the schematic
 				-- and board drawing. This is required in case
-				-- the specified device does not exist. 
+				-- the specified device does not exist.
 				-- It is redundant in case the specified device
 				-- does exist. The reset would be executed twice,
 				-- the first time here and the second time
 				-- by procedure show_device in package et_schematic_ops_device:
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
-					
+
 				et_board_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
@@ -515,45 +515,45 @@ package body et_cp_schematic_unit is
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
-					
-		end case;			
-		
+
+		end case;
+
 		log_indentation_down;
 	end show_device;
 
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure delete_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-	
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		device_name : type_device_name;
 		unit_name	: pac_unit_name.bounded_string;
 	begin
 		log (text => "delete unit", level => log_threshold);
 		log_indentation_up;
-		
+
 		device_name := to_device_name (get_field (cmd, 5));
 		unit_name	:= to_unit_name (get_field (cmd, 6));
-		
+
 		-- Do an existence-check of the specified device and unit.
-		
+
 		-- Proceed if the specified device exists:
 		if electrical_device_exists (module, device_name) then
-		
+
 			-- Proceed if the specified unit exists:
 			if unit_exists (module, device_name, unit_name) then
-		
+
 				case cmd_field_count is
 					when 6 =>
 						delete_unit (
@@ -564,57 +564,57 @@ package body et_cp_schematic_unit is
 							-- Depending on the origin of the command,
 							-- the design state is to be commited or not:
 							commit_design	=> to_commit_design (cmd),
-							
+
 							log_threshold	=> log_threshold + 1);
 
-					when 7 .. type_field_count'last => 
+					when 7 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-						
+
 					when others => command_incomplete (cmd);
 				end case;
-				
+
 			else
 				message_unit_not_found (SEVERITY_ERROR, unit_name);
 			end if;
-			
+
 		else
 			message_device_not_found (SEVERITY_ERROR, device_name);
 		end if;
-		
+
 		log_indentation_down;
 	end delete_unit;
 
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	procedure drag_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
 		begin
 			device_name := to_device_name (get_field (cmd, 5));
 			unit_name := to_unit_name (get_field (cmd, 6));
-		
-		
+
+
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-		
+
 					drag_unit (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -627,76 +627,76 @@ package body et_cp_schematic_unit is
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
 						commit_design	=> to_commit_design (cmd),
-						
+
 						log_threshold	=> log_threshold + 1);
 
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;						
+			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "drag unit", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 9 =>
 				do_it;
 
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end drag_unit;
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 	procedure move_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
 		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
 			coordinates : type_coordinates;
-			sheet		: type_sheet_relative;		
+			sheet		: type_sheet_relative;
 			destination	: type_vector_model;
 		begin
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name	:= to_unit_name (get_field (cmd, 6)); -- A
 			coordinates := to_coordinates (get_field (cmd, 7)); -- relative/absolute
 			sheet		:= to_sheet_relative (get_field (cmd, 8)); -- -1, 2
-		
+
 			destination	:= set (x => to_distance (get_field (cmd, 9)), -- 2, 210
 							y => to_distance (get_field (cmd, 10))); -- 4, 100
 
-		
+
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-		
+
 					move_unit (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -713,13 +713,13 @@ package body et_cp_schematic_unit is
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;						
+			end if;
 		end do_it;
 
-		
+
 	begin
 		log (text => "move unit", level => log_threshold);
 		log_indentation_up;
@@ -728,23 +728,23 @@ package body et_cp_schematic_unit is
 			when 10 =>
 				do_it;
 
-			when 11 .. type_field_count'last => 
+			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end move_unit;
-	
 
-		
-		
 
-		
-		
-		
-		
+
+
+
+
+
+
+
 	procedure rotate_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -752,8 +752,8 @@ package body et_cp_schematic_unit is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
-		
+
+
 		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
@@ -767,10 +767,10 @@ package body et_cp_schematic_unit is
 
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-		
+
 					rotate_unit (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -786,35 +786,35 @@ package body et_cp_schematic_unit is
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;						
+			end if;
 		end do_it;
 
-		
-		
+
+
 	begin
 		log (text => "rotate unit", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 8 =>
 				do_it;
 
-			when 9 .. type_field_count'last => 
+			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end rotate_unit;
-			
-		
 
-		
-		
+
+
+
+
 
 
 
@@ -826,21 +826,21 @@ package body et_cp_schematic_unit is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
-		
+
+
 		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
 		begin
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name := to_unit_name (get_field (cmd, 6)); -- A
-		
+
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-		
+
 					mirror_unit (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -854,24 +854,24 @@ package body et_cp_schematic_unit is
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;		
+			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "mirror unit", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 6 =>
 				do_it;
 
-			when 7 .. type_field_count'last => 
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -881,10 +881,10 @@ package body et_cp_schematic_unit is
 
 
 
-	
-		
-		
-		
+
+
+
+
 
 	procedure fetch_unit (
 		module			: in pac_generic_modules.cursor;
@@ -892,9 +892,9 @@ package body et_cp_schematic_unit is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-	
-	
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
 		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
@@ -907,12 +907,12 @@ package body et_cp_schematic_unit is
 			sheet		:= to_sheet (get_field (cmd, 7)); -- 1
 			place		:= set (x => to_distance (get_field (cmd, 8)), -- 70
 								y => to_distance (get_field (cmd, 9))); -- 100
-		
+
 			rotation	:= to_rotation (get_field (cmd, 10)); -- -90
 
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				fetch_unit (
 					module_cursor	=> module,
 					device_name		=> device_name,
@@ -928,8 +928,8 @@ package body et_cp_schematic_unit is
 				message_device_not_found (SEVERITY_ERROR, device_name);
 			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "fetch unit", level => log_threshold);
 		log_indentation_up;
@@ -940,21 +940,21 @@ package body et_cp_schematic_unit is
 
 			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end fetch_unit;
-		
 
 
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 -- PLACEHOLDERS:
 
 	procedure rotate_unit_placeholder (
@@ -963,15 +963,15 @@ package body et_cp_schematic_unit is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_modes.schematic;
 		use et_rotation_docu;
 		use et_device_placeholders;
 		meaning : type_placeholder_meaning;
 
-		
-		procedure do_it is 
+
+		procedure do_it is
 			device_name : type_device_name;
 			unit_name	: pac_unit_name.bounded_string;
 			rotation	: type_rotation_documentation;
@@ -980,10 +980,10 @@ package body et_cp_schematic_unit is
 			case noun is
 				when NOUN_NAME =>
 					meaning := NAME;
-					
+
 				when NOUN_VALUE =>
 					meaning := VALUE;
-									
+
 				when NOUN_PURPOSE =>
 					meaning := PURPOSE;
 
@@ -991,19 +991,19 @@ package body et_cp_schematic_unit is
 
 				when others => null; -- CS should never happen
 			end case;
-			
-		
+
+
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name := to_unit_name (get_field (cmd, 6)); -- A
 			rotation := to_rotation_documentation (get_field (cmd, 7)); -- horizontal
-			
-			
+
+
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-		
+
 					rotate_placeholder (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -1019,52 +1019,52 @@ package body et_cp_schematic_unit is
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;		
+			end if;
 		end do_it;
 
-		
-		
+
+
 	begin
 		log (text => "rotate unit placeholder", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 7 =>
 				do_it;
 
-			when 8 .. type_field_count'last => 
+			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end rotate_unit_placeholder;
 
 
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 	procedure move_unit_placeholder (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_modes.schematic;
 		use et_device_placeholders;
 
-		
+
 		procedure do_it is
 			meaning : type_placeholder_meaning;
 			device_name : type_device_name;
@@ -1076,10 +1076,10 @@ package body et_cp_schematic_unit is
 			case noun is
 				when NOUN_NAME =>
 					meaning := NAME;
-					
+
 				when NOUN_VALUE =>
 					meaning := VALUE;
-									
+
 				when NOUN_PURPOSE =>
 					meaning := PURPOSE;
 
@@ -1088,19 +1088,19 @@ package body et_cp_schematic_unit is
 				when others => null; -- CS should never happen
 			end case;
 
-			
+
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name := to_unit_name (get_field (cmd, 6)); -- A
 			coordinates := to_coordinates (get_field (cmd, 7));  -- relative/absolute
 			place := to_vector_model (get_field (cmd, 8), get_field (cmd, 9));
-			
-			
+
+
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-			
+
 				-- Proceed if the specified unit exists:
 				if unit_exists (module, device_name, unit_name) then
-			
+
 					move_placeholder (
 						module_cursor 	=> module,
 						device_name		=> device_name,
@@ -1117,40 +1117,40 @@ package body et_cp_schematic_unit is
 				else
 					message_unit_not_found (SEVERITY_ERROR, unit_name);
 				end if;
-				
+
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
-			end if;		
+			end if;
 		end do_it;
 
-		
+
 	begin
 		log (text => "move unit placeholder", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 9 =>
 				do_it;
-				
-			when 10 .. type_field_count'last => 
+
+			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-			
+
 		log_indentation_down;
 	end move_unit_placeholder;
 
-	
-	
-		
+
+
+
 end et_cp_schematic_unit;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

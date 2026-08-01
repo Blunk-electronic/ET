@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,12 +48,12 @@ package body et_drawing_frame is
 	function to_paper_size (paper_size : in string) return type_paper_size is begin
 		return type_paper_size'value (paper_size);
 	end;
-	
+
 	function to_string (paper_size : in type_paper_size) return string is begin
 		return type_paper_size'image (paper_size);
 	end;
 
-	
+
 	function to_string (orientation : in type_orientation) return string is begin
 		return to_lower (type_orientation'image (orientation));
 	end;
@@ -80,12 +80,12 @@ package body et_drawing_frame is
 	end;
 
 
-	
-	
+
+
 
 	function to_string (
-		distance : in type_distance) 
-		return string 
+		distance : in type_distance)
+		return string
 	is begin
 		return type_distance'image (distance);
 	end;
@@ -99,21 +99,21 @@ package body et_drawing_frame is
 		return type_distance'value (distance);
 	end;
 
-	
 
 
-	
+
+
 	function paper_dimension (
 		paper_size	: in type_paper_size;
 		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_distance_positive 
+		return type_distance_positive
 	is
-		dimension : type_distance_positive;	
+		dimension : type_distance_positive;
 	begin
 		case orientation is
 			when LANDSCAPE =>
-				case paper_size is 
+				case paper_size is
 					when A3 =>
 						case axis is
 							when AXIS_X => dimension := paper_size_A3_x;
@@ -128,7 +128,7 @@ package body et_drawing_frame is
 				end case;
 
 			when PORTRAIT =>
-				case paper_size is 
+				case paper_size is
 					when A3 =>
 						case axis is
 							when AXIS_X => dimension := paper_size_A3_y;
@@ -161,8 +161,8 @@ package body et_drawing_frame is
 	end add;
 
 
-	
-	
+
+
 	function to_string (
 		p 		: in type_position;
 		format	: in type_output_format := FORMAT_1)
@@ -180,7 +180,7 @@ package body et_drawing_frame is
 		end case;
 	end to_string;
 
-	
+
 
 
 	function to_string (name : in pac_template_name.bounded_string) return string is begin
@@ -188,13 +188,13 @@ package body et_drawing_frame is
 	end;
 
 
-	
+
 	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
 		return pac_template_name.to_bounded_string (name);
 	end;
 
 
-	
+
 	function to_string (domain : in type_domain) return string is
 		s : constant string := type_domain'image (domain);
 	begin
@@ -202,14 +202,14 @@ package body et_drawing_frame is
 	end;
 
 
-	
+
 	function to_domain (domain : in string) return type_domain is begin
 		return type_domain'value (domain_prefix & domain);
 	end;
 
 
 
-	
+
 	procedure set_position (
 		frame 		: in out type_frame_general;
 		position	: in type_position)
@@ -219,7 +219,7 @@ package body et_drawing_frame is
 
 
 
-	
+
 	function get_position (
 		frame 		: in type_frame_general)
 		return type_position
@@ -229,12 +229,12 @@ package body et_drawing_frame is
 
 
 
-	
+
 end et_drawing_frame;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

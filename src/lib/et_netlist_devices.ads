@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.containers;            use ada.containers;
@@ -53,33 +53,33 @@ package et_netlist_devices is
 	-- In a netlist, a device that is connected with
 	-- a certain net is modelled by this type:
 	type type_device_port_extended (
-		direction : type_port_direction) 
+		direction : type_port_direction)
 	is record
-		device			: type_device_name; -- IC4		
+		device			: type_device_name; -- IC4
 		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
 		terminal		: pac_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 
-	
+
 	function "<" (
 		left, right : in type_device_port_extended)
 		return boolean;
-	
-	
-	
+
+
+
 	package pac_device_ports_extended is new indefinite_ordered_sets (
 		element_type	=> type_device_port_extended);
 
-		
 
 
-	
+
+
 end et_netlist_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

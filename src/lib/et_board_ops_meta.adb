@@ -53,9 +53,9 @@ package body et_board_ops_meta is
 	is begin
 		return type_meta_basic (element (module).meta.board);
 	end get_basic_meta_information;
-	
 
-	
+
+
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
 		return pac_library_paths_board.list
@@ -65,7 +65,7 @@ package body et_board_ops_meta is
 		return get_preferred_device_libraries_board (m);
 	end get_preferred_libraries;
 
-	
+
 
 
 	procedure add_library_path (
@@ -76,16 +76,16 @@ package body et_board_ops_meta is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			add_device_library (module.meta.board, path);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " add library path to board: "
 			 & to_string (path),
 			 level => log_threshold);
@@ -93,18 +93,18 @@ package body et_board_ops_meta is
 		log_indentation_up;
 
 		-- CS test whether the given path exists
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end add_library_path;
 
 
-	
 
 
 
-	
+
+
 
 	procedure remove_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -114,16 +114,16 @@ package body et_board_ops_meta is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			remove_device_library (module.meta.board, path);
 		end query_module;
 
-		
+
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " remove library path from board: "
 			 & to_string (path),
 			 level => log_threshold);
@@ -131,19 +131,19 @@ package body et_board_ops_meta is
 		log_indentation_up;
 
 		-- CS test whether the given path exists
-		
+
 		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end remove_library_path;
-	
+
 
 end et_board_ops_meta;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

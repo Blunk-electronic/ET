@@ -45,7 +45,7 @@
 separate (et_canvas_schematic)
 
 procedure mouse_moved (
-	point	: in type_vector_model) 
+	point	: in type_vector_model)
 is
 	pragma unreferenced (point);
 	use et_modes.schematic;
@@ -60,7 +60,7 @@ begin
 
 				when NOUN_NETCHANGER =>
 					redraw;
-					
+
 				when others => null;
 			end case;
 
@@ -75,7 +75,7 @@ begin
 				when others => null;
 			end case;
 
-			
+
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_NET =>
@@ -85,28 +85,28 @@ begin
 
 				when others => null;
 			end case;
-			
-			
+
+
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
-				when NOUN_GROUP => 
+				when NOUN_GROUP =>
 					if edit_process_running then
 						redraw_schematic;
 					end if;
 
-					
-				when NOUN_PLACEHOLDER => 
+
+				when NOUN_PLACEHOLDER =>
 					if edit_process_running then
 						redraw_schematic;
 					end if;
 
-					
+
 				when NOUN_SEGMENT | NOUN_NET_LABEL =>
 					if edit_process_running then
 						redraw_schematic;
 					end if;
 
-					
+
 				when NOUN_UNIT =>
 					if edit_process_running then
 						redraw_schematic;
@@ -132,7 +132,7 @@ begin
 				when others => null;
 			end case;
 
-			
+
 		when VERB_FETCH =>
 			case noun is
 				when NOUN_UNIT =>
@@ -142,7 +142,7 @@ begin
 
 				when others => null;
 			end case;
-			
+
 		when others => null;
 	end case;
 end mouse_moved;
@@ -150,7 +150,7 @@ end mouse_moved;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

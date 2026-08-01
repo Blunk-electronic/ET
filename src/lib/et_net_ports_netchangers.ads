@@ -56,8 +56,8 @@ with et_netchangers.schematic;	use et_netchangers.schematic;
 
 
 package et_net_ports_netchangers is
-	
-	
+
+
 
 	-- This is the port of a netchanger as it appears in a net segment:
 	type type_port_netchanger is record
@@ -65,12 +65,12 @@ package et_net_ports_netchangers is
 		port	: type_netchanger_port_name := SLAVE; -- CS reasonable default ?
 	end record;
 
-	function "<" (left, right : in type_port_netchanger) return boolean;	
+	function "<" (left, right : in type_port_netchanger) return boolean;
 
 
 	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
 
-	
+
 	-- Returns true if the given list contains
 	-- a netchanger port with the given index and port:
 	function contains_netchanger_port (
@@ -80,12 +80,12 @@ package et_net_ports_netchangers is
 		return boolean;
 
 
-		
+
 end et_net_ports_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

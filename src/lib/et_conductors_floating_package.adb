@@ -48,26 +48,26 @@
 
 -- with ada.text_io;			use ada.text_io;
 package body et_conductors_floating_package is
-	
 
-	
+
+
 -- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given track clearance is in range of type_track_clearance.
 -- 	begin
 -- 		if clearance not in type_track_clearance then
--- 			log (ERROR, "track clearance invalid ! Allowed range is" 
+-- 			log (ERROR, "track clearance invalid ! Allowed range is"
 -- 				 & to_string (type_track_clearance'first) & " .."
 -- 				 & to_string (type_track_clearance'last),
 -- 				 console => true);
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end validate_track_clearance;
--- 
+--
 -- 	procedure validate_track_width (track_width : in type_distance_positive) is
 -- 	-- Checks whether the given width is in range of type_track_width.
 -- 	begin
 -- 		if track_width not in type_track_width then
--- 			log (ERROR, "track width invalid ! Allowed range is" 
+-- 			log (ERROR, "track width invalid ! Allowed range is"
 -- 				 & to_string (type_track_width'first) & " .."
 -- 				 & to_string (type_track_width'last),
 -- 				 console => true);
@@ -85,7 +85,7 @@ package body et_conductors_floating_package is
 		case face is
 			when TOP =>
 				conductors.top.texts.append (text);
-				
+
 			when BOTTOM =>
 				conductors.bottom.texts.append (text);
 		end case;
@@ -94,7 +94,7 @@ package body et_conductors_floating_package is
 
 
 
-	
+
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -116,7 +116,7 @@ package body et_conductors_floating_package is
 		rotate_texts (conductors.texts, angle);
 	end rotate_conductor_objects;
 
-	
+
 
 	procedure move_conductor_objects (
 		conductors	: in out type_conductor_objects;
@@ -128,7 +128,7 @@ package body et_conductors_floating_package is
 		move_texts (conductors.texts, offset);
 	end move_conductor_objects;
 
-	
+
 	function to_polygons (
 		conductors	: in type_conductor_objects;
 		tolerance	: in type_distance_positive)
@@ -146,21 +146,21 @@ package body et_conductors_floating_package is
 		-- circles (outer edges only ):
 		scratch := to_polygons_outside (conductors.circles, tolerance);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
-		
+
 		-- texts
 		scratch := to_polygons (conductors.texts);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
-		
+
 		return result;
 	end to_polygons;
 
 
-	
+
 end et_conductors_floating_package;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

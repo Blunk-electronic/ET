@@ -52,18 +52,18 @@ package body et_stencil_mask_status is
 		return to_lower (type_solder_paste_status'image (solder_paste));
 	end;
 
-	
+
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
 		return type_solder_paste_status'value (solder_paste);
 	end;
 
 
-	
+
 end et_stencil_mask_status;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

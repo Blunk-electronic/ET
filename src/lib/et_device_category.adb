@@ -44,8 +44,8 @@
 with et_logging;				use et_logging;
 package body et_device_category is
 
-	
-	
+
+
 	function to_string (cat : in type_device_category) return string is
 	begin
 		return " " & type_device_category'image (cat);
@@ -54,7 +54,7 @@ package body et_device_category is
 
 
 
-	
+
 	function to_category (category : in string) return type_device_category is
 		category_out : type_device_category;
 	begin
@@ -67,23 +67,23 @@ package body et_device_category is
 					 console => true);
 
 				log (text => "supported categories are:");
-				for cat in type_device_category'pos (type_device_category'first) .. 
+				for cat in type_device_category'pos (type_device_category'first) ..
 					type_device_category'pos (type_device_category'last) loop
 
 					log (text => "- " & to_string (type_device_category'val (cat)));
 				end loop;
-				
+
 				raise constraint_error;
 	end to_category;
 
 
-	
-		
+
+
 end et_device_category;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

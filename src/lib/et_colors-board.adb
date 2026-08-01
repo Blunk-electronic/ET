@@ -36,7 +36,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -57,14 +57,14 @@ package body et_colors.board is
 		use cairo.pattern;
 
 		zero : constant gdouble := 0.0;
-		
+
 		-- The pattern appearance must be independed of the zoom-factor of the canvas.
-		-- So we need a compensation mechanism that keeps the pattern size constant. 
+		-- So we need a compensation mechanism that keeps the pattern size constant.
 		-- This is the length of the gradient:
 		gl : gdouble;
 
 		-- The modifier to compensate the zoom-factor is different for straight
-		-- and angular patterns. The modifier will be used to compute the 
+		-- and angular patterns. The modifier will be used to compute the
 		-- length of the gradient:
 		m_0_90		: constant gdouble := 25.0;
 		m_45_135	: constant gdouble := m_0_90 - 5.0;
@@ -89,10 +89,10 @@ package body et_colors.board is
 			-- gradient from left to right (in the view, in pixels)
 			p := pattern_create_linear (zero, zero, zero, gl);
 		end make_gradient_0;
-		
+
 		procedure make_gradient_45 is begin
 			gl := m_45_135 / gdouble (S);
-			
+
 			-- gradient from top left to bottom right (in the view, in pixels)
 			p := pattern_create_linear (zero, zero, gl, gl);
 		end make_gradient_45;
@@ -104,15 +104,15 @@ package body et_colors.board is
 			p := pattern_create_linear (zero, zero, gl, zero);
 		end make_gradient_90;
 
-		
+
 		procedure make_gradient_135 is begin
 			gl := m_45_135 / gdouble (S);
-			
+
 			-- gradient from top left to bottom right (in the view, in pixels)
 			p := pattern_create_linear (gl, zero, zero, gl);
 		end make_gradient_135;
 
-		
+
 	begin -- create_fill_pattern
 		case style is
 			when SOLID =>
@@ -123,7 +123,7 @@ package body et_colors.board is
 			when STRIPED_45		=> make_gradient_45;
 			when STRIPED_90		=> make_gradient_90;
 			when STRIPED_135	=> make_gradient_135;
-				
+
 			when others => null;
 		end case;
 
@@ -132,37 +132,37 @@ package body et_colors.board is
 
 				-- Set the brightness of the color that is to fill the gaps between lines or dots:
 				gap_color := dim (color, gap_brightness);
-				
+
 				add_gap (0.50);
 				add_foreground (0.51);
 				add_foreground (0.55);
 				add_gap (0.56);
-				
+
 				set_source (context, p);
 				set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
 
 			when others => null;
 		end case;
-		
+
 	end create_fill_pattern;
 
 
-	
-	-- procedure set_color_cursor (context : in cairo_context) is begin		
+
+	-- procedure set_color_cursor (context : in cairo_context) is begin
 	-- 	set_source_rgb (
-	-- 		context, 
+	-- 		context,
 	-- 		cursor.red,
 	-- 		cursor.green,
 	-- 		cursor.blue);
 	-- end set_color_cursor;
 
 
-	
+
 	procedure set_color_background (
 		opacity : in type_opacity := default_opacity)
 	is begin
 		set_source_rgba (
-			context, 
+			context,
 			background.red,
 			background.green,
 			background.blue,
@@ -171,11 +171,11 @@ package body et_colors.board is
 
 
 
-	
+
 
 	procedure set_brightness (
 		brightness	: in type_brightness)
-	is 
+	is
 		c : type_color;
 	begin
 		-- If the given brightness differes from the
@@ -188,7 +188,7 @@ package body et_colors.board is
 
 			-- Apply the brightness modified color:
 			set_source_rgb (context, c.red, c.green, c.blue);
-			
+
 			-- Update global foreground brightness:
 			current_foreground_brightness := brightness;
 		end if;
@@ -196,14 +196,14 @@ package body et_colors.board is
 
 
 
-	
-	
+
+
 
 	procedure set_color (
 		color		: in type_color;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
-	is 
+	is
 		c : type_color;
 	begin
 		-- Modify the given color by the given brightness:
@@ -229,32 +229,32 @@ package body et_colors.board is
 
 
 
-	
 
-	
+
+
 	procedure set_color_frame (
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
 		-- and overwrite value of variable frame
-		
+
 		set_color (frame, brightness);
 	end set_color_frame;
 
 
-	
-	
+
+
 	procedure set_color_origin (
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
 		-- and overwrite value of variable origin
-		
+
 		set_color (origin, brightness);
 	end set_color_origin;
 
 
-	
+
 
 	procedure set_color_ratsnest (
 		brightness	: in type_brightness := brightness_default)
@@ -263,11 +263,11 @@ package body et_colors.board is
 	end set_color_ratsnest;
 
 
-	
-	
+
+
 	procedure set_color_outline (
 		brightness	: in type_brightness := brightness_default)
-	is begin		
+	is begin
 		set_color (outline, brightness);
 	end set_color_outline;
 
@@ -276,30 +276,30 @@ package body et_colors.board is
 
 	procedure set_color_netchanger (
 		brightness	: in type_brightness := brightness_default)
-	is begin		
+	is begin
 		set_color (netchanger, brightness);
 	end;
 
-	
-	
-	
+
+
+
 -- VIAS
 
 	procedure set_color_via_restring (
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_color (via_restring, brightness, opacity);
 	end set_color_via_restring;
 
 
-	
-	
+
+
 	procedure set_color_via_layers (
 		opacity : in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_source_rgba (
-			context, 
+			context,
 			via_layers.red,
 			via_layers.green,
 			via_layers.blue,
@@ -308,12 +308,12 @@ package body et_colors.board is
 
 
 
-	
+
 	procedure set_color_via_net_name (
 		opacity : in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_source_rgba (
-			context, 
+			context,
 			via_net_name.red,
 			via_net_name.green,
 			via_net_name.blue,
@@ -322,21 +322,21 @@ package body et_colors.board is
 
 
 
-	
+
 	procedure set_color_via_drill_size (
 		opacity : in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_source_rgba (
-			context, 
+			context,
 			via_drill_size.red,
 			via_drill_size.green,
 			via_drill_size.blue,
 			color_range (opacity));
 	end set_color_via_drill_size;
-	
 
 
-	
+
+
 	procedure set_color_silkscreen (
 		face		: in type_face;
 		brightness	: in type_brightness;
@@ -352,8 +352,8 @@ package body et_colors.board is
 	end set_color_silkscreen;
 
 
-	
-	
+
+
 	procedure set_color_assy_doc (
 		face		: in type_face;
 		brightness	: in type_brightness;
@@ -370,12 +370,12 @@ package body et_colors.board is
 
 
 
-	
-	
+
+
 	procedure set_color_stop_mask (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity) 
+		opacity 	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
@@ -389,13 +389,13 @@ package body et_colors.board is
 					color		=> dim (stop_mask_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stop_mask_fill);
-		end case;	
+		end case;
 	end set_color_stop_mask;
-	
 
 
-	
-	
+
+
+
 	procedure set_color_stencil (
 		face		: in type_face;
 		brightness	: in type_brightness;
@@ -413,13 +413,13 @@ package body et_colors.board is
 					color		=> dim (stencil_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stencil_fill);
-				
+
 		end case;
 	end set_color_stencil;
 
 
 
-	
+
 
 	procedure set_color_keepout (
 		face		: in type_face;
@@ -438,28 +438,28 @@ package body et_colors.board is
 
 
 
-	
+
 	procedure set_color_route_restrict (
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_color (route_restrict, brightness, opacity);
 	end set_color_route_restrict;
 
 
 
-	
+
 	procedure set_color_via_restrict (
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
-	is begin		
+	is begin
 		set_color (via_restrict, brightness, opacity);
 	end set_color_via_restrict;
 
 
 
-	
-	
+
+
 	procedure set_color_conductor (
 		layer		: in type_signal_layer;
 		brightness	: in type_brightness;
@@ -467,11 +467,11 @@ package body et_colors.board is
 	is begin
 		set_color (conductors (layer), brightness, opacity);
 	end set_color_conductor;
-	
 
 
 
-	
+
+
 	procedure set_color_terminal_name (
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
@@ -480,8 +480,8 @@ package body et_colors.board is
 	end set_color_terminal_name;
 
 
-	
-		
+
+
 	procedure set_color_tht_pad (
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
@@ -489,13 +489,13 @@ package body et_colors.board is
 		set_color (tht_pads, brightness, opacity);
 	end set_color_tht_pad;
 
-	
-	
+
+
 end et_colors.board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

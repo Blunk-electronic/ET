@@ -58,15 +58,15 @@ package et_module_read_meta is
 
 	procedure add_meta_board;
 
-	
-	
+
+
 	-- Assigns the collected meta data to the module:
 	procedure set_meta (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	function read_meta_basic (
 		line : in type_fields_of_line)
 		return boolean;
@@ -79,24 +79,24 @@ package et_module_read_meta is
 
 	procedure read_meta_board (
 		line : in type_fields_of_line);
-	
+
 
 
 	procedure read_preferred_lib_schematic (
  		line : in type_fields_of_line);
 
-	
+
 	procedure read_preferred_lib_board (
 		line : in type_fields_of_line);
 
-	
-	
+
+
 end et_module_read_meta;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

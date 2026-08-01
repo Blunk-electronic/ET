@@ -52,7 +52,7 @@ package et_board_text is
 
 	linewidth_fab_min : constant type_distance_positive := 0.005;
 	linewidth_fab_max : constant type_distance_positive := 10.0;
-	
+
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
 		size_min			=> 0.01,
@@ -63,7 +63,7 @@ package et_board_text is
 	package pac_text_board_vectorized is new et_text_vectorized.generic_pac_text_vectorized (
 		pac_geometry		=> pac_geometry_2,
 		pac_text			=> pac_text_board,
-		pac_polygons		=> pac_polygons,											 
+		pac_polygons		=> pac_polygons,
 		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> 0.01,
 		size_max			=> 100.0,
@@ -72,14 +72,14 @@ package et_board_text is
 		line_width_max		=> linewidth_fab_max,
 		line_width_default	=> 0.005);
 
-	
+
 	-- CS fonts for non-vector text ?
-	
+
 end et_board_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

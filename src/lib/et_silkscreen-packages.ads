@@ -48,7 +48,7 @@ package et_silkscreen.packages is
 		placeholders : pac_text_placeholders.vector;
 	end record;
 
-	
+
 	-- Silkscreen is about two sides of the board:
 	type type_silkscreen_both_sides is record
 		top		: type_silkscreen_package;
@@ -74,7 +74,7 @@ package et_silkscreen.packages is
 
 
 
-	
+
 	-- CS procedures add_line, arc, cirlce zone
 
 	-- procedure add_line (
@@ -88,25 +88,25 @@ package et_silkscreen.packages is
 		zone		: in type_silk_zone;
 		face		: in type_face);
 
-		
+
 	procedure add_text (
 		silkscreen	: in out type_silkscreen_both_sides;
 		text		: in type_silk_text;
 		face		: in type_face);
 
-		
+
 	procedure add_placeholder (
 		silkscreen	: in out type_silkscreen_both_sides;
 		placeholder	: in type_text_placeholder;
 		face		: in type_face);
 
-		
-		
+
+
 end et_silkscreen.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

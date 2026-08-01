@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 with et_generic_modules;		use et_generic_modules;
@@ -47,25 +47,25 @@ with et_logging;				use et_logging;
 package et_module_write is
 
 	use pac_generic_modules;
-		
+
 
 	-- Saves the given generic module in the current working directory.
 	-- Saves the module with its own name if save_as_name is empty.
 	-- If save_as_name contains something, then the module is saved
-	-- with that name. 
+	-- with that name.
 	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level);
-	
-	
-	
-	
+
+
+
+
 end et_module_write;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

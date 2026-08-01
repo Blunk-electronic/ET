@@ -44,25 +44,25 @@ package et_net_junction is
 
 	use pac_geometry_2;
 
-	
+
 	procedure junction_in_sloping_segment (
 		point : in type_object_position);
-	
-	
+
+
 	-- A net junction is where segments are connected with each other.
 	-- This type models the junctionss of a net segment:
 	type type_junctions is record
-		A	: boolean := false; -- CS dedicated type like type_junction_active 
+		A	: boolean := false; -- CS dedicated type like type_junction_active
 								-- and value like JUNCTION_ON, JUNCTION_OFF
 		B	: boolean := false;
 	end record;
 
-	
+
 	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
 	junction_radius : constant type_distance_positive := 0.5;
-	
 
-	
+
+
 	junction_symbol : type_circle := type_circle (to_circle (
 			center	=> origin,
 			radius 	=> junction_radius));
@@ -70,12 +70,12 @@ package et_net_junction is
 
 
 
-	
+
 end et_net_junction;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

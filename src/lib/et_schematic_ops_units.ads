@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
--- To Do: 
+-- To Do:
 --
 --
 
@@ -74,9 +74,9 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_units is
 
 	use pac_generic_modules;
-	
-	
-	-- Locates the given unit of the given device in the 
+
+
+	-- Locates the given unit of the given device in the
 	-- given module and returns the cursor to the unit.
 	-- If the unit does not exist, returns no_element.
 	-- Raises exception if device does not exist.
@@ -85,9 +85,9 @@ package et_schematic_ops_units is
 		device			: in type_device_name; -- R2
 		unit			: in pac_unit_name.bounded_string)
 		return pac_units.cursor;
-		
-	
-	-- Returns true if the unit of the given device in the 
+
+
+	-- Returns true if the unit of the given device in the
 	-- given module has been deployed somewhere.
 	-- If the unit has not been deployed yet, returns false.
 	-- Raises exception if device does not exist.
@@ -106,8 +106,8 @@ package et_schematic_ops_units is
 		unit	: in pac_unit_name.bounded_string)
 		return boolean renames is_deployed;
 
-	
-	
+
+
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -115,20 +115,20 @@ package et_schematic_ops_units is
 		port_name		: in pac_port_name.bounded_string) -- CE
 		return boolean;
 
-	
-	
+
+
 	-- Returns true if given device exists in module indicated by module_cursor.
 	-- The unit and port names are optionally.
 	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE		
-		return boolean;						
+		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
+		return boolean;
 
 
-	
-	-- Returns the names of available units of the given device in the 
+
+	-- Returns the names of available units of the given device in the
 	-- given generic module. "Available" means the unit exists and is
 	-- not already placed somewhere in the schematic:
 	function get_available_units (
@@ -138,7 +138,7 @@ package et_schematic_ops_units is
 		return pac_unit_names.list;
 
 
-	
+
 	-- Returns true if the given unit is available.
 	-- Raises constraint error if device does not exist or
 	-- unit is not defined in device model of given device:
@@ -149,8 +149,8 @@ package et_schematic_ops_units is
 		return boolean;
 
 
-	
-	-- Returns the names of units of the given device in the 
+
+	-- Returns the names of units of the given device in the
 	-- given generic module on the given sheet.
 	function get_units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -160,7 +160,7 @@ package et_schematic_ops_units is
 		return pac_unit_names.list;
 
 
-	
+
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
@@ -169,8 +169,8 @@ package et_schematic_ops_units is
 		unit			: in pac_unit_name.bounded_string)
 		return type_object_position;
 
-	
-	
+
+
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_sheet (
@@ -191,7 +191,7 @@ package et_schematic_ops_units is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Inserts the given device ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
@@ -208,8 +208,8 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 
 	-- Fetches a unit from a device into the schematic.
 	-- CS: Reject unit if a port overlaps a port of another
@@ -227,7 +227,7 @@ package et_schematic_ops_units is
 
 	-- Copies a unit and places it relative to the
 	-- original by a given offset.
-	-- 1. If target_device is not specified, then 
+	-- 1. If target_device is not specified, then
 	--    a new device is created indirectly. The lowest available
 	--    name index will be assigned to that device.
 	-- 2. If target_device is specified, then no new device
@@ -247,9 +247,9 @@ package et_schematic_ops_units is
 		device_created	: out type_device_name;-- CS use a cursor instead ?
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 
 	-- Returns true if no unit sits on top of another.
 	function unit_positions_valid (
@@ -258,7 +258,7 @@ package et_schematic_ops_units is
 		return boolean;
 
 
-	
+
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
 	-- Assumes the default assembly variant (means ALL devices are mounted).
@@ -275,11 +275,11 @@ package et_schematic_ops_units is
 
 	-- CS type_port_query
 
-	-- CS function port_position 
+	-- CS function port_position
 
-	
-	-- Deletes a unit of a device. 
-	-- In case the last unit has been deleted, then the device is 
+
+	-- Deletes a unit of a device.
+	-- In case the last unit has been deleted, then the device is
 	-- deleted entirely from the module.
 	-- It is assumed, that the given device and unit exist.
 	-- Otherwise an execption will be raised:
@@ -300,14 +300,14 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
-	
+
+
 
 
 -- DEVICE DELETE and RENAME:
 
 
-	
+
 	-- Deletes a whole device (incl. all its units)
 	-- in the module.
 	-- It is assumed that the targeted device with device_name
@@ -321,7 +321,7 @@ package et_schematic_ops_units is
 
 
 	-- Renames the device ports of the net segments.
-	-- Leaves the unit and port names as they are because 
+	-- Leaves the unit and port names as they are because
 	-- this is solely about changing device names:
 	procedure rename_device_ports (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -331,13 +331,13 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 	-- Renames a device.
 	-- It is assumed that the targeted device with device_name_before
 	-- exists in the module. If not, then an exception is raised.
 	-- Changing the prefix is not allowed. A warning will be issued.
-	-- For example renaming from R1 to C1 is forbidden as this would 
+	-- For example renaming from R1 to C1 is forbidden as this would
 	-- change the device category:
 	procedure rename_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
@@ -349,13 +349,13 @@ package et_schematic_ops_units is
 
 
 
-	
+
 
 -- UNIT MOVE, DRAG, ROTATE, MIRROR, DELETE:
-		
+
 
 	-- Moves the given unit within the schematic. Disconnects the unit from
-	-- start or end points of net segments BEFORE the move. 
+	-- start or end points of net segments BEFORE the move.
 	-- Connects unit ports with segment end or start points AFTER the move.
 	-- CS: Reject unit if a port overlaps a port of another
 	-- existing unit.
@@ -370,7 +370,7 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-		
+
 	-- Moves all units of a given electrical device by the
 	-- given number of sheets. Moves only those units
 	-- which are on the sheet_old.
@@ -383,13 +383,13 @@ package et_schematic_ops_units is
 		sheet_old		: in type_sheet;
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level);
-		
-		
+
+
 	-- This procedure is to be used in connection with
-	-- deleting sheets. 
+	-- deleting sheets.
 	--
 	-- IMPORTANT: It should only be called after:
-	-- 1. all strands have been moved via procedure 
+	-- 1. all strands have been moved via procedure
 	--    et_schematic_ops_nets.move_strands_on_sheet_delete
 	--    because this operation has moved the ports of units already.
 	-- 2. all units have been deleted on the sheet to be deleted.
@@ -403,9 +403,9 @@ package et_schematic_ops_units is
 	-- sheets to move anything:
 	procedure move_units_on_sheet_delete (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet_delete	: in type_sheet;	
+		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level);
-		
+
 
 	-- Returns the position of given unit. If the unit_name is empty ("")
 	-- then the position of the first unit of the device is returned.
@@ -418,9 +418,9 @@ package et_schematic_ops_units is
 -- 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return type_unit_query;
 
-	
-	
-	-- Tests whether the given unit ports at their individual location are movable. 
+
+
+	-- Tests whether the given unit ports at their individual location are movable.
 	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
 	-- CS: Might become obsolete once ports at the same x/y position are prevented.
@@ -447,17 +447,17 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Drags the given unit about the sheet.
 	-- Assumes that the specified device and unit exist.
 	-- Otherwise an exception will be raised.
 	-- Already existing connections with net segments are kept.
 	-- Connected net segments are dragged along with the unit.
-	-- Net segment positions are modified.	
+	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 	-- CS: Reject unit if a port ends up by overlappin a port
-	-- of another existing unit.	
+	-- of another existing unit.
 	procedure drag_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -468,17 +468,17 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- Rotates the given unit. 
+	-- Rotates the given unit.
 	-- Disconnects the unit from attached net segments before the rotation.
 	-- Connects the unit with net segments after the rotation.
 	-- Rotates the placeholders about the unit origin.
 	-- CS: Reject unit if a port ends up by overlappin a port
-	-- of another existing unit.	
+	-- of another existing unit.
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in type_rotation_model; -- 90
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -486,11 +486,11 @@ package et_schematic_ops_units is
 
 	-- Mirrors a unit along its y-axis.
 	-- Toggles between mirror and no-mirror status.
-	-- Disconnects the unit from attached net segments before 
+	-- Disconnects the unit from attached net segments before
 	-- the mirror operation.
 	-- Connects the unit with net segments after the operation.
 	-- CS: Reject unit if a port ends up by overlapping a port
-	-- of another existing unit.	
+	-- of another existing unit.
 	-- The positions of placeholders are NOT changed because
 	-- mirroring the unit does not necessarily affect the placeholders.
 	-- So the operator is requested to do that if required.
@@ -501,7 +501,7 @@ package et_schematic_ops_units is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 
 	-- This composite type is meant to identify a unit
@@ -528,7 +528,7 @@ package et_schematic_ops_units is
 		return type_device_name;
 
 
-	
+
 	function get_unit_name (
 		object	: in type_object_unit)
 		return string;
@@ -538,8 +538,8 @@ package et_schematic_ops_units is
 		object	: in type_object_unit)
 		return pac_unit_name.bounded_string;
 
-	
-	
+
+
 	-- Returns the full name of the given object
 	-- as string in the form like "IC12.B":
 	function get_object_name (
@@ -547,7 +547,7 @@ package et_schematic_ops_units is
 		return string;
 
 
-	
+
 
 	-- Modifies the status flag of a unit.
 	-- If the unit is set as moving, then its
@@ -559,8 +559,8 @@ package et_schematic_ops_units is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Sets the proposed-flag of all units which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of units that have been found.
@@ -572,10 +572,10 @@ package et_schematic_ops_units is
 		count			: in out natural;
 		real_only		: in boolean := false;
 		log_threshold	: in type_log_level);
-								
 
 
-	-- Resets the status flags of 
+
+	-- Resets the status flags of
 	-- all devices, their units and packages:
 	procedure reset_status_units (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -588,7 +588,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Returns the first unit according to the given flag.
 	-- If no unit has been found,
@@ -603,14 +603,14 @@ package et_schematic_ops_units is
 
 
 
-	
+
 -- GROUPS:
 
-	-- Sets "selected" flag of all units that 
+	-- Sets "selected" flag of all units that
 	-- are on the given sheet and in the given area:
 	procedure group_units_in_rectangular_area (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;							  
+		sheet			: in type_sheet;
 		area			: in type_area;
 		log_threshold	: in type_log_level);
 
@@ -620,13 +620,13 @@ package et_schematic_ops_units is
 	-- "selected"-flag set:
 	-- This procedure does not do any commit operations,
 	-- because this is part of a group call.
-	-- It is up to the caller of this procedure to care for 
+	-- It is up to the caller of this procedure to care for
 	-- the commit actions:
 	procedure delete_units_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
+
 
 	-- This procedure drags selected units by the
 	-- given offset.
@@ -649,7 +649,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- This procedure clears the "moving" flag of all
 	-- untis (regardless whether they are selcted or not):
 	procedure set_all_units_as_not_moving (
@@ -668,19 +668,19 @@ package et_schematic_ops_units is
 	--    the result is an IC2 with unit A and an IC5 with unit C.
 	procedure copy_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;		
+		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
-	
-	-- This procedure copies selected units to 
+
+	-- This procedure copies selected units to
 	-- the clipboard:
 	procedure copy_selected_units_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-		
-		
-		
+
+
+
 
 -- PLACEHOLDERS:
 
@@ -697,7 +697,7 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is either horizontal or vertical.
 	-- If toggle is true, then rotation is ignored and
@@ -709,14 +709,14 @@ package et_schematic_ops_units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_documentation := HORIZONTAL;
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
 
-	
-	-- This composite type is meant to identify a 
+
+	-- This composite type is meant to identify a
 	-- placeholder of a unit
 	-- and its parent device in the schematic:
 	type type_object_placeholder is record
@@ -729,7 +729,7 @@ package et_schematic_ops_units is
 	function get_device_name (
 		object : in type_object_placeholder)
 		return type_device_name;
-	
+
 
 	function get_unit_name (
 		object : in type_object_placeholder)
@@ -745,27 +745,27 @@ package et_schematic_ops_units is
 	function get_device_name (
 		object : in type_object_placeholder)
 		return string;
-	
+
 
 	function get_unit_name (
 		object : in type_object_placeholder)
 		return string;
 
-	
+
 	-- Returns the full name of the given object
 	-- as string in the form like "IC12.B":
 	function get_object_name (
 		object	: in type_object_placeholder)
 		return string;
 
-	
+
 
 	function get_meaning (
 		object : in type_object_placeholder)
 		return string;
 
-	
-	
+
+
 	-- Modifies the status flag of a placeholder.
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -773,8 +773,8 @@ package et_schematic_ops_units is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Sets the proposed-flag of all placeholders which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of placeholders that have been found:
@@ -783,7 +783,7 @@ package et_schematic_ops_units is
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
-								
+
 
 
 	-- Resets the status flags of all placeholders:
@@ -803,7 +803,7 @@ package et_schematic_ops_units is
 		return type_object_placeholder;
 
 
-	
+
 
 ------------------------------------------------------------------------------------------
 
@@ -821,20 +821,20 @@ package et_schematic_ops_units is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_UNIT =>
 				unit : type_object_unit;
 
 			when CAT_PLACEHOLDER =>
 				placeholder : type_object_placeholder;
-				
+
 			-- CS CAT_PLACEHOLDER_VALUE, NAME, PURPOSE ?
 		end case;
 	end record;
 
 
-	
-	
+
+
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 
 
@@ -842,7 +842,7 @@ package et_schematic_ops_units is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
+
 
 
 	-- Returns the first object
@@ -850,20 +850,20 @@ package et_schematic_ops_units is
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
 
 
-	-- Collects all objects 
+	-- Collects all objects
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
-	
+
 
 
 	-- Modifies the status flag of an object:
@@ -881,10 +881,10 @@ package et_schematic_ops_units is
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- This is a collective procedure that resets
-	-- the status flags of all 
+	-- the status flags of all
 	-- objects (electrical devices, units, placeholders, nets, net labels):
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -913,21 +913,21 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Sets the start or end points of net segments which are 
+
+	-- Sets the start or end points of net segments which are
 	-- connected with ports of selected units to "moving":
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -939,22 +939,22 @@ package et_schematic_ops_units is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		new_name_device	: in type_device_name;
 		-- CS add argument for new names of other kinds of objects
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;		
+		destination		: in type_position;
 		log_threshold	: in type_log_level);
 
-	
+
 	procedure set_value (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -982,12 +982,12 @@ package et_schematic_ops_units is
 		new_variant		: in pac_package_variant_name.bounded_string;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_schematic_ops_units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

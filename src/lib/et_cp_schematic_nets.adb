@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -80,7 +80,7 @@ package body et_cp_schematic_nets is
 	use pac_geometry_2;
 
 
-	
+
 	procedure export_netlist (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -88,12 +88,12 @@ package body et_cp_schematic_nets is
 	is
 		use et_schematic_ops_netlists_2;
 		use et_assembly_variant_name;
-		
+
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
+
 		category : type_netlist_category := type_netlist_category'first;
-		
+
 	begin
 		-- CS log message
 
@@ -102,12 +102,12 @@ package body et_cp_schematic_nets is
 		case cmd_field_count is
 			when 6 =>
 				-- schematic demo make netlist low_cost 1
-				
+
 				category := to_netlist_category (get_field (cmd, 6));
-				
+
 				case category is
 					when NETLIST_CAT_1 =>
-					
+
 						make_netlist_cat_1 (
 							module_cursor 	=> module,
 							variant			=> to_variant (get_field (cmd, 5)),
@@ -117,13 +117,13 @@ package body et_cp_schematic_nets is
 						null;
 						-- CS
 				end case;
-				
-				
-				
-							
+
+
+
+
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end export_netlist;
@@ -142,11 +142,11 @@ package body et_cp_schematic_nets is
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is		
+	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
 		procedure do_it is
 			net_name : pac_net_name.bounded_string;
 			scope : type_net_scope;
@@ -156,7 +156,7 @@ package body et_cp_schematic_nets is
 
 			-- Proceed if the net exists:
 			if net_exists (module, net_name) then
-			
+
 				set_scope (
 					module_cursor 	=> module,
 					net_name		=> net_name,
@@ -172,8 +172,8 @@ package body et_cp_schematic_nets is
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set net scope", level => log_threshold);
 		log_indentation_up;
@@ -184,9 +184,9 @@ package body et_cp_schematic_nets is
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
-		end case;		
+		end case;
 
 		log_indentation_down;
 	end set_net_scope;
@@ -196,7 +196,7 @@ package body et_cp_schematic_nets is
 
 
 
-	
+
 
 
 
@@ -206,10 +206,10 @@ package body et_cp_schematic_nets is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
-		
+
+
 		procedure do_it is
 			net_name : pac_net_name.bounded_string;
 		begin
@@ -218,7 +218,7 @@ package body et_cp_schematic_nets is
 			-- Proceed if the net exists:
 			if net_exists (module, net_name) then
 				show_net (module, net_name, log_threshold + 1);
-				
+
 				-- CS: Move the view so that the first strand
 				-- of the net is in the center.
 			else
@@ -226,74 +226,74 @@ package body et_cp_schematic_nets is
 			end if;
 		end do_it;
 
-		
-		
-		
+
+
+
 		procedure preprocess_command is begin
 			case cmd_field_count is
-				when 5 => 
+				when 5 =>
 					do_it;
-				
+
 				when 6 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-				
+
 				when others => command_incomplete (cmd);
-			end case;		
+			end case;
 		end preprocess_command;
-		
-		
+
+
 	begin
 		log (text => "show net", level => log_threshold);
-		log_indentation_up;		
-		
-		
+		log_indentation_up;
+
+
 		-- Show operations are only useful and possible in graphical
 		-- runmode. So we start preprocessing the given command
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-			
+
 				-- Deselect all objects in the schematic
 				-- and board drawing. This is required in case
-				-- the specified net does not exist. 
+				-- the specified net does not exist.
 				-- It is redundant in case the specified net
 				-- does exist. The reset would be executed twice,
 				-- the first time here and the second time
 				-- by procedure show_net in package et_schematic_ops_nets:
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
-					
+
 				et_board_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
 				preprocess_command;
 
-				
+
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
-					
-		end case;			
 
-		
+		end case;
+
+
 		log_indentation_down;
 	end show_net;
 
 
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	procedure place_net_connector (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "place net connector", level => log_threshold);
 		log_indentation_up;
@@ -309,7 +309,7 @@ package body et_cp_schematic_nets is
 							x => to_distance (get_field (cmd, 6)),
 							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
-	
+
 					-- A connector requires specification of signal direction:
 					direction		=> to_direction (get_field (cmd, 8)),
 					-- INPUT, OUTPUT, PASSIVE, ...
@@ -320,25 +320,25 @@ package body et_cp_schematic_nets is
 
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end place_net_connector;
-	
-	
-	
-	
-	
-	
-	
-	
-		
+
+
+
+
+
+
+
+
+
 
 	procedure delete_net_connector (
 		module			: in pac_generic_modules.cursor;
@@ -347,24 +347,24 @@ package body et_cp_schematic_nets is
 	is
 		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "delete net connector", level => log_threshold);
 		log_indentation_up;
 
 		-- CS
 		null;
-		
+
 		log_indentation_down;
 	end delete_net_connector;
 
 
-	
-	
 
 
-	
-	
+
+
+
+
 
 	procedure place_net_label (
 		module			: in pac_generic_modules.cursor;
@@ -372,7 +372,7 @@ package body et_cp_schematic_nets is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "place net label", level => log_threshold);
 		log_indentation_up;
@@ -380,7 +380,7 @@ package body et_cp_schematic_nets is
 
 		case cmd_field_count is
 			when 7 =>
-				
+
 				place_net_label (
 					module_cursor	=> module,
 					position		=> to_position (
@@ -395,24 +395,24 @@ package body et_cp_schematic_nets is
 
 					log_threshold	=> log_threshold + 1);
 
-				
+
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end place_net_label;
 
-		
 
-	
-		
-		
 
-		
+
+
+
+
+
 
 	procedure delete_net_label (
 		module			: in pac_generic_modules.cursor;
@@ -420,7 +420,7 @@ package body et_cp_schematic_nets is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "delete net label", level => log_threshold);
 		log_indentation_up;
@@ -441,26 +441,26 @@ package body et_cp_schematic_nets is
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
-					
+
 					log_threshold	=> log_threshold + 1);
-				
+
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end delete_net_label;
-	
-	
-	
-	
-	
-	
-		
-		
+
+
+
+
+
+
+
+
 
 	procedure move_net_label (
 		module			: in pac_generic_modules.cursor;
@@ -469,23 +469,23 @@ package body et_cp_schematic_nets is
 	is
 		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "move net label", level => log_threshold);
 		log_indentation_up;
 
 		-- CS
 		null;
-		
+
 		log_indentation_down;
 	end move_net_label;
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 
 	procedure set_net_class (
 		module			: in pac_generic_modules.cursor;
@@ -494,8 +494,8 @@ package body et_cp_schematic_nets is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-		
-		
+
+
 		procedure do_it is
 			use et_board_ops_net_class;
 			use et_net_class_name;
@@ -507,9 +507,9 @@ package body et_cp_schematic_nets is
 
 			-- Proceed if net exists:
 			if net_exists (module, net_name) then
-			
+
 			-- CS Test if the net class exists.
-			
+
 				set_net_class (
 					module_cursor	=> module,
 					net_name		=> net_name,
@@ -525,8 +525,8 @@ package body et_cp_schematic_nets is
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
 		end do_it;
-		
-		
+
+
 	begin
 		log (text => "set net class", level => log_threshold);
 		log_indentation_up;
@@ -534,25 +534,25 @@ package body et_cp_schematic_nets is
 		case cmd_field_count is
 			when 6 =>
 				do_it;
-				
+
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end set_net_class;
-		
-		
 
 
-	
 
-		
-		
-		
-		
+
+
+
+
+
+
+
 
 	procedure draw_net (
 		module			: in pac_generic_modules.cursor;
@@ -560,13 +560,13 @@ package body et_cp_schematic_nets is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_canvas_schematic.pac_canvas;
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_preliminary_object;
-		
-		
+
+
 		procedure no_name_given is begin
 			-- If this is the first net right after system start,
 			-- then an anonymous net will be used.
@@ -574,20 +574,20 @@ package body et_cp_schematic_nets is
 			-- as it is stored in object_net_name.
 			if is_empty (object_net_name) then -- after system start
 				object_net_name := get_lowest_available_anonymous_net (module);
-				log (text => "apply anonymous name: " 
+				log (text => "apply anonymous name: "
 					& net_name_to_string (object_net_name),
 					level => log_threshold + 2);
 			else
-				log (text => "apply name used last: " 
+				log (text => "apply name used last: "
 					& net_name_to_string (object_net_name),
 					level => log_threshold + 2);
 			end if;
 
-			set_status (status_draw_net & " of net " 
+			set_status (status_draw_net & " of net "
 				& net_name_to_string (object_net_name));
 		end;
 
-		
+
 		procedure explicit_name_given is
 			name_s : constant string := get_field (cmd, 5); -- RESET_N
 			name_b : pac_net_name.bounded_string;
@@ -600,12 +600,12 @@ package body et_cp_schematic_nets is
 			-- Assign the net name:
 			object_net_name := name_b;
 
-			set_status (status_draw_net & " of net " 
+			set_status (status_draw_net & " of net "
 				& net_name_to_string (object_net_name));
 		end explicit_name_given;
 
 
-		
+
 		procedure segment_given is
 			name_s : constant string := get_field (cmd, 5); -- RESET_N
 			name_b : pac_net_name.bounded_string;
@@ -632,22 +632,22 @@ package body et_cp_schematic_nets is
 			insert_net_segment (
 				module_cursor	=> module,
 				net_name		=> object_net_name,
-				A				=> A,					
+				A				=> A,
 				B 				=> B,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
 				commit_design	=> to_commit_design (cmd),
-				
+
 				log_threshold	=> log_threshold + 1);
 		end segment_given;
-		
-		
-	begin	
+
+
+	begin
 		log (text => "draw net", level => log_threshold);
 		log_indentation_up;
 
-	
+
 		case get_origin (cmd) is
 			when ORIGIN_CONSOLE =>
 
@@ -661,22 +661,22 @@ package body et_cp_schematic_nets is
 						log_indentation_up;
 						no_name_given;
 						log_indentation_down;
-						
+
 					when 5 => -- like "draw net RESET_N"
 						explicit_name_given;
-					
+
 					when 10 => -- like "draw net RESET_N 1 90 100  100 100"
 						segment_given;
 
-					when 11 .. type_field_count'last => 
+					when 11 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-					
+
 					when others =>
 						command_incomplete (cmd);
 				end case;
 
-				
-				
+
+
 			when ORIGIN_SCRIPT =>
 
 				-- The command MUST contain a certain number of
@@ -685,45 +685,45 @@ package body et_cp_schematic_nets is
 					when 10 => -- like "draw net RESET_N 1 90 100  100 100"
 						segment_given;
 
-					when 11 .. type_field_count'last => 
+					when 11 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-						
-					when others => 
+
+					when others =>
 						command_incomplete (cmd);
-						
+
 				end case;
 
 		end case;
-		
+
 		log_indentation_down;
 
 		-- CS exception handler
 		-- CS set_exit_code (cmd, 3);
 	end draw_net;
-		
-		
-		
-		
-		
-		
-		
-		
-	
+
+
+
+
+
+
+
+
+
 	procedure delete_net (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
 		-- This procedure deletes the net on all sheets:
 		procedure delete_all is
 			net_name : pac_net_name.bounded_string;
 		begin
 			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
-			
+
 			if net_exists (module, net_name) then
 
 				delete_net (
@@ -737,14 +737,14 @@ package body et_cp_schematic_nets is
 					commit_design	=> to_commit_design (cmd),
 
 					log_threshold		=> log_threshold + 1);
-		
-			else	
+
+			else
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
 		end delete_all;
-		
-		
-		
+
+
+
 		-- This procedure deletes the net on a single sheet:
 		procedure delete_sheet is
 			net_name : pac_net_name.bounded_string;
@@ -752,7 +752,7 @@ package body et_cp_schematic_nets is
 		begin
 			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
 			sheet := to_sheet (get_field (cmd, 6));
-			
+
 			if net_exists (module, net_name) then
 
 				delete_net (
@@ -765,17 +765,17 @@ package body et_cp_schematic_nets is
 					commit_design	=> to_commit_design (cmd),
 
 					log_threshold		=> log_threshold + 1);
-		
-			else	
+
+			else
 				message_net_not_found (SEVERITY_ERROR, net_name);
-			end if;		
+			end if;
 		end delete_sheet;
-		
-		
+
+
 	begin
 		log (text => "delete net", level => log_threshold);
 		log_indentation_up;
-		
+
 		case cmd_field_count is
 			when 5 =>
 				-- example 1: "delete net RESET_N"
@@ -784,44 +784,44 @@ package body et_cp_schematic_nets is
 			when 6 =>
 				-- example 2: "delete net RESET_N 2"
 				delete_sheet;
-			
+
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end delete_net;
-		
 
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
 	procedure rename_net (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		net_name_before, net_name_after : pac_net_name.bounded_string;
 		sheet : type_sheet;
 		catch_zone : type_catch_zone;
-		
-		
+
+
 		-- This procedure renames the net on all sheets:
 		procedure rename_all is begin
 			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
 			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
-		
+
 			if net_exists (module, net_name_before) then
-			
+
 				rename_net (
 					module_cursor		=> module,
 					net_name_before		=> net_name_before,
@@ -833,24 +833,24 @@ package body et_cp_schematic_nets is
 					commit_design	=> to_commit_design (cmd),
 
 					log_threshold		=> log_threshold + 1);
-		
+
 			else
 				message_net_not_found (SEVERITY_ERROR, net_name_before);
 			end if;
 		end rename_all;
-		
 
-		
+
+
 		-- This procedure renames the net on the specified sheet:
 		procedure rename_on_sheet is begin
 			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
 			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
 			sheet := to_sheet (get_field (cmd, 7)); -- 2
-			
+
 			if net_exists (module, net_name_before) then
-			
+
 				-- CS: Test if the given sheet exists.
-				
+
 				rename_net (
 					module_cursor		=> module,
 					net_name_before		=> net_name_before,
@@ -862,28 +862,28 @@ package body et_cp_schematic_nets is
 					commit_design	=> to_commit_design (cmd),
 
 					log_threshold		=> log_threshold + 1);
-		
+
 			else
 				message_net_not_found (SEVERITY_ERROR, net_name_before);
 			end if;
 		end rename_on_sheet;
 
-		
-		
+
+
 		-- This procedure renames a strand on a given sheet:
 		procedure rename_strand is begin
 			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
 			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
 			sheet := to_sheet (get_field (cmd, 7)); -- 2
-		
+
 			catch_zone := set_catch_zone (
 				center	=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
 				radius	=> to_zone_radius (get_field (cmd, 10))); -- 50 90 5
 
 			if net_exists (module, net_name_before) then
-			
+
 				-- CS: Test if the given sheet exist.
-				
+
 				rename_strand (
 					module_cursor		=> module,
 					net_name_before		=> net_name_before,
@@ -894,16 +894,16 @@ package body et_cp_schematic_nets is
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
-					
+
 					log_threshold		=> log_threshold + 1);
-		
+
 			else
 				message_net_not_found (SEVERITY_ERROR, net_name_before);
 			end if;
 		end rename_strand;
-		
-		
-		
+
+
+
 	begin
 		log (text => "rename net", level => log_threshold);
 		log_indentation_up;
@@ -913,53 +913,53 @@ package body et_cp_schematic_nets is
 			when 6 =>
 				-- example: rename net RESET_N RST_N
 				rename_all;
-				
+
 			when 7 =>
 				-- example: rename net RESET_N RST_N 2
 				rename_on_sheet;
-				
+
 			when 10 =>
 				-- example: rename net RESET_N RST_N 2 50 90 5
 				rename_strand;
-				
+
 			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
+
 		log_indentation_down;
 	end rename_net;
 
-		
-		
-		
-		
 
-		
-	
-	
+
+
+
+
+
+
+
 	procedure delete_net_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		catch_zone : type_catch_zone;
 	begin
 		log (text => "delete net segment", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			-- example: "delete segment 1 97 99 2"
 			when 8 =>
 				catch_zone := set_catch_zone (
 					center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
 					radius	=> to_zone_radius (get_field (cmd, 8)));
-				
+
 				delete_segment (
 					module_cursor	=> module,
 					sheet			=> to_sheet (get_field (cmd, 5)),
@@ -973,38 +973,38 @@ package body et_cp_schematic_nets is
 
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end delete_net_segment;
-	
-	
-	
-	
-	
 
-	
-	
-	
-		
-	
+
+
+
+
+
+
+
+
+
+
 	procedure drag_net_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		catch_zone : type_catch_zone;
 	begin
 		log (text => "drag net segment", level => log_threshold);
 		log_indentation_up;
 
-		
+
 		-- example: "drag segment 1 80 100 2 relative 10 0"
 		case cmd_field_count is
 			when 11 =>
@@ -1012,48 +1012,48 @@ package body et_cp_schematic_nets is
 				catch_zone := set_catch_zone (
 					center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
 					radius	=> to_zone_radius (get_field (cmd, 8)));
-				
+
 				drag_segment (
 					module_cursor	=> module,
 					sheet			=> to_sheet (get_field (cmd, 5)),
-					catch_zone		=> catch_zone,					
-					coordinates		=> to_coordinates (get_field (cmd, 9)), -- relative/absolute					
+					catch_zone		=> catch_zone,
+					coordinates		=> to_coordinates (get_field (cmd, 9)), -- relative/absolute
 					destination		=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
-					
+
 					log_threshold	=> log_threshold + 1);
-					
+
 
 			when 13 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end drag_net_segment;
 
 
 
 
-	
-	
-	
 
-	
-	
+
+
+
+
+
 	procedure delete_net_strand (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 		catch_zone : type_catch_zone;
 	begin
 		log (text => "delete net strand", level => log_threshold);
@@ -1066,7 +1066,7 @@ package body et_cp_schematic_nets is
 				catch_zone := set_catch_zone (
 					center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
 					radius	=> to_zone_radius (get_field (cmd, 8)));
-				
+
 				delete_strand (
 					module_cursor	=> module,
 					sheet			=> to_sheet (get_field (cmd, 5)),
@@ -1075,29 +1075,29 @@ package body et_cp_schematic_nets is
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
 					commit_design	=> to_commit_design (cmd),
-					
+
 					log_threshold	=> log_threshold + 1);
 
-			when 9 .. type_field_count'last => 
+			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
-		
-		
+
+
 		log_indentation_down;
 	end delete_net_strand;
 
-		
-		
-	
+
+
+
 end et_cp_schematic_nets;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,27 +45,27 @@ with et_string_processing;			use et_string_processing;
 
 
 package et_drawing_frame_rw is
-	
-	
+
+
 	-- Creates and saves a frame in given file_name.
 	procedure create_frame (
 		file_name		: in pac_template_name.bounded_string;
-		domain			: in type_domain;							   
+		domain			: in type_domain;
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- Saves the given schematic frame in file_name.
 	procedure save_frame_schematic (
 		frame			: in type_frame_schematic;
-		file_name		: in pac_template_name.bounded_string;							 
+		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Saves the given board frame in file_name.
 	procedure save_frame_board (
 		frame			: in type_frame_pcb_pre;
-		file_name		: in pac_template_name.bounded_string;							 
+		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level);
 
 
@@ -77,8 +77,8 @@ package et_drawing_frame_rw is
 		log_threshold	: in type_log_level)
 		return type_frame_schematic;
 
-	
-	
+
+
 	-- Reads a frame template for the board as given by file_name and returns
 	-- a schematic frame.
 	function read_frame_board (
@@ -87,21 +87,21 @@ package et_drawing_frame_rw is
 		return type_frame_pcb_pre;
 
 
-	
 
-	
+
+
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150
 		from : in et_string_processing.type_field_count_positive)
 		return type_position;
 
-	
+
 end et_drawing_frame_rw;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

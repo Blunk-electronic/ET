@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 --
 -- DESCRIPTION:
 -- This package is about conductor objects.
@@ -62,7 +62,7 @@ package et_cp_board_conductors is
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-	
+
 
 	-- Parses a command that draws a track that
 	-- is connected with a net. Examples:
@@ -108,7 +108,7 @@ package et_cp_board_conductors is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure parses a command to 
+	-- This procedure parses a command to
 	-- delete an freetrack segment in a conductor layer:
 	procedure delete_freetrack_segment (
 		module			: in pac_generic_modules.cursor;
@@ -131,7 +131,7 @@ package et_cp_board_conductors is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Parses a command that updtaes the ratsnest.
 	-- Example: board demo update ratsnest
@@ -145,7 +145,7 @@ end et_cp_board_conductors;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

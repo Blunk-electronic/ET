@@ -37,7 +37,7 @@
 --
 --
 --
--- To Do: 
+-- To Do:
 -- - implement characteristics of submodule port
 
 
@@ -56,32 +56,32 @@ package et_netlist_submodules is
 	type type_submodule_port_extended is record
 		-- The name of the submodule instance:
 		submodule	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		
-		-- The port of the submodule instance 
+
+		-- The port of the submodule instance
 		-- is named after a net that is exported by
 		-- the submodule:
 		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-		
+
 		-- CS ? direction	: type_netchanger_port_name; -- master/slave
 		-- CS ? characteristics. See et_netlist_devices.type_device_port_extended
 	end record;
 
-	
+
 	function "<" (
-		left, right : in type_submodule_port_extended) 
+		left, right : in type_submodule_port_extended)
 		return boolean;
 
-	
+
 	package pac_submodule_ports_extended is new ordered_sets (
 		element_type	=> type_submodule_port_extended);
-	
-	
-	
+
+
+
 end et_netlist_submodules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

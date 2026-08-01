@@ -44,7 +44,7 @@ with et_fonts;					use et_fonts;
 
 generic
 
-	
+
 package et_canvas.text is
 
 
@@ -63,8 +63,8 @@ package et_canvas.text is
 		return glib.gdouble;
 
 
-	
-	
+
+
 	type type_align_mode_vertical is (
 		-- In this mode the text is aligned basing on
 		-- the y-bearing and used size exlusively.
@@ -78,8 +78,8 @@ package et_canvas.text is
 		MODE_ALIGN_RELATIVE_TO_BASELINE);
 
 
-	
-	-- This function computes the extents of the 
+
+	-- This function computes the extents of the
 	-- given text content, size and font
 	-- according to the current zoom-factor:
 	function get_text_extents (
@@ -90,7 +90,7 @@ package et_canvas.text is
 
 
 
-	
+
 	-- Converts cairo_text_extents to an area (in the model-domain)
 	-- according to the current zoom-factor.
 	-- NOTE: Since cairo_text_extents does not include the position
@@ -101,7 +101,7 @@ package et_canvas.text is
 		return type_area;
 
 
-	
+
 	-- This function computes the canvas point where
 	-- a text of given extents and requested alignment
 	-- is to be drawn:
@@ -114,8 +114,8 @@ package et_canvas.text is
 		return type_logical_pixels_vector;
 
 
-	
-	
+
+
 	-- Draws a text on the canvas:
 	procedure draw_text (
 		content		: in pac_text_content.bounded_string;
@@ -128,13 +128,13 @@ package et_canvas.text is
 
 
 
-	
+
 	-- Draws a text. Draws the origin and vectorizes the text.
 	-- 1. If the text has no content, then only the origin
 	--    will be drawn.
 	-- 2. The argument pos contains the position and rotation
 	--    of the parent complex object.
-	-- 3. If the text is being moved (status flag of the text), 
+	-- 3. If the text is being moved (status flag of the text),
 	--    then its position will be overridden by the tool position.
 	-- 4. In case there is no parent object then the pos argument
 	--    can be omitted which results in a default of (0;0) and 0 degree.
@@ -144,20 +144,20 @@ package et_canvas.text is
 	--    belong to a parent object and are to be mirrored (like
 	--    conductor or silkscreen texts on the bottom side of the board):
 	procedure draw_vector_text (
-		text			: in pac_text_vectorized.type_text_fab_with_content'class;								   
+		text			: in pac_text_vectorized.type_text_fab_with_content'class;
 		mirror			: in type_mirror := MIRROR_NO;
-		
+
 		parent_position	: in pac_geometry.type_position := origin_zero_rotation;
 		-- includes x,y, rotatio
-	
+
 		place_absolute	: in boolean := false);
-		
+
 end et_canvas.text;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

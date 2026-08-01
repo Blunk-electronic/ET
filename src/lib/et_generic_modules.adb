@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+--  ToDo:
+--
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -59,7 +59,7 @@ package body et_generic_modules is
 	end;
 
 
-	
+
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean
@@ -68,7 +68,7 @@ package body et_generic_modules is
 	end;
 	pragma unreferenced (design_rules_schematic_assigned);
 
-		
+
 	function design_rules_board_assigned (
 		module : in type_generic_module)
 		return boolean
@@ -79,7 +79,7 @@ package body et_generic_modules is
 
 
 
-	
+
 
 	function get_grid_schematic (
 		module : in type_generic_module)
@@ -99,11 +99,11 @@ package body et_generic_modules is
 	end;
 	pragma unreferenced (get_grid_board);
 
-	
+
 
 	function to_string (
 		module_cursor	: in pac_generic_modules.cursor;
-		quote			: in boolean := true)				   
+		quote			: in boolean := true)
 		return string
 	is
 		name : pac_module_name.bounded_string;
@@ -117,7 +117,7 @@ package body et_generic_modules is
 		end if;
 	end to_string;
 
-	
+
 
 	function get_count (
 		modules : in pac_generic_modules.map)
@@ -127,7 +127,7 @@ package body et_generic_modules is
 	end get_count;
 
 
-	
+
 	function get_active_module return string is
 		use pac_module_name;
 	begin
@@ -135,9 +135,9 @@ package body et_generic_modules is
 	end get_active_module;
 
 
-	
+
 	function generic_module_exists (
-		module : in pac_module_name.bounded_string) 
+		module : in pac_module_name.bounded_string)
 		return boolean
 	is begin
 		return pac_generic_modules.contains (generic_modules, module);
@@ -146,7 +146,7 @@ package body et_generic_modules is
 
 
 	procedure validate_module_name (
-		module : in pac_module_name.bounded_string) 
+		module : in pac_module_name.bounded_string)
 	is begin
 		if not generic_module_exists (module) then
 			log (SEVERITY_ERROR, "module " & to_string (module) &
@@ -154,17 +154,17 @@ package body et_generic_modules is
 			raise constraint_error;
 		end if;
 	end;
-	
 
-	
+
+
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
-		return pac_generic_modules.cursor 
+		return pac_generic_modules.cursor
 	is
 		cursor : constant pac_generic_modules.cursor := find (generic_modules, name);
 	begin
 		if cursor = pac_generic_modules.no_element then
 			raise semantic_error_1 with
-				"ERROR: Module " & enclose_in_quotes (to_string (name)) 
+				"ERROR: Module " & enclose_in_quotes (to_string (name))
 				& " does not exist !";
 		else
 			return find (generic_modules, name);
@@ -179,51 +179,51 @@ package body et_generic_modules is
 	is begin
 		return element (module).meta;
 	end get_meta_information;
-	
 
-	
+
+
 
 
 
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor;
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
-		return boolean 
+		return boolean
 	is
 
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			result := variant_exists (module, variant);
 		end;
-		
+
 	begin
 		if is_default (variant) then
 			result := true;
 		else
-			
+
 			pac_generic_modules.query_element (
 				position	=> module,
 				process		=> query_variants'access);
 
 		end if;
-					
+
 		return result;
 	end assembly_variant_exists;
 
 
 
 
-	
+
 
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return boolean 
+		return boolean
 	is begin
 		if design_rules_board_assigned (element (module)) then
 			return true;
@@ -232,23 +232,23 @@ package body et_generic_modules is
 		end if;
 	end layout_rules_assigned;
 
-	
+
 
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return type_design_rules_board -- JLP_ML4_standard.dru
 	is begin
-		return get_rules (element (module).rules.layout); 
+		return get_rules (element (module).rules.layout);
 	end get_pcb_design_rules;
 
 
 
-	
+
 end et_generic_modules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

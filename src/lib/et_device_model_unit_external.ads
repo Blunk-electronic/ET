@@ -61,10 +61,10 @@ with et_unit_add_level;					use et_unit_add_level;
 package et_device_model_unit_external is
 
 	use pac_geometry_2;
-	use pac_unit_name;	
+	use pac_unit_name;
 
-	
-	
+
+
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record
 
@@ -75,16 +75,16 @@ package et_device_model_unit_external is
 		-- symbol model must have been read beforehand.
 		-- Otherwise a valid cursor can not be assigned
 		-- to the unit !
-		
+
 		-- The position within the device editor:
 		position	: type_vector_model := origin;
-		
+
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;
 	end record;
 
 
-	
+
 
 	-- External units are collected in a map;
 	package pac_units_external is new ordered_maps (
@@ -92,7 +92,7 @@ package et_device_model_unit_external is
 		element_type	=> type_unit_external);
 
 	use pac_units_external;
-	
+
 
 	-- Returns the ports of the given external unit:
 	function get_ports_external (
@@ -100,8 +100,8 @@ package et_device_model_unit_external is
 		return pac_symbol_ports.map;
 
 
-	
-	
+
+
 	function get_symbol_model_file ( -- CS rename to get_symbol_model_name
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_name.bounded_string;
@@ -111,33 +111,33 @@ package et_device_model_unit_external is
 		unit	: in pac_units_external.cursor)
 		return string;
 
-	
-	
+
+
 	-- Maps from an external unit to the symbol
 	-- in the symbol library:
 	function get_symbol (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_models.cursor;
-	
 
 
-	
 
-	-- Returns the default x/y-positions 
+
+
+	-- Returns the default x/y-positions
 	-- of the given external unit. If the given
 	-- cursor of the unit is no_element then the
 	-- return is an empty list:
 	function get_port_positions (
 		unit	: in pac_units_external.cursor)
 		return pac_points.list;
-	
-								   
-	
+
+
+
 end et_device_model_unit_external;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

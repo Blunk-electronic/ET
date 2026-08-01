@@ -75,21 +75,21 @@ package body et_kicad_packages is
 
 	use pac_holes;
 
-	
+
 	function to_string (tags : in type_package_tags.bounded_string) return string is
 	begin
 		return "tags '" & type_package_tags.to_string (tags) & "'";
 	end to_string;
 
 
-	
+
 	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
 	begin
 		return type_package_tags.to_bounded_string (tags);
 	end to_package_tags;
 
-	
-	
+
+
 	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
@@ -100,19 +100,19 @@ package body et_kicad_packages is
 	end to_assembly_technology;
 
 
-	
+
 	function to_string (shape : in type_pad_shape_tht) return string is begin
 		return space & to_lower (type_pad_shape_tht'image (shape));
 	end to_string;
 
 
-	
+
 	function to_string (shape : in type_pad_shape_smt) return string is begin
 		return space & to_lower (type_pad_shape_smt'image (shape));
 	end to_string;
 
 
-	
+
 	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "circle" then return CIRCULAR;
@@ -124,7 +124,7 @@ package body et_kicad_packages is
 	end to_pad_shape_tht;
 
 
-	
+
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "oval" then return OVAL;
@@ -140,20 +140,20 @@ package body et_kicad_packages is
 	procedure validate_pad_size (size : in type_distance_model) is begin
 		if size not in type_pad_size then
 			raise semantic_error_1 with
-				"ERROR: Pad size invalid ! Allowed range is" 
+				"ERROR: Pad size invalid ! Allowed range is"
 				 & to_string (type_pad_size'first) & " .."
 				 & to_string (type_pad_size'last);
 		end if;
 	end validate_pad_size;
 
-	
 
-	
+
+
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_vector_model)	-- the offset of the pad from the center
-		return type_contour 
+		return type_contour
 	is
 		shape : type_contour; -- to be returned
 		c : type_circle;
@@ -165,19 +165,19 @@ package body et_kicad_packages is
 		move_by (c, offset);
 
 		shape.set_circle (c);
-		
+
 		return shape;
 	end to_pad_shape_circle;
 
-	
-	
+
+
 	function to_pad_shape_rectangle (
 	-- CS: rework as in to_pad_shape_oval
 		center		: in type_position; -- the pad center position (incl. angle)
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_vector_model)	-- the offset of the pad from the center
-		return type_contour 
+		return type_contour
 	is
 
 		shape : type_contour; -- to be returned
@@ -198,7 +198,7 @@ package body et_kicad_packages is
 		p21, p22 : type_vector_model;
 
 		use pac_geometry_2;
-		
+
 		-- These are the four lines we need for the rectangular pad contour:
 		line_1, line_2 : pac_geometry_2.type_line; -- left line, right line
 		line_3, line_4 : pac_geometry_2.type_line; -- upper line, lower line
@@ -221,7 +221,7 @@ package body et_kicad_packages is
 		-- move supportive points by given offset
 		move_by (p11, offset);
 		move_by (p12, offset);
-		
+
 		move_by (p21, offset);
 		move_by (p22, offset);
 
@@ -232,7 +232,7 @@ package body et_kicad_packages is
 		-- set lower line
 		set_A (line_4, p12);
 		set_B (line_4, p22);
-		
+
 		-- set right line
 		set_A (line_2, p22);
 		set_B (line_2, p21);
@@ -240,31 +240,31 @@ package body et_kicad_packages is
 		-- set upper line
 		set_A (line_3, p21);
 		set_B (line_3, p11);
-		
+
 		-- build shape
 		shape.append_segment ((LINE, line_1));
 		shape.append_segment ((LINE, line_4));
 		shape.append_segment ((LINE, line_2));
 		shape.append_segment ((LINE, line_3));
-		
+
 		return shape;
 	end to_pad_shape_rectangle;
 
 
-	
+
 	function to_pad_shape_oval (
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
 		offset	: in type_vector_model)	-- the offset of the pad from the center
-		return type_contour 
+		return type_contour
 	is
 
 		shape : type_contour; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation_model := get_rotation (center);
-		
+
 		-- supportive frequently used values
 		x1p : constant type_position_axis := size_x / 2.0;
 		x1n : constant type_position_axis := -(x1p);
@@ -281,11 +281,11 @@ package body et_kicad_packages is
 		p41, p42 : type_vector_model; -- center of left/right arc
 
 		use pac_geometry_2;
-		
+
 		-- These are the two lines and the two arcs we need for the oval pad contour:
 		line_1, line_2	: pac_geometry_2.type_line;	-- upper/lower line
 		arc_1, arc_2	: pac_geometry_2.type_arc;	-- left/right arc
-		
+
 	begin -- to_pad_shape_oval
 
 		-- set supportive points
@@ -302,27 +302,27 @@ package body et_kicad_packages is
 
 		-- right arc
 		p42 := set (x => x2p,  y => zero);
-		
-		-- rotate supportive points 
+
+		-- rotate supportive points
 		rotate_by (p11, angle);
 		rotate_by (p12, angle);
-		
+
 		rotate_by (p21, angle);
 		rotate_by (p22, angle);
-		
+
 		rotate_by (p41, angle);
-		rotate_by (p42, angle);		
+		rotate_by (p42, angle);
 
 		-- move supportive points by given offset
 		move_by (p11, offset);
 		move_by (p12, offset);
-		
+
 		move_by (p21, offset);
 		move_by (p22, offset);
-		
+
 		move_by (p41, offset);
-		move_by (p42, offset);		
-		
+		move_by (p42, offset);
+
 		-- set upper line
 		set_A (line_1, p11);
 		set_B (line_1, p12);
@@ -331,33 +331,33 @@ package body et_kicad_packages is
 		set_A (arc_2, p12);
 		set_center (arc_2, p42);
 		set_B (arc_2, p22);
-		
+
 		-- set lower line
 		set_A (line_2, p22);
 		set_B (line_2, p21);
-		
+
 		-- set left arc
 		set_A (arc_1, p21);
 		set_center (arc_1, p41);
 		set_B (arc_1, p11);
-		
+
 		-- build shape
 		shape.append_segment ((LINE, line_1));
 		shape.append_segment ((ARC, arc_2));
 		shape.append_segment ((LINE, line_2));
 		shape.append_segment ((ARC, arc_1));
-		
+
 		return shape;
 	end to_pad_shape_oval;
 
 
-	
+
 	function to_pad_milling_contour (
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_vector_model)	-- the offset of the pad from the center
-		return pac_segments.list 
+		return pac_segments.list
 	is
 
 		use pac_segments;
@@ -365,7 +365,7 @@ package body et_kicad_packages is
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation_model := get_rotation (center);
-		
+
 		-- supportive frequently used values
 		xp : constant type_position_axis := size_x / 2.0;
 		xn : constant type_position_axis := -(xp);
@@ -399,7 +399,7 @@ package body et_kicad_packages is
 		-- move supportive points by given offset
 		move_by (p11, offset);
 		move_by (p12, offset);
-		
+
 		move_by (p21, offset);
 		move_by (p22, offset);
 
@@ -419,7 +419,7 @@ package body et_kicad_packages is
 		set_A (line_3, p21);
 		set_B (line_3, p11);
 
-		
+
 		-- Assemble milling contour:
 
 		-- The lines are appended in counterclockwise direction.
@@ -427,35 +427,35 @@ package body et_kicad_packages is
 		lines.append ((shape => LINE, segment_line => line_4)); -- lower
 		lines.append ((shape => LINE, segment_line => line_2)); -- right
 		lines.append ((shape => LINE, segment_line => line_3)); -- upper
-		
+
 		return lines;
 	end to_pad_milling_contour;
 
 
-	
-	function to_string (directory_name : in pac_directory_name.bounded_string) 
-		return string 
+
+	function to_string (directory_name : in pac_directory_name.bounded_string)
+		return string
 	is begin
 		return pac_directory_name.to_string (directory_name);
 	end to_string;
 
 
-	
-	function to_directory (directory_name : in string) 
-		return pac_directory_name.bounded_string 
+
+	function to_directory (directory_name : in string)
+		return pac_directory_name.bounded_string
 	is begin
 		return pac_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 	pragma unreferenced (to_directory);
 
 
-	
-	
+
+
 	function to_package_model (
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level)
-		return type_package_library 
+		return type_package_library
 	is
 		use pac_lines_of_file;
 		use et_drills;
@@ -465,7 +465,7 @@ package body et_kicad_packages is
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : constant pac_package_name.bounded_string :=
-			to_package_name (ada.directories.base_name (file_name)); 
+			to_package_name (ada.directories.base_name (file_name));
 
 		function path_and_file_name return string is
 		-- returns the path and file name. used for error messages.
@@ -474,7 +474,7 @@ package body et_kicad_packages is
 			--	to_string (library_group), file_name);
 			return "file " & file_name;
 		end path_and_file_name;
-		
+
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
 		line_cursor : pac_lines_of_file.cursor := lines.first;
 
@@ -533,7 +533,7 @@ package body et_kicad_packages is
 		function to_string (arg_count : in type_argument_counter) return string is begin
 		-- Returns the given argument count as string.
 			return trim (type_argument_counter'image (arg_count), left);
-		end to_string;			
+		end to_string;
 
 		-- Type contains the current section name, the parent section name and the pointer to the argument.
 		-- The argument counter is reset on entering a section.
@@ -547,9 +547,9 @@ package body et_kicad_packages is
 		section : type_section; -- the section being processed
 
 		-- Since there are numerous subsections we store sections on a stack.
-		-- Once a subsection as been entered the previous section is pushed 
+		-- Once a subsection as been entered the previous section is pushed
 		-- on stack (see procedure read_section).
-		-- One leaving a subsection the previous section is popped 
+		-- One leaving a subsection the previous section is popped
 		-- from stack (see end of procedure exec_section).
 		package sections_stack is new et_generic_stacks.stack_lifo (
 			max => 20, item => type_section);
@@ -557,8 +557,8 @@ package body et_kicad_packages is
 
 
 
-		
-	
+
+
 		function to_string (section : in type_keyword) return string is
 		-- Converts a section name to a string.
 			len : constant positive := type_keyword'image (section)'last;
@@ -567,7 +567,7 @@ package body et_kicad_packages is
 			-- the section image.
 			return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
 		end to_string;
-	
+
 		function enter_section (section : in type_keyword) return string is begin
 			return ("entering section " & to_string (section));
 		end enter_section;
@@ -582,9 +582,9 @@ package body et_kicad_packages is
 
 
 
-	
 
-		
+
+
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		description	: pac_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
@@ -599,7 +599,7 @@ package body et_kicad_packages is
 		line	: type_line;
 		arc		: type_arc;
 		circle	: type_circle;
-		
+
 
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
@@ -611,15 +611,15 @@ package body et_kicad_packages is
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
 		terminal_face 				: et_pcb_sides.type_face;
-		terminal_drill_size			: type_drill_size; 
+		terminal_drill_size			: type_drill_size;
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
-		terminal_milling_size_y		: type_pad_milling_size; 
+		terminal_milling_size_y		: type_pad_milling_size;
 		terminal_pad_drill_offset	: pac_geometry_2.type_vector_model;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
-		terminal_position	: pac_geometry_2.type_position; 
-		
+		terminal_position	: pac_geometry_2.type_position;
+
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
 
@@ -652,13 +652,13 @@ package body et_kicad_packages is
 	-- TEXTS
 		text : type_text_package;
 
-		-- Temporarily text placeholders for reference and value are required. 
+		-- Temporarily text placeholders for reference and value are required.
 		placeholder : type_text_placeholder;
 
 
-		
-		
-	-- CONTAINERS 
+
+
+	-- CONTAINERS
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
@@ -671,17 +671,17 @@ package body et_kicad_packages is
 		-- SOLDER STENCIL OBJECTS
 		stencil : et_stencil.packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
-	
+
 		-- SILKSCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
 		silk_screen : et_silkscreen.packages.type_silkscreen_both_sides;
-	
+
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
 		assy_doc : et_assy_doc.packages.type_assy_doc_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		keepout : et_keepout.packages.type_keepout_both_sides;
 
-		
+
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
 		procedure init_stop_and_mask is begin
@@ -691,12 +691,12 @@ package body et_kicad_packages is
 			terminal_bot_stop_mask := type_stop_mask_status'first;
 		end init_stop_and_mask;
 
-		
-		-- From the SMT terminal face, validates the status of 
+
+		-- From the SMT terminal face, validates the status of
 		-- stopmask and solder paste:
 		procedure set_stop_and_mask is
 			use et_pcb_sides;
-			
+
 			procedure invalid is begin
 				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
 				log (text => "face " & to_string (terminal_face), console => true);
@@ -705,11 +705,11 @@ package body et_kicad_packages is
 				log (text => " stop mask top    " & to_string (terminal_top_stop_mask), console => true);
 				log (text => " stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
 				raise constraint_error;
-			end invalid; 
-				
+			end invalid;
+
 		begin -- set_stop_and_mask
 			case terminal_face is
-				when TOP => 
+				when TOP =>
 
 					terminal_solder_paste := terminal_top_solder_paste;
 					-- CS warning if solder paste not applied ?
@@ -721,25 +721,25 @@ package body et_kicad_packages is
 
 					terminal_stop_mask_status := terminal_top_stop_mask;
 					-- CS warning if stop mask closed ?
-					
+
 					-- A TOP terminal must have the BOTTOM stop mask OPEN.
 					if terminal_bot_stop_mask = OPEN then
 						invalid;
 					end if;
 
-					
+
 				when BOTTOM =>
 
 					terminal_solder_paste := terminal_bot_solder_paste;
 					-- CS warning if solder paste not applied ?
-					
+
 					-- A BOTTOM terminal must NOT have TOP paste applied.
 					if terminal_top_solder_paste = APPLIED then
 						invalid;
 					end if;
 
 					terminal_stop_mask_status := terminal_bot_stop_mask;
-					-- CS warning if stop mask closed ?					
+					-- CS warning if stop mask closed ?
 
 					-- A BOTTOM terminal must have the TOP stop mask OPEN.
 					if terminal_top_stop_mask = OPEN then
@@ -747,11 +747,11 @@ package body et_kicad_packages is
 					end if;
 			end case;
 		end set_stop_and_mask;
-		
+
 
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
-		-- if neccessary. 
+		-- if neccessary.
 		-- The character_cursor points to the character being tested or processed in that line.
 		line_length_max : constant positive := 300;
 		package type_current_line is new generic_bounded_length (line_length_max);
@@ -765,7 +765,7 @@ package body et_kicad_packages is
 			next (line_cursor);
 			if line_cursor /= pac_lines_of_file.no_element then
 
-				-- Since a single line in container "lines" (where line_cursor points to) is a list 
+				-- Since a single line in container "lines" (where line_cursor points to) is a list
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
 				log (text => "line " & to_string (current_line), level => log_threshold + 4);
@@ -777,7 +777,7 @@ package body et_kicad_packages is
 			end if;
 		end get_next_line;
 
-		
+
 		procedure next_character is
 		-- Updates the cursor position to the position of the next
 		-- non_space character starting from the current cursor position.
@@ -790,8 +790,8 @@ package body et_kicad_packages is
 			end loop;
 		end next_character;
 
-		
-		procedure read_section is 
+
+		procedure read_section is
 		-- Stores the section name and current argument counter on sections_stack.
 		-- Reads the section name from current cursor position until termination
 		-- character or its last character.
@@ -799,7 +799,7 @@ package body et_kicad_packages is
 
 			procedure invalid_section is
 			begin
-				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name)
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -809,9 +809,9 @@ package body et_kicad_packages is
 
 			-- the former active section name becomes the parent section name
 			section.parent := section.name;
-			
+
 			section.arg_counter := 0;
-			
+
 			-- get position of last character
 			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
 
@@ -845,7 +845,7 @@ package body et_kicad_packages is
 						when SEC_FONT => null;
 						when others => invalid_section;
 					end case;
-					
+
 				when SEC_FONT =>
 					case section.name is
 						when SEC_SIZE | SEC_THICKNESS => null;
@@ -881,11 +881,11 @@ package body et_kicad_packages is
 						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
 						when others => invalid_section;
 					end case;
-					
+
 				when others => null;
 			end case;
 
-			
+
 			-- update cursor
 			character_cursor := end_of_kw;
 
@@ -895,15 +895,15 @@ package body et_kicad_packages is
 				when
 					others =>
 						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 							& to_string (element (line_cursor)), console => true);
 
-						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
+						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
 							& "' invalid or not supported yet", console => true);
 						raise;
-			
+
 		end read_section;
-		
+
 
 		-- Reads the arguments of a section.
 		-- Increments the argument counter after each argument.
@@ -918,7 +918,7 @@ package body et_kicad_packages is
 			use pac_text_content;
 			use et_pcb_sides;
 			use pac_geometry_brd;
-		
+
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
@@ -926,30 +926,30 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_layer;
 
-			
+
 			procedure too_many_arguments is begin
 				log (SEVERITY_ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
-			
+
 			procedure invalid_fp_text_keyword is begin
-				log (SEVERITY_ERROR, "expect keyword '" & keyword_fp_text_reference 
-					 & "' or '" & keyword_fp_text_value 
+				log (SEVERITY_ERROR, "expect keyword '" & keyword_fp_text_reference
+					 & "' or '" & keyword_fp_text_value
 					 & "' or '" & keyword_fp_text_user
 					 & "' ! found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_fp_text_keyword;
 
-			
+
 			procedure invalid_placeholder_reference is begin
 				log (SEVERITY_ERROR, "expect reference placeholder '" & placeholder_reference & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_reference;
 
-			
+
 			procedure invalid_placeholder_value is
 			begin
 				log (SEVERITY_ERROR, "expect value placeholder '" & to_string (package_name) & "' !"
@@ -957,7 +957,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_placeholder_value;
 
-			
+
 			procedure invalid_package_name is
 			begin
 				log (SEVERITY_ERROR, "expect package name '" & to_string (package_name) & "' !"
@@ -965,31 +965,31 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_package_name;
 
-			
+
 			procedure invalid_component_assembly_face is begin
-				log (SEVERITY_ERROR, "default assembly face " & to_string (BOTTOM) 
+				log (SEVERITY_ERROR, "default assembly face " & to_string (BOTTOM)
 					 & " found. Must be " & to_string (TOP) & " !", console => true);
 				raise constraint_error;
 			end invalid_component_assembly_face;
 
-			
+
 			procedure invalid_attribute is
 			begin
 				log (SEVERITY_ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
-			
+
 			procedure invalid_section is
 			begin
-				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name)
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
 
 			scratch_point : type_vector_model;
 
-			
+
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -1031,14 +1031,14 @@ package body et_kicad_packages is
 
 			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
-			
+
 			log (text => "arg" & to_string (section.arg_counter) & space & to_string (arg), level => log_threshold + 4);
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
 			case section.name is
 				when INIT => raise constraint_error; -- should never happen
-				
+
 				when SEC_MODULE =>
 					case section.parent is
 						when INIT =>
@@ -1048,14 +1048,14 @@ package body et_kicad_packages is
 									if to_string (arg) /= to_string (package_name) then
 										invalid_package_name;
 									end if;
-								when others => 
+								when others =>
 									too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_DESCR =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1065,14 +1065,14 @@ package body et_kicad_packages is
 									-- CS check length
 									description := to_package_description (to_string (arg));
 									-- CS check description
-								when others => 
+								when others =>
 									too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_TAGS =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1082,14 +1082,14 @@ package body et_kicad_packages is
 									-- CS check length
 									tags := to_package_tags (to_string (arg));
 									-- CS check tags
-								when others => 
+								when others =>
 									too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_TEDIT =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1099,14 +1099,14 @@ package body et_kicad_packages is
 									-- CS check length
 									time_stamp := type_timestamp (to_string (arg));
 									check_timestamp (time_stamp);
-								when others => 
+								when others =>
 									too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_ATTR =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1121,21 +1121,21 @@ package body et_kicad_packages is
 									else
 										invalid_attribute;
 									end if;
-								when others => 
+								when others =>
 									too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_FP_TEXT =>
 					case section.parent is
 						when SEC_MODULE =>
 							-- CS text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = keyword_fp_text_reference then
 										text.meaning := REFERENCE;
 									elsif to_string (arg) = keyword_fp_text_value then
@@ -1145,10 +1145,10 @@ package body et_kicad_packages is
 									else
 										invalid_fp_text_keyword;
 									end if;
-									
-								when 2 => 
+
+								when 2 =>
 									case text.meaning is
-										when REFERENCE => 
+										when REFERENCE =>
 											if to_string (arg) /= placeholder_reference then
 												invalid_placeholder_reference;
 											end if;
@@ -1163,30 +1163,30 @@ package body et_kicad_packages is
 											text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 									end case;
-									
-								when 3 => 
+
+								when 3 =>
 									if to_string (arg) = keyword_fp_text_hide then
 										-- CS text.hidden := true;
 										null;
 									end if;
-									
+
 								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_CENTER =>
 					case section.parent is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									--set (axis => AXIS_X, point => circle.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
 									set_center (circle, scratch_point);
-								when 2 => 
+								when 2 =>
 									--set (axis => AXIS_Y, point => circle.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
 									set_center (circle, scratch_point);
@@ -1196,16 +1196,16 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_START =>
 					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
 									set_A (line, scratch_point);
-								when 2 => 
+								when 2 =>
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
 									set_A (line, scratch_point);
 								when others => too_many_arguments;
@@ -1214,30 +1214,30 @@ package body et_kicad_packages is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									-- set (axis => AXIS_X, point => arc.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
 									set_center (arc, scratch_point);
-								when 2 => 
+								when 2 =>
 									--set (axis => AXIS_Y, point => arc.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
 									set_center (arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
-							
+
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_END =>
 					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
 									set_B (line, scratch_point);
-								when 2 => 
+								when 2 =>
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
 									set_B (line, scratch_point);
 								when others => too_many_arguments;
@@ -1246,11 +1246,11 @@ package body et_kicad_packages is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									--set (axis => AXIS_X, point => arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
 									set_A (arc, scratch_point);
-								when 2 => 
+								when 2 =>
 									-- set (axis => AXIS_Y, point => arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
 									set_A (arc, scratch_point);
@@ -1260,9 +1260,9 @@ package body et_kicad_packages is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									set (axis => AXIS_X, point => circle.point, value => to_distance (to_string (arg)));
-								when 2 => 
+								when 2 =>
 									set (axis => AXIS_Y, point => circle.point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
@@ -1270,7 +1270,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_ANGLE =>
 					case section.parent is
 						when SEC_FP_ARC =>
@@ -1283,13 +1283,13 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_LAYER =>
 					case section.parent is
 						when SEC_MODULE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = layer_bot_copper then
 										invalid_component_assembly_face;
 									elsif to_string (arg) /= layer_top_copper then
@@ -1297,11 +1297,11 @@ package body et_kicad_packages is
 									end if;
 								when others => too_many_arguments;
 							end case;
-									
+
 						when SEC_FP_TEXT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = layer_top_silk_screen then
 										text.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
@@ -1324,32 +1324,32 @@ package body et_kicad_packages is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = layer_top_silk_screen then
 										line.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										line.layer := BOT_SILK;
-										
+
 									elsif to_string (arg) = layer_top_assy_doc then
 										line.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										line.layer := BOT_ASSY;
-										
+
 									elsif to_string (arg) = layer_top_keepout then
 										line.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										line.layer := BOT_KEEP;
-										
+
 									elsif to_string (arg) = layer_top_copper then
 										line.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										line.layer := BOT_COPPER;
-										
+
 									elsif to_string (arg) = layer_top_stop_mask then
 										line.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										line.layer := BOT_STOP;
-										
+
 									elsif to_string (arg) = layer_top_solder_paste then
 										line.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
@@ -1364,17 +1364,17 @@ package body et_kicad_packages is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = layer_top_silk_screen then
 										arc.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										arc.layer := BOT_SILK;
-										
+
 									elsif to_string (arg) = layer_top_assy_doc then
 										arc.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										arc.layer := BOT_ASSY;
-										
+
 									elsif to_string (arg) = layer_top_keepout then
 										arc.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
@@ -1384,12 +1384,12 @@ package body et_kicad_packages is
 										arc.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										arc.layer := BOT_COPPER;
-										
+
 									elsif to_string (arg) = layer_top_stop_mask then
 										arc.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										arc.layer := BOT_STOP;
-										
+
 									elsif to_string (arg) = layer_top_solder_paste then
 										arc.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
@@ -1404,17 +1404,17 @@ package body et_kicad_packages is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = layer_top_silk_screen then
 										circle.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										circle.layer := BOT_SILK;
-										
+
 									elsif to_string (arg) = layer_top_assy_doc then
 										circle.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										circle.layer := BOT_ASSY;
-										
+
 									elsif to_string (arg) = layer_top_keepout then
 										circle.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
@@ -1424,12 +1424,12 @@ package body et_kicad_packages is
 										circle.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										circle.layer := BOT_COPPER;
-										
+
 									elsif to_string (arg) = layer_top_stop_mask then
 										circle.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										circle.layer := BOT_STOP;
-										
+
 									elsif to_string (arg) = layer_top_solder_paste then
 										circle.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
@@ -1440,17 +1440,17 @@ package body et_kicad_packages is
 
 								when others => too_many_arguments;
 							end case;
-							
+
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_WIDTH =>
 					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									line.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -1458,7 +1458,7 @@ package body et_kicad_packages is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									arc.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -1466,7 +1466,7 @@ package body et_kicad_packages is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									circle.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -1474,7 +1474,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_SIZE =>
 					case section.parent is
 						when SEC_FONT =>
@@ -1488,18 +1488,18 @@ package body et_kicad_packages is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									validate_pad_size (to_distance (to_string (arg)));
 									pad_size_x := to_distance (to_string (arg));
-								when 2 => 
+								when 2 =>
 									validate_pad_size (to_distance (to_string (arg)));
 									pad_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
-							
+
 						when others => invalid_section;
 					end case;
-					
+
 				when SEC_THICKNESS =>
 					case section.parent is
 						when SEC_FONT =>
@@ -1512,18 +1512,18 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
 							set_rotation (terminal_position, pac_geometry_2.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									set (axis => AXIS_X, point => terminal_position.place, value => to_distance (to_string (arg)));
-								when 2 => 
+								when 2 =>
 									set (axis => AXIS_Y, point => terminal_position.place, value => to_distance (to_string (arg)));
-								when 3 => 
+								when 3 =>
 									set_rotation (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
@@ -1533,26 +1533,26 @@ package body et_kicad_packages is
 							set_rotation (text.position, pac_geometry_2.zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									set (axis => AXIS_X, point => text.position.place, value => to_distance (to_string (arg)));
-								when 2 => 
+								when 2 =>
 									set (axis => AXIS_Y, point => text.position.place, value => to_distance (to_string (arg)));
-								when 3 => 
+								when 3 =>
 									--text.angle := to_angle (to_string (arg));
 									set_rotation (text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
-							
+
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_DRILL =>
 					case section.parent is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => 
+								when 1 =>
 									if to_string (arg) = tht_hole_shape_oval then -- (drill oval 1.2 5.5)
 										terminal_hole_shape := OVAL;
 									else
@@ -1570,14 +1570,14 @@ package body et_kicad_packages is
 										when CIRCULAR => too_many_arguments;
 										when OVAL => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
 									end case;
-									
+
 								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_OFFSET =>
 					case section.parent is
 						when SEC_DRILL =>
@@ -1590,13 +1590,13 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_LAYERS => -- applies for terminals exclusively
 					case section.parent is
 						when SEC_PAD =>
 							case section.arg_counter is
-								when 0 => null;	
-								when others => 	
+								when 0 => null;
+								when others =>
 									case terminal_technology is
 										when SMT =>
 
@@ -1622,30 +1622,30 @@ package body et_kicad_packages is
 												invalid_layer;
 											end if;
 
-												
+
 										when THT =>
 
 											-- copper and stop mask
-											if to_string (arg) = layer_all_copper 
+											if to_string (arg) = layer_all_copper
 											or to_string (arg) = layer_all_stop_mask then
 												null; -- fine
 											else
 												invalid_layer;
 											end if;
-											
+
 									end case;
 							end case;
 
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_PAD =>
 					case section.parent is
 						when SEC_MODULE =>
 							case section.arg_counter is
 								when 0 => null;
-								
+
 								when 1 => null;
 									-- CS: check terminal name length
 									terminal_name := to_terminal_name (to_string (arg));
@@ -1653,11 +1653,11 @@ package body et_kicad_packages is
 
 									-- Reset pad-drill offset (in case there is no offset given).
 									-- This serves as initialize measure.
-									reset (terminal_pad_drill_offset); 
+									reset (terminal_pad_drill_offset);
 
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
-									
+
 								when 3 =>
 									case terminal_technology is
 										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));
@@ -1669,28 +1669,28 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_EFFECTS =>
 					case section.parent is
 						when SEC_FP_TEXT => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_FONT =>
 					case section.parent is
 						when SEC_EFFECTS => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE =>
 					case section.parent is
 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_MODEL =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1702,14 +1702,14 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_ROTATE | SEC_SCALE =>
 					case section.parent is
 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
-					
+
 				when SEC_XYZ =>
 					case section.parent is
 						when SEC_AT => null; -- CS
@@ -1719,12 +1719,12 @@ package body et_kicad_packages is
 					end case;
 
 			end case;
-			
+
 			exception
 				when event:
 					others =>
 						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -1732,7 +1732,7 @@ package body et_kicad_packages is
 		end read_arg;
 
 
-		
+
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
@@ -1744,27 +1744,27 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_layer;
 
-			
+
 			procedure invalid_layer_reference is begin
 				log (SEVERITY_ERROR, "reference placeholder must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
-			
+
 			procedure invalid_layer_value is begin
 				log (SEVERITY_WARNING, "value placeholder should be in a fabrication layer !");
 			end invalid_layer_value;
 
-			
+
 			procedure invalid_layer_user is begin
 				log (SEVERITY_ERROR, "user text must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
-			
+
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 			procedure insert_fp_arc is begin
-				
+
 				-- compute end point of arc from center, start point and angle
 				set_B (arc, get_arc_B (get_center (arc), get_A (arc), arc.angle));
 
@@ -1776,30 +1776,30 @@ package body et_kicad_packages is
 					when TOP_SILK =>
 						silk_screen.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
-						
+
 					when BOT_SILK =>
 						silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
 
-						
+
 					when TOP_ASSY =>
 						assy_doc.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
-						
+
 					when BOT_ASSY =>
 						assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
-		
-						
-					when TOP_COPPER => 
+
+
+					when TOP_COPPER =>
 						copper.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_conductor_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
-					when BOT_COPPER => 
+					when BOT_COPPER =>
 						copper.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_conductor_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
-						
+
 					when TOP_STOP =>
 						stop_mask.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
@@ -1808,7 +1808,7 @@ package body et_kicad_packages is
 						stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
-						
+
 					when TOP_PASTE =>
 						stencil.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
@@ -1820,169 +1820,169 @@ package body et_kicad_packages is
 					when others => invalid_layer;
 				end case;
 			end insert_fp_arc;
-			
 
-			
+
+
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 			procedure insert_fp_circle is begin
-				
+
 				-- Compute the circle radius from its center and point at circle:
 				set_radius (circle, to_distance (
 					get_distance_absolute (get_center (circle), circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
-				-- and then optionally extended with the line width of the circumfence. 
+				-- and then optionally extended with the line width of the circumfence.
 				-- Thus a type_fillable_circle or a type_fillable_circle_solid
 				-- is formed and appended to the corresponding list of circles.
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
 					when TOP_SILK =>
-						silk_screen.top.circles.append ((pac_geometry_2.type_circle (circle) with 
-							width => circle.width)); 
-						
+						silk_screen.top.circles.append ((pac_geometry_2.type_circle (circle) with
+							width => circle.width));
+
 						-- CS circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
-						
+
 					when BOT_SILK =>
 						silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
-						
+							width => circle.width));
+
 						-- CS circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 
-						
+
 					when TOP_ASSY =>
 						assy_doc.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
+							width => circle.width));
 
 						-- CS circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
-						
+
 					when BOT_ASSY =>
 						assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
+							width => circle.width));
 
 						-- CS circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
-	
-						
-					when TOP_COPPER => 
+
+
+					when TOP_COPPER =>
 						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							width => circle.width));
-						
+
 						-- CS circle_conductor_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
-					when BOT_COPPER => 
+					when BOT_COPPER =>
 						copper.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							width => circle.width));
-						
+
 						-- CS circle_conductor_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 
-						
+
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
+							width => circle.width));
 
 						-- CS circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
-						
+							width => circle.width));
+
 						-- CS circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 
-						
+
 					when TOP_PASTE =>
 						stencil.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
+							width => circle.width));
 
 						-- CS circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						stencil.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							width => circle.width)); 
+							width => circle.width));
 
 						-- CS circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
 			end insert_fp_circle;
-			
 
-			
+
+
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 			procedure insert_fp_line is begin
-				
+
 				case line.layer is
 					when TOP_SILK =>
 						silk_screen.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_silk_screen_properties (TOP, silk_screen.top.lines.last, log_threshold + 1);
-						
+
 					when BOT_SILK =>
-						silk_screen.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+						silk_screen.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_silk_screen_properties (BOTTOM, silk_screen.bottom.lines.last, log_threshold + 1);
 
-						
+
 					when TOP_ASSY =>
 						assy_doc.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_assy_doc_properties (TOP, assy_doc.top.lines.last, log_threshold + 1);
-						
+
 					when BOT_ASSY =>
 						assy_doc.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
-		
-						
-					when TOP_COPPER => 
-						copper.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+
+
+					when TOP_COPPER =>
+						copper.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
-						
-					when BOT_COPPER => 
+
+					when BOT_COPPER =>
 						copper.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
-						
-					when TOP_STOP => 
-						stop_mask.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+
+					when TOP_STOP =>
+						stop_mask.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_stop_mask_properties (TOP, stop_mask.top.lines.last, log_threshold + 1);
-						
-					when BOT_STOP => 
-						stop_mask.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+
+					when BOT_STOP =>
+						stop_mask.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_stop_mask_properties (BOTTOM, stop_mask.bottom.lines.last, log_threshold + 1);
 
-						
-					when TOP_PASTE => 
-						stencil.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+
+					when TOP_PASTE =>
+						stencil.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_stencil_properties (TOP, stencil.top.lines.last, log_threshold + 1);
-						
-					when BOT_PASTE => 
-						stencil.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
+
+					when BOT_PASTE =>
+						stencil.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						-- CS line_stencil_properties (BOTTOM, stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
 
 			end insert_fp_line;
-			
 
-			
+
+
 			-- Insert a terminal in the list "terminals".
 			-- This is library related stuff.
-			procedure insert_terminal is 
+			procedure insert_terminal is
 
 				use et_terminals;
-				
+
 				-- this cursor points to the terminal inserted last
 				terminal_cursor : et_terminals.pac_terminals.cursor;
-				
+
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
 				shape : type_contour;
 
-				
-				procedure insert_tht is begin 
+
+				procedure insert_tht is begin
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
 				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
 						when CIRCULAR => -- a circular hole
-							
+
 							terminals.insert (
 								key 		=> terminal_name,
 								position	=> terminal_cursor,
@@ -1991,14 +1991,14 @@ package body et_kicad_packages is
 									technology 			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
-									
-									-- The shape is the same on top and on bottom side.									
+
+									-- The shape is the same on top and on bottom side.
 									pad_shape_tht		=> (top => shape, bottom => shape),
 
 									-- CS: We assume there is no option in kicad to cover
 									-- a THT pad with stop laquer.
 									stop_mask_status_tht	=> stop_mask_status_default,
-									
+
 									-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 									-- It should be investigated whether kicad supports other stop mask
 									-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
@@ -2010,7 +2010,7 @@ package body et_kicad_packages is
 									drill_size			=> terminal_drill_size
 								));
 
-							
+
 						when OVAL => -- a milled hole
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
@@ -2022,7 +2022,7 @@ package body et_kicad_packages is
 									offset	=> terminal_pad_drill_offset);
 
 								millings : type_contour;
-								
+
 							begin
 								load_segments (millings, (circular => false, segments => lines));
 
@@ -2038,8 +2038,8 @@ package body et_kicad_packages is
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
 										stop_mask_status_tht	=> stop_mask_status_default,
-										
-										-- The shape is the same on top and on bottom side.									
+
+										-- The shape is the same on top and on bottom side.
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -2058,20 +2058,20 @@ package body et_kicad_packages is
 					end case;
 				end insert_tht;
 
-				
+
 			begin -- insert_terminal
-	
+
 				case terminal_technology is
 					when THT =>
 
 						case terminal_pad_shape_tht is
 							when CIRCULAR =>
-								-- Caclulate the pad shape. It is a circle. 
+								-- Caclulate the pad shape. It is a circle.
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
-											terminal_position, pad_size_x, 
+											terminal_position, pad_size_x,
 											terminal_pad_drill_offset);
-								
+
 								terminals.insert (
 									key 		=> terminal_name,
 									position	=> terminal_cursor,
@@ -2084,8 +2084,8 @@ package body et_kicad_packages is
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
 										stop_mask_status_tht	=> stop_mask_status_default,
-										
-										-- The shape is the same on top and on bottom side.									
+
+										-- The shape is the same on top and on bottom side.
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -2109,7 +2109,7 @@ package body et_kicad_packages is
 
 								insert_tht;
 
-							when OVAL => 
+							when OVAL =>
 								-- Calculate the pad shape.
 								shape := to_pad_shape_oval (
 											center		=> terminal_position,
@@ -2121,23 +2121,23 @@ package body et_kicad_packages is
 
 						end case;
 
-				
+
 					when SMT =>
 
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
 						set_stop_and_mask;
-						
+
 						case terminal_pad_shape_smt is
 							when CIRCULAR =>
 
-								-- Caclulate the pad shape. It is a circle. 
+								-- Caclulate the pad shape. It is a circle.
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
-											terminal_position, pad_size_x, 
+											terminal_position, pad_size_x,
 											terminal_pad_drill_offset);
-								
+
 								terminals.insert (
-									key 		=> terminal_name, 
+									key 		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
 									new_item 	=> (
@@ -2160,7 +2160,7 @@ package body et_kicad_packages is
 										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
 										stencil_shape		=> (others => <>)
 										));
-							
+
 							when RECTANGULAR =>
 
 								-- Calculate the rectangular pad shape.
@@ -2171,7 +2171,7 @@ package body et_kicad_packages is
 											offset 		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name, 
+									key 		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
 									new_item 	=> (
@@ -2195,7 +2195,7 @@ package body et_kicad_packages is
 										stencil_shape		=> (others => <>)
 										));
 
-								
+
 							when OVAL =>
 
 								-- Calculate the oval pad shape.
@@ -2206,7 +2206,7 @@ package body et_kicad_packages is
 											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name, 
+									key 		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
 									new_item 	=> (
@@ -2229,7 +2229,7 @@ package body et_kicad_packages is
 										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
 										stencil_shape		=> (others => <>)
 										));
-								
+
 						end case;
 
 						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
@@ -2248,11 +2248,11 @@ package body et_kicad_packages is
 			end insert_terminal;
 
 
-			
-			procedure insert_fp_text is 
+
+			procedure insert_fp_text is
 				use et_alignment;
 			begin
-					
+
 				-- Since there is no alignment information provided, use default values:
 				text.alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
@@ -2261,78 +2261,78 @@ package body et_kicad_packages is
 						--placeholder := (et_packages.type_text (text) with meaning => NAME);
 						placeholder := (type_text_fab (text) with
 							meaning => NAME, others => <>);
-						
+
 						case text.layer is
 							when TOP_SILK =>
 								silk_screen.top.placeholders.append (placeholder);
 								placeholder_properties (TOP, silk_screen.top.placeholders.last, log_threshold + 1);
-								
+
 							when BOT_SILK =>
 								silk_screen.bottom.placeholders.append (placeholder);
 								placeholder_properties (BOTTOM, silk_screen.bottom.placeholders.last, log_threshold + 1);
-								
+
 							when others => -- should never happen
-								invalid_layer_reference; 
+								invalid_layer_reference;
 						end case;
 
 					when VALUE =>
 						--placeholder := (et_packages.type_text (text) with meaning => VALUE);
 						placeholder := (type_text_fab (text) with
 							meaning => VALUE, others => <>);
-						
+
 						case text.layer is
 							when TOP_ASSY =>
 								assy_doc.top.placeholders.append (placeholder);
 								placeholder_properties (TOP, assy_doc.top.placeholders.last, log_threshold + 1);
-								
+
 							when BOT_ASSY =>
 								assy_doc.bottom.placeholders.append (placeholder);
 								placeholder_properties (BOTTOM, assy_doc.bottom.placeholders.last, log_threshold + 1);
-								
+
 							when others => -- should never happen
 								invalid_layer_value;
 						end case;
-						
+
 					when USER =>
 						-- If there are invalid characters in user text then they will be replaced
 						-- by the character defined in et_text.replace_by_default.
 						replace_invalid_characters (text.content);
-						
+
 						case text.layer is
-							when TOP_SILK => 
-								silk_screen.top.texts.append ((type_text_fab (text) with 
+							when TOP_SILK =>
+								silk_screen.top.texts.append ((type_text_fab (text) with
 									content => text.content)); -- CS vectorize text
 								-- CS text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
-								
-							when BOT_SILK => 
-								silk_screen.bottom.texts.append ((type_text_fab (text) with 
+
+							when BOT_SILK =>
+								silk_screen.bottom.texts.append ((type_text_fab (text) with
 									content => text.content)); -- CS vectorize text
 								-- CS text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 
-								
-							when TOP_ASSY => 
-								assy_doc.top.texts.append ((type_text_fab (text) with 
+
+							when TOP_ASSY =>
+								assy_doc.top.texts.append ((type_text_fab (text) with
 									content => text.content)); -- CS vectorize text
 								-- CS text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
-								
-							when BOT_ASSY => 
+
+							when BOT_ASSY =>
 								assy_doc.bottom.texts.append ((type_text_fab (text) with
 									content => text.content)); -- CS vectorize text
 								-- CS text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
 
-								
-							when others -- should never happen. kicad does not allow texts in signal layers 
+
+							when others -- should never happen. kicad does not allow texts in signal layers
 								=> invalid_layer_user;
 						end case;
 				end case;
 			end insert_fp_text;
 
-			
+
 		begin -- exec_section
 			log (text => process_section (section.name), level => log_threshold + 5);
 
 			-- CS case construct for section.parent (as with board packages)
-			
+
 			case section.name is
 
 				when SEC_TEDIT =>
@@ -2340,13 +2340,13 @@ package body et_kicad_packages is
 
 				when SEC_DESCR =>
 					log (text => to_string (description, verbose => true), level => log_threshold + 1);
-					
+
 				when SEC_TAGS =>
 					log (text => to_string (tags), level => log_threshold + 1);
 
 				when SEC_FP_TEXT =>
 					insert_fp_text;
-	
+
 				when SEC_FP_LINE =>
 					insert_fp_line;
 
@@ -2355,30 +2355,30 @@ package body et_kicad_packages is
 
 				when SEC_FP_CIRCLE =>
 					insert_fp_circle;
-					
+
 				when SEC_PAD =>
 					insert_terminal;
-					
+
 				when others => null;
 			end case;
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
 			log (text => return_to_section (section.name), level => log_threshold + 5);
-			
+
 			exception
 				when event:
 					others =>
 						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
-			
+
 		end exec_section;
 
-		
-		
+
+
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
 		procedure check_placeholders is
@@ -2401,8 +2401,8 @@ package body et_kicad_packages is
 
 			if not reference_found then
 				log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-				log (SEVERITY_ERROR, "no placeholder for component " 
-					 & to_string (NAME) 
+				log (SEVERITY_ERROR, "no placeholder for component "
+					 & to_string (NAME)
 					 & " found in " & to_string (TOP) & " silk screen !", console => true);
 				raise constraint_error;
 			end if;
@@ -2420,17 +2420,17 @@ package body et_kicad_packages is
 
 			if not value_found then
 				log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-				log (SEVERITY_ERROR, "no placeholder for component " 
-					 & to_string (VALUE) 
+				log (SEVERITY_ERROR, "no placeholder for component "
+					 & to_string (VALUE)
 					 & " found in " & to_string (TOP) & " assembly documentation !", console => true);
 				raise constraint_error;
 			end if;
-			
+
 		end check_placeholders;
 
 
-		
-		-- If the package is REAL, counts the tht and smd terminals. 
+
+		-- If the package is REAL, counts the tht and smd terminals.
 		-- Warns operator if the package technology
 		-- is not set according to the majority of terminals respectively.
 		procedure check_technology is
@@ -2441,16 +2441,16 @@ package body et_kicad_packages is
 			function number (count : in natural) return string is begin
 				return " (" & trim (positive'image (count), left) & "). ";
 			end number;
-		
+
 		begin -- check_technology
 			log (text => "checking package technology vs. terminal count ...", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			log (text => "appearance " & to_string (package_appearance), level => log_threshold + 1);
-			
+
 			if package_appearance = BOM_RELEVANT_YES then
 				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
-			
+
 				while cursor /= et_terminals.pac_terminals.no_element loop
 					case element (cursor).technology is
 						when THT => tht_count := tht_count + 1;
@@ -2481,7 +2481,7 @@ package body et_kicad_packages is
 			log_indentation_down;
 		end check_technology;
 
-		
+
 	begin -- to_package_model
 		log (text => "parsing/building model ...", level => log_threshold);
 		log_indentation_up;
@@ -2491,7 +2491,7 @@ package body et_kicad_packages is
 		-- get first line
 		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
 		log (text => "line " & to_string (current_line), level => log_threshold + 4);
-		
+
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
 
@@ -2500,7 +2500,7 @@ package body et_kicad_packages is
 		-- This is the central loop where decisions are made whether to read a section name,
 		-- an argument or whether to "execute" a section.
 		-- An opening bracket indicates a new (sub)section. A closing bracket indicates that a section
-		-- finishes and is to be executed. The loop comes to an end if the sections stack depth 
+		-- finishes and is to be executed. The loop comes to an end if the sections stack depth
 		-- reaches zero.
 		loop
 			-- read (sub)section
@@ -2516,7 +2516,7 @@ package body et_kicad_packages is
 			<<label_read_argument>>
 				read_arg;
 				next_character; -- set character cursor to next character
-			
+
 				-- Test for cb, opening_bracket or other character after argument:
 				case element (current_line, character_cursor) is
 
@@ -2529,7 +2529,7 @@ package body et_kicad_packages is
 					when opening_bracket => goto label_read_section;
 
 					-- In case another argument follows, it must be read:
-					when others => goto label_read_argument; 
+					when others => goto label_read_argument;
 				end case;
 
 			-- execute section
@@ -2539,7 +2539,7 @@ package body et_kicad_packages is
 				-- After executing the section, check the stack depth.
 				-- Exit when zero reached (topmost section has been executed).
 				if sections_stack.depth = 0 then exit; end if;
-				
+
 				next_character; -- set character cursor to next character
 
 				-- Test for cb, opening_bracket or other character after closed section:
@@ -2555,9 +2555,9 @@ package body et_kicad_packages is
 
 					-- In case an argument follows, it belongs to the parent
 					-- section and is to be read:
-					when others => goto label_read_argument; 
+					when others => goto label_read_argument;
 				end case;
-				
+
 		end loop;
 
 		-- check section name. must be top level section
@@ -2574,7 +2574,7 @@ package body et_kicad_packages is
 		check_technology;
 
 		-- CS validate description
-		
+
 		log_indentation_down;
 
 		-- depending on the attribute we return a real or a virtual package
@@ -2588,7 +2588,7 @@ package body et_kicad_packages is
 					holes				=> pac_holes.empty_list,
 
 					-- CS: plated pcb contours ?
-					
+
 					terminals			=> terminals,
 					conductors			=> copper, -- non electric !
 					silk_screen			=> silk_screen,
@@ -2601,7 +2601,7 @@ package body et_kicad_packages is
 
 					-- kicad does not know via restrict
 					via_restrict 		=> (others => <>),
-					
+
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
@@ -2611,12 +2611,12 @@ package body et_kicad_packages is
 			when BOM_RELEVANT_NO => -- no package_contours
 				return (
 					appearance			=> BOM_RELEVANT_NO,
-						   
-					-- CS: pcb contours in a package						   
+
+					-- CS: pcb contours in a package
 					holes				=> pac_holes.empty_list,
 
 					-- CS: plated pcb contours ?
-					
+
 					terminals			=> terminals,
 					conductors			=> copper, -- non electric !
 					silk_screen			=> silk_screen,
@@ -2629,23 +2629,23 @@ package body et_kicad_packages is
 
 					-- kicad does not know via restrict
 					via_restrict 		=> (others => <>),
-					
+
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
 					);
 		end case;
-				
+
 	end to_package_model;
 
 
-	
-	
+
+
 	procedure read_libraries (
-		log_threshold 	: in type_log_level) 
+		log_threshold 	: in type_log_level)
 	-- Reads package libraries.
-	-- V4: 
+	-- V4:
 	-- 	- Creates the libraries in container package_libraries.
 	-- 	- Bases on search_list_project_lib_dirs (created on reading the project file).
 	-- V5:
@@ -2661,36 +2661,36 @@ package body et_kicad_packages is
 		-- Set lib_dir_cursor to first directory.
 		use type_project_lib_dirs;
 		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
-	
+
 		-- backup the directory of origin
 		use pac_directory_name;
 		origin_directory : constant pac_directory_name.bounded_string := to_bounded_string (current_directory);
-	
+
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.
 		library_names : pac_directory_entries.list;
 		library_name_cursor : pac_directory_entries.cursor;
-		
+
 		-- While inserting the libraries the flag library_inserted goes true once
 		-- inserting was successuful. The flag goes false if a library already exist.
 		-- This is happens if a library has already been created via the import of another project.
 		library_inserted : boolean;
 		--------------------------------------------------------------------------------------------------------
-		
+
 		-- The library_cursor points to the library in the container package_libraries.
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
-		
+
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 		procedure read_packages (
 			library_name	: in pac_package_model_file.bounded_string;
-			packages		: in out type_packages_library.map) 
+			packages		: in out type_packages_library.map)
 		is
 			package_names : pac_directory_entries.list;
 			package_name_cursor : pac_directory_entries.cursor;
-			
+
 			library_handle : ada.text_io.file_type;
 			line : type_fields_of_line; -- a line of a package model
 
@@ -2702,7 +2702,7 @@ package body et_kicad_packages is
 			log_indentation_up;
 
 			package_names := directory_entries (
-								target_directory	=> current_directory, 
+								target_directory	=> current_directory,
 								category			=> ada.directories.ordinary_file,
 								pattern				=> package_pattern);
 
@@ -2712,14 +2712,14 @@ package body et_kicad_packages is
 			else
 				log (text => "found" & count_type'image (length (package_names)) & " packages", level => log_threshold + 4);
 			end if;
-			
+
 			log_indentation_up;
 
 			package_name_cursor := package_names.first;
 			while package_name_cursor /= pac_directory_entries.no_element loop
 				log (text => element (package_name_cursor), level => log_threshold + 5);
 				log_indentation_up;
-				
+
 				-- open package model file
 				open (
 					file => library_handle,
@@ -2741,11 +2741,11 @@ package body et_kicad_packages is
 					if get_field_count (line) > 0 then -- we skip empty or commented lines
 						append (lines, line);
 					end if;
-						
+
 				end loop;
 				close (library_handle);
 
-				-- From the collected lines the package model can be built and inserted in the 
+				-- From the collected lines the package model can be built and inserted in the
 				-- package list right away:
 				type_packages_library.insert (
 					container	=> packages,
@@ -2754,7 +2754,7 @@ package body et_kicad_packages is
 										file_name 		=> element (package_name_cursor), -- S_0201.kicad_mod
 										lines			=> lines,
 										log_threshold	=> log_threshold + 6));
-				
+
 				-- Once the package model file has been read, the collection of lines
 				--must be cleared for the next model.
 				clear (lines);
@@ -2777,22 +2777,22 @@ package body et_kicad_packages is
 
 
 		use et_import;
-		
+
 	begin -- read_libraries
 		log (text => "reading package libraries ...", level => log_threshold);
 		log_indentation_up;
 
 		case cad_format is
 			when KICAD_V4 =>
-				
+
 				-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
 				while lib_dir_cursor /= type_project_lib_dirs.no_element loop
 
 					log (text => "in directory " & to_string (element (lib_dir_cursor)), level => log_threshold + 1);
-					
+
 					-- Scan for package library in directory indicated by lib_dir_cursor:
 					library_names := directory_entries (
-						target_directory	=> to_string (element (lib_dir_cursor)),  
+						target_directory	=> to_string (element (lib_dir_cursor)),
 						category			=> ada.directories.directory,
 						pattern				=> package_library_pattern); -- *.pretty stuff
 
@@ -2806,7 +2806,7 @@ package body et_kicad_packages is
 						log (text => "found" & count_type'image (length (library_names)) & " libraries", level => log_threshold + 2);
 						log_indentation_up;
 
-						-- Loop through library_names and create the same-named empty libraries 
+						-- Loop through library_names and create the same-named empty libraries
 						-- in container package_libraries:
 						library_name_cursor := library_names.first;
 						while library_name_cursor /= pac_directory_entries.no_element loop
@@ -2815,7 +2815,7 @@ package body et_kicad_packages is
 							-- create the (empty) library in container package_libraries
 							type_libraries.insert (
 								container	=> package_libraries,
-								key			=> to_package_model_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
+								key			=> to_package_model_name (compose ( -- ../lbr/tht_packages/plcc.pretty
 										containing_directory	=> to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
 								inserted	=> library_inserted,
@@ -2842,7 +2842,7 @@ package body et_kicad_packages is
 							else
 								log (text => " already loaded -> skipped", level => log_threshold + 2);
 							end if;
-							
+
 							next (library_name_cursor);
 						end loop;
 
@@ -2858,7 +2858,7 @@ package body et_kicad_packages is
 				-- Fill empty package_libraries.
 				-- Loop in list package_libraries and fill one library after another:
 				library_cursor := package_libraries.first;
-				
+
 				while library_cursor /= type_libraries.no_element loop
 					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
 					set_directory (to_string (key (library_cursor)));
@@ -2873,10 +2873,10 @@ package body et_kicad_packages is
 
 					next (library_cursor);
 				end loop;
-				
+
 			when others =>
 				raise constraint_error;
-				
+
 		end case;
 		log_indentation_down;
 
@@ -2890,13 +2890,13 @@ package body et_kicad_packages is
 	end read_libraries;
 
 
-	
-	
+
+
 end et_kicad_packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

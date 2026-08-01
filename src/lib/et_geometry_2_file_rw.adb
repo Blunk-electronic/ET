@@ -39,7 +39,7 @@
 -- with ada.strings.unbounded;
 -- with ada.characters.latin_1;
 -- with ada.characters.handling;	use ada.characters.handling;
--- 
+--
 -- with ada.text_io;			use ada.text_io;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_keywords;					use et_keywords;
@@ -47,7 +47,7 @@ with et_file_write;					use et_file_write;
 with et_file_sections;				use et_file_sections;
 with et_directions;					use et_directions;
 
-	
+
 package body et_geometry_2_file_rw is
 
 
@@ -64,7 +64,7 @@ package body et_geometry_2_file_rw is
 		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
 	end write_arc;
 
-	
+
 	procedure write_circle (circle : in type_circle'class) is begin
 		write (keyword => keyword_center, parameters => to_string (get_center (circle), FORMAT_2));
 		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
@@ -76,10 +76,10 @@ package body et_geometry_2_file_rw is
 		polygon : in type_contour'class)
 	is
 		use pac_segments;
-		
+
 		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
-				
+
 				when LINE =>
 					section_mark (section_line, HEADER);
 					write_line (element (c).segment_line);
@@ -91,11 +91,11 @@ package body et_geometry_2_file_rw is
 					section_mark (section_arc, FOOTER);
 
 			end case;
-		end query_segment;		
+		end query_segment;
 
 		contours : constant type_segments := get_segments (polygon);
-		
-	begin				
+
+	begin
 		if contours.circular then
 
 			section_mark (section_circle, HEADER);
@@ -105,16 +105,16 @@ package body et_geometry_2_file_rw is
 		else
 			contours.segments.iterate (query_segment'access);
 		end if;
-		
+
 	end write_polygon_segments;
 
-	
-	
+
+
 end et_geometry_2_file_rw;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

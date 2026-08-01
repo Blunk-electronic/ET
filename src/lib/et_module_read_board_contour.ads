@@ -59,7 +59,7 @@ package et_module_read_board_contour is
 
 	use pac_geometry_2;
 	use pac_contours;
-	
+
 
 	contour_line	: type_line;
 	contour_arc		: type_arc;
@@ -67,19 +67,19 @@ package et_module_read_board_contour is
 	contour			: type_contour;
 
 
-	
+
 	procedure read_contour_line (
 		line : type_fields_of_line);
 
-		
+
 	procedure read_contour_arc (
 		line : type_fields_of_line);
 
-	
+
 	procedure read_contour_circle (
 		line : type_fields_of_line);
 
-	
+
 
 	procedure insert_contour_line;
 
@@ -90,17 +90,17 @@ package et_module_read_board_contour is
 
 	procedure check_contour (
 		log_threshold : in type_log_level);
-		
-	
+
+
 end et_module_read_board_contour;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

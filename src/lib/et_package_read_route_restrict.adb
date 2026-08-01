@@ -52,11 +52,11 @@ with et_package_read_contour;			use et_package_read_contour;
 package body et_package_read_route_restrict is
 
 	use pac_geometry_2;
-	
+
 	route_restrict_line : type_route_restrict_line;
 	route_restrict_arc : type_route_restrict_arc;
 	route_restrict_circle : type_route_restrict_circle;
-	
+
 
 
 
@@ -76,27 +76,27 @@ package body et_package_read_route_restrict is
 			p := to_vector_model (line, 2);
 			set_A (route_restrict_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (route_restrict_line, p);
-					
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_route_restrict_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_route_restrict_arc (
 		line	: in type_fields_of_line)
 	is
@@ -111,39 +111,39 @@ package body et_package_read_route_restrict is
 			p := to_vector_model (line, 2);
 			set_A (route_restrict_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (route_restrict_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (route_restrict_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
 			set_direction (route_restrict_arc, to_direction (f (line, 2)));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_route_restrict_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_route_restrict_circle (
 		line	: in type_fields_of_line)
 	is
@@ -155,13 +155,13 @@ package body et_package_read_route_restrict is
 			-- extract the center position starting at field 2 of line
 			set_center (route_restrict_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
 			set_radius (route_restrict_circle, to_radius (f (line, 2)));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -176,75 +176,75 @@ package body et_package_read_route_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_lines;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.route_restrict.top.lines, route_restrict_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.route_restrict.bottom.lines, route_restrict_line);
 		end case;
 		-- CS use procedure add_line
-		
-		
-		-- clean up for next line
-		reset_line (route_restrict_line);		
-	end insert_route_restrict_line;
-	
 
-	
-	
-	
+
+		-- clean up for next line
+		reset_line (route_restrict_line);
+	end insert_route_restrict_line;
+
+
+
+
+
 	procedure insert_route_restrict_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_arcs;
 	begin
 		-- CS check arc
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.route_restrict.top.arcs, route_restrict_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.route_restrict.bottom.arcs, route_restrict_arc);
 		end case;
 		-- CS use procedure add_arc
-		
+
 		-- clean up for next arc
-		reset_arc (route_restrict_arc);		
+		reset_arc (route_restrict_arc);
 	end insert_route_restrict_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_route_restrict_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_route_restrict_circles;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.route_restrict.top.circles, route_restrict_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.route_restrict.bottom.circles, route_restrict_circle);
 		end case;
 		-- CS use procedure add_circle
 
 		-- clean up for next circle
-		reset_circle (route_restrict_circle);		
+		reset_circle (route_restrict_circle);
 	end insert_route_restrict_circle;
 
 
@@ -255,12 +255,12 @@ package body et_package_read_route_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_zone (packge.route_restrict, (contour with null record), face);
-		
+
 		-- clean up for next contour
 		reset_contour (contour);
 	end;
@@ -272,16 +272,16 @@ package body et_package_read_route_restrict is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
 		add_cutout (packge.route_restrict, (contour with null record), face);
-		
+
 		-- clean up for next contour
 		reset_contour (contour);
 	end;
 
-	
-	
+
+
 end et_package_read_route_restrict;

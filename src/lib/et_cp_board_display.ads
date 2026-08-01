@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 -- - propose arguments if command incomplete
 
 with et_logging;				use et_logging;
@@ -46,7 +46,7 @@ with et_cmd_sts;				use et_cmd_sts;
 package et_cp_board_display is
 
 
-	-- Parses a command that enables or disables 
+	-- Parses a command that enables or disables
 	-- the board outline.
 	-- Example: "board demo display outline on/off"
 	-- If on/off is left off, then the outline will be enabled:
@@ -56,7 +56,7 @@ package et_cp_board_display is
 
 
 
-	-- Parses a command that enables or disables 
+	-- Parses a command that enables or disables
 	-- the ratsnest (airwires).
 	-- Example: "board demo display ratsnest on/off"
 	-- If on/off is left off, then the ratsnest will be enabled:
@@ -65,7 +65,7 @@ package et_cp_board_display is
 		log_threshold	: in type_log_level);
 
 
-	-- Parses a command that enables or disables 
+	-- Parses a command that enables or disables
 	-- a non-conductor layer (silkscreen, stopmask, assembly doc, ...).
 	-- Example command: board demo display silkscreen top [on/off]
 	procedure display_non_conductor (
@@ -73,7 +73,7 @@ package et_cp_board_display is
 		log_threshold	: in type_log_level);
 
 
-	-- Parses a command that enables or disables 
+	-- Parses a command that enables or disables
 	-- a conductor layer.
 	-- Example command: board demo display conductors 2 [on/off]
 	procedure display_conductor (
@@ -89,20 +89,20 @@ package et_cp_board_display is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Parses a command that enables or disables 
+
+	-- Parses a command that enables or disables
 	-- a route or via restrict layer.
 	-- Example command: board demo display restrict route/via 2 [on/off]
 	procedure display_restrict (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_cp_board_display;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

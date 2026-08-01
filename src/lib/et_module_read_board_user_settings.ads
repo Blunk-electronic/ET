@@ -52,32 +52,32 @@ package et_module_read_board_user_settings is
 
 	use pac_generic_modules;
 
-	
+
 	procedure read_user_settings_vias (
 		line : in type_fields_of_line);
-		
-		
-		
+
+
+
 	procedure read_user_settings_fill_zones_conductor (
 		line : in type_fields_of_line);
-		
-		
-		
+
+
+
 	procedure assign_user_settings_board (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 end et_module_read_board_user_settings;
 
-	
 
 
-	
+
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

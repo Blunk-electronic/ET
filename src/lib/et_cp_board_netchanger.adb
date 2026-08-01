@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -82,10 +82,10 @@ package body et_cp_board_netchanger is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		
+
 		procedure runmode_module is
 			index : type_netchanger_id;
 
@@ -93,11 +93,11 @@ package body et_cp_board_netchanger is
 			-- in the schematic drawing:
 			procedure zoom_in_schematic is
 				use et_schematic_coordinates;
-				
+
 				-- In order to zoom on the targeted netchanger
 				-- we need its position in the schematic:
 				position : type_object_position;
-				
+
 				use et_canvas_schematic;
 				use pac_canvas;
 			begin
@@ -125,7 +125,7 @@ package body et_cp_board_netchanger is
 				-- In order to zoom on the targeted netchanger
 				-- we need its position on the board
 				position : type_vector_model;
-				
+
 				use et_canvas_board;
 				use et_canvas_board.pac_canvas;
 			begin
@@ -137,11 +137,11 @@ package body et_cp_board_netchanger is
 				zoom_to (position, S);
 			end zoom_in_board;
 
-			
+
 		begin
 			case cmd_field_count is
 				-- "show netchanger 44"
-				
+
 				when 5 =>
 					index := to_netchanger_id (get_field (cmd, 5)); -- 44
 
@@ -152,21 +152,21 @@ package body et_cp_board_netchanger is
 						-- schematic and in the board drawing:
 						zoom_in_schematic;
 						zoom_in_board;
-						
+
 					else
 						netchanger_not_found (index);
 					end if;
-					
-						
+
+
 				when 6 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
-					
+
 				when others => command_incomplete (cmd);
 			end case;
 		end runmode_module;
 
 
-		
+
 	begin
 		log (text => "show netchanger", level => log_threshold);
 		log_indentation_up;
@@ -179,15 +179,15 @@ package body et_cp_board_netchanger is
 
 				-- Deselect all objects in the schematic
 				-- and board drawing. This is required in case
-				-- the specified netchanger does not exist. 
+				-- the specified netchanger does not exist.
 				-- It is redundant in case the specified netchanger
 				-- does exist. The reset would be executed twice,
 				-- the first time here and the second time
-				-- by procedure show_netchanger in package 
+				-- by procedure show_netchanger in package
 				-- et_schematic_ops_netchangers:
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
-					
+
 				et_board_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
@@ -195,20 +195,20 @@ package body et_cp_board_netchanger is
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
-					
-		end case;				
+
+		end case;
 
 
 		log_indentation_down;
 	end show_netchanger;
 
 
-	
 
 
 
-	
-	
+
+
+
 
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -216,28 +216,28 @@ package body et_cp_board_netchanger is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		index : type_netchanger_id;
 	begin
 		-- CS log message
 
-		
+
 		case cmd_field_count is
 			when 8 =>
 				-- Extract the index of the targeted netchanger:
 				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
-				
+
 				if netchanger_exists (module, index) then
-					
+
 					move_netchanger (
 						module_cursor	=> module,
 						index			=> index,
 						coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 						point			=> set (
 											x => to_distance (get_field (cmd, 7)),
-											y => to_distance (get_field (cmd, 8))),						
+											y => to_distance (get_field (cmd, 8))),
 
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
@@ -248,17 +248,17 @@ package body et_cp_board_netchanger is
 					netchanger_not_found (index);
 				end if;
 
-				
+
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end move_netchanger;
 
 
 
-	
+
 
 
 
@@ -269,11 +269,11 @@ package body et_cp_board_netchanger is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		-- CS log message
 		null;
-		
+
 -- 		case cmd_field_count is
 -- 			when 8 =>
 -- 				drag_netchanger (
@@ -284,18 +284,18 @@ package body et_cp_board_netchanger is
 -- 										x => to_distance (get_field (cmd, 7)),
 -- 										y => to_distance (get_field (cmd, 8)))),
 -- 					log_threshold	=> log_threshold + 1);
--- 
+--
 -- 			when 9 .. type_field_count'last =>
 -- 				command_too_long (cmd, cmd_field_count - 1);
--- 				
+--
 -- 			when others => command_incomplete (cmd);
--- 		end case;		
+-- 		end case;
 	end drag_netchanger;
 
 
 
 
-	
+
 
 
 	procedure set_netchanger_layer (
@@ -304,28 +304,28 @@ package body et_cp_board_netchanger is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		index : type_netchanger_id;
 		layer : type_signal_layer;
 	begin
 		-- CS log message
 
-		
+
 		case cmd_field_count is
 			when 7 =>
 				-- Extract the index of the targeted netchanger:
 				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
-				
+
 				if netchanger_exists (module, index) then
 
 					-- CS: test keyword "layer" on place 6
-					
+
 					layer := to_signal_layer (get_field (cmd, 7));
-					-- CS: make sure the signal layer 
+					-- CS: make sure the signal layer
 					-- exists in the module.
-					
+
 					set_netchanger_layer (
 						module_cursor	=> module,
 						index			=> index,
@@ -340,25 +340,25 @@ package body et_cp_board_netchanger is
 					netchanger_not_found (index);
 				end if;
 
-				
+
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 	end set_netchanger_layer;
 
 
-	
-	
-	
+
+
+
 end et_cp_board_netchanger;
 
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

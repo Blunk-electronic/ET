@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,35 +52,35 @@ package et_symbol_read_body is
 
 	procedure read_body_line (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_body_line (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
-	
 
 
-	
+
+
 
 	procedure read_body_arc (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_body_arc (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 
 	procedure read_body_circle (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure insert_body_circle (
 		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_symbol_read_body;

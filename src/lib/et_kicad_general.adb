@@ -38,19 +38,19 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_kicad_general is
 
-	
+
 	procedure check_timestamp (timestamp : in type_timestamp) is
 	-- Checks the given timestamp for valid characters and plausible time.
 	begin
 		null; -- CS
 	end check_timestamp;
-	
+
 	function to_library_name (library_name : in string) return type_library_name.bounded_string is
 	-- converts a string to a type_library_name
 	begin
 		return type_library_name.to_bounded_string (library_name);
 	end to_library_name;
-	
+
 	function to_string (library_name : in type_library_name.bounded_string) return string is
 	-- Returns the given library name as string.
 	begin
@@ -62,12 +62,12 @@ package body et_kicad_general is
 		return type_library_directory.to_string (dir);
 	end to_string;
 
-	
+
 end et_kicad_general;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

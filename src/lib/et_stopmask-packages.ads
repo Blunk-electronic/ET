@@ -39,7 +39,7 @@
 
 package et_stopmask.packages is
 
-	
+
 	type type_stopmask_both_sides is record
 		top		: type_stopmask;
 		bottom	: type_stopmask;
@@ -64,7 +64,7 @@ package et_stopmask.packages is
 
 
 	-- CS procedure add_line, add_arc, add_circle
-	
+
 
 	procedure add_zone (
 		stopmask	: in out type_stopmask_both_sides;
@@ -78,12 +78,12 @@ package et_stopmask.packages is
 		face		: in type_face);
 
 
-	
+
 end et_stopmask.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

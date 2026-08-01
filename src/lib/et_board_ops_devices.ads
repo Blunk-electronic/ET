@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -72,12 +72,12 @@ package et_board_ops_devices is
 
 
 	use pac_generic_modules;
-	
-	
+
+
 
 -- ELECTRICAL DEVICES:
-	
-	
+
+
 	type type_object_electrical is record
 		cursor : pac_devices_electrical.cursor;
 	end record;
@@ -93,8 +93,8 @@ package et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_electrical)
 		return type_device_name;
-	
-	
+
+
 
 	-- Modifies that status flag of an electrical device:
 	procedure modify_status (
@@ -103,8 +103,8 @@ package et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	-- Sets the proposed-flag of the package of
 	-- all real electrical devices which are in the
 	-- given zone around the given place.
@@ -115,9 +115,9 @@ package et_board_ops_devices is
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 
-	
 
-	
+
+
 
 
 	-- Returns the first device according to the given flag.
@@ -141,12 +141,12 @@ package et_board_ops_devices is
 	procedure move_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
 	-- Automatically detects whether the given device is
@@ -155,7 +155,7 @@ package et_board_ops_devices is
 	procedure rotate_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
+		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_board_geometry.type_rotation_model := 90.0;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -170,7 +170,7 @@ package et_board_ops_devices is
 	-- electrical or non-electrical. However, the device
 	-- is assumed to exist. Otherwise an exception is raised:
 	-- 1. If toggle is false, then the destination face must be
-	-- provided. 
+	-- provided.
 	-- 2. If toggle is true, then the face of the targeted device
 	--    is changed from top to bottom or vice versa.
 	--    The argument face is then ignored.
@@ -184,9 +184,9 @@ package et_board_ops_devices is
 
 
 
-	
+
 --------------------------------------------------------------------------
-	
+
 -- NON-ELECTRICAL DEVICES:
 
 
@@ -197,8 +197,8 @@ package et_board_ops_devices is
 		return boolean;
 
 
-	
-	
+
+
 
 	-- Returns the cursor to the given non-electrical device
 	-- in the given module.
@@ -209,12 +209,12 @@ package et_board_ops_devices is
 		return pac_devices_non_electrical.cursor;
 
 
-	
 
 
-	
+
+
 -- SHOW DEVICE:
-	
+
 	-- Sets the given non-electrical device as selected.
 	-- Assumes that the given device exists. Otherwise
 	-- an exception is raised:
@@ -224,7 +224,7 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 
-	-- Returns properties of the given non-electrical device. 
+	-- Returns properties of the given non-electrical device.
 	-- 1. The given device must exist. Otherwise an exception
 	--    will be raised.
 	-- 2. Level determines the degree and amount of information to be returned.
@@ -232,7 +232,7 @@ package et_board_ops_devices is
 	--    so that the result is a single line.
 	-- 4. If linebreaks is true, then linebreaks are inserted.
 	--    This is useful when the output is to be displayed
-	--    in a window or if it is to be written in a file:	
+	--    in a window or if it is to be written in a file:
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -241,10 +241,10 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return string;
 
-	
 
 
-	
+
+
 	type type_object_non_electrical is record
 		cursor : pac_devices_non_electrical.cursor;
 	end record;
@@ -262,7 +262,7 @@ package et_board_ops_devices is
 		return type_device_name;
 
 
-	
+
 	-- Modifies that status flag of a non-electrical device:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -270,8 +270,8 @@ package et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	-- Sets the proposed-flag of all real non-electrical 
+
+	-- Sets the proposed-flag of all real non-electrical
 	-- devices which are in the
 	-- given zone around the given place.
 	-- Adds to count the number of devices that have been found:
@@ -281,13 +281,13 @@ package et_board_ops_devices is
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Clears the status flags all non-electrical devices:
 	procedure reset_status_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Returns the first non-electrical device according to the given flag.
 	-- If no device has been found,
 	-- then the return is no_element:
@@ -306,13 +306,13 @@ package et_board_ops_devices is
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_non_electrical;
-	
-	
 
-	
--- DEVICE ADD and COPY:	
 
-	
+
+
+-- DEVICE ADD and COPY:
+
+
 	-- Returns all non-electrical devices that have the given prefix:
 	function get_non_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -320,7 +320,7 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.map;
 
-	
+
 
 	-- Adds a non-electrical device to the board:
 	procedure add_non_electrical_device (
@@ -336,7 +336,7 @@ package et_board_ops_devices is
 
 	-- Copies a non-electrical device to the given destination.
 	-- Assumes that the specified device exists. Otherwise
-	-- an exception is raised:	
+	-- an exception is raised:
 	procedure copy_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
@@ -348,7 +348,7 @@ package et_board_ops_devices is
 
 	-- Deletes a non-electrical device in the board layout.
 	-- Assumes that the specified device exists. Otherwise
-	-- an exception will be raised.	
+	-- an exception will be raised.
 	-- NOTE: Electrical devices must be deleted in the schematic domain !
 	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -356,7 +356,7 @@ package et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Renames a non-electrical device in the board layout.
 	-- Assumes that the device named after device_name_before
 	-- exists. Otherwise an exception will be raised:
@@ -369,7 +369,7 @@ package et_board_ops_devices is
 
 
 
-	
+
 
 -- PLACEHOLDERS:
 
@@ -437,7 +437,7 @@ package et_board_ops_devices is
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		layer			: in type_placeholder_layer; -- silkscreen, assy_doc
 		face			: in type_face; -- top/bottom
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
@@ -458,39 +458,39 @@ package et_board_ops_devices is
 		index		: type_placeholder_index;
 	end record;
 
-	
-	
+
+
 	function get_device_name (
 		placeholder	: in type_object_placeholder)
 		return type_device_name;
-		
+
 
 	function get_device_name (
 		placeholder	: in type_object_placeholder)
 		return string;
 
-		
+
 	function get_place (
 		placeholder	: in type_object_placeholder)
 		return type_vector_model;
-		
+
 
 	function get_layer (
 		placeholder	: in type_object_placeholder)
 		return string;
 
-		
+
 	function get_meaning (
 		placeholder	: in type_object_placeholder)
 		return type_placeholder_meaning;
-		
+
 
 	function to_string (
 		placeholder	: in type_object_placeholder)
 		return string;
-	
-	
-	
+
+
+
 	-- Sets the proposed-flag of all placeholders which are in the
 	-- given zone around the given place.
 	-- Adds to count the number of placeholders that have been found:
@@ -500,9 +500,9 @@ package et_board_ops_devices is
 		count			: in out natural; -- the number of affected placeholders
 		log_threshold	: in type_log_level);
 
-	
-	
-	
+
+
+
 	-- Modifies the status flag of a placeholder:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -510,9 +510,9 @@ package et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-	
-		
+
+
+
 	-- Returns the first placeholder according to the given flag.
 	-- If no placeholder has been found, then the return is no_element:
 	function get_first_placeholder (
@@ -521,20 +521,20 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object_placeholder;
 
-		
+
 
 	-- Resets the status flags of all placeholders of all devices:
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-		
-		
+
+
 ------------------------------------------------------------------------
 
 
 -- OBJECTS:
-	
+
 	type type_object_category is (
 		CAT_VOID,
 		CAT_ELECTRICAL_DEVICE,
@@ -547,11 +547,11 @@ package et_board_ops_devices is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
-			
+
 			when CAT_ELECTRICAL_DEVICE =>
 				electrical_device		: type_object_electrical;
-				
-			when CAT_NON_ELECTRICAL_DEVICE => 
+
+			when CAT_NON_ELECTRICAL_DEVICE =>
 				non_electrical_device	: type_object_non_electrical;
 
 			when CAT_PLACEHOLDER =>
@@ -559,7 +559,7 @@ package et_board_ops_devices is
 		end case;
 	end record;
 
-	
+
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 
 
@@ -568,7 +568,7 @@ package et_board_ops_devices is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural;
-	
+
 
 
 	-- Returns the first object (electrical, non-electrical device, placeholder)
@@ -576,20 +576,20 @@ package et_board_ops_devices is
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object;
 
-	
+
 	-- Collects all objects (electrical, non-electrical devices, placeholders)
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
-	
+
 
 	-- Modifies the status flag of an object:
 	procedure modify_status (
@@ -608,17 +608,17 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 
-	-- Resets the status flags of 
+	-- Resets the status flags of
 	-- all electrical and non-electrical devices:
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
 
-	
+
+
 -- COPY:
-	
+
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -626,9 +626,9 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 
-	
+
 -- MOVE, DELETE, FLIP:
-	
+
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -641,8 +641,8 @@ package et_board_ops_devices is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -653,11 +653,11 @@ package et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
-	
+
 
 
 -- RENAME:
-	
+
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -665,21 +665,21 @@ package et_board_ops_devices is
 		-- CS add argument for new names of other kinds of objects
 		log_threshold	: in type_log_level);
 
-	
+
 
 -- SHOW:
-	
+
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
 
-	
-	
+
+
+
 -- TERMINALS:
-	
+
 	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
 	-- The default assembly variant is assumed (means all devices are mounted).
@@ -707,7 +707,7 @@ package et_board_ops_devices is
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine;
 
-	
+
 	-- CS ?
 	-- Same as above function but takes a terminal cursor instead of a terminal name
 	--function get_terminal_position (
@@ -731,12 +731,12 @@ package et_board_ops_devices is
 
 
 
-	
+
 end et_board_ops_devices;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

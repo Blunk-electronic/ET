@@ -45,8 +45,8 @@ package body et_geometry_1.et_polygons.clipping is
 
 
 
-	
-	
+
+
 	function clip (
 		polygon_A	: in type_polygon;
 		polygon_B	: in type_polygon;
@@ -55,27 +55,27 @@ package body et_geometry_1.et_polygons.clipping is
 	is
 		result : pac_polygon_list.list;
 
-		-- The list of intersecting A and B edges:		
+		-- The list of intersecting A and B edges:
 		intersections : pac_intersections.list;
-		
-		
+
+
 		-- This procedure does the actual clipping work:
-		procedure do_clipping is 
+		procedure do_clipping is
 
 			-- These are the lists of vertices and intersections
 			-- in counter-clockwise order for polygon A and B:
 			vertices_A, vertices_B : pac_vertices.list;
-					
+
 			vertice_A_cursor : pac_vertices.cursor;
 
 			-- Temporarily collections of vertices and intersections:
 			vertices_tmp_1 : pac_vertices.list; -- primary collection
 			vertices_tmp_2 : pac_vertices.list; -- secondary collection
-			
+
 			-- The start point when walking along the vertices_A is
 			-- always an ENTERING intersection:
 			v_start : type_vertex (category => INTERSECTION);
-			
+
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
 			safety_counter_limit : constant type_safety_count := 100;
@@ -84,7 +84,7 @@ package body et_geometry_1.et_polygons.clipping is
 		begin
 			-- Make the vertices and intersection nodes of polygon A:
 			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
-			
+
 			if debug then
 				new_line;
 				put_line ("vertices A: " & to_string (vertices_A));
@@ -111,7 +111,7 @@ package body et_geometry_1.et_polygons.clipping is
 			while vertice_A_cursor /= pac_vertices.no_element loop
 
 				-- A sub-polygon starts at v_start. When walking along the
-				-- edges of polygon A or B we will eventually get back to 
+				-- edges of polygon A or B we will eventually get back to
 				-- the start point v_start. The current sub-polygon is then complete.
 				v_start := element (vertice_A_cursor);
 
@@ -123,8 +123,8 @@ package body et_geometry_1.et_polygons.clipping is
 					start_vertex				=> vertice_A_cursor,
 					direction_of_intersection	=> LEAVING,
 					direction_of_search			=> CCW);
-				
-				-- Now we have the intersections and vertices from after the start point 
+
+				-- Now we have the intersections and vertices from after the start point
 				-- to (and including) the leaving intersection L.
 
 				-- Find the very leaving intersection L in polygon B and walk
@@ -137,16 +137,16 @@ package body et_geometry_1.et_polygons.clipping is
 					direction_of_intersection	=> ENTERING,
 					direction_of_search			=> CCW);
 
-				
+
 				loop
 					-- safety measure to prevent forever-looping:
-					increment_safety_counter (safety_counter, safety_counter_limit);					
+					increment_safety_counter (safety_counter, safety_counter_limit);
 
 					-- Splice the intersections and vertices of A and B.
 					-- Collect everything in the primary collection:
 					splice (
 						target	=> vertices_tmp_1, -- primary
-						before	=> pac_vertices.no_element, 
+						before	=> pac_vertices.no_element,
 						source 	=> vertices_tmp_2); -- will be emptied
 
 					-- If we have reached the start point then the sub-polygon
@@ -155,7 +155,7 @@ package body et_geometry_1.et_polygons.clipping is
 						exit;
 					else
 						--  CS: This comment is obsolete ? Rework !
-						
+
 						-- In order to handle the STC (see header of the package specification)
 						-- this stuff is required
 						-- as an extension of the Weiler-Atherton algorithm:
@@ -172,12 +172,12 @@ package body et_geometry_1.et_polygons.clipping is
 							direction_of_intersection	=> LEAVING,
 							direction_of_search			=> CCW);
 
-						
+
 						-- Append the intersection (and vertices) to the primary
 						-- collection:
 						splice (
 							target	=> vertices_tmp_1, -- primary
-							before	=> pac_vertices.no_element, 
+							before	=> pac_vertices.no_element,
 							source 	=> vertices_tmp_2); -- will be emtied
 
 						-- Switch to polygon B and get intersections
@@ -194,18 +194,18 @@ package body et_geometry_1.et_polygons.clipping is
 
 					end if;
 				end loop;
-					
+
 
 				-- Append the sub-polygon to the result:
 				result.append (to_polygon (vertices_tmp_1));
 				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
 				-- CS: useful ?
-				-- Iron out useless vertices and append the 
+				-- Iron out useless vertices and append the
 				-- sub-polygon to the result:
 				--result.append (optimize_edges (to_polygon (vertices_tmp_1)));
 
-				
+
 				-- Get the next entering vertex from vertices_A.
 				-- In case there is no entering vertex any more, then this
 				-- loop will be the last:
@@ -213,45 +213,45 @@ package body et_geometry_1.et_polygons.clipping is
 			end loop;
 
 		end do_clipping;
-		
-		
+
+
 
 		overlap_status : type_overlap_status;
-		
+
 	begin -- clip
-		
+
 		-- Find intersections of the given two polygons:
 		intersections := get_intersections (polygon_A, polygon_B, debug);
 
 
 		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
-		
+
 		case overlap_status is
 			when CONGRUENT =>
 				-- Both polygons have the same outline. So the result
 				-- is polygon A:
 				result.append (polygon_A);
-				
-			when A_DOES_NOT_OVERLAP_B => 
-				-- Nothing to do. Return an empty list:
-				null; 
 
-			when A_INSIDE_B => 
+			when A_DOES_NOT_OVERLAP_B =>
+				-- Nothing to do. Return an empty list:
+				null;
+
+			when A_INSIDE_B =>
 				-- Polygon A is completely inside B. So the result
 				-- is just polygon A:
 				result.append (polygon_A);
 
-			when B_INSIDE_A => 
+			when B_INSIDE_A =>
 				-- Polygon B is completely inside A. So the result
 				-- is just polygon B:
 				result.append (polygon_B);
-				
-			when A_OVERLAPS_B => 
+
+			when A_OVERLAPS_B =>
 				-- Do the actual clipping work:
 				do_clipping;
 		end case;
-	
-	
+
+
 		return result;
 
 
@@ -259,19 +259,19 @@ package body et_geometry_1.et_polygons.clipping is
 		-- Convert the polygon specific exception to a constraint error:
 		exception when event: others =>
 			--put_line (exception_name (event) & " " & exception_message (event));
-		
-			raise constraint_error with 
+
+			raise constraint_error with
 				exception_name (event) & " " & exception_message (event);
 
-		
+
 	end clip;
 
-	
+
 end et_geometry_1.et_polygons.clipping;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

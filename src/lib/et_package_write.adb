@@ -60,21 +60,21 @@ with et_package_write_terminals;		use et_package_write_terminals;
 
 package body et_package_write is
 
-	
+
 
 	procedure write_package (
-		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
+		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in type_package_model; -- the actual package model
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		file_handle : ada.text_io.file_type;
-		
+
 	begin
 		log (text => "save package model as " & to_string (file_name),
 			 level => log_threshold);
-		
+
 		log_indentation_up;
-		
+
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
@@ -94,16 +94,16 @@ package body et_package_write is
 		-- CS sort the follwing actions by their importance:
 		-- CS move them into a procedure like do_write
 		write_meta (packge, log_threshold + 1);
-		write_silkscreen (packge, log_threshold + 1);		
+		write_silkscreen (packge, log_threshold + 1);
 		write_assy_doc (packge, log_threshold + 1);
 		write_keepout (packge, log_threshold + 1);
 		write_conductors (packge, log_threshold + 1);
 		write_stopmask (packge, log_threshold + 1);
 		write_stencil (packge, log_threshold + 1);
-		
+
 		write_route_restrict (packge, log_threshold + 1);
 		write_via_restrict (packge, log_threshold + 1);
-		
+
 		write_holes (packge, log_threshold + 1);
 
 		write_terminals (packge, log_threshold + 1);
@@ -116,26 +116,26 @@ package body et_package_write is
 		put_line (comment_mark_default & " " & row_separator_double);
 		put_line (comment_mark_default & " package model end");
 		new_line;
-		
+
 		reset_tab_depth;
-		
+
 		set_output (standard_output);
 		close (file_handle);
 
 		log_indentation_down;
-		
+
 
 		exception when event: others =>
 			log (text => ada.exceptions.exception_message (event));
 			log_indentation_down;
-		
+
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
 			raise;
 
 	end write_package;
-	
-		
-	
+
+
+
 end et_package_write;

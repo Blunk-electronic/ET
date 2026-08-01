@@ -50,16 +50,16 @@ package et_route_restrict is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;
-	
 
-	
+
+
 -- LINES:
 
 	type type_route_restrict_line is new
 		pac_geometry_2.type_line with null record;
-	
 
-	
+
+
 	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 	use pac_route_restrict_lines;
 
@@ -67,7 +67,7 @@ package et_route_restrict is
 	procedure mirror_lines (
 		lines	: in out pac_route_restrict_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
 		lines	: in out pac_route_restrict_lines.list;
@@ -80,14 +80,14 @@ package et_route_restrict is
 
 
 
-	
--- ARCS:	
+
+-- ARCS:
 
 	type type_route_restrict_arc is new
 		pac_geometry_2.type_arc with null record;
-	
 
-	
+
+
 	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	use pac_route_restrict_arcs;
 
@@ -95,7 +95,7 @@ package et_route_restrict is
 	procedure mirror_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
@@ -107,28 +107,28 @@ package et_route_restrict is
 		offset	: in type_vector_model);
 
 
-	
 
--- CIRCLES:	
+
+-- CIRCLES:
 
 	type type_route_restrict_circle is new
 		pac_geometry_2.type_circle with null record;
 
-	
-	-- Converts the outer edge of a circle to a polygon:	
+
+	-- Converts the outer edge of a circle to a polygon:
 	function to_polygon_outside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
-	
-	-- Converts the inner edge of a circle to a polygon:	
+
+	-- Converts the inner edge of a circle to a polygon:
 	function to_polygon_inside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
-	
+
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 	use pac_route_restrict_circles;
 
@@ -136,7 +136,7 @@ package et_route_restrict is
 	procedure mirror_circles (
 		circles	: in out pac_route_restrict_circles.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
 		circles	: in out pac_route_restrict_circles.list;
@@ -162,19 +162,19 @@ package et_route_restrict is
 		return pac_polygon_list.list;
 
 
-	
-	
+
+
 -- ZONES:
 	type type_route_restrict_zone is new type_contour with null record;
-	
-	
+
+
 	package pac_route_restrict_zones is new doubly_linked_lists (type_route_restrict_zone);
 
-	
+
 	type type_route_restrict_cutout is new type_contour with null record;
 	-- CS not sure whether this is really required.
 	-- CS rename to type_route_restrict_zone_cutout
-		
+
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 	-- CS not sure whether this is really required.
 	-- CS rename to pac_route_restrict_zone_cutouts
@@ -188,7 +188,7 @@ package et_route_restrict is
 	-- 	face			: in type_face;
 	-- 	cursor			: in pac_route_restrict_lines.cursor;
 	-- 	log_threshold 	: in type_log_level);
- -- 
+ --
 	-- -- Logs the properties of the given arc of route restrict
 	-- procedure arc_route_restrict_properties (
 	-- 	face			: in type_face;
@@ -197,13 +197,13 @@ package et_route_restrict is
 
 	-- CS procedure circle_route_restrict_properties
 
-	
-	
+
+
 end et_route_restrict;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

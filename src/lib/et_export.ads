@@ -42,11 +42,11 @@ package et_export is
 	directory_export		: constant string := "export";
 
 	directory_cam			: constant string := "CAM";
-	directory_bom 			: constant string := "BOM";	
+	directory_bom 			: constant string := "BOM";
 	directory_pick_and_place: constant string := "pick_and_place";
 	directory_netlists 		: constant string := "netlists";
 
-	-- directory_cad			: constant string := "CAD";	
+	-- directory_cad			: constant string := "CAD";
 	directory_statistics	: constant string := "statistics";
 
 	procedure dummy;
@@ -55,7 +55,7 @@ end et_export;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

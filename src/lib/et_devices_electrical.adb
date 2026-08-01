@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -59,8 +59,8 @@ package body et_devices_electrical is
 	end;
 
 
-	
-	
+
+
 	function get_position (
 		device : in type_device_electrical)
 		return et_board_coordinates.type_package_position
@@ -68,15 +68,15 @@ package body et_devices_electrical is
 		return device.position;
 	end;
 
-	
-	
-	
-	
+
+
+
+
 
 	function get_device_model_file (
 		device : type_device_electrical)
 		return pac_device_model_file.bounded_string
-	is 
+	is
 		use pac_device_models;
 	begin
 		return key (device.model_cursor);
@@ -88,16 +88,16 @@ package body et_devices_electrical is
 	function get_device_model_name (
 		device : type_device_electrical)
 		return string
-	is 
+	is
 		use pac_device_models;
 	begin
 		return to_string (key (device.model_cursor));
 	end;
 
 
-	
-	
-	
+
+
+
 
 	function get_device_model (
 		device : in type_device_electrical)
@@ -114,10 +114,10 @@ package body et_devices_electrical is
 		return get_device_model (model_file);
 	end get_device_model;
 
-	
 
 
-	
+
+
 
 
 
@@ -131,32 +131,32 @@ package body et_devices_electrical is
 	end get_package_model_name;
 
 
-	
-	
-	
+
+
+
 	function get_device_names (
 		devices : in pac_devices_electrical.map)
 		return pac_device_names.set
 	is
 		result : pac_device_names.set;
-				
+
 		procedure query_device (
-			c : in pac_devices_electrical.cursor) 
+			c : in pac_devices_electrical.cursor)
 		is begin
 			-- Insert the device name in the resulting list:
 			result.insert (key (c));
 		end;
-		
-	begin	
+
+	begin
 		-- Iterate through the devices:
 		devices.iterate (query_device'access);
-	
+
 		return result;
 	end get_device_names;
 
-	
-	
-	
+
+
+
 
 
 	function get_count (
@@ -165,8 +165,8 @@ package body et_devices_electrical is
 	is begin
 		return natural (devices.length);
 	end;
-		
-		
+
+
 
 	function get_count (
 		devices	: in pac_devices_electrical.map)
@@ -175,10 +175,10 @@ package body et_devices_electrical is
 		return count_type'image (devices.length);
 	end;
 
-	
-	
-	
-	
+
+
+
+
 
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
@@ -187,7 +187,7 @@ package body et_devices_electrical is
 		return get_device_model_file (element (device));
 	end get_device_model_file;
 
-	
+
 
 
 	function get_device_model (
@@ -200,15 +200,15 @@ package body et_devices_electrical is
 	end get_device_model;
 
 
-	
 
 
 
-	
 
-	
 
-	
+
+
+
+
 
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
@@ -218,7 +218,7 @@ package body et_devices_electrical is
 	end get_device_name;
 
 
-	
+
 
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
@@ -240,28 +240,28 @@ package body et_devices_electrical is
 
 
 
-	
+
 	procedure device_name_in_use (
 		name : in type_device_name)
-	is 
+	is
 		use et_logging;
 	begin
 		log (SEVERITY_ERROR, "Name " & enclose_in_quotes (to_string (name)) &
 			 " already used by another electrical device !",
 			 console => true);
-		
+
 		raise constraint_error;
 	end device_name_in_use;
 
 
-	
 
-	
 
-	
 
-	
-	
+
+
+
+
+
 	procedure set_selected (
 		device : in out type_device_electrical)
 	is begin
@@ -271,8 +271,8 @@ package body et_devices_electrical is
 	end;
 
 
-	
-	
+
+
 	procedure clear_selected (
 		device : in out type_device_electrical)
 	is begin
@@ -282,7 +282,7 @@ package body et_devices_electrical is
 	end;
 
 
-	
+
 	function is_selected (
 		device : in type_device_electrical)
 		return boolean
@@ -296,11 +296,11 @@ package body et_devices_electrical is
 		else
 			return false;
 		end if;
-	end;	
-	
+	end;
 
-	
-	
+
+
+
 	procedure set_proposed (
 		device : in out type_device_electrical)
 	is begin
@@ -308,9 +308,9 @@ package body et_devices_electrical is
 			set_proposed (device.status);
 		end if;
 	end;
-	
 
-	
+
+
 	procedure clear_proposed (
 		device : in out type_device_electrical)
 	is begin
@@ -319,8 +319,8 @@ package body et_devices_electrical is
 		end if;
 	end;
 
-	
-	
+
+
 	function is_proposed (
 		device : in type_device_electrical)
 		return boolean
@@ -345,7 +345,7 @@ package body et_devices_electrical is
 			set_moving (device.status);
 		end if;
 	end;
-	
+
 
 	procedure clear_moving (
 		device : in out type_device_electrical)
@@ -355,8 +355,8 @@ package body et_devices_electrical is
 		end if;
 	end;
 
-	
-	
+
+
 	function is_moving (
 		device : in type_device_electrical)
 		return boolean
@@ -376,7 +376,7 @@ package body et_devices_electrical is
 
 
 
-	
+
 
 	procedure modify_status (
 		device		: in out type_device_electrical;
@@ -387,9 +387,9 @@ package body et_devices_electrical is
 		end if;
 	end modify_status;
 
-	
 
-	
+
+
 	procedure reset_status (
 		device : in out type_device_electrical)
 	is begin
@@ -398,27 +398,27 @@ package body et_devices_electrical is
 		end if;
 	end;
 
-	
 
 
-	
+
+
 	function is_real (
 		device : in pac_devices_electrical.cursor)
-		return boolean 
-	is 
+		return boolean
+	is
 		d : type_device_electrical renames element (device);
 	begin
 		return is_real (d);
 	end is_real;
-	
 
 
-	
+
+
 
 	function is_proposed (
 		device : in pac_devices_electrical.cursor)
 		return boolean
-	is 
+	is
 		d : type_device_electrical renames element (device);
 	begin
 		if is_proposed (d) then
@@ -427,15 +427,15 @@ package body et_devices_electrical is
 			return false;
 		end if;
 	end is_proposed;
-	
 
 
-	
+
+
 
 	function is_selected (
 		device : in pac_devices_electrical.cursor)
 		return boolean
-	is 
+	is
 		d : type_device_electrical renames element (device);
 	begin
 		if is_selected (d) then
@@ -446,13 +446,13 @@ package body et_devices_electrical is
 	end is_selected;
 
 
-	
+
 
 
 	function is_moving (
 		device : in pac_devices_electrical.cursor)
 		return boolean
-	is 
+	is
 		d : type_device_electrical renames element (device);
 	begin
 		if is_moving (d) then
@@ -463,14 +463,14 @@ package body et_devices_electrical is
 	end is_moving;
 
 
-	
+
 
 
 	procedure iterate (
 		devices	: in pac_devices_electrical.map;
 		process	: not null access procedure (position : in pac_devices_electrical.cursor);
 		proceed	: not null access boolean)
-	is 
+	is
 		use pac_devices_electrical;
 		c : pac_devices_electrical.cursor := devices.first;
 	begin
@@ -479,15 +479,15 @@ package body et_devices_electrical is
 			next (c);
 		end loop;
 	end iterate;
-	
-
-	
 
 
 
 
 
-	
+
+
+
+
 
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
@@ -500,12 +500,12 @@ package body et_devices_electrical is
 	end get_package_model_name;
 
 
-	
 
 
 
-	
-	
+
+
+
 	function get_package_model (
 		device : in pac_devices_electrical.cursor)
 		return pac_package_models.cursor
@@ -520,8 +520,8 @@ package body et_devices_electrical is
 
 
 	function is_bom_relevant (
-		device : in pac_devices_electrical.cursor) 
-		return boolean 
+		device : in pac_devices_electrical.cursor)
+		return boolean
 	is
 		package_model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
@@ -531,24 +531,24 @@ package body et_devices_electrical is
 		return is_bom_relevant (package_model);
 	end is_bom_relevant;
 
-	
-	
-	
-	
 
 
 
-	
+
+
+
+
+
 
 
 
 -- PLACEHOLDERS
-	
+
 
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor;
 		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
-		return pac_text_content.bounded_string 
+		return pac_text_content.bounded_string
 	is
 		device : type_device_electrical renames element (device_cursor);
 
@@ -561,20 +561,20 @@ package body et_devices_electrical is
 			when VALUE		=> result := to_content (to_string (device.value));
 			when PURPOSE	=> result := to_content (to_string (device.purpose));
 		end case;
-		
+
 		return result;
 	end to_placeholder_content;
 
 
-	
-	
-	
+
+
+
 end et_devices_electrical;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

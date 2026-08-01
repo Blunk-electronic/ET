@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.strings.bounded;       	use ada.strings.bounded;
 
@@ -59,7 +59,7 @@ package et_undo_redo is
 	-- The fragment can be nets, silkscreen, board contours, meta info, ...
 	-- The affected fragment to be committed depends on the
 	-- given verb and noun.
-	-- This commit procedure must be called before and after a 
+	-- This commit procedure must be called before and after a
 	-- schematic operation. For this reason we speak about
 	-- PRE- and POST-commits (see package et_commit). A complete
 	-- commit consists of a PRE- and a POST-commit.
@@ -72,7 +72,7 @@ package et_undo_redo is
 
 
 	-- Likewise as the procedure above.
-	-- This commit procedure must be called before and after a 
+	-- This commit procedure must be called before and after a
 	-- schematic operation:
 	procedure commit (
 		stage	: in type_commit_stage;
@@ -82,11 +82,11 @@ package et_undo_redo is
 
 
 
-	
+
 	undo_message_length_max : constant positive := 50;
 	package pac_undo_message is new generic_bounded_length (undo_message_length_max);
 
-	
+
 	-- Restores the design state (both in schematic and board)
 	-- to the state BEFORE the latest commit.
 	-- Moves the latest PRE- and POST-commit to one of the the redo-stacks.
@@ -95,12 +95,12 @@ package et_undo_redo is
 	procedure undo (
 		message	: in out pac_undo_message.bounded_string;
 		lth		: in type_log_level);
-	
+
 
 	redo_message_length_max : constant positive := 50;
 	package pac_redo_message is new generic_bounded_length (redo_message_length_max);
 
-	
+
 	-- Redoes the the latest undo-operation:
 	-- Moves the latest PRE- and POST-commit back to one of the the do-stacks.
 	-- Via the argument "message" the procedure returns some helpful information
@@ -108,13 +108,13 @@ package et_undo_redo is
 	procedure redo  (
 		message	: in out pac_redo_message.bounded_string;
 		lth		: in type_log_level);
-	
-	
+
+
 end et_undo_redo;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

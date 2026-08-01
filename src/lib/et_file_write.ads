@@ -47,19 +47,19 @@ package et_file_write is
 
 	subtype type_tab_depth is natural range natural'first .. 9;
 	tab_depth : type_tab_depth := type_tab_depth'first;
-	
+
 	tab : constant character := ada.characters.latin_1.ht;
 
 	procedure tab_depth_up;
 	procedure tab_depth_down;
 	procedure reset_tab_depth;
 
-	type type_section_mark is (HEADER, FOOTER);	
+	type type_section_mark is (HEADER, FOOTER);
 
-	
+
 	procedure section_mark (section : in string; mark : in type_section_mark);
 
-	
+
 
 	-- Writes a line in the current output.
 	procedure write (

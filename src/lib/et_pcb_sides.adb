@@ -43,19 +43,19 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_pcb_sides is
 
 
-		
+
 	function to_string (face : in type_face) return string is begin
 		return latin_1.space & to_lower (type_face'image (face));
 	end to_string;
 
-	
+
 	function to_face (face : in string) return type_face is begin
 		return type_face'value (face);
 	end to_face;
 
-	
+
 	procedure toggle (face : in out type_face) is begin
-		case face is 
+		case face is
 			when TOP => face := BOTTOM;
 			when BOTTOM => face := TOP;
 		end case;
@@ -72,12 +72,12 @@ package body et_pcb_sides is
 	end;
 
 
-	
+
 end et_pcb_sides;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

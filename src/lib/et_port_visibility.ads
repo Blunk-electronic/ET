@@ -41,26 +41,26 @@ package et_port_visibility is
 
 	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
 	keyword_port_name_visible		: constant string := "port_name_visible";
-	
-	
+
+
 	type type_port_name_visible is (YES, NO);
 	port_name_visible_default : constant type_port_name_visible := YES;
 	function to_string (visible : in type_port_name_visible) return string;
-	function to_port_name_visible (visible : in string) return type_port_name_visible;	
+	function to_port_name_visible (visible : in string) return type_port_name_visible;
 
-	
+
 	type type_terminal_name_visible is (YES, NO);
 	terminal_name_visible_default : constant type_terminal_name_visible := YES;
-	function to_string (visible : in type_terminal_name_visible) return string;	
+	function to_string (visible : in type_terminal_name_visible) return string;
 	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
 
-		
-	
+
+
 end et_port_visibility;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

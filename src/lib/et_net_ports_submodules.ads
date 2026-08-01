@@ -53,9 +53,9 @@ with et_net_names;				use et_net_names;
 
 
 package et_net_ports_submodules is
-	
-	
-	
+
+
+
 	-- This is the port of a submodule:
 	type type_net_submodule_port is record
 		-- The instance of a certain submodule:
@@ -67,25 +67,25 @@ package et_net_ports_submodules is
 		-- CS rename to port ?
 	end record;
 
-	
-	
+
+
 	function "<" (
-		left, right : in type_net_submodule_port) 
+		left, right : in type_net_submodule_port)
 		return boolean;
 
-	
+
 	-- Many submodule ports are stored in ordered sets:
-	package pac_net_submodule_ports is new 
+	package pac_net_submodule_ports is new
 		ordered_sets (type_net_submodule_port);
 
 
 
-		
+
 end et_net_ports_submodules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

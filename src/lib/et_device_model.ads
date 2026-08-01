@@ -39,8 +39,8 @@
 --
 -- This is about so called "electrical" device models.
 -- A device is called "electrical" because it ALWAYS
--- has an abstract representation in the schematic and mostly 
--- a physical representation in the board. 
+-- has an abstract representation in the schematic and mostly
+-- a physical representation in the board.
 --
 -- To Do:
 -- - Rename everything containing the term "unit" to "symbol".
@@ -57,7 +57,7 @@ with et_device_model_unit_external;		use et_device_model_unit_external;
 
 package et_device_model is
 
-	
+
 	-- A device may have up to 1000 units. CS: seems to be reasonable limit
 	subtype type_unit_count is positive range 1 .. 1000;
 
@@ -65,27 +65,27 @@ package et_device_model is
 
 	-- NOTE: Devices can be composed of internal and/or external units.
 	--
-	-- An internal unit is modelled directly inside the device model, 
+	-- An internal unit is modelled directly inside the device model,
 	-- is fixed to the that device model
 	-- and can be used by that device model exclusively.
-	-- For example after importing a KiCad project there will only be 
+	-- For example after importing a KiCad project there will only be
 	-- internal units.
 	--
-	-- External units in turn provide much more flexibilty as they can 
-	-- be used by many device models. There is no fixed connection between 
+	-- External units in turn provide much more flexibilty as they can
+	-- be used by many device models. There is no fixed connection between
 	-- device model and unit..
 
 
 	-- A device has one or more units. A unit is a subsection of a device.
-	-- There are internal units, which exist for the particular device exclusively. 
+	-- There are internal units, which exist for the particular device exclusively.
 	-- An internal unit has a symbol and further properties like a swap level.
 	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
 	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
-	-- like swap level.	
+	-- like swap level.
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
-	
-	
+
+
 	type type_device_model (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
@@ -93,20 +93,20 @@ package et_device_model is
 
 		case appearance is
 
-			-- If a device appears in the schematic only, it is a virtual component 
+			-- If a device appears in the schematic only, it is a virtual component
 			-- and thus does not have any package variants.
 			-- Such components are power symbols. Later when building netlists
 			-- those components enforce net names (like GND or P3V3).
-			when APPEARANCE_VIRTUAL => 
+			when APPEARANCE_VIRTUAL =>
 				null;
 
-			-- If a device appears in both schematic and layout it comes 
+			-- If a device appears in both schematic and layout it comes
 			-- with at least one package/footprint variant. We store variants in a map.
-			when APPEARANCE_PCB => 
+			when APPEARANCE_PCB =>
 				value		: pac_device_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: pac_package_variants.map;
-				
+
 		end case;
 	end record;
 
@@ -115,7 +115,7 @@ package et_device_model is
 	-- This access type is required for reading a
 	-- device model from a file:
 	type type_device_model_access is access type_device_model;
-	
+
 
 
 	-- Returns true if the given model
@@ -123,9 +123,9 @@ package et_device_model is
 	function is_real (
 		model : in type_device_model)
 		return boolean;
-	
 
-	
+
+
 	-- When querying units of a device this type is required:
 	type type_device_units is record
 		int : pac_units_internal.cursor;
@@ -138,7 +138,7 @@ package et_device_model is
 	function has_internal_unit (
 		units : in type_device_units)
 		return boolean;
-	
+
 
 	-- Returns true if the given units provide
 	-- an external unit:
@@ -146,13 +146,13 @@ package et_device_model is
 		units : in type_device_units)
 		return boolean;
 
-	
+
 	-- Returns the name of the internal unit.
 	-- If no internal unit exists, then an exception is raised:
 	function get_name_internal (
 		units : in type_device_units)
 		return pac_unit_name.bounded_string;
-	
+
 
 	-- Returns the name of the external unit.
 	-- If no external unit exists, then an exception is raised:
@@ -162,7 +162,7 @@ package et_device_model is
 
 
 
-	
+
 
 	-- Locates the given unit by its name among the
 	-- internal units of the given device model.
@@ -173,7 +173,7 @@ package et_device_model is
 		model	: in type_device_model;
 		unit	: in pac_unit_name.bounded_string;
 		cursor	: in out pac_units_internal.cursor);
-	
+
 
 	-- Locates the given unit by its name among the
 	-- external units of the given device model.
@@ -186,7 +186,7 @@ package et_device_model is
 		cursor	: in out pac_units_external.cursor);
 
 
-	
+
 
 	-- Returns the total number of units that the
 	-- given device model contains.
@@ -194,7 +194,7 @@ package et_device_model is
 	function get_unit_count (
 		device_model : in type_device_model)
 		return type_unit_count;
-	
+
 
 	-- Returns the name of the first package variant
 	-- of the given device model.
@@ -205,7 +205,7 @@ package et_device_model is
 		return pac_package_variant_name.bounded_string;
 
 
-	-- Returns the default value as it is 
+	-- Returns the default value as it is
 	-- specified in the device model.
 	-- If the device is virtual (like a GND symbol) or if
 	-- no value is predifined in the model, then an empty
@@ -214,13 +214,13 @@ package et_device_model is
 		device_model : in type_device_model)
 		return pac_device_value.bounded_string;
 
-								   
-	
+
+
 end et_device_model;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

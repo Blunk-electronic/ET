@@ -62,12 +62,12 @@ package body et_module_read_tracks_route is
 
 	track_line : type_conductor_line;
 	track_arc : type_conductor_arc;
-	
-	-- CS linewidth_fab_min should not be defined in et_board_text ! 
+
+	-- CS linewidth_fab_min should not be defined in et_board_text !
 	-- seems misplaced there.
-	
-	
-	
+
+
+
 	procedure read_track_line (
 		line : in type_fields_of_line)
 	is
@@ -81,7 +81,7 @@ package body et_module_read_tracks_route is
 			-- extract the start position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_A (track_line, p);
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -89,16 +89,16 @@ package body et_module_read_tracks_route is
 			p := to_vector_model (line, 2);
 			set_B (track_line, p);
 
-		
+
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_line.layer := to_signal_layer (f (line, 2));
 
-			
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_line.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -106,8 +106,8 @@ package body et_module_read_tracks_route is
 
 
 
-	
-	
+
+
 	procedure read_track_arc (
 		line : in type_fields_of_line)
 	is
@@ -125,7 +125,7 @@ package body et_module_read_tracks_route is
 
 			-- extract the end position starting at field 2 of line
 			set_B (track_arc, to_vector_model (line, 2));
-			
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -137,7 +137,7 @@ package body et_module_read_tracks_route is
 
 			set_direction (track_arc, to_direction (f (line, 2)));
 
-			
+
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_arc.layer := to_signal_layer (f (line, 2));
@@ -145,16 +145,16 @@ package body et_module_read_tracks_route is
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_arc.width := to_distance (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_track_arc;
 
-	
 
-	
-	
+
+
+
 	procedure insert_track_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -165,18 +165,18 @@ package body et_module_read_tracks_route is
 		-- CS log messages
 		-- CS use update_element
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		add_line (route, track_line);
-			
+
 		-- Reset line for next line:
 		reset_line (track_line);
-	
+
 	end insert_track_line;
 
-	
-	
-	
-		
+
+
+
+
 	procedure insert_track_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -187,28 +187,28 @@ package body et_module_read_tracks_route is
 		-- CS log messages
 		-- CS use update_element
 		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
-		
+
 		-- CS board_check_arc (log_threshold + 1);
 		-- if not is_valid (board_arc) then
 			-- invalid_arc;
 		-- end if;
-		
+
 		-- insert arc
 		add_arc (route, track_arc);
-		
+
 		-- Reset arc for next arc:
 		reset_arc (track_arc);
-	
+
 	end insert_track_arc;
 
-	
+
 
 end et_module_read_tracks_route;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

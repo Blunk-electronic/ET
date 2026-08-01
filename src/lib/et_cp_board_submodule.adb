@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -57,8 +57,8 @@ package body et_cp_board_submodule is
 
 	use pac_geometry_2;
 	use pac_generic_modules;
-	
-	
+
+
 
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
@@ -66,12 +66,12 @@ package body et_cp_board_submodule is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 	begin
 		log (text => "move submodule", level => log_threshold);
 		log_indentation_up;
-		
+
 
 		case cmd_field_count is
 			when 8 =>
@@ -85,27 +85,27 @@ package body et_cp_board_submodule is
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:
-					commit_design	=> to_commit_design (cmd),					
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others =>
 				command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end move_submodule;
 
 
-		
+
 end et_cp_board_submodule;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

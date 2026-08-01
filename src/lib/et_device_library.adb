@@ -50,7 +50,7 @@ package body et_device_library is
 	--function hash_device_model (
 		--model	: in pac_device_model_file.bounded_string)
 		--return hash_type
-	--is 
+	--is
 	--begin
 		--return ada.strings.hash (to_string (model));
 	--end hash_device_model;
@@ -72,7 +72,7 @@ package body et_device_library is
 	end;
 
 
-	
+
 
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
@@ -87,14 +87,14 @@ package body et_device_library is
 	procedure create_device (
 		device_name		: in pac_device_model_file.bounded_string;
 		appearance		: in type_appearance;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use pac_device_models;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
-		
+
 		-- Test if device already exists. If already exists, issue warning and exit.
 		if contains (device_library, device_name) then
 			log (SEVERITY_WARNING, text => "device already exists -> skipped", level => log_threshold + 1);
@@ -113,7 +113,7 @@ package body et_device_library is
 						key			=> device_name,
 						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
-			end case;					
+			end case;
 		end if;
 
 		log_indentation_down;
@@ -121,18 +121,18 @@ package body et_device_library is
 
 
 
-	
+
 
 	function get_device_model (
 		model : in pac_device_model_file.bounded_string)
-		return pac_device_models.cursor 
+		return pac_device_models.cursor
 	is
 		cursor : constant pac_device_models.cursor := find (device_library, model);
 	begin
 		return cursor;
 	end;
 
-	
+
 
 
 
@@ -144,8 +144,8 @@ package body et_device_library is
 		return key (device_cursor);
 	end;
 
- 
- 
+
+
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return string
@@ -155,9 +155,9 @@ package body et_device_library is
 
 
 
-	
 
-	
+
+
 	function is_real (
 		device_cursor : in pac_device_models.cursor)
 		return boolean
@@ -168,10 +168,10 @@ package body et_device_library is
 		end case;
 	end is_real;
 
-	
 
 
-	
+
+
 
 
 
@@ -186,13 +186,13 @@ package body et_device_library is
 	end;
 
 
-	
-		
+
+
 end et_device_library;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

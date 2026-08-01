@@ -60,9 +60,9 @@ package et_device_library.units is
 
 	use pac_unit_name;
 
-	
-	
-	-- Returns true if the given device (via a cursor) 
+
+
+	-- Returns true if the given device (via a cursor)
 	-- does provide the given unit.
 	function provides_unit (
 		device_cursor	: in pac_device_models.cursor;
@@ -70,31 +70,31 @@ package et_device_library.units is
 		return boolean;
 
 
-	
+
 	-- Returns the cursor of the first internal or external unit.
-	-- Searches first in internal and then in external units. 
+	-- Searches first in internal and then in external units.
 	--  The search order is further-on determined
 	-- by the add levels of the units. Priority is add level MUST,
 	-- then ALWAYS, then NEXT, then REQUEST, then CAN.
-	--  If no suitable internal unit found, the cursor of internal 
+	--  If no suitable internal unit found, the cursor of internal
 	-- units in the return is no_element.
 	--  If no suitable external unit found, the cursor of external
 	-- units in the return is no_element.
 	function get_first_unit (
-		device_cursor : in pac_device_models.cursor) 
+		device_cursor : in pac_device_models.cursor)
 		return type_device_units;
 
 
-	
+
 	-- Returns the name of the first unit.
 	-- It can be an internal or an external unit.
 	function get_first_unit (
-		device_cursor : in pac_device_models.cursor) 
+		device_cursor : in pac_device_models.cursor)
 		return pac_unit_name.bounded_string;
 
 
-	
-							
+
+
 	-- Returns the cursor of the desired internal or external unit.
 	function get_unit (
 		device_cursor	: in pac_device_models.cursor;
@@ -103,46 +103,46 @@ package et_device_library.units is
 
 
 	-- If unit names are to be stored in lists:
-	package pac_unit_names is new 
+	package pac_unit_names is new
 		doubly_linked_lists (pac_unit_name.bounded_string);
 	-- CS move to et_unit_name
 
-	
+
 	-- Returns a list of all unit names of the given device:
 	function get_all_units (
 		device_cursor	: in pac_device_models.cursor)
 		return pac_unit_names.list;
 
 
-	
+
 	-- Returns the total number of units
 	-- that the given device model provides:
 	function get_unit_count (
 		device_cursor	: in pac_device_models.cursor)
 		return type_unit_count;
 
-	
 
 
 
-	
 
-	
+
+
+
 	-- For locating units this type is required by function locate_unit.
 	-- A unit can either be external (most likely) or internal to the device:
 	type type_unit_ext_int is (EXT, INT);
 	type type_unit_cursors (ext_int : type_unit_ext_int) is record
 		case ext_int is
-			when EXT => 
+			when EXT =>
 				external	: pac_units_external.cursor;
 			when INT =>
 				internal	: pac_units_internal.cursor;
 		end case;
 	end record;
 
-	
-	
-	-- Searches the given unit in the given device. Returns a cursor to 
+
+
+	-- Searches the given unit in the given device. Returns a cursor to
 	-- either the internal or external unit.
 	function locate_unit (
 		device_cursor	: in pac_device_models.cursor;
@@ -154,27 +154,27 @@ package et_device_library.units is
 	function get_symbol (
 		unit : in type_unit_cursors)
 		return type_symbol_model;
-		
-	
 
-	
+
+
+
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
 		terminal	: pac_terminal_name.bounded_string; -- H4, 1, 16
 		properties	: type_symbol_port (direction);
 	end record;
 
-	
+
 	-- Returns the properties of the given port of the given device.
 	function get_properties (
 		device_cursor	: in pac_device_models.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_symbol_ports.cursor;
 
-	type type_port_properties_access is access type_port_properties;	
-	
+	type type_port_properties_access is access type_port_properties;
 
-	
+
+
 
 	-- Returns the ports of the given device and unit.
 	-- The coordinates of the ports are the default x/y-positions relative
@@ -185,12 +185,12 @@ package et_device_library.units is
 		return pac_symbol_ports.map;
 
 
-	
+
 end et_device_library.units;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

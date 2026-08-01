@@ -49,25 +49,25 @@ package body et_board_ops_stencil is
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
-	
+
 
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_lines;
@@ -77,7 +77,7 @@ package body et_board_ops_stencil is
 					append (
 						container	=> module.board.stencil.top.lines,
 						new_item	=> line);
-					
+
 				when BOTTOM =>
 					append (
 						container	=> module.board.stencil.bottom.lines,
@@ -85,7 +85,7 @@ package body et_board_ops_stencil is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" draw stencil line" &
@@ -94,16 +94,16 @@ package body et_board_ops_stencil is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -113,14 +113,14 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
 	end add_line;
 
 
 
-	
+
 
 
 
@@ -131,34 +131,34 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_line (
 				line	: in out type_stencil_line)
 			is begin
 				modify_status (line, operation);
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stencil_lines.list renames module.board.stencil.top.lines;
 			begin
 				top.update_element (line.cursor, query_line'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 			begin
 				bottom.update_element (line.cursor, query_line'access);
 			end query_bottom;
 
-			
+
 		begin
 			case line.face is
 				when TOP =>
@@ -169,16 +169,16 @@ package body et_board_ops_stencil is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (element (line.cursor)) -- CS: log top/bottom			
+			& to_string (element (line.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -188,9 +188,9 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure propose_lines (
@@ -203,7 +203,7 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_stencil_lines.cursor;
@@ -222,8 +222,8 @@ package body et_board_ops_stencil is
 				end if;
 			end query_line;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stencil_lines.list renames module.board.stencil.top.lines;
 			begin
 				if not top.is_empty then
@@ -235,8 +235,8 @@ package body et_board_ops_stencil is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 			begin
 				if not bottom.is_empty then
@@ -248,15 +248,15 @@ package body et_board_ops_stencil is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing lines in" & to_string (catch_zone)
@@ -274,10 +274,10 @@ package body et_board_ops_stencil is
 
 
 
-	
 
-	
-	
+
+
+
 
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -286,22 +286,22 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_stencil_lines.list renames module.board.stencil.top.lines;
 			bottom	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 
-			
+
 			procedure query_line (
 				line	: in out type_stencil_line)
 			is begin
 				reset_status (line);
 			end query_line;
 
-			
+
 			lc : pac_stencil_lines.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -312,7 +312,7 @@ package body et_board_ops_stencil is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -323,13 +323,13 @@ package body et_board_ops_stencil is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed lines",
@@ -346,22 +346,22 @@ package body et_board_ops_stencil is
 
 
 
-	
 
 
-	
+
+
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_line
 	is
 		result : type_object_line;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -369,7 +369,7 @@ package body et_board_ops_stencil is
 			top_items 		: pac_stencil_lines.list renames module.board.stencil.top.lines;
 			bottom_items	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 
-			
+
 			procedure query_line (c : in pac_stencil_lines.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -388,9 +388,9 @@ package body et_board_ops_stencil is
 						null; -- CS
 				end case;
 			end query_line;
-			
 
-			
+
+
 		begin
 			-- Query the lines in the top layer first:
 			iterate (top_items, query_line'access, proceed'access);
@@ -404,18 +404,18 @@ package body et_board_ops_stencil is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -426,12 +426,12 @@ package body et_board_ops_stencil is
 	end get_first_line;
 
 
-	
 
 
-	
 
-	
+
+
+
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -446,15 +446,15 @@ package body et_board_ops_stencil is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_stencil_lines.cursor;
 
-			
+
 			procedure query_line (line : in out type_stencil_line) is
 			begin
 				-- case coordinates is
@@ -467,23 +467,23 @@ package body et_board_ops_stencil is
 				-- end case;
 			end query_line;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					line_cursor := module.board.stencil.top.lines.find (line);
 					module.board.stencil.top.lines.update_element (line_cursor, query_line'access);
-					
+
 				when BOTTOM =>
 					line_cursor := module.board.stencil.bottom.lines.find (line);
 					module.board.stencil.bottom.lines.update_element (line_cursor, query_line'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move stencil " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -496,8 +496,8 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -505,8 +505,8 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_line;
 
@@ -514,8 +514,8 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
+
+
 
 
 
@@ -530,10 +530,10 @@ package body et_board_ops_stencil is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			line_cursor : pac_stencil_lines.cursor;
@@ -545,7 +545,7 @@ package body et_board_ops_stencil is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_stencil_lines.no_element then
-						module.board.stencil.top.lines.delete (line_cursor); 
+						module.board.stencil.top.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -556,7 +556,7 @@ package body et_board_ops_stencil is
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_stencil_lines.no_element then
-						module.board.stencil.bottom.lines.delete (line_cursor); 
+						module.board.stencil.bottom.lines.delete (line_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -566,10 +566,10 @@ package body et_board_ops_stencil is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete in stencil" & to_string (line),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
@@ -577,7 +577,7 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -586,39 +586,39 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_line;
 
 
 
-	
-
-	
 
 
-	
 
--- ARCS:	
-	
+
+
+
+
+-- ARCS:
+
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		arc				: in type_stencil_arc;		
+		arc				: in type_stencil_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_arcs;
@@ -636,7 +636,7 @@ package body et_board_ops_stencil is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing stencil arc" &
@@ -647,15 +647,15 @@ package body et_board_ops_stencil is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -664,7 +664,7 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_arc;
@@ -672,7 +672,7 @@ package body et_board_ops_stencil is
 
 
 
-	
+
 
 
 
@@ -687,31 +687,31 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_arc (
 				arc	: in out type_stencil_arc)
 			is begin
 				modify_status (arc, operation);
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			begin
 				top.update_element (arc.cursor, query_arc'access);
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 			begin
 				bottom.update_element (arc.cursor, query_arc'access);
 			end query_bottom;
 
-			
+
 		begin
 			case arc.face is
 				when TOP =>
@@ -722,16 +722,16 @@ package body et_board_ops_stencil is
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (element (arc.cursor)) -- CS: log top/bottom			
+			& to_string (element (arc.cursor)) -- CS: log top/bottom
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -742,7 +742,7 @@ package body et_board_ops_stencil is
 
 
 
-	
+
 
 
 
@@ -757,7 +757,7 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			lc : pac_stencil_arcs.cursor;
@@ -776,8 +776,8 @@ package body et_board_ops_stencil is
 				end if;
 			end query_arc;
 
-			
-			procedure query_top is 
+
+			procedure query_top is
 				top : pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			begin
 				if not top.is_empty then
@@ -789,8 +789,8 @@ package body et_board_ops_stencil is
 				end if;
 			end query_top;
 
-			
-			procedure query_bottom is 
+
+			procedure query_bottom is
 				bottom : pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 			begin
 				if not bottom.is_empty then
@@ -802,15 +802,15 @@ package body et_board_ops_stencil is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			case face is
 				when TOP	=> query_top;
 				when BOTTOM	=> query_bottom;
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing arcs in " & to_string (catch_zone)
@@ -829,9 +829,9 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
-	
+
+
+
 
 
 	procedure reset_proposed_arcs (
@@ -841,22 +841,22 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			top 	: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			bottom	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 
-			
+
 			procedure query_arc (
 				arc	: in out type_stencil_arc)
 			is begin
 				reset_status (arc);
 			end query_arc;
 
-			
+
 			lc : pac_stencil_arcs.cursor;
-			
+
 			procedure query_top is begin
 				if not top.is_empty then
 					lc := top.first;
@@ -867,7 +867,7 @@ package body et_board_ops_stencil is
 				end if;
 			end query_top;
 
-			
+
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -878,13 +878,13 @@ package body et_board_ops_stencil is
 				end if;
 			end query_bottom;
 
-			
+
 		begin
 			query_top;
 			query_bottom;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " resetting proposed arcs",
@@ -900,25 +900,25 @@ package body et_board_ops_stencil is
 	end reset_proposed_arcs;
 
 
-	
 
 
 
-	
+
+
 
 
 	function get_first_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_arc
 	is
 		result : type_object_arc;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
@@ -926,7 +926,7 @@ package body et_board_ops_stencil is
 			top_items 		: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			bottom_items	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 
-			
+
 			procedure query_arc (c : in pac_stencil_arcs.cursor) is begin
 				case flag is
 					when PROPOSED =>
@@ -945,9 +945,9 @@ package body et_board_ops_stencil is
 						null; -- CS
 				end case;
 			end query_arc;
-			
 
-			
+
+
 		begin
 			-- Query the arcs in the top layer first:
 			iterate (top_items, query_arc'access, proceed'access);
@@ -961,18 +961,18 @@ package body et_board_ops_stencil is
 
 			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				result := (others => <>);	
+				result := (others => <>);
 			end if;
 		end query_module;
 
-			
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first arc / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -983,14 +983,14 @@ package body et_board_ops_stencil is
 	end get_first_arc;
 
 
-	
 
 
 
 
-	
 
-	
+
+
+
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -1005,15 +1005,15 @@ package body et_board_ops_stencil is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			arc_cursor : pac_stencil_arcs.cursor;
 
-			
+
 			procedure query_arc (arc : in out type_stencil_arc) is
 			begin
 				-- case coordinates is
@@ -1026,23 +1026,23 @@ package body et_board_ops_stencil is
 				-- end case;
 			end query_arc;
 
-			
+
 		begin
 			case face is
 				when TOP =>
 					arc_cursor := module.board.stencil.top.arcs.find (arc);
 					module.board.stencil.top.arcs.update_element (arc_cursor, query_arc'access);
-					
+
 				when BOTTOM =>
 					arc_cursor := module.board.stencil.bottom.arcs.find (arc);
 					module.board.stencil.bottom.arcs.update_element (arc_cursor, query_arc'access);
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " move stencil " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
@@ -1055,16 +1055,16 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end move_arc;
@@ -1072,8 +1072,8 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
+
+
 
 
 
@@ -1088,10 +1088,10 @@ package body et_board_ops_stencil is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_arcs;
@@ -1104,7 +1104,7 @@ package body et_board_ops_stencil is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_stencil_arcs.no_element then
-						module.board.stencil.top.arcs.delete (arc_cursor); 
+						module.board.stencil.top.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1115,7 +1115,7 @@ package body et_board_ops_stencil is
 
 					-- Delete the arc if it exists:
 					if arc_cursor /= pac_stencil_arcs.no_element then
-						module.board.stencil.bottom.arcs.delete (arc_cursor); 
+						module.board.stencil.bottom.arcs.delete (arc_cursor);
 					else
 						null; -- CS message
 					end if;
@@ -1125,18 +1125,18 @@ package body et_board_ops_stencil is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
+			& " face" & to_string (face)
 			& " delete stencil arc " & to_string (arc),
 			level => log_threshold);
-		
+
 		log_indentation_up;
 
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
-		
-		
+
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1145,39 +1145,39 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_arc;
 
-	
 
 
 
 
-	
 
-	
-	
+
+
+
+
 -- CIRLCES:
-	
+
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stencil_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
-		
+
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_circles;
@@ -1196,7 +1196,7 @@ package body et_board_ops_stencil is
 			end case;
 		end;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" draw stencil circle" &
@@ -1208,13 +1208,13 @@ package body et_board_ops_stencil is
 		module_cursor := locate_module (module_name);
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1224,21 +1224,21 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end add_circle;
-	
 
 
 
 
-	
-	
+
+
+
 
 
 -- ZONES:
-	
+
 
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1255,11 +1255,11 @@ package body et_board_ops_stencil is
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			c : pac_stencil_zones.cursor;
@@ -1284,7 +1284,7 @@ package body et_board_ops_stencil is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			case face is
 				when TOP =>
@@ -1304,7 +1304,7 @@ package body et_board_ops_stencil is
 						module.board.stencil.top.zones.append (zone);
 					end if;
 
-					
+
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
 					c := module.board.stencil.bottom.zones.first;
@@ -1326,8 +1326,8 @@ package body et_board_ops_stencil is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " draw stencil zone" 
+		log (text => "module " & to_string (module_cursor)
+			 & " draw stencil zone"
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
@@ -1339,7 +1339,7 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1349,17 +1349,17 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end draw_zone;
 
-	
 
 
-	
 
-	
+
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
@@ -1369,21 +1369,21 @@ package body et_board_ops_stencil is
 		use pac_contours;
 		use pac_segments;
 		use pac_stencil_zones;
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
 				modify_status (segment, operation);
 			end query_segment;
 
-			
+
 			procedure query_zone (
 				zone : in out type_stencil_zone)
 			is begin
@@ -1399,28 +1399,28 @@ package body et_board_ops_stencil is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
 			-- Search the given segment according to its
 			-- zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stencil.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stencil.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
@@ -1430,7 +1430,7 @@ package body et_board_ops_stencil is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1442,7 +1442,7 @@ package body et_board_ops_stencil is
 
 
 
-	
+
 
 
 	procedure propose_segments (
@@ -1455,7 +1455,7 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_zones;
@@ -1464,7 +1464,7 @@ package body et_board_ops_stencil is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1476,14 +1476,14 @@ package body et_board_ops_stencil is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_stencil_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1500,8 +1500,8 @@ package body et_board_ops_stencil is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			case face is
 				when TOP =>
@@ -1512,11 +1512,11 @@ package body et_board_ops_stencil is
 							container	=> module.board.stencil.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
 
-					
+
 				when BOTTOM =>
 					zc := module.board.stencil.bottom.zones.first;
 
@@ -1525,13 +1525,13 @@ package body et_board_ops_stencil is
 							container	=> module.board.stencil.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
-						
+
 						next (zc);
 					end loop;
-			end case;	
+			end case;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " proposing segments in" & to_string (catch_zone)
@@ -1550,11 +1550,11 @@ package body et_board_ops_stencil is
 
 
 
-	
 
 
-	
-	
+
+
+
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -1562,7 +1562,7 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_zones;
@@ -1571,7 +1571,7 @@ package body et_board_ops_stencil is
 			use pac_contours;
 			use pac_segments;
 
-			
+
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
@@ -1579,14 +1579,14 @@ package body et_board_ops_stencil is
 			end query_segment;
 
 
-			
+
 			procedure query_zone (
 				zone : in out type_stencil_zone)
 			is
 				use pac_contours;
 				use pac_segments;
 				c : pac_segments.cursor;
-				
+
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1603,8 +1603,8 @@ package body et_board_ops_stencil is
 					end loop;
 				end if;
 			end query_zone;
-			
-			
+
+
 		begin
 			zc := module.board.stencil.top.zones.first;
 
@@ -1613,11 +1613,11 @@ package body et_board_ops_stencil is
 					container	=> module.board.stencil.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 
-					
+
 			zc := module.board.stencil.bottom.zones.first;
 
 			while zc /= pac_stencil_zones.no_element loop
@@ -1625,12 +1625,12 @@ package body et_board_ops_stencil is
 					container	=> module.board.stencil.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
-				
+
 				next (zc);
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " resetting proposed segments of zones in stencil",
@@ -1648,13 +1648,13 @@ package body et_board_ops_stencil is
 
 
 
-	
 
-	
+
+
 
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
@@ -1664,22 +1664,22 @@ package body et_board_ops_stencil is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_contours;
 			use pac_segments;
 			use pac_stencil_zones;
-			
+
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
-			
-			
-			procedure query_zone (z : in pac_stencil_zones.cursor) is 
+
+
+			procedure query_zone (z : in pac_stencil_zones.cursor) is
 
 				procedure query_segment (
-					c : in pac_segments.cursor) 
+					c : in pac_segments.cursor)
 				is begin
 					case flag is
 						when PROPOSED =>
@@ -1706,16 +1706,16 @@ package body et_board_ops_stencil is
 							null; -- CS
 					end case;
 				end query_segment;
-				
-				
+
+
 				procedure query_segments (z : in type_stencil_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
-						proceed		=> proceed'access);				
+						proceed		=> proceed'access);
 				end query_segments;
 
-				
+
 			begin
 				if element (z).contour.circular then
 					null; -- CS
@@ -1724,41 +1724,41 @@ package body et_board_ops_stencil is
 				end if;
 			end query_zone;
 
-			
+
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
 				zones	=> module.board.stencil.top.zones,
-				process	=> query_zone'access, 
+				process	=> query_zone'access,
 				proceed	=> proceed'access);
 
-			
+
 			-- If nothing found, iterate the bottom layer:
 			if proceed then
 				face := BOTTOM;
-				
+
 				iterate (
 					zones	=> module.board.stencil.bottom.zones,
-					process	=> query_zone'access, 
+					process	=> query_zone'access,
 					proceed	=> proceed'access);
 
 			end if;
 		end query_module;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first segment / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		-- put_line ("found " & to_string (result));
-		
+
 		log_indentation_down;
 
 		return result;
@@ -1767,8 +1767,8 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
+
+
 
 
 
@@ -1784,15 +1784,15 @@ package body et_board_ops_stencil is
 		use pac_contours;
 		use pac_segments;
 		use pac_stencil_zones;
-				
+
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
@@ -1801,16 +1801,16 @@ package body et_board_ops_stencil is
 				move_segment (s, point_of_attack, destination);
 			end do_it;
 
-			
+
 			procedure query_zone (
 				zone : in out type_stencil_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
-					-- Locate the given segment in 
+					-- Locate the given segment in
 					-- the candidate zone:
 					update_element (
 						container	=> zone.contour.segments,
@@ -1819,28 +1819,28 @@ package body et_board_ops_stencil is
 
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stencil.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stencil.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
-		
-				
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move stencil zone segment " & to_string (segment.segment)
@@ -1855,8 +1855,8 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
@@ -1866,18 +1866,18 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end move_segment;
 
 
-	
-
-	
 
 
-	
+
+
+
+
 
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1893,51 +1893,51 @@ package body et_board_ops_stencil is
 		use et_undo_redo;
 		use et_commit;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			procedure query_zone (
 				zone : in out type_stencil_zone)
-			is 
+			is
 				c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
-					c := segment.segment;					
+					c := segment.segment;
 					zone.contour.segments.delete (c);
 				end if;
 			end query_zone;
-	
-			
+
+
 		begin
-			-- Search for the given segment according to the 
+			-- Search for the given segment according to the
 			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stencil.top.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.top.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stencil.bottom.zones, 
-						position	=> segment.zone, 
+						container	=> module.board.stencil.bottom.zones,
+						position	=> segment.zone,
 						process		=> query_zone'access);
 
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " delete stencil zone segment " 
+			& " delete stencil zone segment "
 			& to_string (segment.segment),
 			level => log_threshold);
 
@@ -1948,30 +1948,30 @@ package body et_board_ops_stencil is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		generic_modules.update_element (						
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
-		
+		end if;
+
 		log_indentation_down;
 	end delete_segment;
-	
 
 
 
 
 
 
-	
+
+
 
 -- OBJECTS:
-	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -1979,14 +1979,14 @@ package body et_board_ops_stencil is
 	is begin
 		return natural (objects.length);
 	end get_count;
-	
-	
-	
-	
+
+
+
+
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object
 	is
@@ -2008,9 +2008,9 @@ package body et_board_ops_stencil is
 
 		log_indentation_up;
 
-		
+
 		-- SEARCH FOR A LINE:
-		
+
 		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
 
@@ -2019,7 +2019,7 @@ package body et_board_ops_stencil is
 			log (text => to_string (element (result_line.cursor))
 				 & " face " & to_string (result_line.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_LINE;
 		end if;
 
@@ -2028,9 +2028,9 @@ package body et_board_ops_stencil is
 		end if;
 
 
-		
+
 		-- SEARCH FOR AN ARC:
-		
+
 		-- If an arc has been found, then go to the end of this procedure:
 		result_arc := get_first_arc (module_cursor, flag, log_threshold + 1);
 
@@ -2039,7 +2039,7 @@ package body et_board_ops_stencil is
 			log (text => to_string (element (result_arc.cursor))
 				 & " face " & to_string (result_arc.face),
 				 level => log_threshold + 1);
-			
+
 			result_category := CAT_ARC;
 		end if;
 
@@ -2054,7 +2054,7 @@ package body et_board_ops_stencil is
 
 
 		-- SEARCH FOR A SEGMENT OF A ZONE:
-		
+
 		-- If there is one, then go to the end  of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
 
@@ -2063,16 +2063,16 @@ package body et_board_ops_stencil is
 			log (text => to_string (result_segment.segment)
 					& " face " & to_string (result_segment.face),
 					level => log_threshold + 1);
-			
+
 			result_category := CAT_ZONE_SEGMENT;
 		end if;
 
-		
+
 		-- If still nothing has been found then the category is CAT_VOID.
-		
+
 
 	<<end_of_search>>
-		
+
 		log_indentation_down;
 
 		case result_category is
@@ -2087,7 +2087,7 @@ package body et_board_ops_stencil is
 
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
-				
+
 		end case;
 	end get_first_object;
 
@@ -2095,8 +2095,8 @@ package body et_board_ops_stencil is
 
 
 
-	
-	
+
+
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -2106,16 +2106,16 @@ package body et_board_ops_stencil is
 		use pac_objects;
 		result : pac_objects.list;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_zones;
 			zone_cursor : pac_stencil_zones.cursor;
 			face : type_face := TOP;
-			
+
 			use pac_stencil_lines;
 			line_cursor : pac_stencil_lines.cursor;
 
@@ -2123,15 +2123,15 @@ package body et_board_ops_stencil is
 			arc_cursor : pac_stencil_arcs.cursor;
 
 			-- CS circles
-			
-			
+
+
 			procedure query_zone (zone : in type_stencil_zone) is
 				use pac_contours;
 				use pac_segments;
 				-- CS test circular flag !!
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
-				
-				procedure query_segment (segment : in type_segment) is 
+
+				procedure query_segment (segment : in type_segment) is
 
 					procedure collect is begin
 						result.append ((
@@ -2152,21 +2152,21 @@ package body et_board_ops_stencil is
 							if is_selected (segment) then
 								collect;
 							end if;
-							
+
 						when others => null; -- CS
 					end case;
 				end query_segment;
-				
+
 			begin
 				while segment_cursor /= pac_segments.no_element loop
 					query_element (segment_cursor, query_segment'access);
 					next (segment_cursor);
 				end loop;
 			end query_zone;
-			
 
-			
-			procedure query_line (line : in type_stencil_line) is 
+
+
+			procedure query_line (line : in type_stencil_line) is
 
 				procedure collect is begin
 					result.append ((
@@ -2175,7 +2175,7 @@ package body et_board_ops_stencil is
 
 					log (text => to_string (line), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -2191,12 +2191,12 @@ package body et_board_ops_stencil is
 					when others => null; -- CS
 				end case;
 			end query_line;
-				
 
 
 
-	
-			procedure query_arc (arc : in type_stencil_arc) is 
+
+
+			procedure query_arc (arc : in type_stencil_arc) is
 
 				procedure collect is begin
 					result.append ((
@@ -2205,7 +2205,7 @@ package body et_board_ops_stencil is
 
 					log (text => to_string (arc), level => log_threshold + 2);
 				end collect;
-				
+
 			begin
 				case flag is
 					when PROPOSED =>
@@ -2222,12 +2222,12 @@ package body et_board_ops_stencil is
 				end case;
 			end query_arc;
 
-			
-			
+
+
 		begin
 			log (text => "top zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.stencil.top.zones.first;
 			while zone_cursor /= pac_stencil_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -2236,10 +2236,10 @@ package body et_board_ops_stencil is
 
 			log_indentation_down;
 
-			
+
 			log (text => "top lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.stencil.top.lines.first;
 			while line_cursor /= pac_stencil_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -2252,7 +2252,7 @@ package body et_board_ops_stencil is
 
 			log (text => "top arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.stencil.top.arcs.first;
 			while arc_cursor /= pac_stencil_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -2263,7 +2263,7 @@ package body et_board_ops_stencil is
 
 
 
-			
+
 			-- CS circles
 
 
@@ -2271,7 +2271,7 @@ package body et_board_ops_stencil is
 
 			log (text => "bottom zones", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			zone_cursor := module.board.stencil.bottom.zones.first;
 			while zone_cursor /= pac_stencil_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
@@ -2280,10 +2280,10 @@ package body et_board_ops_stencil is
 
 			log_indentation_down;
 
-			
+
 			log (text => "bottom lines", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			line_cursor := module.board.stencil.bottom.lines.first;
 			while line_cursor /= pac_stencil_lines.no_element loop
 				query_element (line_cursor, query_line'access);
@@ -2295,7 +2295,7 @@ package body et_board_ops_stencil is
 
 			log (text => "bottom arcs", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			arc_cursor := module.board.stencil.bottom.arcs.first;
 			while arc_cursor /= pac_stencil_arcs.no_element loop
 				query_element (arc_cursor, query_arc'access);
@@ -2305,32 +2305,32 @@ package body et_board_ops_stencil is
 			log_indentation_down;
 
 			-- CS circles
-			
+
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element ( -- CS query_module is sufficient
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 
 		return result;
 	end get_objects;
-	
 
 
 
 
 
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2345,7 +2345,7 @@ package body et_board_ops_stencil is
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		case object.cat is
 			when CAT_LINE =>
 				modify_status (module_cursor, object.line, operation, log_threshold + 1);
@@ -2355,7 +2355,7 @@ package body et_board_ops_stencil is
 
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -2367,16 +2367,16 @@ package body et_board_ops_stencil is
 
 
 
-	
 
-	
+
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
@@ -2387,10 +2387,10 @@ package body et_board_ops_stencil is
 
 
 
-	
 
 
-	
+
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2401,7 +2401,7 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " move stencil object " 
+			& " move stencil object "
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -2411,36 +2411,36 @@ package body et_board_ops_stencil is
 
 		case object.cat is
 			when CAT_LINE =>
-				move_line (module_cursor, object.line.face, 
+				move_line (module_cursor, object.line.face,
 					element (object.line.cursor),
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
-				move_arc (module_cursor, object.arc.face, 
+				move_arc (module_cursor, object.arc.face,
 					element (object.arc.cursor),
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
-				
+
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
 					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
-							
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end move_object;
-	
 
 
 
 
 
-	
+
+
 
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2462,11 +2462,11 @@ package body et_board_ops_stencil is
 	end reset_proposed_objects;
 
 
-	
 
 
 
-	
+
+
 
 
 	procedure delete_object (
@@ -2484,60 +2484,60 @@ package body et_board_ops_stencil is
 		case object.cat is
 			when CAT_LINE =>
 				delete_line (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.line.face,
 					line			=> element (object.line.cursor),
 					commit_design	=> DO_COMMIT,
-					log_threshold	=> log_threshold + 1);					
+					log_threshold	=> log_threshold + 1);
 
 			when CAT_ARC =>
 				delete_arc (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					face			=> object.arc.face,
 					arc				=> element (object.arc.cursor),
 					commit_design	=> DO_COMMIT,
-					log_threshold	=> log_threshold + 1);					
-				
+					log_threshold	=> log_threshold + 1);
+
 			-- CS circles
-				
+
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (
-					module_cursor	=> module_cursor, 
+					module_cursor	=> module_cursor,
 					segment			=> object.segment,
 					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
-				
+
 			when CAT_VOID =>
 				null;
-		end case;		
-		
+		end case;
+
 		log_indentation_down;
 	end delete_object;
-	
 
 
 
-	
 
-	
-	
+
+
+
+
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use pac_stencil_lines;
@@ -2558,7 +2558,7 @@ package body et_board_ops_stencil is
 				arc_cursor    	:= module.board.stencil.bottom.arcs.first;
 				circle_cursor	:= module.board.stencil.bottom.circles.first;
 			end if;
-			
+
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stencil_lines.no_element loop
 				if in_catch_zone (
@@ -2601,7 +2601,7 @@ package body et_board_ops_stencil is
 					if in_catch_zone (
 						zone	=> catch_zone,
 						circle	=> element (circle_cursor))
-					then					
+					then
 						if face = TOP then
 							delete (module.board.stencil.top.circles, circle_cursor);
 						else
@@ -2617,10 +2617,10 @@ package body et_board_ops_stencil is
 			if not deleted then
 				nothing_found (catch_zone);
 			end if;
-			
+
 		end delete;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" delete stencil object face" & to_string (face) &
@@ -2632,13 +2632,13 @@ package body et_board_ops_stencil is
 
 
 		log_indentation_up;
-		
+
 		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -2648,18 +2648,18 @@ package body et_board_ops_stencil is
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
-		end if;		
+		end if;
 
 		log_indentation_down;
 	end delete_object;
-	
-	
+
+
 end et_board_ops_stencil;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

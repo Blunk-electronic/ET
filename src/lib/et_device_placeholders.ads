@@ -53,41 +53,41 @@ package et_device_placeholders is
 		-- CS partcode ?
 		);
 	-- CS use prefix
-	
+
 
 	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
-	
-	
+
+
 	function to_string (
-		text_meaning : in type_placeholder_meaning) 
+		text_meaning : in type_placeholder_meaning)
 		return string;
 
-	
+
 	function to_meaning (
-		text_meaning : in string) 
+		text_meaning : in string)
 		return type_placeholder_meaning;
-	
+
 
 
 
 	-- This enumeration type shall be used in order to
 	-- specify how a placeholder is tied to a package.
 	type type_anchor_mode is (
-	
-		-- The placeholder position is relative to the 
+
+		-- The placeholder position is relative to the
 		-- origin of the complex parent object.
-		-- If the object is moved or rotated, then the 
+		-- If the object is moved or rotated, then the
 		-- placeholder moves along:
 		RELATIVE,
-		
+
 		-- The placeholder position is absolute, independend
 		-- of the parent object position. So the placeholder is completely
 		-- disconnected from the object:
 		ABSOLUTE);
 
-		
+
 	anchor_mode_default : constant type_anchor_mode := RELATIVE;
-	
+
 
 
 	function to_string (
@@ -98,20 +98,20 @@ package et_device_placeholders is
 	function to_anchor_mode (
 		mode : in string)
 		return type_anchor_mode;
-	
-	
-	
+
+
+
 	-- CS ?
 	-- type type_rotation_mode is (
 	-- 	MODE_ROTATE_WITH_PACKAGE
 	-- 	...);
-	
-	
+
+
 end et_device_placeholders;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -44,10 +44,10 @@
 package body et_cmd_sts is
 
 
-	
+
 
 	function to_string (
-		origin : in type_cmd_origin) 
+		origin : in type_cmd_origin)
 		return string
 	is begin
 		return type_cmd_origin'image (origin);
@@ -61,10 +61,10 @@ package body et_cmd_sts is
 	is begin
 		cmd.origin := origin;
 	end;
-	
 
 
-	
+
+
 	function get_origin (
 		cmd		: in type_single_cmd)
 		return type_cmd_origin
@@ -81,17 +81,17 @@ package body et_cmd_sts is
 		return to_string (cmd.origin);
 	end;
 
-	
 
-	
+
+
 	function to_single_cmd (
 		fields	: in type_fields_of_line;
 		origin	: in type_cmd_origin)
 		return type_single_cmd
-	is 
+	is
 		cmd : constant type_single_cmd := (
-			fields => fields, 
-			origin	=> origin,						 
+			fields => fields,
+			origin	=> origin,
 			others => <>);
 	begin
 		return cmd;
@@ -117,8 +117,8 @@ package body et_cmd_sts is
 	end;
 
 
-	
-	
+
+
 
 	procedure set_fields (
 		cmd		: in out type_single_cmd;
@@ -139,7 +139,7 @@ package body et_cmd_sts is
 
 
 
-	
+
 	function get_fields (
 		cmd		: in type_single_cmd)
 		return type_fields_of_line
@@ -148,8 +148,8 @@ package body et_cmd_sts is
 	end;
 
 
-	
-	
+
+
 	function get_all_fields (
 		cmd		: in type_single_cmd)
 		return string
@@ -158,7 +158,7 @@ package body et_cmd_sts is
 	end;
 
 
-	
+
 
 	function get_field_count (
 		cmd		: in type_single_cmd)
@@ -168,7 +168,7 @@ package body et_cmd_sts is
 	end;
 
 
-	
+
 
 	function is_complete (
 		cmd		: in type_single_cmd)
@@ -184,14 +184,14 @@ package body et_cmd_sts is
 	is begin
 		cmd.complete := true;
 	end;
-	
+
 
 	procedure set_incomplete (
 		cmd		: in out type_single_cmd)
 	is begin
 		cmd.complete := false;
 	end;
-	
+
 
 
 	function finalization_is_pending (
@@ -208,7 +208,7 @@ package body et_cmd_sts is
 	is begin
 		cmd.finalization_pending := true;
 	end;
-	
+
 
 
 	function to_string (
@@ -219,7 +219,7 @@ package body et_cmd_sts is
 	end;
 
 
-	
+
 	function get_exit_code (
 		cmd		: in type_single_cmd)
 		return type_exit_code_command
@@ -228,7 +228,7 @@ package body et_cmd_sts is
 	end;
 
 
-	
+
 
 	procedure set_exit_code (
 		cmd		: in out type_single_cmd;
@@ -238,7 +238,7 @@ package body et_cmd_sts is
 	end;
 
 
-	
+
 
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd)
@@ -246,75 +246,75 @@ package body et_cmd_sts is
 		cmd := (others	=> <>);
 	end;
 
-	
+
 
 
 	procedure invalid_keyword (
-		field : in type_field_count) 
+		field : in type_field_count)
 	is begin
-		log (SEVERITY_ERROR, "invalid keyword in field no." 
+		log (SEVERITY_ERROR, "invalid keyword in field no."
 			 & type_field_count'image (field) & " !",
 			 console => true);
 		raise constraint_error;
 	end;
 
-	
 
-	
+
+
 	procedure log_command_incomplete (
 		field_count		: in type_field_count;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => incomplete 
-			& "Only" & type_field_count'image (field_count) 
+		log (text => incomplete
+			& "Only" & type_field_count'image (field_count)
 			& " arguments provided. "
-			& "Proposing arguments ...", 
+			& "Proposing arguments ...",
 			level => log_threshold);
 	end log_command_incomplete;
 
 
 
-	
+
 	procedure command_incomplete (
 		cmd : in out type_single_cmd)
 	is begin
 		cmd.complete := false;
-		
+
 		case cmd.origin is
 			when ORIGIN_CONSOLE =>
 				-- This is not a failure. For this reason
 				-- we do not set an exit code here.
-				
-				-- Instead in console mode, further actions 
+
+				-- Instead in console mode, further actions
 				-- can be proposed to the operator:
-				null;				
+				null;
 				log (SEVERITY_NOTE, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
 
-				
+
 			when ORIGIN_SCRIPT =>
 				log (SEVERITY_ERROR, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
-				
+
 				-- In script mode, an incomplete command is not accepted.
 				-- The exit code must be set accordingly:
 				set_exit_code (cmd, 1);
-				
+
 		end case;
 	end command_incomplete;
 
 
-	
+
 
 
 
 
 	procedure command_too_long (
 		cmd		: in out type_single_cmd;
-		from	: in type_field_count) 
+		from	: in type_field_count)
 	is begin
-		log (SEVERITY_ERROR, "Command: " & enclose_in_quotes (get_all_fields (cmd)) 
+		log (SEVERITY_ERROR, "Command: " & enclose_in_quotes (get_all_fields (cmd))
 			 & " too long !");
-		
-		log (text => "Excessive arguments after no." 
+
+		log (text => "Excessive arguments after no."
 			 & type_field_count'image (from));
 
 		-- A too long a command is not accepted.
@@ -324,7 +324,7 @@ package body et_cmd_sts is
 
 
 
-	
-	
+
+
 end et_cmd_sts;
 

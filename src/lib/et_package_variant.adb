@@ -55,7 +55,7 @@ package body et_package_variant is
 	end;
 
 
-	
+
 
 	function get_variant_count (
 		variants : in pac_package_variants.map)
@@ -65,7 +65,7 @@ package body et_package_variant is
 	end;
 
 
-	
+
 
 
 	function get_unit_and_port (
@@ -76,7 +76,7 @@ package body et_package_variant is
 		result : type_get_port_result;
 
 		use pac_package_variants;
-		
+
 		procedure query_terminal_port_map (
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
@@ -84,7 +84,7 @@ package body et_package_variant is
 			pragma unreferenced (name);
 			-- Locate in the given package variant the given terminal:
 			use pac_terminal_port_map;
-			c : constant pac_terminal_port_map.cursor := 
+			c : constant pac_terminal_port_map.cursor :=
 				find (variant.terminal_port_map, terminal);
 		begin
 			if c /= pac_terminal_port_map.no_element then -- terminal exists
@@ -98,13 +98,13 @@ package body et_package_variant is
 				result := (linked => FALSE);
 			end if;
 		end query_terminal_port_map;
-								
+
 	begin
 		query_element (variant, query_terminal_port_map'access);
 		return result;
 	end get_unit_and_port;
 
-	
+
 
 
 	function get_terminal (
@@ -117,7 +117,7 @@ package body et_package_variant is
 		result : pac_terminal_name.bounded_string;
 
 		use pac_package_variants;
-		
+
 		procedure query_terminal_port_map (
 			name	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant)
@@ -129,14 +129,14 @@ package body et_package_variant is
 			c : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 		begin
 			while c /= pac_terminal_port_map.no_element loop
-				if element (c).unit = unit and then element (c).name = port then 
+				if element (c).unit = unit and then element (c).name = port then
 					result := key (c);
 					exit;
 				end if;
 				next (c);
 			end loop;
 		end query_terminal_port_map;
-								
+
 	begin
 		query_element (variant, query_terminal_port_map'access);
 
@@ -145,7 +145,7 @@ package body et_package_variant is
 			raise semantic_error_1 with "No terminal found !";
 			-- CS output variant name, unit and port
 		end if;
-		
+
 		return result;
 	end get_terminal;
 
@@ -157,7 +157,7 @@ package body et_package_variant is
 		terminal	: in type_terminal;
 		show_unit	: in boolean := false;
 		preamble	: in boolean := true)
-		return string 
+		return string
 	is
 		use pac_unit_name;
 	begin
@@ -165,41 +165,41 @@ package body et_package_variant is
 			when true =>
 				case show_unit is
 					when true =>
-						return (" port " & to_string (port => terminal.port) 
+						return (" port " & to_string (port => terminal.port)
 							& " unit " & to_string (terminal.unit)
 							& " terminal " & to_string (terminal.name)
 							& latin_1.space);
-						
+
 					when false =>
-						return (" port " & to_string (port => terminal.port) 
+						return (" port " & to_string (port => terminal.port)
 							& " terminal " & to_string (terminal.name)
 							& latin_1.space);
 				end case;
-						
+
 			when false =>
 				case show_unit is
 					when true =>
-						return (latin_1.space & to_string (port => terminal.port) 
+						return (latin_1.space & to_string (port => terminal.port)
 							& latin_1.space & to_string (terminal.unit)
 							& latin_1.space & to_string (terminal.name)
 							& latin_1.space);
-						
+
 					when false =>
-						return (latin_1.space & to_string (port => terminal.port) 
+						return (latin_1.space & to_string (port => terminal.port)
 							& latin_1.space & to_string (terminal.name)
 							& latin_1.space);
 				end case;
 		end case;
-		
+
 	end to_string;
 
-	
-		
+
+
 end et_package_variant;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

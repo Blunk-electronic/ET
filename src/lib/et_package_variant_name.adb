@@ -58,10 +58,10 @@ package body et_package_variant_name is
 	end;
 
 
-	
-	
+
+
 	function to_variant_name (
-		variant_name : in string) 
+		variant_name : in string)
 		return pac_package_variant_name.bounded_string
 	is begin
 		return pac_package_variant_name.to_bounded_string (variant_name);
@@ -69,30 +69,30 @@ package body et_package_variant_name is
 
 
 	-- function to_string (
-	-- 	variant : in pac_package_variant_name.bounded_string) 
+	-- 	variant : in pac_package_variant_name.bounded_string)
 	-- 	return string
 	-- is begin
 	-- 	return pac_package_variant_name.to_string (variant);
 	-- end;
 
-	
-	
+
+
 	procedure check_variant_name_length (
-		variant_name : in string) 
+		variant_name : in string)
 	is begin
 		if variant_name'length > variant_name_length_max then
-			log (SEVERITY_WARNING, "variant name too long. Max. length is" 
+			log (SEVERITY_WARNING, "variant name too long. Max. length is"
 				 & positive'image (variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
 
 
-	
-	
-	
+
+
+
 	procedure check_variant_name_characters (
 		variant		: in pac_package_variant_name.bounded_string;
-		characters	: in character_set := variant_name_characters) 
+		characters	: in character_set := variant_name_characters)
 	is
 		invalid_character_position : natural := 0;
 	begin
@@ -104,19 +104,19 @@ package body et_package_variant_name is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (SEVERITY_WARNING, "invalid character in variant name " 
+			log (SEVERITY_WARNING, "invalid character in variant name "
 				& to_string (variant) & " at position" & natural'image (invalid_character_position));
 		end if;
 	end check_variant_name_characters;
 
 
-	
-		
+
+
 end et_package_variant_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

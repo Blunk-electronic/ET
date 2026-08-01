@@ -41,25 +41,25 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 
 package et_rig_name is
-	
+
 
 	-- The rig configuration is modelled here:
 	file_length_max : constant positive := 100;
 
 	package pac_file_name is new generic_bounded_length (file_length_max);
 
-	
+
 	file_extension : constant string := "rig";
 	file_extension_asterisk : constant string := "*." & file_extension;
 
 
 	procedure dummy;
-	
+
 end et_rig_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

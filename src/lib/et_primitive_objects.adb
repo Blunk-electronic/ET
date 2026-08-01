@@ -53,17 +53,17 @@ package body et_primitive_objects is
 		return type_shape'value (shape);
 	end;
 
-	
+
 	function to_string (shape : in type_shape) return string is begin
 		return to_lower (type_shape'image (shape));
 	end;
 
-	
 
 
 
 
-	
+
+
 	function to_string (filled : in type_filled) return string is begin
 		return to_lower (type_filled'image (filled));
 	end to_string;
@@ -73,7 +73,7 @@ package body et_primitive_objects is
 	end to_filled;
 
 
-	
+
 	-- FILL STYLE
 	function to_string (fill_style : in type_fill_style) return string is begin
 		return to_lower (type_fill_style'image (fill_style));
@@ -84,12 +84,12 @@ package body et_primitive_objects is
 	end;
 
 
-	
+
 end et_primitive_objects;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

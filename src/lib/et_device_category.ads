@@ -42,7 +42,7 @@
 
 package et_device_category is
 
-	
+
 	-- CS apply prefix
 	-- category_prefix	: constant string := ("CAT_");
 
@@ -103,19 +103,19 @@ package et_device_category is
 	function to_string (cat : in type_device_category) return string;
 
 
-	
+
 	-- Converts a string to a type_device_category:
 	function to_category (category : in string) return type_device_category;
 
-	
 
-	
-		
+
+
+
 end et_device_category;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

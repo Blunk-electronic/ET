@@ -47,7 +47,7 @@ with et_device_name;				use et_device_name;
 
 generic
 
-	
+
 package et_canvas.schematic_device_ops is
 -- CS rename to device_ops
 
@@ -63,7 +63,7 @@ package et_canvas.schematic_device_ops is
 
 
 
-	
+
 
 -- RENAME WINDOW:
 
@@ -74,24 +74,24 @@ package et_canvas.schematic_device_ops is
 
 	-- This flag indicates that the rename window is open:
 	rename_window_open : boolean := false;
-	
-	-- This is the field inside the rename_window 
+
+	-- This is the field inside the rename_window
 	-- where the operator enters the new name of a device:
 	rename_new : gtk_gentry;
-	
-	-- This is the field inside the rename_window 
+
+	-- This is the field inside the rename_window
 	-- where the old name of a device is shown:
 	rename_old : gtk_gentry;
 
-	
-	-- This procedure assembles the rename_window with 
+
+	-- This procedure assembles the rename_window with
 	-- all its basic properties.
 	-- It connects the "on_key_press_event" with the
 	-- callback function cb_rename_window_key_pressed (see below).
 	-- This procedure DOES NOT show the rename window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_rename_window 
+	-- for example procedure show_rename_window
 	-- in et_canvas_schematic_units):
 	procedure build_rename_window;
 
@@ -109,18 +109,18 @@ package et_canvas.schematic_device_ops is
 
 	-- This flag indicates that the value window is open:
 	value_window_open : boolean := false;
-	
-	-- This is the field inside the value_window 
+
+	-- This is the field inside the value_window
 	-- where the operator enters the new value of a device:
 	value_new : gtk_gentry;
-	
-	-- This is the field inside the value_window 
+
+	-- This is the field inside the value_window
 	-- where the old value of a device is shown:
 	value_old : gtk_gentry;
 
-	
-	-- This procedure assembles the value_window with 
-	-- all its basic properties. It sets the title of the 
+
+	-- This procedure assembles the value_window with
+	-- all its basic properties. It sets the title of the
 	-- window with the targeted device name so that the operator
 	-- knows what device it is about.
 	-- It connects the "on_key_press_event" with the
@@ -128,7 +128,7 @@ package et_canvas.schematic_device_ops is
 	-- This procedure DOES NOT show the value window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_value_window 
+	-- for example procedure show_value_window
 	-- in et_canvas_schematic_units):
 	procedure build_value_window (
 		device_name : in type_device_name);
@@ -148,18 +148,18 @@ package et_canvas.schematic_device_ops is
 
 	-- This flag indicates that the value window is open:
 	purpose_window_open : boolean := false;
-	
-	-- This is the field inside the purpose_window 
+
+	-- This is the field inside the purpose_window
 	-- where the operator enters the new value of a device:
 	purpose_new : gtk_gentry;
-	
-	-- This is the field inside the purpose_window 
+
+	-- This is the field inside the purpose_window
 	-- where the old value of a device is shown:
 	purpose_old : gtk_gentry;
 
-	
-	-- This procedure assembles the purpose_window with 
-	-- all its basic properties. It sets the title of the 
+
+	-- This procedure assembles the purpose_window with
+	-- all its basic properties. It sets the title of the
 	-- window with the targeted device name so that the operator
 	-- knows what device it is about.
 	-- It connects the "on_key_press_event" with the
@@ -167,12 +167,12 @@ package et_canvas.schematic_device_ops is
 	-- This procedure DOES NOT show the value window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_purpose_window 
+	-- for example procedure show_purpose_window
 	-- in et_canvas_schematic_units):
 	procedure build_purpose_window (
 		device_name : in type_device_name);
 
-	
+
 
 
 
@@ -186,18 +186,18 @@ package et_canvas.schematic_device_ops is
 
 	-- This flag indicates that the value window is open:
 	partcode_window_open : boolean := false;
-	
-	-- This is the field inside the partcode_window 
+
+	-- This is the field inside the partcode_window
 	-- where the operator enters the new value of a device:
 	partcode_new : gtk_gentry;
-	
-	-- This is the field inside the partcode_window 
+
+	-- This is the field inside the partcode_window
 	-- where the old value of a device is shown:
 	partcode_old : gtk_gentry;
 
-	
-	-- This procedure assembles the partcode_window with 
-	-- all its basic properties. It sets the title of the 
+
+	-- This procedure assembles the partcode_window with
+	-- all its basic properties. It sets the title of the
 	-- window with the targeted device name so that the operator
 	-- knows what device it is about.
 	-- It connects the "on_key_press_event" with the
@@ -205,7 +205,7 @@ package et_canvas.schematic_device_ops is
 	-- This procedure DOES NOT show the value window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_partcode_window 
+	-- for example procedure show_partcode_window
 	-- in et_canvas_schematic_units):
 	procedure build_partcode_window (
 		device_name : in type_device_name);
@@ -230,9 +230,9 @@ package et_canvas.schematic_device_ops is
 		variants	: in pac_package_variants.map;
 		store 		: in out gtk_list_store);
 
-	
 
-	
+
+
 	-- The window to set the package_variant of devices is used in all domains
 	-- and in various situations. For this reason we make it
 	-- a generic object:
@@ -240,22 +240,22 @@ package et_canvas.schematic_device_ops is
 
 	-- This flag indicates that the package_variant window is open:
 	package_variant_window_open : boolean := false;
-	
-	-- This is the box inside the package_variant_window 
+
+	-- This is the box inside the package_variant_window
 	-- where the operator selectes the new package_variant of a device:
 	package_variant_new : gtk_combo_box;
-	
-	-- This is the field inside the package_variant_window 
+
+	-- This is the field inside the package_variant_window
 	-- where the old package_variant of a device is shown:
 	package_variant_old : gtk_gentry;
 
 	-- If the operator wants to apply the selected
 	-- package variant, then she/he clicks this button:
 	package_variant_button_apply : gtk_button;
-	
-	
-	-- This procedure assembles the package_variant_window with 
-	-- all its basic properties. It sets the title of the 
+
+
+	-- This procedure assembles the package_variant_window with
+	-- all its basic properties. It sets the title of the
 	-- window with the targeted device name so that the operator
 	-- knows what device it is about.
 	-- It connects the "on_key_press_event" with the
@@ -263,24 +263,24 @@ package et_canvas.schematic_device_ops is
 	-- This procedure DOES NOT show the package_variant window. It just prepares
 	-- basic things. The actual showing is preformed by a procedure in
 	-- the package where the canvas is instantiated (see
-	-- for example procedure show_package_variant_window 
+	-- for example procedure show_package_variant_window
 	-- in et_canvas_schematic_units):
 	procedure build_package_variant_window (
 		device_cursor : in pac_devices_electrical.cursor);
 
 
-	
+
 
 
 -- PROPERTIES WINDOW:
 
 	properties_window : gtk.window.gtk_window;
 
-	-- This flag indicates that the package_variant window is open:	
+	-- This flag indicates that the package_variant window is open:
 	properties_window_open : boolean := false;
 
 	-- This procedure assembles the properties_window.
-	-- It sets the title of the window with the targeted device 
+	-- It sets the title of the window with the targeted device
 	-- name so that the operator knows what device it is about.
 	-- It connects the "on_key_press_event" and the "on_destroy" signel with the
 	-- callback function cb_properties_window_key_pressed and
@@ -297,15 +297,15 @@ package et_canvas.schematic_device_ops is
 	procedure reset_window_open_flags;
 
 
-	
+
 private
-	
-	
+
+
 
 -- RENAME WINDOW:
 
 	-- See comments on rename window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the rename window.
 	-- If ESC key pressed, then the window is destroyed
@@ -313,26 +313,26 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "rename_new" above):
 	function cb_rename_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_rename_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_rename_window_key_pressed'access;
 
 
-	
+
 
 
 
 -- VALUE WINDOW:
 
 	-- See comments on device value window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the value window.
 	-- If ESC key pressed, then the window is destroyed
@@ -340,18 +340,18 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "value_new" above):
 	function cb_value_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_value_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_value_window_key_pressed'access;
 
-	
+
 
 
 
@@ -359,7 +359,7 @@ private
 -- PURPOSE WINDOW:
 
 	-- See comments on device purpose window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the value window.
 	-- If ESC key pressed, then the window is destroyed
@@ -367,13 +367,13 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "purpose_new" above):
 	function cb_purpose_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_purpose_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_purpose_window_key_pressed'access;
@@ -387,7 +387,7 @@ private
 -- PARTCODE WINDOW:
 
 	-- See comments on device partcode window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the value window.
 	-- If ESC key pressed, then the window is destroyed
@@ -395,13 +395,13 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "partcode_new" above):
 	function cb_partcode_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_partcode_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_partcode_window_key_pressed'access;
@@ -413,7 +413,7 @@ private
 -- PACKAGE VARIANT WINDOW:
 
 	-- See comments on device package_variant window above.
-	
+
 	-- This callback function is called whenever
 	-- the operator presses a key in the value window.
 	-- If ESC key pressed, then the window is destroyed
@@ -421,13 +421,13 @@ private
 	-- to the "destroy" signal is estabilshed in the package
 	-- where the canvas is instantiated.
 	-- All other key-press events are propagated to the
-	-- field where the new name is entered (see 
+	-- field where the new name is entered (see
 	-- variable "package_variant_new" above):
 	function cb_package_variant_window_key_pressed (
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 
 	access_cb_package_variant_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_package_variant_window_key_pressed'access;
@@ -447,28 +447,28 @@ private
 		window	: access gtk_widget_record'class;
 		event	: gdk_event_key)
 		return boolean;
-	
+
 	access_cb_properties_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_properties_window_key_pressed'access;
 
 
 
-	
+
 	-- This procedure is called when the operator closes
 	-- the properties windwo by clicking the X in the upper right corner:
 	procedure cb_properties_window_destroy (
 		window : access gtk_widget_record'class);
-	
+
 	access_cb_properties_window_destroy : constant
 		cb_gtk_widget_void := cb_properties_window_destroy'access;
 
-	
-	
+
+
 end et_canvas.schematic_device_ops;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

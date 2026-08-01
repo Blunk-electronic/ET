@@ -44,13 +44,13 @@ with et_mirroring;					use et_mirroring;
 
 
 package et_via_restrict.packages is
-	
+
 	type type_one_side is record
 		zones		: pac_via_restrict_zones.list;
 		cutouts		: pac_via_restrict_cutouts.list;
 		-- CS not sure whether this is really required.
 
-		-- CS texts : 
+		-- CS texts :
 		-- This must not be derived from from conductor text because
 		-- it is not fabrication relevant.
 		-- It should contain notes of the designer exclusively.
@@ -61,7 +61,7 @@ package et_via_restrict.packages is
 	procedure mirror_via_restrict_objects (
 		restrict	: in out type_one_side;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates the given via restrict objects by the given angle
 	-- about the origin:
 	procedure rotate_via_restrict_objects (
@@ -80,7 +80,7 @@ package et_via_restrict.packages is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
-	
+
 	type type_via_restrict is record -- CS rename to type_via_restrict_both_sides ?
 		top		: type_one_side;
 		bottom	: type_one_side;
@@ -89,7 +89,7 @@ package et_via_restrict.packages is
 
 
 
-	
+
 
 	procedure add_zone (
 		via_restrict	: in out type_via_restrict;
@@ -101,13 +101,13 @@ package et_via_restrict.packages is
 		via_restrict	: in out type_via_restrict;
 		cutout			: in type_via_restrict_cutout;
 		face			: in type_face);
-	
-	
+
+
 end et_via_restrict.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

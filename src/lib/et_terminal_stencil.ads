@@ -61,48 +61,48 @@ package et_terminal_stencil is
 
 	stencil_shrink_mode_default : constant type_distance_positive := 0.7; -- CS adjust to a useful value
 	-- CS subtype for shrink value ?
-	
+
 	stencil_modification_default : constant type_stencil_shrink_mode := AS_PAD;
 
-	
+
 	function to_string (
-		shape : in type_stencil_shrink_mode) 
+		shape : in type_stencil_shrink_mode)
 		return string;
-		
-		
+
+
 	function to_modification (
-		shape : in string) 
+		shape : in string)
 		return type_stencil_shrink_mode;
-		
-		
-		
+
+
+
 
 	type type_stencil_contours is new type_contour with null record;
 	-- CS other properties stencil contours ?
-	
+
 	type type_stencil_shape (
-		shrink_mode : type_stencil_shrink_mode := stencil_modification_default) 
+		shrink_mode : type_stencil_shrink_mode := stencil_modification_default)
 	is record
 		case shrink_mode is
 			when USER_SPECIFIC =>
 				contour : type_stencil_contours;
-				
+
 			when SHRINK_PAD =>
 				shrink_factor : type_distance_positive := stencil_shrink_mode_default;
-				
+
 			when others => null;
 		end case;
 	end record;
-	
 
-	
-	
-	
+
+
+
+
 end et_terminal_stencil;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

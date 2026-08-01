@@ -34,7 +34,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 -- with ada.text_io;
 -- with ada.strings;
@@ -49,12 +49,12 @@ package body et_display is
 	function to_layer_status (on_off : in string) return type_layer_status is begin
 		return type_layer_status'value (on_off);
 	end;
-	
+
 end et_display;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

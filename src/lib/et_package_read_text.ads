@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about lines, arcs and circles in the stopmask.
 --
 --   do do:
@@ -54,7 +54,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 package et_package_read_text is
 
 	use pac_text_board_vectorized;
-	
+
 
 
 
@@ -69,11 +69,11 @@ package et_package_read_text is
 
 	procedure read_text (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_placeholder (
 		line : in type_fields_of_line);
 
-	
-	
+
+
 end et_package_read_text;

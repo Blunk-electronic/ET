@@ -52,11 +52,11 @@ with et_package_read_contour;			use et_package_read_contour;
 package body et_package_read_stencil is
 
 	use pac_geometry_2;
-	
+
 	stencil_line : type_stencil_line;
 	stencil_arc : type_stencil_arc;
 	stencil_circle : type_stencil_circle;
-	
+
 
 
 
@@ -76,7 +76,7 @@ package body et_package_read_stencil is
 			p := to_vector_model (line, 2);
 			set_A (stencil_line, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
@@ -84,24 +84,24 @@ package body et_package_read_stencil is
 			p := to_vector_model (line, 2);
 			set_B (stencil_line, p);
 
-		
+
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			stencil_line.width := to_distance (f (line, 2));
-												
-			
+
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_stencil_line;
 
 
-	
 
-	
-	
-	
-	
+
+
+
+
+
 	procedure read_stencil_arc (
 		line	: in type_fields_of_line)
 	is
@@ -116,22 +116,22 @@ package body et_package_read_stencil is
 			p := to_vector_model (line, 2);
 			set_A (stencil_arc, p);
 
-			
+
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
 			p := to_vector_model (line, 2);
 			set_B (stencil_arc, p);
-		
-			
+
+
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
 			set_center (stencil_arc, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
@@ -142,19 +142,19 @@ package body et_package_read_stencil is
 			expect_field_count (line, 2);
 			stencil_arc.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_stencil_arc;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 	procedure read_stencil_circle (
 		line	: in type_fields_of_line)
 	is
@@ -166,7 +166,7 @@ package body et_package_read_stencil is
 			-- extract the center position starting at field 2 of line
 			set_center (stencil_circle, to_vector_model (line, 2));
 
-			
+
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
@@ -177,7 +177,7 @@ package body et_package_read_stencil is
 			expect_field_count (line, 2);
 			stencil_circle.width := to_distance (f (line, 2));
 
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -192,83 +192,83 @@ package body et_package_read_stencil is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stencil_lines;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stencil.top.lines, stencil_line);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stencil.bottom.lines, stencil_line);
 		end case;
-				
-		-- clean up for next line
-		reset_line (stencil_line);		
-	end insert_stencil_line;
-	
 
-	
-	
-	
+		-- clean up for next line
+		reset_line (stencil_line);
+	end insert_stencil_line;
+
+
+
+
+
 	procedure insert_stencil_arc (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stencil_arcs;
 	begin
 		-- CS check arc
-		
+
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stencil.top.arcs, stencil_arc);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stencil.bottom.arcs, stencil_arc);
 		end case;
 
 		-- clean up for next arc
-		reset_arc (stencil_arc);		
+		reset_arc (stencil_arc);
 	end insert_stencil_arc;
 
-	
-	
 
-	
-	
+
+
+
+
 	procedure insert_stencil_circle (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_stencil_circles;
 	begin
 		case face is
-			when TOP => 
+			when TOP =>
 				append (packge.stencil.top.circles, stencil_circle);
 
-			when BOTTOM => 
+			when BOTTOM =>
 				append (packge.stencil.bottom.circles, stencil_circle);
 		end case;
 
 		-- clean up for next circle
-		reset_circle (stencil_circle);		
+		reset_circle (stencil_circle);
 	end insert_stencil_circle;
 
 
 
 
 
-	
+
 	procedure insert_stencil_zone (
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		pragma unreferenced (log_threshold);
 		use pac_contours;
 	begin
@@ -277,7 +277,7 @@ package body et_package_read_stencil is
 		-- clean up for next zone
 		reset_contour (contour);
 	end insert_stencil_zone;
-	
-	
-	
+
+
+
 end et_package_read_stencil;

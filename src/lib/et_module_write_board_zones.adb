@@ -74,7 +74,7 @@ package body et_module_write_board_zones is
 	use pac_file_rw;
 	use pac_contours;
 	use pac_signal_layers;
-	
+
 
 
 
@@ -85,9 +85,9 @@ package body et_module_write_board_zones is
 		use pac_floating_solid;
 		use pac_floating_hatched;
 
-		
-		-- CS rename to write_zone		
-		procedure write_polygon (cursor : in pac_floating_solid.cursor) is 
+
+		-- CS rename to write_zone
+		procedure write_polygon (cursor : in pac_floating_solid.cursor) is
 			zone : type_floating_solid renames element (cursor);
 		begin
 			section_mark (section_zone, HEADER);
@@ -95,39 +95,39 @@ package body et_module_write_board_zones is
 
 			write (keyword => keyword_easing_style,
 				parameters => to_string (zone.easing.style));
-			
-			write (keyword => keyword_easing_radius, 
+
+			write (keyword => keyword_easing_radius,
 				parameters => to_string (zone.easing.radius));
 
-			
+
 
 			write (keyword => keyword_width,
 				parameters => to_string (zone.linewidth));
 
-			write (keyword => keyword_isolation, 
+			write (keyword => keyword_isolation,
 				parameters => to_string (zone.isolation));
 
-			write (keyword => keyword_priority , 
+			write (keyword => keyword_priority ,
 				parameters => to_string (zone.properties.priority_level));
-			
+
 			write (keyword => keyword_layer,
 				parameters => to_string (zone.properties.layer));
 
-			write (keyword => keyword_fill_style, 
+			write (keyword => keyword_fill_style,
 				parameters => to_string (zone.fill_style));
-			
+
 
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (type_contour (element (cursor)));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_zone, FOOTER);
 		end;
 
-		
+
 
 		-- CS rename to write_zone
-		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is 
+		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is
 			zone : type_floating_hatched renames element (cursor);
 		begin
 			section_mark (section_zone, HEADER);
@@ -135,43 +135,43 @@ package body et_module_write_board_zones is
 
 			write (keyword => keyword_easing_style,
 				parameters => to_string (zone.easing.style));
-			
-			write (keyword => keyword_easing_radius, 
+
+			write (keyword => keyword_easing_radius,
 				parameters => to_string (zone.easing.radius));
 
-			
+
 
 			write (keyword => keyword_width,
 				parameters => to_string (zone.linewidth));
 
-			write (keyword => keyword_isolation, 
+			write (keyword => keyword_isolation,
 				   parameters => to_string (zone.isolation));
 
-			write (keyword => keyword_priority , 
+			write (keyword => keyword_priority ,
 				   parameters => to_string (zone.properties.priority_level));
 
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
-			write (keyword => keyword_fill_style, 
+			write (keyword => keyword_fill_style,
 				parameters => to_string (zone.fill_style));
-			
-			
-			write (keyword => keyword_spacing, 
+
+
+			write (keyword => keyword_spacing,
 				   parameters => to_string (zone.spacing));
 
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (type_contour (element (cursor)));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_zone, FOOTER);
 		end;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			zones : type_floating renames module.board.conductors_floating.zones;
 		begin
@@ -179,7 +179,7 @@ package body et_module_write_board_zones is
 			iterate (zones.hatched, write_polygon'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write floating fill zones",
@@ -188,13 +188,13 @@ package body et_module_write_board_zones is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
-	end write_zones_conductor;
-	
-	
-	
 
-	
+	end write_zones_conductor;
+
+
+
+
+
 
 	procedure write_zones_conductor_cutout (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -202,33 +202,33 @@ package body et_module_write_board_zones is
 	is
 		use pac_cutouts;
 
-		
-		procedure write_cutout (cursor : in pac_cutouts.cursor) is 
+
+		procedure write_cutout (cursor : in pac_cutouts.cursor) is
 			zone : type_cutout renames element (cursor);
 		begin
 			section_mark (section_cutout_zone, HEADER);
-			
+
 			write (keyword => keyword_layer, parameters => to_string (zone.layer));
-			
+
 			section_mark (section_contours, HEADER); -- CS correct ?
 			write_polygon_segments (type_contour (element (cursor)));
 			section_mark (section_contours, FOOTER); -- CS correct ?
-			
+
 			section_mark (section_cutout_zone, FOOTER);
 		end;
 
-	
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			cutouts : pac_cutouts.list renames module.board.conductors_floating.cutouts;
 		begin
 			iterate (cutouts, write_cutout'access);
 		end query_module;
 
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -238,16 +238,16 @@ package body et_module_write_board_zones is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
+
 	end write_zones_conductor_cutout;
-	
 
 
 
 
 
 
-	
+
+
 
 	procedure write_zones_non_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -270,28 +270,18 @@ package body et_module_write_board_zones is
 		use et_stencil;
 		use pac_stencil_zones;
 
-		
-		procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+
+		procedure write_polygon (cursor : in pac_silk_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (type_contour (element (cursor)));
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
 
-		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
-		begin
-			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
-			write_polygon_segments (element (cursor));
-			section_mark (section_contours, FOOTER);
-			section_mark (section_zone, FOOTER);
-		end write_polygon;
-
-
-		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 		
+		procedure write_polygon (cursor : in pac_doc_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -301,17 +291,7 @@ package body et_module_write_board_zones is
 		end write_polygon;
 
 
-		procedure write_polygon (cursor : in pac_stop_zones.cursor) is 
-		begin
-			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
-			write_polygon_segments (element (cursor));
-			section_mark (section_contours, FOOTER);
-			section_mark (section_zone, FOOTER);
-		end write_polygon;
-
-
-		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
+		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -320,12 +300,32 @@ package body et_module_write_board_zones is
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
-		
-		
+
+		procedure write_polygon (cursor : in pac_stop_zones.cursor) is
+		begin
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);
+			write_polygon_segments (element (cursor));
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
+		end write_polygon;
+
+
+		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is
+		begin
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);
+			write_polygon_segments (element (cursor));
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
+		end write_polygon;
+
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 
 		begin
@@ -334,22 +334,22 @@ package body et_module_write_board_zones is
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
 							iterate (module.board.silkscreen.top.zones, write_polygon'access);
-										
+
 						when LAYER_CAT_ASSY =>
 							iterate (module.board.assy_doc.top.zones, write_polygon'access);
 
 						when LAYER_CAT_STENCIL =>
 							iterate (module.board.stencil.top.zones, write_polygon'access);
-							
+
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.top.zones, write_polygon'access);
-							
+
 						when LAYER_CAT_KEEPOUT =>
 							iterate (module.board.keepout.top.zones, write_polygon'access);
 
 						when others => null; -- CS raise exception ?
 					end case;
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
@@ -357,24 +357,24 @@ package body et_module_write_board_zones is
 
 						when LAYER_CAT_ASSY =>
 							iterate (module.board.assy_doc.bottom.zones, write_polygon'access);
-							
+
 						when LAYER_CAT_STENCIL =>
 							iterate (module.board.stencil.bottom.zones, write_polygon'access);
-							
+
 						when LAYER_CAT_STOPMASK =>
 							iterate (module.board.stopmask.bottom.zones, write_polygon'access);
-							
+
 						when LAYER_CAT_KEEPOUT =>
 							iterate (module.board.keepout.bottom.zones, write_polygon'access);
 
 						when others => null; -- CS raise exception ?
 					end case;
-					
+
 			end case;
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write non-conductor zones",
@@ -385,7 +385,7 @@ package body et_module_write_board_zones is
 		log_indentation_down;
 	end write_zones_non_conductor;
 
-	
+
 
 
 
@@ -401,7 +401,7 @@ package body et_module_write_board_zones is
 		use pac_keepout_cutouts;
 
 
-		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
+		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is
 		begin
 			section_mark (section_cutout_zone, HEADER);
 			section_mark (section_contours, HEADER);
@@ -410,8 +410,8 @@ package body et_module_write_board_zones is
 			section_mark (section_cutout_zone, FOOTER);
 		end;
 
-		
-		
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -423,46 +423,46 @@ package body et_module_write_board_zones is
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
 							null; -- CS
-										
+
 						when LAYER_CAT_ASSY =>
 							null; -- CS
 
 						when LAYER_CAT_STENCIL =>
 							null; -- CS
-							
+
 						when LAYER_CAT_STOPMASK =>
 							null; -- CS
-							
+
 						when LAYER_CAT_KEEPOUT =>
 							iterate (module.board.keepout.top.cutouts, write_cutout'access);
 
 						when others => null; -- CS raise exception ?
 					end case;
 
-					
+
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
 							null; -- CS
-										
+
 						when LAYER_CAT_ASSY =>
 							null; -- CS
 
 						when LAYER_CAT_STENCIL =>
 							null; -- CS
-							
+
 						when LAYER_CAT_STOPMASK =>
 							null; -- CS
-							
+
 						when LAYER_CAT_KEEPOUT =>
 							iterate (module.board.keepout.bottom.cutouts, write_cutout'access);
 
 						when others => null; -- CS raise exception ?
-					end case;					
+					end case;
 			end case;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write non-conductor zones",
@@ -471,7 +471,7 @@ package body et_module_write_board_zones is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
+
 	end write_zones_non_conductor_cutout;
 
 
@@ -481,7 +481,7 @@ package body et_module_write_board_zones is
 
 
 
-	
+
 
 	procedure write_zones_route_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -489,9 +489,9 @@ package body et_module_write_board_zones is
 	is
 		use et_route_restrict.boards;
 		use pac_route_restrict_contours;
-		
 
-		procedure write_contour (cursor : in pac_route_restrict_contours.cursor) is 
+
+		procedure write_contour (cursor : in pac_route_restrict_contours.cursor) is
 			zone : type_route_restrict_contour renames element (cursor);
 		begin
 			section_mark (section_zone, HEADER);
@@ -500,12 +500,12 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_zone, FOOTER);
 		end write_contour;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -516,7 +516,7 @@ package body et_module_write_board_zones is
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write route restrict zones",
@@ -525,13 +525,13 @@ package body et_module_write_board_zones is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
+
 	end write_zones_route_restrict;
 
-	
 
 
-	
+
+
 
 
 	procedure write_zones_via_restrict (
@@ -540,9 +540,9 @@ package body et_module_write_board_zones is
 	is
 		use et_via_restrict.boards;
 		use pac_via_restrict_contours;
-		
 
-		procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is 
+
+		procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is
 			zone : type_via_restrict_contour renames element (cursor);
 		begin
 			section_mark (section_zone, HEADER);
@@ -551,12 +551,12 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_zone, FOOTER);
 		end write_contour;
 
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -567,7 +567,7 @@ package body et_module_write_board_zones is
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write via restrict zones",
@@ -576,24 +576,24 @@ package body et_module_write_board_zones is
 		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-		
+
 	end write_zones_via_restrict;
-	
 
 
 
 
-	
+
+
 
 	procedure write_zones_route_restrict_cutout (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
+	is
 		use et_route_restrict.boards;
 		use pac_route_restrict_cutouts;
 
-		
-		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
+
+		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is
 			zone : type_route_restrict_cutout renames element (cursor);
 		begin
 			section_mark (section_cutout_zone, HEADER);
@@ -602,11 +602,11 @@ package body et_module_write_board_zones is
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_cutout_zone, FOOTER);
 		end;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -616,7 +616,7 @@ package body et_module_write_board_zones is
 			iterate (module.board.route_restrict.cutouts, write_cutout'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write route restrict cutout zones",
@@ -629,9 +629,9 @@ package body et_module_write_board_zones is
 
 
 
-	
 
-	
+
+
 
 	procedure write_zones_via_restrict_cutout (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -640,21 +640,21 @@ package body et_module_write_board_zones is
 		use et_via_restrict.boards;
 		use pac_via_restrict_cutouts;
 
-		
-		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
+
+		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is
 			zone : type_via_restrict_cutout renames element (cursor);
 		begin
 			section_mark (section_cutout_zone, HEADER);
 			write (keyword => keyword_layers, parameters => to_string (zone.layers));
-			
+
 			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
-			
+
 			section_mark (section_cutout_zone, FOOTER);
 		end;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -664,7 +664,7 @@ package body et_module_write_board_zones is
 			iterate (module.board.via_restrict.cutouts, write_cutout'access);
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write via restrict cutout zones",
@@ -675,14 +675,14 @@ package body et_module_write_board_zones is
 		log_indentation_down;
 	end write_zones_via_restrict_cutout;
 
-	
-	
+
+
 end et_module_write_board_zones;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

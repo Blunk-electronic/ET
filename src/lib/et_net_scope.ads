@@ -35,12 +35,12 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
 package et_net_scope is
-		
+
 
 	-- If a net exists in a (sub)module exclusively or whether it can be
 	-- seen from the parent module. For example power nets like GND are global.
@@ -49,18 +49,18 @@ package et_net_scope is
 		GLOBAL	-- parent module can connect to it directly
 		);
 	-- CS use prefix ?
-	
+
 
 	function to_string (net_scope : in type_net_scope) return string;
 
 	function to_net_scope (scope : in string) return type_net_scope;
 
-	
+
 end et_net_scope;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

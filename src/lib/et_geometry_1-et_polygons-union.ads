@@ -41,20 +41,20 @@
 
 
 generic
-	
+
 package et_geometry_1.et_polygons.union is
 
 	use pac_polygon_list;
-		
-	
-	
+
+
+
 	-- Returns from the given list of polygons the one that encloses
 	-- all others in the list
 	function get_greatest (
 		polygons	: in pac_polygon_list.list)
 		return pac_polygon_list.cursor;
-	
-	
+
+
 	-- The result of a polygon union operation:
 	type type_union (exists : boolean := true) is record
 		case exists is
@@ -69,14 +69,14 @@ package et_geometry_1.et_polygons.union is
 	--function "=" (
 		--left, right : in type_union)
 		--return boolean;
-	
-	
-	
+
+
+
 	-- Unions polygon A with polygon B.
 	-- - If the polygons share an edge without overlapping each other
 	--   then there will be a union.
 	-- - If the polygons share a vertex without overlapping each other
-	--   then there will NOT be union.	
+	--   then there will NOT be union.
 	-- - CS: polygons share two or more edges or vertices so that the
 	--   resulting union would have a hole ?
 	-- - The pretest-flag decides whether to test for overlappin boundaries
@@ -97,21 +97,21 @@ package et_geometry_1.et_polygons.union is
 	procedure multi_union (
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false);
-							 
+
 
 	-- CS: Experimental. Behaves like multi_union but
 	-- takes longer.
 	procedure multi_union_2 (
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false);
-							 
-	
-	
+
+
+
 end et_geometry_1.et_polygons.union;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

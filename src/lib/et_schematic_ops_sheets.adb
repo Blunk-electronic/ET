@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,17 +55,17 @@ package body et_schematic_ops_sheets is
 
 
 
-	
+
 	procedure sheet_not_found (
 		sheet : in type_sheet)
 	is begin
 		log (SEVERITY_WARNING, "Sheet no. " & to_string (sheet) & " not found !");
 	end;
 
-	
-	
-	
-	
+
+
+
+
 	function get_sheet_count (
 		module	: in pac_generic_modules.cursor)
 		return type_sheet
@@ -74,26 +74,26 @@ package body et_schematic_ops_sheets is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			result := get_sheet_count (module.frames);
 		end query_module;
-		
+
 	begin
 		query_element (module, query_module'access);
 		return result;
 	end get_sheet_count;
-	
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	function sheet_exists (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
@@ -101,53 +101,53 @@ package body et_schematic_ops_sheets is
 	is
 		result : boolean := false;
 
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			result := sheet_exists (module.frames, sheet);
 		end query_module;
 
-		
+
 	begin
 		query_element (module, query_module'access);
 		return result;
 	end sheet_exists;
-		
-		
-	
-	
-	
-	
+
+
+
+
+
+
 	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
-		return type_schematic_description 
+		return type_schematic_description
 	is
 
 		use pac_schematic_descriptions;
 		cursor : pac_schematic_descriptions.cursor;
 
 
-		
+
 		procedure query_descriptions (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
 			cursor := module.frames.descriptions.to_cursor (sheet);
 		end query_descriptions;
 
-		
+
 	begin
 		query_element (
 			position	=> module,
 			process		=> query_descriptions'access);
-		
+
 		if cursor /= pac_schematic_descriptions.no_element then
 			return element (cursor);
 		else
@@ -163,7 +163,7 @@ package body et_schematic_ops_sheets is
 
 
 
-	
+
 
 
 	procedure set_sheet_category (
@@ -177,7 +177,7 @@ package body et_schematic_ops_sheets is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -188,30 +188,30 @@ package body et_schematic_ops_sheets is
 
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " set sheet " & to_string (sheet) 
+			 & " set sheet " & to_string (sheet)
 			 & " category " & to_string (category),
 			level => log_threshold);
 
 		log_indentation_up;
 
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
 		log_indentation_down;
 	end set_sheet_category;
 
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	procedure delete_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
@@ -222,12 +222,12 @@ package body et_schematic_ops_sheets is
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
-	
-	
+
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is 
+			module		: in out type_generic_module)
+		is
 			pragma unreferenced (module_name);
 			use et_schematic_ops_nets;
 			use et_schematic_ops_units;
@@ -236,50 +236,50 @@ package body et_schematic_ops_sheets is
 		begin
 			-- Delete all nets on the given sheet:
 			delete_nets (module_cursor, sheet, log_threshold + 1);
-			
+
 			-- Move all strands of nets on following sheets
 			-- downward by one sheet:
 			move_strands_on_sheet_delete (
-				module_cursor	=> module_cursor, 
+				module_cursor	=> module_cursor,
 				sheet_delete	=> sheet,
 				log_threshold	=> log_threshold + 1);
-				
-			
+
+
 			-- Delete all units on the given sheet:
 			delete_units (module_cursor, sheet, log_threshold + 1);
 
 			-- Move all units on following sheets
 			-- downward by one sheet:
 			move_units_on_sheet_delete (
-				module_cursor	=> module_cursor, 
+				module_cursor	=> module_cursor,
 				sheet_delete	=> sheet,
 				log_threshold	=> log_threshold + 1);
 
-			
+
 			-- Delete all netchangers on the given sheet:
 			delete_netchangers (module_cursor, sheet, log_threshold + 1);
 
 			-- Move all netchangerss on following sheets
 			-- downward by one sheet:
 			move_netchangers_on_sheet_delete (
-				module_cursor	=> module_cursor, 
+				module_cursor	=> module_cursor,
 				sheet_delete	=> sheet,
 				log_threshold	=> log_threshold + 1);
 
-						
+
 			-- CS: delete submodules, texts, ...
-			
-			
+
+
 			-- Remove the sheet from the drawing frames:
 			delete_sheet (module.frames, sheet);
 
 		end query_module;
 
-	
-	
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " delete sheet " & to_string (sheet), 
+			 & " delete sheet " & to_string (sheet),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -288,32 +288,32 @@ package body et_schematic_ops_sheets is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 		end if;
-		
-		
+
+
 		generic_modules.update_element (
-			position	=> module_cursor,		   
+			position	=> module_cursor,
 			process		=> query_module'access);
-		
-		
-		
+
+
+
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
 
-		
+
 		update_ratsnest (module_cursor, log_threshold + 1);
-				
+
 		log_indentation_down;
 	end delete_sheet;
 
-	
+
 end et_schematic_ops_sheets;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

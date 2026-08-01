@@ -35,11 +35,11 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 --		1. device accessories
--- 
+--
 -- DESCRIPTION:
--- 
+--
 -- This package is about the type, basic properties and subprograms related
 -- to so called "electrical" devices as they are modelled in the schematic
 -- and in the board.
@@ -80,15 +80,15 @@ with et_logging;						use et_logging;
 package et_devices_electrical is
 
 
-	
+
 
 	-- This is a device as it appears in the schematic.
 	type type_device_electrical (  -- CS should be private
-		appearance : type_appearance_schematic) 
+		appearance : type_appearance_schematic)
 	is record
-		-- The link to the device model like 
+		-- The link to the device model like
 		-- "../libraries/devices/transistor/pnp.dev"
-		-- is a cursor to the device library:		
+		-- is a cursor to the device library:
 		model_cursor : pac_device_models.cursor;
 
 		-- IMPORTANT: When reading the module file, the
@@ -101,12 +101,12 @@ package et_devices_electrical is
 		-- Real devices like a single resistor have one unit.
 		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
 		units	: pac_units.map;
-		
+
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
 				value		: pac_device_value.bounded_string; -- 470R
-				
+
 				partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)
 				-- usually no partcode is required.
@@ -134,7 +134,7 @@ package et_devices_electrical is
 
 				-- The status of the package:
 				status : type_object_status;
-				
+
 			when APPEARANCE_VIRTUAL => null;
 
 		end case;
@@ -146,14 +146,14 @@ package et_devices_electrical is
 	function is_real (
 		device : in type_device_electrical)
 		return boolean;
-	
 
-	
+
+
 	function get_position (
 		device : in type_device_electrical)
 		return et_board_coordinates.type_package_position;
 
-	
+
 
 	function get_device_model_file (
 		device : type_device_electrical)
@@ -165,9 +165,9 @@ package et_devices_electrical is
 		device : type_device_electrical)
 		return string;
 
-	
 
-	-- Maps from schematic device to 
+
+	-- Maps from schematic device to
 	-- cursor to device model (in library):
 	function get_device_model (
 		device : in type_device_electrical)
@@ -175,22 +175,22 @@ package et_devices_electrical is
 
 
 
-												
+
 
 
 	-- Returns the name of the package model of the given device
 	-- according to the current package variant of the device.
 	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
-	-- The given device must be real. Otherwise constraint error arises here.	
+	-- The given device must be real. Otherwise constraint error arises here.
 	function get_package_model_name (
 		device : in type_device_electrical)
 		return pac_package_model_file.bounded_string;
 
-	
 
 
-	
-	
+
+
+
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
 	package pac_devices_electrical is new indefinite_ordered_maps (
@@ -198,48 +198,48 @@ package et_devices_electrical is
  		element_type	=> type_device_electrical);
 
 	use pac_devices_electrical;
-	
 
-	
+
+
 	-- Extracts from the given list of devices the
 	-- names (like IC1, R23, D23):
 	function get_device_names (
 		devices : in pac_devices_electrical.map)
 		return pac_device_names.set;
-	
-	
+
+
 
 	-- Returns the number of devices that the
 	-- given list contains:
 	function get_count (
 		devices	: in pac_devices_electrical.map)
 		return natural;
-		
+
 
 	function get_count (
 		devices	: in pac_devices_electrical.map)
 		return string;
-		
-		
 
-		
+
+
+
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
 		return pac_device_model_file.bounded_string; -- *.dev
 
 
 
-	-- Maps from schematic device cursor to 
+	-- Maps from schematic device cursor to
 	-- cursor to device model (in library):
 	function get_device_model (
 		device : in pac_devices_electrical.cursor)
 		return pac_device_models.cursor;
 
-	
 
 
-	
-	
+
+
+
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
 		return type_device_name;
@@ -250,15 +250,15 @@ package et_devices_electrical is
 		return pac_device_prefix.bounded_string;
 
 
-	
+
 	-- Returns the name of a device as string:
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
 		return string;
-	
 
-	
-	
+
+
+
 	procedure device_name_in_use (
 		name : in type_device_name); -- IC1, R1, ...
 
@@ -267,10 +267,10 @@ package et_devices_electrical is
 
 
 
-	
-	
+
+
 -- DEVICE STATUS OPERATIONS:
-	
+
 	-- NOTE: Operations regarding the status
 	-- apply to the package of the device (in the board domain)
 	-- which implies that the targeted device is real.
@@ -280,98 +280,98 @@ package et_devices_electrical is
 	-- is not real then the operation has no effect.
 	-- Regarding query operations like is_selected or is_moving: If
 	-- the device is not real then the return is always false.
-	
+
 	procedure set_selected (
 		device : in out type_device_electrical);
-	
+
 
 	procedure clear_selected (
 		device : in out type_device_electrical);
-	
+
 
 	function is_selected (
 		device : in type_device_electrical)
 		return boolean;
-	
 
-	
+
+
 	procedure set_proposed (
 		device : in out type_device_electrical);
-	
+
 
 	procedure clear_proposed (
 		device : in out type_device_electrical);
 
-	
+
 	function is_proposed (
 		device : in type_device_electrical)
 		return boolean;
 
 
 
-	
+
 	procedure set_moving (
 		device : in out type_device_electrical);
-	
+
 
 	procedure clear_moving (
 		device : in out type_device_electrical);
 
-	
+
 	function is_moving (
 		device : in type_device_electrical)
 		return boolean;
 
 
-	
-	
+
+
 	procedure modify_status (
 		device		: in out type_device_electrical;
 		operation	: in type_status_operation);
-	
 
-	
+
+
 	procedure reset_status (
 		device : in out type_device_electrical);
 
 
 
 
-	-- Returns true if given device is real (means if it has a physical 
+	-- Returns true if given device is real (means if it has a physical
 	-- counterpart in the PCB layout). For a resistor it returns true.
 	-- For a GND symbol it returns false:
 	function is_real (
-		device : in pac_devices_electrical.cursor) 
+		device : in pac_devices_electrical.cursor)
 		return boolean;
-	
 
 
-	
+
+
 	function is_proposed (
 		device : in pac_devices_electrical.cursor)
 		return boolean;
-	
+
 
 	function is_selected (
 		device : in pac_devices_electrical.cursor)
 		return boolean;
 
-	
+
 	function is_moving (
 		device : in pac_devices_electrical.cursor)
 		return boolean;
 
-	
-	
+
+
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		devices	: in pac_devices_electrical.map;
 		process	: not null access procedure (position : in pac_devices_electrical.cursor);
 		proceed	: not null access boolean);
 
-	
 
-	
+
+
 -- DEVICE QUERY OPERATIONS:
 
 
@@ -380,23 +380,23 @@ package et_devices_electrical is
 	-- Returns the name of the package model of the given device
 	-- according to the current package variant of the device.
 	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
-	-- The given device must be real. Otherwise constraint error arises here.	
+	-- The given device must be real. Otherwise constraint error arises here.
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
 		return pac_package_model_file.bounded_string;
-	
+
 
 	-- Returns the cursor to the package model of the given device
 	-- according to the current package variant of the device.
-	-- The given device must be real. Otherwise constraint error arises here.	
+	-- The given device must be real. Otherwise constraint error arises here.
 	function get_package_model (
 		device : in pac_devices_electrical.cursor)
 		return pac_package_models.cursor;
 
 
 	-- Returns true if the given device has a
-	-- a real package with a height, means if it is relevant 
-	-- for creating bill of materials (BOM).	
+	-- a real package with a height, means if it is relevant
+	-- for creating bill of materials (BOM).
 	-- The given device itself must be real (means it has a counterpart
 	-- in the board drawing). Otherwise a constraint error is raised.
 	function is_bom_relevant (
@@ -408,7 +408,7 @@ package et_devices_electrical is
 
 
 -- PLACEHOLDERS:
-	
+
 	-- Maps from meaning of given placeholder to a text content:
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
@@ -417,16 +417,16 @@ package et_devices_electrical is
 
 
 
-	
-	
-	
+
+
+
 -- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
-	
+
 	use et_commit;
-	
+
 	package pac_device_commit is new pac_commit (pac_devices_electrical.map);
 	use pac_device_commit;
-	
+
 	package pac_device_commits is new doubly_linked_lists (
 		element_type	=> pac_device_commit.type_commit);
 
@@ -435,16 +435,16 @@ package et_devices_electrical is
 		redos	: pac_device_commits.list;
 	end record;
 
-	
-	
 
-	
-		
+
+
+
+
 end et_devices_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.containers;            use ada.containers;
@@ -48,31 +48,31 @@ with et_netlists;				use et_netlists;
 
 package et_netlists_export is
 
-	
+
 	comment_mark : constant string := "#";
-	
-	
-	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
+
+
+	-- If write_file ist true, creates the netlist file (which inevitably and intentionally
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - The netlist file will be named after the module name and assembly variant.	
+	-- - The netlist file will be named after the module name and assembly variant.
 	-- - Exports the netlist of the given module to the export/CAM directory.
 	function make_netlist (
 		modules			: in pac_netlist_modules.tree;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_module_netlist.tree;
 
 
-	
+
 end et_netlists_export;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,22 +52,22 @@ procedure copy_unit (
 is
 	-- Since the name of the unit to be copied is used frequently
 	-- here, we store it in a constant:
-	unit_name : constant pac_unit_name.bounded_string := 
+	unit_name : constant pac_unit_name.bounded_string :=
 		get_unit_name (unit_cursor);
-	
+
 
 	-- Here we store the position of the new unit.
 	-- It is an absolute position:
 	position_new : type_object_position;
 
-	
+
 	-- This procedure computes the position
 	-- where the copy of the unit will be placed:
 	procedure compute_final_position is begin
 		-- First we copy the coordinates
 		-- from the original unit:
 		position_new := get_position (unit_cursor);
-						
+
 		-- In the following, the rotatation remains unchanged
 		-- because we copy the rotation along with other
 		-- properties of the unit.
@@ -94,37 +94,37 @@ is
 	-- It also connects the new unit with net segments
 	-- that may start or end at the ports of the new unit:
 	procedure copy_into_specified_device is
-	
+
 		-- Get a cursor to the target device:
 		target_device_cursor : constant pac_devices_electrical.cursor :=
 			get_electrical_device (module_cursor, target_device);
-			
-		-- Get a cursor to the model of the target device:		
+
+		-- Get a cursor to the model of the target device:
 		device_cursor_lib : constant pac_device_models.cursor :=
 			get_device_model (target_device_cursor);
-			
-			
+
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			
-			
+
+
 			procedure query_target_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is 
+			is
 				-- Here we store temporarily the ports (with
 				-- their positions) of the new unit:
 				ports : pac_symbol_ports.map;
 			begin
 				-- CS log messages
-				
+
 				-- Copy the unit into the target device:
 				copy_unit_to_device (
 					unit_cursor, sheet, destination, device);
-					
+
 				-- Get the ports with their original positions
 				-- as they are defined in the device model:
 				ports := get_ports_from_symbol_model (
@@ -148,32 +148,32 @@ is
 				if is_real (device_cursor_lib) then
 					update_ratsnest (module_cursor, log_threshold + 1);
 				end if;
-					
-					
+
+
 				-- The copy was made in the given target device.
 				-- So the created device is the same as the target
 				-- device:
 				device_created := device_name;
 			end query_target_device;
-			
-			
+
+
 		begin
 			module.devices.update_element (
 				target_device_cursor, query_target_device'access);
 		end query_module;
-		
-		
+
+
 	begin
 		generic_modules.update_element (
 			module_cursor, query_module'access);
-			
+
 	end copy_into_specified_device;
 
-	
-	
+
+
 begin
-	log (text => "module " & to_string (module_cursor) 
-		& " device " & get_device_name (device_cursor) 
+	log (text => "module " & to_string (module_cursor)
+		& " device " & get_device_name (device_cursor)
 		& " copy unit " & to_string (unit_name)
 		& " by sheet(s) " & relative_to_string (sheet)
 		& " offset " & to_string (destination),
@@ -193,7 +193,7 @@ begin
 			 level => log_threshold + 1);
 
 		log_indentation_up;
-		
+
 		copy_device (
 			module_cursor		=> module_cursor,
 			device_name			=> key (device_cursor),
@@ -204,11 +204,11 @@ begin
 			log_threshold		=> log_threshold + 2);
 
 		log_indentation_down;
-		
+
 	else
 	-- If a target_device was specified then we copy
 	-- the unit into the given device:
-		log (text => "copy into explicitly specified target device " 
+		log (text => "copy into explicitly specified target device "
 			 & to_string (target_device),
 			 level => log_threshold + 1);
 
@@ -218,15 +218,15 @@ begin
 
 	end if;
 
-	
-	log_indentation_down;	
+
+	log_indentation_down;
 end copy_unit;
 
 
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

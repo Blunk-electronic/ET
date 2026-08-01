@@ -61,26 +61,26 @@ package body et_module_read_pcb_layer_stack is
 
 
 
-	conductor_layer, dielectric_layer : type_signal_layer := 
+	conductor_layer, dielectric_layer : type_signal_layer :=
 		type_signal_layer'first;
-	
-	conductor_thickness : type_conductor_thickness := 
+
+	conductor_thickness : type_conductor_thickness :=
 		conductor_thickness_outer_default;
 
-	
+
 	board_layer : type_layer;
 
 	board_layers : package_layers.vector;
-	
+
 	dielectric_found : boolean := false;
 
 
 
-	
+
 
 	procedure read_layer (
 		line			: in type_fields_of_line;
-		log_threshold	: in type_log_level)					 
+		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		kw : constant string := f (line, 1);
@@ -104,7 +104,7 @@ package body et_module_read_pcb_layer_stack is
 					raise constraint_error;
 				end if;
 			end if;
-			
+
 			dielectric_found := false;
 
 		elsif kw = keyword_dielectric then -- dielectric 1 1.5
@@ -112,7 +112,7 @@ package body et_module_read_pcb_layer_stack is
 			dielectric_layer := to_signal_layer (f (line, 2));
 			board_layer.dielectric.thickness := to_distance (f (line, 3));
 			dielectric_found := true;
-			
+
 			if dielectric_layer = conductor_layer then
 				append (board_layers, board_layer);
 			else
@@ -128,7 +128,7 @@ package body et_module_read_pcb_layer_stack is
 
 
 
-	
+
 
 	procedure add_board_layer (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -137,7 +137,7 @@ package body et_module_read_pcb_layer_stack is
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -154,7 +154,7 @@ package body et_module_read_pcb_layer_stack is
 				log (SEVERITY_ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
 				raise constraint_error;
 			end if;
-			
+
 			-- reset layer values:
 			dielectric_found := false;
 			conductor_layer := type_signal_layer'first;
@@ -166,13 +166,13 @@ package body et_module_read_pcb_layer_stack is
 		end do_it;
 
 
-	begin	
+	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " add signal layer",
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -182,13 +182,13 @@ package body et_module_read_pcb_layer_stack is
 	end add_board_layer;
 
 
-	
+
 end et_module_read_pcb_layer_stack;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

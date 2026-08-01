@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -51,40 +51,40 @@ package et_project_name is
 
 	use pac_project_name;
 
-	
+
 
 	function get_length (
-		project_name : in pac_project_name.bounded_string) 
-		return natural;	
+		project_name : in pac_project_name.bounded_string)
+		return natural;
 
-	
+
 
 	function to_string (
-		project_name : in pac_project_name.bounded_string) 
+		project_name : in pac_project_name.bounded_string)
 		return string;
 
 
-	
+
 	function to_project_name (
-		name : in string) 
+		name : in string)
 		return pac_project_name.bounded_string;
 
 
 
-	-- Tests whether the project name is a child directory 
+	-- Tests whether the project name is a child directory
 	-- of the current working directory.
 	-- Raises constraint error otherwise.
 	procedure validate_project_name (
 		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
-	
+
 
 end et_project_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

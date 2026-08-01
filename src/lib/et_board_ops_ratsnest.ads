@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -60,7 +60,7 @@ package et_board_ops_ratsnest is
 	use pac_net_name;
 
 
-	-- Returns the start and end positions (x/y) of all track 
+	-- Returns the start and end positions (x/y) of all track
 	-- segments (lines and arcs) of the given net:
 	-- The list of returned points uses fixed point coordinates
 	-- as the tracks are placed by the operator (their ends are man-made):
@@ -75,8 +75,8 @@ package et_board_ops_ratsnest is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor)
 		return pac_points.list;
-								 
-	
+
+
 	-- (Re)generates the ratsnest of all nets according to the current
 	-- positions of vias, tracks and terminals:
 	procedure update_ratsnest (
@@ -114,7 +114,7 @@ package et_board_ops_ratsnest is
 	function get_net_name (
 		object : in pac_objects.cursor)
 		return pac_net_name.bounded_string;
-	
+
 
 	-- Returns the number of items stored in the given list:
 	function get_count (
@@ -122,7 +122,7 @@ package et_board_ops_ratsnest is
 		return natural;
 
 
-	
+
 	-- Returns the first airwire according to the given flag.
 	-- If no airwire has been found,
 	-- then the selector wire_cursor in the return is no_element
@@ -133,16 +133,16 @@ package et_board_ops_ratsnest is
 		log_threshold	: in type_log_level)
 		return type_object_airwire;
 
-	
+
 	-- Collects all airwires
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 
-	
+
 	-- Modifies the status flag of an airwire:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -157,13 +157,13 @@ package et_board_ops_ratsnest is
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-	
-											
+
+
 end et_board_ops_ratsnest;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

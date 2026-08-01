@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with et_board_geometry;					use et_board_geometry;
 
@@ -45,10 +45,10 @@ with et_canvas_messages;				use et_canvas_messages;
 
 
 package et_canvas_board_silkscreen is
-	
+
 	use pac_geometry_2;
 
-	
+
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
@@ -69,51 +69,51 @@ package et_canvas_board_silkscreen is
 		point : in type_vector_model);
 
 
-	
-	
+
+
 -- PLACING:
 
 	-- see package et_canvas_board_lines
-	
 
-	
+
+
 
 -- MOVE:
 
-	status_move_object : constant string := 
-		status_click_left 
+	status_move_object : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to move object in silkscreen." 
+		& "to move object in silkscreen."
 		& status_hint_for_abort;
 
-	
+
 	procedure move_object (
 		tool	: in type_tool;
-		point	: in type_vector_model);				   
+		point	: in type_vector_model);
 
 
 
 -- DELETE:
 
-	status_delete_object : constant string := 
-		status_click_left 
+	status_delete_object : constant string :=
+		status_click_left
 		& "or "
 		& status_press_space
-		& "to delete object in silkscreen." 
+		& "to delete object in silkscreen."
 		& status_hint_for_abort;
 
-	
-	procedure delete_object (
-		point	: in type_vector_model);				   
 
-	
-	
+	procedure delete_object (
+		point	: in type_vector_model);
+
+
+
 end et_canvas_board_silkscreen;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

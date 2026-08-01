@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with ada.text_io;				use ada.text_io;
@@ -53,31 +53,31 @@ with et_pcb_sides;				use et_pcb_sides;
 
 
 package body et_pick_and_place is
-	
+
 	function to_string (name : in pac_pnp_file_name.bounded_string) return string is begin
 		return pac_pnp_file_name.to_string (name);
 	end;
-	
+
 	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string is begin
 		return pac_pnp_file_name.to_bounded_string (name);
 	end;
 
-	
+
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
-		log_threshold	: in type_log_level) 
-	is		
+		log_threshold	: in type_log_level)
+	is
 
 		file_name : pac_pnp_file_name.bounded_string;
-		
+
 		pnp_handle : ada.text_io.file_type;
 		device_cursor : pac_devices.cursor := pnp.first;
 
-		
-		procedure set_file_name is 
+
+		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
 			use pac_assembly_variant_name;
@@ -85,7 +85,7 @@ package body et_pick_and_place is
 		begin
 			if is_default (variant_name) then
 				file_name := to_file_name (
-							compose 
+							compose
 							(
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_pick_and_place,
@@ -96,18 +96,18 @@ package body et_pick_and_place is
 
 			else
 				file_name := to_file_name (
-							compose 
+							compose
 							(
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_pick_and_place,
 
-								name					=> to_string (module_name) & "_" & 
+								name					=> to_string (module_name) & "_" &
 															to_variant (variant_name),
 								extension				=> extension_pnp
 							));
 			end if;
-		end;	
-		
+		end;
+
 		procedure native is
 			use et_csv;
 
@@ -139,10 +139,10 @@ package body et_pick_and_place is
 
 				put_lf (file => pnp_handle, field_count => et_csv.column);
 			end query_device;
-			
+
 		begin -- native
 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
-			
+
 			-- write the table header
 			et_csv.reset_column;
 			put_field (file => pnp_handle, text => column_item);
@@ -156,21 +156,21 @@ package body et_pick_and_place is
 			pac_devices.iterate (
 				container	=> pnp,
 				process		=> query_device'access);
-			
+
 			-- CS: A list end mark should be placed.
 			-- put_line (pnp_handle, comment_mark & " end of list");
-			
+
 		end;
-		
+
 	begin -- write_pnp
 		-- build the file name
 		set_file_name;
 
 		log (text => "writing pick & place file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
-		
+
 		create (
 			file => pnp_handle,
-			mode => out_file, 
+			mode => out_file,
 			name => to_string (file_name));
 
 		case format is
@@ -178,7 +178,7 @@ package body et_pick_and_place is
 -- 			when EAGLE => eagle;
 			when others => raise constraint_error;
 		end case;
-				
+
 		close (pnp_handle);
 
 		exception
@@ -186,19 +186,19 @@ package body et_pick_and_place is
 				if is_open (pnp_handle) then
 					close (pnp_handle);
 				end if;
-				
+
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
-				
+
 	end write_pnp;
 
-		
+
 end et_pick_and_place;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

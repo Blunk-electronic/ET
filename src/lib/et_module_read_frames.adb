@@ -62,12 +62,12 @@ package body et_module_read_frames is
 
 	use pac_generic_modules;
 
-	
-	
+
+
 	sheet_descriptions			: pac_schematic_descriptions.vector;
-	sheet_description_category	: type_schematic_sheet_category := 
+	sheet_description_category	: type_schematic_sheet_category :=
 		schematic_sheet_category_default; -- product/develpment/routing
-	
+
 	sheet_description_number	: type_sheet := type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: pac_text_content.bounded_string;		-- "voltage regulator"
 
@@ -76,8 +76,8 @@ package body et_module_read_frames is
 	frame_template_board		: pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 	frame_board_position		: type_position; -- x 0 y 0
 
-	
-	
+
+
 
 	procedure read_frame_template_schematic (
 		line : in type_fields_of_line)
@@ -93,9 +93,9 @@ package body et_module_read_frames is
 		end if;
 	end;
 
-		
 
-		
+
+
 	procedure read_frame_template_board (
 		line : in type_fields_of_line)
 	is
@@ -114,9 +114,9 @@ package body et_module_read_frames is
 		end if;
 	end;
 
-	
-		
-		
+
+
+
 
 	procedure read_sheet_description (
 		line : in type_fields_of_line)
@@ -135,18 +135,18 @@ package body et_module_read_frames is
 		elsif kw = keyword_sheet_description then -- text "voltage regulator"
 			expect_field_count (line, 2);
 			sheet_description_text := to_content (f (line, 2));
-			
+
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_sheet_description;
 
-		
 
-		
-		
-		
-	procedure add_sheet_description is 
+
+
+
+
+	procedure add_sheet_description is
 		use pac_schematic_descriptions;
 		position : pac_schematic_descriptions.cursor;
 	begin
@@ -161,26 +161,26 @@ package body et_module_read_frames is
 		sheet_description_text := to_content("");
 	end add_sheet_description;
 
-				
-				
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 	procedure set_frame_schematic (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-	
+
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
-			log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
+			log (text => "drawing frame schematic " & to_string (frame_template_schematic),
 				level => log_threshold + 1);
 
 			-- set the frame template name
@@ -192,14 +192,14 @@ package body et_module_read_frames is
 			-- Clean up sheet descriptions even if
 			-- there should not be another section for sheet descriptions:
 			pac_schematic_descriptions.clear (sheet_descriptions);
-			
+
 			-- read the frame template file
 			module.frames.frame := read_frame_schematic (
 				file_name		=> frame_template_schematic,
 				log_threshold	=> log_threshold + 2);
 
 		end do_it;
-					
+
 
 	begin
 		-- set schematic frame template
@@ -207,17 +207,17 @@ package body et_module_read_frames is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-		
+
 	end set_frame_schematic;
 
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	procedure set_frame_board  (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -225,7 +225,7 @@ package body et_module_read_frames is
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -243,7 +243,7 @@ package body et_module_read_frames is
 			module.board.frame.frame.position := frame_board_position;
 		end do_it;
 
-		
+
 	begin
 		-- set board/layout frame template
 		update_element (
@@ -254,15 +254,15 @@ package body et_module_read_frames is
 	end set_frame_board;
 
 
-	
-	
-	
+
+
+
 end et_module_read_frames;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

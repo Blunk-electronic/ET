@@ -41,7 +41,7 @@ with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.exceptions;
- 
+
 with ada.command_line;			use ada.command_line;
 with gnat.command_line;			use gnat.command_line;
 with ada.directories;			use ada.directories;
@@ -110,7 +110,7 @@ procedure et is
 
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-	
+
 	package_name_create		: pac_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
 	package_name_import		: pac_package_model_file.bounded_string; -- the package to be imported
 	package_name_open		: pac_package_model_file.bounded_string; -- the package to be opened
@@ -121,7 +121,7 @@ procedure et is
 	symbol_name_open		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be opened
 	symbol_name_save_as		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
-	
+
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
 	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
 	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
@@ -131,23 +131,23 @@ procedure et is
 	frame_name_open			: et_drawing_frame.pac_template_name.bounded_string;
 	unused_frame_name_save_as	: et_drawing_frame.pac_template_name.bounded_string;
 	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
-	
+
 	script_name				: pac_script_name.bounded_string;
-	
+
 	dummy_name : constant string := "dummy";
 
 	message_error : constant string := "ERROR ! ";
 
 
-	
+
 	procedure get_commandline_arguments is
 		use ada.characters.latin_1;
 		use et_system_info;
-		
+
 		arg : constant string := ("argument: -");
 		equals : character renames equals_sign;
 	begin
-		loop 
+		loop
 			case getopt (switch_version -- FIND THE SWITCH STRINGS IN ET_GENERAL !!!
 						& space & switch_help -- no parameter
 						& space & switch_make_default_conv & equals
@@ -197,11 +197,11 @@ procedure et is
 						& space & switch_runmode & equals
 					) is
 
-				
+
 				when hyphen => -- which is a '-'
 					if full_switch = switch_version then
 						put_line (system_name & " version " & version);
-						
+
 					elsif full_switch = switch_help then
 						put_line ("help"); -- CS write helpful help
 
@@ -221,7 +221,7 @@ procedure et is
 					elsif full_switch = switch_native_project_create then
 						log (text => arg & full_switch & space & parameter);
 						project_name_create := to_project_name (remove_trailing_directory_separator (parameter));
-						
+
 					elsif full_switch = switch_native_project_open then
 						log (text => arg & full_switch & space & parameter);
 						project_name_open := to_project_name (remove_trailing_directory_separator (parameter));
@@ -233,11 +233,11 @@ procedure et is
 					elsif full_switch = switch_native_project_module then
 						log (text => arg & full_switch & space & parameter);
 						module_file_name := to_module_file_name (parameter);
-						
+
 					elsif full_switch = switch_native_project_sheet then
 						log (text => arg & full_switch & space & parameter);
 						module_sheet := et_sheets.to_sheet (parameter);
-						
+
 					-- package
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch); -- no parameter
@@ -246,7 +246,7 @@ procedure et is
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
 						package_appearance := et_package_bom_relevance.to_bom_relevant (parameter); -- if not provided -> default used
-						
+
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
 						package_name_open := to_package_model_name (parameter); -- libraries/packages/smd/SOT23.pac
@@ -263,7 +263,7 @@ procedure et is
 					elsif full_switch = switch_symbol_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
 						symbol_appearance := et_device_appearance.to_appearance (parameter); -- if not provided -> default used
-						
+
 					elsif full_switch = switch_native_symbol_open then
 						log (text => arg & full_switch & space & parameter);
 						symbol_name_open := et_symbol_name.to_file_name (parameter); -- libraries/symbols/nand.sym
@@ -281,7 +281,7 @@ procedure et is
 					elsif full_switch = switch_device_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
 						device_appearance := et_device_appearance.to_appearance (parameter); -- if not provided -> default used
-						
+
 					elsif full_switch = switch_native_device_open then
 						log (text => arg & full_switch & space & parameter);
 						device_name_open := to_file_name (parameter); -- libraries/devices/TL084.dev
@@ -290,18 +290,18 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						device_name_save_as := to_file_name (parameter);
 
-						
+
 					-- frame schematic
 					elsif full_switch = switch_frame_schematic_create then
 						log (text => arg & full_switch & space & parameter);
 						frame_name_create := et_drawing_frame.to_template_name (parameter);
 						frame_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
-						
+
 					elsif full_switch = switch_frame_schematic_open then
 						log (text => arg & full_switch & space & parameter);
 						frame_name_open := et_drawing_frame.to_template_name (parameter);
 						frame_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
-						
+
 					elsif full_switch = switch_frame_schematic_save_as then
 						log (text => arg & full_switch & space & parameter);
 						unused_frame_name_save_as := et_drawing_frame.to_template_name (parameter);
@@ -317,16 +317,16 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						frame_name_open := et_drawing_frame.to_template_name (parameter);
 						frame_domain := et_drawing_frame.DOMAIN_PCB;
-						
+
 					elsif full_switch = switch_frame_pcb_save_as then
 						log (text => arg & full_switch & space & parameter);
 						unused_frame_name_save_as := et_drawing_frame.to_template_name (parameter);
-						
+
 					-- script
 					elsif full_switch = switch_execute_script then
 						log (text => arg & full_switch & space & parameter);
 						script_name := to_script_name (parameter);
-						
+
 					elsif full_switch = switch_log_level then
 						log (text => arg & full_switch & space & parameter);
 						log_level := type_log_level_cmd_line'value (parameter);
@@ -335,9 +335,9 @@ procedure et is
 					elsif full_switch = switch_runmode then
 						log (text => arg & full_switch & space & parameter);
 						runmode := to_runmode (parameter);
-						
+
 					end if;
-					
+
 				when others => exit;
 
 			end case;
@@ -348,10 +348,10 @@ procedure et is
 				put_line (message_error & "command line argument error !");
 				show_cdl_switches;
 				raise;
-				
+
 	end get_commandline_arguments;
 
-		
+
 
 	procedure backup_projects_root_directory is
 		use et_project;
@@ -363,8 +363,8 @@ procedure et is
 	pragma unreferenced (backup_projects_root_directory);
 
 
-	
-	
+
+
 	procedure restore_projects_root_directory is
 		use et_project;
 		use et_project.pac_root_directory;
@@ -375,10 +375,10 @@ procedure et is
 		set_directory (to_string (projects_root_dir));
 	end;
 	pragma unreferenced (restore_projects_root_directory);
-	
 
 
-	
+
+
 	procedure create_work_directory is
 		use et_system_info;
 	begin
@@ -389,8 +389,8 @@ procedure et is
 	end;
 
 
-	
-	procedure create_report_directory is begin	
+
+	procedure create_report_directory is begin
 		if not exists (compose (work_directory, report_directory)) then
 			put_line ("creating report directory ...");
 			create_directory (compose (work_directory, report_directory));
@@ -399,8 +399,8 @@ procedure et is
 
 
 
-	
-	
+
+
 	procedure import_project is -- CS move to et_import ?
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_import;
@@ -421,11 +421,11 @@ procedure et is
 		if et_import.cad_format = UNKNOWN then
 			put_line (message_error & "CAD format not specified !");
 			raise constraint_error;
-		end if;		
+		end if;
 
 		log (text => "importing project " & to_string (project_name_import) & " ...", console => true);
 		log (text => "CAD format " & to_string (et_import.cad_format));
-				
+
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
@@ -441,11 +441,11 @@ procedure et is
 				et_kicad_to_native.to_native (to_project_name
 					(base_name (to_string (project_name_import))), log_threshold => 0);
 				log_indentation_down;
-				
+
 			when others => -- CS
 				raise constraint_error;
 		end case;
-		
+
 		exception
 			when
 				others =>
@@ -456,9 +456,9 @@ procedure et is
 
 
 
-	
-	
-	procedure save_package_as is 
+
+
+	procedure save_package_as is
 		use et_package_library;
 		use pac_package_model_file;
 	begin
@@ -466,7 +466,7 @@ procedure et is
 		-- Otherwise the latest and only package is saved.
 
 		-- CS: Test file extension package_model_file_extension
-		
+
 		if length (package_name_save_as) > 0 then
 			et_package_write.write_package (
 				file_name 		=> package_name_save_as,
@@ -477,10 +477,10 @@ procedure et is
 	end;
 
 
-	
 
-	
-	procedure save_symbol_as is 
+
+
+	procedure save_symbol_as is
 		use et_symbol_library;
 		use et_symbol_name.pac_symbol_model_name;
 	begin
@@ -497,9 +497,9 @@ procedure et is
 
 
 
-	
-	
-	procedure save_device_as is 
+
+
+	procedure save_device_as is
 		use pac_device_model_file;
 	begin
 		-- If device_name_save_as is empty nothing happens.
@@ -515,8 +515,8 @@ procedure et is
 
 
 
-	
-	
+
+
 	procedure launch_schematic_and_board_editor is
 		use et_gui_2;
 		use pac_generic_modules;
@@ -530,16 +530,16 @@ procedure et is
 	begin
 		-- If no generic modules available at all, create an untitled module:
 		if get_count (generic_modules) = 0 then
-			
+
 			create_module (
 				module_name		=> to_module_name (untitled),
 				log_threshold	=> 0);
 			-- NOTE: does not create a module file as this module is still untitled.
-			
+
 			module_cursor := generic_modules.first; -- select the untitled generic module
 		else
 		-- Generic module are available:
-			
+
 			-- If no module name was given via command line, then the first
 			-- available generic module will be opened.
 			if length (module_file_name) = 0 then
@@ -548,17 +548,17 @@ procedure et is
 				-- Convert the optionally given module file name to a module name.
 				generic_module_name := to_module_name (remove_extension (
 					simple_name (pac_module_file_name.to_string (module_file_name))));
-				
+
 				module_cursor := find (generic_modules, generic_module_name);
 			end if;
 		end if;
-			
+
 		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.
 		-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
 		if pac_script_name.length (script_name) > 0 then
 			script_name_tmp := to_script_name (simple_name (to_string (script_name))); -- rename_nets.scr
 		end if;
-		
+
 		-- We pass the script name (even if empty) to the schematic so
 		-- that it gets executed from there. If the script name is empty,
 		-- no script will be executed by the gui.
@@ -568,13 +568,13 @@ procedure et is
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
 			script			=> script_name_tmp,
 			log_threshold	=> 0);
-		
+
 	end launch_schematic_and_board_editor;
 
-	
 
 
-	
+
+
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
 		use pac_package_model_file;
@@ -584,7 +584,7 @@ procedure et is
 		use et_script_processor;
 
 		exit_code_script : type_exit_code_script;
-		
+
 	begin
 		-- The arguments are processed according to a certain priority.
 		-- 1. create conventions file
@@ -602,14 +602,14 @@ procedure et is
 
 				-- create project directory
 				runmode := MODE_HEADLESS;
-				
+
 				-- CS: provide module name via cdl argument
 				et_project.create_project_directory (
 					module_name		=> to_module_name (to_string (project_name_create)),
 					project_name	=> project_name_create,
 -- 					project_path	=> et_project.to_project_path (""),
 					log_threshold	=> 0);
-				
+
 			-- If operator wants to import a project it will be done here.
 			elsif get_length (project_name_import) > 0 then
 				import_project;
@@ -625,17 +625,17 @@ procedure et is
 					-- NOTE: In headless mode the script will be executed right here.
 					-- Function et_scripting.execute_script parses the script line per line
 					-- and calls procedure et_scripting.execute_command for each line.
-					
+
 					-- In graphical mode (means everything other than MODE_HEADLESS)
-					-- the script will NOT be executed here but FROM INSIDE the GUI 
+					-- the script will NOT be executed here but FROM INSIDE the GUI
 					-- as if it where an ordinary command entered by the operator.
 					-- See procedure et_gui.single_module for more.
-					
+
 					case runmode is
 						when MODE_HEADLESS =>
 
 							--cmd_entry_mode := SCRIPT_ON_STARTUP;
-							
+
 							exit_code_script := execute_script_headless (script_name, log_threshold => 0);
 
 							-- evaluate exit code
@@ -651,50 +651,50 @@ procedure et is
 
 								when SUCCESSFUL =>
 									log (text => "Execution of script " & to_string (script_name) & " successful");
-									
+
 							end case;
 
 						when others => null;
 					end case;
-					
+
 				end if;
-				
+
 				-- optionally the project can be saved with a different name
 				if get_length (project_name_save_as) > 0 then
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
 
-				
+
 			-- package
 			elsif length (package_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
-				
+
 				et_package_library.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
 
 
-				
+
 			elsif length (package_name_import) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				null; -- CS
 
 
-				
+
 			elsif length (package_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
-				
+
 				et_package_read.read_package (package_name_open, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as; -- if package_name_save_as is empty nothing happens
 
-				
+
 			-- symbol
 			elsif length (symbol_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
-				
+
 				et_symbol_library.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name
@@ -702,17 +702,17 @@ procedure et is
 
 			elsif length (symbol_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
-				
+
 				et_symbol_read.read_symbol (symbol_name_open, log_threshold => 0);
 
-				-- optionally the symbol can be saved under a different name				
+				-- optionally the symbol can be saved under a different name
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 
 
 			-- device
 			elsif length (device_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
-				
+
 				et_device_library.create_device (device_name_create, device_appearance, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name
@@ -720,29 +720,29 @@ procedure et is
 
 			elsif length (device_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
-				
+
 				et_device_read.read_device (device_name_open, log_threshold => 0);
 
-				-- optionally the device can be saved under a different name				
+				-- optionally the device can be saved under a different name
 				save_device_as; -- if device_name_save_as is empty nothing happens
 
 
 			-- frame
 			elsif length (frame_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
-				
+
 				et_drawing_frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
 
 			elsif length (frame_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
-				
+
 				declare
 					-- CS frame : type_frame (frame_domain);
 				begin
 					null;
 					-- CS frame := read_frame (frame_name_open, frame_domain, log_threshold => 0);
 
-					-- optionally the framc can be saved under a different name				
+					-- optionally the framc can be saved under a different name
 					-- CS
 					-- if length (frame_name_save_as) > 0 then
 					-- 	save_frame (frame, frame_name_save_as, log_threshold => 0);
@@ -750,30 +750,30 @@ procedure et is
 				end;
 
 			end if;
-			
+
 		end if;
-		
+
 	end process_commandline_arguments;
 
 
 
-	
-	procedure log_sys_info is 
+
+	procedure log_sys_info is
 	begin
 		log (text => et_board_geometry.pac_geometry_2.get_info ("layout/board"));
 		log (text => et_schematic_geometry.pac_geometry_2.get_info ("schematic"));
 	end log_sys_info;
 
 
-	
+
 begin -- main
 
 	if argument_count = 0 then
 		-- If operator does not provide any arguments, show possible options.
 		show_cdl_switches;
-		
+
 	else
-		
+
 		-- create a directory where imported projects and reports live:
 		create_work_directory;
 
@@ -783,7 +783,7 @@ begin -- main
 		create_report;
 
 		log_sys_info;
-		
+
 		get_commandline_arguments;
 
 		process_commandline_arguments;
@@ -793,18 +793,18 @@ begin -- main
 			when MODE_MODULE => launch_schematic_and_board_editor;
 			when others => null;
 		end case;
-		
+
 		close_report;
 	end if;
 
 	-- put_line ("exit");
-	
+
 	exception
 		when event: others =>
 			log_indentation_reset;
 			log (text => ada.exceptions.exception_information (event), console => true);
 			close_report;
-			
+
 			put_line ("Read log file " & log_file_name & " for details !");
 			set_exit_status (failure);
 
@@ -812,7 +812,7 @@ end et;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

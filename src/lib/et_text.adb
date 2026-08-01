@@ -43,17 +43,17 @@ with et_logging;				use et_logging;
 
 package body et_text is
 
-	
-	
+
+
 	package body generic_pac_text is
 
-		
+
 		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
 
 		-- With this line uncommented the linker outputs errors like "undefined reference ..."
 		-- function to_text_size (size : in type_distance) return type_text_size is
-			
+
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 			function to_string (
 				size		: in type_text_size;
@@ -69,8 +69,8 @@ package body et_text is
 
 		begin
 			if size not in type_text_size then
-				log (SEVERITY_ERROR, "text " 
-					& to_string (size => size, preamble => true)  
+				log (SEVERITY_ERROR, "text "
+					& to_string (size => size, preamble => true)
 					& " out of range !",
 					console => true);
 
@@ -82,13 +82,13 @@ package body et_text is
 			end if;
 			return size;
 		end to_text_size;
-		
 
-		
+
+
 		procedure validate_text_size (size : in pac_geometry.type_distance) is
 		begin
 			if size not in type_text_size then
-				log (SEVERITY_ERROR, "text size invalid ! Allowed range is" 
+				log (SEVERITY_ERROR, "text size invalid ! Allowed range is"
 					& to_string (type_text_size'first) & " .."
 					& to_string (type_text_size'last),
 					console => true);
@@ -107,10 +107,10 @@ package body et_text is
 			text.alignment := text_alignment_default;
 			reset_status (text.status);
 		end;
-		
 
 
-		
+
+
 
 
 		function is_proposed (
@@ -123,23 +123,23 @@ package body et_text is
 				return false;
 			end if;
 		end is_proposed;
-			
+
 
 		procedure set_proposed (
 			text : in out type_text)
 		is begin
 			set_proposed (text.status);
 		end set_proposed;
-		
+
 
 		procedure clear_proposed (
 			text : in out type_text)
 		is begin
 			clear_proposed (text.status);
 		end clear_proposed;
-		
 
-		
+
+
 		function is_moving (
 			text : in type_text)
 			return boolean
@@ -150,23 +150,23 @@ package body et_text is
 				return false;
 			end if;
 		end is_moving;
-		
 
-		
+
+
 		procedure set_moving (
 			text : in out type_text)
 		is begin
 			set_moving (text.status);
 		end set_moving;
 
-		
+
 
 		procedure clear_moving (
 			text : in out type_text)
 		is begin
 			clear_moving (text.status);
 		end clear_moving;
-		
+
 
 		function is_selected (
 			text : in type_text)
@@ -178,14 +178,14 @@ package body et_text is
 				return FALSE;
 			end if;
 		end is_selected;
-		
+
 
 		procedure set_selected (
 			text : in out type_text)
 		is begin
 			set_selected (text.status);
 		end set_selected;
-		
+
 
 		procedure clear_selected (
 			text : in out type_text)
@@ -193,7 +193,7 @@ package body et_text is
 			clear_selected (text.status);
 		end clear_selected;
 
-		
+
 
 		procedure modify_status (
 			text 		: in out type_text;
@@ -203,7 +203,7 @@ package body et_text is
 		end modify_status;
 
 
-		
+
 
 		procedure reset_status (
 			text 		: in out type_text)
@@ -211,13 +211,13 @@ package body et_text is
 			reset_status (text.status);
 		end reset_status;
 
-		
-		
 
-		
+
+
+
 		function text_properties (
-			text : in type_text) 
-			return string 
+			text : in type_text)
+			return string
 		is begin
 			return
 				"size" & to_string (text.size)
@@ -225,12 +225,12 @@ package body et_text is
 		end text_properties;
 
 
-		
-		
 
 
-		
-		function to_rotation (rotation : in type_rotation_documentation) 
+
+
+
+		function to_rotation (rotation : in type_rotation_documentation)
 			return type_rotation is
 		begin
 			case rotation is
@@ -241,8 +241,8 @@ package body et_text is
 
 
 
-		
-		function to_string (rotation : in type_rotation_documentation) 
+
+		function to_string (rotation : in type_rotation_documentation)
 			return string is
 		begin
 			if rotation = HORIZONTAL then
@@ -253,8 +253,8 @@ package body et_text is
 		end;
 
 
-		
-		
+
+
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
 			rotation_add	: in type_rotation)
@@ -264,19 +264,19 @@ package body et_text is
 		end;
 
 
-		
-		
-		
+
+
+
 		procedure warning_rotation_outside_range is
 		begin
 			log (SEVERITY_WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;
 
-		
-		
-		
+
+
+
 		function to_rotation_doc (
-			rotation : in type_rotation) 
+			rotation : in type_rotation)
 			return type_rotation_documentation
 		is
 			offset : constant type_rotation := 45.0 - type_rotation'small;
@@ -294,28 +294,28 @@ package body et_text is
 		end;
 
 
-		
-		
+
+
 		function to_rotation_doc (
-			rotation : in string) 
-			return type_rotation_documentation 
+			rotation : in string)
+			return type_rotation_documentation
 		is
 			r : constant type_rotation := to_rotation (rotation);
 		begin
 			if r = zero_rotation then
 				return HORIZONTAL;
-				
+
 			elsif r = 90.0 then
 				return VERTICAL;
-				
+
 			else
 				warning_rotation_outside_range;
 				return to_rotation_doc (r);
 			end if;
 		end;
-	
 
-		
+
+
 	end generic_pac_text;
 
 end et_text;
@@ -323,7 +323,7 @@ end et_text;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -39,7 +39,7 @@
 -- with ada.strings.bounded;
 -- with ada.strings;
 -- with ada.strings.fixed;
--- 
+--
 
 -- with ada.text_io;			use ada.text_io;
 with glib;
@@ -51,7 +51,7 @@ package body et_canvas.contours is
 	use glib;
 	use cairo;
 
-	
+
 	procedure draw_contour (
 		contour	: in type_contour'class;
 		pos 	: in type_position := origin_zero_rotation;
@@ -62,7 +62,7 @@ package body et_canvas.contours is
 		mirror	: in type_mirror := MIRROR_NO)
 		-- CS fill style
 	is
-		-- The line style, or the dash pattern, will be calculated 
+		-- The line style, or the dash pattern, will be calculated
 		-- according to the current scale:
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
@@ -74,7 +74,7 @@ package body et_canvas.contours is
 		-- This is the final position of the contour
 		-- due to the position of the parent object:
 		pos_end : type_position := pos;
-		
+
 		use pac_segments;
 
 
@@ -92,11 +92,11 @@ package body et_canvas.contours is
 		-- flag is set when the first segment is drawn:
 		start_point_set : boolean := false;
 
-		
+
 		-- This procedure draws a segment of the given contour:
 		procedure query_segment (
-			c : in pac_segments.cursor) 
-		is 
+			c : in pac_segments.cursor)
+		is
 			-- Take a copy of the given segment:
 			segment : constant type_segment := element (c);
 
@@ -104,8 +104,8 @@ package body et_canvas.contours is
 			-- by the operator, then we store the tool
 			-- position here:
 			pointer : type_vector_model;
-		begin			
-			case segment.shape is				
+		begin
+			case segment.shape is
 				when LINE =>
 					--put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
@@ -115,10 +115,10 @@ package body et_canvas.contours is
 						-- Draw a polyline:
 						if not start_point_set then
 							start_point_set := true;
-						
+
 							draw_line (
 								line	=> segment.segment_line,
-								pos		=> pos_end,		  
+								pos		=> pos_end,
 								width	=> zero,  -- don't care. see specs of draw_line.
 								mirror	=> mirror,
 								style	=> style,
@@ -126,7 +126,7 @@ package body et_canvas.contours is
 						else
 							draw_line (
 								line	=> segment.segment_line,
-								pos		=> pos_end,		  
+								pos		=> pos_end,
 								width	=> zero,  -- don't care. see specs of draw_line.
 								mirror	=> mirror,
 								style	=> style,
@@ -140,20 +140,20 @@ package body et_canvas.contours is
 						-- Each line is drawn as a single independend segment:
 						draw_line (
 							line	=> segment.segment_line,
-							pos		=> pos_end,		  
+							pos		=> pos_end,
 							width	=> zero,  -- don't care. see specs of draw_line.
 							mirror	=> mirror,
 							style	=> style,
 							path	=> NO_PATH);
 					end if;
 
-					
+
 				when ARC =>
 
 					-- CS ?
 					draw_arc (
 						arc		=> segment.segment_arc,
-						pos		=> pos_end,		 
+						pos		=> pos_end,
 						width	=> zero,
 						mirror	=> mirror,
 						style	=> style);
@@ -162,7 +162,7 @@ package body et_canvas.contours is
 			end case;
 		end query_segment;
 
-		
+
 	begin -- draw_contour
 		-- put_line ("draw_contour");
 		-- put_line (" pos" & to_string (pos));
@@ -170,7 +170,7 @@ package body et_canvas.contours is
 
 		-- Rotate by rotation of parent object:
 		rotate_by (offset_tmp, get_rotation (pos));
-		
+
 		case mirror is
 			when MIRROR_ALONG_X_AXIS =>
 				mirror_point (offset_tmp, MIRROR_ALONG_X_AXIS);
@@ -180,18 +180,18 @@ package body et_canvas.contours is
 
 			when others => null;
 		end case;
-		
+
 		add (pos_end.place, offset_tmp);
 
 
 
-		-- The calls of primitive draw operations in this 
-		-- procedure are without explicit strokes. For this 
+		-- The calls of primitive draw operations in this
+		-- procedure are without explicit strokes. For this
 		-- reason the linewidth must be set first:
 		if width > zero then
-			set_line_width (context, 
+			set_line_width (context,
 				to_gdouble_positive (to_distance (width)));
-  
+
 		else
 			-- If linewidth is zero then a mimimum
 			-- must be ensured:
@@ -204,29 +204,29 @@ package body et_canvas.contours is
 		-- If the contour is a collection of segments (arc and lines),
 		-- then iterate through the segments:
 		if contour.contour.circular then
-			
+
 			-- CS: The intersection between circle and other segments
 			-- is still visible as a very thin line.
 
 			-- Draw the single circle that forms the contour:
 			draw_circle (
 				circle		=> contour.contour.circle,
-				pos			=> pos_end,			
+				pos			=> pos_end,
 				filled		=> filled,
 				mirror		=> mirror,
-				width		=> zero,   
+				width		=> zero,
 				-- The linewidth is ignored (see specs of draw_circle)
 				-- because no stroke will be carried out.
 				-- The linewidth has been set already and
 				-- there is a final stroke in this procedure.
 				style		=> style);
-			
+
 		else
 			new_sub_path (context); -- required to suppress an initial line
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
 
-		
+
 		-- Fill the contour if requested by the caller
 		-- AND if it is closed:
 		if filled = YES and contour_is_closed then
@@ -239,11 +239,11 @@ package body et_canvas.contours is
 		-- should be done by draw_line, draw_arc and draw_circle instead.
 		case style is
 			when CONTINUOUS => null;
-			
+
 			when DASHED =>
 				dash_on  := 1.5 * to_gdouble (to_distance (width));
 				dash_off := 1.5 * to_gdouble (to_distance (width));
-				
+
 				dash_pattern (1) := dash_on;
 				dash_pattern (2) := dash_off;
 				set_dash (context, dash_pattern, 0.0);
@@ -259,7 +259,7 @@ package body et_canvas.contours is
 		if style /= CONTINUOUS then
 			set_dash (context, no_dashes, 0.0);
 		end if;
-		
+
 	end draw_contour;
 
 
@@ -278,13 +278,13 @@ package body et_canvas.contours is
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context, CAIRO_OPERATOR_CLEAR);
-		
+
 		-- draw inner area to be taken out:
-		draw_circle (inner_border, pos, filled => YES, 
+		draw_circle (inner_border, pos, filled => YES,
 			width => zero, mirror => mirror, stroke => DO_STROKE);
 
 		-- restore default compositing operator:
-		set_operator (context, CAIRO_OPERATOR_OVER);		
+		set_operator (context, CAIRO_OPERATOR_OVER);
 	end draw_contour_with_circular_cutout;
 
 
@@ -299,25 +299,25 @@ package body et_canvas.contours is
 		-- draw outer contour:
 		draw_contour (outer_border, pos, offset, CONTINUOUS, YES, zero, mirror);
 		-- CS dash pattern ? currently set to CONTINUOUS
-		
+
 		-- the cutout area must clear out the outer area:
 		set_operator (context, CAIRO_OPERATOR_CLEAR);
-		
+
 		-- draw inner contour - the area to be taken out:
 		draw_contour (inner_border, pos, offset, CONTINUOUS, YES, zero, mirror);
 		-- CS dash pattern ? currently set to CONTINUOUS
-		
+
 		-- restore default compositing operator:
-		set_operator (context, CAIRO_OPERATOR_OVER);		
+		set_operator (context, CAIRO_OPERATOR_OVER);
 	end draw_contour_with_arbitrary_cutout;
 
-	
-	
+
+
 end et_canvas.contours;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

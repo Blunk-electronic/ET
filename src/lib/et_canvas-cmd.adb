@@ -49,16 +49,16 @@ with et_logging;					use et_logging;
 package body et_canvas.cmd is
 
 
-	
+
 	procedure skipped_in_this_runmode (
-		log_threshold : in type_log_level) 
+		log_threshold : in type_log_level)
 	is begin
 		log (text => "skipped in current runmode "
 			& to_string (runmode), level => log_threshold);
 	end skipped_in_this_runmode;
 
 
-	
+
 
 	function to_string (
 		noun : in type_canvas_noun)
@@ -67,9 +67,9 @@ package body et_canvas.cmd is
 		return type_canvas_noun'image (noun);
 	end to_string;
 
-	
 
-	
+
+
 
 
 	procedure parse_canvas_command (
@@ -82,40 +82,40 @@ package body et_canvas.cmd is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- This procedure is a shortcut. 
+		-- This procedure is a shortcut.
 		-- Call it in case the given command is too long:
 		procedure too_long is begin
 			command_too_long (cmd, cmd_field_count - 1);
 		end;
 
 
-		-- This procedure is a shortcut. 
+		-- This procedure is a shortcut.
 		-- Call it in case the given command is incomplete:
 		procedure command_incomplete is begin
 			command_incomplete (cmd);
 		end;
 
 
-		
 
-		function get_field (place : in type_field_count) 
-			return string 
+
+		function get_field (place : in type_field_count)
+			return string
 		is begin
 			return get_field (cmd, place);
 		end;
 
-		
 
 
-		
-		
-	
-		procedure evaluate_on_verb_set is 
+
+
+
+
+		procedure evaluate_on_verb_set is
 
 			-- This procedure parses a command that
 			-- sets the grid spacing like
 			-- "set grid spacing 5 5":
-			procedure set_grid is begin				
+			procedure set_grid is begin
 				case cmd_field_count is
 
 					when 5 =>
@@ -123,24 +123,24 @@ package body et_canvas.cmd is
 						-- schematic led_driver set grid on/off
 
 							grid.on_off := ON;
-							
+
 						elsif to_lower (get_field (5)) = keyword_off then
 							grid.on_off := OFF;
 						end if;
-						
-							
+
+
 					when 6 =>
 						if to_lower (get_field (5)) = keyword_spacing then
 						-- schematic led_driver set grid spacing 5
-							
+
 							grid.spacing := (
 								x => to_distance (get_field (6)),
 								y => to_distance (get_field (6)));
 
 							set_grid_to_scale;
 							update_grid_display;
-							
-							
+
+
 						elsif to_lower (get_field (5)) = keyword_style then
 						-- schematic led_driver set grid style dots/lines
 
@@ -149,14 +149,14 @@ package body et_canvas.cmd is
 							elsif to_lower (get_field (6)) = keyword_lines then
 								grid.style := LINES;
 							end if;
-							
+
 						end if;
 
-						
+
 					when 7 =>
 						if to_lower (get_field (5)) = keyword_spacing then
 						-- schematic led_driver set grid spacing 5 5
-							
+
 							grid.spacing := (
 								x => to_distance (get_field (6)),
 								y => to_distance (get_field (7)));
@@ -165,21 +165,21 @@ package body et_canvas.cmd is
 							update_grid_display;
 						end if;
 
-						
-					when 8 .. type_field_count'last => 
+
+					when 8 .. type_field_count'last =>
 						too_long;
 
-					
+
 					when others =>  -- command incomplete
 						command_incomplete;
-						
+
 				end case;
 			end set_grid;
 
-			
+
 			-- Parses a command that sets the zoom
 			-- factor like "set zoom 3":
-			procedure set_zoom is 
+			procedure set_zoom is
 				l : type_zoom_factor;
 			begin
 				case cmd_field_count is
@@ -187,14 +187,14 @@ package body et_canvas.cmd is
 						l := to_zoom_factor (get_field (5));
 
 						log (text => "set zoom factor " & to_string (l),
-							level => log_threshold + 1);					
+							level => log_threshold + 1);
 
 						zoom_to (get_cursor_position, l);
 
 					when 6 .. type_field_count'last => too_long;
 
 					when others => command_incomplete;
-				end case;			
+				end case;
 			end set_zoom;
 
 
@@ -204,7 +204,7 @@ package body et_canvas.cmd is
 			-- Parses a command that sets the color
 			-- of a certain item or layer.
 			-- Example: "set color background black"
-			procedure set_color is 
+			procedure set_color is
 
 
 				procedure set is
@@ -213,14 +213,14 @@ package body et_canvas.cmd is
 					if to_lower (get_field (5)) = keyword_background then
 						color := to_color (get_field (6));
 						log (text => to_string (color), level => log_threshold + 1);
-						
+
 						set_color_background (color);
 					end if;
-					
+
 					-- CS grid, cursor, drawing origin
 				end set;
 
-				
+
 			begin
 				case cmd_field_count is
 					when 6 =>  -- set color background black
@@ -235,12 +235,12 @@ package body et_canvas.cmd is
 
 
 
-			
-			
-			
+
+
+
 			-- Parses a command that sets the cursor
 			-- to a certain place like "set cursor 10 10":
-			procedure set_cursor is 
+			procedure set_cursor is
 
 				-- Sets the cursor to a certain place
 				-- but leaves the zoom factor unchanged:
@@ -252,7 +252,7 @@ package body et_canvas.cmd is
 				begin
 					log (text => "set cursor at " & to_string (c),
 						level => log_threshold + 1);
-							
+
 					zoom_to (c, S); -- zoom factor remains unchanged
 				end set;
 
@@ -267,20 +267,20 @@ package body et_canvas.cmd is
 
 					l : constant type_zoom_factor := to_zoom_factor (get_field (7));
 				begin
-					log (text => "zoom to point " & to_string (c) 
+					log (text => "zoom to point " & to_string (c)
 						& " zoom factor" & to_string (l),
 						level => log_threshold + 1);
-							
+
 					zoom_to (c, l);
 				end zoom_to_point;
 
-				
+
 			begin
 				case cmd_field_count is
 					when 6 =>  -- set cursor 10 10
 						set;
 
-					when 7 =>  -- set cursor 10 10 0.5 
+					when 7 =>  -- set cursor 10 10 0.5
 						zoom_to_point;
 
 					when 8 .. type_field_count'last => too_long;
@@ -289,7 +289,7 @@ package body et_canvas.cmd is
 				end case;
 			end set_cursor;
 
-			
+
 
 
 			-- Parses a command that sets the scale like
@@ -299,7 +299,7 @@ package body et_canvas.cmd is
 				-- Sets the scale, the grid according to the new scale,
 				-- updates the scale and grid display:
 				procedure set is
-					M_new : constant type_scale := type_scale'value (get_field (5));		
+					M_new : constant type_scale := type_scale'value (get_field (5));
 					-- CS do a proper range check. exception handler ?
 				begin
 					M := M_new;
@@ -308,19 +308,19 @@ package body et_canvas.cmd is
 					-- a default grid spacing must be set first:
 					grid.spacing.x := grid_spacing_default;
 					grid.spacing.y := grid_spacing_default;
-					
+
 					-- If the operator changes the scale, then the
 					-- visible grid spacing must be changed accordingly.
 					set_grid_to_scale;
-					
-					-- put_line ("grid spacing x/y:" 
+
+					-- put_line ("grid spacing x/y:"
 					-- 	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
 
 					update_grid_display;
 					update_scale_display;
 				end set;
 
-				
+
 			begin
 				case cmd_field_count is
 					when 5 =>  -- set scale 3
@@ -332,25 +332,25 @@ package body et_canvas.cmd is
 				end case;
 			end set_scale;
 
-			
-			
+
+
 		begin
 			case noun is
 				when NOUN_GRID =>
-					set_grid;					
+					set_grid;
 
 				when NOUN_COLOR =>
-					set_color;					
-					
-				when NOUN_ZOOM => 
+					set_color;
+
+				when NOUN_ZOOM =>
 					set_zoom;
-									
+
 				when NOUN_CURSOR =>
 					set_cursor;
 
 				when NOUN_SCALE =>
-					set_scale;				
-					
+					set_scale;
+
 				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_set;
@@ -358,8 +358,8 @@ package body et_canvas.cmd is
 
 
 
-		
-		procedure evaluate_on_verb_move is 
+
+		procedure evaluate_on_verb_move is
 
 			-- Parses a command that moves the cursor
 			-- by a certain offset like "move cursor 5 -10":
@@ -373,12 +373,12 @@ package body et_canvas.cmd is
 				begin
 					log (text => "move cursor by " & to_string (c),
 						level => log_threshold + 1);
-							
+
 					move_cursor_by (c);
 				end move;
 				pragma unreferenced (move);
 
-				
+
 			begin
 				case cmd_field_count is
 					when 6 =>  -- move cursor 5 -10
@@ -391,29 +391,29 @@ package body et_canvas.cmd is
 					when others => command_incomplete;
 				end case;
 			end move_cursor;
-		
+
 
 		begin
 			case noun is
 				when NOUN_CURSOR =>
 					move_cursor;
-				
+
 				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_move;
 
 
-		
-		
+
+
 	begin
 		log (text => "parse canvas command", level => log_threshold + 1);
 		log_indentation_up;
-		
-		-- Canvas commands can only be executed 
+
+		-- Canvas commands can only be executed
 		-- in a graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-				
+
 				-- Evaluate the given verb:
 				case verb is
 					when VERB_SET =>
@@ -433,15 +433,15 @@ package body et_canvas.cmd is
 		-- end if;
 
 				log_indentation_down;
-				
-			
+
+
 			when others =>
 				log_indentation_down;
 				skipped_in_this_runmode (log_threshold + 1);
-					
-		end case;				
+
+		end case;
 	end parse_canvas_command;
 
-	
+
 end et_canvas.cmd;
 

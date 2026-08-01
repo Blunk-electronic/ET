@@ -68,7 +68,7 @@ package body et_module_write_board_user_settings is
 
 	use pac_geometry_2;
 
-	
+
 
 	procedure write_board_user_settings (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -78,53 +78,53 @@ package body et_module_write_board_user_settings is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			us : type_user_settings renames module.board.user_settings;
 
-			
+
 			procedure vias is begin
 				section_mark (section_vias, HEADER);
 
 				-- via drill
 				if us.vias.drill.active then
 					write ( -- drill 0.3
-						keyword		=> keyword_via_drill, 
+						keyword		=> keyword_via_drill,
 						parameters	=> to_string (us.vias.drill.size));
 				else
 					write ( -- drill dru
-						keyword		=> keyword_via_drill, 
+						keyword		=> keyword_via_drill,
 						parameters	=> keyword_dru);
 				end if;
 
 				-- inner restring
 				if us.vias.restring_inner.active then
 					write ( -- restring_inner 0.3
-						keyword		=> keyword_restring_inner, 
+						keyword		=> keyword_restring_inner,
 						parameters	=> to_string (us.vias.restring_inner.width));
 				else
 					write ( -- restring_inner dru
-						keyword		=> keyword_restring_inner, 
+						keyword		=> keyword_restring_inner,
 						parameters	=> keyword_dru);
 				end if;
 
 				-- outer restring
 				if us.vias.restring_outer.active then
 					write ( -- restring_outer 0.3
-						keyword		=> keyword_restring_outer, 
+						keyword		=> keyword_restring_outer,
 						parameters	=> to_string (us.vias.restring_outer.width));
 				else
 					write ( -- restring_inner dru
-						keyword		=> keyword_restring_outer, 
+						keyword		=> keyword_restring_outer,
 						parameters	=> keyword_dru);
 				end if;
-				
+
 				section_mark (section_vias, FOOTER);
 			end vias;
 
-			
-			
-			procedure polygons is 
+
+
+			procedure polygons is
 				use et_primitive_objects;
 				use et_thermal_relief;
 				use et_fill_zones;
@@ -133,76 +133,76 @@ package body et_module_write_board_user_settings is
 			begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
-				write (keyword => keyword_fill_style, 
+				write (keyword => keyword_fill_style,
 					parameters => to_string (us.polygons_conductor.fill_style));
-				
+
 				write (keyword => keyword_linewidth,
 					parameters => to_string (us.polygons_conductor.linewidth));
 
-				write (keyword => keyword_priority , 
+				write (keyword => keyword_priority ,
 					parameters => to_string (us.polygons_conductor.priority_level));
-								
-				write (keyword => keyword_isolation, 
-					   parameters => to_string (us.polygons_conductor.isolation));
-				
-				write (keyword => keyword_spacing, 
-					parameters => to_string (us.polygons_conductor.spacing));
-				
-				write (keyword => keyword_connection, 
-					   parameters => to_string (us.polygons_conductor.connection));
-				
 
-				
+				write (keyword => keyword_isolation,
+					   parameters => to_string (us.polygons_conductor.isolation));
+
+				write (keyword => keyword_spacing,
+					parameters => to_string (us.polygons_conductor.spacing));
+
+				write (keyword => keyword_connection,
+					   parameters => to_string (us.polygons_conductor.connection));
+
+
+
 				write (keyword => keyword_pad_technology,
 					parameters => to_string (us.polygons_conductor.thermal.technology));
-				
-				write (keyword => keyword_relief_width_min, 
-					parameters => to_string (us.polygons_conductor.thermal.width_min));
-				
-				write (keyword => keyword_relief_gap_max,
-					parameters => to_string (us.polygons_conductor.thermal.gap_max));	
 
-				
-				
+				write (keyword => keyword_relief_width_min,
+					parameters => to_string (us.polygons_conductor.thermal.width_min));
+
+				write (keyword => keyword_relief_gap_max,
+					parameters => to_string (us.polygons_conductor.thermal.gap_max));
+
+
+
 				write (keyword => keyword_easing_style,
 					parameters => to_string (us.polygons_conductor.easing.style));
-				
-				write (keyword => keyword_easing_radius, 
+
+				write (keyword => keyword_easing_radius,
 					parameters => to_string (us.polygons_conductor.easing.radius));
-				
-				
+
+
 				section_mark (section_fill_zones_conductor, FOOTER);
 			end polygons;
 
-			
+
 		begin
 			vias;
 			polygons; -- CS rename to zones
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write board user settings",
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		section_mark (section_user_settings, HEADER);
-		query_element (module_cursor, query_module'access);		
+		query_element (module_cursor, query_module'access);
 		section_mark (section_user_settings, FOOTER);
 
 		log_indentation_down;
 	end write_board_user_settings;
-		
-	
-				
+
+
+
 end et_module_write_board_user_settings;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  ToDo: 
+--  ToDo:
 --  - clean up
 --  - decompose in smaller packages (board and schematic related)
 
@@ -60,8 +60,8 @@ with et_design_rules_board;			use et_design_rules_board;
 
 package et_generic_modules is
 
-	
-		
+
+
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
 	-- Module names are things like "motor_driver" or "temperature_controller".
@@ -72,30 +72,30 @@ package et_generic_modules is
 		"<"				=> pac_module_name."<",
 		element_type	=> type_generic_module);
 
-	
+
 	use pac_generic_modules;
 
-	
+
 	function get_module_name (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_module_name.bounded_string;
-		
+
 
 
 	-- Returns the name of the module indicated by module_cursor:
 	function to_string (
 		module_cursor	: in pac_generic_modules.cursor;
-		quote			: in boolean := true)				   
+		quote			: in boolean := true)
 		return string;
 
-	
+
 
 	function get_count (
 		modules : in pac_generic_modules.map)
 		return natural;
 
-	
-	
+
+
 	generic_modules : pac_generic_modules.map;
 
 
@@ -110,10 +110,10 @@ package et_generic_modules is
 
 
 
-	
+
 	-- Returns true if the module with the given name exists in container modules.
 	function generic_module_exists (
-		module : in pac_module_name.bounded_string) 
+		module : in pac_module_name.bounded_string)
 		return boolean;
 
 
@@ -121,51 +121,51 @@ package et_generic_modules is
 		module : in pac_module_name.bounded_string);
 
 
-	
-	
+
+
 	-- Locates the given module in the global container "modules".
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 	-- CS rename to get_module_cursor
 
 
-	-- Fetches the meta information for the whole 
+	-- Fetches the meta information for the whole
 	-- module (both schematic and board):
 	function get_meta_information (
 		module : in pac_generic_modules.cursor)
 		return et_meta.type_meta;
 
 
-	
+
 	-- Returns true if the given module provides the given assembly variant.
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor;
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
-		return boolean;	
+		return boolean;
 
 
-		
-		
+
+
 	-- Returns true if a design rules file for the layout has been
 	-- assigned to the given module.
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return boolean;
 
-	
+
 	-- Returns the PCB design rules of the given module:
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return type_design_rules_board; -- JLP_ML4_standard.dru
 
-	
+
 end et_generic_modules;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

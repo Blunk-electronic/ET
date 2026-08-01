@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -42,21 +42,21 @@ with et_string_processing;		use et_string_processing;
 
 package body et_domains is
 
-	
+
 	function to_string (
-		domain : in type_domain) 
-		return string 
-	is 
+		domain : in type_domain)
+		return string
+	is
 		s : constant string := type_domain'image (domain);
 	begin
 		return s (domain_prefix'length + 1 .. s'last);
 	end to_string;
 
 
-	
+
 	function to_domain (
-		domain : in string) 
-		return type_domain 
+		domain : in string)
+		return type_domain
 	is begin
 		return type_domain'value (domain_prefix & domain);
 
@@ -66,12 +66,12 @@ package body et_domains is
 			raise;
 	end to_domain;
 
-	
+
 end et_domains;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about lines, arcs and circles in the silkscreen.
 --
 --   do do:
@@ -56,15 +56,15 @@ package et_package_read_silkscreen is
 
 	procedure read_silk_line (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_silk_arc (
 		line : in type_fields_of_line);
 
 
 	procedure read_silk_circle (
 		line : in type_fields_of_line);
-	
+
 
 
 	procedure insert_silk_line (
@@ -83,7 +83,7 @@ package et_package_read_silkscreen is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure insert_silk_zone (
 		packge			: in type_package_model_access;
@@ -102,5 +102,5 @@ package et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_package_read_silkscreen;

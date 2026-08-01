@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -47,10 +47,10 @@ with et_directory_and_file_ops;
 package body et_meta_device_libraries_board is
 
 
-	
+
 	function library_path_exists (
 		lib : in pac_library_path_board.bounded_string)
-		return boolean 
+		return boolean
 	is
 		use ada.directories;
 		use et_directory_and_file_ops;
@@ -64,7 +64,7 @@ package body et_meta_device_libraries_board is
 
 
 
-	
+
 	function to_library_path (
 		lib : in string)
 		return pac_library_path_board.bounded_string
@@ -74,7 +74,7 @@ package body et_meta_device_libraries_board is
 
 
 
-	
+
 
 	function to_string (
 		lib : in pac_library_path_board.bounded_string)
@@ -95,7 +95,7 @@ package body et_meta_device_libraries_board is
 	end;
 
 
-	
+
 
 
 	function is_empty (
@@ -105,13 +105,13 @@ package body et_meta_device_libraries_board is
 		return pac_library_paths_board.is_empty (paths);
 	end;
 
-	
-	
+
+
 end et_meta_device_libraries_board;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

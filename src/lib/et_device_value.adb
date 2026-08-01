@@ -54,19 +54,19 @@ package body et_device_value is
 	end;
 
 
-	
+
 	function to_value (value : in string) return pac_device_value.bounded_string is begin
 		return pac_device_value.to_bounded_string (value);
 	end;
 
 
-	
+
 	function value_length_valid (value : in string) return boolean is
 	-- Tests if the given value is longer than allowed. Returns false if too long.
-	-- Returns true if length is in allowed range.		
+	-- Returns true if length is in allowed range.
 	begin
 		if value'length > value_length_max then
-			log (SEVERITY_WARNING, "value " & enclose_in_quotes (value) & " is longer than" 
+			log (SEVERITY_WARNING, "value " & enclose_in_quotes (value) & " is longer than"
 				 & positive'image (value_length_max) & " characters !");
 			return false;
 		else
@@ -74,7 +74,7 @@ package body et_device_value is
 		end if;
 	end value_length_valid;
 
-	
+
 
 	function truncate (value : in string) return pac_device_value.bounded_string is
 		value_out : string (1 .. value_length_max);
@@ -86,11 +86,11 @@ package body et_device_value is
 	end truncate;
 
 
-	
-	
+
+
 	function value_characters_valid (
 		value		: in pac_device_value.bounded_string;
-		characters	: in character_set := value_characters) 
+		characters	: in character_set := value_characters)
 		return boolean is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -115,9 +115,9 @@ package body et_device_value is
 	end value_characters_valid;
 
 
-	
 
-	procedure value_invalid (value : in string) is 
+
+	procedure value_invalid (value : in string) is
 	begin
 		--log (SEVERITY_ERROR, "value " & enclose_in_quotes (value) &
 			 --" invalid !", console => true);
@@ -128,14 +128,14 @@ package body et_device_value is
 
 
 
-	
+
 	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
 		return pac_device_value.bounded_string is
-		
-		value_out : pac_device_value.bounded_string; -- to be returned		
+
+		value_out : pac_device_value.bounded_string; -- to be returned
 	begin
 		-- Test length of given value. truncate if too long:
 		if value_length_valid (value) then
@@ -144,7 +144,7 @@ package body et_device_value is
 			value_out := truncate (value);
 		end if;
 
-		-- Test characters in (truncated) value. If error_on_invalid_character 
+		-- Test characters in (truncated) value. If error_on_invalid_character
 		-- is required by caller, abort on invalid character (default).
 		if value_characters_valid (value_out) then
 			null;
@@ -153,33 +153,33 @@ package body et_device_value is
 				value_invalid (pac_device_value.to_string (value_out));
 			end if;
 		end if;
-			
+
 		return value_out;
 	end to_value_with_check;
 
 
-	
+
 
 
 	function is_empty (
-		value : in pac_device_value.bounded_string) 
-		return boolean 
+		value : in pac_device_value.bounded_string)
+		return boolean
 	is begin
 		if value = empty_value then
 			return true;
-		else 
+		else
 			return false;
 		end if;
 	end is_empty;
-		
 
-	
-		
+
+
+
 end et_device_value;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

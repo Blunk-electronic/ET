@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2023                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,10 +51,10 @@ package body et_time is
 		return type_date (date);
 	end date_now;
 
-	
+
 	function get_date (
-		preamble : in boolean := true) 
-		return string 
+		preamble : in boolean := true)
+		return string
 	is begin
 		if preamble then
 			return "date " & string (date_now);
@@ -73,7 +73,7 @@ package body et_time is
 		now (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return now;
 	end to_string_full;
-	
+
 
 	function to_string_YMD (
 		time	: ada.calendar.time)
@@ -84,14 +84,14 @@ package body et_time is
 		return now;
 	end to_string_YMD;
 
-	
+
 	function date_first return time is
 		r : constant time := gnat.calendar.no_time; -- 1901-01-01
 		--time_of (year => 1970, month => 01, day => 01, seconds => 1.0); -- return 1970-01-01
 	begin
 		return r;
 	end date_first;
-	
+
 
 	function to_string (date : in type_date) return string is
 	begin
@@ -100,8 +100,8 @@ package body et_time is
 
 
 	function to_date (
-		date : in string) 
-		return time 
+		date : in string)
+		return time
 	is begin
 		-- The function "value" requires something like "2017-08-17 14:17:25".
 		-- Since date provides only year, month and day, we append hours, minutes and seconds.
@@ -113,7 +113,7 @@ package body et_time is
 				raise;
 	end to_date;
 
-	
+
 	function date_valid (date : in type_date) return boolean is
 	pragma unreferenced (date);
 	begin
@@ -122,12 +122,12 @@ package body et_time is
 		return true;
 	end date_valid;
 
-	
+
 end et_time;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

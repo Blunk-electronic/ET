@@ -44,10 +44,10 @@ with et_file_write;					use et_file_write;
 
 
 separate (et_project.configuration)
-	
+
 procedure save_configuration (
 	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-	log_threshold 	: in type_log_level) 
+	log_threshold 	: in type_log_level)
 is
 	-- backup the previous output destination
 	previous_output : ada.text_io.file_type renames current_output;
@@ -55,10 +55,10 @@ is
 	use ada.directories;
 
 	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.prj:
-	file_name : pac_file_name.bounded_string; 
+	file_name : pac_file_name.bounded_string;
 	file_handle : ada.text_io.file_type;
 
-	procedure write_rules is 
+	procedure write_rules is
 		use et_conventions;
 	begin
 		section_mark (section_rules, HEADER);
@@ -66,10 +66,10 @@ is
 		if conventions_specified then
 			write (keyword => keyword_conventions, parameters => to_string (project.rules.conventions));
 		end if;
-		
+
 		section_mark (section_rules, FOOTER);
 	end write_rules;
-	
+
 begin -- save_configuration
 	log (text => "saving project configuration file ...",
 		 level => log_threshold, console => true);
@@ -80,13 +80,13 @@ begin -- save_configuration
 	file_name := pac_file_name.to_bounded_string (compose (
 		name 		=> to_string (project_name),
 		extension 	=> file_extension)); -- prj
-	
+
 	-- create the file
 	create (
 		file => file_handle,
-		mode => out_file, 
+		mode => out_file,
 		name => to_string (file_name));
-	
+
 	set_output (file_handle);
 	write_configuration_header;
 
@@ -96,15 +96,15 @@ begin -- save_configuration
 
 	-- CS write other stuff
 
-	write_configuration_footer;	
+	write_configuration_footer;
 	set_output (previous_output);
-	
+
 	close (file_handle);
-	
+
 	log_indentation_down;
 
 	exception when event:
-		others => 
+		others =>
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (file_handle);
 			set_output (previous_output);
@@ -114,7 +114,7 @@ end save_configuration;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

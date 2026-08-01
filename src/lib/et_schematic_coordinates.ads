@@ -49,31 +49,31 @@ package et_schematic_coordinates is
 
 	use pac_geometry_2;
 
-	
+
 -- 	pragma assertion_policy (check);
 
 
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
 	hierarchy_separator : constant string (1..1) := "/";
-	
-	
+
+
 
 -- POSITION OF AN OBJECT:
-	
+
 	type type_object_position is new pac_geometry_2.type_position with private;
-	
+
 	type type_object_position_relative is new pac_geometry_2.type_position with private;
 
 
-	
+
 	greatest_position : constant type_object_position;
 
-	
-	function "<" (left, right : in type_object_position) 
+
+	function "<" (left, right : in type_object_position)
 		return boolean;
 
-	
+
 	procedure move (
 		position	: in out type_object_position'class;
 		offset		: in type_object_position_relative);
@@ -82,29 +82,29 @@ package et_schematic_coordinates is
 	procedure move_by (
 		position	: in out type_object_position;
 		offset		: in type_vector_model);
-	
+
 	function to_position (
 		position	: in type_position;
 		sheet		: in type_sheet)
 		return type_object_position;
 
-	
+
 	function to_position (
 		point 		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position;
 
-	
+
 	function to_position_relative (
 		point 		: in type_vector_model;
 		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation_model := zero_rotation)		
+		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position_relative;
-	
+
 	zero_position : constant type_object_position;
 
-	
+
 
 	-- This function returns the given object position
 	-- as string formatted as follows:
@@ -127,22 +127,22 @@ package et_schematic_coordinates is
 		from : in type_field_count_positive)
 		return type_object_position;
 
-	
+
 	overriding function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_object_position_relative;
 
 
-	
-	
 
 
-	
+
+
+
 -- ROTATION:
-	
+
 	function get_rotation (
-		position : in type_object_position) 
+		position : in type_object_position)
 		return type_rotation_model;
 
 
@@ -150,17 +150,17 @@ package et_schematic_coordinates is
 		position 	: in out type_object_position;
 		rotation	: in type_rotation_model);
 
-	
-	
+
+
 -- SHEET:
 
 	-- The current active sheet:
 	active_sheet : type_sheet := type_sheet'first;
 
-	
+
 	-- Returns the sheet number of the given position:
 	function get_sheet (
-		position : in type_object_position) 
+		position : in type_object_position)
 		return type_sheet;
 
 
@@ -176,9 +176,9 @@ package et_schematic_coordinates is
 		offset		: in type_sheet_relative);
 
 
-	
-	
-private 
+
+
+private
 
 	type type_object_position is new pac_geometry_2.type_position with record
 		sheet : type_sheet := type_sheet'first;
@@ -188,23 +188,23 @@ private
 		sheet : type_sheet_relative := 0;
 	end record;
 
-		
+
 	zero_position : constant type_object_position := (
 		origin_zero_rotation with sheet => type_sheet'first);
 
-		
+
 	-- A position in a schematic which is on the
 	-- last possible sheet and the greatest distance in
 	-- x and y from the origin:
 	greatest_position : constant type_object_position := (
 		far_upper_right_zero_rotation with sheet => type_sheet'last);
 
-		
+
 end et_schematic_coordinates;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

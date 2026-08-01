@@ -60,7 +60,7 @@ package body et_module_write_route_restrict is
 	use pac_generic_modules;
 	use et_board_geometry.pac_file_rw;
 
-	
+
 	procedure write_route_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -69,18 +69,18 @@ package body et_module_write_route_restrict is
 		use pac_route_restrict_arcs;
 		use pac_route_restrict_circles;
 
-		
-		procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
+
+		procedure write_line (cursor : in pac_route_restrict_lines.cursor) is
 			line : type_route_restrict_line renames element (cursor);
 		begin
 			section_mark (section_line, HEADER);
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_layers, parameters => to_string (line.layers));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is
 			arc : type_route_restrict_arc renames element (cursor);
 		begin
 			section_mark (section_arc , HEADER);
@@ -89,8 +89,8 @@ package body et_module_write_route_restrict is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is
 			circle : type_route_restrict_circle renames element (cursor);
 		begin
 			section_mark (section_circle, HEADER);
@@ -99,12 +99,12 @@ package body et_module_write_route_restrict is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
+
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
-		is 
+		is
 			pragma unreferenced (module_name);
 			route_restrict : type_route_restrict
 				renames module.board.route_restrict;
@@ -113,8 +113,8 @@ package body et_module_write_route_restrict is
 			iterate (route_restrict.arcs, write_arc'access);
 			iterate (route_restrict.circles, write_circle'access);
 		end query_module;
-		
-			
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " write route restrict lines, arcs and circles",
@@ -124,15 +124,15 @@ package body et_module_write_route_restrict is
 		query_element (module_cursor, query_module'access);
 		log_indentation_down;
 	end write_route_restrict;
-	
-	
-	
+
+
+
 end et_module_write_route_restrict;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

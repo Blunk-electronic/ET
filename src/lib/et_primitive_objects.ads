@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,38 +45,38 @@ package et_primitive_objects is
 
 	function to_shape (shape : in string) return type_shape;
 	function to_string (shape : in type_shape) return string;
-	
 
 
-	
+
+
 	type type_filled is (NO, YES);
 	function to_string (filled : in type_filled) return string;
 	function to_filled (filled : in string) return type_filled;
 	filled_default : constant type_filled := NO;
 
 
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-	
+	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
+
 	type type_fill_style is (SOLID, HATCHED);  -- CS prefix
 	fill_style_default : constant type_fill_style := SOLID;
-	
+
 	function to_string (fill_style : in type_fill_style) return string;
 	function to_fill_style (fill_style : in string) return type_fill_style;
 
-	
 
-	
+
+
 	-- Whether a line, arc, circle or contour is drawn dashed or not:
 	type type_line_style is (CONTINUOUS, DASHED);  -- CS prefix
 	-- CS other pattersn like jotted, dash-point, ... ?
 
-	
-		
+
+
 end et_primitive_objects;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -63,11 +63,11 @@ package body et_symbol_write is
 		log_threshold	: in type_log_level)
 	is begin
 		-- CS log messages
-		
+
 		-- appearance
-		write (keyword => keyword_appearance, 
+		write (keyword => keyword_appearance,
 			parameters => to_string (symbol.appearance));
-		
+
 		-- body section begin
 		section_mark (section_draw, HEADER);
 
@@ -77,18 +77,18 @@ package body et_symbol_write is
 
 		-- body section end
 		section_mark (section_draw, FOOTER);
-		
-		
+
+
 		write_texts (symbol, log_threshold + 1);
 		write_placeholders (symbol, log_threshold + 1);
 		write_ports (symbol, log_threshold + 1);
 	end save_symbol_1;
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	procedure save_symbol_2 (
 		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol_model; -- the actual symbol model
@@ -96,11 +96,11 @@ package body et_symbol_write is
 	is
 		use et_system_info;
 		file_handle : ada.text_io.file_type;
-		
+
 	begin
-		log (text => "save symbol model as " & to_string (file_name), 
+		log (text => "save symbol model as " & to_string (file_name),
 			level => log_threshold);
-			
+
 		log_indentation_up;
 
 		create (
@@ -109,7 +109,7 @@ package body et_symbol_write is
 			name	=> to_string (file_name));
 
 		set_output (file_handle);
-		
+
 		-- CS: move into a procedure write_header
 		-- write a nice header
 		put_line (comment_mark_default & " " & system_name & " symbol model");
@@ -118,42 +118,42 @@ package body et_symbol_write is
 		new_line;
 
 		-- CS: ? reset_tab_depth;
-		
+
 		save_symbol_1 (symbol, log_threshold + 1);
 
 		-- CS: move into a procedure write_footer
 		-- write footer
-		new_line;		
+		new_line;
 		put_line (comment_mark_default & " " & row_separator_double);
 		put_line (comment_mark_default & " symbol model end");
 		new_line;
-		
-		reset_tab_depth;		
-		
+
+		reset_tab_depth;
+
 		set_output (standard_output);
 		close (file_handle);
-		
+
 		log_indentation_down;
-		
+
 
 		exception when event: others =>
 			log_indentation_down;
-			
+
 			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
 			raise;
-		
+
 	end save_symbol_2;
-	
-	
+
+
 end et_symbol_write;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

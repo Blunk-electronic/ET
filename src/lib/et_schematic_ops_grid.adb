@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,19 +45,19 @@ with et_string_processing;				use et_string_processing;
 
 package body et_schematic_ops_grid is
 
-	
+
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -65,7 +65,7 @@ package body et_schematic_ops_grid is
 			module.grid := grid;
 		end;
 
-		
+
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
 			& " set schematic grid to " & to_string (grid.spacing),
@@ -82,19 +82,19 @@ package body et_schematic_ops_grid is
 	end set_grid;
 
 
-	
-	
+
+
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 		use pac_generic_modules;
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
+			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -102,7 +102,7 @@ package body et_schematic_ops_grid is
 			module.grid := grid;
 		end;
 
-		
+
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			& " setting schematic grid" & to_string (grid.spacing),
@@ -115,7 +115,7 @@ package body et_schematic_ops_grid is
 
 	end set_grid;
 
-	
+
 
 
 	function get_grid (
@@ -128,10 +128,10 @@ package body et_schematic_ops_grid is
 
 		result : type_grid;
 
-		
+
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -139,7 +139,7 @@ package body et_schematic_ops_grid is
 			result := module.grid;
 		end;
 
-		
+
 	begin
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			& " getting schematic grid",
@@ -152,14 +152,14 @@ package body et_schematic_ops_grid is
 		return result;
 	end get_grid;
 
-	
-	
+
+
 end et_schematic_ops_grid;
-	
+
 -- Soli Deo Gloria
 
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

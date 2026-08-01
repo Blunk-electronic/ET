@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  To Do: 
+--  To Do:
 --
 --
 
@@ -50,21 +50,21 @@ with et_logging;					use et_logging;
 
 package et_module_clipboard.devices_electrical is
 
-	
+
 
 	procedure copy_unit_to_clipboard (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		log_threshold	: in type_log_level);
-		
-	
-	
-	
+
+
+
+
 end et_module_clipboard.devices_electrical;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

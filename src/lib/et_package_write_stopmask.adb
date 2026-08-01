@@ -59,20 +59,20 @@ package body et_package_write_stopmask is
 
 	use pac_geometry_2;
 	use pac_file_rw;
-	
+
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;
 	use pac_stop_zones;
 
-	
+
 
 	procedure write_stopmask (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
-		procedure write_line (cursor : in pac_stop_lines.cursor) is 
+		procedure write_line (cursor : in pac_stop_lines.cursor) is
 		begin
 			section_mark (section_line, HEADER);
 			write_line (element (cursor));
@@ -80,8 +80,8 @@ package body et_package_write_stopmask is
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		
-		procedure write_arc (cursor : in pac_stop_arcs.cursor) is 
+
+		procedure write_arc (cursor : in pac_stop_arcs.cursor) is
 		begin
 			section_mark (section_arc , HEADER);
 			write_arc (element (cursor));
@@ -89,8 +89,8 @@ package body et_package_write_stopmask is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
-		procedure write_circle (cursor : in pac_stop_circles.cursor) is 
+
+		procedure write_circle (cursor : in pac_stop_circles.cursor) is
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (element (cursor));
@@ -98,18 +98,18 @@ package body et_package_write_stopmask is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
-		procedure write_polygon (cursor : in pac_stop_zones.cursor) is 
+
+		procedure write_polygon (cursor : in pac_stop_zones.cursor) is
 		begin
 			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
-		
-		
+
+
 	begin
 		log (text => "write stopmask", level => log_threshold);
 
@@ -122,19 +122,19 @@ package body et_package_write_stopmask is
 		iterate (packge.stopmask.top.circles, write_circle'access);
 		iterate (packge.stopmask.top.zones, write_polygon'access);
 		section_mark (section_top, FOOTER);
-		
+
 		-- bottom
 		section_mark (section_bottom, HEADER);
 		iterate (packge.stopmask.bottom.lines, write_line'access);
 		iterate (packge.stopmask.bottom.arcs, write_arc'access);
 		iterate (packge.stopmask.bottom.circles, write_circle'access);
-		iterate (packge.stopmask.bottom.zones, write_polygon'access);			
+		iterate (packge.stopmask.bottom.zones, write_polygon'access);
 		section_mark (section_bottom, FOOTER);
 
-		section_mark (section_stopmask, FOOTER);			
-	
+		section_mark (section_stopmask, FOOTER);
+
 
 	end write_stopmask;
 
-	
+
 end et_package_write_stopmask;

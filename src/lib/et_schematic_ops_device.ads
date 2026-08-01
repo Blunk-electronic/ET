@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
@@ -77,14 +77,14 @@ package et_schematic_ops_device is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-	
+
 
 	-- Returns the names of all electrical
 	-- devices in the module in a list like IC1, R23, D23):
 	function get_device_names (
 		module_cursor 	: in pac_generic_modules.cursor)
 		return pac_device_names.set;
-		
+
 
 
 	-- CS description !
@@ -101,7 +101,7 @@ package et_schematic_ops_device is
 		device	: in type_device_name)
 		return boolean;
 
-	
+
 	-- Returns the cursor to the given electrical device
 	-- in the given module.
 	-- If the device does not exist, then no_element is returned:
@@ -110,14 +110,14 @@ package et_schematic_ops_device is
 		device	: in type_device_name) -- R2
 		return pac_devices_electrical.cursor;
 
-		
+
 	-- Returns the cursor to the first electrical
 	-- device of the module:
 	function get_first_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_devices_electrical.cursor;
 
-	
+
 	-- Returns the cursor to the device model
 	-- for the given device in the given module.
 	-- If the device does not exist, then no_element is returned:
@@ -125,8 +125,8 @@ package et_schematic_ops_device is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_device_models.cursor;
-	
-	
+
+
 	-- Returns the name of the device model of the
 	-- given device in the given module.
 	-- The model name is the name of the file (like 7400.dev)
@@ -139,7 +139,7 @@ package et_schematic_ops_device is
 
 
 
-	
+
 
 
 	-- Sets all units or an explicitly given unit as selected.
@@ -161,8 +161,8 @@ package et_schematic_ops_device is
 
 
 
-	
-	-- Returns properties of the given device. 
+
+	-- Returns properties of the given device.
 	-- 1. Assumes that the given device exists. Otherwise
 	--    an exception will be raised.
 	-- 2. Level determines the degree and amount of information to be returned.
@@ -175,7 +175,7 @@ package et_schematic_ops_device is
 	--    so that the result is a single line.
 	-- 6. If linebreaks is true, then linebreaks are inserted.
 	--    This is useful when the output is to be displayed
-	--    in a window or if it is to be written in a file:	
+	--    in a window or if it is to be written in a file:
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -187,12 +187,12 @@ package et_schematic_ops_device is
 		return string;
 
 
-	
-	
+
+
 
 -- VALUE, PURPOSE, PARTCODE:
-	
-	
+
+
 	-- Sets the value of a device.
 	-- It is assumed that the targeted device
 	-- exists in the module. If not, then an exception is raised.
@@ -205,7 +205,7 @@ package et_schematic_ops_device is
 
 	-- CS procedure set_value that takes a device cursor.
 
-	
+
 	-- Sets the purpose of a device.
 	-- It is assumed that the targeted device
 	-- exists in the module. If not, then an exception is raised.
@@ -218,7 +218,7 @@ package et_schematic_ops_device is
 
 	-- CS procedure set_purpose that takes a device cursor.
 
-	
+
 	-- Sets the partcode of a device.
 	-- It is assumed that the targeted device
 	-- exists in the module. If not, then an exception is raised.
@@ -235,9 +235,9 @@ package et_schematic_ops_device is
 
 
 
-	
+
 -- PACKAGE VARIANT:
-	
+
 	-- Returns the package variants available for the
 	-- given device.
 	-- The device must be real. Otherwise constraint error rises.
@@ -247,7 +247,7 @@ package et_schematic_ops_device is
 		return pac_package_variants.map;
 
 
-	
+
 	-- Returns the name of the package variant of the device.
 	-- The device must exist and it must be a real device.
 	-- Otherwise an exception will be raised:
@@ -256,8 +256,8 @@ package et_schematic_ops_device is
 		device	: in type_device_name) -- R2
 		return pac_package_variant_name.bounded_string; -- D, N
 
-	
-	
+
+
 	-- Sets the package variant of a device.
 	-- It is assumed that the targeted device
 	-- exists in the module. If not, then an exception is raised.
@@ -276,7 +276,7 @@ package et_schematic_ops_device is
 
 
 
-	
+
 -- ADD and COPY:
 
 
@@ -286,12 +286,12 @@ package et_schematic_ops_device is
 		prefix			: in pac_device_prefix.bounded_string; -- C
 		log_threshold	: in type_log_level)
 		return pac_devices_electrical.map;
-	
-	
 
-	-- Returns for the given device prefix the next available 
+
+
+	-- Returns for the given device prefix the next available
 	-- device name in the module.
-	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 
+	-- Example: prefix is C. If there are C1, C12, C1034 and C1035
 	-- then the return will be C2.
 	-- Devices names are also used by non-electrical devices. So this
 	-- function also looks into the non-electrical devices and returns
@@ -302,14 +302,14 @@ package et_schematic_ops_device is
 		log_threshold	: in type_log_level)
 		return type_device_name; -- C2
 
-	
-	
-	-- Adds a device to the schematic. 
+
+
+	-- Adds a device to the schematic.
 	-- Determines the name of the device automatically by its
 	-- prefix and the device indexes that are available (after IC43 follows IC44).
 	-- The unit to be added is determined by the add levels of the units.
 	-- If the given variant is empty (zero length) then
-	-- the the device is assumed to be virtual (like a GND symbol). 
+	-- the the device is assumed to be virtual (like a GND symbol).
 	-- CS: Reject the selected unit if a port overlaps a port of another
 	-- existing unit.
 	procedure add_electrical_device (
@@ -325,14 +325,14 @@ package et_schematic_ops_device is
 	-- CS procedure add_electrical_device that takes model cursor
 
 
-	
+
 	-- Copies the given device and places a unit
 	-- at the given destination in the schematic.
 	-- 1. If unit_name_explicit is empty (unit_name_default), then
 	--    the first unit of the device (according to add level)
 	--    will be placed.
 	-- 2. If unit_name_explicit contains the name of an available
-	--    unit, then this unit will be placed.	
+	--    unit, then this unit will be placed.
 	-- 3. It is assumed that the targeted device
 	--    exists in the module. If not, then an exception is raised.
 	-- 4. Argument device_created outputs the name of the
@@ -351,9 +351,9 @@ package et_schematic_ops_device is
 
 
 
-	
-	
-	
+
+
+
 	-- Renumbers devices according to the sheet number.
 	procedure renumber_devices (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -364,12 +364,12 @@ package et_schematic_ops_device is
 
 
 
-	
+
 end et_schematic_ops_device;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

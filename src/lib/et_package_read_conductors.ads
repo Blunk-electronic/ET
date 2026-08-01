@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This is about lines, arcs and circles in top and bottom conductor layers.
 -- Usually these structures do not carry current. They are not tied to terminals
 -- or tracks.
@@ -63,15 +63,15 @@ package et_package_read_conductors is
 
 	procedure read_conductor_line (
 		line : in type_fields_of_line);
-	
-	
+
+
 	procedure read_conductor_arc (
 		line : in type_fields_of_line);
 
 
 	procedure read_conductor_circle (
 		line : in type_fields_of_line);
-	
+
 
 
 	procedure insert_conductor_line (
@@ -90,7 +90,7 @@ package et_package_read_conductors is
 		packge			: in type_package_model_access;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
-	
+
 
 	procedure insert_conductor_text (
 		packge			: in type_package_model_access;
@@ -108,12 +108,12 @@ package et_package_read_conductors is
 	zone_width_min : type_track_width := type_track_width'first;
 
 
-	
-	
+
+
 	procedure read_fill_zone (
 		line : in type_fields_of_line);
 
 
 	-- CS insert_conductor_zone
-	
+
 end et_package_read_conductors;

@@ -54,11 +54,11 @@ package et_stopmask is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_text_board_vectorized;
-	
+
 
 -- LINES:
-	
-	type type_stop_line is new		
+
+	type type_stop_line is new
 		et_conductor_segment.type_conductor_line with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
@@ -76,20 +76,20 @@ package et_stopmask is
 
 	-- CS likewise iteratator for arcs and circles
 
-	
-	
+
+
 	-- Returns true if the "proposed-flag" of the given line is set:
 	function is_proposed (
 		line_cursor	: in pac_stop_lines.cursor)
 		return boolean;
 
-	
+
 	-- Returns true if the "selected-flag" of the given line is set:
 	function is_selected (
 		line_cursor	: in pac_stop_lines.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_stop_lines.list;
@@ -98,25 +98,25 @@ package et_stopmask is
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
 		lines	: in out pac_stop_lines.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_stop_lines.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-	
+
 
 -- ARCS:
-	
+
 	type type_stop_arc is new
 		et_conductor_segment.type_conductor_arc with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
 
 	package pac_stop_arcs is new doubly_linked_lists (type_stop_arc);
-	use pac_stop_arcs;	
+	use pac_stop_arcs;
 
 
 	-- Iterates the arcs.
@@ -127,18 +127,18 @@ package et_stopmask is
 		proceed	: not null access boolean);
 
 
-	
+
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_stop_arcs.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given arc is set:
 	function is_selected (
 		arc_cursor	: in pac_stop_arcs.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stop_arcs.list;
@@ -147,17 +147,17 @@ package et_stopmask is
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
 
 -- CIRCLES:
-	
+
 	type type_stop_circle is new
 		et_conductor_segment.type_conductor_circle with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -175,38 +175,38 @@ package et_stopmask is
 		proceed	: not null access boolean);
 
 
-	
+
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
 		circle_cursor	: in pac_stop_circles.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given circle is set:
 	function is_selected (
 		circle_cursor	: in pac_stop_circles.cursor)
 		return boolean;
 
-	
+
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stop_circles.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);	
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
 		circles	: in out pac_stop_circles.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_stop_circles.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-	
+
 -- ZONES:
-	
+
 	type type_stop_zone is new type_contour with null record;
 	package pac_stop_zones is new doubly_linked_lists (type_stop_zone);
 	use pac_stop_zones;
@@ -219,7 +219,7 @@ package et_stopmask is
 		return boolean;
 
 
-	
+
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -227,7 +227,7 @@ package et_stopmask is
 		process	: not null access procedure (position : in pac_stop_zones.cursor);
 		proceed	: not null access boolean);
 
-	
+
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_stop_zones.list;
@@ -236,12 +236,12 @@ package et_stopmask is
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
 		contours	: in out pac_stop_zones.list;
-		angle		: in type_rotation_model);					
+		angle		: in type_rotation_model);
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
 		contours	: in out pac_stop_zones.list;
-		offset		: in type_vector_model);					
+		offset		: in type_vector_model);
 
 
 
@@ -249,10 +249,10 @@ package et_stopmask is
 
 
 -- TEXTS:
-	
+
 	-- for texts in conductor layer to be exposed:
 	type type_stop_text is new type_text_fab_with_content with null record;
-	
+
 
 	package pac_stop_texts is new doubly_linked_lists (type_stop_text);
 	use pac_stop_texts;
@@ -262,20 +262,20 @@ package et_stopmask is
 	function is_proposed (
 		text_cursor	: in pac_stop_texts.cursor)
 		return boolean;
-	
+
 	-- Returns true if the "selected-flag" of the given text is set:
 	function is_selected (
 		text_cursor	: in pac_stop_texts.cursor)
 		return boolean;
 
 
-	
+
 	-- Returns the position, linewidth and content
 	-- of the given text:
 	function to_string (
 		text : in pac_stop_texts.cursor)
 		return string;
-	
+
 
 	-- Iterates the texts.
 	-- Aborts the process when the proceed-flag goes false:
@@ -287,7 +287,7 @@ package et_stopmask is
 
 
 
-	
+
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_stop_texts.list;
@@ -296,15 +296,15 @@ package et_stopmask is
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (
 		texts	: in out pac_stop_texts.list;
-		angle	: in type_rotation_model);					
+		angle	: in type_rotation_model);
 
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (
 		texts	: in out pac_stop_texts.list;
-		offset	: in type_vector_model);					
+		offset	: in type_vector_model);
 
 
-	
+
 	-- This is the type for stopmask objects in general.
 	-- This has nothing to do with the stop mask of pads.
 	type type_stopmask is tagged record
@@ -316,7 +316,7 @@ package et_stopmask is
 	end record;
 
 
-	
+
 	-- Logs the properties of the given arc of stop mask
 	procedure arc_stop_mask_properties (
 		face			: in type_face;
@@ -341,12 +341,12 @@ package et_stopmask is
 	-- 	cursor			: in pac_stop_texts.cursor;
 	-- 	log_threshold 	: in type_log_level);
 
-	
+
 end et_stopmask;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

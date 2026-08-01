@@ -55,24 +55,24 @@ package et_module_read_grid is
 
 	procedure read_drawing_grid_schematic (
 		line : in type_fields_of_line);
-		
-		
+
+
 	procedure read_drawing_grid_board (
 		line : in type_fields_of_line);
 
 
-		
+
 	procedure set_drawing_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 end et_module_read_grid;
 
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -57,9 +57,9 @@ package body et_net_classes is
 	is begin
 		return key (class_cursor);
 	end;
-	
 
-	
+
+
 	function get_net_class_name (
 		class_cursor	: in pac_net_classes.cursor)
 		return string
@@ -68,12 +68,12 @@ package body et_net_classes is
 	end;
 
 
-	
+
 end et_net_classes;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -6,7 +6,7 @@
 --                                                                          --
 --                             S p e c                                      --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,15 +53,15 @@ with et_ratsnest;
 
 package et_route is
 
-	use pac_polygons;	
-	
-		
+	use pac_polygons;
+
+
 	-- A complete net may consist of these conductor objects.
 	-- Everything that is a conducting object is called a "route":
-	
+
 	type type_net_route is record
 		airwires	: et_ratsnest.type_airwires;
-		
+
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
@@ -76,10 +76,10 @@ package et_route is
 
 
 
-	
+
 	procedure add_line (
 		route 	: in out type_net_route;
-		line	: in type_conductor_line);				   
+		line	: in type_conductor_line);
 
 
 	procedure add_arc (
@@ -87,8 +87,8 @@ package et_route is
 		arc		: in type_conductor_arc);
 
 
-	
-	
+
+
 	-- Iterates the track segments and vias of the
 	-- given route and converts them to polygons:
 	function get_polygons (
@@ -97,16 +97,16 @@ package et_route is
 		layer			: in type_signal_layer;
 		bottom_layer	: in type_signal_layer)
 		return pac_polygon_list.list;
-	
-	
-	
+
+
+
 end et_route;
 
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

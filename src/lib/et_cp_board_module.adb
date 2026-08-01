@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,7 +56,7 @@ with et_canvas_board;
 
 package body et_cp_board_module is
 
-	
+
 
 	procedure save_module (
 		module			: in pac_generic_modules.cursor;
@@ -64,16 +64,16 @@ package body et_cp_board_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
 	begin
 		log (text => "save module", level => log_threshold);
 		log_indentation_up;
-		
-		
+
+
 		-- Since we are already in the project directory,
 		-- we can call the write_module procedures right away.
-		
+
 		case cmd_field_count is
 			when 4 =>
 				-- Save the module with its own name:
@@ -87,10 +87,10 @@ package body et_cp_board_module is
 					module_cursor	=> module,
 					save_as_name	=> to_module_name (get_field (cmd, 5)), -- led_driver_test
 					log_threshold	=> log_threshold + 1);
-				
-			when 6 .. type_field_count'last => 
+
+			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
@@ -100,7 +100,7 @@ package body et_cp_board_module is
 
 
 
-	
+
 
 
 
@@ -111,24 +111,24 @@ package body et_cp_board_module is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
+
 		module_name : pac_module_name.bounded_string;
 
 		use et_sheets;
 		sheet : type_sheet := 1;
 
-		
+
 		-- Sets the active module and first sheet.
-		procedure module_and_first_sheet is 
+		procedure module_and_first_sheet is
 			use et_canvas_schematic;
 			use et_schematic_coordinates;
 		begin
 			module_name := to_module_name (get_field (cmd, 5));
 			set_module (module_name);
 			active_sheet := sheet;
-			
+
 			et_canvas_schematic.update_schematic_editor;
 			et_canvas_board.update_board_editor;
 		end module_and_first_sheet;
@@ -136,54 +136,54 @@ package body et_cp_board_module is
 
 
 		-- Sets the active module and sheet.
-		procedure module_and_random_sheet is 
+		procedure module_and_random_sheet is
 			use et_canvas_schematic;
 			use et_schematic_coordinates;
 		begin
 			module_name := to_module_name (get_field (cmd, 5));
 			set_module (module_name);
 
-			log (text => "sheet " & to_string (sheet), 
+			log (text => "sheet " & to_string (sheet),
 				level => log_threshold + 1);
-			
+
 			sheet := to_sheet (get_field (cmd, 6));
 			active_sheet := sheet;
 
 			et_canvas_schematic.update_schematic_editor;
 			et_canvas_board.update_board_editor;
 		end module_and_random_sheet;
-		
-		
-	begin		
-		log (text => "show module (via board editor) " 
+
+
+	begin
+		log (text => "show module (via board editor) "
 			& to_string (module),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		
+
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
 			when 6 => module_and_random_sheet; -- show module LED-driver 2
 
-			when 7 .. type_field_count'last => 
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
-				
+
 			when others => command_incomplete (cmd);
 		end case;
 
-		
+
 		log_indentation_down;
 	end show_module;
 
 
 
-		
+
 end et_cp_board_module;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

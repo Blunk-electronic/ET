@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -46,25 +46,25 @@ with ada.characters.handling;	use ada.characters.handling;
 
 
 package body et_net_scope is
-	
 
-	
+
+
 	function to_string (net_scope : in type_net_scope) return string is begin
 		return " " & to_lower (type_net_scope'image (net_scope));
 	end to_string;
 
-	
+
 	function to_net_scope (scope : in string) return type_net_scope is begin
 		return type_net_scope'value (scope);
 	end to_net_scope;
 
-	
-	
+
+
 end et_net_scope;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

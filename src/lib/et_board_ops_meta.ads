@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 with et_meta_device_libraries_board;	use et_meta_device_libraries_board;
@@ -51,16 +51,16 @@ package et_board_ops_meta is
 	use pac_generic_modules;
 
 
-	
-	-- This function fetches the basic meta 
+
+	-- This function fetches the basic meta
 	-- information of the board:
 	function get_basic_meta_information (
 		module : in pac_generic_modules.cursor)
 		return type_meta_basic;
 
 
-	
-	-- Returns the list of preferred board 
+
+	-- Returns the list of preferred board
 	-- libraries (non-electrical packages):
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
@@ -80,13 +80,13 @@ package et_board_ops_meta is
 		module_cursor	: in pac_generic_modules.cursor;
 		path			: in pac_library_path_board.bounded_string;
 		log_threshold	: in type_log_level);
-	
-	
+
+
 end et_board_ops_meta;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

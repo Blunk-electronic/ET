@@ -64,32 +64,32 @@ package body et_package_write_assy_doc is
 
 	use pac_geometry_2;
 	use pac_file_rw;
-	
+
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;
 	use pac_doc_zones;
 	use pac_doc_texts;
-			
-	use pac_text_placeholders;		
 
-	
+	use pac_text_placeholders;
+
+
 
 	procedure write_assy_doc (
 		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
+		log_threshold	: in type_log_level)
 	is
 
-		procedure write_line (cursor : in pac_doc_lines.cursor) is 
+		procedure write_line (cursor : in pac_doc_lines.cursor) is
 			use pac_doc_lines;
 		begin
 			section_mark (section_line, HEADER);
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
-		procedure write_arc (cursor : in pac_doc_arcs.cursor) is 
+		procedure write_arc (cursor : in pac_doc_arcs.cursor) is
 			use pac_doc_arcs;
 		begin
 			section_mark (section_arc , HEADER);
@@ -98,7 +98,7 @@ package body et_package_write_assy_doc is
 			section_mark (section_arc , FOOTER);
 		end write_arc;
 
-		
+
 		procedure write_circle (cursor : in pac_doc_circles.cursor) is
 			use pac_doc_circles;
 		begin
@@ -108,54 +108,54 @@ package body et_package_write_assy_doc is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		
+
 		-- CS rename to write_zone
-		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
+		procedure write_polygon (cursor : in pac_doc_zones.cursor) is
 			use pac_doc_zones;
 			zone : type_doc_zone renames element (cursor);
 		begin
 			section_mark (section_zone, HEADER);
-			section_mark (section_contours, HEADER);		
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (zone);
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
-		
-		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is 
+
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder renames element (cursor);
 		begin
 			section_mark (section_placeholder, HEADER);
-			
+
 			write (keyword => keyword_meaning,
 				parameters => to_string (element (cursor).meaning));
-			
+
 			----
 			-- CS rework:
-			
-			write (keyword => keyword_position, 
+
+			write (keyword => keyword_position,
 				parameters => to_string (get_position (ph), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (ph.size)); -- size 1.000
-			
+
 			write (keyword => keyword_linewidth,
 				parameters => to_string (ph.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (ph.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 			----
-			
+
 			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 
-		procedure write_text (cursor : in pac_doc_texts.cursor) is 
+		procedure write_text (cursor : in pac_doc_texts.cursor) is
 			t : type_doc_text renames element (cursor);
 		begin
 			section_mark (section_text, HEADER);
@@ -164,33 +164,33 @@ package body et_package_write_assy_doc is
 
 			----
 			-- CS rework:
-			
-			write (keyword => keyword_position, 
+
+			write (keyword => keyword_position,
 				parameters => to_string (get_position (t), FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
-			
-			write (keyword => keyword_size, 
+
+			write (keyword => keyword_size,
 				parameters => to_string (t.size)); -- size 1.000
-			
+
 			write (keyword => keyword_linewidth,
 				parameters => to_string (t.line_width));
-				
-			write (keyword => keyword_alignment, 
+
+			write (keyword => keyword_alignment,
 				parameters =>
 					keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 					keyword_vertical   & space & to_string (t.alignment.vertical));
 
-			-- CS use et_alignment.to_string 
+			-- CS use et_alignment.to_string
 			----
-				
+
 			section_mark (section_text, FOOTER);
 		end write_text;
 
-		
+
 	begin
 		log (text => "write assembly documentation", level => log_threshold);
 
-		
+
 		section_mark (section_assembly_doc, HEADER);
 
 		-- top
@@ -202,7 +202,7 @@ package body et_package_write_assy_doc is
 		iterate (packge.assy_doc.top.texts, write_text'access);
 		iterate (packge.assy_doc.top.placeholders, write_placeholder'access);
 		section_mark (section_top, FOOTER);
-		
+
 		-- bottom
 		section_mark (section_bottom, HEADER);
 		iterate (packge.assy_doc.bottom.lines, write_line'access);
@@ -216,5 +216,5 @@ package body et_package_write_assy_doc is
 		section_mark (section_assembly_doc, FOOTER);
 	end write_assy_doc;
 
-	
+
 end et_package_write_assy_doc;

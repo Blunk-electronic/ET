@@ -45,12 +45,12 @@ with et_keywords;						use et_keywords;
 
 package body et_board_coordinates is
 
-	
+
 	function to_string (
 		position	: in type_package_position;
 		format		: in type_output_format := FORMAT_1)
-		return string 
-	is 
+		return string
+	is
 		x : constant string := to_string (get_x (position));
 		y : constant string := to_string (get_y (position));
 		r : constant string := to_string (get_rotation (position));
@@ -77,7 +77,7 @@ package body et_board_coordinates is
 
 
 
-	
+
 
 	function to_position (
 		line : in type_fields_of_line;
@@ -111,24 +111,24 @@ package body et_board_coordinates is
 				invalid_keyword (get_field (line, place));
 				raise constraint_error; -- CS
 			end if;
-				
+
 			place := place + 2;
 		end loop;
-		
+
 		return position;
 	end to_position;
 
 
 
-	
 
-	
-	
+
+
+
 	function to_package_position (
 		point 		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
-		return type_package_position 
+		return type_package_position
 	is begin
 		return pos : type_package_position do
 			set_place (pos, point);
@@ -138,8 +138,8 @@ package body et_board_coordinates is
 	end to_package_position;
 
 
-	
-	
+
+
 	procedure set_face (
 		position: in out type_package_position;
 		face	: in type_face)
@@ -148,18 +148,18 @@ package body et_board_coordinates is
 	end set_face;
 
 
-	
-	
+
+
 	function get_face (
 		packge : in type_package_position)
-		return type_face 
+		return type_face
 	is begin
 		return packge.face;
 	end get_face;
 
 
 
-	
+
 
 	procedure toggle_face (
 		position : in out type_package_position)
@@ -170,10 +170,10 @@ package body et_board_coordinates is
 		end case;
 	end;
 
-	
-	
 
-	
+
+
+
 	function get_position (
 		position : in type_package_position)
 		return type_position
@@ -192,8 +192,8 @@ package body et_board_coordinates is
 		package_position.rotation := get_rotation (position);
 	end;
 
-	
-	
+
+
 	function get_place (
 		position : in type_package_position)
 		return type_vector_model
@@ -214,13 +214,13 @@ package body et_board_coordinates is
 		end if;
 	end;
 
-	
-	
-	
+
+
+
 	function to_terminal_position (
 		point		: in type_vector_model;
 		rotation	: in type_rotation_model)
-		return type_position'class 
+		return type_position'class
 	is
 		pos : type_position;
 	begin
@@ -231,12 +231,12 @@ package body et_board_coordinates is
 	end to_terminal_position;
 
 
-	
+
 end et_board_coordinates;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

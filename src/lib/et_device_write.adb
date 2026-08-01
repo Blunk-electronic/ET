@@ -57,24 +57,24 @@ with et_device_write_package_variant;	use et_device_write_package_variant;
 
 package body et_device_write is
 
-	
+
 
 	procedure write_device (
 		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		device			: in type_device_model; -- the actual device model
 		log_threshold	: in type_log_level)
-	is		
+	is
 		file_handle : ada.text_io.file_type;
 
 
-		
+
 		procedure write_meta is
 			use et_device_prefix;
 			use et_device_value;
 		begin
 			log (text => "write meta", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			write (keyword => keyword_prefix, parameters => to_string (device.prefix));
 			write (keyword => keyword_appearance, parameters => to_string (device.appearance));
 
@@ -89,7 +89,7 @@ package body et_device_write is
 
 
 
-		
+
 		procedure write_package_variants is
 		begin
 			log (text => "write package variants", level => log_threshold + 1);
@@ -103,22 +103,22 @@ package body et_device_write is
 			log_indentation_down;
 		end write_package_variants;
 
-		
+
 
 
 		procedure write_units is
 		begin
 			log (text => "write units", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			write_internal_units (device.units_internal, log_threshold + 2);
 			write_external_units (device.units_external, log_threshold + 2);
-			
+
 			log_indentation_down;
 		end write_units;
 
 
-		
+
 
 		procedure write_header is
 			use et_system_info;
@@ -131,19 +131,19 @@ package body et_device_write is
 			new_line;
 		end write_header;
 
-		
+
 
 		procedure write_footer is
 		begin
 			-- CS log message
-			new_line;		
+			new_line;
 			put_line (comment_mark_default & " " & row_separator_double);
 			put_line (comment_mark_default & " device model file end");
 			new_line;
 		end write_footer;
 		pragma unreferenced (write_footer);
-		
-		
+
+
 	begin
 		log (text => "save device model as " & to_string (file_name),
 			 level => log_threshold);
@@ -166,13 +166,13 @@ package body et_device_write is
 		write_units;
 
 		reset_tab_depth;
-		
+
 		set_output (standard_output);
 		close (file_handle);
 
 		log_indentation_down;
 		-- CS log message
-		
+
 
 		exception when event: others =>
 			log_indentation_down;
@@ -181,8 +181,8 @@ package body et_device_write is
 				close (file_handle);
 			end if;
 			raise;
-		
+
 	end write_device;
 
-		
+
 end et_device_write;

@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 -- with ada.text_io;			use ada.text_io;
@@ -75,46 +75,46 @@ package body et_board_ops_groups is
 		end;
 
 
-					
-		procedure reset_devices is 
+
+		procedure reset_devices is
 			use et_board_ops_devices;
 		begin
 			log (text => "devices (electrical and non-electrical)",
 				 level => log_threshold + 1);
-			
+
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end;
 
-		
+
 		procedure reset_assy_doc is
 			use et_board_ops_assy_doc;
 		begin
 			log (text => "assembly documentation",
 				 level => log_threshold + 1);
-			
+
 			log_indentation_up;
 			reset_status_objects (active_module, log_threshold + 1);
 			log_indentation_down;
 		end;
-		
+
 		-- CS:
 		-- Make separate procedures as in package et_schematic_ops_groups
 
 	begin
-		log (text => "module " & to_string (module_cursor) 
+		log (text => "module " & to_string (module_cursor)
 			 & " reset objects (board)",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		reset_devices;
 		reset_conductors;
 
 		reset_assy_doc;
 
-		
+
 		et_board_ops_silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_stopmask.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_stencil.reset_proposed_objects (active_module, log_threshold + 1);
@@ -132,13 +132,13 @@ package body et_board_ops_groups is
 		log_indentation_down;
 	end reset_objects;
 
-	
-	
+
+
 end et_board_ops_groups;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

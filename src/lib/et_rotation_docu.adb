@@ -52,8 +52,8 @@ package body et_rotation_docu is
 
 
 
-	
-	
+
+
 	procedure toggle_rotation (rotation : in out type_rotation_documentation) is
 	begin
 		case rotation is
@@ -63,13 +63,13 @@ package body et_rotation_docu is
 	end toggle_rotation;
 
 
-	
+
 end et_rotation_docu;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

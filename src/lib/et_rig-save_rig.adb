@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,7 +50,7 @@ separate (et_rig)
 
 procedure save_rig (
 	rig_cursor		: in pac_rigs.cursor;
-	log_threshold 	: in type_log_level) 
+	log_threshold 	: in type_log_level)
 is
 
 	use pac_rigs;
@@ -58,26 +58,26 @@ is
 	use pac_module_instances;
 	use pac_module_connections;
 
-	-- For the final full file name like 
+	-- For the final full file name like
 	-- /home/user/et_projects/blood_sample_analyzer.conf
 	file_name : et_rig_name.pac_file_name.bounded_string;
 
 	-- backup the previous output
 	previous_output : ada.text_io.file_type renames current_output;
-	
+
 	file_handle : ada.text_io.file_type;
 
-	
+
 	procedure query_instance (instance_cursor : in pac_module_instances.cursor) is
 	begin
-		section_mark (section_module, HEADER);			
+		section_mark (section_module, HEADER);
 		write (keyword => keyword_generic_name, parameters => to_string (element (instance_cursor).generic_name));
 		write (keyword => keyword_instance_name, parameters => to_string (key (instance_cursor)));
 		section_mark (section_module, FOOTER);
 	end;
 
 
-	
+
 	procedure query_connections (connection_cursor : in pac_module_connections.cursor) is
 		con : constant type_module_connection := element (connection_cursor);
 	begin
@@ -89,11 +89,11 @@ is
 		write (keyword => keyword_purpose_B, wrap => true, parameters => to_string (con.purpose_B));
 
 		-- CS: net comparator, warnings
-		
+
 		section_mark (section_connector, FOOTER);
 	end;
 
-	
+
 begin -- save_rig_configuration
 	log (text => "saving rig configuration ...", level => log_threshold);
 	reset_tab_depth;
@@ -107,11 +107,11 @@ begin -- save_rig_configuration
 	-- create the file
 	create (
 		file => file_handle,
-		mode => out_file, 
+		mode => out_file,
 		name => pac_file_name.to_string (file_name));
-	
+
 	set_output (file_handle);
-	write_rig_configuration_header;		
+	write_rig_configuration_header;
 
 	-- section module instances
 	section_mark (section_module_instances, HEADER);
@@ -130,21 +130,21 @@ begin -- save_rig_configuration
 	write_rig_configuration_footer;
 	set_output (previous_output);
 	close (file_handle);
-	
+
 	log_indentation_down;
 
 	exception when event:
-		others => 
+		others =>
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (file_handle);
 			set_output (previous_output);
 			raise;
 
 end save_rig;
-	
+
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

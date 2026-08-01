@@ -47,8 +47,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_symbol_name is
 
-	
-	
+
+
 	symbol_file_name_length_max : constant natural := 500;
 
 
@@ -56,29 +56,29 @@ package et_symbol_name is
 	-- "../lbr/logic/nand.sym"
 	-- The model name is equally to the file name that contains
 	-- the model:
-	package pac_symbol_model_name is new 
+	package pac_symbol_model_name is new
 		generic_bounded_length (symbol_file_name_length_max);
 
-		
+
 	symbol_library_file_extension : constant string := "sym";
-		
-		
+
+
 	function to_string (
-		name : in pac_symbol_model_name.bounded_string) 
+		name : in pac_symbol_model_name.bounded_string)
 		return string;
 
-	
+
 	function to_file_name (
-		name : in string) 
+		name : in string)
 		return pac_symbol_model_name.bounded_string;
-	
+
 
 
 end et_symbol_name;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

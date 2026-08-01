@@ -44,12 +44,12 @@ with et_logging;				use et_logging;
 
 package et_package_write_via_restrict is
 
-	
+
 
 	procedure write_via_restrict (
 		packge			: in type_package_model;
 		log_threshold	: in type_log_level);
-	
-		
-	
+
+
+
 end et_package_write_via_restrict;

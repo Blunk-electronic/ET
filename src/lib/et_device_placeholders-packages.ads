@@ -56,37 +56,37 @@ package et_device_placeholders.packages is
 	use pac_geometry_2;
 	use pac_text_board;
 	use pac_text_board_vectorized;
-		
-	
-	
+
+
+
 	type type_text_placeholder is new type_text_fab with record
 		meaning		: type_placeholder_meaning := placeholder_meaning_default;
 		anchor_mode	: type_anchor_mode := anchor_mode_default;
 	end record;
 
-	
+
 	-- Resets size, alignment, status, position,
 	-- linewidth, meaning and anchor mode to default:
 	procedure reset_placeholder (
 		placeholder : in out type_text_placeholder);
-		
-	
+
+
 	procedure set_anchor_mode (
 		placeholder		: in out type_text_placeholder;
 		mode			: in type_anchor_mode);
-		
+
 
 	function get_anchor_mode (
 		placeholder		: in type_text_placeholder)
 		return type_anchor_mode;
-		
-		
+
+
 	function get_anchor_mode (
 		placeholder		: in type_text_placeholder)
 		return string;
 
-		
-		
+
+
 	-- Returns the absolute x/y position of a placeholder.
 	-- Since the placeholder can be positioned relative to
 	-- a package, the package position (x/y, rotation, face)
@@ -97,7 +97,7 @@ package et_device_placeholders.packages is
 		package_position	: in type_package_position)
 		return type_vector_model;
 
-	
+
 	-- Returns the relative position of the placeholder
 	-- to the given package position. The result represents
 	-- the relative position for a non-rotated and non-flipped
@@ -107,30 +107,30 @@ package et_device_placeholders.packages is
 		package_position	: in type_package_position)
 		return type_vector_model;
 
-		
-	
+
+
 	function get_meaning (
 		placeholder : in type_text_placeholder)
 		return type_placeholder_meaning;
-	
-	
-	-- CS function set_meaning
-	
 
-	
+
+	-- CS function set_meaning
+
+
+
 	function to_string (
 		placeholder : in type_text_placeholder)
 		return string;
-		
-	
+
+
 	subtype type_placeholder_index is positive range 1 .. 10;
-	
-	
+
+
 	function to_placeholder_index (
 		index : in string)
 		return type_placeholder_index;
-		
-		
+
+
 	-- Due to packages that require a lot of area, it is useful to
 	-- have a lot of placeholders for value, name, purpose.
 	-- So for example the name X2 of a long edge connector can be
@@ -140,31 +140,31 @@ package et_device_placeholders.packages is
 	package pac_text_placeholders is new vectors (
 		index_type		=> type_placeholder_index,
 		element_type	=> type_text_placeholder);
-	
+
 	use pac_text_placeholders;
-	
-	
-	
-	
+
+
+
+
 	-- Iterates the placeholders. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		placeholders	: in pac_text_placeholders.vector;
 		process			: not null access procedure (position : in pac_text_placeholders.cursor);
 		proceed			: not null access boolean);
 
-	
-	
-		
-		
+
+
+
+
 	function get_meaning (
 		placeholder : in pac_text_placeholders.cursor)
 		return type_placeholder_meaning;
-		
-		
-		
-	
+
+
+
+
 	-- Locates the placeholder as specified by meaning and index.
-	-- With other words: Locates the n'th (index) placeholder 
+	-- With other words: Locates the n'th (index) placeholder
 	-- having the given meaning.
 	-- If no matching placeholder has been found, then the result
 	-- is no_element:
@@ -173,14 +173,14 @@ package et_device_placeholders.packages is
 		meaning			: in type_placeholder_meaning;
 		index			: in type_placeholder_index)
 		return pac_text_placeholders.cursor;
-		
-		
+
+
 
 	-- Mirrors a list of placeholders along the given axis:
 	procedure mirror_placeholders (
 		placeholders	: in out pac_text_placeholders.vector;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
+
 	-- Rotates a list of placeholders by the given angle:
 	procedure rotate_placeholders (
 		placeholders	: in out pac_text_placeholders.vector;
@@ -191,39 +191,39 @@ package et_device_placeholders.packages is
 		placeholders	: in out pac_text_placeholders.vector;
 		offset			: in type_vector_model);
 
-	
-	
+
+
 	-- Logs the properties of the given placeholder:
 	procedure placeholder_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in type_log_level);
-	
-	
-	
+
+
+
 
 	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
 	type type_placeholder_layer is (SILKSCREEN, ASSY_DOC);
 	-- CS apply prefix !
-	
+
 	function to_string (
-		layer : in type_placeholder_layer) 
+		layer : in type_placeholder_layer)
 		return string;
 
-		
+
 	function to_placeholder_layer (
-		layer : in string) 
+		layer : in string)
 		return type_placeholder_layer;
 
 
-		
-		
 
-	
-	-- Initially, when a device is added to the schematic, these placeholders are 
+
+
+
+	-- Initially, when a device is added to the schematic, these placeholders are
 	-- copies of the placeholders as defined in the package model.
-	-- The user is then free to change them in the 
+	-- The user is then free to change them in the
 	-- layout (position, text size, rotation, line width ...).
 	type type_placeholders_silkscreen is record
 		top		: pac_text_placeholders.vector;
@@ -251,10 +251,10 @@ package et_device_placeholders.packages is
 		-- CS parameter to insert linebreaks
 		return string;
 
-	
-	
-		
-	
+
+
+
+
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
@@ -270,17 +270,17 @@ package et_device_placeholders.packages is
 	-- set accordingly:
 	procedure move_placeholder (
 		placeholders		: in out type_text_placeholders;
-		meaning				: in type_placeholder_meaning;					 
+		meaning				: in type_placeholder_meaning;
 		layer				: in type_placeholder_layer; -- silkscreen, assy doc
 		face				: in type_face;
 		index				: in type_placeholder_index; -- 1, 2, 3, ...
 		package_position	: in type_package_position;
 		coordinates			: in type_coordinates; -- relative/absolute
-		point				: in type_vector_model); -- x/y 
+		point				: in type_vector_model); -- x/y
 		-- CS rename to destination_offset rework documentation above
 
 
-	
+
 	-- Rotates the placeholder given by meaning, layer, face and index.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
@@ -295,7 +295,7 @@ package et_device_placeholders.packages is
 	-- is rotated by the given rotation:
 	procedure rotate_placeholder (
 		placeholders	: in out type_text_placeholders;
-		meaning			: in type_placeholder_meaning;					 
+		meaning			: in type_placeholder_meaning;
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
@@ -316,9 +316,9 @@ package et_device_placeholders.packages is
 		catch_zone			: in type_catch_zone;
 		count				: in out natural;
 		log_threshold		: in type_log_level);
-		
-		
-		
+
+
+
 	-- Modifies the status of a placeholder among a given
 	-- list of placeholders. The placeholder is identified by
 	-- the layer, face and the cursor to the placeholder:
@@ -329,12 +329,12 @@ package et_device_placeholders.packages is
 		placeholder_cursor	: in pac_text_placeholders.cursor;
 		operation			: in type_status_operation);
 
-		
+
 	-- Resets all status flags of the given placeholders:
 	procedure reset_status (
 		placeholders		: in out type_text_placeholders);
-		
-		
+
+
 	-- Returns the first placeholder among the given placeholders
 	-- that has the given status flag set.
 	-- If nothing has been found, then placeholder_cursor is no_element.
@@ -347,40 +347,40 @@ package et_device_placeholders.packages is
 		face				: out type_face; -- top/bottom
 		index				: out type_placeholder_index; -- 1, 2, 3, ...
 		log_threshold		: in type_log_level);
-		
-		
+
+
 	-- This stuff is required when cursors of placeholders
 	-- are to be collected:
-		
+
 	type type_placeholder_cursor is record
 		cursor : pac_text_placeholders.cursor;
 		index  : type_placeholder_index;
 	end record;
-	
-		
-	package pac_placeholder_cursors is 
+
+
+	package pac_placeholder_cursors is
 		new doubly_linked_lists (type_placeholder_cursor);
-		
-		
+
+
 	type type_placeholder_cursors_assy is record
 		top		: pac_placeholder_cursors.list;
 		bottom	: pac_placeholder_cursors.list;
 	end record;
 
-	
+
 	type type_placeholder_cursors_silkscreen is record
 		top		: pac_placeholder_cursors.list;
 		bottom	: pac_placeholder_cursors.list;
 	end record;
 
-		
-		
+
+
 	type type_placeholder_cursors is record
 		assy_doc	: type_placeholder_cursors_assy;
 		silkscreen	: type_placeholder_cursors_silkscreen;
 	end record;
-		
-		
+
+
 	-- Extracts from the given placeholders those
 	-- which have the given status flag set.
 	-- The result are cursors of placeholders:
@@ -389,13 +389,13 @@ package et_device_placeholders.packages is
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_placeholder_cursors;
-		
-	
+
+
 end et_device_placeholders.packages;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

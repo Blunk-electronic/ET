@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -68,14 +68,14 @@ with et_conductor_text.boards;
 package et_routing is
 
 	use pac_generic_modules;
-	
+
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
-	
 
-	
-	
+
+
+
 
 	-- When inquiring the clearance of a terminal then
 	-- these types are required:
@@ -105,7 +105,7 @@ package et_routing is
 		return type_get_terminal_clearance_result;
 
 
-	
+
 	-- Returns the distance to the nearest point
 	-- on the board edge. Objects that are regarded as board
 	-- edges are outline segments and hole segments:
@@ -115,9 +115,9 @@ package et_routing is
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return type_float_positive;
-	
 
-	-- Tests whether the given point is in the usable board area. 
+
+	-- Tests whether the given point is in the usable board area.
 	-- Returns false if the point is outside the board or inside a hole.
 	-- Returns false if the point is exactly on the edge of the board.
 	-- Returns true if the point is exactly on the edge of a hole.
@@ -128,11 +128,11 @@ package et_routing is
 		--lth				: in type_log_level)
 		--return boolean;
 
-	
-	
+
+
 	-- A track starts at a certain point and travels into
 	-- a certain direction. It has a width and a
-	-- clearance to other objects. 
+	-- clearance to other objects.
 	-- The clearance may assume zero if a fill zones is to be filled
 	-- because in that case the track reaches the border of the fill area.
 	type type_track is record
@@ -142,14 +142,14 @@ package et_routing is
 	end record;
 
 
-	
+
 	type type_place is (
 		BEFORE,
-		AFTER);					
+		AFTER);
 
 	function to_string (place : in type_place) return string;
 
-	
+
 	-- The dimensions of a track:
 	--type type_track_dimensions is record
 		--direction	: type_rotation; -- the direction of travel
@@ -172,7 +172,7 @@ package et_routing is
 			--when CIRCLE	=> circle : type_circle;
 		--end case;
 	--end record;
-	
+
 
 	-- This function searches the break point before or after
 	-- an obstacle along the x-axis. The result is an x-position
@@ -184,10 +184,10 @@ package et_routing is
 		--obstacle		: in type_obstacle;
 		--clearance		: in type_distance_positive; -- the clearance to the obstacle
 		--log_category	: in type_log_category;
-		--lth				: in type_log_level) 
+		--lth				: in type_log_level)
 		--return type_distance;
 
-	
+
 	-- A break may or may not exist. If it exists, then the point
 	-- is where a track ends (before an obstacle) or where it starts
 	-- (after an obstacle). Point is the center of the cap of the track.
@@ -197,10 +197,10 @@ package et_routing is
 			when FALSE => null;
 		end case;
 	end record;
-	
+
 	-- Returns the point where a track is broken/interrupted
 	-- by a line that crosses or overlaps the track.
-	-- If place is BEFORE: 
+	-- If place is BEFORE:
 	--  - Returns the point, after the start of the track, where the break begins.
 	-- If place is AFTER:
 	--  - Returns the point, after the start of the track, where the break ends.
@@ -216,7 +216,7 @@ package et_routing is
 		--lth					: in type_log_level)
 		--return type_break;
 
-	
+
 	-- A break of a track with an arc may consist of up to
 	-- two points where the arc intersects the track:
 	subtype type_break_count is natural range 0..2;
@@ -227,10 +227,10 @@ package et_routing is
 			when 2 => point_1, point_2 : type_vector_model;
 		end case;
 	end record;
-	
+
 	-- Returns the point where a track is broken/interrupted
 	-- by an arc that crosses or overlaps the track.
-	-- If place is BEFORE: 
+	-- If place is BEFORE:
 	--  - Returns the points, after the start of the track, where the break begins.
 	-- If place is AFTER:
 	--  - Returns the points, after the start of the track, where the break ends.
@@ -248,7 +248,7 @@ package et_routing is
 
 	-- Returns the point where a track is broken/interrupted
 	-- by a circle that crosses or overlaps the track.
-	-- If place is BEFORE: 
+	-- If place is BEFORE:
 	--  - Returns the points, after the start of the track, where the break begins.
 	-- If place is AFTER:
 	--  - Returns the points, after the start of the track, where the break ends.
@@ -263,20 +263,20 @@ package et_routing is
 		--log_category		: in type_log_category;
 		--lth					: in type_log_level)
 		--return type_break_double;
-	
 
-	-- Returns true if the given point comes after the 
-	-- start point of the given track. 
-	-- Assumes that the point is on the center line of the track. 
+
+	-- Returns true if the given point comes after the
+	-- start point of the given track.
+	-- Assumes that the point is on the center line of the track.
 	-- If the point is not on the track, raises constraint error:
 	--function after_start_of_track (
 		--track	: in type_track;
 		--point	: in type_vector_model)
 		--return boolean;
-	
+
 
 	type type_valid is (VALID, INVALID);
-	
+
 	type type_route_distance (status : type_valid) is record
 		case status is
 			when VALID		=> distance : type_distance_positive;
@@ -286,26 +286,26 @@ package et_routing is
 
 
 	type type_observe_foreign_nets is new boolean;
-	
-	
+
+
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is
-			when TRUE => 
+			when TRUE =>
 				outline : et_fill_zones.type_zone (SOLID);
 				-- The fill style does not matter.
 
 			when FALSE => null;
 		end case;
 	end record;
-	
-	-- If place is BEFORE: 
+
+	-- If place is BEFORE:
 	--  - Returns the distance from start_point to the nearest obstacle
 	--    with status VALID.
 	--  - If the start point does not qualify to start a track then
 	--    the return is INVALID.
 	--  - If there is no obstacle then the return is VALID and the
 	--    returned distance is the maxium (type_distance_model'last).
-	-- If place is AFTER: 
+	-- If place is AFTER:
 	--  - Returns the distance from start_point to the nearest point,
 	--    after one or more obstacles, that qualifies to start a track.
 	--  - If no suitable point found then the return is INVALID.
@@ -347,15 +347,15 @@ package et_routing is
 		--width			: in type_track_width;
 		--ignore_same_net	: in boolean;
 		--log_category	: in type_log_category := log_category_default;
-		--lth				: in type_log_level)		
+		--lth				: in type_log_level)
 		--return boolean;
 
-	
+
 end et_routing;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

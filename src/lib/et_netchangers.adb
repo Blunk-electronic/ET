@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--   ToDo:
 
 
 
@@ -47,19 +47,19 @@ with ada.strings.fixed;				use ada.strings.fixed;
 
 package body et_netchangers is
 
-	
+
 	function to_netchanger_id (
-		id : in string) 
-		return type_netchanger_id 
+		id : in string)
+		return type_netchanger_id
 	is begin
 		return type_netchanger_id'value (id);
 	end;
 
 
-	
+
 	function to_string (
-		id : in type_netchanger_id) 
-		return string 
+		id : in type_netchanger_id)
+		return string
 	is begin
 		return trim (type_netchanger_id'image (id), left);
 	end;
@@ -68,12 +68,12 @@ package body et_netchangers is
 
 
 	function get_netchanger_name (
-		id : in type_netchanger_id) 
+		id : in type_netchanger_id)
 		return string
 	is begin
-		return netchanger_prefix & to_string (id);		
+		return netchanger_prefix & to_string (id);
 	end;
-	
+
 
 
 
@@ -83,15 +83,15 @@ package body et_netchangers is
 		case direction is
 			when FORWARD =>
 				direction := BACKWARD;
-				
+
 			when BACKWARD =>
 				direction := FORWARD;
 		end case;
 	end;
-	
-	
-	
-	
+
+
+
+
 	function to_netchanger_direction (
 		direction : in string)
 		return type_netchanger_direction
@@ -106,18 +106,18 @@ package body et_netchangers is
 	is begin
 		return type_netchanger_direction'image (direction);
 	end;
-	
-	
 
 
-	
 
-		
-		
-	
 
-	
-	
+
+
+
+
+
+
+
+
 
 	procedure reset_netchanger (
 		netchanger : in out type_netchanger)
@@ -126,9 +126,9 @@ package body et_netchangers is
 		netchanger.position_brd := (others => <>);
 		netchanger.direction := type_netchanger_direction'first;
 	end;
-	
-	
-	
+
+
+
 	function get_netchanger_name (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return string
@@ -137,7 +137,7 @@ package body et_netchangers is
 	end;
 
 
-	
+
 	function get_netchanger_id (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_id
@@ -146,7 +146,7 @@ package body et_netchangers is
 	end;
 
 
-	
+
 	function get_netchanger (
 		netchangers : in pac_netchangers.map;
 		index		: in type_netchanger_id)
@@ -155,14 +155,14 @@ package body et_netchangers is
 		return netchangers.find (index);
 	end;
 
-	
 
-	
+
+
 end et_netchangers;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
