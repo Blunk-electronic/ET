@@ -109,8 +109,7 @@ procedure draw_units is
 		-- also as an aggreate type. So it should be left as is is:
 		unit_place			: in type_vector_model; -- x/y
 		unit_rotation		: in type_rotation := zero_rotation; -- angle
-		unit_mirror_status 	: in type_mirror := MIRROR_ALONG_Y_AXIS;
-
+		unit_mirror_status 	: in type_mirror := MIRROR_NO;
 		placeholders	: in type_text_placeholders;
 		preview			: in boolean := false)
 	is
