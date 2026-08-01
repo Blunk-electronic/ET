@@ -160,6 +160,14 @@ package body et_units is
 
 
 
+	procedure move_unit (
+		unit	: in out type_unit;
+		offset	: in type_vector_model)
+	is begin
+		move_by (unit.position, offset);
+	end;
+
+	
 
 	procedure move_unit (
 		unit	: in out type_unit;
@@ -460,6 +468,15 @@ package body et_units is
 	end rotate_placeholder;
 
 	
+
+
+
+	function get_unit (
+		unit_cursor : in pac_units.cursor)
+		return type_unit
+	is begin
+		return element (unit_cursor);
+	end;
 
 
 

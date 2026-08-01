@@ -192,6 +192,13 @@ package et_devices_electrical.units is
 
 
 
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device	: in type_device_electrical; -- R2
+		unit	: in pac_unit_name.bounded_string) -- A, B, C
+		return type_object_position;
+	
 
 
 	-- Returns the position (x/y/sheet) of the given unit.
@@ -413,7 +420,22 @@ package et_devices_electrical.units is
 
 
 
-
+	-- Copies a unit into the given device. The copy
+	-- will be placed by the given number of sheets and
+	-- the given offset (x/y) away from the original unit.
+	-- CS: 
+	-- 1. Currently the caller must ensure that the unit
+	--    can become a part of the given device as specified.
+	--    The source device and the target device must have the
+	--    same device model.
+	-- 2. If the unit already exists in the given device,
+	--    then an exception is raised.
+	procedure copy_unit_to_device (
+		source_unit_cursor	: in pac_units.cursor;
+		sheet				: in type_sheet_relative;
+		offset				: in type_vector_model;
+		target_device		: in out type_device_electrical);
+	
 	
 
 

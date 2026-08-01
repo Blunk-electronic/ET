@@ -85,8 +85,7 @@ package et_schematic_ops_units is
 		device			: in type_device_name; -- R2
 		unit			: in pac_unit_name.bounded_string)
 		return pac_units.cursor;
-	
-
+		
 	
 	-- Returns true if the unit of the given device in the 
 	-- given module has been deployed somewhere.
@@ -228,16 +227,24 @@ package et_schematic_ops_units is
 
 	-- Copies a unit and places it relative to the
 	-- original by a given offset.
-	-- Since a unit is copied, a new device is created indirectly.
-	-- Argument device_created outputs the name of the
-	-- device that has been created:
+	-- 1. If target_device is not specified, then 
+	--    a new device is created indirectly. The lowest available
+	--    name index will be assigned to that device.
+	-- 2. If target_device is specified, then no new device
+	--    will be created. The unit will be copied into the
+	--    given target_device.
+	-- 3. The output argument device_created outputs the name of the
+	--    device where the unit has been copied into.
+	--    If target_device was specified, then device_created
+	--    assumes the same value as target_device.
 	procedure copy_unit (
 		module_cursor 	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model; -- CS rename to offset
-		device_created	: out type_device_name;
+		target_device	: in type_device_name := device_name_default;
+		device_created	: out type_device_name;-- CS use a cursor instead ?
 		log_threshold	: in type_log_level);
 
 	

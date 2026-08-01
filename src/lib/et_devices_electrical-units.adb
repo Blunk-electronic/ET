@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -260,6 +260,37 @@ package body et_devices_electrical.units is
 
 
 
+	
+	function get_position (
+		device	: in type_device_electrical;
+		unit	: in pac_unit_name.bounded_string)
+		return type_object_position
+	is
+		-- Locate the given unit in the device:
+		unit_cursor : constant pac_units.cursor := 
+			device.units.find (unit);
+	
+		result : type_object_position;
+		
+		
+		procedure query_unit (
+			unit_name	: in pac_unit_name.bounded_string;
+			unit		: in type_unit)
+		is 
+			pragma unreferenced (unit_name);
+		begin
+			result := get_position (unit);
+		end;
+		
+	begin
+		query_element (unit_cursor, query_unit'access);
+		return result;
+	end get_position;
+	
+	
+	
+	
+	
 
 
 
@@ -1163,6 +1194,44 @@ package body et_devices_electrical.units is
 	end get_port;
 
 	
+	
+
+
+	
+
+
+	procedure copy_unit_to_device (
+		source_unit_cursor	: in pac_units.cursor;
+		sheet				: in type_sheet_relative;
+		offset				: in type_vector_model;
+		target_device		: in out type_device_electrical)
+	is
+		-- Make a copy of the given unit.
+		-- This includes placeholders, position,
+		-- rotation and mirror status:
+		unit : type_unit := get_unit (source_unit_cursor);
+		
+		c : pac_units.cursor;
+		inserted : boolean;
+	begin
+		-- Move the unit by the given offset
+		-- and the number of given sheets:
+		move_unit (unit, offset);
+		move_unit (unit, sheet);
+	
+		-- Insert the unit in the given target device:
+		target_device.units.insert (
+			key			=> key (source_unit_cursor),
+			new_item	=> unit,
+			position	=> c,
+			inserted	=> inserted);
+			
+		if not inserted then
+			raise constraint_error; -- CS text message ?
+		end if;
+	end copy_unit_to_device;
+
+
 	
 
 	

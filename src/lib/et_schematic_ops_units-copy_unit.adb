@@ -46,6 +46,7 @@ procedure copy_unit (
 	unit_cursor		: in pac_units.cursor;
 	sheet			: in type_sheet_relative;
 	destination		: in type_vector_model;
+	target_device	: in type_device_name := device_name_default;
 	device_created	: out type_device_name;
 	log_threshold	: in type_log_level)
 is
@@ -79,6 +80,79 @@ is
 		-- can be assigned to the new unit.
 	end compute_final_position;
 
+
+
+	procedure copy_into_specified_device is
+		target_device_cursor : constant pac_devices_electrical.cursor :=
+			get_electrical_device (module_cursor, target_device);
+			
+		-- The pointer to the device model:		
+		device_cursor_lib : constant pac_device_models.cursor :=
+			get_device_model (target_device_cursor);
+			
+			
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			
+			
+			procedure query_target_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is 
+				-- Here we store temporarily the ports (with
+				-- their positions) of the unit to be added:
+				ports : pac_symbol_ports.map;
+			begin
+				-- Copy the unit into the target device:
+				copy_unit_to_device (
+					unit_cursor, sheet, destination, device);
+					
+				-- Get the ports with their original positions
+				-- as they are defined in the device model:
+				ports := get_ports_from_symbol_model (
+					device_cursor	=> device_cursor_lib,
+					unit_name		=> get_unit_name (unit_cursor));
+
+				-- Move the ports to the position of the unit:
+				move_ports (ports, position_new);
+
+				-- Insert the new unit ports in the net segments:
+				insert_ports (
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> get_unit_name (unit_cursor),
+					ports			=> ports,
+					sheet			=> get_sheet (position_new),
+					log_threshold	=> log_threshold + 2);
+
+
+				-- Update the ratsnest if the added device is real:
+				if is_real (device_cursor_lib) then
+					update_ratsnest (module_cursor, log_threshold + 1);
+				end if;
+					
+					
+				-- The copy was made in the given target device.
+				-- So the created device is the same as the target
+				-- device:
+				device_created := device_name;
+			end query_target_device;
+			
+			
+		begin
+			module.devices.update_element (
+				target_device_cursor, query_target_device'access);
+		end query_module;
+		
+		
+	begin
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+			
+	end copy_into_specified_device;
+
 	
 	
 begin
@@ -89,25 +163,42 @@ begin
 		& " offset " & to_string (destination),
 		level => log_threshold);
 
-
 	log_indentation_up;
 
-	
 	-- Now we compute the new position
 	-- of the new unit.
 	compute_final_position;
 
 
-	copy_device (
-		module_cursor		=> module_cursor,
-		device_name			=> key (device_cursor),
-		unit_name_explicit	=> key (unit_cursor),
-		destination			=> position_new, -- absolute
-		commit_design		=> NO_COMMIT,
-		device_created		=> device_created,
-		log_threshold		=> log_threshold + 1);
+	if is_default_name (target_device) then
+		log (text => "copy into new device",
+			 level => log_threshold + 1);
+
+		log_indentation_up;
 		
+		copy_device (
+			module_cursor		=> module_cursor,
+			device_name			=> key (device_cursor),
+			unit_name_explicit	=> key (unit_cursor),
+			destination			=> position_new, -- absolute
+			commit_design		=> NO_COMMIT,
+			device_created		=> device_created,
+			log_threshold		=> log_threshold + 2);
+
+		log_indentation_down;
 		
+	else
+		log (text => "copy into explicitly specified device " 
+			 & to_string (target_device),
+			 level => log_threshold + 1);
+
+		log_indentation_up;
+		copy_into_specified_device;
+		log_indentation_down;
+
+	end if;
+
+	
 	log_indentation_down;	
 end copy_unit;
 

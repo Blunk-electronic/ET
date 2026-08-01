@@ -89,6 +89,7 @@ package et_device_name is
 	end record;
 
 
+	
 
 	-- CS function get_width
 	-- CS procedure set_width
@@ -118,9 +119,17 @@ package et_device_name is
 	function "=" (left, right : in type_device_name) return boolean;
 
 
-	no_name : constant type_device_name := (others => <>);
+	no_name : constant type_device_name := (others => <>); -- CS remove
 	
+	device_name_default : constant type_device_name := (others => <>);
 
+
+	-- Returns true if the given device name
+	-- is the default name device_name_default:
+	function is_default_name (
+		name : in type_device_name)
+		return boolean;
+	
 	
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.

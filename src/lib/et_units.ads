@@ -82,7 +82,7 @@ package et_units is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
-	type type_unit (appearance : type_appearance_schematic) is record
+	type type_unit (appearance : type_appearance_schematic) is record -- CS make private
 		position		: type_object_position; -- incl. rotation and sheet number
 		mirror_status	: type_mirror := MIRROR_NO;
 		status			: type_object_status;
@@ -166,6 +166,12 @@ package et_units is
 	
 
 
+	-- Moves a unit by the given offset:
+	procedure move_unit (
+		unit	: in out type_unit;
+		offset	: in type_vector_model);					
+
+	
 	-- Moves a unit by the given number of sheets:
 	procedure move_unit (
 		unit	: in out type_unit;
@@ -301,6 +307,12 @@ package et_units is
 	use pac_units;
 
 
+	-- Returns a unit as indicated by unit cursor:
+	function get_unit (
+		unit_cursor	: in pac_units.cursor)
+		return type_unit;
+
+	
 
 	function get_position (
 		unit	: in pac_units.cursor)

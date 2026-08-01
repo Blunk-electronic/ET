@@ -160,8 +160,8 @@ package body et_schematic_ops_units is
 	end locate_unit;
 
 
-	
 
+	
 	
 	
 
@@ -958,6 +958,7 @@ package body et_schematic_ops_units is
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model;
+		target_device	: in type_device_name := device_name_default;
 		device_created	: out type_device_name;
 		log_threshold	: in type_log_level) is separate;
 	
@@ -4020,28 +4021,20 @@ package body et_schematic_ops_units is
 
 
 		procedure copy_in_same_device is
-			position : type_object_position;
 		begin
-			log (text => "copy unit in same device", level => log_threshold + 1);
+			log (text => "copy unit into same device", level => log_threshold + 1);
 			log_indentation_up;
 
-			-- Get the position of the unit (incl. rotation and sheet)
-			-- to be copied and move it by the given offset:
-			position := get_position (unit_cursor_old);
-			move_by (position, offset);
-
-			-- Fetch a unit of the same as indicated
-			-- by cursor unit_cursor_old:
-			fetch_unit (
+			copy_unit (
 				module_cursor	=> module_cursor,
-				device_name		=> device_created,
-				unit_name		=> get_unit_name (unit_cursor_old),
-				destination		=> position,
-				commit_design	=> NO_COMMIT,
+				device_cursor	=> device_cursor_old,
+				unit_cursor		=> unit_cursor_old,
+				sheet			=> sheet,
+				destination		=> offset,
+				target_device	=> device_created,
+				device_created	=> device_created,
 				log_threshold	=> log_threshold + 1);
 
-			-- CS copy mirror status and positions and angles
-			-- of place holders.
 			
 			log_indentation_down;
 		end copy_in_same_device;

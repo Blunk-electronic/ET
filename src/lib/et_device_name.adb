@@ -231,6 +231,21 @@ package body et_device_name is
 	end;
 
 
+
+
+	function is_default_name (
+		name : in type_device_name)
+		return boolean
+	is begin
+		if name = device_name_default then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
 	
 	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
