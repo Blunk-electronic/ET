@@ -86,10 +86,10 @@ package body et_module_write_stopmask is
 		procedure write_arc (cursor : in pac_stop_arcs.cursor) is
 			use pac_stop_arcs;
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 

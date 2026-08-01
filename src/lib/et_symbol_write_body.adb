@@ -70,7 +70,7 @@ package body et_symbol_write_body is
 		is begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => to_string (get_A (cursor), FORMAT_2));
-			write (keyword => keyword_end  , parameters => to_string (get_B (cursor), FORMAT_2));
+			write (keyword => keyword_end, parameters => to_string (get_B (cursor), FORMAT_2));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
@@ -103,10 +103,10 @@ package body et_symbol_write_body is
 		is begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (cursor), FORMAT_2));
-			write (keyword => keyword_start , parameters => to_string (get_A (cursor), FORMAT_2));
-			write (keyword => keyword_end   , parameters => to_string (get_B (cursor), FORMAT_2));
+			write (keyword => keyword_start, parameters => to_string (get_A (cursor), FORMAT_2));
+			write (keyword => keyword_end, parameters => to_string (get_B (cursor), FORMAT_2));
 			write (keyword => keyword_direction, parameters => to_string (get_direction (cursor)));
-			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
@@ -141,7 +141,7 @@ package body et_symbol_write_body is
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
 			write (keyword => keyword_radius, parameters => to_string (get_radius (element (cursor))));
-			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_circle, FOOTER);
 		end write_circle;

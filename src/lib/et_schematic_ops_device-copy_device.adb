@@ -129,7 +129,7 @@ is
 						purpose			=> original.purpose,
 						variant			=> original.variant,
 						placeholders	=> original.placeholders, -- layout related
-						others			=> <> ));
+						others			=> <>));
 						-- CS: The position in layout assumes default. Should be
 						-- so that it is not placed on top of another device.
 

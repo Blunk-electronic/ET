@@ -64,7 +64,7 @@ package body et_canvas.text is
 		-- In cairo all angles increase in clockwise direction.
 		-- Since our angles increase in counterclockwise direction (mathematically)
 		-- the angle must change the sign.
-		return gdouble (to_radians (- type_angle (angle)));
+		return gdouble (to_radians (-type_angle (angle)));
 	end to_cairo_angle;
 
 
@@ -331,7 +331,7 @@ package body et_canvas.text is
 				rotate (context, to_cairo_angle (rotation));
 
 				translate (context,
-					- to_gdouble (anchor_canvas.x), - to_gdouble (anchor_canvas.y));
+					-to_gdouble (anchor_canvas.x), -to_gdouble (anchor_canvas.y));
 			end if;
 
 

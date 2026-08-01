@@ -622,11 +622,11 @@ package body et_kicad.schematic is
 
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
-		function strip_f ( text : in string) return string is
+		function strip_f (text : in string) return string is
 		-- removes the heading character from the given string.
 		begin return text(text'first+1..text'last); end strip_f;
 
-		function strip_id ( text : in string) return string is
+		function strip_id (text : in string) return string is
 		-- removes the trailing id from the given string.
 		begin return text(text'first..text'first); end strip_id;
 
@@ -6967,7 +6967,7 @@ package body et_kicad.schematic is
 								-- Probing other ports would be a waste of time.
 								if same_path_and_sheet (
 									left => strand.position,
-									right => element (port_cursor).coordinates ) then
+									right => element (port_cursor).coordinates) then
 
 									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
 									if element (port_cursor).connected = NO then

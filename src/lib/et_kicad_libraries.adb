@@ -588,11 +588,11 @@ package body et_kicad_libraries is
 
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
-		function strip_f ( text : in string) return string is
+		function strip_f (text : in string) return string is
 		-- removes the heading character from the given string.
 		begin return text(text'first+1..text'last); end strip_f;
 
-		function strip_id ( text : in string) return string is
+		function strip_id (text : in string) return string is
 		-- removes the trailing id from the given string.
 		begin return text(text'first..text'first); end strip_id;
 
@@ -1846,7 +1846,7 @@ package body et_kicad_libraries is
 
 
 			begin -- to_text
-				text.rotation := to_rotation_doc (- to_degrees (f (line,2)));
+				text.rotation := to_rotation_doc (-to_degrees (f (line,2)));
 
 				set (text.position, AXIS_X, mil_to_distance (mil => f (line,3)));
 				set (text.position, AXIS_Y, mil_to_distance (mil => f (line,4)));

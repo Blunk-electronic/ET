@@ -105,12 +105,12 @@ package body et_symbol_read is
 				-- Create the new symbol:
 				case appearance is
 					when APPEARANCE_VIRTUAL =>
-						symbol_model := new type_symbol_model' (
+						symbol_model := new type_symbol_model'(
 							appearance	=> APPEARANCE_VIRTUAL,
 							others		=> <>);
 
 					when APPEARANCE_PCB =>
-						symbol_model := new type_symbol_model' (
+						symbol_model := new type_symbol_model'(
 							appearance	=> APPEARANCE_PCB,
 							others		=> <>);
 

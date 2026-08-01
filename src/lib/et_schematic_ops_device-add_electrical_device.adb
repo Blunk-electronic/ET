@@ -168,7 +168,7 @@ is
 
 					-- Use default position of the device in the layout.
 					-- CS: do not place the package on top of others
-					others		=> <> );
+					others		=> <>);
 
 
 				-- Insert the device in the schematic:
