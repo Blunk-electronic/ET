@@ -66,7 +66,7 @@ package body et_gui_2 is
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-		log_threshold_in: in type_log_level)
+		log_threshold_in : in type_log_level)
 	is
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
@@ -191,7 +191,7 @@ package body et_gui_2 is
 	procedure init_board (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
-		log_threshold_in: in type_log_level)
+		log_threshold_in : in type_log_level)
 	is
 		pragma unreferenced (project);
 		use et_canvas_board;

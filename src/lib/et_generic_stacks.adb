@@ -42,19 +42,19 @@
 package body et_generic_stacks is
 
 	package body stack_lifo is
-		s : array (1..max) of item;
-		top : natural range 0..max;
+		s : array (1 .. max) of item;
+		top : natural range 0 .. max;
 
-		procedure push(x : item) is
+		procedure push (x : item) is
 		begin
 			top := top + 1;
-			s(top) := x;
+			s (top) := x;
 		end push;
 
 		function pop return item is
 		begin
 			top := top - 1;
-			return s(top + 1);
+			return s (top + 1);
 		end pop;
 
 		function depth return natural is

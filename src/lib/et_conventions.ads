@@ -62,14 +62,14 @@ package et_conventions is
 
 
 	-- conventions file section headers
-	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
-	section_component_units							: constant string (1..22)	:= "[UNITS_OF_MEASUREMENT]";
-	section_components_with_operator_interaction 	: constant string (1..31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
-	section_partcode_keywords						: constant string (1..20)	:= "[PART_CODE_KEYWORDS]";
+	section_component_prefixes						: constant string (1 .. 20)	:= "[COMPONENT_PREFIXES]";
+	section_component_units							: constant string (1 .. 22)	:= "[UNITS_OF_MEASUREMENT]";
+	section_components_with_operator_interaction 	: constant string (1 .. 31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
+	section_partcode_keywords						: constant string (1 .. 20)	:= "[PART_CODE_KEYWORDS]";
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 	--section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
 	--section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
-	section_text_sizes_schematic					: constant string (1..22)	:= "[TEXT_SIZES_SCHEMATIC]";
+	section_text_sizes_schematic					: constant string (1 .. 22)	:= "[TEXT_SIZES_SCHEMATIC]";
 
 -- 	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
 -- 	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
@@ -339,7 +339,7 @@ package et_conventions is
 		PART_TYPE);
 
 	partcode_keyword_length_max : constant positive := 5;
-	partcode_keyword_characters : character_set := to_set (span => ('A','Z'));
+	partcode_keyword_characters : character_set := to_set (span => ('A', 'Z'));
 	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
 
 	partcode_keyword_argument_lenght_max : constant positive := 10;

@@ -365,7 +365,7 @@ package body et_cp_board_device is
 
 
 		case cmd_field_count is
-			when 8..10 => do_it;
+			when 8 .. 10 => do_it;
 			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
 			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
 			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top

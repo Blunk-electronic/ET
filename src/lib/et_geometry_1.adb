@@ -2460,7 +2460,7 @@ package body et_geometry_1 is
 
 
 	function normalize_arc (
-		arc: in type_arc_fine)
+		arc : in type_arc_fine)
 		return type_arc_fine
 	is begin
 		case arc.direction is
@@ -2734,7 +2734,7 @@ package body et_geometry_1 is
 
 
 	function normalize_arc (
-		arc: in type_arc_angles)
+		arc : in type_arc_angles)
 		return type_arc_angles
 	is
 		result : type_arc_angles;
@@ -3209,7 +3209,7 @@ package body et_geometry_1 is
 		return boolean
 	is
 		-- the distance from center to point:
-		DCP: constant type_float_positive :=
+		DCP : constant type_float_positive :=
 			get_distance_total (point, circle.center);
 	begin
 		if DCP = circle.radius then

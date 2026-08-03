@@ -287,7 +287,7 @@ package body et_board_ops_ratsnest is
 
 
 		exception
-			when event: others =>
+			when event : others =>
 				log (text => ada.exceptions.exception_information (event), console => true);
 				--log (text => ada.exceptions.exception_information (event));
 

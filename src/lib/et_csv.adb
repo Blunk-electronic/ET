@@ -46,7 +46,7 @@ package body et_csv is
 
 	function to_string (column : in type_column) return string is
 	begin
-		return trim (type_column'image (column),left);
+		return trim (type_column'image (column), left);
 	end to_string;
 
 	procedure reset_column is
@@ -86,7 +86,7 @@ package body et_csv is
 			fill_fields := field_count - column; -- number of fields to fill
 
 			-- write empty pad fields
-			for i in 1..fill_fields loop
+			for i in 1 .. fill_fields loop
 				put_field (file);
 			end loop;
 

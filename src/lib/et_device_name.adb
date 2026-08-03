@@ -89,7 +89,7 @@ package body et_device_name is
 		text_in_justified : constant string (1 .. text_in'length) := to_upper (text_in);
 
 		r : type_device_name := (
-				prefix		=> pac_device_prefix.to_bounded_string(""),
+				prefix		=> pac_device_prefix.to_bounded_string (""),
 				id 			=> 0,
 				id_width	=> 1);
 
@@ -254,7 +254,7 @@ package body et_device_name is
 
 		-- The width of the given id is obtained by converting the id to a string
 		-- and then by measuring its length:
-		id_width_given	: constant natural := trim (natural'image (name.id),left)'length;
+		id_width_given	: constant natural := trim (natural'image (name.id), left)'length;
 
 		-- Finally the number of zeros to prepend is the difference of wanted
 		-- and given digits:
@@ -263,11 +263,11 @@ package body et_device_name is
 		case lz is
 			when 0 => -- no leading zeroes
 				return pac_device_prefix.to_string (name.prefix)
-					& trim (natural'image (name.id),left);
+					& trim (natural'image (name.id), left);
 
 			when others => -- leading zeros required
 				return pac_device_prefix.to_string (name.prefix)
-					& lz * '0' & trim (natural'image (name.id),left);
+					& lz * '0' & trim (natural'image (name.id), left);
 		end case;
 	end to_string;
 

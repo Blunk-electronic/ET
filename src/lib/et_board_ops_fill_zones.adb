@@ -1695,7 +1695,7 @@ package body et_board_ops_fill_zones is
 
 					-- If something went wrong, output some
 					-- helpful information and restore the zone:
-					exception when event:
+					exception when event :
 						others =>
 						log (SEVERITY_WARNING,
 							exception_information (event));

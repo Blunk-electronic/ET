@@ -182,7 +182,7 @@ package body et_pick_and_place is
 		close (pnp_handle);
 
 		exception
-			when event: others =>
+			when event : others =>
 				if is_open (pnp_handle) then
 					close (pnp_handle);
 				end if;
