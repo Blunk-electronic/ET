@@ -891,16 +891,16 @@ package body et_kicad_packages is
 
 			log (text => enter_section (section.name), level => log_threshold + 5);
 
-			exception
-				when
-					others =>
-						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
+		exception
+			when
+				others =>
+					log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
 
-						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
-							& "' invalid or not supported yet", console => true);
-						raise;
+					log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
+						& "' invalid or not supported yet", console => true);
+					raise;
 
 		end read_section;
 
@@ -1720,14 +1720,14 @@ package body et_kicad_packages is
 
 			end case;
 
-			exception
-				when event:
-					others =>
-						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event:
+				others =>
+					log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 
 		end read_arg;
 
@@ -2366,14 +2366,14 @@ package body et_kicad_packages is
 			section := sections_stack.pop;
 			log (text => return_to_section (section.name), level => log_threshold + 5);
 
-			exception
-				when event:
-					others =>
-						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event:
+				others =>
+					log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 
 		end exec_section;
 
@@ -2766,12 +2766,12 @@ package body et_kicad_packages is
 			log_indentation_down;
 			log_indentation_down;
 
-			exception
-				when event:
-					others =>
-						log_indentation_reset;
-						log (text => ada.exceptions.exception_message (event), console => true);
-						raise;
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (text => ada.exceptions.exception_message (event), console => true);
+					raise;
 
 		end read_packages;
 
@@ -2880,12 +2880,12 @@ package body et_kicad_packages is
 		end case;
 		log_indentation_down;
 
-		exception
-			when event:
-				others =>
-					log_indentation_reset;
-					put_line (ada.exceptions.exception_message (event));
-					raise;
+	exception
+		when event:
+			others =>
+				log_indentation_reset;
+				put_line (ada.exceptions.exception_message (event));
+				raise;
 
 	end read_libraries;
 

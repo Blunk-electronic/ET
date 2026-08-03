@@ -209,11 +209,11 @@ is
 			end if;
 
 
-			exception when others =>
-				log (text => "file " & enclose_in_quotes (file_name)
-					 & space & get_affected_line (line)
-						& to_string (line), console => true);
-				raise;
+		exception when others =>
+			log (text => "file " & enclose_in_quotes (file_name)
+				 & space & get_affected_line (line)
+					& to_string (line), console => true);
+			raise;
 
 		end process_line;
 
@@ -284,11 +284,11 @@ begin
 	-- log (text => "done", level => log_threshold);
 
 
-	exception when
-		others =>
-			if is_open (file_handle) then close (file_handle); end if;
-			set_input (previous_input);
-			raise;
+exception when
+	others =>
+		if is_open (file_handle) then close (file_handle); end if;
+		set_input (previous_input);
+		raise;
 
 end read_configuration;
 

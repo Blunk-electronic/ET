@@ -286,10 +286,10 @@ package body et_board_ops_ratsnest is
 		log_indentation_down;
 
 
-		exception
-			when event: others =>
-				log (text => ada.exceptions.exception_information (event), console => true);
-				--log (text => ada.exceptions.exception_information (event));
+	exception
+		when event: others =>
+			log (text => ada.exceptions.exception_information (event), console => true);
+			--log (text => ada.exceptions.exception_information (event));
 
 
 	end update_ratsnest;

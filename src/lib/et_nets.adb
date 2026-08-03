@@ -716,11 +716,11 @@ package body et_nets is
 						new_item	=> element (device_cursor));
 				end if;
 
-				exception
-					when others =>
-						raise constraint_error with to_string (element (device_cursor))
-						--put_line (to_string (element (device_cursor))
-						& " already in set !";
+			exception
+				when others =>
+					raise constraint_error with to_string (element (device_cursor))
+					--put_line (to_string (element (device_cursor))
+					& " already in set !";
 
 			end query_devices;
 

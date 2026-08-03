@@ -622,11 +622,11 @@ package body et_schematic_ops_netlists is
 		log_indentation_down;
 
 		-- CS: rework exception handler
-		exception
-			when event: others =>
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+	exception
+		when event: others =>
+			log_indentation_reset;
+			log (text => ada.exceptions.exception_information (event), console => true);
+			raise;
 
 	end query_submodules;
 

@@ -55,9 +55,9 @@ package body et_modes.project is
 	function to_verb (verb : in string) return type_verb_project is begin
 		return type_verb_project'value (verb_prefix & verb);
 
-		exception when others =>
-			log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
+	exception when others =>
+		log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+		raise;
 	end;
 
 
@@ -73,9 +73,9 @@ package body et_modes.project is
 	function to_noun (noun : in string) return type_noun_project is begin
 		return type_noun_project'value (noun_prefix & noun);
 
-		exception when others =>
-			log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
+	exception when others =>
+		log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+		raise;
 	end;
 
 

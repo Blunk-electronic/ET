@@ -236,15 +236,15 @@ package body et_material is
 
 		close (bom_handle);
 
-		exception
-			when event: others =>
-				if is_open (bom_handle) then
-					close (bom_handle);
-				end if;
+	exception
+		when event: others =>
+			if is_open (bom_handle) then
+				close (bom_handle);
+			end if;
 
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+			log_indentation_reset;
+			log (text => ada.exceptions.exception_information (event), console => true);
+			raise;
 
 	end write_bom;
 

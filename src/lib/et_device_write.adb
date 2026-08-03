@@ -174,13 +174,13 @@ package body et_device_write is
 		-- CS log message
 
 
-		exception when event: others =>
-			log_indentation_down;
-			log (text => ada.exceptions.exception_message (event));
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
-			raise;
+	exception when event: others =>
+		log_indentation_down;
+		log (text => ada.exceptions.exception_message (event));
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
+		raise;
 
 	end write_device;
 

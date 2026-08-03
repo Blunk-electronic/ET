@@ -373,15 +373,15 @@ package body et_netlist_cat_1 is
 		log_indentation_down;
 
 
-		exception
-			when others =>
-				if is_open (file_handle) then
-					close (file_handle);
-				end if;
+	exception
+		when others =>
+			if is_open (file_handle) then
+				close (file_handle);
+			end if;
 
-				log_indentation_reset;
-				-- log (text => ada.exceptions.exception_information (event), console => true);
-				-- raise;
+			log_indentation_reset;
+			-- log (text => ada.exceptions.exception_information (event), console => true);
+			-- raise;
 
 
 	end write_netlist;

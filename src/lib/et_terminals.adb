@@ -257,17 +257,17 @@ package body et_terminals is
 			-- list "terminals":
 			delete (terminals, element (name));
 
-			exception
-				when constraint_error =>
-					--raise semantic_error_1 with "Terminal "
-					--& enclose_in_quotes (to_string (element (name)))
-					--& " not found !";
+		exception
+			when constraint_error =>
+				--raise semantic_error_1 with "Terminal "
+				--& enclose_in_quotes (to_string (element (name)))
+				--& " not found !";
 
-					put_line ("WARNING: Terminal "
-						& enclose_in_quotes (to_string (element (name)))
-						& " not found !");
+				put_line ("WARNING: Terminal "
+					& enclose_in_quotes (to_string (element (name)))
+					& " not found !");
 
-					-- CS better a log message ?
+				-- CS better a log message ?
 
 		end query_name;
 

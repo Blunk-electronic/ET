@@ -136,11 +136,11 @@ package body et_board_ops_submodule is
 						move_by (submodule.position_in_board.place, point);
 				end case;
 
-				exception
-					when event: others =>
-						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
-						log (text => ada.exceptions.exception_information (event), console => true);
-						raise;
+			exception
+				when event: others =>
+					log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
+					log (text => ada.exceptions.exception_information (event), console => true);
+					raise;
 
 			end move;
 

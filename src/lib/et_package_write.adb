@@ -125,14 +125,14 @@ package body et_package_write is
 		log_indentation_down;
 
 
-		exception when event: others =>
-			log (text => ada.exceptions.exception_message (event));
-			log_indentation_down;
+	exception when event: others =>
+		log (text => ada.exceptions.exception_message (event));
+		log_indentation_down;
 
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
-			raise;
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
+		raise;
 
 	end write_package;
 

@@ -4974,10 +4974,10 @@ package body et_schematic_ops_nets is
 			end loop;
 
 
-			exception
-				when event: others =>
-					log (text => ada.exceptions.exception_information (event));
-					raise;
+		exception
+			when event: others =>
+				log (text => ada.exceptions.exception_information (event));
+				raise;
 
 		end rename_on_sheet;
 
@@ -5496,10 +5496,10 @@ package body et_schematic_ops_nets is
 
 		return result;
 
-		exception
-			when others =>
-				raise semantic_error_1 with
-					"ERROR: No net found in module !";
+	exception
+		when others =>
+			raise semantic_error_1 with
+				"ERROR: No net found in module !";
 
 	end get_first_net;
 

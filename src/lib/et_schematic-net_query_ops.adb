@@ -68,11 +68,11 @@ package body et_schematic.net_query_ops is
 						new_item	=> element (device_cursor));
 				end if;
 
-				exception
-					when event: others =>
-						raise constraint_error with to_string (element (device_cursor))
-						--put_line (to_string (element (device_cursor))
-						& " already in set !";
+			exception
+				when event: others =>
+					raise constraint_error with to_string (element (device_cursor))
+					--put_line (to_string (element (device_cursor))
+					& " already in set !";
 
 			end query_devices;
 

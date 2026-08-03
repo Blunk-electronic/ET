@@ -133,12 +133,12 @@ begin -- save_rig_configuration
 
 	log_indentation_down;
 
-	exception when event:
-		others =>
-			log (text => ada.exceptions.exception_message (event), console => true);
-			close (file_handle);
-			set_output (previous_output);
-			raise;
+exception when event:
+	others =>
+		log (text => ada.exceptions.exception_message (event), console => true);
+		close (file_handle);
+		set_output (previous_output);
+		raise;
 
 end save_rig;
 

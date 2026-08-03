@@ -181,15 +181,15 @@ package body et_pick_and_place is
 
 		close (pnp_handle);
 
-		exception
-			when event: others =>
-				if is_open (pnp_handle) then
-					close (pnp_handle);
-				end if;
+	exception
+		when event: others =>
+			if is_open (pnp_handle) then
+				close (pnp_handle);
+			end if;
 
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+			log_indentation_reset;
+			log (text => ada.exceptions.exception_information (event), console => true);
+			raise;
 
 	end write_pnp;
 

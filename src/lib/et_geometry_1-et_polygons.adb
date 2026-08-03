@@ -631,9 +631,9 @@ package body et_geometry_1.et_polygons is
 		end if;
 
 
-		exception when others =>
-			put_line ("Safety counter overrun ! (" & count_type'image (safety_counter) & ")");
-			raise;
+	exception when others =>
+		put_line ("Safety counter overrun ! (" & count_type'image (safety_counter) & ")");
+		raise;
 
 	end merge_overlapping_edges;
 
@@ -773,10 +773,10 @@ package body et_geometry_1.et_polygons is
 
 		return to_polygon (v_list, clean_up);
 
-		exception
-			when others =>
-				put_line (vertices);
-				raise;
+	exception
+		when others =>
+			put_line (vertices);
+			raise;
 
 	end to_polygon;
 
@@ -805,9 +805,9 @@ package body et_geometry_1.et_polygons is
 		vectors.iterate (query_vector'access);
 		return to_polygon (v_list, clean_up);
 
-		exception when others =>
-			put_line (error_message_too_few_vertices);
-			raise;
+	exception when others =>
+		put_line (error_message_too_few_vertices);
+		raise;
 	end to_polygon;
 
 

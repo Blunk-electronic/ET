@@ -1695,22 +1695,22 @@ package body et_board_ops_fill_zones is
 
 					-- If something went wrong, output some
 					-- helpful information and restore the zone:
-					exception when event:
-						others =>
-						log (SEVERITY_WARNING,
-							exception_information (event));
+				exception when event:
+					others =>
+					log (SEVERITY_WARNING,
+						exception_information (event));
 
-						log (
-							SEVERITY_WARNING,
-							"Zone at"
-								& to_string (get_corner_nearest_to_origin (zone))
-								& " has NOT been filled !");
-							--level => log_threshold + 3);
+					log (
+						SEVERITY_WARNING,
+						"Zone at"
+							& to_string (get_corner_nearest_to_origin (zone))
+							& " has NOT been filled !");
+						--level => log_threshold + 3);
 
-						-- CS log zone properties ?
-						-- CS write warning in GUI status bar
+					-- CS log zone properties ?
+					-- CS write warning in GUI status bar
 
-						zone := zone_bakup;
+					zone := zone_bakup;
 				end do_it;
 
 

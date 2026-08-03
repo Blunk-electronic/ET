@@ -650,10 +650,10 @@ package body et_cp_schematic is
 			log_indentation_down;
 
 
-			exception
-				when event: others =>
-					-- log (text => ada.exceptions.exception_information (event), console => true);
-					log (text => ada.exceptions.exception_information (event));
+		exception
+			when event: others =>
+				-- log (text => ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event));
 
 		end parse;
 

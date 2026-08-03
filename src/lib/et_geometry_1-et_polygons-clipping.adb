@@ -257,11 +257,11 @@ package body et_geometry_1.et_polygons.clipping is
 
 
 		-- Convert the polygon specific exception to a constraint error:
-		exception when event: others =>
-			--put_line (exception_name (event) & " " & exception_message (event));
+	exception when event: others =>
+		--put_line (exception_name (event) & " " & exception_message (event));
 
-			raise constraint_error with
-				exception_name (event) & " " & exception_message (event);
+		raise constraint_error with
+			exception_name (event) & " " & exception_message (event);
 
 
 	end clip;

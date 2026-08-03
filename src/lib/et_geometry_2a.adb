@@ -297,9 +297,9 @@ package body et_geometry_2a is
 		--end if;
 
 
-		exception when others =>
-			put_line ("f: " & to_string (f));
-			raise;
+	exception when others =>
+		put_line ("f: " & to_string (f));
+		raise;
 
 	end to_distance;
 
@@ -310,10 +310,10 @@ package body et_geometry_2a is
 	is begin
 		return type_distance'value (dd);
 
-		exception when others =>
-			raise syntax_error_2 with
-				"ERROR: Expect a distance instead of "
-				& enclose_in_quotes (dd) & " !";
+	exception when others =>
+		raise syntax_error_2 with
+			"ERROR: Expect a distance instead of "
+			& enclose_in_quotes (dd) & " !";
 	end to_distance;
 
 
@@ -850,10 +850,10 @@ package body et_geometry_2a is
 
 		return type_rotation (a);
 
-		exception
-			when ADA.NUMERICS.ARGUMENT_ERROR =>
-				put_line ("tangens error");
-				raise;
+	exception
+		when ADA.NUMERICS.ARGUMENT_ERROR =>
+			put_line ("tangens error");
+			raise;
 
 	end get_angle;
 
@@ -957,10 +957,10 @@ package body et_geometry_2a is
 			-- function to_distance conducts rounding
 			-- by bankers rule.
 
-		exception
-			when constraint_error =>
-				raise constraint_error
-					with "vector component too great:" & to_string (v);
+	exception
+		when constraint_error =>
+			raise constraint_error
+				with "vector component too great:" & to_string (v);
 
 	end to_vector_model;
 
@@ -984,13 +984,13 @@ package body et_geometry_2a is
 
 		return p;
 
-		exception
-			when constraint_error =>
-				log (text => "distance too great: x/y"
-					& to_string (d.x)
-					& "/"
-					& to_string (d.y));
-				raise;
+	exception
+		when constraint_error =>
+			log (text => "distance too great: x/y"
+				& to_string (d.x)
+				& "/"
+				& to_string (d.y));
+			raise;
 
 	end to_vector_model;
 

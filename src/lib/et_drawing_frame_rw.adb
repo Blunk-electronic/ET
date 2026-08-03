@@ -337,12 +337,12 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-		exception when event: others =>
-			log (text => ada.exceptions.exception_message (event));
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
-			raise;
+	exception when event: others =>
+		log (text => ada.exceptions.exception_message (event));
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
+		raise;
 
 	end write_schematic;
 
@@ -656,12 +656,12 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-		exception when event: others =>
-			log (text => ada.exceptions.exception_message (event));
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
-			raise;
+	exception when event: others =>
+		log (text => ada.exceptions.exception_message (event));
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
+		raise;
 
 	end write_board;
 
@@ -1259,10 +1259,10 @@ package body et_drawing_frame_rw is
 			end if;
 
 
-			exception when others =>
-				log (text => "file " & to_string (file_name) & space
-					 & get_affected_line (line) & to_string (line), console => true);
-				raise;
+		exception when others =>
+			log (text => "file " & to_string (file_name) & space
+				 & get_affected_line (line) & to_string (line), console => true);
+			raise;
 
 		end process_line;
 
@@ -1344,12 +1344,12 @@ package body et_drawing_frame_rw is
 		return frame;
 
 
-		exception when others =>
-			if is_open (file_handle) then
-				set_input (previous_input);
-				close (file_handle);
-			end if;
-			raise;
+	exception when others =>
+		if is_open (file_handle) then
+			set_input (previous_input);
+			close (file_handle);
+		end if;
+		raise;
 
 	end read_frame_schematic;
 
@@ -2065,10 +2065,10 @@ package body et_drawing_frame_rw is
 			end if;
 
 
-			exception when others =>
-				log (text => "file " & to_string (file_name) & space
-					 & get_affected_line (line) & to_string (line), console => true);
-				raise;
+		exception when others =>
+			log (text => "file " & to_string (file_name) & space
+				 & get_affected_line (line) & to_string (line), console => true);
+			raise;
 
 		end process_line;
 
@@ -2149,12 +2149,12 @@ package body et_drawing_frame_rw is
 		return frame;
 
 
-		exception when others =>
-			if is_open (file_handle) then
-				set_input (previous_input);
-				close (file_handle);
-			end if;
-			raise;
+	exception when others =>
+		if is_open (file_handle) then
+			set_input (previous_input);
+			close (file_handle);
+		end if;
+		raise;
 
 	end read_frame_board;
 

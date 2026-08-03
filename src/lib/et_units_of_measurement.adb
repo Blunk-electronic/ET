@@ -58,18 +58,18 @@ package body et_units_of_measurement is
 		unit_out := type_unit_of_measurement'value (unit);
 		return unit_out;
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, unit & " is not a supported unit of measurement !",
-					 console => true);
+	exception
+		when others =>
+			log (SEVERITY_ERROR, unit & " is not a supported unit of measurement !",
+				 console => true);
 
-				log (text => "supported units are:");
-				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) ..
-					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
-					log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
-				end loop;
+			log (text => "supported units are:");
+			for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) ..
+				type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
+				log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
+			end loop;
 
-				raise constraint_error;
+			raise constraint_error;
 	end to_unit_of_measurement;
 
 

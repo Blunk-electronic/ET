@@ -144,14 +144,14 @@ package body et_fill_zones is
 				source	=> status.x_intersections,
 				before	=> pac_float_numbers.no_element);
 
-			exception
-				when others =>
-					--put_line ("bottom: " & to_string (bottom));
-					--put_line ("height: " & to_string (height));
-					put_line ("status : " & to_string (
-						get_point_status (lake, A, true)));
+		exception
+			when others =>
+				--put_line ("bottom: " & to_string (bottom));
+				--put_line ("height: " & to_string (height));
+				put_line ("status : " & to_string (
+					get_point_status (lake, A, true)));
 
-					raise;
+				raise;
 		end query_lake;
 
 
@@ -206,14 +206,14 @@ package body et_fill_zones is
 		end case;
 
 
-		exception
-			when others =>
-				--put_line ("bottom: " & to_string (bottom));
-				--put_line ("height: " & to_string (height));
-				put_line ("boundaries : " & to_string (boundaries));
-				put_line ("A: " & to_string (A));
+	exception
+		when others =>
+			--put_line ("bottom: " & to_string (bottom));
+			--put_line ("height: " & to_string (height));
+			put_line ("boundaries : " & to_string (boundaries));
+			put_line ("A: " & to_string (A));
 
-				raise;
+			raise;
 
 	end make_stripes;
 

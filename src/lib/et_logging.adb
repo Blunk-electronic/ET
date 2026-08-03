@@ -81,12 +81,12 @@ package body et_logging is
 	procedure log_indentation_up is begin
 		log_indentation := log_indentation + 1;
 
-		exception
-			when constraint_error =>
-				put_line (report_handle, "WARNING ! Maximum log indentation reached !");
-				log_indentation := type_indentation_level'last;
+	exception
+		when constraint_error =>
+			put_line (report_handle, "WARNING ! Maximum log indentation reached !");
+			log_indentation := type_indentation_level'last;
 
-			when others => null;
+		when others => null;
 	end log_indentation_up;
 
 
@@ -96,12 +96,12 @@ package body et_logging is
 	procedure log_indentation_down is begin
 		log_indentation := log_indentation - 1;
 
-		exception
-			when constraint_error =>
-				put_line (report_handle, "WARNING ! Minimum log indentation reached !");
-				log_indentation := type_indentation_level'first;
+	exception
+		when constraint_error =>
+			put_line (report_handle, "WARNING ! Minimum log indentation reached !");
+			log_indentation := type_indentation_level'first;
 
-			when others => null;
+		when others => null;
 	end log_indentation_down;
 
 

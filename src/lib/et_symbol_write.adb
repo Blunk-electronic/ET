@@ -136,14 +136,14 @@ package body et_symbol_write is
 		log_indentation_down;
 
 
-		exception when event: others =>
-			log_indentation_down;
+	exception when event: others =>
+		log_indentation_down;
 
-			log (text => ada.exceptions.exception_message (event));
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
-			raise;
+		log (text => ada.exceptions.exception_message (event));
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
+		raise;
 
 	end save_symbol_2;
 

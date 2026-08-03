@@ -343,11 +343,11 @@ procedure et is
 			end case;
 		end loop;
 
-		exception
-			when others =>
-				put_line (message_error & "command line argument error !");
-				show_cdl_switches;
-				raise;
+	exception
+		when others =>
+			put_line (message_error & "command line argument error !");
+			show_cdl_switches;
+			raise;
 
 	end get_commandline_arguments;
 
@@ -446,11 +446,11 @@ procedure et is
 				raise constraint_error;
 		end case;
 
-		exception
-			when
-				others =>
-					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
-					raise;
+	exception
+		when
+			others =>
+				put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
+				raise;
 
 	end import_project;
 
@@ -799,14 +799,14 @@ begin -- main
 
 	-- put_line ("exit");
 
-	exception
-		when event: others =>
-			log_indentation_reset;
-			log (text => ada.exceptions.exception_information (event), console => true);
-			close_report;
+exception
+	when event: others =>
+		log_indentation_reset;
+		log (text => ada.exceptions.exception_information (event), console => true);
+		close_report;
 
-			put_line ("Read log file " & log_file_name & " for details !");
-			set_exit_status (failure);
+		put_line ("Read log file " & log_file_name & " for details !");
+		set_exit_status (failure);
 
 end et;
 
