@@ -94,14 +94,14 @@ package body et_module_write_freetracks is
 		is
 			arc : type_conductor_arc renames element (c);
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (arc);
 
 			write (keyword => keyword_width,
 				parameters => to_string (arc.width));
 
 			write (keyword => keyword_layer, parameters => to_string (arc.layer));
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end;
 
 

@@ -93,12 +93,12 @@ package body et_device_read_unit is
 			-- The symbol will be copied to the current unit later.
 			case appearance is
 				when APPEARANCE_VIRTUAL =>
-					symbol_model := new type_symbol_model' (
+					symbol_model := new type_symbol_model'(
 						appearance	=> APPEARANCE_VIRTUAL,
 						others		=> <>);
 
 				when APPEARANCE_PCB =>
-					symbol_model := new type_symbol_model' (
+					symbol_model := new type_symbol_model'(
 						appearance	=> APPEARANCE_PCB,
 						others		=> <>);
 

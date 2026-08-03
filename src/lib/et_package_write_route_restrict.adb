@@ -80,9 +80,9 @@ package body et_package_write_route_restrict is
 
 		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (element (cursor));
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is

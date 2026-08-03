@@ -591,7 +591,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector_model
 	is begin
-		return (- point.x, - point.y);
+		return (-point.x, -point.y);
 	end invert;
 
 
@@ -604,8 +604,8 @@ package body et_geometry_2a is
 		p : type_vector_model := point;
 	begin
 		case axis is
-			when MIRROR_ALONG_X_AXIS => p.x := - p.x;
-			when MIRROR_ALONG_Y_AXIS => p.y := - p.y;
+			when MIRROR_ALONG_X_AXIS => p.x := -p.x;
+			when MIRROR_ALONG_Y_AXIS => p.y := -p.y;
 			when MIRROR_NO => null;
 		end case;
 
@@ -4218,7 +4218,7 @@ package body et_geometry_2a is
 			when MIRROR_ALONG_Y_AXIS =>
 				mirror_point (position.place, MIRROR_ALONG_Y_AXIS);
 
-				rotate_by (position.place, - get_rotation (offset));
+				rotate_by (position.place, -get_rotation (offset));
 
 				add (position.place, offset.place);
 				add (position.rotation, offset.rotation);

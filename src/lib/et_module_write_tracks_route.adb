@@ -97,7 +97,7 @@ package body et_module_write_tracks_route is
 				section_mark (section_line, HEADER);
 
 				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor), FORMAT_2));
-				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor), FORMAT_2));
+				write (keyword => keyword_end, parameters => to_string (get_B (line_cursor), FORMAT_2));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 				-- CS functions required get_A (line_cursor) return string
@@ -121,10 +121,10 @@ package body et_module_write_tracks_route is
 				section_mark (section_arc, HEADER);
 
 				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor)), FORMAT_2));
-				write (keyword => keyword_start , parameters => to_string (get_A (arc_cursor), FORMAT_2));
-				write (keyword => keyword_end   , parameters => to_string (get_B (arc_cursor), FORMAT_2));
-				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
-				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
+				write (keyword => keyword_start, parameters => to_string (get_A (arc_cursor), FORMAT_2));
+				write (keyword => keyword_end, parameters => to_string (get_B (arc_cursor), FORMAT_2));
+				write (keyword => keyword_width, parameters => to_string (element (arc_cursor).width));
+				write (keyword => keyword_layer, parameters => to_string (element (arc_cursor).layer));
 
 				section_mark (section_arc, FOOTER);
 				next (arc_cursor);
@@ -161,7 +161,7 @@ package body et_module_write_tracks_route is
 				write (keyword => keyword_isolation,
 					parameters => to_string (zone.isolation));
 
-				write (keyword => keyword_priority ,
+				write (keyword => keyword_priority,
 					parameters => to_string (zone.properties.priority_level));
 
 				write (keyword => keyword_layer,
@@ -237,7 +237,7 @@ package body et_module_write_tracks_route is
 				write (keyword => keyword_isolation,
 				   parameters => to_string (zone.isolation));
 
-				write (keyword => keyword_priority ,
+				write (keyword => keyword_priority,
 					parameters => to_string (zone.properties.priority_level));
 
 				write (keyword => keyword_layer,

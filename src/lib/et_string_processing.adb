@@ -834,7 +834,7 @@ package body et_string_processing is
 
 
 	function get_affected_line (
-		line : in type_fields_of_line )
+		line : in type_fields_of_line)
 		return string
 	is begin
 		return ("line" & positive'image (line.number) & ": ");

@@ -75,11 +75,11 @@ package et_netchanger_symbol_board is
 	type type_netchanger_symbol is record
 		line_1 : type_line := type_line (to_line (
 			A => (-line_point, -line_point),
-			B => ( line_point,  line_point)));
+			B => (line_point,  line_point)));
 
 		line_2 : type_line := type_line (to_line (
 			A => (-line_point,  line_point),
-			B => ( line_point, -line_point)));
+			B => (line_point, -line_point)));
 	end record;
 
 

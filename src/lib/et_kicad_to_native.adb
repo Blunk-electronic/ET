@@ -2431,7 +2431,7 @@ package body et_kicad_to_native is
 			if width < zero then
 				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_X_AXIS);
 				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_X_AXIS);
-				width := - width;
+				width := -width;
 			end if;
 
 			height := get_distance (axis => AXIS_Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
@@ -2441,7 +2441,7 @@ package body et_kicad_to_native is
 			if height < zero then
 				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_Y_AXIS);
 				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_Y_AXIS);
-				height := - height;
+				height := -height;
 			end if;
 
 			log (text => "new start " & to_string (rectangle.corner_A)

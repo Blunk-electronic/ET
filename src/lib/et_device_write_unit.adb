@@ -87,7 +87,7 @@ package body et_device_write_unit is
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
-			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
+			write (keyword => keyword_add_level, parameters => to_string (unit.add_level));
 			section_mark (section_symbol, HEADER);
 			save_symbol_1 (unit.symbol, log_threshold + 1);
 			section_mark (section_symbol, FOOTER);
@@ -135,7 +135,7 @@ package body et_device_write_unit is
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
-			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
+			write (keyword => keyword_add_level, parameters => to_string (unit.add_level));
 
 			-- write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
 

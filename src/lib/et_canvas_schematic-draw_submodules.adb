@@ -90,7 +90,7 @@ procedure draw_submodules is
 		procedure draw_instance_name is
 			position : type_vector_model := submod.position.place;
 
-			offset : constant type_vector_model := set (x => zero, y => - text_spacing);
+			offset : constant type_vector_model := set (x => zero, y => -text_spacing);
 
 			use pac_draw_text;
 			use et_alignment;
@@ -116,7 +116,7 @@ procedure draw_submodules is
 
 			offset : constant type_vector_model := set (
 					x => zero,
-					y => - (2.0 * text_spacing + instance_font_size));
+					y => -(2.0 * text_spacing + instance_font_size));
 
 			use pac_draw_text;
 			use et_alignment;
@@ -142,7 +142,7 @@ procedure draw_submodules is
 
 			offset : constant type_vector_model := set (
 					x => zero,
-					y => - (3.0 * text_spacing + instance_font_size + file_font_size));
+					y => -(3.0 * text_spacing + instance_font_size + file_font_size));
 
 			use et_board_geometry.pac_geometry_2;
 
@@ -252,7 +252,7 @@ procedure draw_submodules is
 
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => zero, y => - port_symbol_height / 2.0));
+					move_by (pos, set (x => zero, y => -port_symbol_height / 2.0));
 
 					draw_horizontal;
 
@@ -282,7 +282,7 @@ procedure draw_submodules is
 
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_width, y => - port_symbol_height / 2.0));
+					move_by (pos, set (x => -port_symbol_width, y => -port_symbol_height / 2.0));
 
 					draw_horizontal;
 
@@ -312,7 +312,7 @@ procedure draw_submodules is
 
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_height / 2.0, y => zero));
+					move_by (pos, set (x => -port_symbol_height / 2.0, y => zero));
 
 					draw_vertical;
 
@@ -342,7 +342,7 @@ procedure draw_submodules is
 
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_height / 2.0, y => - port_symbol_width));
+					move_by (pos, set (x => -port_symbol_height / 2.0, y => -port_symbol_width));
 
 					draw_vertical;
 

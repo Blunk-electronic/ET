@@ -3406,7 +3406,7 @@ package body et_geometry_1 is
 			unused_s := TWO_EXIST; -- secant
 
 			-- COMPUTE 1ST INTERSECTION:
-			x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
+			x := (DI * dy + sgn (dy) * dx * sqrt (d)) / b;
 			y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 1:
@@ -3417,7 +3417,7 @@ package body et_geometry_1 is
 			move_by (intersection_1, offset);
 
 			-- COMPUTE 2ND INTERSECTION:
-			x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
+			x := (DI * dy - sgn (dy) * dx * sqrt (d)) / b;
 			y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 2:

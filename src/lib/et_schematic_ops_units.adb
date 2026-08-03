@@ -1966,7 +1966,7 @@ package body et_schematic_ops_units is
 						module_cursor	=> module_cursor,
 						device_cursor	=> device_cursor,
 						sheet_old		=> i, -- the current sheet
-						offset			=> - 1, -- one sheet down
+						offset			=> -1, -- one sheet down
 						log_threshold	=> log_threshold + 1);
 
 					log_indentation_down;

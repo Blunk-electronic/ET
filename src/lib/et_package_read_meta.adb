@@ -71,12 +71,12 @@ package body et_package_read_meta is
 			-- where pointer packge is pointing at:
 			case pac_appearance is
 				when BOM_RELEVANT_YES =>
-					packge := new type_package_model' (
+					packge := new type_package_model'(
 								appearance	=> BOM_RELEVANT_YES,
 								others		=> <>);
 
 				when BOM_RELEVANT_NO =>
-					packge := new type_package_model' (
+					packge := new type_package_model'(
 								appearance	=> BOM_RELEVANT_NO,
 								others		=> <>);
 			end case;

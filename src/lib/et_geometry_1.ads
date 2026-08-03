@@ -93,10 +93,10 @@ package et_geometry_1 is
 	units_per_cycle : constant type_float := 360.0;
 
 
-	radians_max : constant type_float := - 2.0 * ada.numerics.pi;
+	radians_max : constant type_float := -2.0 * ada.numerics.pi;
 	-- CS should be: radians_max : constant type_float := 2.0 * ada.numerics.pi;
 
-	subtype type_radians is type_float range (- radians_max) .. radians_max;
+	subtype type_radians is type_float range (-radians_max) .. radians_max;
 
 
 	--Converts degrees to radians.

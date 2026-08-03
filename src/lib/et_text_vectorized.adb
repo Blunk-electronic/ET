@@ -387,10 +387,10 @@ package body et_text_vectorized is
 							null; -- already computed for bottom alignment. nothing to do
 
 						when ALIGN_CENTER =>
-							move_by (border, to_offset (zero, - text_height_half));
+							move_by (border, to_offset (zero, -text_height_half));
 
 						when ALIGN_TOP =>
-							move_by (border, to_offset (zero, - text_height));
+							move_by (border, to_offset (zero, -text_height));
 					end case;
 				end align_vertical;
 
@@ -412,12 +412,12 @@ package body et_text_vectorized is
 						align_vertical;
 
 					when ALIGN_CENTER =>
-						move_by (border, to_offset (- text_length_half, zero));
+						move_by (border, to_offset (-text_length_half, zero));
 
 						align_vertical;
 
 					when ALIGN_RIGHT =>
-						move_by (border, to_offset (- text_length, zero));
+						move_by (border, to_offset (-text_length, zero));
 
 						align_vertical;
 				end case;
@@ -475,13 +475,13 @@ package body et_text_vectorized is
 							when ALIGN_CENTER =>
 								move_by (
 									line	=> l,
-									offset	=> to_offset (zero, - text_height_half));
+									offset	=> to_offset (zero, -text_height_half));
 
 
 							when ALIGN_TOP =>
 								move_by (
 									line	=> l,
-									offset	=> to_offset (zero, - text_height));
+									offset	=> to_offset (zero, -text_height));
 
 						end case;
 					end align_vertical;
@@ -498,14 +498,14 @@ package body et_text_vectorized is
 						when ALIGN_CENTER =>
 							move_by (
 								line	=> l,
-								offset	=> to_offset (- text_length_half, zero));
+								offset	=> to_offset (-text_length_half, zero));
 
 							align_vertical;
 
 						when ALIGN_RIGHT =>
 							move_by (
 								line	=> l,
-								offset	=> to_offset (- text_length, zero));
+								offset	=> to_offset (-text_length, zero));
 
 							align_vertical;
 					end case;

@@ -107,7 +107,7 @@ is
 		--scratch : type_net_segment_base;
 		scratch : type_net_segment;
 
-		procedure set_picked (segment : in out type_wild_net_segment )
+		procedure set_picked (segment : in out type_wild_net_segment)
 		is begin
 			segment.picked := true;
 		end set_picked;
@@ -158,8 +158,8 @@ is
 		untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
 		-- Prodcedures that set the s,e or picked flag in a wild net segment.
-		procedure set_e (segment : in out type_wild_net_segment ) is begin segment.e := true; end set_e;
-		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
+		procedure set_e (segment : in out type_wild_net_segment) is begin segment.e := true; end set_e;
+		procedure set_s (segment : in out type_wild_net_segment) is begin segment.s := true; end set_s;
 
 		use type_wild_segments;
 		cursor : type_wild_segments.cursor;
