@@ -40,7 +40,7 @@ package et_commandline_switches is
 
 
 -- COMMAND LINE SWITCHES (long switches)
-	--switch_about			: constant string (1..7) := "--about"; -- CS
+	--switch_about			: constant string := "--about"; -- CS
 	switch_version					: constant string := "-version";
 	switch_log_level				: constant string := "-log-level";
 	switch_help						: constant string := "-help";

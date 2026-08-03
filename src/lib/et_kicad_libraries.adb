@@ -2679,7 +2679,7 @@ package body et_kicad_libraries is
 					log_indentation_down;
 				end write_scope_of_object;
 
-				--draw_object : constant string (1..12) := "draw object ";
+				--draw_object : constant string := "draw object ";
 
 			begin -- read_draw_object
 				--log (text => "draw object", level => log_threshold + 1);

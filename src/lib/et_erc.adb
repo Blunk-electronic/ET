@@ -44,7 +44,7 @@ package body et_erc is
 
 
 	function show_danger (danger : in type_danger) return string is
-		preamble : constant string (1 .. 9) := " RISK OF ";
+		preamble : constant string := " RISK OF ";
 	begin
 		case danger is
 			when floating_input		=> return preamble & "FLOATING INPUT(S) !";

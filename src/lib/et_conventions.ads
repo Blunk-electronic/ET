@@ -62,18 +62,18 @@ package et_conventions is
 
 
 	-- conventions file section headers
-	section_component_prefixes						: constant string (1 .. 20)	:= "[COMPONENT_PREFIXES]";
-	section_component_units							: constant string (1 .. 22)	:= "[UNITS_OF_MEASUREMENT]";
-	section_components_with_operator_interaction 	: constant string (1 .. 31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
-	section_partcode_keywords						: constant string (1 .. 20)	:= "[PART_CODE_KEYWORDS]";
-	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
-	--section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
-	--section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
-	section_text_sizes_schematic					: constant string (1 .. 22)	:= "[TEXT_SIZES_SCHEMATIC]";
+	section_component_prefixes						: constant string := "[COMPONENT_PREFIXES]";
+	section_component_units							: constant string := "[UNITS_OF_MEASUREMENT]";
+	section_components_with_operator_interaction 	: constant string := "[OPERATOR_INTERACTION_REQUIRED]";
+	section_partcode_keywords						: constant string := "[PART_CODE_KEYWORDS]";
+	-- CS: section_connector_gnd_terminal					: constant string := "[CONNECTOR_GND_TERMINAL]";
+	--section_import_modules							: constant string := "[IMPORT_MODULES]";
+	--section_module_interconnections					: constant string := "[MODULE_INTERCONNECTIONS]";
+	section_text_sizes_schematic					: constant string := "[TEXT_SIZES_SCHEMATIC]";
 
--- 	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
--- 	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
--- 	option_module_interconnections_warn_only		: constant string (1..9) 	:= "warn_only";
+-- 	option_module_interconnections_comparator_off	: constant string := "net_comparator_off";
+-- 	option_module_interconnections_comparator_on	: constant string := "net_comparator_on";
+-- 	option_module_interconnections_warn_only		: constant string := "warn_only";
 
 -- 	-- A module to be imported has a name, an abbrevation, a CAD format and a certain
 -- 	-- number of instances.

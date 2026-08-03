@@ -140,10 +140,10 @@ package body et_kicad_to_native is
 			et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
 
 		root : constant et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
--- 		before	: constant string (1..15) := "position before";
--- 		now		: constant string (1..15) := "position now   ";
-		before	: constant string (1 .. 6) := "before";
-		now		: constant string (1 .. 6) := "now   ";
+-- 		before	: constant string := "position before";
+-- 		now		: constant string := "position now   ";
+		before	: constant string := "before";
+		now		: constant string := "now   ";
 
 		-- This list of frames serves to map from sheet number to paper size:
 		schematic_frames : et_kicad.schematic.type_frames.list;
@@ -772,7 +772,7 @@ package body et_kicad_to_native is
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
 					poly_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
 
-					board_track : constant string (1 .. 12) := "board track ";
+					board_track : constant string := "board track ";
 
 
 					procedure move_line (line : in out type_conductor_line) is

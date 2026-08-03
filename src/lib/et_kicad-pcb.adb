@@ -297,7 +297,7 @@ package body et_kicad.pcb is
 		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
-		sec_prefix : constant string (1 .. 4) := "sec_";
+		sec_prefix : constant string := "sec_";
 
 		-- These are the keywords used in the board file. They prelude a certain section.
 		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.

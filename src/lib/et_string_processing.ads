@@ -52,7 +52,7 @@ package et_string_processing is
 	row_separator_length 	: constant positive := 100;
 	row_separator_single	: constant string (1 .. row_separator_length)	:= row_separator_length * "-";
 	row_separator_double	: constant string (1 .. row_separator_length)	:= row_separator_length * "=";
--- 	item_not_specified		: constant string (1..7) := "missing";
+-- 	item_not_specified		: constant string := "missing";
 
 
 -- WARNING AND ERROR MESSAGES:
