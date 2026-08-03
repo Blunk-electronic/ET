@@ -417,10 +417,10 @@ package body et_geometry_1 is
 
 		return result;
 
-		exception
-			when others =>
-				put_line ("ERROR: rotation " & to_string (rotation));
-				raise;
+	exception
+		when others =>
+			put_line ("ERROR: rotation " & to_string (rotation));
+			raise;
 
 	end to_angle_positive;
 
@@ -1195,10 +1195,10 @@ package body et_geometry_1 is
 
 		return result;
 
-		exception when others =>
-			put_line ("v1:" & to_string (v1));
-			put_line ("v2:" & to_string (v2));
-			raise;
+	exception when others =>
+		put_line ("v1:" & to_string (v1));
+		put_line ("v2:" & to_string (v2));
+		raise;
 
 	end get_distance;
 
@@ -1785,10 +1785,10 @@ package body et_geometry_1 is
 
 		return result;
 
-		exception when constraint_error =>
-			put_line ("b1: " & to_string (b1));
-			put_line ("b2: " & to_string (b2));
-			raise;
+	exception when constraint_error =>
+		put_line ("b1: " & to_string (b1));
+		put_line ("b2: " & to_string (b2));
+		raise;
 
 	end overlap;
 
@@ -3893,17 +3893,17 @@ package body et_geometry_1 is
 
 
 
-		exception
-			when CONSTRAINT_ERROR =>
-				put_line ("get_distance");
-				put_line ("line   " & to_string (line));
-				put_line ("vector " & to_string (vector));
-				put_line ("dv     " & to_string (dv));
-				put_line ("sv     " & to_string (sv));
-				put_line ("d1     " & to_string (d1));
-				put_line ("m      " & to_string (m));
-				put_line ("n      " & to_string (n));
-				raise;
+	exception
+		when CONSTRAINT_ERROR =>
+			put_line ("get_distance");
+			put_line ("line   " & to_string (line));
+			put_line ("vector " & to_string (vector));
+			put_line ("dv     " & to_string (dv));
+			put_line ("sv     " & to_string (sv));
+			put_line ("d1     " & to_string (d1));
+			put_line ("m      " & to_string (m));
+			put_line ("n      " & to_string (n));
+			raise;
 	end get_distance;
 
 

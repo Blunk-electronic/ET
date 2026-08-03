@@ -55,9 +55,9 @@ package body et_modes.board is
 	-- ADD becomes VERB_ADD.
 		return type_verb'value (verb_prefix & verb);
 
-		exception when others =>
-			log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
+	exception when others =>
+		log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+		raise;
 	end to_verb;
 
 
@@ -71,9 +71,9 @@ package body et_modes.board is
 	function to_noun (noun : in string) return type_noun is begin
 		return type_noun'value (noun_prefix & noun);
 
-		exception when others =>
-			log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
+	exception when others =>
+		log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+		raise;
 	end to_noun;
 
 

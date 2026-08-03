@@ -420,12 +420,12 @@ package body et_module_write is
 
 		write_footer;
 
-		exception when event :
-			others =>
-				log (text => ada.exceptions.exception_message (event), console => true);
-				close (module_file_handle);
-				set_output (previous_output);
-				raise;
+	exception when event :
+		others =>
+			log (text => ada.exceptions.exception_message (event), console => true);
+			close (module_file_handle);
+			set_output (previous_output);
+			raise;
 
 	end write_module;
 

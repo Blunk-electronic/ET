@@ -1349,12 +1349,12 @@ is
 
 		log_indentation_down;
 
-		exception
-			when event :
-				others =>
-					log_indentation_reset;
-					log (text => ada.exceptions.exception_message (event));
-					raise;
+	exception
+		when event :
+			others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_message (event));
+				raise;
 
 	end make_drawing_frame;
 
@@ -1399,12 +1399,12 @@ is
 
 			return result;
 
-			exception
-				when constraint_error =>
-					log (SEVERITY_ERROR, "invalid port direction '"
-							& dir_in & "' !");
-					-- CS: provide more details
-					raise;
+		exception
+			when constraint_error =>
+				log (SEVERITY_ERROR, "invalid port direction '"
+						& dir_in & "' !");
+				-- CS: provide more details
+				raise;
 
 		end to_direction;
 
@@ -1427,12 +1427,12 @@ is
 
 			return result;
 
-			exception
-				when constraint_error =>
-					log (SEVERITY_ERROR, "invalid port orientation '"
-							& or_in & "' !");
-					-- CS: provide more details
-					raise;
+		exception
+			when constraint_error =>
+				log (SEVERITY_ERROR, "invalid port orientation '"
+						& or_in & "' !");
+				-- CS: provide more details
+				raise;
 
 		end to_orientation;
 
@@ -1559,13 +1559,13 @@ is
 
 		log_indentation_down;
 
-		exception
-			when event :
-				others =>
-					log_indentation_reset;
-					--log (message_error , console => true);
-					log (text => ada.exceptions.exception_message (event));
-					raise;
+	exception
+		when event :
+			others =>
+				log_indentation_reset;
+				--log (message_error , console => true);
+				log (text => ada.exceptions.exception_message (event));
+				raise;
 
 	end make_gui_sheet;
 
@@ -2270,16 +2270,16 @@ is
 			log_indentation_down;
 			log_indentation_down;
 
-			exception
-				when event :
-					others =>
-						log (SEVERITY_ERROR,
-							"invalid field in component " & to_string (reference)
-							& to_string (position => unit_position),
-							console => true);
-						log (text => ada.exceptions.exception_message (event), console => true);
-						-- CS: evaluate prog position and provided more detailled output
-						raise;
+		exception
+			when event :
+				others =>
+					log (SEVERITY_ERROR,
+						"invalid field in component " & to_string (reference)
+						& to_string (position => unit_position),
+						console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
+					-- CS: evaluate prog position and provided more detailled output
+					raise;
 
 		end check_text_fields;
 
@@ -2602,12 +2602,12 @@ is
 
 			log_indentation_down;
 
-			exception
-				when constraint_error =>
-					log (SEVERITY_ERROR, "component " & to_string (reference)
-							& " " & to_string (position => unit_position),
-						console => true);
-					raise constraint_error;
+		exception
+			when constraint_error =>
+				log (SEVERITY_ERROR, "component " & to_string (reference)
+						& " " & to_string (position => unit_position),
+					console => true);
+				raise constraint_error;
 
 		end insert_component;
 
@@ -3181,15 +3181,15 @@ is
 
 		log_indentation_down;
 
-		exception
-			when
-				others =>
-					if line_cursor /= pac_lines_of_file.no_element then
-						error_in_schematic_file (line);
-					end if;
+	exception
+		when
+			others =>
+				if line_cursor /= pac_lines_of_file.no_element then
+					error_in_schematic_file (line);
+				end if;
 
-					--log (text => ada.exceptions.exception_message (event), console => true);
-					raise;
+				--log (text => ada.exceptions.exception_message (event), console => true);
+				raise;
 
 	end make_component;
 
@@ -3557,10 +3557,10 @@ begin -- read
 
 	return hierarchic_sheet_file_names;
 
-	exception
-		when others =>
-			error_in_schematic_file (line);
-			raise;
+exception
+	when others =>
+		error_in_schematic_file (line);
+		raise;
 
 end read;
 

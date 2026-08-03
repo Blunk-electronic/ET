@@ -249,15 +249,15 @@ package body et_netlists_export is
 
 		close (netlist_handle);
 
-		exception
-			when event: others =>
-				if is_open (netlist_handle) then
-					close (netlist_handle);
-				end if;
+	exception
+		when event: others =>
+			if is_open (netlist_handle) then
+				close (netlist_handle);
+			end if;
 
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+			log_indentation_reset;
+			log (text => ada.exceptions.exception_information (event), console => true);
+			raise;
 
 	end write_netlist;
 

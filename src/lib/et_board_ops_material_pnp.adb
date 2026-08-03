@@ -532,11 +532,11 @@ package body et_board_ops_material_pnp is
 
 		log_indentation_down;
 
-		exception
-			when event : others =>
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+	exception
+		when event : others =>
+			log_indentation_reset;
+			log (text => ada.exceptions.exception_information (event), console => true);
+			raise;
 
 	end make_pick_and_place;
 

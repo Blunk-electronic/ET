@@ -1280,10 +1280,10 @@ package body et_schematic_ops_device is
 
 			return result;
 
-			exception when event :
-				others =>
-					log (text => ada.exceptions.exception_message (event), console => true);
-				raise;
+		exception when event :
+			others =>
+				log (text => ada.exceptions.exception_message (event), console => true);
+			raise;
 
 		end renumber;
 

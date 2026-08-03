@@ -187,15 +187,15 @@ package body et_script_processor is
 		return exit_code;
 
 
-		exception when event : others =>
-			log_indentation_down;
-			log (text => ada.exceptions.exception_information (event));
+	exception when event : others =>
+		log_indentation_down;
+		log (text => ada.exceptions.exception_information (event));
 
-			if is_open (file_handle) then
-				close (file_handle);
-			end if;
+		if is_open (file_handle) then
+			close (file_handle);
+		end if;
 
-			return exit_code;
+		return exit_code;
 	end read_script;
 
 
@@ -244,14 +244,14 @@ package body et_script_processor is
 		return exit_code;
 
 
-		exception when event : others =>
-			log (text => ada.exceptions.exception_information (event));
+	exception when event : others =>
+		log (text => ada.exceptions.exception_information (event));
 
-			if is_open (previous_input) then
-				set_input (previous_input);
-			end if;
+		if is_open (previous_input) then
+			set_input (previous_input);
+		end if;
 
-			return exit_code;
+		return exit_code;
 	end execute_nested_script;
 
 
@@ -316,14 +316,14 @@ package body et_script_processor is
 		return exit_code;
 
 
-		exception when event : others =>
-			set_input (standard_input);
+	exception when event : others =>
+		set_input (standard_input);
 
-			log (text => ada.exceptions.exception_information (event));
-			log (text => exception_name (event), console => true);
-			log (text => exception_message (event), console => true);
+		log (text => ada.exceptions.exception_information (event));
+		log (text => exception_name (event), console => true);
+		log (text => exception_message (event), console => true);
 
-			return exit_code;
+		return exit_code;
 
 	end execute_script_headless;
 

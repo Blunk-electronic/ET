@@ -1852,18 +1852,18 @@ package body et_conventions is
 		text_out := type_text_schematic'value (text);
 		return text_out;
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, text & " is not a supported text category !",
-					 console => true);
+	exception
+		when others =>
+			log (SEVERITY_ERROR, text & " is not a supported text category !",
+				 console => true);
 
-				-- show supported text categories
-				log (text => "Available categories are :");
-				for cat in type_text_schematic'pos (type_text_schematic'first) .. type_text_schematic'pos (type_text_schematic'last) loop
-					log (text => "- " & type_text_schematic'image (type_text_schematic'val (cat)));
-				end loop;
+			-- show supported text categories
+			log (text => "Available categories are :");
+			for cat in type_text_schematic'pos (type_text_schematic'first) .. type_text_schematic'pos (type_text_schematic'last) loop
+				log (text => "- " & type_text_schematic'image (type_text_schematic'val (cat)));
+			end loop;
 
-				raise constraint_error;
+			raise constraint_error;
 	end to_text;
 
 
@@ -2227,14 +2227,14 @@ package body et_conventions is
 
 		log_indentation_down;
 
-		exception
-			when event :
-				others =>
-				log (SEVERITY_WARNING, "Error in optional keywords of partcode " &
-					 enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
-					 " at position" & positive'image (place) & " !");
+	exception
+		when event :
+			others =>
+			log (SEVERITY_WARNING, "Error in optional keywords of partcode " &
+				 enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
+				 " at position" & positive'image (place) & " !");
 
-				log (text => ada.exceptions.exception_message (event));
+			log (text => ada.exceptions.exception_message (event));
 
 	end validate_other_partcode_keywords;
 
@@ -2306,18 +2306,18 @@ package body et_conventions is
 	begin
 		return type_partcode_section'value (text);
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, text & " is not a supported partcode section !",
-					 console => true);
+	exception
+		when others =>
+			log (SEVERITY_ERROR, text & " is not a supported partcode section !",
+				 console => true);
 
-				-- show supported sections
-				log (text => "Available sections are :");
-				for section in type_partcode_section'pos (type_partcode_section'first) .. type_partcode_section'pos (type_partcode_section'last) loop
-					log (text => "- " & type_partcode_section'image (type_partcode_section'val (section)));
-				end loop;
+			-- show supported sections
+			log (text => "Available sections are :");
+			for section in type_partcode_section'pos (type_partcode_section'first) .. type_partcode_section'pos (type_partcode_section'last) loop
+				log (text => "- " & type_partcode_section'image (type_partcode_section'val (section)));
+			end loop;
 
-				raise constraint_error;
+			raise constraint_error;
 
 	end to_partcode_section;
 
@@ -2571,12 +2571,12 @@ package body et_conventions is
 		set_output (standard_output);
 		close (conventions_file_handle);
 
-		exception
-			when
-				others =>
-					set_output (standard_output);
-					log (SEVERITY_ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
-					raise;
+	exception
+		when
+			others =>
+				set_output (standard_output);
+				log (SEVERITY_ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
+				raise;
 
 	end make_default_conventions;
 
@@ -2866,17 +2866,17 @@ package body et_conventions is
 			-- clean up. empty container "lines" for next section
 			lines.clear;
 
-			exception
-				when others =>
-					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-						 & latin_1.space & to_string (element (line_cursor)),
-						 console => true);
+		exception
+			when others =>
+				log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+					 & latin_1.space & to_string (element (line_cursor)),
+					 console => true);
 
-					-- CS: provide information on what is wrong with the line (depending on section_entered)
-					-- number of characters in unit of measurement
-					-- propose category, units, ...
+				-- CS: provide information on what is wrong with the line (depending on section_entered)
+				-- number of characters in unit of measurement
+				-- propose category, units, ...
 
-					raise;
+				raise;
 
 		end process_previous_section;
 
@@ -3179,11 +3179,11 @@ package body et_conventions is
 
 		return result;
 
-		exception
-			when others =>
-				-- CS: explain more detailled what is wrong
-				value_invalid;
-				return false;
+	exception
+		when others =>
+			-- CS: explain more detailled what is wrong
+			value_invalid;
+			return false;
 
 	end value_valid;
 

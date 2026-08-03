@@ -982,8 +982,8 @@ package body et_schematic_ops_units is
 
 		return true;
 
-		exception when others =>
-			return false;
+	exception when others =>
+		return false;
 
 	end unit_positions_valid;
 

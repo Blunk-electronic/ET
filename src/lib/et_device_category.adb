@@ -61,19 +61,19 @@ package body et_device_category is
 		category_out := type_device_category'value (category);
 		return category_out;
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, category & " is not a supported device category !",
-					 console => true);
+	exception
+		when others =>
+			log (SEVERITY_ERROR, category & " is not a supported device category !",
+				 console => true);
 
-				log (text => "supported categories are:");
-				for cat in type_device_category'pos (type_device_category'first) ..
-					type_device_category'pos (type_device_category'last) loop
+			log (text => "supported categories are:");
+			for cat in type_device_category'pos (type_device_category'first) ..
+				type_device_category'pos (type_device_category'last) loop
 
-					log (text => "- " & to_string (type_device_category'val (cat)));
-				end loop;
+				log (text => "- " & to_string (type_device_category'val (cat)));
+			end loop;
 
-				raise constraint_error;
+			raise constraint_error;
 	end to_category;
 
 

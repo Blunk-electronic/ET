@@ -676,10 +676,10 @@ package body et_kicad.schematic is
 
 		return meaning;
 
-		exception
-			when constraint_error =>
-				invalid_field (line); -- CS: May display the affected line a second time in some cases.
-				raise;
+	exception
+		when constraint_error =>
+			invalid_field (line); -- CS: May display the affected line a second time in some cases.
+			raise;
 
 	end to_text_meaning;
 
@@ -695,13 +695,13 @@ package body et_kicad.schematic is
 			when V => return 90.0; -- CS -90.0 ?
 		end case;
 
-		exception
-			when constraint_error =>
-				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
-				raise;
-			when others =>
-				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
-				raise;
+	exception
+		when constraint_error =>
+			log (SEVERITY_ERROR, "invalid text orientation !", console => true);
+			raise;
+		when others =>
+			log (SEVERITY_ERROR, "invalid text orientation !", console => true);
+			raise;
 	end to_field_orientation;
 
 
@@ -876,10 +876,10 @@ package body et_kicad.schematic is
 
 		return comp_app;
 
-		exception
-			when constraint_error =>
-				invalid_appearance;
-				raise;
+	exception
+		when constraint_error =>
+			invalid_appearance;
+			raise;
 
 	end to_appearance;
 
@@ -911,10 +911,10 @@ package body et_kicad.schematic is
 
 		return rep_out;
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
-				raise;
+	exception
+		when others =>
+			log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
+			raise;
 
 	end to_alternative_representation;
 
@@ -1135,12 +1135,12 @@ package body et_kicad.schematic is
 
 				log_indentation_down;
 
-				exception
-					when event :
-						others =>
-							log_indentation_reset;
-							put_line (ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log_indentation_reset;
+						put_line (ada.exceptions.exception_message (event));
+						raise;
 
 			end query_variants;
 
@@ -1166,12 +1166,12 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 
-			exception
-				when event :
-					others =>
-						log_indentation_reset;
-						put_line (ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event :
+				others =>
+					log_indentation_reset;
+					put_line (ada.exceptions.exception_message (event));
+					raise;
 
 		end locate_component;
 
@@ -2623,16 +2623,16 @@ package body et_kicad.schematic is
 
 						log (text => enter_section (section.name), level => log_threshold + 5);
 
-						exception
-							when
-								others =>
-									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
-									log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-										& to_string (element (line_cursor)), console => true);
+					exception
+						when
+							others =>
+								log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+								log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+									& to_string (element (line_cursor)), console => true);
 
-									log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
-										& "' invalid or not supported yet", console => true);
-									raise;
+								log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
+									& "' invalid or not supported yet", console => true);
+								raise;
 
 
 					end read_section;
@@ -2759,14 +2759,14 @@ package body et_kicad.schematic is
 							when others => null; -- Not all sections require arguments.
 						end case;
 
-						exception
-							when event :
-								others =>
-									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
-									log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-										& to_string (element (line_cursor)), console => true);
-									log (text => ada.exceptions.exception_message (event));
-									raise;
+					exception
+						when event :
+							others =>
+								log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+								log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+									& to_string (element (line_cursor)), console => true);
+								log (text => ada.exceptions.exception_message (event));
+								raise;
 
 					end read_arg;
 
@@ -2810,14 +2810,14 @@ package body et_kicad.schematic is
 						section := sections_stack.pop;
 						log (text => return_to_section (section.name), level => log_threshold + 5);
 
-						exception
-							when event :
-								others =>
-									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
-									log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-										& to_string (element (line_cursor)), console => true);
-									log (text => ada.exceptions.exception_message (event));
-									raise;
+					exception
+						when event :
+							others =>
+								log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+								log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+									& to_string (element (line_cursor)), console => true);
+								log (text => ada.exceptions.exception_message (event));
+								raise;
 
 					end exec_section;
 
@@ -3430,19 +3430,19 @@ package body et_kicad.schematic is
 		-- change back to initial directory
 		set_directory (current_working_directory);
 
-		exception
+	exception
 -- 			-- CS: log exception message
-			when event :
-				others =>
-					log (text => ada.exceptions.exception_message (event), console => true);
-					set_directory (current_working_directory);
+		when event :
+			others =>
+				log (text => ada.exceptions.exception_message (event), console => true);
+				set_directory (current_working_directory);
 
 -- 					log (SEVERITY_ERROR, "in schematic file '"
 -- 						& to_string (current_schematic) & "' "
 -- 						console => true);
 -- 						et_import.close_report;
 -- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
-					raise;
+				raise;
 
 	end import_design;
 
@@ -7208,12 +7208,12 @@ package body et_kicad.schematic is
 
 					log_indentation_down;
 
-					exception
-						when event :
-							others =>
-								log_indentation_reset;
-								log (text => ada.exceptions.exception_message (event), console => true);
-								raise;
+				exception
+					when event :
+						others =>
+							log_indentation_reset;
+							log (text => ada.exceptions.exception_message (event), console => true);
+							raise;
 
 				end query_variants;
 

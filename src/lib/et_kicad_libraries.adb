@@ -642,10 +642,10 @@ package body et_kicad_libraries is
 
 		return meaning;
 
-		exception
-			when constraint_error =>
-				invalid_field (line); -- CS: May display the affected line a second time in some cases.
-				raise;
+	exception
+		when constraint_error =>
+			invalid_field (line); -- CS: May display the affected line a second time in some cases.
+			raise;
 
 	end to_text_meaning;
 
@@ -663,13 +663,13 @@ package body et_kicad_libraries is
 			when V => return 90.0; -- CS -90.0 ?
 		end case;
 
-		exception
-			when constraint_error =>
-				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
-				raise;
-			when others =>
-				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
-				raise;
+	exception
+		when constraint_error =>
+			log (SEVERITY_ERROR, "invalid text orientation !", console => true);
+			raise;
+		when others =>
+			log (SEVERITY_ERROR, "invalid text orientation !", console => true);
+			raise;
 	end to_field_orientation;
 
 
@@ -840,10 +840,10 @@ package body et_kicad_libraries is
 
 		return comp_app;
 
-		exception
-			when constraint_error =>
-				invalid_appearance;
-				raise;
+	exception
+		when constraint_error =>
+			invalid_appearance;
+			raise;
 
 	end to_appearance;
 
@@ -874,10 +874,10 @@ package body et_kicad_libraries is
 
 		return rep_out;
 
-		exception
-			when others =>
-				log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
-				raise;
+	exception
+		when others =>
+			log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
+			raise;
 
 	end to_alternative_representation;
 	pragma unreferenced (to_alternative_representation);
@@ -1293,12 +1293,12 @@ package body et_kicad_libraries is
 
 		return true;
 
-		exception
-			when event :
-				others =>
-					log_indentation_reset;
-					log (text => ada.exceptions.exception_message (event), console => true);
-					raise;
+	exception
+		when event :
+			others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_message (event), console => true);
+				raise;
 
 	end terminal_port_map_fits;
 
@@ -2335,13 +2335,13 @@ package body et_kicad_libraries is
 					raise constraint_error;
 				end if;
 
-				exception
-					when event : others =>
-						log (SEVERITY_ERROR, "component " & to_string (tmp_component_name) & " invalid !",
-							 console => true);
-						-- CS: provide details about the problem (line number, ...)
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+			exception
+				when event : others =>
+					log (SEVERITY_ERROR, "component " & to_string (tmp_component_name) & " invalid !",
+						 console => true);
+					-- CS: provide details about the problem (line number, ...)
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 
 			end insert_component;
 
@@ -2373,11 +2373,11 @@ package body et_kicad_libraries is
 					type_device_libraries.query_element (lib_cursor, locate_component'access);
 				end if;
 
-				exception
-					when event :
-						others =>
-							log (text => ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log (text => ada.exceptions.exception_message (event));
+						raise;
 
 			end set_unit_cursor;
 
@@ -2435,11 +2435,11 @@ package body et_kicad_libraries is
 					null; -- CS
 				end if;
 
-				exception
-					when event :
-						others =>
-							log (text => ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log (text => ada.exceptions.exception_message (event));
+						raise;
 
 			end add_unit;
 
@@ -2567,11 +2567,11 @@ package body et_kicad_libraries is
 					end if;
 				end if;
 
-				exception
-					when event :
-						others =>
-							log (text => ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log (text => ada.exceptions.exception_message (event));
+						raise;
 
 			end add_symbol_element;
 
@@ -2647,11 +2647,11 @@ package body et_kicad_libraries is
 					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
 
-				exception
-					when event :
-						others =>
-							log (text => ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log (text => ada.exceptions.exception_message (event));
+						raise;
 
 			end set_text_placeholder_properties;
 
@@ -2903,11 +2903,11 @@ package body et_kicad_libraries is
 				begin -- add_footprint
 					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 
-					exception
-						when event :
-							others =>
-								log (text => ada.exceptions.exception_message (event));
-								raise;
+				exception
+					when event :
+						others =>
+							log (text => ada.exceptions.exception_message (event));
+							raise;
 
 				end do_it;
 
@@ -3080,11 +3080,11 @@ package body et_kicad_libraries is
 				log_indentation_down;
 				log_indentation_down;
 
-				exception
-					when event :
-						others =>
-							log (text => ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log (text => ada.exceptions.exception_message (event));
+						raise;
 
 			end build_package_variant;
 
@@ -3333,12 +3333,12 @@ package body et_kicad_libraries is
 			log_indentation_down;
 			log_indentation_down;
 
-			exception
-				when event :
-					others =>
-						log (SEVERITY_ERROR, get_affected_line (line) & to_string (line), console => true);
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event :
+				others =>
+					log (SEVERITY_ERROR, get_affected_line (line) & to_string (line), console => true);
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 		end read_library;
 
 		-- When accessing library files we need this:
@@ -3569,12 +3569,12 @@ package body et_kicad_libraries is
 
 				log_indentation_down;
 
-				exception
-					when event :
-						others =>
-							log_indentation_reset;
-							put_line (ada.exceptions.exception_message (event));
-							raise;
+			exception
+				when event :
+					others =>
+						log_indentation_reset;
+						put_line (ada.exceptions.exception_message (event));
+						raise;
 
 			end query_variants;
 
@@ -3600,12 +3600,12 @@ package body et_kicad_libraries is
 
 			log_indentation_down;
 
-			exception
-				when event :
-					others =>
-						log_indentation_reset;
-						put_line (ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event :
+				others =>
+					log_indentation_reset;
+					put_line (ada.exceptions.exception_message (event));
+					raise;
 
 		end locate_component;
 

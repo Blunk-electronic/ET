@@ -191,8 +191,8 @@ package body et_kicad.pcb is
 
 		return id;
 
-		exception
-			when constraint_error => invalid_layer; raise;
+	exception
+		when constraint_error => invalid_layer; raise;
 	end to_signal_layer_id;
 
 
@@ -979,16 +979,16 @@ package body et_kicad.pcb is
 
 			log (text => enter_section (section.name), level => log_threshold + 5);
 
-			exception
-				when
-					others =>
-						log (SEVERITY_ERROR, "in " & file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
+		exception
+			when
+				others =>
+					log (SEVERITY_ERROR, "in " & file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
 
-						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
-							& "' invalid or not supported yet", console => true);
-						raise;
+					log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw)
+						& "' invalid or not supported yet", console => true);
+					raise;
 
 		end read_section;
 
@@ -3118,14 +3118,14 @@ package body et_kicad.pcb is
 				when others => null; -- Not all sections require arguments.
 			end case;
 
-			exception
-				when event :
-					others =>
-						log (SEVERITY_ERROR, "in " & file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event :
+				others =>
+					log (SEVERITY_ERROR, "in " & file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 
 		end read_arg;
 
@@ -4563,14 +4563,14 @@ package body et_kicad.pcb is
 			section := sections_stack.pop;
 			log (text => return_to_section (section.name), level => log_threshold + 5);
 
-			exception
-				when event :
-					others =>
-						log (SEVERITY_ERROR, "in " & file_name, console => true);
-						log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
-							& to_string (element (line_cursor)), console => true);
-						log (text => ada.exceptions.exception_message (event));
-						raise;
+		exception
+			when event :
+				others =>
+					log (SEVERITY_ERROR, "in " & file_name, console => true);
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
+						& to_string (element (line_cursor)), console => true);
+					log (text => ada.exceptions.exception_message (event));
+					raise;
 
 		end exec_section;
 
@@ -5579,12 +5579,12 @@ package body et_kicad.pcb is
 				position	=> module_cursor,
 				process		=> add_board_objects'access);
 
-			exception
-				when event :
-					others =>
-						log_indentation_reset;
-						log (text => ada.exceptions.exception_message (event), console => true);
-						raise;
+		exception
+			when event :
+				others =>
+					log_indentation_reset;
+					log (text => ada.exceptions.exception_message (event), console => true);
+					raise;
 
 		end merge_board_and_schematic;
 
@@ -5731,12 +5731,12 @@ package body et_kicad.pcb is
 
 		return terminals;
 
-		exception
-			when event :
-				others =>
-					log_indentation_reset;
-					log (text => ada.exceptions.exception_message (event), console => true);
-					raise;
+	exception
+		when event :
+			others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_message (event), console => true);
+				raise;
 
 	end get_terminal_count;
 

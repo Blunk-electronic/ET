@@ -308,10 +308,10 @@ package body et_project is
 
 		log_indentation_down;
 
-		exception when event :
-			others =>
-				log (text => ada.exceptions.exception_message (event), console => true);
-				raise;
+	exception when event :
+		others =>
+			log (text => ada.exceptions.exception_message (event), console => true);
+			raise;
 
 	end create_project_directory;
 
@@ -355,10 +355,10 @@ package body et_project is
 
 		log_indentation_down;
 
-		exception when event :
-			others =>
-				log (text => ada.exceptions.exception_message (event), console => true);
-				raise;
+	exception when event :
+		others =>
+			log (text => ada.exceptions.exception_message (event), console => true);
+			raise;
 
 	end create_project_directory_bare;
 
@@ -415,11 +415,11 @@ package body et_project is
 		-- Restore working directory.
 		set_directory (current_working_directory);
 
-		exception when
-			others =>
-				-- Restore working directory.
-				set_directory (current_working_directory);
-				raise;
+	exception when
+		others =>
+			-- Restore working directory.
+			set_directory (current_working_directory);
+			raise;
 
 	end open_project;
 

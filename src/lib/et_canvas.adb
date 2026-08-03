@@ -84,20 +84,20 @@ package body et_canvas is
 	procedure increase_zoom_factor is begin
 		S := S * SM;
 
-		exception
-			when constraint_error =>
-				put_line ("upper zoom limit reached");
-			when others => null;
+	exception
+		when constraint_error =>
+			put_line ("upper zoom limit reached");
+		when others => null;
 	end increase_zoom_factor;
 
 
 	procedure decrease_zoom_factor is begin
 		S := S / SM;
 
-		exception
-			when constraint_error =>
-				put_line ("lower zoom limit reached");
-			when others => null;
+	exception
+		when constraint_error =>
+			put_line ("lower zoom limit reached");
+		when others => null;
 	end decrease_zoom_factor;
 
 
@@ -255,15 +255,15 @@ package body et_canvas is
 		-- a real model point:
 		return to_real (M);
 
-		exception
-			when constraint_error =>
-				put_line ("ERROR: conversion from canvas point "
-					& "to model point failed !");
-				put_line (" point " & to_string (P));
-				put_line (" zf    " & to_string (zf));
-				put_line (" T     " & to_string (T));
-				put_line (" F     " & to_string (F));
-				raise;
+	exception
+		when constraint_error =>
+			put_line ("ERROR: conversion from canvas point "
+				& "to model point failed !");
+			put_line (" point " & to_string (P));
+			put_line (" zf    " & to_string (zf));
+			put_line (" T     " & to_string (T));
+			put_line (" F     " & to_string (F));
+			raise;
 	end canvas_to_real;
 
 

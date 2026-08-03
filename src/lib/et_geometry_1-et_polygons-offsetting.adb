@@ -284,10 +284,10 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			return result;
 
-			exception when event : others =>
-				put_line (exception_information (event));
-				--put_line (exception_occurrence (event));
-				raise;
+		exception when event : others =>
+			put_line (exception_information (event));
+			--put_line (exception_occurrence (event));
+			raise;
 
 		end get_next_direct_intersection;
 
@@ -536,13 +536,13 @@ package body et_geometry_1.et_polygons.offsetting is
 		log_indentation_down;
 
 		-- Convert the polygon specific exception to a constraint error:
-		exception when event : others =>
-			--put_line (exception_name (event) & " " & exception_message (event));
+	exception when event : others =>
+		--put_line (exception_name (event) & " " & exception_message (event));
 
-			log_indentation_down;
+		log_indentation_down;
 
-			raise constraint_error with
-				exception_name (event) & " " & exception_message (event);
+		raise constraint_error with
+			exception_name (event) & " " & exception_message (event);
 
 	end offset_polygon;
 
