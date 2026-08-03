@@ -649,7 +649,7 @@ package body et_text_vectorized is
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
-				position: in pac_character_lines.cursor))
+				position : in pac_character_lines.cursor))
 		is
 			use pac_character_lines;
 			c : pac_character_lines.cursor := text.lines.first;

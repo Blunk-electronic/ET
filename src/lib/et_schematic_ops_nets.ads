@@ -222,7 +222,7 @@ package et_schematic_ops_nets is
 	procedure move_secondary_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment; -- new state of primary segment
-		original_segment: in type_net_segment; -- original state of the primary segment
+		original_segment : in type_net_segment; -- original state of the primary segment
 		AB_end			: in type_start_end_point; -- A/B of primary segment
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level);

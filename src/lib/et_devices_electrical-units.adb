@@ -848,7 +848,7 @@ package body et_devices_electrical.units is
 		return result;
 
 		exception
-			when event: others =>
+			when event : others =>
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;

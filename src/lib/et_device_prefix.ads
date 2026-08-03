@@ -45,7 +45,7 @@ package et_device_prefix is
 
 	-- A device name consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
-	prefix_characters : character_set := to_set (span => ('A','Z'));
+	prefix_characters : character_set := to_set (span => ('A', 'Z'));
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
 
 	package pac_device_prefix is new generic_bounded_length (prefix_length_max);

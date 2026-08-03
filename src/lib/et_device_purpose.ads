@@ -58,7 +58,7 @@ package et_device_purpose is
 	keyword_purpose : constant string := "purpose";
 
 	purpose_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- ");
+		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("_- ");
 
 	purpose_length_max : constant positive := 50;
 

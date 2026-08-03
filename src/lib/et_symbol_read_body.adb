@@ -203,7 +203,7 @@ package body et_symbol_read_body is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2
-			set_center (symbol_circle, to_vector_model (line,2));
+			set_center (symbol_circle, to_vector_model (line, 2));
 
 		elsif kw = keyword_width then -- widht 0.2
 			expect_field_count (line, 2);

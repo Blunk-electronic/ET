@@ -59,7 +59,7 @@ package et_net_names is
 
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
-	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
+	net_name_characters : character_set := to_set (ranges => (('A', 'Z'), ('0', '9'))) or to_set ("_-#");
 
 
 	net_inversion_mark : constant string := "#";

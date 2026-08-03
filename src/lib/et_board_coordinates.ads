@@ -89,7 +89,7 @@ package et_board_coordinates is
 
 
 	procedure set_face (
-		position: in out type_package_position;
+		position : in out type_package_position;
 		face	: in type_face);
 
 

@@ -1259,7 +1259,7 @@ package body et_schematic_ops_nets is
 	procedure move_secondary_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment;
-		original_segment: in type_net_segment;
+		original_segment : in type_net_segment;
 		AB_end			: in type_start_end_point;
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level)
@@ -1922,7 +1922,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -1931,7 +1931,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -1940,7 +1940,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -1948,7 +1948,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -2030,7 +2030,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 2);
@@ -2039,7 +2039,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 2);
@@ -2048,7 +2048,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 2);
@@ -2056,7 +2056,7 @@ package body et_schematic_ops_nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
+							original_segment => segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 2);
@@ -4975,7 +4975,7 @@ package body et_schematic_ops_nets is
 
 
 			exception
-				when event: others =>
+				when event : others =>
 					log (text => ada.exceptions.exception_information (event));
 					raise;
 
@@ -8540,7 +8540,7 @@ package body et_schematic_ops_nets is
 		result_strand	: type_object_strand;
 		result_net		: type_object_net;
 		result_label	: type_object_net_label;
-		result_connector: type_object_net_connector;
+		result_connector : type_object_net_connector;
 
 	begin
 		log (text => "module " & to_string (module_cursor)

@@ -353,7 +353,7 @@ is
 										expect_field_count (line, 2);
 
 										-- The generic name does not use the *.mod extension.
-										generic_name := pac_module_name.to_bounded_string (f (line,2));
+										generic_name := pac_module_name.to_bounded_string (f (line, 2));
 
 										-- test whether a module with this generic name exists
 										if not generic_module_exists (generic_name) then
@@ -365,12 +365,12 @@ is
 
 									elsif kw = keyword_instance_name then
 										expect_field_count (line, 2);
-										instance_name := to_instance_name (f (line,2));
+										instance_name := to_instance_name (f (line, 2));
 
 
 									elsif kw = keyword_assembly_variant then
 										expect_field_count (line, 2);
-										assembly_variant := to_variant (f (line,2));
+										assembly_variant := to_variant (f (line, 2));
 
 										-- test whether module provides the assembly variant
 										module_cursor := locate_module (generic_name);
@@ -399,21 +399,21 @@ is
 								begin
 									if kw = keyword_instance_A then
 										expect_field_count (line, 2);
-										instance_A := to_instance_name (f (line,2));
+										instance_A := to_instance_name (f (line, 2));
 										-- CS: test if instance exists
 									elsif kw = keyword_instance_B then
 										expect_field_count (line, 2);
-										instance_B := to_instance_name (f (line,2));
+										instance_B := to_instance_name (f (line, 2));
 										-- CS: test if instance exists
 
 									elsif kw = keyword_purpose_A then
 										expect_field_count (line, 2);
-										purpose_A := to_purpose (f (line,2));
+										purpose_A := to_purpose (f (line, 2));
 										-- CS: test if a connector with this purpose exists in the instance
 
 									elsif kw = keyword_purpose_B then
 										expect_field_count (line, 2);
-										purpose_B := to_purpose (f (line,2));
+										purpose_B := to_purpose (f (line, 2));
 										-- CS: test if a connector with this purpose exists in the instance
 
 									-- CS: net comparator and warning on/off

@@ -52,7 +52,7 @@ package et_device_partcode is
 
 
 	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/");
+		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("_/");
 	partcode_length_max : constant positive := 100;
 
 	package pac_device_partcode is new generic_bounded_length (partcode_length_max);

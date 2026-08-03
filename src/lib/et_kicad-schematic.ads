@@ -521,7 +521,7 @@ package et_kicad.schematic is
 	-- In reality a net can only be either local or global. Hierarchic nets
 	-- are just extensions of local or global nets with a different name.
 	type type_strand_scope is (UNKNOWN, HIERARCHIC, LOCAL, GLOBAL);
-	subtype type_net_scope is type_strand_scope range LOCAL..GLOBAL;
+	subtype type_net_scope is type_strand_scope range LOCAL .. GLOBAL;
 
 	function to_string (scope : in type_strand_scope) return string;
 	-- Returns the given scope as string.
@@ -570,24 +570,24 @@ package et_kicad.schematic is
 
 
 -- PROJECT FILE RELATED KEYWORDS AND VARIABLES
-    project_header_eeschema                 : constant string (1..10) := "[eeschema]";
-    project_header_eeschema_libraries       : constant string (1..20) := "[eeschema/libraries]";
-    project_keyword_version                 : constant string (1..7)  := "version";
-	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
-    project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
+    project_header_eeschema                 : constant string (1 .. 10) := "[eeschema]";
+    project_header_eeschema_libraries       : constant string (1 .. 20) := "[eeschema/libraries]";
+    project_keyword_version                 : constant string (1 .. 7)  := "version";
+	project_keyword_library_directory       : constant string (1 .. 6)  := "LibDir";
+    project_keyword_library_name            : constant string (1 .. 7)  := "LibName"; -- with index like "LibName1"
 
 
 
 -- COMPONENT TEXT FIELDS
 
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":
-	component_field_identifier : constant string (1..1) := "F";
+	component_field_identifier : constant string (1 .. 1) := "F";
 
 	-- We limit the number of fields in the component library to this constant.
 	library_component_field_count_max : constant positive := 3;
 
 
-	type type_component_field_id is range 0..library_component_field_count_max;
+	type type_component_field_id is range 0 .. library_component_field_count_max;
 	component_field_reference		: constant type_component_field_id := 0;
 	component_field_value			: constant type_component_field_id := 1;
 	component_field_package			: constant type_component_field_id := 2;
@@ -601,71 +601,71 @@ package et_kicad.schematic is
 
 -- SCHEMATIC
 
-    schematic_header_keyword_sys_name      : constant string (1..8) := "EESchema";
-    schematic_header_keyword_schematic     : constant string (1..9) := "Schematic";
-    schematic_header_keyword_file          : constant string (1..4) := "File";
-    schematic_header_keyword_version       : constant string (1..7) := "Version";
+    schematic_header_keyword_sys_name      : constant string (1 .. 8) := "EESchema";
+    schematic_header_keyword_schematic     : constant string (1 .. 9) := "Schematic";
+    schematic_header_keyword_file          : constant string (1 .. 4) := "File";
+    schematic_header_keyword_version       : constant string (1 .. 7) := "Version";
 
-    schematic_library                      : constant string (1..4) := "LIBS";
-    schematic_eelayer                      : constant string (1..7) := "EELAYER";
-    schematic_eelayer_end                  : constant string (1..3) := "END";
+    schematic_library                      : constant string (1 .. 4) := "LIBS";
+    schematic_eelayer                      : constant string (1 .. 7) := "EELAYER";
+    schematic_eelayer_end                  : constant string (1 .. 3) := "END";
 
-	schematic_description_header           : constant string (1..6) := "$Descr";
-	schematic_description_footer           : constant string (1..9) := "$EndDescr";
-	schematic_sheet_header                 : constant string (1..6) := "$Sheet";
-	schematic_sheet_footer                 : constant string (1..9) := "$EndSheet";
-	schematic_component_header             : constant string (1..5) := "$Comp";
-	schematic_component_footer             : constant string (1..8) := "$EndComp";
+	schematic_description_header           : constant string (1 .. 6) := "$Descr";
+	schematic_description_footer           : constant string (1 .. 9) := "$EndDescr";
+	schematic_sheet_header                 : constant string (1 .. 6) := "$Sheet";
+	schematic_sheet_footer                 : constant string (1 .. 9) := "$EndSheet";
+	schematic_component_header             : constant string (1 .. 5) := "$Comp";
+	schematic_component_footer             : constant string (1 .. 8) := "$EndComp";
 
-    schematic_keyword_sheet                : constant string (1..5) := "Sheet";
-    schematic_keyword_title                : constant string (1..5) := "Title";
-    schematic_keyword_encoding             : constant string (1..8) := "encoding";
-    schematic_keyword_date                 : constant string (1..4) := "Date";
-    schematic_keyword_revision             : constant string (1..3) := "Rev";
-    schematic_keyword_company              : constant string (1..4) := "Comp";
-	schematic_keyword_wire		           : constant string (1..4) := "Wire";
-	schematic_keyword_connection           : constant string (1..10) := "Connection";
-	schematic_keyword_line                 : constant string (1..4) := "Line";
-	schematic_keyword_text                 : constant string (1..4) := "Text";
-	schematic_keyword_label_simple         : constant string (1..5) := "Label";
-	schematic_keyword_label_hierarchic     : constant string (1..6) := "HLabel";
-	schematic_keyword_label_global         : constant string (1..6) := "GLabel";
-	schematic_keyword_label_dir_bidir      : constant string (1..4) := "BiDi";
-	schematic_keyword_label_dir_input      : constant string (1..5) := "Input";
-	schematic_keyword_label_dir_output     : constant string (1..6) := "Output";
-	schematic_keyword_label_dir_passive	   : constant string (1..5) := "UnSpc";
-    schematic_keyword_label_dir_tristate   : constant string (1..6) := "3State";
-	schematic_keyword_note					: constant string (1..5) := "Notes";
-	schematic_keyword_no_connection			: constant string (1..6) := "NoConn";
+    schematic_keyword_sheet                : constant string (1 .. 5) := "Sheet";
+    schematic_keyword_title                : constant string (1 .. 5) := "Title";
+    schematic_keyword_encoding             : constant string (1 .. 8) := "encoding";
+    schematic_keyword_date                 : constant string (1 .. 4) := "Date";
+    schematic_keyword_revision             : constant string (1 .. 3) := "Rev";
+    schematic_keyword_company              : constant string (1 .. 4) := "Comp";
+	schematic_keyword_wire		           : constant string (1 .. 4) := "Wire";
+	schematic_keyword_connection           : constant string (1 .. 10) := "Connection";
+	schematic_keyword_line                 : constant string (1 .. 4) := "Line";
+	schematic_keyword_text                 : constant string (1 .. 4) := "Text";
+	schematic_keyword_label_simple         : constant string (1 .. 5) := "Label";
+	schematic_keyword_label_hierarchic     : constant string (1 .. 6) := "HLabel";
+	schematic_keyword_label_global         : constant string (1 .. 6) := "GLabel";
+	schematic_keyword_label_dir_bidir      : constant string (1 .. 4) := "BiDi";
+	schematic_keyword_label_dir_input      : constant string (1 .. 5) := "Input";
+	schematic_keyword_label_dir_output     : constant string (1 .. 6) := "Output";
+	schematic_keyword_label_dir_passive	   : constant string (1 .. 5) := "UnSpc";
+    schematic_keyword_label_dir_tristate   : constant string (1 .. 6) := "3State";
+	schematic_keyword_note					: constant string (1 .. 5) := "Notes";
+	schematic_keyword_no_connection			: constant string (1 .. 6) := "NoConn";
 
-    schematic_keyword_comment_1            : constant string (1..8) := "Comment1";
-    schematic_keyword_comment_2            : constant string (1..8) := "Comment2";
-    schematic_keyword_comment_3            : constant string (1..8) := "Comment3";
-	schematic_keyword_comment_4            : constant string (1..8) := "Comment4";
+    schematic_keyword_comment_1            : constant string (1 .. 8) := "Comment1";
+    schematic_keyword_comment_2            : constant string (1 .. 8) := "Comment2";
+    schematic_keyword_comment_3            : constant string (1 .. 8) := "Comment3";
+	schematic_keyword_comment_4            : constant string (1 .. 8) := "Comment4";
 
-    schematic_keyword_sheet_pos_and_size   : constant string (1..1) := "S";
-    schematic_keyword_sheet_timestamp      : constant string (1..1) := "U";
-	schematic_keyword_sheet_name           : constant string (1..2) := "F0";
-	schematic_keyword_sheet_file           : constant string (1..2) := "F1";
-	schematic_keyword_sheet_port           : constant string (1..2) := "F2";
-	schematic_component_identifier_name    : constant string (1..1) := "L";
-	schematic_component_identifier_unit	   : constant string (1..1) := "U";
-	schematic_component_identifier_coord   : constant string (1..1) := "P";
-	schematic_component_identifier_path    : constant string (1..2) := "AR"; -- CS: meaning unclear
+    schematic_keyword_sheet_pos_and_size   : constant string (1 .. 1) := "S";
+    schematic_keyword_sheet_timestamp      : constant string (1 .. 1) := "U";
+	schematic_keyword_sheet_name           : constant string (1 .. 2) := "F0";
+	schematic_keyword_sheet_file           : constant string (1 .. 2) := "F1";
+	schematic_keyword_sheet_port           : constant string (1 .. 2) := "F2";
+	schematic_component_identifier_name    : constant string (1 .. 1) := "L";
+	schematic_component_identifier_unit	   : constant string (1 .. 1) := "U";
+	schematic_component_identifier_coord   : constant string (1 .. 1) := "P";
+	schematic_component_identifier_path    : constant string (1 .. 2) := "AR"; -- CS: meaning unclear
 
-	type type_schematic_unit_orientation	is range -1..1;
-	type type_schematic_unit_mirror_style	is range -1..1;
+	type type_schematic_unit_orientation	is range -1 .. 1;
+	type type_schematic_unit_mirror_style	is range -1 .. 1;
 
-    type type_label_orientation is range 0..3; -- also used for notes
+    type type_label_orientation is range 0 .. 3; -- also used for notes
 
-    schematic_tilde : constant string (1..1) := "~";
+    schematic_tilde : constant string (1 .. 1) := "~";
 
 	-- These strange strings are used to define the text style of
 	-- net labels and notes:
-	text_schematic_style_normal : constant string (1..1) := "~";
-    text_schematic_style_italic : constant string (1..6) := "Italic";
-	text_library_style_normal	: constant string (1..6) := "Normal";
-	text_library_style_italic	: constant string (1..6) := "Italic";
+	text_schematic_style_normal : constant string (1 .. 1) := "~";
+    text_schematic_style_italic : constant string (1 .. 6) := "Italic";
+	text_library_style_normal	: constant string (1 .. 6) := "Normal";
+	text_library_style_italic	: constant string (1 .. 6) := "Italic";
 
     -- fields
 	type type_field_orientation is (H, V); -- horizontal, vertical
@@ -681,12 +681,12 @@ package et_kicad.schematic is
 		T, -- text
 		X); -- pin
 
-	library_fill_none			: constant string (1..1) := "N";
-	library_fill_foreground		: constant string (1..1) := "F";
-	library_fill_background		: constant string (1..1) := "f";
+	library_fill_none			: constant string (1 .. 1) := "N";
+	library_fill_foreground		: constant string (1 .. 1) := "F";
+	library_fill_background		: constant string (1 .. 1) := "f";
 
-	library_text_bold_off						: constant string (1..1) := "0";
-	library_text_bold_on						: constant string (1..1) := "1";
+	library_text_bold_off						: constant string (1 .. 1) := "0";
+	library_text_bold_on						: constant string (1 .. 1) := "1";
 
 	type type_library_pin_orientation is (
 		U, -- up
@@ -734,10 +734,10 @@ package et_kicad.schematic is
 	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible
 
 
-	field_style_default 	: constant string (1..2) := "NN";
-	field_style_bold		: constant string (1..2) := "NB";
-	field_style_italic		: constant string (1..2) := "IN";
-	field_style_italic_bold	: constant string (1..2) := "IB";
+	field_style_default 	: constant string (1 .. 2) := "NN";
+	field_style_bold		: constant string (1 .. 2) := "NB";
+	field_style_italic		: constant string (1 .. 2) := "IN";
+	field_style_italic_bold	: constant string (1 .. 2) := "IB";
 
 	-- electrical direction of HIERARCHICAL SHEET PORTS
 	type type_sheet_port_direction is (
@@ -755,12 +755,12 @@ package et_kicad.schematic is
 
 
 	-- In schematic, a power symbol/component has a hash as first character in a line like "L P3V3 #PWR07"
-	schematic_component_power_symbol_prefix: constant character := '#';
+	schematic_component_power_symbol_prefix : constant character := '#';
 
 	-- power flags and symbols have a special prefix which distinguishes
 	-- them from real components:
-	power_flag_prefix : constant string (1..4) := "#FLG";
-	power_symbol_prefix : constant string (1..4) := "#PWR";
+	power_flag_prefix : constant string (1 .. 4) := "#FLG";
+	power_symbol_prefix : constant string (1 .. 4) := "#PWR";
 
 	-- These are the characters allowed for a component prefix:
 	component_prefix_characters : character_set := prefix_characters
@@ -769,7 +769,7 @@ package et_kicad.schematic is
 	-- These characters are allowed for a component reference.
 	-- This character set is used for prechecking references (like IC904 or #PWR) if
 	-- provided as string together with procedure check_reference_characters (see et_libraries):
-	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
+	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0', '9'));
 
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
@@ -785,7 +785,7 @@ package et_kicad.schematic is
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
 	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no
 
-	type type_alternative_representation is new natural range 0..1;
+	type type_alternative_representation is new natural range 0 .. 1;
 	alternative_representation_yes	: constant type_alternative_representation := 0;
 	alternative_representation_no	: constant type_alternative_representation := 1;
 

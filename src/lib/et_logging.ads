@@ -100,7 +100,7 @@ package et_logging is
 	-- to the right.
 	log_indentation_max : constant positive := 100;
 
-	type type_indentation_level is range 0..log_indentation_max;
+	type type_indentation_level is range 0 .. log_indentation_max;
 
 	log_indentation : type_indentation_level := type_indentation_level'first;
 
@@ -209,7 +209,7 @@ package et_logging is
 	-- Output the file and line:
 	procedure show_line (
 		file : string; -- the file name
-		line : natural);-- the line number
+		line : natural); -- the line number
 
 
 

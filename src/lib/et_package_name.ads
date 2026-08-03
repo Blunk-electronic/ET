@@ -54,10 +54,10 @@ package et_package_name is
 
 	-- Package names like "SOT23" or "TO220" are stored in bounded strings:
 	package_name_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9')))
-		or to_set('.')
-		or to_set('-')
-		or to_set('_');
+		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9')))
+		or to_set ('.')
+		or to_set ('-')
+		or to_set ('_');
 
 
 	package_name_length_max : constant positive := 100;

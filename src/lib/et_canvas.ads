@@ -1846,7 +1846,7 @@ private
 	procedure cb_move (
 		button : access gtk_button_record'class);
 
-	access_cb_move: constant cb_gtk_button_void := cb_move'access;
+	access_cb_move : constant cb_gtk_button_void := cb_move'access;
 
 
 	-- This callback procedure is called each time the

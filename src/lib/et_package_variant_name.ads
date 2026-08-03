@@ -53,7 +53,7 @@ package et_package_variant_name is
 	-- The variant name is manufacturer specific. example: TL084D or TL084N.
 	-- Device package variant names like "N" or "D" are stored in bounded strings:
 	variant_name_characters : character_set :=
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-");
+		to_set (ranges => (('A', 'Z'), ('a', 'z'), ('0', '9'))) or to_set ("_-");
 
 
 	variant_name_length_max : constant positive := 50;

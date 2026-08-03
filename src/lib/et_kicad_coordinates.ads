@@ -65,7 +65,7 @@ package et_kicad_coordinates is
 -- 	-- Checks if the given submodule name is not longer than allowed.
 
 	submodule_name_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_");
+		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("-_");
 
 	procedure check_submodule_name_characters (
 		name		: in type_submodule_name.bounded_string;
