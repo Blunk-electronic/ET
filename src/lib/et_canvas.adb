@@ -2288,15 +2288,15 @@ package body et_canvas is
 		gtk_new (mode_display.label_mode_verb, "VERB");
 		set_halign (mode_display.label_mode_verb, align_start);
 
-		gtk_new_with_entry (mode_display.cbox_mode_verb);
-		set_halign (mode_display.cbox_mode_verb, align_end);
+		gtk_new (mode_display.cbox_mode_verb);
+		set_halign (mode_display.cbox_mode_verb, align => align_fill);
 
 
 		gtk_new (mode_display.label_mode_noun, "NOUN");
 		set_halign (mode_display.label_mode_noun, align_start);
 
-		gtk_new_with_entry (mode_display.cbox_mode_noun);
-		set_halign (mode_display.cbox_mode_noun, align_end);
+		gtk_new (mode_display.cbox_mode_noun);
+		set_halign (mode_display.cbox_mode_noun, align => align_fill);
 
 
 		gtk_new (mode_display.grid_mode);
