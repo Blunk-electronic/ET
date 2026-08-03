@@ -39,6 +39,7 @@
 
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
+
 with et_board_coordinates;			use et_board_coordinates;
 with et_project;
 with et_module;						use et_module;
@@ -125,10 +126,17 @@ package body et_canvas_board is
 		-- Get the current drawing mode
 		v : constant string := to_string (verb);
 		n : constant string := to_string (noun);
+		unused_found : boolean;
 	begin
 		-- show the drawing mode
-		gtk_entry (mode_display.cbox_mode_verb.get_child).set_text (v);
-		gtk_entry (mode_display.cbox_mode_noun.get_child).set_text (n);
+		unused_found :=
+			set_active_id (
+				mode_display.cbox_mode_verb,
+				active_id => v);
+		unused_found :=
+			set_active_id (
+				mode_display.cbox_mode_noun,
+				active_id => n);
 	end update_mode_display;
 
 
@@ -842,6 +850,59 @@ package body et_canvas_board is
 
 
 
+-- VERB / NOUN:
+
+	procedure cb_verb_changed (
+		self : access gtk.combo_box.gtk_combo_box_record'class)
+	is
+		use et_modes.board;
+	begin
+		put_line ("cb_verb_changed");
+		verb := to_verb (self.get_active_id);
+	end cb_verb_changed;
+
+	procedure set_up_verb_combo is
+		use et_modes.board;
+		use pac_canvas;
+	begin
+		for verb in type_verb loop
+			mode_display.cbox_mode_verb.append (
+				id		=> to_string (verb),
+				text	=> to_string (verb));
+		end loop;
+
+		mode_display.cbox_mode_verb.on_changed (
+			call  => cb_verb_changed'access,
+			after => true);
+	end set_up_verb_combo;
+
+
+
+	procedure cb_noun_changed (
+		self : access gtk.combo_box.gtk_combo_box_record'class)
+	is
+		use et_modes.board;
+	begin
+		put_line ("cb_noun_changed");
+		noun := to_noun (self.get_active_id);
+	end cb_noun_changed;
+
+	procedure set_up_noun_combo is
+		use et_modes.board;
+		use pac_canvas;
+	begin
+		for noun in type_noun loop
+			mode_display.cbox_mode_noun.append (
+				id		=> to_string (noun),
+				text	=> to_string (noun));
+		end loop;
+
+		on_changed (
+			mode_display.cbox_mode_noun,
+			call  => cb_noun_changed'access,
+			after => true);
+	end set_up_noun_combo;
+
 
 
 -- UNDO / REDO:
@@ -875,11 +936,6 @@ package body et_canvas_board is
 
 		redraw;
 	end redo;
-
-
-
-
-
 
 
 
