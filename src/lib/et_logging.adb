@@ -207,7 +207,7 @@ package body et_logging is
 
 
 	function message_warning return string is
-		warning : constant string (1 .. 9) := "WARNING #";
+		warning : constant string := "WARNING #";
 	begin
 		increment_warning_counter;
 		return warning & trim (warning_count, left) & " : ";

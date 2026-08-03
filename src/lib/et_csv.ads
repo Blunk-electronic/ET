@@ -39,10 +39,10 @@ with ada.text_io;					use ada.text_io;
 
 package et_csv is
 
-	file_extension		: constant string (1 .. 3) := "csv";
+	file_extension		: constant string := "csv";
 
-	row_separator_1 	: constant string (1 .. 10) := "----------";
-	row_separator_2 	: constant string (1 .. 20) := "--------------------";
+	row_separator_1 	: constant string := "----------";
+	row_separator_2 	: constant string := "--------------------";
 
 	columns_max : constant natural := 1000; -- CS this is the limit of columns a csv file can have.
 	type type_column is range 0 .. columns_max;

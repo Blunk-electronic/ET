@@ -90,10 +90,10 @@ package et_kicad_libraries is
 	dir_global_lib_tables_linux	: constant string := "/.config/kicad/";
 	-- CS: windows ?
 
-	file_sym_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_sym_lib_table'length)
+	file_sym_lib_table_global_linux : constant string
 		:= dir_global_lib_tables_linux & file_sym_lib_table;
 
-	file_fp_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_fp_lib_table'length)
+	file_fp_lib_table_global_linux : constant string
 		:= dir_global_lib_tables_linux & file_fp_lib_table;
 	------------------------------------------------------------------------------------------------------------------
 

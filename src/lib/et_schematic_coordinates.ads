@@ -55,7 +55,7 @@ package et_schematic_coordinates is
 
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
-	hierarchy_separator : constant string (1 .. 1) := "/";
+	hierarchy_separator : constant string := "/";
 
 
 

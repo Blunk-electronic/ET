@@ -725,7 +725,7 @@ package body et_kicad.schematic is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : type_text_alignment_vertical;
-		s : constant string (1 .. 1) := text (text'first .. text'first);
+		s : constant string := text (text'first .. text'first);
 	begin
 		case type_field_alignment_vertical'value (s) is
 			when T => a := ALIGN_TOP;
@@ -2080,7 +2080,7 @@ package body et_kicad.schematic is
 				-- search_list_project_lib_dirs assists search operations.
 					use type_library_directory;
 					directory_count 	: natural;
-					lib_dir_separator 	: constant string (1 .. 1) := ";";
+					lib_dir_separator 	: constant string := ";";
 					lib_dir_name 		: type_library_directory.bounded_string;
 
 				begin -- locate_library_directories
@@ -2447,11 +2447,11 @@ package body et_kicad.schematic is
 					opening_bracket : constant character := '(';
 					closing_bracket : constant character := ')';
 
-					term_char_seq : constant string (1 .. 2) := latin_1.space & closing_bracket;
+					term_char_seq : constant string := latin_1.space & closing_bracket;
 					term_char_set : constant character_set := to_set (term_char_seq);
 
 					-- the section prefix is a workaround due to GNAT reserved keywords.
-					sec_prefix : constant string (1 .. 4) := "sec_";
+					sec_prefix : constant string := "sec_";
 
 					-- These are the keywords used in the sym-lib tables:
 					type type_keyword is (
@@ -8020,7 +8020,7 @@ package body et_kicad.schematic is
 
 -- 	procedure make_statistics (log_threshold : in type_log_level) is
 --
--- 		arrow : constant string (1..4) := " -> ";
+-- 		arrow : constant string := " -> ";
 --
 -- 		use et_string_processing;
 --

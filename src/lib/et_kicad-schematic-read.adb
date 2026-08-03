@@ -2953,7 +2953,7 @@ is
 
 		function generic_name (text : in string) return type_component_generic_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
-			ifs : constant string (1 .. 1) := ":";
+			ifs : constant string := ":";
 
 			-- The separator must NOT be at first position in text.
 			-- CS: Text is limited to 200 characters which seems sufficient.
@@ -2967,7 +2967,7 @@ is
 
 		function extract_library_name (text : in string) return type_library_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
-			ifs : constant string (1 .. 1) := ":";
+			ifs : constant string := ":";
 
 			-- The separator must NOT be at first position in text.
 			-- CS: Text is limited to 200 characters which seems sufficient.

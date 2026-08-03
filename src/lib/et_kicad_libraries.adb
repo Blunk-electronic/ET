@@ -692,7 +692,7 @@ package body et_kicad_libraries is
 	-- The given text is something like CNN. We are interested in the first character only.
 	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 		a : type_text_alignment_vertical;
-		s : constant string (1 .. 1) := text (text'first .. text'first);
+		s : constant string := text (text'first .. text'first);
 	begin
 		case type_field_alignment_vertical'value (s) is
 			when T => a := ALIGN_TOP;
@@ -2679,7 +2679,7 @@ package body et_kicad_libraries is
 					log_indentation_down;
 				end write_scope_of_object;
 
-				--draw_object : constant string (1..12) := "draw object ";
+				--draw_object : constant string := "draw object ";
 
 			begin -- read_draw_object
 				--log (text => "draw object", level => log_threshold + 1);
