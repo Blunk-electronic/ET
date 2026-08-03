@@ -79,7 +79,7 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : constant string (1 .. 10) := image (time, time_zone => utc_time_offset (time)) (1 .. 10);
+		now : constant string := image (time, time_zone => utc_time_offset (time)) (1 .. 10);
 	begin
 		return now;
 	end to_string_YMD;

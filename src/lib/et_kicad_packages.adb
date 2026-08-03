@@ -481,7 +481,7 @@ package body et_kicad_packages is
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1 .. 2) := space & closing_bracket;
+		term_char_seq : constant string	:= space & closing_bracket;
 		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.

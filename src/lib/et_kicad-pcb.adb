@@ -293,7 +293,7 @@ package body et_kicad.pcb is
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1 .. 2) := latin_1.space & closing_bracket;
+		term_char_seq : constant string := latin_1.space & closing_bracket;
 		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.

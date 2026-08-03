@@ -725,7 +725,7 @@ package body et_kicad.schematic is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : type_text_alignment_vertical;
-		s : constant string (1 .. 1) := text (text'first .. text'first);
+		s : constant string := text (text'first .. text'first);
 	begin
 		case type_field_alignment_vertical'value (s) is
 			when T => a := ALIGN_TOP;
@@ -2447,7 +2447,7 @@ package body et_kicad.schematic is
 					opening_bracket : constant character := '(';
 					closing_bracket : constant character := ')';
 
-					term_char_seq : constant string (1 .. 2) := latin_1.space & closing_bracket;
+					term_char_seq : constant string := latin_1.space & closing_bracket;
 					term_char_set : constant character_set := to_set (term_char_seq);
 
 					-- the section prefix is a workaround due to GNAT reserved keywords.
