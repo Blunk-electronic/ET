@@ -56,7 +56,7 @@ package body et_generic_modules is
 		return pac_module_name.bounded_string
 	is begin
 		return key (module_cursor);
-	end;
+	end get_module_name;
 
 
 
@@ -65,7 +65,7 @@ package body et_generic_modules is
 		return boolean
 	is begin
 		return schematic_rules_assigned (module.rules);
-	end;
+	end design_rules_schematic_assigned;
 	pragma unreferenced (design_rules_schematic_assigned);
 
 
@@ -74,7 +74,7 @@ package body et_generic_modules is
 		return boolean
 	is begin
 		return board_rules_assigned (module.rules);
-	end;
+	end design_rules_board_assigned;
 
 
 
@@ -86,7 +86,7 @@ package body et_generic_modules is
 		return et_schematic_geometry.pac_grid.type_grid
 	is begin
 		return module.grid;
-	end;
+	end get_grid_schematic;
 	pragma unreferenced (get_grid_schematic);
 
 
@@ -96,7 +96,7 @@ package body et_generic_modules is
 		return et_board_geometry.pac_grid.type_grid
 	is begin
 		return module.board.grid;
-	end;
+	end get_grid_board;
 	pragma unreferenced (get_grid_board);
 
 
@@ -141,7 +141,7 @@ package body et_generic_modules is
 		return boolean
 	is begin
 		return pac_generic_modules.contains (generic_modules, module);
-	end;
+	end generic_module_exists;
 
 
 
@@ -153,7 +153,7 @@ package body et_generic_modules is
 				" not found !", console => true);
 			raise constraint_error;
 		end if;
-	end;
+	end validate_module_name;
 
 
 
@@ -200,7 +200,7 @@ package body et_generic_modules is
 			pragma unreferenced (module_name);
 		begin
 			result := variant_exists (module, variant);
-		end;
+		end query_variants;
 
 	begin
 		if is_default (variant) then

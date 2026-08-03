@@ -51,13 +51,13 @@ package body et_device_value is
 
 	function to_string (value : in pac_device_value.bounded_string) return string is begin
 		return pac_device_value.to_string (value);
-	end;
+	end to_string;
 
 
 
 	function to_value (value : in string) return pac_device_value.bounded_string is begin
 		return pac_device_value.to_bounded_string (value);
-	end;
+	end to_value;
 
 
 

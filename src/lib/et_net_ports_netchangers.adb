@@ -58,7 +58,7 @@ package body et_net_ports_netchangers is
 		else
 			return false;
 		end if;
-	end;
+	end "<";
 
 
 
@@ -73,7 +73,7 @@ package body et_net_ports_netchangers is
 		item : constant type_port_netchanger := (index, port);
 	begin
 		return ports.contains (item);
-	end;
+	end contains_netchanger_port;
 
 
 

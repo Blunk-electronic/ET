@@ -128,7 +128,7 @@ package body et_schematic_ops_nets is
 			pragma unreferenced (module_name);
 		begin
 			result := module.nets.first;
-		end;
+		end query_module;
 
 	begin
 		query_element (module_cursor, query_module'access);
@@ -970,7 +970,7 @@ package body et_schematic_ops_nets is
 			begin
 				log (text => "no strands left. delete net.", level => log_threshold + 1);
 				delete (module.nets, c);
-			end;
+			end delete_net;
 
 
 		begin
@@ -2170,7 +2170,7 @@ package body et_schematic_ops_nets is
 
 							set_selected (segment, area);
 						end if;
-					end;
+					end query_segment;
 
 
 				begin
@@ -2289,7 +2289,7 @@ package body et_schematic_ops_nets is
 							-- segments, strands and nets:
 							segment_found := true;
 						end if;
-					end;
+					end query_segment;
 
 
 				begin
@@ -3029,7 +3029,7 @@ package body et_schematic_ops_nets is
 					if get_sheet (strand) = sheet_old then
 						move_strand (strand, offset);
 					end if;
-				end;
+				end query_strand;
 
 
 			begin
@@ -4415,7 +4415,7 @@ package body et_schematic_ops_nets is
 	begin
 		net_cursor := locate_net (module_cursor, net_name);
 		return has_element (net_cursor);
-	end;
+	end net_exists;
 
 
 
@@ -5063,7 +5063,7 @@ package body et_schematic_ops_nets is
 			else
 				return "sheet " & to_string (sheet);
 			end if;
-		end;
+		end to_sheets;
 
 
 	begin
@@ -5139,7 +5139,7 @@ package body et_schematic_ops_nets is
 				c : pac_nets.cursor := net.net_cursor;
 			begin
 				module.nets.delete (c);
-			end;
+			end delete_whole_net;
 
 
 			-- This procedure deletes all strands of
@@ -6268,7 +6268,7 @@ package body et_schematic_ops_nets is
 			end case;
 
 			insert_net_segments (module_cursor, net_cursor, sheet, new_segments, log_threshold + 2);
-		end;
+		end get_strands_between_AB;
 
 
 	begin
@@ -6590,7 +6590,7 @@ package body et_schematic_ops_nets is
 						procedure query_label (label : in out type_net_label) is begin
 							log (text => "label: " & get_position (label), level => log_threshold + 3);
 							reset_status (label);
-						end;
+						end query_label;
 
 					begin
 						log (text => "segment: " & to_string (segment), level => log_threshold + 2);
@@ -6681,7 +6681,7 @@ package body et_schematic_ops_nets is
 
 						procedure query_label (label : in out type_net_label) is begin
 							modify_status (label, operation);
-						end;
+						end query_label;
 
 					begin
 						segment.labels.update_element (label.label_cursor, query_label'access);
@@ -7039,7 +7039,7 @@ package body et_schematic_ops_nets is
 
 							-- Add the label to other labels of the segment:
 							add_label (segment, label);
-						end;
+						end horizontal_text;
 
 
 
@@ -7062,7 +7062,7 @@ package body et_schematic_ops_nets is
 
 							-- Add the label to other labels of the segment:
 							add_label (segment, label);
-						end;
+						end vertical_text;
 
 
 					begin
@@ -7663,7 +7663,7 @@ package body et_schematic_ops_nets is
 
 						procedure query_label (label : in out type_net_label) is begin
 							set_selected (label);
-						end;
+						end query_label;
 
 					begin
 						segment.labels.update_element (label.label_cursor, query_label'access);
@@ -7671,7 +7671,7 @@ package body et_schematic_ops_nets is
 
 				begin
 					strand.segments.update_element (label.segment_cursor, query_segment'access);
-				end;
+				end query_strand;
 
 			begin
 				net.strands.update_element (label.strand_cursor, query_strand'access);
@@ -8398,7 +8398,7 @@ package body et_schematic_ops_nets is
 
 				begin
 					strand.segments.update_element (connector.segment_cursor, query_segment'access);
-				end;
+				end query_strand;
 
 
 			begin
@@ -8497,7 +8497,7 @@ package body et_schematic_ops_nets is
 			when others =>
 				return c; -- CS exception ?
 		end case;
-	end;
+	end get_net;
 
 
 
@@ -8510,7 +8510,7 @@ package body et_schematic_ops_nets is
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.strand_cursor;
-	end;
+	end get_strand;
 
 
 
@@ -8522,7 +8522,7 @@ package body et_schematic_ops_nets is
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.segment_cursor;
-	end;
+	end get_segment;
 
 
 
@@ -9229,7 +9229,7 @@ package body et_schematic_ops_nets is
 
 			reset_status_labels (module_cursor, log_threshold + 1);
 			reset_status_connectors (module_cursor, log_threshold + 1);
-		end;
+		end reset_nets;
 
 
 	begin
@@ -9384,7 +9384,7 @@ package body et_schematic_ops_nets is
 
 				return false;
 			end if;
-		end;
+		end is_movable;
 
 
 

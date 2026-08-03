@@ -60,7 +60,7 @@ package body et_schematic_ops_sheets is
 		sheet : in type_sheet)
 	is begin
 		log (SEVERITY_WARNING, "Sheet no. " & to_string (sheet) & " not found !");
-	end;
+	end sheet_not_found;
 
 
 

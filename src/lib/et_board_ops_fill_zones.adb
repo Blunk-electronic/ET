@@ -1795,7 +1795,7 @@ package body et_board_ops_fill_zones is
 					log_indentation_up;
 					update_element (module.nets, net_cursor, route_solid'access);
 					log_indentation_down;
-				end;
+				end process_solid_zones;
 
 
 				procedure process_hatched_zones is begin
@@ -1803,7 +1803,7 @@ package body et_board_ops_fill_zones is
 					log_indentation_up;
 					update_element (module.nets, net_cursor, route_hatched'access);
 					log_indentation_down;
-				end;
+				end process_hatched_zones;
 
 
 			begin

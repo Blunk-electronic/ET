@@ -106,7 +106,7 @@ package body et_text is
 			text.size := size_default;
 			text.alignment := text_alignment_default;
 			reset_status (text.status);
-		end;
+		end reset_text;
 
 
 
@@ -250,7 +250,7 @@ package body et_text is
 			else
 				return to_string (rotation => 90.0);
 			end if;
-		end;
+		end to_string;
 
 
 
@@ -261,7 +261,7 @@ package body et_text is
 			return type_rotation is
 		begin
 			return to_rotation (rotation_doc) + rotation_add;
-		end;
+		end "+";
 
 
 
@@ -270,7 +270,7 @@ package body et_text is
 		procedure warning_rotation_outside_range is
 		begin
 			log (SEVERITY_WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
-		end;
+		end warning_rotation_outside_range;
 
 
 
@@ -291,7 +291,7 @@ package body et_text is
 			if r3 rem 2 = 0 then return HORIZONTAL;
 			else return VERTICAL;
 			end if;
-		end;
+		end to_rotation_doc;
 
 
 
@@ -312,7 +312,7 @@ package body et_text is
 				warning_rotation_outside_range;
 				return to_rotation_doc (r);
 			end if;
-		end;
+		end to_rotation_doc;
 
 
 

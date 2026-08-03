@@ -76,7 +76,7 @@ package body et_board_ops_submodule is
 		begin
 			submod_cursor := find (module.submods, instance);
 			position := element (submod_cursor).position_in_board;
-		end;
+		end query_submodules;
 
 
 	begin -- get_position
@@ -159,7 +159,7 @@ package body et_board_ops_submodule is
 				submodule_not_found (instance);
 			end if;
 
-		end;
+		end query_submodules;
 
 
 	begin -- move_submodule

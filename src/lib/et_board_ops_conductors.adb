@@ -127,7 +127,7 @@ package body et_board_ops_conductors is
 	is
 		procedure warning is begin
 			log (SEVERITY_WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
-		end;
+		end warning;
 
 	begin
 		-- If terminal is SMT type: check desired layer against terminal.face
@@ -264,7 +264,7 @@ package body et_board_ops_conductors is
 			append (
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> line);
-		end;
+		end add_freetrack;
 
 
 	begin
@@ -1708,7 +1708,7 @@ package body et_board_ops_conductors is
 			is
 				procedure move (line : in out type_conductor_line) is begin
 					attack (line, point_of_attack, destination);
-				end;
+				end move;
 
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
@@ -1782,7 +1782,7 @@ package body et_board_ops_conductors is
 			procedure move (line : in out type_conductor_line) is begin
 				attack (line, point_of_attack, destination);
 				log (text => (to_string (line, true)), level => log_threshold + 1);
-			end;
+			end move;
 
 
 		begin
@@ -2003,7 +2003,7 @@ package body et_board_ops_conductors is
 			append (
 				container	=> module.board.conductors_floating.arcs,
 				new_item	=> arc);
-		end;
+		end add_freetrack;
 
 
 		procedure add_named_track (
@@ -2607,7 +2607,7 @@ package body et_board_ops_conductors is
 			is
 				procedure move (arc : in out type_conductor_arc) is begin
 					attack (arc, point_of_attack, destination);
-				end;
+				end move;
 
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
@@ -2679,7 +2679,7 @@ package body et_board_ops_conductors is
 			procedure move (arc : in out type_conductor_arc) is begin
 				attack (arc, point_of_attack, destination);
 				log (text => (to_string (arc, true)), level => log_threshold + 1);
-			end;
+			end move;
 
 
 		begin

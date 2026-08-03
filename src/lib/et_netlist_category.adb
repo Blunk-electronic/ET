@@ -48,7 +48,7 @@ package body et_netlist_category is
 		return string
 	is begin
 		return type_netlist_category'image (category);
-	end;
+	end to_string;
 
 
 
@@ -66,7 +66,7 @@ package body et_netlist_category is
 		end if;
 
 		return result;
-	end;
+	end to_netlist_category;
 
 
 end et_netlist_category;

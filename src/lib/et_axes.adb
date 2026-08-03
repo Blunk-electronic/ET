@@ -53,7 +53,7 @@ package body et_axes is
 		s : constant string := to_lower (type_axis'image (axis));
 	begin
 		return s (axis_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 	function to_axis (
@@ -61,7 +61,7 @@ package body et_axes is
 		return type_axis
 	is begin
 		return type_axis'value (axis_prefix & axis);
-	end;
+	end to_axis;
 
 
 

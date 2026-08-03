@@ -50,7 +50,7 @@ package body et_symbol_library is
 		return pac_symbol_model_name.bounded_string
 	is begin
 		return key (symbol_cursor);
-	end;
+	end get_symbol_model_name;
 
 
 	function get_symbol_model_name (
@@ -58,7 +58,7 @@ package body et_symbol_library is
 		return string
 	is begin
 		return pac_symbol_model_name.to_string (key (symbol_cursor));
-	end;
+	end get_symbol_model_name;
 
 
 
@@ -105,7 +105,7 @@ package body et_symbol_library is
 		cursor		: in out pac_symbol_models.cursor)
 	is begin
 		cursor := symbol_library.find (model_file);
-	end;
+	end get_symbol_model;
 
 
 
@@ -114,7 +114,7 @@ package body et_symbol_library is
 		return pac_symbol_models.cursor
 	is begin
 		return symbol_library.find (model_name);
-	end;
+	end get_symbol_model;
 
 
 
@@ -152,7 +152,7 @@ package body et_symbol_library is
 		else
 			return (others => <>);
 		end if;
-	end;
+	end get_placeholders;
 
 
 
@@ -186,7 +186,7 @@ package body et_symbol_library is
 		return type_symbol_model
 	is begin
 		return element (symbol);
-	end;
+	end get_symbol;
 
 
 

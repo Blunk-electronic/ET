@@ -56,11 +56,11 @@ package body et_pick_and_place is
 
 	function to_string (name : in pac_pnp_file_name.bounded_string) return string is begin
 		return pac_pnp_file_name.to_string (name);
-	end;
+	end to_string;
 
 	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string is begin
 		return pac_pnp_file_name.to_bounded_string (name);
-	end;
+	end to_file_name;
 
 
 	procedure write_pnp (
@@ -106,7 +106,7 @@ package body et_pick_and_place is
 								extension				=> extension_pnp
 							));
 			end if;
-		end;
+		end set_file_name;
 
 		procedure native is
 			use et_csv;
@@ -160,7 +160,7 @@ package body et_pick_and_place is
 			-- CS: A list end mark should be placed.
 			-- put_line (pnp_handle, comment_mark & " end of list");
 
-		end;
+		end native;
 
 	begin -- write_pnp
 		-- build the file name

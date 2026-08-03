@@ -192,7 +192,7 @@ package body et_colors.board is
 			-- Update global foreground brightness:
 			current_foreground_brightness := brightness;
 		end if;
-	end;
+	end set_brightness;
 
 
 
@@ -278,7 +278,7 @@ package body et_colors.board is
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		set_color (netchanger, brightness);
-	end;
+	end set_color_netchanger;
 
 
 

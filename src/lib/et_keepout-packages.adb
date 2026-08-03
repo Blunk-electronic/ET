@@ -60,7 +60,7 @@ package body et_keepout.packages is
 			when BOTTOM =>
 				keepout.bottom.zones.append (zone);
 		end case;
-	end;
+	end add_zone;
 
 
 
@@ -79,7 +79,7 @@ package body et_keepout.packages is
 			when BOTTOM =>
 				keepout.bottom.cutouts.append (zone);
 		end case;
-	end;
+	end add_cutout;
 
 
 

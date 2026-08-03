@@ -49,7 +49,7 @@ package body et_conductor_text is
 	is begin
 		reset_text (type_text_fab_with_content (text));
 		text.vectors := vector_text_default;
-	end;
+	end reset_text;
 
 
 

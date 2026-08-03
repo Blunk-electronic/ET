@@ -92,7 +92,7 @@ package body et_package_read_meta is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_meta;
 
 
 

@@ -62,22 +62,22 @@ package body et_file_sections is
 
 
 
-	function write_top_level_reached return string is begin return "top level reached"; end;
-	function write_enter_section return string is begin return "entering section "; end;
-	function write_return_to_section return string is begin return "returning to section "; end;
+	function write_top_level_reached return string is begin return "top level reached"; end write_top_level_reached;
+	function write_enter_section return string is begin return "entering section "; end write_enter_section;
+	function write_return_to_section return string is begin return "returning to section "; end write_return_to_section;
 
 	function write_missing_begin_end return string is begin
 		return "missing section begin or section end after section name !";
-	end;
+	end write_missing_begin_end;
 
 	function write_section_stack_not_empty return string is begin
 		return "section stack not empty !";
-	end;
+	end write_section_stack_not_empty;
 
 	procedure invalid_section is begin
 		log (SEVERITY_ERROR, "invalid section name !", console => true);
 		raise constraint_error;
-	end;
+	end invalid_section;
 
 
 

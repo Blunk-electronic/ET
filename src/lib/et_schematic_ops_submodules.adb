@@ -96,7 +96,7 @@ package body et_schematic_ops_submodules is
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
-	end;
+	end dragging_not_possible;
 
 
 
@@ -109,7 +109,7 @@ package body et_schematic_ops_submodules is
 			console => true
 			);
 		raise constraint_error;
-	end;
+	end relative_rotation_invalid;
 	pragma unreferenced (relative_rotation_invalid);
 
 
@@ -121,7 +121,7 @@ package body et_schematic_ops_submodules is
 		log (SEVERITY_ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
-	end;
+	end submodule_not_found;
 
 
 
@@ -137,7 +137,7 @@ package body et_schematic_ops_submodules is
 			 & enclose_in_quotes (net_name_to_string (name))
 			 & " must be at the edge of the submodule !", console => true);
 		raise constraint_error;
-	end;
+	end port_not_at_edge;
 
 
 
@@ -516,7 +516,7 @@ package body et_schematic_ops_submodules is
 		log (SEVERITY_ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
-	end;
+	end port_not_provided;
 
 
 
@@ -982,7 +982,7 @@ package body et_schematic_ops_submodules is
 		log (SEVERITY_ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
-	end;
+	end submodule_port_not_found;
 
 
 
@@ -3388,7 +3388,7 @@ package body et_schematic_ops_submodules is
 			query_element (
 				position	=> variant_cursor,
 				process		=> query_submodules'access);
-		end;
+		end query_variants;
 
 
 	begin -- get_alternative_submodule
@@ -3580,8 +3580,8 @@ package body et_schematic_ops_submodules is
 		errors : natural := 0;
 		warnings : natural := 0;
 
-		procedure error is begin errors := errors + 1; end;
-		procedure warning is begin warnings := warnings + 1; end;
+		procedure error is begin errors := errors + 1; end error;
+		procedure warning is begin warnings := warnings + 1; end warning;
 		pragma unreferenced (warning);
 
 
@@ -4109,7 +4109,7 @@ package body et_schematic_ops_submodules is
 									console => true);
 							raise constraint_error;
 						end if;
-					end;
+					end test_inserted;
 
 
 					procedure test_partcode (partcode : in pac_device_partcode.bounded_string) is
@@ -4118,7 +4118,7 @@ package body et_schematic_ops_submodules is
 							log (SEVERITY_WARNING, text => "device " & to_string (device_name) &
 								" has no partcode !");
 						end if;
-					end;
+					end test_partcode;
 
 
 					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is
@@ -4613,7 +4613,7 @@ package body et_schematic_ops_submodules is
 
 		procedure increase_index_max (index : in type_name_index) is begin
 			index_max := index_max + index;
-		end;
+		end increase_index_max;
 
 
 		-- Reads the submodule tree submod_tree.
@@ -4640,7 +4640,7 @@ package body et_schematic_ops_submodules is
 					" setting device names offset to" &
 					to_string (module.device_names_offset),
 					level => log_threshold + 2);
-			end;
+			end assign_offset;
 
 
 		begin -- set_offset
@@ -4716,7 +4716,7 @@ package body et_schematic_ops_submodules is
 			pragma unreferenced (module_name);
 		begin
 			module.submod_tree := submod_tree;
-		end;
+		end replace_tree;
 
 
 

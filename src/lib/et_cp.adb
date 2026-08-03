@@ -107,7 +107,7 @@ package body et_cp is
 		-- Call it in case the given command is incomplete:
 		procedure command_incomplete is begin
 			command_incomplete (cmd);
-		end;
+		end command_incomplete;
 
 
 		use et_domains;

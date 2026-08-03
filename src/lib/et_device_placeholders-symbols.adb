@@ -74,7 +74,7 @@ package body et_device_placeholders.symbols is
 		reset_status (placeholders.name);
 		reset_status (placeholders.value);
 		reset_status (placeholders.purpose);
-	end;
+	end reset_status;
 
 
 
@@ -122,7 +122,7 @@ package body et_device_placeholders.symbols is
 	begin
 		rotate_placeholders (result, rotation);
 		return result;
-	end;
+	end rotate_placeholders;
 
 
 

@@ -64,7 +64,7 @@ is
 		file_name : constant string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		et_module_read.read_module (file_name, log_threshold + 1);
-	end;
+	end read_module_file_pre;
 
 
 	-- The search of rig configuration files requires this stuff:

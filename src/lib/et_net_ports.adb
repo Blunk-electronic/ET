@@ -74,7 +74,7 @@ package body et_net_ports is
 	begin
 		scratch := merge_ports (target, source);
 		target := scratch;
-	end;
+	end merge_ports;
 
 
 
@@ -170,7 +170,7 @@ package body et_net_ports is
 
 		result := natural (d + s + n);
 		return result;
-	end;
+	end get_port_count;
 
 
 
@@ -181,7 +181,7 @@ package body et_net_ports is
 		return natural
 	is begin
 		return natural (ports.devices.length);
-	end;
+	end get_port_count_devices;
 
 
 	function get_port_count_submodules (
@@ -189,7 +189,7 @@ package body et_net_ports is
 		return natural
 	is begin
 		return natural (ports.submodules.length);
-	end;
+	end get_port_count_submodules;
 
 
 	function get_port_count_netchangers (
@@ -197,7 +197,7 @@ package body et_net_ports is
 		return natural
 	is begin
 		return natural (ports.netchangers.length);
-	end;
+	end get_port_count_netchangers;
 
 
 

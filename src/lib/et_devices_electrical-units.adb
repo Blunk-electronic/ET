@@ -70,12 +70,12 @@ package body et_devices_electrical.units is
 
 		procedure query_unit (c : in pac_units.cursor) is begin
 			result.append (key (c));
-		end;
+		end query_unit;
 
 	begin
 		device.units.iterate (query_unit'access);
 		return result;
-	end;
+	end get_unit_names_deployed;
 
 
 
@@ -97,7 +97,7 @@ package body et_devices_electrical.units is
 		result := get_unit_count (cursor);
 
 		return result;
-	end;
+	end get_unit_count;
 
 
 
@@ -107,7 +107,7 @@ package body et_devices_electrical.units is
 		return natural
 	is begin
 		return natural (device.units.length);
-	end;
+	end get_unit_count_deployed;
 
 
 
@@ -120,7 +120,7 @@ package body et_devices_electrical.units is
 		return pac_units.cursor
 	is begin
 		return device.units.first;
-	end;
+	end get_first_unit;
 
 
 
@@ -134,7 +134,7 @@ package body et_devices_electrical.units is
 		return pac_units.cursor
 	is begin
 		return find (device.units, unit);
-	end;
+	end locate_unit;
 
 
 
@@ -173,7 +173,7 @@ package body et_devices_electrical.units is
 		return pac_unit_names.list
 	is begin
 		return get_unit_names_deployed (element (device));
-	end;
+	end get_unit_names_deployed;
 
 
 
@@ -207,7 +207,7 @@ package body et_devices_electrical.units is
 		return natural
 	is begin
 		return get_unit_count_deployed (element (device));
-	end;
+	end get_unit_count_deployed;
 
 
 
@@ -280,7 +280,7 @@ package body et_devices_electrical.units is
 			pragma unreferenced (unit_name);
 		begin
 			result := get_position (unit);
-		end;
+		end query_unit;
 
 	begin
 		query_element (unit_cursor, query_unit'access);
@@ -399,7 +399,7 @@ package body et_devices_electrical.units is
 			pragma unreferenced (device_name);
 		begin
 			positions := get_unit_positions (device.units);
-		end;
+		end get_positions;
 
 	begin
 		pac_devices_electrical.query_element (
@@ -407,7 +407,7 @@ package body et_devices_electrical.units is
 			process		=> get_positions'access);
 
 		return positions;
-	end;
+	end get_unit_positions;
 
 
 
@@ -426,14 +426,14 @@ package body et_devices_electrical.units is
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
 				to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
-		end;
+		end write;
 
 	begin
 		log (text => "location(s) in schematic:", level => log_threshold);
 		log_indentation_up;
 		pac_unit_positions.iterate (positions, write'access);
 		log_indentation_down;
-	end;
+	end log_unit_positions;
 
 
 
@@ -719,7 +719,7 @@ package body et_devices_electrical.units is
 			use pac_text_positions;
 		begin
 			append (result.texts, element (c).position);
-		end;
+		end query_text;
 
 
 		-- Indicates whether the unit is internal or external:
@@ -895,7 +895,7 @@ package body et_devices_electrical.units is
 			else
 				return "";
 			end if;
-		end;
+		end ins_LF;
 
 
 		unit : type_unit renames element (unit_cursor);
@@ -913,7 +913,7 @@ package body et_devices_electrical.units is
 		end case;
 
 		return to_string (result);
-	end;
+	end get_unit_properties;
 
 
 
@@ -943,7 +943,7 @@ package body et_devices_electrical.units is
 			else
 				return "";
 			end if;
-		end;
+		end ins_LF;
 
 
 		-- CS: Refinement required about what
@@ -962,7 +962,7 @@ package body et_devices_electrical.units is
 						& get_purpose (device) & ins_LF;
 				end if;
 			end if;
-		end;
+		end get_info_1;
 
 
 		procedure get_info_2 is begin
@@ -975,7 +975,7 @@ package body et_devices_electrical.units is
 				-- CS write interactive status true/false
 				-- CS package variant
 			end if;
-		end;
+		end get_info_2;
 
 
 		procedure get_info_3 is begin
@@ -986,7 +986,7 @@ package body et_devices_electrical.units is
 				result := result & " package model: "
 					& to_string (get_package_model_name (device)) & ins_LF;
 			end if;
-		end;
+		end get_info_3;
 
 
 
@@ -1056,7 +1056,7 @@ package body et_devices_electrical.units is
 			else
 				return "";
 			end if;
-		end;
+		end ins_LF;
 
 
 
@@ -1243,7 +1243,7 @@ package body et_devices_electrical.units is
 		return string
 	is begin
 		return type_device_search_mode'image (mode);
-	end;
+	end to_string;
 
 
 

@@ -50,7 +50,7 @@ package body et_silkscreen is
 	is begin
 		reset_line (type_line (line));
 		line.width := linewidth_default;
-	end;
+	end reset_line;
 
 
 
@@ -168,7 +168,7 @@ package body et_silkscreen is
 	is begin
 		reset_arc (type_arc (arc));
 		arc.width := linewidth_default;
-	end;
+	end reset_arc;
 
 
 
@@ -287,7 +287,7 @@ package body et_silkscreen is
 	is begin
 		reset_circle (type_circle (circle));
 		circle.width := linewidth_default;
-	end;
+	end reset_circle;
 
 
 
@@ -641,7 +641,7 @@ package body et_silkscreen is
 		log (text => "silk screen circle face" & to_string (face)
 			 & to_string (element (cursor)),
 			level => log_threshold);
-	end;
+	end circle_silk_screen_properties;
 
 
 	-- procedure text_silk_screen_properties (

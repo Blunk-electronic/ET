@@ -53,7 +53,7 @@ package body et_module is
 		return pac_library_paths_schematic.list
 	is begin
 		return get_device_libraries (module.meta.schematic);
-	end;
+	end get_preferred_device_libraries_schematic;
 
 
 	function get_preferred_device_libraries_board (
@@ -61,7 +61,7 @@ package body et_module is
 		return pac_library_paths_board.list
 	is begin
 		return get_device_libraries (module.meta.board);
-	end;
+	end get_preferred_device_libraries_board;
 
 
 
@@ -72,7 +72,7 @@ package body et_module is
 		return type_design_rules
 	is begin
 		return module.rules;
-	end;
+	end get_design_rules;
 
 
 
@@ -82,7 +82,7 @@ package body et_module is
 		return boolean
 	is begin
 		return schematic_rules_assigned (module.rules);
-	end;
+	end design_rules_schematic_assigned;
 
 
 	function design_rules_board_assigned (
@@ -90,7 +90,7 @@ package body et_module is
 		return boolean
 	is begin
 		return board_rules_assigned (module.rules);
-	end;
+	end design_rules_board_assigned;
 
 
 
@@ -102,7 +102,7 @@ package body et_module is
 		return et_schematic_geometry.pac_grid.type_grid
 	is begin
 		return module.grid;
-	end;
+	end get_grid_schematic;
 
 
 
@@ -111,7 +111,7 @@ package body et_module is
 		return et_board_geometry.pac_grid.type_grid
 	is begin
 		return module.board.grid;
-	end;
+	end get_grid_board;
 
 
 
@@ -122,7 +122,7 @@ package body et_module is
 		return boolean
 	is begin
 		return variant_exists (module.assembly_variants, variant);
-	end;
+	end variant_exists;
 
 
 
@@ -131,7 +131,7 @@ package body et_module is
 		return pac_assembly_variant_name.bounded_string
 	is begin
 		return module.assembly_variants.active;
-	end;
+	end get_active_variant;
 
 
 
@@ -140,7 +140,7 @@ package body et_module is
 		return natural
 	is begin
 		return get_count (module.assembly_variants);
-	end;
+	end get_variant_count;
 
 end et_module;
 

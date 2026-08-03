@@ -44,7 +44,7 @@
 package body et_canvas_schematic_preliminary_object is
 
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 end et_canvas_schematic_preliminary_object;

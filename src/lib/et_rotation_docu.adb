@@ -48,7 +48,7 @@ package body et_rotation_docu is
 		return type_rotation_documentation
 	is begin
 		return type_rotation_documentation'value (rotation);
-	end;
+	end to_rotation_documentation;
 
 
 

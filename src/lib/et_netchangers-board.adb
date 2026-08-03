@@ -57,7 +57,7 @@ package body et_netchangers.board is
 	is begin
 		return to_string (position.place)
 			& " layer " & to_string (position.layer);
-	end;
+	end to_string;
 
 
 
@@ -66,7 +66,7 @@ package body et_netchangers.board is
 		place		: in type_vector_model)
 	is begin
 		netchanger.position_brd.place := place;
-	end;
+	end set_place;
 
 
 
@@ -75,7 +75,7 @@ package body et_netchangers.board is
 		return type_vector_model
 	is begin
 		return netchanger.position_brd.place;
-	end;
+	end get_place;
 
 
 
@@ -85,7 +85,7 @@ package body et_netchangers.board is
 		layer		: in type_signal_layer)
 	is begin
 		netchanger.position_brd.layer := layer;
-	end;
+	end set_layer;
 
 
 
@@ -94,7 +94,7 @@ package body et_netchangers.board is
 		return type_signal_layer
 	is begin
 		return netchanger.position_brd.layer;
-	end;
+	end get_layer;
 
 
 
@@ -103,7 +103,7 @@ package body et_netchangers.board is
 		return string
 	is begin
 		return "L" & to_string (get_layer (netchanger));
-	end;
+	end get_layer;
 
 
 
@@ -149,7 +149,7 @@ package body et_netchangers.board is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -162,7 +162,7 @@ package body et_netchangers.board is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -175,7 +175,7 @@ package body et_netchangers.board is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -183,7 +183,7 @@ package body et_netchangers.board is
 		netchanger : in out type_netchanger)
 	is begin
 		set_proposed (netchanger.status_brd);
-	end;
+	end set_proposed;
 
 
 
@@ -192,7 +192,7 @@ package body et_netchangers.board is
 	is begin
 		set_selected (netchanger.status_sch);
 		set_selected (netchanger.status_brd);
-	end;
+	end set_selected;
 
 
 
@@ -201,7 +201,7 @@ package body et_netchangers.board is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (netchanger.status_brd, operation);
-	end;
+	end modify_status;
 
 
 
@@ -210,7 +210,7 @@ package body et_netchangers.board is
 	is begin
 		reset_status (netchanger.status_sch);
 		reset_status (netchanger.status_brd);
-	end;
+	end reset_status;
 
 
 

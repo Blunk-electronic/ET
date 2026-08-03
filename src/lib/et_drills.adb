@@ -95,21 +95,21 @@ package body et_drills is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 	procedure set_selected (
 		drill : in out type_drill)
 	is begin
 		set_selected (drill.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		drill : in out type_drill)
 	is begin
 		clear_selected (drill.status);
-	end;
+	end clear_selected;
 
 
 	function is_proposed (
@@ -121,7 +121,7 @@ package body et_drills is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -129,14 +129,14 @@ package body et_drills is
 		drill : in out type_drill)
 	is begin
 		set_proposed (drill.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		drill : in out type_drill)
 	is begin
 		clear_proposed (drill.status);
-	end;
+	end clear_proposed;
 
 
 	function is_moving (
@@ -148,7 +148,7 @@ package body et_drills is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 	procedure set_moving (

@@ -100,7 +100,7 @@ package body et_package_model is
 		else
 			return false;
 		end if;
-	end;
+	end is_bom_relevant;
 
 
 
@@ -122,7 +122,7 @@ package body et_package_model is
 		result.assy_doc.bottom := packge.assy_doc.bottom.placeholders;
 
 		return result;
-	end;
+	end get_default_placeholders;
 
 
 

@@ -67,7 +67,7 @@ package body et_module_read_board_outline is
 	procedure insert_outline_line is begin
 		append_segment (contour, (LINE, contour_line));
 		reset_line (contour_line);
-	end;
+	end insert_outline_line;
 
 
 
@@ -77,7 +77,7 @@ package body et_module_read_board_outline is
 
 		append_segment (contour, (ARC, contour_arc));
 		reset_arc (contour_arc);
-	end;
+	end insert_outline_arc;
 
 
 
@@ -98,7 +98,7 @@ package body et_module_read_board_outline is
 		-- Assign the circle to the contour:
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
-	end;
+	end insert_outline_circle;
 
 
 
@@ -133,7 +133,7 @@ package body et_module_read_board_outline is
 			process		=> do_it'access);
 
 		reset_contour (contour);
-	end;
+	end set_outline;
 
 
 
@@ -173,7 +173,7 @@ package body et_module_read_board_outline is
 			process		=> do_it'access);
 
 		reset_contour (contour);
-	end;
+	end add_hole;
 
 
 

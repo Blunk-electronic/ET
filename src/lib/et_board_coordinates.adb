@@ -168,7 +168,7 @@ package body et_board_coordinates is
 			when TOP	=> set_face (position, BOTTOM);
 			when BOTTOM	=> set_face (position, TOP);
 		end case;
-	end;
+	end toggle_face;
 
 
 
@@ -190,7 +190,7 @@ package body et_board_coordinates is
 	is begin
 		package_position.place := get_place (position);
 		package_position.rotation := get_rotation (position);
-	end;
+	end set_position;
 
 
 
@@ -199,7 +199,7 @@ package body et_board_coordinates is
 		return type_vector_model
 	is begin
 		return position.place;
-	end;
+	end get_place;
 
 
 
@@ -212,7 +212,7 @@ package body et_board_coordinates is
 		else
 			return false;
 		end if;
-	end;
+	end is_flipped;
 
 
 

@@ -144,7 +144,7 @@ package body et_logging is
 				when SEVERITY_NORMAL => return "";
 				when others => return type_message_severity'image (importance) & ": ";
 			end case;
-		end;
+		end to_importance;
 
 
 		function write_text (indentation_on : in boolean := true)
@@ -157,7 +157,7 @@ package body et_logging is
 			else
 				return to_importance (importance) & text;
 			end if;
-		end;
+		end write_text;
 
 	begin -- log
 		-- 		if level < no_logging then
@@ -345,7 +345,7 @@ package body et_logging is
 	begin
 		log_indentation_reset;
 		log (text => "source file " & file & " line" & natural'image (line), console => true);
-	end;
+	end show_line;
 
 
 end et_logging;

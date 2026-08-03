@@ -46,18 +46,18 @@ package body et_thermal_relief is
 
 	function to_string (connection : in type_pad_connection) return string is begin
 		return to_lower (type_pad_connection'image (connection));
-	end;
+	end to_string;
 
 
 	function to_pad_connection (connection : in string) return type_pad_connection is begin
 		return type_pad_connection'value (connection);
-	end;
+	end to_pad_connection;
 
 
 
 	function to_string (technology : in type_pad_technology) return string is begin
 		return to_lower (type_pad_technology'image (technology));
-	end;
+	end to_string;
 
 
 	function to_pad_technology (technology : in string) return type_pad_technology is begin
@@ -75,7 +75,7 @@ package body et_thermal_relief is
 		return "absolute position: " & to_string (terminal.position)
 			& " name: " & get_terminal_name (terminal.terminal);
 			-- CS: outline ?
-	end;
+	end to_string;
 
 
 
@@ -88,7 +88,7 @@ package body et_thermal_relief is
 		t : type_terminal_with_relief renames element (terminal);
 	begin
 		return get_terminal_name (t.terminal);
-	end;
+	end get_terminal_name;
 
 
 
@@ -99,7 +99,7 @@ package body et_thermal_relief is
 		t : type_terminal_with_relief renames element (terminal);
 	begin
 		return get_terminal_name (t.terminal);
-	end;
+	end get_terminal_name;
 
 
 
@@ -110,7 +110,7 @@ package body et_thermal_relief is
 		t : type_terminal_with_relief renames element (terminal);
 	begin
 		return to_string (t);
-	end;
+	end to_string;
 
 
 
@@ -124,7 +124,7 @@ package body et_thermal_relief is
 	begin
 		target.splice (before => pac_terminals_with_relief.no_element,
 					   source => scratch);
-	end;
+	end append_relieves;
 
 
 

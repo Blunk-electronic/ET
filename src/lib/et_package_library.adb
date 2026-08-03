@@ -122,7 +122,7 @@ package body et_package_library is
 		return pac_package_model_file.bounded_string
 	is begin
 		return key (model_cursor);
-	end;
+	end get_package_model_file;
 
 
 
@@ -131,7 +131,7 @@ package body et_package_library is
 		return string
 	is begin
 		return pac_package_model_file.to_string (key (model_cursor));
-	end;
+	end get_package_model_name;
 
 
 
@@ -184,7 +184,7 @@ package body et_package_library is
 		return pac_package_models.cursor
 	is begin
 		return pac_package_models.find (package_library, model_name);
-	end;
+	end get_package_model;
 
 
 
@@ -232,7 +232,7 @@ package body et_package_library is
 			use pac_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);
-		end;
+		end query_terminals;
 
 	begin
 		pac_package_models.query_element (

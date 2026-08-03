@@ -337,7 +337,7 @@ package body et_geometry_1.et_polygons.cropping is
 			if debug then
 				put_line ("OVERLAP STATUS: " & type_overlap_status'image (overlap_status));
 			end if;
-		end;
+		end show_overlap_status;
 
 
 	begin -- crop

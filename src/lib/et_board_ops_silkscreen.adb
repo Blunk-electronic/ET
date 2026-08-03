@@ -88,7 +88,7 @@ package body et_board_ops_silkscreen is
 						container	=> module.board.silkscreen.bottom.lines,
 						new_item	=> line);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -706,7 +706,7 @@ package body et_board_ops_silkscreen is
 						container	=> module.board.silkscreen.bottom.arcs,
 						new_item	=> arc);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -1259,7 +1259,7 @@ package body et_board_ops_silkscreen is
 						new_item	=> circle);
 
 			end case;
-		end;
+		end add;
 
 
 	begin

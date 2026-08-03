@@ -243,7 +243,7 @@ package body et_module_read_submodules is
 
 		-- clean up for next collection of ports
 		et_submodules.pac_submodule_ports.clear (submodule_ports);
-	end;
+	end assign_submodule_ports;
 
 
 

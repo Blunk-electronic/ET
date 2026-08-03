@@ -53,7 +53,7 @@ package body et_conductor_segment.boards is
 
 		line.width := type_track_width'first;
 		line.layer := type_signal_layer'first;
-	end;
+	end reset_line;
 
 
 
@@ -63,7 +63,7 @@ package body et_conductor_segment.boards is
 		return type_signal_layer
 	is begin
 		return line.layer;
-	end;
+	end get_layer;
 
 
 
@@ -135,7 +135,7 @@ package body et_conductor_segment.boards is
 		return type_vector_model
 	is begin
 		return get_A (element (line));
-	end;
+	end get_A;
 
 
 	function get_B (
@@ -143,7 +143,7 @@ package body et_conductor_segment.boards is
 		return type_vector_model
 	is begin
 		return get_B (element (line));
-	end;
+	end get_B;
 
 
 
@@ -291,7 +291,7 @@ package body et_conductor_segment.boards is
 
 		arc.width := type_track_width'first;
 		arc.layer := type_signal_layer'first;
-	end;
+	end reset_arc;
 
 
 
@@ -300,7 +300,7 @@ package body et_conductor_segment.boards is
 		return type_signal_layer
 	is begin
 		return arc.layer;
-	end;
+	end get_layer;
 
 
 
@@ -328,7 +328,7 @@ package body et_conductor_segment.boards is
 		return type_vector_model
 	is begin
 		return get_A (element (arc));
-	end;
+	end get_A;
 
 
 	function get_B (
@@ -336,7 +336,7 @@ package body et_conductor_segment.boards is
 		return type_vector_model
 	is begin
 		return get_B (element (arc));
-	end;
+	end get_B;
 
 
 
@@ -463,7 +463,7 @@ package body et_conductor_segment.boards is
 		return type_signal_layer
 	is begin
 		return circle.layer;
-	end;
+	end get_layer;
 
 
 

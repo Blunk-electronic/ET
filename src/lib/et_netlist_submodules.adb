@@ -76,7 +76,7 @@ package body et_netlist_submodules is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 

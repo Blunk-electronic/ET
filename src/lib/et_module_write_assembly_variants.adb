@@ -100,7 +100,7 @@ package body et_module_write_assembly_variants is
 				else
 					return "";
 				end if;
-			end;
+			end purpose;
 
 
 		begin -- query_devices

@@ -54,7 +54,7 @@ package body et_symbol_name is
 		return pac_symbol_model_name.bounded_string
 	is begin
 		return pac_symbol_model_name.to_bounded_string (name);
-	end;
+	end to_file_name;
 
 
 end et_symbol_name;

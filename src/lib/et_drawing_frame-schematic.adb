@@ -163,13 +163,13 @@ package body et_drawing_frame.schematic is
 
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
-	end;
+	end to_string;
 
 
 
 	function to_category (cat : in string) return type_schematic_sheet_category is begin
 		return type_schematic_sheet_category'value (cat);
-	end;
+	end to_category;
 
 
 
@@ -179,7 +179,7 @@ package body et_drawing_frame.schematic is
 		return type_sheet
 	is begin
 		return type_sheet (descriptions.length);
-	end;
+	end get_sheet_count;
 
 
 
@@ -196,7 +196,7 @@ package body et_drawing_frame.schematic is
 		cursor := frames.descriptions.to_cursor (sheet);
 
 		return has_element (cursor);
-	end;
+	end sheet_exists;
 
 
 
@@ -210,7 +210,7 @@ package body et_drawing_frame.schematic is
 	begin
 		sheet := to_index (sheet_cursor);
 		return to_string (sheet);
-	end;
+	end get_sheet;
 
 
 
@@ -224,7 +224,7 @@ package body et_drawing_frame.schematic is
 	begin
 		category := element (sheet_cursor).category;
 		return to_string (category);
-	end;
+	end get_category;
 
 
 
@@ -238,7 +238,7 @@ package body et_drawing_frame.schematic is
 	begin
 		content := element (sheet_cursor).content;
 		return to_string (content);
-	end;
+	end get_content;
 
 
 
@@ -252,7 +252,7 @@ package body et_drawing_frame.schematic is
 		use pac_schematic_descriptions;
 	begin
 		return type_sheet (frames.descriptions.length);
-	end;
+	end get_sheet_count;
 
 
 
@@ -275,7 +275,7 @@ package body et_drawing_frame.schematic is
 
 			-- Delete the sheet:
 			frames.descriptions.delete (cursor);
-		end;
+		end do_it;
 
 
 	begin
@@ -306,7 +306,7 @@ package body et_drawing_frame.schematic is
 			description	: in out type_schematic_description)
 		is begin
 			description.category := cat;
-		end;
+		end query_sheet;
 
 
 	begin

@@ -56,7 +56,7 @@ package body et_symbol_port_general is
 		return type_vector_model
 	is begin
 		return port.position;
-	end;
+	end get_place;
 
 
 
@@ -65,7 +65,7 @@ package body et_symbol_port_general is
 		place		: in type_vector_model)
 	is begin
 		port.position := place;
-	end;
+	end set_place;
 
 
 
@@ -75,7 +75,7 @@ package body et_symbol_port_general is
 		return type_rotation_relative
 	is begin
 		return port.rotation;
-	end;
+	end get_rotation;
 
 
 
@@ -84,7 +84,7 @@ package body et_symbol_port_general is
 		rotation	: in type_rotation_relative)
 	is begin
 		port.rotation := rotation;
-	end;
+	end set_rotation;
 
 
 
@@ -94,7 +94,7 @@ package body et_symbol_port_general is
 		return type_port_length
 	is begin
 		return port.length;
-	end;
+	end get_length;
 
 
 

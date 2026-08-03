@@ -53,12 +53,12 @@ package body et_kicad_coordinates is
 
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
 		return type_schematic_file_name.to_string (schematic);
-	end;
+	end to_string;
 
 
 	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string is begin
 		return type_schematic_file_name.to_bounded_string (file);
-	end;
+	end to_schematic_file_name;
 
 
 	procedure check_submodule_name_characters (
@@ -179,7 +179,7 @@ package body et_kicad_coordinates is
 
 	function path (position : in type_position) return type_path_to_submodule.list is begin
 		return position.path;
-	end;
+	end path;
 
 
 	procedure set_path (
@@ -188,7 +188,7 @@ package body et_kicad_coordinates is
 	begin
 		-- Sets the path in given position.
 		position.path := path;
-	end;
+	end set_path;
 
 -- 	procedure check_submodule_name_length (name : in string) is
 -- 	-- Checks if the given submodule name is not longer than allowed.
@@ -230,13 +230,13 @@ package body et_kicad_coordinates is
 	-- Returns the given submodule name as string.
 	begin
 		return type_submodule_name.to_string (submodule);
-	end;
+	end to_string;
 
 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
 	-- Converts a string to type_submodule_name.
 	begin
 		return type_submodule_name.to_bounded_string (submodule);
-	end;
+	end to_submodule_name;
 
 
 -- 	function to_string (

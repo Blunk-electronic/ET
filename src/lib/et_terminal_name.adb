@@ -48,7 +48,7 @@ package body et_terminal_name is
 		terminal : in pac_terminal_name.bounded_string)
 	return string is begin
 		return pac_terminal_name.to_string (terminal);
-	end;
+	end to_string;
 
 
 
@@ -57,7 +57,7 @@ package body et_terminal_name is
 		return pac_terminal_name.bounded_string
 	is begin
 		return pac_terminal_name.to_bounded_string (terminal);
-	end;
+	end to_terminal_name;
 
 
 end et_terminal_name;

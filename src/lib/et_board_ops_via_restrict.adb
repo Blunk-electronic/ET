@@ -210,7 +210,7 @@ package body et_board_ops_via_restrict is
 				log (text => "added as new zone", level => log_threshold + 1);
 				module.board.via_restrict.contours.append (zone);
 			end if;
-		end;
+		end query_module;
 
 
 	begin

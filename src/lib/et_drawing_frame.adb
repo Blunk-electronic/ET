@@ -47,37 +47,37 @@ package body et_drawing_frame is
 
 	function to_paper_size (paper_size : in string) return type_paper_size is begin
 		return type_paper_size'value (paper_size);
-	end;
+	end to_paper_size;
 
 	function to_string (paper_size : in type_paper_size) return string is begin
 		return type_paper_size'image (paper_size);
-	end;
+	end to_string;
 
 
 	function to_string (orientation : in type_orientation) return string is begin
 		return to_lower (type_orientation'image (orientation));
-	end;
+	end to_string;
 
 	function to_orientation (orientation : in string) return type_orientation is begin
 		return type_orientation'value (orientation);
-	end;
+	end to_orientation;
 
 
 	function to_string (rows : in type_rows) return string is begin
 		return trim (type_rows'image (rows), left);
-	end;
+	end to_string;
 
 	function to_rows (rows : in string) return type_rows is begin
 		return type_rows'value (rows);
-	end;
+	end to_rows;
 
 	function to_string (columns : in type_columns) return string is begin
 		return trim (type_columns'image (columns), left);
-	end;
+	end to_string;
 
 	function to_columns (columns : in string) return type_columns is begin
 		return type_columns'value (columns);
-	end;
+	end to_columns;
 
 
 
@@ -88,7 +88,7 @@ package body et_drawing_frame is
 		return string
 	is begin
 		return type_distance'image (distance);
-	end;
+	end to_string;
 
 
 
@@ -97,7 +97,7 @@ package body et_drawing_frame is
 		return type_distance
 	is begin
 		return type_distance'value (distance);
-	end;
+	end to_distance;
 
 
 
@@ -185,13 +185,13 @@ package body et_drawing_frame is
 
 	function to_string (name : in pac_template_name.bounded_string) return string is begin
 		return pac_template_name.to_string (name);
-	end;
+	end to_string;
 
 
 
 	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
 		return pac_template_name.to_bounded_string (name);
-	end;
+	end to_template_name;
 
 
 
@@ -199,13 +199,13 @@ package body et_drawing_frame is
 		s : constant string := type_domain'image (domain);
 	begin
 		return s (domain_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 
 	function to_domain (domain : in string) return type_domain is begin
 		return type_domain'value (domain_prefix & domain);
-	end;
+	end to_domain;
 
 
 

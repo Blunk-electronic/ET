@@ -122,7 +122,7 @@ package body et_module_read_pcb_layer_stack is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_layer;
 
 
 

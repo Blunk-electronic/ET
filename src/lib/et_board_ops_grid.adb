@@ -61,7 +61,7 @@ package body et_board_ops_grid is
 		begin
 			-- Set the grid in the database:
 			module.board.grid := grid;
-		end;
+		end do_it;
 
 
 	begin -- set_grid
@@ -95,7 +95,7 @@ package body et_board_ops_grid is
 		begin
 			-- Set the grid in the database:
 			module.board.grid := grid;
-		end;
+		end do_it;
 
 
 	begin -- set_grid
@@ -132,7 +132,7 @@ package body et_board_ops_grid is
 		begin
 			-- Get the grid from the database:
 			result := module.board.grid;
-		end;
+		end do_it;
 
 
 	begin

@@ -65,11 +65,11 @@ package body et_pcb_sides is
 
 	function to_string (flipped : in type_flipped) return string is begin
 		return to_lower (type_flipped'image (flipped));
-	end;
+	end to_string;
 
 	function to_flipped (flipped : in string) return type_flipped is begin
 		return type_flipped'value (flipped);
-	end;
+	end to_flipped;
 
 
 

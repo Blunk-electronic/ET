@@ -48,7 +48,7 @@ package body et_modes.project is
 		s : constant string := type_verb_project'image (verb);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 
@@ -58,7 +58,7 @@ package body et_modes.project is
 		exception when others =>
 			log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
-	end;
+	end to_verb;
 
 
 
@@ -66,7 +66,7 @@ package body et_modes.project is
 		s : constant string := type_noun_project'image (noun);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 
@@ -76,7 +76,7 @@ package body et_modes.project is
 		exception when others =>
 			log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
-	end;
+	end to_noun;
 
 
 end et_modes.project;

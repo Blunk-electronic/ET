@@ -1715,7 +1715,7 @@ package body et_canvas_schematic_units is
 		if unit_add.valid then
 			add (unit_add.rotation, 90.0);
 		end if;
-	end;
+	end rotate_unit_add;
 
 
 
@@ -1804,7 +1804,7 @@ package body et_canvas_schematic_units is
 			box_v4.remove (box_package_variant);
 			box_package_variant_active := false;
 		end if;
-	end;
+	end remove_box_package_variant;
 
 
 
@@ -2475,7 +2475,7 @@ package body et_canvas_schematic_units is
 		if unit_fetch.valid then
 			add (unit_fetch.rotation, 90.0);
 		end if;
-	end;
+	end rotate_unit_fetch;
 
 
 
@@ -2483,7 +2483,7 @@ package body et_canvas_schematic_units is
 
 	procedure reset_unit_fetch is begin
 		unit_fetch := (others => <>);
-	end;
+	end reset_unit_fetch;
 
 
 

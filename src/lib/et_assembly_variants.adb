@@ -50,11 +50,11 @@ package body et_assembly_variants is
 
 	function to_mounted (mounted : in string) return type_mounted is begin
 		return type_mounted'value (mounted);
-	end;
+	end to_mounted;
 
 	function to_mounted (mounted : in type_mounted) return string is begin
 		return space & to_lower (type_mounted'image (mounted));
-	end;
+	end to_mounted;
 
 
 
@@ -63,7 +63,7 @@ package body et_assembly_variants is
 		return natural
 	is begin
 		return natural (length (variants));
-	end;
+	end get_count;
 
 
 
@@ -125,7 +125,7 @@ package body et_assembly_variants is
 		return natural
 	is begin
 		return get_count (variants.variants);
-	end;
+	end get_count;
 
 
 
@@ -135,7 +135,7 @@ package body et_assembly_variants is
 		return boolean
 	is begin
 		return contains (variants.variants, variant);
-	end;
+	end variant_exists;
 
 
 

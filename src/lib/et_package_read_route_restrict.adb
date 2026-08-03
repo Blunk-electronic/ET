@@ -263,7 +263,7 @@ package body et_package_read_route_restrict is
 
 		-- clean up for next contour
 		reset_contour (contour);
-	end;
+	end insert_route_restrict_zone;
 
 
 
@@ -280,7 +280,7 @@ package body et_package_read_route_restrict is
 
 		-- clean up for next contour
 		reset_contour (contour);
-	end;
+	end insert_route_restrict_zone_cutout;
 
 
 

@@ -76,7 +76,7 @@ package body et_schematic_ops_assembly_variant is
 		log (SEVERITY_ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
 		raise constraint_error;
-	end;
+	end assembly_variant_not_found;
 
 
 
@@ -91,7 +91,7 @@ package body et_schematic_ops_assembly_variant is
 		use pac_assembly_variants;
 	begin
 		return find (module.assembly_variants.variants, variant_name);
-	end;
+	end get_assembly_variant;
 
 
 
@@ -373,7 +373,7 @@ package body et_schematic_ops_assembly_variant is
 			query_element (
 				position	=> variant_cursor,
 				process		=> query_devices'access);
-		end;
+		end query_variants;
 
 
 	begin
@@ -428,7 +428,7 @@ package body et_schematic_ops_assembly_variant is
 			query_element (
 				position	=> variant_cursor,
 				process		=> query_devices'access);
-		end;
+		end query_variants;
 
 	begin
 		pac_generic_modules.query_element (
@@ -467,7 +467,7 @@ package body et_schematic_ops_assembly_variant is
 			else
 				return " purpose " & enclose_in_quotes (to_string (purpose));
 			end if;
-		end;
+		end write_purpose;
 
 
 		procedure mount (

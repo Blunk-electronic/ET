@@ -70,7 +70,7 @@ package body et_file_write is
 
 	procedure reset_tab_depth is begin
 		tab_depth := type_tab_depth'first;
-	end;
+	end reset_tab_depth;
 
 
 

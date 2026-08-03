@@ -54,7 +54,7 @@ package body et_submodules is
 			to_string (size.x) &
 			axis_separator &
 			to_string (size.y);
-	end;
+	end to_submodule_size;
 
 
 
@@ -105,14 +105,14 @@ package body et_submodules is
 
 	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
 		return pac_submodule_path.to_bounded_string (path);
-	end;
+	end to_submodule_path;
 
 
 
 
 	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
 		return pac_submodule_path.to_string (path);
-	end;
+	end to_string;
 
 
 
@@ -148,14 +148,14 @@ package body et_submodules is
 			pragma unreferenced (name);
 		begin
 			move_by (port.position, offset.place);
-		end;
+		end move;
 
 		procedure query_port (cursor : in pac_submodule_ports.cursor) is begin
 			pac_submodule_ports.update_element (
 				container	=> ports,
 				position	=> cursor,
 				process		=> move'access);
-		end;
+		end query_port;
 
 	begin -- move_ports
 		pac_submodule_ports.iterate (ports, query_port'access);
@@ -167,14 +167,14 @@ package body et_submodules is
 
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return to_lower (type_submodule_view_mode'image (view));
-	end;
+	end to_string;
 
 
 
 
 	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
 		return type_submodule_view_mode'value (mode);
-	end;
+	end to_view_mode;
 
 
 
@@ -183,7 +183,7 @@ package body et_submodules is
 		return natural
 	is begin
 		return natural (submodules.length);
-	end;
+	end get_count;
 
 
 

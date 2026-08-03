@@ -53,7 +53,7 @@ package body et_geometry_2a.grid is
 		use ada.characters.handling;
 	begin
 		return to_lower (type_grid_on_off'image (on_off));
-	end;
+	end to_string;
 
 
 	function to_on_off (
@@ -72,7 +72,7 @@ package body et_geometry_2a.grid is
 		use ada.characters.handling;
 	begin
 		return to_lower (type_grid_style'image (style));
-	end;
+	end to_string;
 
 
 	function to_style (
@@ -80,7 +80,7 @@ package body et_geometry_2a.grid is
 		return type_grid_style
 	is begin
 		return type_grid_style'value (style);
-	end;
+	end to_style;
 
 
 
@@ -166,7 +166,7 @@ package body et_geometry_2a.grid is
 		return type_grid_notches
 	is begin
 		return type_grid_notches'value (notches);
-	end;
+	end to_notches;
 
 
 	function to_string (
@@ -174,7 +174,7 @@ package body et_geometry_2a.grid is
 		return string
 	is begin
 		return type_grid_notches'image (notches);
-	end;
+	end to_string;
 
 
 

@@ -67,7 +67,7 @@ package body et_text_vectorized is
 			reset_text (type_text (text));
 			reset_position (text.position);
 			text.line_width := line_width_default;
-		end;
+		end reset_text;
 
 
 
@@ -90,7 +90,7 @@ package body et_text_vectorized is
 			place	: in type_vector_model)
 		is begin
 			text.position.place := place;
-		end;
+		end set_place;
 
 
 
@@ -240,7 +240,7 @@ package body et_text_vectorized is
 		is begin
 			reset_text (type_text_fab (text));
 			clear_content (text.content);
-		end;
+		end reset_text;
 
 
 
@@ -254,7 +254,7 @@ package body et_text_vectorized is
 			else
 				return false;
 			end if;
-		end;
+		end is_empty;
 
 
 

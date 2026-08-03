@@ -145,7 +145,7 @@ package body et_package_read_terminal is
 		end case;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_conductor_tht;
 
 
 
@@ -163,7 +163,7 @@ package body et_package_read_terminal is
 		end case;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stopmask_tht;
 
 
 
@@ -172,7 +172,7 @@ package body et_package_read_terminal is
 		tht_millings := contour;
 
 		reset_contour (contour);
-	end;
+	end assign_plated_millings;
 
 
 
@@ -183,7 +183,7 @@ package body et_package_read_terminal is
 		smt_pad_shape := contour;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_conductor_smt;
 
 
 
@@ -193,7 +193,7 @@ package body et_package_read_terminal is
 		smt_stop_mask_contours := (contour with null record);
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stopmask_smt;
 
 
 
@@ -203,7 +203,7 @@ package body et_package_read_terminal is
 		smt_stencil_contours := (contour with null record);
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stencil_smt;
 
 
 

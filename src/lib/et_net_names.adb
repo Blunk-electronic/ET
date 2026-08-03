@@ -183,7 +183,7 @@ package body et_net_names is
 		net_name : in out pac_net_name.bounded_string)
 	is begin
 		net_name := no_name;
-	end;
+	end clear_net_name;
 
 
 
@@ -213,7 +213,7 @@ package body et_net_names is
 			return string
 		is begin
 			return "Net " & to_string (name) & " not found !";
-		end;
+		end get_message_text;
 
 
 	begin
@@ -252,7 +252,7 @@ package body et_net_names is
 			return string
 		is begin
 			return "Net " & to_string (name) & " already exists !";
-		end;
+		end get_message_text;
 
 
 	begin

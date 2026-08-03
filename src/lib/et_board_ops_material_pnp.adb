@@ -109,7 +109,7 @@ package body et_board_ops_material_pnp is
 						log (text => "and applying submodule" & to_string (position_in_board),
 							level => log_threshold + 1);
 					end if;
-				end;
+				end log_position_in_board;
 
 
 				procedure query_devices (
@@ -135,7 +135,7 @@ package body et_board_ops_material_pnp is
 							level => log_threshold + 2);
 
 						return device_position;
-					end;
+					end apply_position_in_board;
 
 
 					procedure test_inserted is begin
@@ -144,7 +144,7 @@ package body et_board_ops_material_pnp is
 									console => true);
 							raise constraint_error;
 						end if;
-					end;
+					end test_inserted;
 
 
 					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is

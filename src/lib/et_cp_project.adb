@@ -100,14 +100,14 @@ package body et_cp_project is
 		-- Call it in case the given command is too long:
 		procedure too_long is begin
 			command_too_long (cmd, cmd_field_count - 1);
-		end;
+		end too_long;
 
 
 		-- This procedure is a shortcut.
 		-- Call it in case the given command is incomplete:
 		procedure command_incomplete is begin
 			command_incomplete (cmd);
-		end;
+		end command_incomplete;
 
 
 		-- This function is a shortcut to get a single field
@@ -116,7 +116,7 @@ package body et_cp_project is
 			return string
 		is begin
 			return get_field (cmd, place);
-		end;
+		end get_field;
 
 
 

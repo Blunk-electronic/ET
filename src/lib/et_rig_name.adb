@@ -43,7 +43,7 @@ package body et_rig_name is
 
 
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 end et_rig_name;

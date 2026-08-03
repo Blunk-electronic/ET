@@ -203,7 +203,7 @@ package body et_geometry_2a is
 	is begin
 		limit_to_minimum (distance, minimum);
 		limit_to_maximum (distance, maximum);
-	end;
+	end clip;
 
 
 
@@ -223,7 +223,7 @@ package body et_geometry_2a is
 		return string
 	is begin
 		return pac_geometry_1.distance_to_mil (type_float (distance));
-	end;
+	end distance_to_mil;
 
 
 
@@ -352,7 +352,7 @@ package body et_geometry_2a is
 		else
 			null;
 		end if;
-	end;
+	end toggle_rotation;
 
 
 
@@ -368,7 +368,7 @@ package body et_geometry_2a is
 		end if;
 		-- CS suppress trailing zeros
 		-- use package fixed point in/out ?
-	end;
+	end to_string;
 
 
 
@@ -377,7 +377,7 @@ package body et_geometry_2a is
 		return type_rotation
 	is begin
 		return type_rotation'value (rotation);
-	end;
+	end to_rotation;
 
 
 
@@ -455,7 +455,7 @@ package body et_geometry_2a is
 
 		result := to_rotation (scratch);
 		return result;
-	end;
+	end add;
 
 
 
@@ -480,7 +480,7 @@ package body et_geometry_2a is
 	begin
 		-- CS
 		return false;
-	end;
+	end is_orthogonal;
 
 
 
@@ -493,7 +493,7 @@ package body et_geometry_2a is
 		else
 			return false;
 		end if;
-	end;
+	end is_0_or_90;
 
 
 
@@ -583,7 +583,7 @@ package body et_geometry_2a is
 	is begin
 		point.x := zero;
 		point.y := zero;
-	end;
+	end reset;
 
 
 
@@ -634,7 +634,7 @@ package body et_geometry_2a is
 		r.x := left.x + right.x;
 		r.y := left.y + right.y;
 		return r;
-	end;
+	end "+";
 
 
 
@@ -660,7 +660,7 @@ package body et_geometry_2a is
 		r.x := left.x - right.x;
 		r.y := left.y - right.y;
 		return r;
-	end;
+	end "-";
 
 
 
@@ -864,7 +864,7 @@ package body et_geometry_2a is
 		return type_rotation
 	is begin
 		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
-	end;
+	end get_rotation_about_origin;
 
 
 
@@ -874,7 +874,7 @@ package body et_geometry_2a is
 		return type_position_axis
 	is begin
 		return point.x;
-	end;
+	end get_x;
 
 
 
@@ -883,7 +883,7 @@ package body et_geometry_2a is
 		return type_position_axis
 	is begin
 		return point.y;
-	end;
+	end get_y;
 
 
 	function set (
@@ -895,7 +895,7 @@ package body et_geometry_2a is
 		point.x := x;
 		point.y := y;
 		return point;
-	end;
+	end set;
 
 
 	procedure set (
@@ -907,7 +907,7 @@ package body et_geometry_2a is
 			when AXIS_X => point.x := value;
 			when AXIS_Y => point.y := value;
 		end case;
-	end;
+	end set;
 
 
 
@@ -917,7 +917,7 @@ package body et_geometry_2a is
 	is begin
 		point.x := position.x;
 		point.y := position.y;
-	end;
+	end set;
 
 
 
@@ -1100,7 +1100,7 @@ package body et_geometry_2a is
 			when DIR_UP		=> point.y := point.y + distance;
 			when DIR_DOWN	=> point.y := point.y - distance;
 		end case;
-	end;
+	end move;
 
 
 
@@ -1179,7 +1179,7 @@ package body et_geometry_2a is
 		end if;
 
 		-- CS compare absolute distance to origin instead
-	end;
+	end "<";
 
 
 
@@ -1225,11 +1225,11 @@ package body et_geometry_2a is
 
 		procedure move (p : in out type_vector_model) is begin
 			move_by (p, offset);
-		end;
+		end move;
 
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, move'access);
-		end;
+		end query_point;
 
 	begin
 		points.iterate (query_point'access);
@@ -1246,11 +1246,11 @@ package body et_geometry_2a is
 
 		procedure rotate (p : in out type_vector_model) is begin
 			rotate_by (p, rotation);
-		end;
+		end rotate;
 
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, rotate'access);
-		end;
+		end query_point;
 
 	begin
 		points.iterate (query_point'access);
@@ -1267,11 +1267,11 @@ package body et_geometry_2a is
 
 		procedure mirror_point (p : in out type_vector_model) is begin
 			mirror_point (p, mirror);
-		end;
+		end mirror_point;
 
 		procedure query_point (c : in pac_points.cursor) is begin
 			points.update_element (c, mirror_point'access);
-		end;
+		end query_point;
 
 	begin
 		points.iterate (query_point'access);
@@ -1345,7 +1345,7 @@ package body et_geometry_2a is
 
 		procedure query_vector (c : in pac_vectors.cursor) is begin
 			result.append (to_vector_model (element (c)));
-		end;
+		end query_vector;
 
 	begin
 		vectors.iterate (query_vector'access);
@@ -1395,7 +1395,7 @@ package body et_geometry_2a is
 		position	: in type_vector_model)
 	is begin
 		area.position := position;
-	end;
+	end set_position;
 
 
 
@@ -1404,7 +1404,7 @@ package body et_geometry_2a is
 		width	: in type_distance_positive)
 	is begin
 		area.width := width;
-	end;
+	end set_width;
 
 
 
@@ -1414,7 +1414,7 @@ package body et_geometry_2a is
 		height	: in type_distance_positive)
 	is begin
 		area.height := height;
-	end;
+	end set_height;
 
 
 
@@ -1685,7 +1685,7 @@ package body et_geometry_2a is
 			when A => return B;
 			when B => return A;
 		end case;
-	end;
+	end get_opposide_end;
 
 
 
@@ -1705,7 +1705,7 @@ package body et_geometry_2a is
 		return type_start_end_point
 	is begin
 		return type_start_end_point'value (point);
-	end;
+	end to_start_end_point;
 
 
 
@@ -1716,7 +1716,7 @@ package body et_geometry_2a is
 		line : in out type_line)
 	is begin
 		line := (others => <>);
-	end;
+	end reset_line;
 
 
 
@@ -1730,7 +1730,7 @@ package body et_geometry_2a is
 		l.A := A;
 		l.B := B;
 		return l;
-	end;
+	end to_line;
 
 
 
@@ -1741,7 +1741,7 @@ package body et_geometry_2a is
 	is begin
 		return "A: " & to_string (line.A)
 			& " B: " & to_string (line.B);
-	end;
+	end to_string;
 
 
 
@@ -1755,7 +1755,7 @@ package body et_geometry_2a is
 			when A => return line.A;
 			when B => return line.B;
 		end case;
-	end;
+	end get_end_point;
 
 
 
@@ -1960,7 +1960,7 @@ package body et_geometry_2a is
 		end case;
 
 		return result;
-	end;
+	end get_x_of_west_end;
 
 
 
@@ -1986,7 +1986,7 @@ package body et_geometry_2a is
 		end case;
 
 		return result;
-	end;
+	end get_x_of_east_end;
 
 
 
@@ -2013,7 +2013,7 @@ package body et_geometry_2a is
 		end case;
 
 		return result;
-	end;
+	end get_y_of_north_end;
 
 
 
@@ -2040,7 +2040,7 @@ package body et_geometry_2a is
 		end case;
 
 		return result;
-	end;
+	end get_y_of_south_end;
 
 
 
@@ -2077,7 +2077,7 @@ package body et_geometry_2a is
 		return type_vector_model
 	is begin
 		return line.A;
-	end;
+	end get_A;
 
 
 
@@ -2086,7 +2086,7 @@ package body et_geometry_2a is
 		return type_vector_model
 	is begin
 		return line.B;
-	end;
+	end get_B;
 
 
 
@@ -2109,7 +2109,7 @@ package body et_geometry_2a is
 		A		: in type_vector_model)
 	is begin
 		line.A := A;
-	end;
+	end set_A;
 
 
 	procedure set_B (
@@ -2117,7 +2117,7 @@ package body et_geometry_2a is
 		B		: in type_vector_model)
 	is begin
 		line.B := B;
-	end;
+	end set_B;
 
 
 
@@ -2126,7 +2126,7 @@ package body et_geometry_2a is
 		offset	: in type_vector_model)
 	is begin
 		move_by (line.A, offset);
-	end;
+	end move_A_by;
 
 
 
@@ -2135,7 +2135,7 @@ package body et_geometry_2a is
 		offset	: in type_vector_model)
 	is begin
 		move_by (line.B, offset);
-	end;
+	end move_B_by;
 
 
 
@@ -2173,7 +2173,7 @@ package body et_geometry_2a is
 		return boolean
 	is begin
 		return is_A_selected (line.status_AB);
-	end;
+	end is_A_selected;
 
 
 	function is_B_selected (
@@ -2181,35 +2181,35 @@ package body et_geometry_2a is
 		return boolean
 	is begin
 		return is_B_selected (line.status_AB);
-	end;
+	end is_B_selected;
 
 
 	procedure set_A_selected (
 		line : in out type_line)
 	is begin
 		set_A_selected (line.status_AB);
-	end;
+	end set_A_selected;
 
 
 	procedure set_B_selected (
 		line : in out type_line)
 	is begin
 		set_B_selected (line.status_AB);
-	end;
+	end set_B_selected;
 
 
 	procedure clear_A_selected (
 		line	: in out type_line)
 	is begin
 		clear_A_selected (line.status_AB);
-	end;
+	end clear_A_selected;
 
 
 	procedure clear_B_selected (
 		line	: in out type_line)
 	is begin
 		clear_B_selected (line.status_AB);
-	end;
+	end clear_B_selected;
 
 
 
@@ -2286,7 +2286,7 @@ package body et_geometry_2a is
 		return boolean
 	is begin
 		return is_A_moving (line.status_AB);
-	end;
+	end is_A_moving;
 
 
 	function is_B_moving (
@@ -2294,7 +2294,7 @@ package body et_geometry_2a is
 		return boolean
 	is begin
 		return is_B_moving (line.status_AB);
-	end;
+	end is_B_moving;
 
 
 
@@ -2304,14 +2304,14 @@ package body et_geometry_2a is
 		line	: in out type_line)
 	is begin
 		set_A_moving (line.status_AB);
-	end;
+	end set_A_moving;
 
 
 	procedure clear_A_moving (
 		line	: in out type_line)
 	is begin
 		clear_A_moving (line.status_AB);
-	end;
+	end clear_A_moving;
 
 
 
@@ -2319,7 +2319,7 @@ package body et_geometry_2a is
 		line	: in out type_line)
 	is begin
 		set_B_moving (line.status_AB);
-	end;
+	end set_B_moving;
 
 
 
@@ -2327,7 +2327,7 @@ package body et_geometry_2a is
 		line	: in out type_line)
 	is begin
 		clear_B_moving (line.status_AB);
-	end;
+	end clear_B_moving;
 
 
 
@@ -2427,7 +2427,7 @@ package body et_geometry_2a is
 	is begin
 		rotate_by (line.A, rotation);
 		rotate_by (line.B, rotation);
-	end;
+	end rotate_line_by;
 
 
 
@@ -3469,7 +3469,7 @@ package body et_geometry_2a is
 		rotate_by (arc.center, rotation);
 		rotate_by (arc.A, rotation);
 		rotate_by (arc.B, rotation);
-	end;
+	end rotate_arc_by;
 
 
 
@@ -3946,7 +3946,7 @@ package body et_geometry_2a is
 		rotation	: in type_rotation)
 	is begin
 		rotate_by (circle.center, rotation);
-	end;
+	end rotate_circle_by;
 
 
 
@@ -4023,7 +4023,7 @@ package body et_geometry_2a is
 		position : in out type_position)
 	is begin
 		position := origin_zero_rotation;
-	end;
+	end reset_position;
 
 
 
@@ -4141,7 +4141,7 @@ package body et_geometry_2a is
 		place		: in type_vector_model)
 	is begin
 		position.place := place;
-	end;
+	end set_place;
 
 
 
@@ -4150,7 +4150,7 @@ package body et_geometry_2a is
 		offset		: in type_vector_model)
 	is begin
 		move_by (position.place, offset);
-	end;
+	end set_place_relative;
 
 
 
@@ -4179,7 +4179,7 @@ package body et_geometry_2a is
 		return type_rotation
 	is begin
 		return position.rotation;
-	end;
+	end get_rotation;
 
 
 	procedure set_rotation (
@@ -4187,7 +4187,7 @@ package body et_geometry_2a is
 		rotation	: in type_rotation)
 	is begin
 		position.rotation := rotation;
-	end;
+	end set_rotation;
 
 
 
@@ -4197,7 +4197,7 @@ package body et_geometry_2a is
 		rotation	: in type_rotation)
 	is begin
 		position.rotation := add (position.rotation, rotation);
-	end;
+	end set_rotation_relative;
 
 
 
@@ -4443,7 +4443,7 @@ package body et_geometry_2a is
 		return string
 	is begin
 		return type_line_zone'image (zone);
-	end;
+	end to_string;
 
 
 
@@ -4758,7 +4758,7 @@ package body et_geometry_2a is
 	is begin
 		return "from " & to_string (drag.before)
 		& " to " & to_string (drag.after);
-	end;
+	end to_string;
 
 
 

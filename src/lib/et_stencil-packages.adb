@@ -59,7 +59,7 @@ package body et_stencil.packages is
 			when BOTTOM =>
 				append (stencil.bottom.zones, zone);
 		end case;
-	end;
+	end add_zone;
 
 
 end et_stencil.packages;

@@ -109,7 +109,7 @@ package body et_module_read_design_rules is
 			end if;
 
 			-- CS module.rules.erc ?
-		end;
+		end do_it;
 
 	begin
 		log (text => "design rules ...", level => log_threshold + 1);

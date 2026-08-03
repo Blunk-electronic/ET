@@ -67,7 +67,7 @@ package body et_package_read_hole is
 		packge.holes.append ((contour with null record));
 
 		reset_contour (contour);
-	end;
+	end insert_hole;
 
 
 end et_package_read_hole;

@@ -247,11 +247,11 @@ package body et_fill_zones is
 
 	function to_easing_style (easing : in string) return type_easing_style is begin
 		return type_easing_style'value (easing);
-	end;
+	end to_easing_style;
 
 	function to_string (easing : in type_easing_style) return string is begin
 		return to_lower (type_easing_style'image (easing));
-	end;
+	end to_string;
 
 
 
@@ -644,7 +644,7 @@ package body et_fill_zones is
 				island_exists	=> border_exists,
 				distance		=> distance,
 				log_threshold	=> log_threshold + 2);
-		end;
+		end between_islands;
 
 
 
@@ -660,7 +660,7 @@ package body et_fill_zones is
 			-- Get the distance from the point to
 			-- the shore of the lake:
 			distance := get_distance_to_border (lake, point, direction);
-		end;
+		end in_lake;
 
 
 

@@ -55,7 +55,7 @@ package body et_package_variant_name is
 		else
 			return false;
 		end if;
-	end;
+	end is_empty;
 
 
 
@@ -65,7 +65,7 @@ package body et_package_variant_name is
 		return pac_package_variant_name.bounded_string
 	is begin
 		return pac_package_variant_name.to_bounded_string (variant_name);
-	end;
+	end to_variant_name;
 
 
 	-- function to_string (

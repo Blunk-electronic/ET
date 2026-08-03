@@ -74,7 +74,7 @@ is
 		write (keyword => keyword_generic_name, parameters => to_string (element (instance_cursor).generic_name));
 		write (keyword => keyword_instance_name, parameters => to_string (key (instance_cursor)));
 		section_mark (section_module, FOOTER);
-	end;
+	end query_instance;
 
 
 
@@ -91,7 +91,7 @@ is
 		-- CS: net comparator, warnings
 
 		section_mark (section_connector, FOOTER);
-	end;
+	end query_connections;
 
 
 begin -- save_rig_configuration

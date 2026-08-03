@@ -46,12 +46,12 @@ package body et_assembly_technology is
 
 	function to_string (technology : in type_assembly_technology) return string is begin
 		return type_assembly_technology'image (technology);
-	end;
+	end to_string;
 
 
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
 		return type_assembly_technology'value (technology);
-	end;
+	end to_assembly_technology;
 
 
 end et_assembly_technology;

@@ -55,7 +55,7 @@ package body et_design_rules is
 		-- else
 			return false;
 		-- end if;
-	end;
+	end schematic_rules_assigned;
 
 
 
@@ -71,7 +71,7 @@ package body et_design_rules is
 		else
 			return false;
 		end if;
-	end;
+	end board_rules_assigned;
 
 
 

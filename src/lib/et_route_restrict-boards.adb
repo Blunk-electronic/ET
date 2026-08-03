@@ -52,7 +52,7 @@ package body et_route_restrict.boards is
 		set_A (line, origin);
 		set_B (line, origin);
 		clear (line.layers);
-	end;
+	end reset_line;
 
 
 
@@ -66,8 +66,8 @@ package body et_route_restrict.boards is
 		-- results in an invalid arc.
 
 		clear (arc.layers);
-		set_direction (arc, CCW);
-	end;
+		set_direction (arc,CCW);
+	end reset_arc;
 
 
 
@@ -77,7 +77,7 @@ package body et_route_restrict.boards is
 		set_center (circle, origin);
 		set_radius (circle, 0.0);
 		clear (circle.layers);
-	end;
+	end reset_circle;
 
 
 

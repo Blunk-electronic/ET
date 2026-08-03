@@ -82,7 +82,7 @@ package body et_net_ports_devices is
 		else
 			return false;
 		end if;
-	end;
+	end "<";
 
 
 
@@ -100,7 +100,7 @@ package body et_net_ports_devices is
 		result.unit_name := unit;
 		result.port_name := port;
 		return result;
-	end;
+	end to_device_port;
 
 
 
@@ -118,7 +118,7 @@ package body et_net_ports_devices is
 			return string
 		is begin
 			return get_field (arguments, place);
-		end;
+		end f;
 
 	begin
 		error := false;

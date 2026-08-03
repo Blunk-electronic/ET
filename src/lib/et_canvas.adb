@@ -77,7 +77,7 @@ package body et_canvas is
 		s_in : in type_zoom_factor)
 	is begin
 		S := s_in;
-	end;
+	end set_zoom_factor;
 
 
 
@@ -722,7 +722,7 @@ package body et_canvas is
 
 				area := (others => <>);
 			end if;
-		end;
+		end compute_area;
 
 
 	begin
@@ -789,7 +789,7 @@ package body et_canvas is
 
 	procedure reset_group_area_keyboard is begin
 		group_area_keyboard := (others => <>);
-	end;
+	end reset_group_area_keyboard;
 
 
 
@@ -915,12 +915,12 @@ package body et_canvas is
 
 	procedure set_group_moving is begin
 		group_is_moving := true;
-	end;
+	end set_group_moving;
 
 
 	procedure set_group_not_moving is begin
 		group_is_moving := false;
-	end;
+	end set_group_not_moving;
 
 
 
@@ -928,12 +928,12 @@ package body et_canvas is
 
 	procedure set_group_being_copied is begin
 		group_is_being_copied := true;
-	end;
+	end set_group_being_copied;
 
 
 	procedure set_group_not_being_copied is begin
 		group_is_being_copied := false;
-	end;
+	end set_group_not_being_copied;
 
 
 
@@ -942,12 +942,12 @@ package body et_canvas is
 
 	procedure set_group_being_pasted is begin
 		group_is_being_pasted := true;
-	end;
+	end set_group_being_pasted;
 
 
 	procedure set_group_not_being_pasted is begin
 		group_is_being_pasted := false;
-	end;
+	end set_group_not_being_pasted;
 
 
 
@@ -957,7 +957,7 @@ package body et_canvas is
 		return type_vector_model
 	is begin
 		return get_object_tool_position - object_point_of_attack;
-	end;
+	end get_group_offset;
 
 
 
@@ -3791,7 +3791,7 @@ package body et_canvas is
 	procedure reset_editing_process is begin
 		log (text => "editing_process full RESET", level => log_threshold);
 		editing_process := (others => <>);
-	end;
+	end reset_editing_process;
 
 
 
@@ -3831,18 +3831,18 @@ package body et_canvas is
 		log (text => "editing_process.runnning SET", level => log_threshold);
 		editing_process.running := true;
 		editing_process.escape_counter := 0;
-	end;
+	end set_edit_process_running;
 
 
 	procedure reset_edit_process_running is begin
 		log (text => "editing_process.runnning RESET", level => log_threshold);
 		editing_process.running := false;
-	end;
+	end reset_edit_process_running;
 
 
 	function edit_process_running return boolean is begin
 		return editing_process.running;
-	end;
+	end edit_process_running;
 
 
 
@@ -3854,18 +3854,18 @@ package body et_canvas is
 	procedure set_finalizing_granted is begin
 		editing_process.finalizing_granted := true;
 		log (text => "editing_process.finalizing_granted SET", level => log_threshold);
-	end;
+	end set_finalizing_granted;
 
 
 	procedure reset_finalizing_granted is begin
 		editing_process.finalizing_granted := false;
 		log (text => "editing_process.finalizing_granted RESET", level => log_threshold);
-	end;
+	end reset_finalizing_granted;
 
 
 	function finalizing_granted return boolean is begin
 		return editing_process.finalizing_granted;
-	end;
+	end finalizing_granted;
 
 
 
@@ -3887,13 +3887,13 @@ package body et_canvas is
 		log (text => "ESC key pressed. editing_process.escape_counter"
 			& type_escape_count'image (editing_process.escape_counter),
 			level => log_threshold);
-	end;
+	end escape_key_pressed;
 
 
 
 	function get_escape_counter return type_escape_count is begin
 		return editing_process.escape_counter;
-	end;
+	end get_escape_counter;
 
 
 
@@ -3901,7 +3901,7 @@ package body et_canvas is
 	procedure reset_escape_counter is begin
 		log (text => "editing_process.escape_counter RESET", level => log_threshold);
 		editing_process.escape_counter := 0;
-	end;
+	end reset_escape_counter;
 
 
 
@@ -3945,7 +3945,7 @@ package body et_canvas is
 				& status_press_space & status_set_B & status_hint_for_abort);
 
 		end if;
-	end;
+	end status_bar_path_show_A;
 
 
 
@@ -5152,7 +5152,7 @@ package body et_canvas is
 		color : in type_color)
 	is begin
 		color_background := color;
-	end;
+	end set_color_background;
 
 
 

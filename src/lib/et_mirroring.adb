@@ -95,7 +95,7 @@ package body et_mirroring is
 			when MIRROR_ALONG_X_AXIS =>
 				status := MIRROR_NO;
 		end case;
-	end;
+	end toggle_along_y;
 
 
 
@@ -115,7 +115,7 @@ package body et_mirroring is
 			when MIRROR_ALONG_Y_AXIS =>
 				status := MIRROR_NO;
 		end case;
-	end;
+	end toggle_along_x;
 
 
 

@@ -52,7 +52,7 @@ package body et_assembly_variant_name is
 		else
 			return false;
 		end if;
-	end;
+	end is_default;
 
 
 
@@ -61,7 +61,7 @@ package body et_assembly_variant_name is
 		return string
 	is begin
 		return pac_assembly_variant_name.to_string (variant);
-	end;
+	end to_variant;
 
 
 
@@ -71,7 +71,7 @@ package body et_assembly_variant_name is
 	is begin
 		-- CS lenght and character check
 		return pac_assembly_variant_name.to_bounded_string (variant);
-	end;
+	end to_variant;
 
 
 

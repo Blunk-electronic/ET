@@ -42,7 +42,7 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_net_class is
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 	-- function get_net_class (

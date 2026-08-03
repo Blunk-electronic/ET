@@ -1007,7 +1007,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out type_silk_zone) is begin
 					log (text => board_silk_screen & "zone segments", level => log_threshold + log_threshold_add);
 					et_board_geometry.pac_contours.transpose_contour (polygon, layout_sheet_height);
-				end;
+				end move_polygon;
 
 
 				procedure move_text (text : in out type_silk_text) is
@@ -1226,7 +1226,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out type_doc_zone) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_geometry.pac_contours.transpose_contour (polygon, layout_sheet_height);
-				end;
+				end move_polygon;
 
 
 				procedure move_text (text : in out type_doc_text) is
@@ -2300,7 +2300,7 @@ package body et_kicad_to_native is
 			rotation	=> rotation);
 
 		return point_out;
-	end;
+	end to_native_coordinates;
 
 
 
@@ -2321,14 +2321,14 @@ package body et_kicad_to_native is
 			pac_symbol_lines.append (
 				container	=> native_shapes.lines,
 				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
-		end;
+		end copy_line;
 
 
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
 			pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
 				new_item	=> et_symbol_shapes.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
-		end;
+		end copy_arc;
 
 
 		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
@@ -2337,7 +2337,7 @@ package body et_kicad_to_native is
 				new_item	=> (
 					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
 					with filled => NO));
-		end;
+		end copy_circle;
 
 
 		-- Converts a polyline to single lines and appends them to native_shapes.lines.
@@ -2410,7 +2410,7 @@ package body et_kicad_to_native is
 				et_symbol_shapes.pac_symbol_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
-			end;
+			end append_line;
 
 			use pac_geometry_2;
 
@@ -2579,7 +2579,7 @@ package body et_kicad_to_native is
 		begin -- to_texts
 			et_kicad.schematic.type_texts.iterate (texts_in, query_texts'access);
 			return texts_out;
-		end;
+		end to_texts;
 
 
 
@@ -3795,7 +3795,7 @@ package body et_kicad_to_native is
 					use pac_device_prefix;
 				begin
 					return to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
-				end;
+				end remove_leading_hash;
 
 
 			begin -- query_components

@@ -87,7 +87,7 @@ package body et_devices_non_electrical is
 		use pac_package_models;
 	begin
 		return key (device.model_cursor);
-	end;
+	end get_package_model_name;
 
 
 
@@ -96,7 +96,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_package_model_name (device));
-	end;
+	end get_package_model_name;
 
 
 
@@ -110,7 +110,7 @@ package body et_devices_non_electrical is
 		position	: in type_package_position)
 	is begin
 		device.position := position;
-	end;
+	end set_position;
 
 
 
@@ -119,7 +119,7 @@ package body et_devices_non_electrical is
 		return type_package_position
 	is begin
 		return device.position;
-	end;
+	end get_position;
 
 
 
@@ -131,7 +131,7 @@ package body et_devices_non_electrical is
 		pragma unreferenced (format);
 	begin
 		return to_string (device.position);
-	end;
+	end get_position;
 
 
 
@@ -140,7 +140,7 @@ package body et_devices_non_electrical is
 		return type_rotation_model
 	is begin
 		return get_rotation (device.position);
-	end;
+	end get_rotation;
 
 
 
@@ -149,7 +149,7 @@ package body et_devices_non_electrical is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation (device.position, rotation);
-	end;
+	end set_rotation;
 
 
 
@@ -158,7 +158,7 @@ package body et_devices_non_electrical is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation_relative (device.position, rotation);
-	end;
+	end set_rotation_relative;
 
 
 
@@ -168,7 +168,7 @@ package body et_devices_non_electrical is
 		face	: in type_face)
 	is begin
 		set_face (device.position, face);
-	end;
+	end set_face;
 
 
 
@@ -176,7 +176,7 @@ package body et_devices_non_electrical is
 		device	: in out type_device_non_electrical)
 	is begin
 		toggle_face (device.position);
-	end;
+	end toggle_face;
 
 
 
@@ -186,7 +186,7 @@ package body et_devices_non_electrical is
 		return type_face
 	is begin
 		return get_face (device.position);
-	end;
+	end get_face;
 
 
 
@@ -195,7 +195,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_face (device.position));
-	end;
+	end get_face;
 
 
 
@@ -204,7 +204,7 @@ package body et_devices_non_electrical is
 		place	: in type_vector_model)
 	is begin
 		set_place (device.position, place);
-	end;
+	end set_place;
 
 
 	procedure set_place_relative (
@@ -212,7 +212,7 @@ package body et_devices_non_electrical is
 		offset	: in type_vector_model)
 	is begin
 		set_place_relative (device.position, offset);
-	end;
+	end set_place_relative;
 
 
 
@@ -221,7 +221,7 @@ package body et_devices_non_electrical is
 		return type_vector_model
 	is begin
 		return get_place (device.position);
-	end;
+	end get_place;
 
 
 
@@ -231,7 +231,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_place (device.position), format);
-	end;
+	end get_place;
 
 
 
@@ -244,7 +244,7 @@ package body et_devices_non_electrical is
 		value	: in pac_device_value.bounded_string)
 	is begin
 		device.value := value;
-	end;
+	end set_value;
 
 
 	function get_value (
@@ -252,7 +252,7 @@ package body et_devices_non_electrical is
 		return pac_device_value.bounded_string
 	is begin
 		return device.value;
-	end;
+	end get_value;
 
 
 	function get_value (
@@ -260,7 +260,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_value (device));
-	end;
+	end get_value;
 
 
 	function has_value (
@@ -272,7 +272,7 @@ package body et_devices_non_electrical is
 		else
 			return true;
 		end if;
-	end;
+	end has_value;
 
 
 
@@ -283,7 +283,7 @@ package body et_devices_non_electrical is
 		partcode	: in pac_device_partcode.bounded_string)
 	is begin
 		device.partcode := partcode;
-	end;
+	end set_partcode;
 
 
 	function get_partcode (
@@ -291,7 +291,7 @@ package body et_devices_non_electrical is
 		return pac_device_partcode.bounded_string
 	is begin
 		return device.partcode;
-	end;
+	end get_partcode;
 
 
 	function get_partcode (
@@ -299,7 +299,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_partcode (device));
-	end;
+	end get_partcode;
 
 
 	function has_partcode (
@@ -311,7 +311,7 @@ package body et_devices_non_electrical is
 		else
 			return true;
 		end if;
-	end;
+	end has_partcode;
 
 
 
@@ -323,7 +323,7 @@ package body et_devices_non_electrical is
 		purpose	: in pac_device_purpose.bounded_string)
 	is begin
 		device.purpose := purpose;
-	end;
+	end set_purpose;
 
 
 	function get_purpose (
@@ -331,7 +331,7 @@ package body et_devices_non_electrical is
 		return pac_device_purpose.bounded_string
 	is begin
 		return device.purpose;
-	end;
+	end get_purpose;
 
 
 	function get_purpose (
@@ -339,7 +339,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return to_string (get_purpose (device));
-	end;
+	end get_purpose;
 
 
 	function has_purpose (
@@ -351,7 +351,7 @@ package body et_devices_non_electrical is
 		else
 			return true;
 		end if;
-	end;
+	end has_purpose;
 
 
 
@@ -364,14 +364,14 @@ package body et_devices_non_electrical is
 		device : in out type_device_non_electrical)
 	is begin
 		set_proposed (device.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		device : in out type_device_non_electrical)
 	is begin
 		clear_proposed (device.status);
-	end;
+	end clear_proposed;
 
 
 	function is_proposed (
@@ -383,7 +383,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -392,14 +392,14 @@ package body et_devices_non_electrical is
 		device : in out type_device_non_electrical)
 	is begin
 		set_selected (device.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		device : in out type_device_non_electrical)
 	is begin
 		clear_selected (device.status);
-	end;
+	end clear_selected;
 
 
 	function is_selected (
@@ -411,7 +411,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -420,14 +420,14 @@ package body et_devices_non_electrical is
 		device : in out type_device_non_electrical)
 	is begin
 		set_moving (device.status);
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
 		device : in out type_device_non_electrical)
 	is begin
 		clear_moving (device.status);
-	end;
+	end clear_moving;
 
 
 	function is_moving (
@@ -439,7 +439,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -448,14 +448,14 @@ package body et_devices_non_electrical is
 		device : in out type_device_non_electrical)
 	is begin
 		set_locked (device.status);
-	end;
+	end set_locked;
 
 
 	procedure clear_locked (
 		device : in out type_device_non_electrical)
 	is begin
 		clear_locked (device.status);
-	end;
+	end clear_locked;
 
 
 	function is_locked (
@@ -467,7 +467,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_locked;
 
 
 
@@ -479,7 +479,7 @@ package body et_devices_non_electrical is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (device.status, operation);
-	end;
+	end modify_status;
 
 
 
@@ -488,7 +488,7 @@ package body et_devices_non_electrical is
 		device : in out type_device_non_electrical)
 	is begin
 		reset_status (device.status);
-	end;
+	end reset_status;
 
 
 
@@ -506,7 +506,7 @@ package body et_devices_non_electrical is
 		is begin
 			-- Insert the device name in the resulting list:
 			result.insert (key (c));
-		end;
+		end query_device;
 
 	begin
 		-- Iterate through the devices:
@@ -528,7 +528,7 @@ package body et_devices_non_electrical is
 		return natural
 	is begin
 		return natural (devices.length);
-	end;
+	end get_count;
 
 
 
@@ -537,7 +537,7 @@ package body et_devices_non_electrical is
 		return string
 	is begin
 		return count_type'image (devices.length);
-	end;
+	end get_count;
 
 
 
@@ -550,7 +550,7 @@ package body et_devices_non_electrical is
 		name : constant type_device_name := key (cursor);
 	begin
 		return get_prefix (name);
-	end;
+	end get_prefix;
 
 
 
@@ -601,7 +601,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_package_model_name (device);
-	end;
+	end get_package_model_name;
 
 
 
@@ -613,7 +613,7 @@ package body et_devices_non_electrical is
 		use pac_package_models;
 	begin
 		return is_bom_relevant (key (device.model_cursor));
-	end;
+	end is_bom_relevant;
 
 
 
@@ -629,7 +629,7 @@ package body et_devices_non_electrical is
 		package_model := get_package_model_name (device_cursor);
 
 		return is_bom_relevant (package_model);
-	end;
+	end is_bom_relevant;
 
 
 
@@ -646,7 +646,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -659,7 +659,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -672,7 +672,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 	function is_locked (
@@ -684,7 +684,7 @@ package body et_devices_non_electrical is
 		else
 			return false;
 		end if;
-	end;
+	end is_locked;
 
 
 
@@ -740,7 +740,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_place (device);
-	end;
+	end get_place;
 
 
 
@@ -754,7 +754,7 @@ package body et_devices_non_electrical is
 	begin
 		p := get_place (device_cursor);
 		return to_string (p, format);
-	end;
+	end get_place;
 
 
 
@@ -780,7 +780,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_rotation (device);
-	end;
+	end get_rotation;
 
 
 
@@ -797,7 +797,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_value (device);
-	end;
+	end get_value;
 
 
 
@@ -808,7 +808,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return to_string (get_value (device));
-	end;
+	end get_value;
 
 
 
@@ -823,7 +823,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_partcode (device);
-	end;
+	end get_partcode;
 
 
 
@@ -834,7 +834,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return to_string (get_partcode (device));
-	end;
+	end get_partcode;
 
 
 
@@ -848,7 +848,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_purpose (device);
-	end;
+	end get_purpose;
 
 
 
@@ -859,7 +859,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return to_string (get_purpose (device));
-	end;
+	end get_purpose;
 
 
 
@@ -956,7 +956,7 @@ package body et_devices_non_electrical is
 			else
 				return "";
 			end if;
-		end;
+		end ins_LF;
 
 
 		-- CS: Refinement required about what
@@ -972,7 +972,7 @@ package body et_devices_non_electrical is
 				result := to_unbounded_string (" purpose: "
 					& get_purpose (device) & ins_LF);
 			end if;
-		end;
+		end get_info_1;
 
 
 		procedure get_info_2 is begin
@@ -980,13 +980,13 @@ package body et_devices_non_electrical is
 				result := result & " partcode: "
 					& get_partcode (device) & ins_LF;
 			end if;
-		end;
+		end get_info_2;
 
 
 		procedure get_info_3 is begin
 			result := result & " package model: "
 				& to_string (get_package_model_name (device)) & ins_LF;
-		end;
+		end get_info_3;
 
 
 
@@ -1038,7 +1038,7 @@ package body et_devices_non_electrical is
 			else
 				return "";
 			end if;
-		end;
+		end ins_LF;
 
 
 	begin

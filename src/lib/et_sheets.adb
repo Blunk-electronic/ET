@@ -43,19 +43,19 @@ package body et_sheets is
 
 	function to_string (sheet : in type_sheet) return string is begin
 		return type_sheet'image (sheet);
-	end;
+	end to_string;
 
 	function to_sheet (sheet : in string) return type_sheet is begin
 		return type_sheet'value (sheet);
-	end;
+	end to_sheet;
 
 	function relative_to_string (sheet : in type_sheet_relative) return string is begin
 		return type_sheet_relative'image (sheet);
-	end;
+	end relative_to_string;
 
 	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
 		return type_sheet_relative'value (sheet);
-	end;
+	end to_sheet_relative;
 
 
 
@@ -64,7 +64,7 @@ package body et_sheets is
 		offset	: in type_sheet_relative)
 	is begin
 		sheet := sheet + offset;
-	end;
+	end add;
 
 
 end et_sheets;

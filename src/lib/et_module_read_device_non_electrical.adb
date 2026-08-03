@@ -207,7 +207,7 @@ package body et_module_read_device_non_electrical is
 					new_item	=> device);
 
 				log_indentation_down;
-			end;
+			end add_package_to_board;
 
 
 

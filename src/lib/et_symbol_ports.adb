@@ -50,7 +50,7 @@ package body et_symbol_ports is
 		return pac_port_name.bounded_string
 	is begin
 		return key (port_cursor);
-	end;
+	end get_port_name;
 
 
 
@@ -61,7 +61,7 @@ package body et_symbol_ports is
 		return natural
 	is begin
 		return natural (ports.length);
-	end;
+	end get_count;
 
 
 
@@ -95,7 +95,7 @@ package body et_symbol_ports is
 				deleted := true;
 				delete_port.port_name := port_name;
 			end if;
-		end;
+		end query_port;
 
 
 	begin
@@ -141,14 +141,14 @@ package body et_symbol_ports is
 		begin
 			move_by (port.position, offset.place);
 			-- CS use primitive operation of et_symbol_port_general
-		end;
+		end move;
 
 		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
 				process		=> move'access);
-		end;
+		end query_port;
 
 	begin -- move_ports
 		iterate (ports, query_port'access);
@@ -170,7 +170,7 @@ package body et_symbol_ports is
 		begin
 			rotate_by (port.position, angle);
 			-- CS use primitive operation of et_symbol_port_general
-		end;
+		end rotate;
 
 
 		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
@@ -178,7 +178,7 @@ package body et_symbol_ports is
 				container	=> ports,
 				position	=> cursor,
 				process		=> rotate'access);
-		end;
+		end query_port;
 
 	begin
 		-- Do nothing if the given angle is zero:

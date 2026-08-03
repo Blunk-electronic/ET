@@ -50,7 +50,7 @@ package body et_pcb_placeholders.non_conductor is
 		reset_text (type_text_fab (placeholder));
 		placeholder.meaning := placeholder_meaning_default;
 		-- CS face ?
-	end;
+	end reset_placeholder;
 
 
 

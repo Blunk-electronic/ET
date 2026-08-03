@@ -56,13 +56,13 @@ package body et_display.board is
 
 	procedure enable_board_contour is begin
 		layers.outline := ON;
-	end;
+	end enable_board_contour;
 
 
 
 	procedure disable_board_contour is begin
 		layers.outline := OFF;
-	end;
+	end disable_board_contour;
 
 
 

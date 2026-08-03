@@ -57,7 +57,7 @@ package body et_route_restrict is
 		begin
 			mirror_line (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
-		end;
+		end query_line;
 
 	begin
 		lines.iterate (query_line'access);
@@ -77,7 +77,7 @@ package body et_route_restrict is
 		begin
 			rotate_line_by (line, angle);
 			result.append (line);
-		end;
+		end query_line;
 
 	begin
 		lines.iterate (query_line'access);
@@ -97,7 +97,7 @@ package body et_route_restrict is
 		begin
 			move_by (line, offset);
 			result.append (line);
-		end;
+		end query_line;
 
 	begin
 		lines.iterate (query_line'access);
@@ -121,7 +121,7 @@ package body et_route_restrict is
 		begin
 			mirror_arc (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
-		end;
+		end query_arc;
 
 	begin
 		arcs.iterate (query_arc'access);
@@ -141,7 +141,7 @@ package body et_route_restrict is
 		begin
 			rotate_arc_by (arc, angle);
 			result.append (arc);
-		end;
+		end query_arc;
 
 	begin
 		arcs.iterate (query_arc'access);
@@ -161,7 +161,7 @@ package body et_route_restrict is
 		begin
 			move_by (arc, offset);
 			result.append (arc);
-		end;
+		end query_arc;
 
 	begin
 		arcs.iterate (query_arc'access);
@@ -235,7 +235,7 @@ package body et_route_restrict is
 		begin
 			mirror_circle (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
-		end;
+		end query_circle;
 
 	begin
 		circles.iterate (query_circle'access);
@@ -255,7 +255,7 @@ package body et_route_restrict is
 		begin
 			rotate_circle_by (circle, angle);
 			result.append (circle);
-		end;
+		end query_circle;
 
 	begin
 		circles.iterate (query_circle'access);
@@ -275,7 +275,7 @@ package body et_route_restrict is
 		begin
 			move_by (circle, offset);
 			result.append (circle);
-		end;
+		end query_circle;
 
 	begin
 		circles.iterate (query_circle'access);

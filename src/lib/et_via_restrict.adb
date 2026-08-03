@@ -42,7 +42,7 @@
 package body et_via_restrict is
 
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 end et_via_restrict;

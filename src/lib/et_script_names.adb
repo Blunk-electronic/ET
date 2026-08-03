@@ -57,7 +57,7 @@ package body et_script_names is
 		return string
 	is begin
 		return pac_script_name.to_string (name);
-	end;
+	end to_string;
 
 
 
@@ -66,7 +66,7 @@ package body et_script_names is
 		return pac_script_name.bounded_string
 	is begin
 		return pac_script_name.to_bounded_string (name);
-	end;
+	end to_script_name;
 
 
 

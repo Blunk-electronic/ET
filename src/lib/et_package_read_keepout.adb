@@ -64,7 +64,7 @@ package body et_package_read_keepout is
 
 		-- clean up for next contour
 		reset_contour (contour);
-	end;
+	end insert_keepout_zone;
 
 
 
@@ -80,7 +80,7 @@ package body et_package_read_keepout is
 
 		-- clean up for next contour
 		reset_contour (contour);
-	end;
+	end insert_keepout_zone_cutout;
 
 
 

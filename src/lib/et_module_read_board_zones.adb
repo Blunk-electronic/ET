@@ -126,7 +126,7 @@ package body et_module_read_board_zones is
 		clear (signal_layers);
 
 		reset_contour (contour);
-	end;
+	end reset_scratch;
 
 
 
@@ -505,70 +505,70 @@ package body et_module_read_board_zones is
 				pac_silk_zones.append (
 					container	=> module.board.silkscreen.top.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_silk_polygon_top;
 
 
 			procedure append_silk_polygon_bottom is begin
 				pac_silk_zones.append (
 					container	=> module.board.silkscreen.bottom.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_silk_polygon_bottom;
 
 
 			procedure append_assy_doc_polygon_top is begin
 				pac_doc_zones.append (
 					container	=> module.board.assy_doc.top.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_assy_doc_polygon_top;
 
 
 			procedure append_assy_doc_polygon_bottom is begin
 				pac_doc_zones.append (
 					container	=> module.board.assy_doc.bottom.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_assy_doc_polygon_bottom;
 
 
 			procedure append_keepout_polygon_top is begin
 				pac_keepout_zones.append (
 					container	=> module.board.keepout.top.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_keepout_polygon_top;
 
 
 			procedure append_keepout_polygon_bottom is begin
 				pac_keepout_zones.append (
 					container	=> module.board.keepout.bottom.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_keepout_polygon_bottom;
 
 
 			procedure append_stencil_polygon_top is begin
 				pac_stencil_zones.append (
 					container	=> module.board.stencil.top.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_stencil_polygon_top;
 
 
 			procedure append_stencil_polygon_bottom is begin
 				pac_stencil_zones.append (
 					container	=> module.board.stencil.bottom.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_stencil_polygon_bottom;
 
 
 			procedure append_stop_polygon_top is begin
 				pac_stop_zones.append (
 					container	=> module.board.stopmask.top.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_stop_polygon_top;
 
 
 			procedure append_stop_polygon_bottom is begin
 				pac_stop_zones.append (
 					container	=> module.board.stopmask.bottom.zones,
 					new_item	=> (contour with null record));
-			end;
+			end append_stop_polygon_bottom;
 
 
 		begin -- do_it
@@ -784,14 +784,14 @@ package body et_module_read_board_zones is
 				pac_keepout_cutouts.append (
 					container	=> module.board.keepout.top.cutouts,
 					new_item	=> (contour with null record));
-			end;
+			end append_keepout_cutout_top;
 
 
 			procedure append_keepout_cutout_bottom is begin
 				pac_keepout_cutouts.append (
 					container	=> module.board.keepout.bottom.cutouts,
 					new_item	=> (contour with null record));
-			end;
+			end append_keepout_cutout_bottom;
 
 
 		begin -- do_it

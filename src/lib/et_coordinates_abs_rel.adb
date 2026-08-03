@@ -53,7 +53,7 @@ package body et_coordinates_abs_rel is
 		return string
 	is begin
 		return space & to_lower (type_coordinates'image (coordinates));
-	end;
+	end to_string;
 
 
 
@@ -67,7 +67,7 @@ package body et_coordinates_abs_rel is
 -- 				when event: others =>
 -- 					log (text => ada.exceptions.exception_information (event), console => true);
 -- 					raise;
-	end;
+	end to_coordinates;
 
 
 

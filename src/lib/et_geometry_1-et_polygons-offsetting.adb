@@ -166,7 +166,7 @@ package body et_geometry_1.et_polygons.offsetting is
 -- 						log (text => "lines overlap", level => log_threshold + 2);
 -- 						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
 -- 						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
-			end;
+			end compute_intersection;
 
 
 		begin

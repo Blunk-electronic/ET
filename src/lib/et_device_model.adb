@@ -54,7 +54,7 @@ package body et_device_model is
 		else
 			return false;
 		end if;
-	end;
+	end is_real;
 
 
 
@@ -67,7 +67,7 @@ package body et_device_model is
 		use pac_units_internal;
 	begin
 		return has_element (units.int);
-	end;
+	end has_internal_unit;
 
 
 
@@ -78,7 +78,7 @@ package body et_device_model is
 		use pac_units_external;
 	begin
 		return has_element (units.ext);
-	end;
+	end has_external_unit;
 
 
 
@@ -90,7 +90,7 @@ package body et_device_model is
 		use pac_units_internal;
 	begin
 		return key (units.int);
-	end;
+	end get_name_internal;
 
 
 	function get_name_external (
@@ -100,7 +100,7 @@ package body et_device_model is
 		use pac_units_external;
 	begin
 		return key (units.ext);
-	end;
+	end get_name_external;
 
 
 
@@ -148,7 +148,7 @@ package body et_device_model is
 		return pac_package_variant_name.bounded_string
 	is begin
 		return get_first_package_variant (device_model.variants);
-	end;
+	end get_first_package_variant;
 
 
 
@@ -161,7 +161,7 @@ package body et_device_model is
 		else
 			return empty_value;
 		end if;
-	end;
+	end get_default_value;
 
 
 
