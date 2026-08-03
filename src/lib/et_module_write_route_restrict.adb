@@ -83,10 +83,10 @@ package body et_module_write_route_restrict is
 		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is
 			arc : type_route_restrict_arc renames element (cursor);
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (element (cursor));
 			write (keyword => keyword_layers, parameters => to_string (arc.layers));
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 

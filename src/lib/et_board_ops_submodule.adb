@@ -137,7 +137,7 @@ package body et_board_ops_submodule is
 				end case;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;

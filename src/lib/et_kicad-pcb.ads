@@ -119,7 +119,7 @@ package et_kicad.pcb is
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
 	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
-	type type_layer_id is range 0..layer_id_max;
+	type type_layer_id is range 0 .. layer_id_max;
 
 	function to_string (layer : in type_layer_id) return string;
 	-- returns the given layer id as string.
@@ -186,17 +186,17 @@ package et_kicad.pcb is
 	-- CS functions to_vias_on_mask and to_string
 
 	-- mode
-	type type_plot_fill_mode is range 1..2; -- 1 filled, 2 sketch
+	type type_plot_fill_mode is range 1 .. 2; -- 1 filled, 2 sketch
 
 	-- useauxorigin
 	type type_plot_use_aux_origin is new boolean;
 	-- CS functions to_use_aux_origin and to_string
 
 	-- hpglpennumber
-	type type_plot_hpgl_pen_number is range 1..1; -- CS so far nothing more known
+	type type_plot_hpgl_pen_number is range 1 .. 1; -- CS so far nothing more known
 
 	-- hpglpenspeed
-	type type_plot_hpgl_pen_speed is range 20..20; -- CS so far nothing more known
+	type type_plot_hpgl_pen_speed is range 20 .. 20; -- CS so far nothing more known
 
 	-- hpglpendiameter -- given in mil
 	hpgl_pen_diameter_min : constant type_distance_positive := 0.1;
@@ -239,7 +239,7 @@ package et_kicad.pcb is
 	-- CS function to_subtract_mask_from_silk and to_string
 
 	-- outputformat
-	type type_plot_output_format is range 0..5;
+	type type_plot_output_format is range 0 .. 5;
 		-- 0 hpgl
 		-- 1 gerber
 		-- 2 postscript
@@ -252,10 +252,10 @@ package et_kicad.pcb is
 	-- CS function to_mirror and to_string
 
 	-- drillshape. NOTE: DO NOT CONFUSE WITH type_drill_shape (see above)
-	type type_plot_drill_shape is range 0..1; -- CS so far nothing more known.
+	type type_plot_drill_shape is range 0 .. 1; -- CS so far nothing more known.
 
 	-- scaleselection
-	type type_plot_scale_selection is range 1..1; -- CS so far nothing more known
+	type type_plot_scale_selection is range 1 .. 1; -- CS so far nothing more known
 
 	-- outputdirectory
 	plot_output_directory_length_max : constant positive := 200;
@@ -328,7 +328,7 @@ package et_kicad.pcb is
 		range aux_axis_origin_min .. aux_axis_origin_max;
 
 	-- CS meaning not clear yet
-	type type_visible_elements is new string (1..8);
+	type type_visible_elements is new string (1 .. 8);
 
 	type type_board_setup is record
 		last_trace_width	: type_track_width;
@@ -372,7 +372,7 @@ package et_kicad.pcb is
 	-- NETLIST ((things like (net 4 /LED_ANODE) ):
 	-- NOTE: this has nothing to do with the kicad netlist file !
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
-	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
+	type type_net_id is range 0 .. net_id_max; -- used in the "netlist" section
 	subtype type_net_id_terminal is type_net_id range 1 .. type_net_id'last; -- used with pads in module section
 
 	function to_net_id (net_id : in string) return type_net_id;
@@ -580,7 +580,7 @@ package et_kicad.pcb is
 	-- The bottom signal layer in kicad is always number 31. Top layer is number 0.
 	signal_layer_id_top		: constant type_layer_id := 0;
 	signal_layer_id_bottom	: constant type_layer_id := 31;
-	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
+	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top .. signal_layer_id_bottom;
 	-- NOTE: On import, the kicad bottom copper layer becomes the ET signal layer 32 !
 	-- (NOT et_pcb.type_signal_layer'last !!)
 

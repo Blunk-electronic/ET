@@ -195,7 +195,7 @@ package body et_canvas is
 		-- debug : boolean := false;
 	begin
 		result.x := type_distance
-			(( (P.x - T.x) - F.x) / type_logical_pixels (zf));
+			(((P.x - T.x) - F.x) / type_logical_pixels (zf));
 
 		result.y := type_distance
 			((-(P.y - T.y) - F.y) / type_logical_pixels (zf));
@@ -317,7 +317,7 @@ package body et_canvas is
 
 	begin
 		x :=   Bw * (S_max - 1.0);
-		y := - Bh * S_max;
+		y := -Bh * S_max;
 
 		-- Set the base-offset:
 		F := (x, y);
@@ -325,7 +325,7 @@ package body et_canvas is
 		-- Output a warning if the base-offset is outside
 		-- the canvas dimensions:
 		if  x >   type_logical_pixels (canvas_size.width) or
-			y < - type_logical_pixels (canvas_size.height) then
+			y < -type_logical_pixels (canvas_size.height) then
 
 			put_line ("WARNING: base-offset outside canvas !");
 			put_line (" F: " & to_string (F));
@@ -1111,7 +1111,7 @@ package body et_canvas is
 		-- Regarding y: T is in the canvas system (CS2)
 		-- where the y-axis goes downward. So we must multiply by -1:
 		T.x :=   type_logical_pixels (dx) * type_logical_pixels (S);
-		T.y := - type_logical_pixels (dy) * type_logical_pixels (S);
+		T.y := -type_logical_pixels (dy) * type_logical_pixels (S);
 		if debug then
 			put_line ("T: " & to_string (T));
 		end if;
@@ -1310,7 +1310,7 @@ package body et_canvas is
 	begin
 		put_line ("set initial scrollbar settings");
 
-		scrollbar_v_init.upper := - F.y;
+		scrollbar_v_init.upper := -F.y;
 
 		scrollbar_v_init.lower := scrollbar_v_init.upper -
 			type_logical_pixels (bounding_box.height);
@@ -1682,15 +1682,15 @@ package body et_canvas is
 
 		-- compute the maximal base-offset:
 		F_max.x :=   Bw * (S_max - 1.0);
-		F_max.y := - Bh * S_max;
+		F_max.y := -Bh * S_max;
 
 		if debug then
 			put_line (" F_max : " & to_string (F_max));
 		end if;
 
 		-- compute the canvas width and height:
-		canvas_size.width  := positive (  F_max.x + Bw * S_max);
-		canvas_size.height := positive (- F_max.y + Bh * (S_max - 1.0));
+		canvas_size.width  := positive (F_max.x + Bw * S_max);
+		canvas_size.height := positive (-F_max.y + Bh * (S_max - 1.0));
 
 		if debug then
 			put_line (" Cw    : " & positive'image (canvas_size.width));
@@ -4473,7 +4473,7 @@ package body et_canvas is
 				 to_gdouble_positive (m.x),
 				 to_gdouble_positive (m.y),
 				 to_gdouble_positive (r),
-				 0.0, 6.3 ); -- start and end angle in radians
+				 0.0, 6.3); -- start and end angle in radians
 
 
 			if filled = YES then
@@ -4610,8 +4610,8 @@ package body et_canvas is
 					to_gdouble_positive (m.x),
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r),
-					- gdouble (to_radians (get_angle_start (a))),
-					- gdouble (to_radians (get_angle_end (a))));
+					-gdouble (to_radians (get_angle_start (a))),
+					-gdouble (to_radians (get_angle_end (a))));
 
 			else
 				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
@@ -4619,8 +4619,8 @@ package body et_canvas is
 					to_gdouble_positive (m.x),
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r),
-					- gdouble (to_radians (get_angle_start (a))),
-					- gdouble (to_radians (get_angle_end (a))));
+					-gdouble (to_radians (get_angle_start (a))),
+					-gdouble (to_radians (get_angle_end (a))));
 
 			end if;
 
@@ -4696,14 +4696,14 @@ package body et_canvas is
 	is
 		l : type_line;
 	begin
-		set_A (l, (x => - origin_arm_length, y => 0.0));
-		set_B (l, (x => + origin_arm_length, y => 0.0));
+		set_A (l, (x => -origin_arm_length, y => 0.0));
+		set_B (l, (x => +origin_arm_length, y => 0.0));
 
 		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 
 
-		set_A (l, (x => 0.0, y => - origin_arm_length));
-		set_B (l, (x => 0.0, y => + origin_arm_length));
+		set_A (l, (x => 0.0, y => -origin_arm_length));
+		set_B (l, (x => 0.0, y => +origin_arm_length));
 
 		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 	end draw_origin;

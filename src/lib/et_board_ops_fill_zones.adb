@@ -139,10 +139,10 @@ package body et_board_ops_fill_zones is
 				mirror (contour, MIRROR_ALONG_Y_AXIS);
 
 				-- if on bottom side: rotate CW
-				rotate_by (contour, - to_rotation (terminal_position.rotation));
+				rotate_by (contour, -to_rotation (terminal_position.rotation));
 			else
 				-- if on top side: rotate CCW
-				rotate_by (contour, + to_rotation (terminal_position.rotation));
+				rotate_by (contour, +to_rotation (terminal_position.rotation));
 			end if;
 		end mirror_and_rotate;
 
@@ -218,7 +218,7 @@ package body et_board_ops_fill_zones is
 				elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
 					contour := terminal.pad_shape_smt;
 					mirror (contour, MIRROR_ALONG_Y_AXIS);
-					rotate_by (contour, - to_rotation (terminal_position.rotation));
+					rotate_by (contour, -to_rotation (terminal_position.rotation));
 					finalize;
 				end if;
 		end case;
@@ -1407,7 +1407,7 @@ package body et_board_ops_fill_zones is
 				& to_string (half_linewidth_float),
 				level => log_threshold + 2);
 
-			offset_polygon (outer_contour_tmp, - half_linewidth_float,
+			offset_polygon (outer_contour_tmp, -half_linewidth_float,
 				log_threshold + 3);
 
 			log_indentation_down;
@@ -1695,7 +1695,7 @@ package body et_board_ops_fill_zones is
 
 					-- If something went wrong, output some
 					-- helpful information and restore the zone:
-					exception when event:
+					exception when event :
 						others =>
 						log (SEVERITY_WARNING,
 							exception_information (event));
@@ -2088,12 +2088,12 @@ package body et_board_ops_fill_zones is
 			-- Shrink the outer board edge by the conductor-to-edge clearance
 			-- as given by the design rules:
 			log (text => "offset by clearance to edge "
-				& to_string (- clearance_conductor_to_edge),
+				& to_string (-clearance_conductor_to_edge),
 				level => log_threshold + 2);
 
 			offset_polygon (
 				polygon			=> board_outer_contour,
-				offset			=> type_float_model (- clearance_conductor_to_edge),
+				offset			=> type_float_model (-clearance_conductor_to_edge),
 				log_threshold	=> log_threshold + 3);
 
 			log_indentation_down;

@@ -293,7 +293,7 @@ package body et_module_write_devices_electrical is
 						write (keyword => keyword_value, parameters => to_string (element (d).value));
 					end if;
 
-					write (keyword => keyword_variant , parameters => to_string (element (d).variant));
+					write (keyword => keyword_variant, parameters => to_string (element (d).variant));
 
 					-- write the partcode if a partcode exists for the device;
 					if not is_empty (element (d).partcode) then
@@ -302,7 +302,7 @@ package body et_module_write_devices_electrical is
 
 					-- write the purpose if a purpose exists for the device;
 					if not is_empty (element (d).purpose) then
-						write (keyword => keyword_purpose , parameters => to_string (element (d).purpose), wrap => true);
+						write (keyword => keyword_purpose, parameters => to_string (element (d).purpose), wrap => true);
 					end if;
 
 					section_mark (section_package, HEADER);

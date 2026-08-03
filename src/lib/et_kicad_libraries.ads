@@ -332,7 +332,7 @@ package et_kicad_libraries is
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
 	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
 	component_datasheet_characters : character_set :=
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
+		to_set (ranges => (('A', 'Z'), ('a', 'z'), ('0', '9'))) or to_set (":/._-&");
 	component_datasheet_length_max : constant positive := 500;
 	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 
@@ -384,9 +384,9 @@ package et_kicad_libraries is
 	-- Only those characters are allowed for the generic component name.
 	-- See et_import.check_component_name for customization depending on CAD format.
 	component_generic_name_characters : character_set := to_set
-		(ranges => (('A','Z'),('0','9')))
-		or to_set('-')
-		or to_set('_');
+		(ranges => (('A', 'Z'), ('0', '9')))
+		or to_set ('-')
+		or to_set ('_');
 
 	procedure check_generic_name_characters (
 	-- Checks if the the given generic component name meets certain conventions.
@@ -622,7 +622,7 @@ package et_kicad_libraries is
 	library_component_field_count_max : constant positive := 3;
 
 
-	type type_component_field_id is range 0..library_component_field_count_max;
+	type type_component_field_id is range 0 .. library_component_field_count_max;
 	component_field_reference		: constant type_component_field_id := 0;
 	component_field_value			: constant type_component_field_id := 1;
 	component_field_package			: constant type_component_field_id := 2;
@@ -729,14 +729,14 @@ package et_kicad_libraries is
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;
-	type type_units_total is new positive range 1..unit_count_max;
-	type type_unit_id is new natural range natural'first..unit_count_max;
+	type type_units_total is new positive range 1 .. unit_count_max;
+	type type_unit_id is new natural range natural'first .. unit_count_max;
 
 	type type_library_component_appearance is (N, P); -- normal or power
 
 
 	-- In schematic, a power symbol/component has a hash as first character in a line like "L P3V3 #PWR07"
-	schematic_component_power_symbol_prefix: constant character := '#';
+	schematic_component_power_symbol_prefix : constant character := '#';
 
 	-- power flags and symbols have a special prefix which distinguishes
 	-- them from real components:
@@ -750,7 +750,7 @@ package et_kicad_libraries is
 	-- These characters are allowed for a component reference.
 	-- This character set is used for prechecking references (like IC904 or #PWR) if
 	-- provided as string together with procedure check_reference_characters (see et_libraries):
-	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
+	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0', '9'));
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
@@ -763,7 +763,7 @@ package et_kicad_libraries is
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
 	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no
 
-	type type_alternative_representation is new natural range 0..1;
+	type type_alternative_representation is new natural range 0 .. 1;
 	alternative_representation_yes	: constant type_alternative_representation := 0;
 	alternative_representation_no	: constant type_alternative_representation := 1;
 

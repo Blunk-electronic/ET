@@ -98,46 +98,46 @@ package body et_module_read_net_classes is
 
 		if kw = keyword_name then
 			expect_field_count (line, 2);
-			net_class_name := to_net_class_name (f (line,2));
+			net_class_name := to_net_class_name (f (line, 2));
 
 		-- CS: In the following: set a corresponding parameter-found-flag
 		elsif kw = keyword_description then
 			expect_field_count (line, 2);
-			net_class.description := to_net_class_description (f (line,2));
+			net_class.description := to_net_class_description (f (line, 2));
 
 		elsif kw = keyword_clearance then
 			expect_field_count (line, 2);
-			net_class.clearance := to_distance (f (line,2));
+			net_class.clearance := to_distance (f (line, 2));
 			validate_track_clearance (net_class.clearance);
 			-- CS validate against dru settings
 
 		elsif kw = keyword_track_width_min then
 			expect_field_count (line, 2);
-			net_class.track_width_min := to_distance (f (line,2));
+			net_class.track_width_min := to_distance (f (line, 2));
 			validate_track_width (net_class.track_width_min);
 			-- CS validate against dru settings
 
 		elsif kw = keyword_via_drill_min then
 			expect_field_count (line, 2);
-			net_class.via_drill_min := to_distance (f (line,2));
+			net_class.via_drill_min := to_distance (f (line, 2));
 			validate_drill_size (net_class.via_drill_min);
 			-- CS validate against dru settings
 
 		elsif kw = keyword_via_restring_min then
 			expect_field_count (line, 2);
-			net_class.via_restring_min := to_distance (f (line,2));
+			net_class.via_restring_min := to_distance (f (line, 2));
 			validate_restring_width (net_class.via_restring_min);
 			-- CS validate against dru settings
 
 		elsif kw = keyword_micro_via_drill_min then
 			expect_field_count (line, 2);
-			net_class.micro_via_drill_min := to_distance (f (line,2));
+			net_class.micro_via_drill_min := to_distance (f (line, 2));
 			validate_drill_size (net_class.micro_via_drill_min);
 			-- CS validate against dru settings
 
 		elsif kw = keyword_micro_via_restring_min then
 			expect_field_count (line, 2);
-			net_class.micro_via_restring_min := to_distance (f (line,2));
+			net_class.micro_via_restring_min := to_distance (f (line, 2));
 			validate_restring_width (net_class.micro_via_restring_min);
 			-- CS validate against dru settings
 		else

@@ -308,7 +308,7 @@ package body et_project is
 
 		log_indentation_down;
 
-		exception when event:
+		exception when event :
 			others =>
 				log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
@@ -355,7 +355,7 @@ package body et_project is
 
 		log_indentation_down;
 
-		exception when event:
+		exception when event :
 			others =>
 				log (text => ada.exceptions.exception_message (event), console => true);
 				raise;

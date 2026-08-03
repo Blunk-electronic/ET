@@ -1234,7 +1234,7 @@ package body et_schematic_ops_device is
 					if category (name_before) = cat then
 
 						log (text => "device " & to_string (name_before) &
-							" unit " & to_string (element (cursor).unit), level => log_threshold +1);
+							" unit " & to_string (element (cursor).unit), level => log_threshold + 1);
 						log_indentation_up;
 
 						update_index;
@@ -1280,7 +1280,7 @@ package body et_schematic_ops_device is
 
 			return result;
 
-			exception when event:
+			exception when event :
 				others =>
 					log (text => ada.exceptions.exception_message (event), console => true);
 				raise;

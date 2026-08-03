@@ -806,7 +806,7 @@ package body et_module_read_device_electrical is
 
 	-- These two variables assist when a particular placeholder is appended to the
 	-- list of placholders in silk screen, assy doc and their top or bottom face:
-	device_text_placeholder_position: et_board_coordinates.type_package_position := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
+	device_text_placeholder_position : et_board_coordinates.type_package_position := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
 
 
 	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer :=

@@ -129,7 +129,7 @@ package et_keywords is
 	keyword_name					: constant string := "name";
 	keyword_netchanger				: constant string := "netchanger";
 	keyword_net_comparator			: constant string := "net_comparator";
-	keyword_net_comparator_warn_only: constant string := "warn_only";
+	keyword_net_comparator_warn_only : constant string := "warn_only";
 	keyword_not_mounted				: constant string := "not_mounted";
 
 	keyword_off						: constant string := "off";

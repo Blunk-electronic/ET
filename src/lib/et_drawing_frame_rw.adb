@@ -337,7 +337,7 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-		exception when event: others =>
+		exception when event : others =>
 			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);
@@ -656,7 +656,7 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-		exception when event: others =>
+		exception when event : others =>
 			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);

@@ -800,7 +800,7 @@ begin -- main
 	-- put_line ("exit");
 
 	exception
-		when event: others =>
+		when event : others =>
 			log_indentation_reset;
 			log (text => ada.exceptions.exception_information (event), console => true);
 			close_report;

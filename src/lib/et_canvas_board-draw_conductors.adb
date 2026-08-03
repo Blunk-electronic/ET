@@ -812,7 +812,7 @@ procedure draw_conductors is
 			position : type_vector_model := get_center (circle);
 
 			offset : constant type_vector_model :=
-				set (zero, + radius_base * text_position_layer_and_drill_factor);
+				set (zero, +radius_base * text_position_layer_and_drill_factor);
 
 			use pac_draw_text;
 		begin
@@ -846,7 +846,7 @@ procedure draw_conductors is
 		begin
 			if not drill_size_drawn then
 
-				offset := set (zero, - radius_base * text_position_layer_and_drill_factor);
+				offset := set (zero, -radius_base * text_position_layer_and_drill_factor);
 
 				move_by (position, offset);
 

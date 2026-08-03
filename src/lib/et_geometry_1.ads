@@ -93,10 +93,10 @@ package et_geometry_1 is
 	units_per_cycle : constant type_float := 360.0;
 
 
-	radians_max : constant type_float := - 2.0 * ada.numerics.pi;
+	radians_max : constant type_float := -2.0 * ada.numerics.pi;
 	-- CS should be: radians_max : constant type_float := 2.0 * ada.numerics.pi;
 
-	subtype type_radians is type_float range (- radians_max) .. radians_max;
+	subtype type_radians is type_float range (-radians_max) .. radians_max;
 
 
 	--Converts degrees to radians.
@@ -1151,7 +1151,7 @@ package et_geometry_1 is
 	-- by swapping start and end point. If direction is already CCW
 	-- then nothing happens.
 	function normalize_arc (
-		arc: in type_arc_fine)
+		arc : in type_arc_fine)
 		return type_arc_fine;
 
 
@@ -1254,7 +1254,7 @@ package et_geometry_1 is
 	-- by swapping start and end angles. Converts all angles to
 	-- positive values (example: -90 degree turns to 270 degree):
 	function normalize_arc (
-		arc: in type_arc_angles)
+		arc : in type_arc_angles)
 		return type_arc_angles;
 
 
@@ -1622,7 +1622,7 @@ package et_geometry_1 is
 private
 
 	type type_distance_polar is record
-		absolute: type_float_positive := 0.0;
+		absolute : type_float_positive := 0.0;
 		angle	: type_angle := 0.0;
 	end record;
 

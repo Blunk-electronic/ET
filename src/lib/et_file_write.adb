@@ -99,7 +99,7 @@ package body et_file_write is
 		wrap		: in boolean := false;
 		as_comment	: in boolean := false)
 	is
-		parameters_wrapped : string (1..parameters'length + 2);
+		parameters_wrapped : string (1 .. parameters'length + 2);
 
 		-- If as_comment is true, returns "-- ". If false, returns "" :
 		function comment return string is begin

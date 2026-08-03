@@ -107,7 +107,7 @@ package body et_module_write_board_zones is
 			write (keyword => keyword_isolation,
 				parameters => to_string (zone.isolation));
 
-			write (keyword => keyword_priority ,
+			write (keyword => keyword_priority,
 				parameters => to_string (zone.properties.priority_level));
 
 			write (keyword => keyword_layer,
@@ -147,7 +147,7 @@ package body et_module_write_board_zones is
 			write (keyword => keyword_isolation,
 				   parameters => to_string (zone.isolation));
 
-			write (keyword => keyword_priority ,
+			write (keyword => keyword_priority,
 				   parameters => to_string (zone.properties.priority_level));
 
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));

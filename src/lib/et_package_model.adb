@@ -163,7 +163,7 @@ package body et_package_model is
 		if flipped = YES then
 			-- The outline must be rotated by the rotation of the package
 			-- minus the rotation of the given position itself:
-			rotate_by (outline, add (package_rotation, - get_rotation (term_pos)));
+			rotate_by (outline, add (package_rotation, -get_rotation (term_pos)));
 
 			-- If the package is flipped, then the
 			-- given outline (of a pad or a milled hole)

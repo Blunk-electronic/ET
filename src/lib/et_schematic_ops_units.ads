@@ -244,7 +244,7 @@ package et_schematic_ops_units is
 		sheet			: in type_sheet_relative;
 		destination		: in type_vector_model; -- CS rename to offset
 		target_device	: in type_device_name := device_name_default;
-		device_created	: out type_device_name;-- CS use a cursor instead ?
+		device_created	: out type_device_name; -- CS use a cursor instead ?
 		log_threshold	: in type_log_level);
 
 

@@ -1966,7 +1966,7 @@ package body et_schematic_ops_units is
 						module_cursor	=> module_cursor,
 						device_cursor	=> device_cursor,
 						sheet_old		=> i, -- the current sheet
-						offset			=> - 1, -- one sheet down
+						offset			=> -1, -- one sheet down
 						log_threshold	=> log_threshold + 1);
 
 					log_indentation_down;
@@ -2826,7 +2826,7 @@ package body et_schematic_ops_units is
 			-- The old ports of the unit must be removed from the net segments,
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
-			sheet: type_sheet;
+			sheet : type_sheet;
 			ports_old, ports_new : pac_symbol_ports.map;
 
 

@@ -3808,7 +3808,7 @@ package body et_board_ops_devices is
 				mirror (terminal_position, MIRROR_ALONG_Y_AXIS);
 
 				-- Rotate the terminal position (x/y) by the rotation of the package:
-				rotate_by (terminal_position, - terminal_rotation);
+				rotate_by (terminal_position, -terminal_rotation);
 
 
 			when TOP =>

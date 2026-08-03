@@ -172,7 +172,7 @@ package body et_device_placeholders.packages is
 				end if;
 
 				-- Rotate back by the package position:
-				rotate_by (result, - get_rotation (package_position));
+				rotate_by (result, -get_rotation (package_position));
 		end case;
 
 		return result;

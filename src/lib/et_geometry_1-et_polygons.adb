@@ -138,10 +138,10 @@ package body et_geometry_1.et_polygons is
 			begin
 				case arc.direction is
 					when CW =>
-						rotate_by (result, - angle_real * type_float (m));
+						rotate_by (result, -angle_real * type_float (m));
 
 					when CCW =>
-						rotate_by (result, + angle_real * type_float (m));
+						rotate_by (result, +angle_real * type_float (m));
 				end case;
 
 				return result;
@@ -1567,7 +1567,7 @@ package body et_geometry_1.et_polygons is
 
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_vector)
+			intersection : in type_vector)
 		is
 			xi : constant type_float := get_x (intersection);
 		begin
@@ -1613,13 +1613,13 @@ package body et_geometry_1.et_polygons is
 			if
 				-- edge comes from above
 				greater_or_equal (edge.A.y, y_th) and
-				less_than        (edge.B.y  , y_th) then
+				less_than        (edge.B.y, y_th) then
 				return true;
 
 			elsif
 				-- edge comes from below
 				less_than        (edge.A.y, y_th) and
-				greater_or_equal (edge.B.y  , y_th) then
+				greater_or_equal (edge.B.y, y_th) then
 				return true;
 
 			else
@@ -1801,7 +1801,7 @@ package body et_geometry_1.et_polygons is
 		reference		: in type_vector)
 	is
 		type type_item is record
-			intersection: type_intersection_line_edge;
+			intersection : type_intersection_line_edge;
 			distance	: type_float_positive;
 		end record;
 
@@ -2227,7 +2227,7 @@ package body et_geometry_1.et_polygons is
 
 		-- Rotate the given polygon about the start point of the edge.
 		-- Rotate the polygon by the negative edge direction:
-		P_rotated := rotate (polygon, edge.A, - edge_direction);
+		P_rotated := rotate (polygon, edge.A, -edge_direction);
 
 		-- Extract the intersections of the probe line between "after" and "before":
 		intersections := get_intersections (

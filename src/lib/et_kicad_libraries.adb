@@ -167,7 +167,7 @@ package body et_kicad_libraries is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string(""),
+				prefix 		=> pac_device_prefix.to_bounded_string (""),
 				id 			=> 0,
 				id_width	=> 1);
 
@@ -204,7 +204,7 @@ package body et_kicad_libraries is
 							end if;
 
 						when true =>
-							if is_in (c, component_prefix_characters) or is_special(c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
+							if is_in (c, component_prefix_characters) or is_special (c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
 								r.prefix := r.prefix & c;
 							else
 								invalid_reference;
@@ -230,10 +230,10 @@ package body et_kicad_libraries is
 		-- All the characters within this range must be digits.
 		-- The significance of the digit is increased after each pass.
 		for i in reverse d .. text_in_justified'last loop
-			c := text_in_justified(i);
+			c := text_in_justified (i);
 
-			if is_digit(c) then
-				r.id := r.id + 10**digit * natural'value(1 * c);
+			if is_digit (c) then
+				r.id := r.id + 10**digit * natural'value (1 * c);
 			else
 				invalid_reference;
 			end if;
@@ -588,13 +588,13 @@ package body et_kicad_libraries is
 
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
-		function strip_f ( text : in string) return string is
+		function strip_f (text : in string) return string is
 		-- removes the heading character from the given string.
-		begin return text(text'first+1..text'last); end strip_f;
+		begin return text (text'first + 1 .. text'last); end strip_f;
 
-		function strip_id ( text : in string) return string is
+		function strip_id (text : in string) return string is
 		-- removes the trailing id from the given string.
-		begin return text(text'first..text'first); end strip_id;
+		begin return text (text'first .. text'first); end strip_id;
 
 	begin -- to_text_meaning
 		case schematic is
@@ -603,11 +603,11 @@ package body et_kicad_libraries is
 				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if f (line,1) = component_field_identifier then
+				if f (line, 1) = component_field_identifier then
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_component_field_id'value (f (line,2)) is -- "0.."
+					case type_component_field_id'value (f (line, 2)) is -- "0.."
 						when component_field_reference	=> meaning := NAME;
 						when component_field_value		=> meaning := VALUE;
 						when component_field_package	=> meaning := PACKGE;
@@ -624,9 +624,9 @@ package body et_kicad_libraries is
 				-- In a library the meaning of a text field is identified by "F0 .. F9".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if strip_id (f (line,1)) = component_field_identifier then
+				if strip_id (f (line, 1)) = component_field_identifier then
 
-					case type_component_field_id'value (strip_f (f (line,1))) is
+					case type_component_field_id'value (strip_f (f (line, 1))) is
 						when component_field_reference	=> meaning := NAME;
 						when component_field_value		=> meaning := VALUE;
 						when component_field_package	=> meaning := PACKGE;
@@ -678,7 +678,7 @@ package body et_kicad_libraries is
 	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
 		a : type_text_alignment_horizontal;
 	begin
-		case type_field_alignment_horizontal'value(text) is
+		case type_field_alignment_horizontal'value (text) is
 			when L => a := ALIGN_LEFT;
 			when C => a := ALIGN_CENTER;
 			when R => a := ALIGN_RIGHT;
@@ -692,9 +692,9 @@ package body et_kicad_libraries is
 	-- The given text is something like CNN. We are interested in the first character only.
 	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 		a : type_text_alignment_vertical;
-		s : constant string (1..1) := text(text'first..text'first);
+		s : constant string (1 .. 1) := text (text'first .. text'first);
 	begin
-		case type_field_alignment_vertical'value(s) is
+		case type_field_alignment_vertical'value (s) is
 			when T => a := ALIGN_TOP;
 			when C => a := ALIGN_CENTER;
 			when B => a := ALIGN_BOTTOM;
@@ -817,7 +817,7 @@ package body et_kicad_libraries is
 			when true =>
 				-- If it is about a schematic component we just test if the first
 				-- character of the 3rd subfield is a hash sign.
-				if f (line,3) (f (line,3)'first)
+				if f (line, 3) (f (line, 3)'first)
 					= schematic_component_power_symbol_prefix then
 					comp_app := APPEARANCE_VIRTUAL;
 				else
@@ -827,7 +827,7 @@ package body et_kicad_libraries is
 			when false =>
 				-- If it is about a library component we test the whole letter
 				-- in subfield #10.
-				lca := type_library_component_appearance'value (f (line,10));
+				lca := type_library_component_appearance'value (f (line, 10));
 
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
@@ -857,7 +857,7 @@ package body et_kicad_libraries is
 		rep_in : type_alternative_representation;
 		rep_out : type_de_morgan_representation;
 	begin
-		rep_in := type_alternative_representation'value (f (line,3));
+		rep_in := type_alternative_representation'value (f (line, 3));
 
 		case rep_in is
 			when alternative_representation_yes =>
@@ -1096,7 +1096,7 @@ package body et_kicad_libraries is
 					full_library_name := to_package_model_name (ada.directories.compose (
 						containing_directory	=> to_string (element (dir_cursor)),
 						name					=> et_kicad_general.to_string (library_name),
-						extension				=> package_library_directory_extension (2..package_library_directory_extension'last)));
+						extension				=> package_library_directory_extension (2 .. package_library_directory_extension'last)));
 
 					log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 
@@ -1294,7 +1294,7 @@ package body et_kicad_libraries is
 		return true;
 
 		exception
-			when event:
+			when event :
 				others =>
 					log_indentation_reset;
 					log (text => ada.exceptions.exception_message (event), console => true);
@@ -1335,7 +1335,7 @@ package body et_kicad_libraries is
 
 			-- This flag is used when ports are added to an extra unit (supply symbols).
 			-- It is initialzed by procedure init_temp_variables on entering a component section.
-			extra_unit_available: boolean;
+			extra_unit_available : boolean;
 
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
@@ -1421,7 +1421,7 @@ package body et_kicad_libraries is
 				log (text => "units interchangeable", level => log_threshold + 2);
 				log_indentation_up;
 
-				i := type_symbol_interchangeable'value(swap_in);
+				i := type_symbol_interchangeable'value (swap_in);
 
 				case i is
 					when L =>
@@ -1608,15 +1608,15 @@ package body et_kicad_libraries is
 				-- #9 : fill style N/F/f no fill/foreground/background
 
 			begin -- to_rectangle
-				set (rectangle.corner_A, AXIS_X, mil_to_distance (mil => f (line,2)));
-				set (rectangle.corner_A, AXIS_Y, mil_to_distance (mil => f (line,3)));
+				set (rectangle.corner_A, AXIS_X, mil_to_distance (mil => f (line, 2)));
+				set (rectangle.corner_A, AXIS_Y, mil_to_distance (mil => f (line, 3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y.
 				mirror_point (point => rectangle.corner_A, axis => MIRROR_ALONG_X_AXIS);
 
-				set (rectangle.corner_B, AXIS_X, mil_to_distance (mil => f (line,4)));
-				set (rectangle.corner_B, AXIS_Y, mil_to_distance (mil => f (line,5)));
+				set (rectangle.corner_B, AXIS_X, mil_to_distance (mil => f (line, 4)));
+				set (rectangle.corner_B, AXIS_Y, mil_to_distance (mil => f (line, 5)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y.
@@ -1629,7 +1629,7 @@ package body et_kicad_libraries is
 					rectangle.width := mil_to_distance (f (line, 8));
 				end if;
 
-				rectangle.fill := to_fill (f (line,9));
+				rectangle.fill := to_fill (f (line, 9));
 
 				-- CS: log properties
 
@@ -1667,13 +1667,13 @@ package body et_kicad_libraries is
 				set_radius (circle, mil_to_distance (mil => f (line, 4)));
 
 				-- If line width is too small, use a lower limit instead.
-				if mil_to_distance (f (line,7)) < type_line_width'first then
+				if mil_to_distance (f (line, 7)) < type_line_width'first then
 					circle.width := type_line_width'first;
 				else
-					circle.width := mil_to_distance (f (line,7));
+					circle.width := mil_to_distance (f (line, 7));
 				end if;
 
-				circle.fill		:= to_fill (f (line,8));
+				circle.fill		:= to_fill (f (line, 8));
 
 				-- CS: log properties
 
@@ -1720,10 +1720,10 @@ package body et_kicad_libraries is
 				set_center (arc, scratch_point);
 
 
-				arc.radius		:= mil_to_distance (mil => f (line,4));
+				arc.radius		:= mil_to_distance (mil => f (line, 4));
 
-				arc.start_angle	:= to_angle (f (line,5)); -- CS multiply by -1 ?
-				arc.end_angle	:= to_angle (f (line,6)); -- CS multiply by -1 ?
+				arc.start_angle	:= to_angle (f (line, 5)); -- CS multiply by -1 ?
+				arc.end_angle	:= to_angle (f (line, 6)); -- CS multiply by -1 ?
 
 				if arc.start_angle > arc.end_angle then
 					set_direction (arc, CCW);
@@ -1732,20 +1732,20 @@ package body et_kicad_libraries is
 				end if;
 
 				-- If line width is too small, use a lower limit instead.
-				if mil_to_distance (f (line,9)) < type_line_width'first then
+				if mil_to_distance (f (line, 9)) < type_line_width'first then
 					arc.width := type_line_width'first;
 				else
-					arc.width := mil_to_distance (f (line,7));
+					arc.width := mil_to_distance (f (line, 7));
 				end if;
 
-				arc.fill		:= to_fill (f (line,10));
+				arc.fill		:= to_fill (f (line, 10));
 
 
 				-- set (arc.A, AXIS_X, mil_to_distance (mil => f (line,11)));
 				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 11)));
 
 				-- set (arc.A, AXIS_Y, mil_to_distance (mil => f (line,12)));
-				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
+				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line, 12)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y.
@@ -1836,7 +1836,7 @@ package body et_kicad_libraries is
 
 				function to_content (text_in : in string) return pac_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a pac_text_content.bounded_string.
-					t : string (1..text_in'length) := text_in; -- copy given text to t
+					t : string (1 .. text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, tilde_to_space'access);
@@ -1846,26 +1846,26 @@ package body et_kicad_libraries is
 
 
 			begin -- to_text
-				text.rotation := to_rotation_doc (- to_degrees (f (line,2)));
+				text.rotation := to_rotation_doc (-to_degrees (f (line,2)));
 
-				set (text.position, AXIS_X, mil_to_distance (mil => f (line,3)));
-				set (text.position, AXIS_Y, mil_to_distance (mil => f (line,4)));
+				set (text.position, AXIS_X, mil_to_distance (mil => f (line, 3)));
+				set (text.position, AXIS_Y, mil_to_distance (mil => f (line, 4)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y.
 				mirror_point (point => text.position, axis => MIRROR_ALONG_X_AXIS);
 
-				text.size := mil_to_distance (mil => f (line,5));
+				text.size := mil_to_distance (mil => f (line, 5));
 
 				-- compose from fields 10 and 11 the text style
 				--text.style := to_style (f (line,10), f (line,11));
 
 				-- compose alignment
-				text.alignment.horizontal	:= to_alignment_horizontal (f (line,12));
-				text.alignment.vertical		:= to_alignment_vertical (f (line,13));
+				text.alignment.horizontal	:= to_alignment_horizontal (f (line, 12));
+				text.alignment.vertical		:= to_alignment_vertical (f (line, 13));
 
 				-- read text content and replace tildes by spaces
-				text.content := to_content (f (line,9));
+				text.content := to_content (f (line, 9));
 
 				-- CS: log properties
 				return text;
@@ -1998,44 +1998,44 @@ package body et_kicad_libraries is
 				log_indentation_up;
 
 				-- port name. to be taken from field #2 of the given line
-				port.name := pac_port_name.to_bounded_string (f (line,2)); -- GND, GPIO2
+				port.name := pac_port_name.to_bounded_string (f (line, 2)); -- GND, GPIO2
 
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := pac_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
+				tmp_terminal_name := pac_terminal_name.to_bounded_string (f (line, 3)); -- H5, 14
 
 				-- compose position
-				set (port.position, AXIS_X, mil_to_distance (mil => f (line,4)));
-				set (port.position, AXIS_Y, mil_to_distance (mil => f (line,5)));
+				set (port.position, AXIS_X, mil_to_distance (mil => f (line, 4)));
+				set (port.position, AXIS_Y, mil_to_distance (mil => f (line, 5)));
 				--mirror (point => port.position, axis => x);
 
 				-- compose length
-				port.length := mil_to_distance (mil => f (line,6)); -- CS port length may assume zero. do something !
+				port.length := mil_to_distance (mil => f (line, 6)); -- CS port length may assume zero. do something !
 
 				-- compose rotation
-				port.rotation := to_rotation (f (line,7));
+				port.rotation := to_rotation (f (line, 7));
 
 				-- port and termnal name text size (set to lower limit if too small)
-				if mil_to_distance (mil => f (line,8)) < pac_text_schematic.type_text_size'first then
+				if mil_to_distance (mil => f (line, 8)) < pac_text_schematic.type_text_size'first then
 					port.terminal_name_size := pac_text_schematic.type_text_size'first;
 				else
-					port.terminal_name_size := mil_to_distance (mil => f (line,8));
+					port.terminal_name_size := mil_to_distance (mil => f (line, 8));
 				end if;
 				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
 
 
-				if mil_to_distance (mil => f (line,9)) < pac_text_schematic.type_text_size'first then
+				if mil_to_distance (mil => f (line, 9)) < pac_text_schematic.type_text_size'first then
 					port.port_name_size	:= pac_text_schematic.type_text_size'first;
 				else
-					port.port_name_size	:= mil_to_distance (mil => f (line,9));
+					port.port_name_size	:= mil_to_distance (mil => f (line, 9));
 				end if;
 				check_schematic_text_size (category => PORT_NAME, size => port.port_name_size);
 
 				-- direction
-				port.direction := to_direction (f (line,12));
+				port.direction := to_direction (f (line, 12));
 
 				-- port style (optional, to be composed if field #13 present)
 				if get_field_count (line) = 13 then
-					port.style := to_style (f (line,13));
+					port.style := to_style (f (line, 13));
 				end if;
 
 				-- visibility port and pin names
@@ -2079,8 +2079,8 @@ package body et_kicad_libraries is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				check_text_content_length (strip_quotes (f (line,2)));
-				text.content := pac_text_content.to_bounded_string (strip_quotes (f (line,2)));
+				check_text_content_length (strip_quotes (f (line, 2)));
+				text.content := pac_text_content.to_bounded_string (strip_quotes (f (line, 2)));
 
 				-- check content vs. meaning.
 				case meaning is
@@ -2118,20 +2118,20 @@ package body et_kicad_libraries is
 
 				end case;
 
-				set (text.position, AXIS_X, mil_to_distance (mil => f (line,3)));
-				set (text.position, AXIS_Y, mil_to_distance (mil => f (line,4)));
+				set (text.position, AXIS_X, mil_to_distance (mil => f (line, 3)));
+				set (text.position, AXIS_Y, mil_to_distance (mil => f (line, 4)));
 
-				text.size := mil_to_distance (mil => f (line,5));
+				text.size := mil_to_distance (mil => f (line, 5));
 
-				text.rotation := to_field_orientation (f (line,6));
+				text.rotation := to_field_orientation (f (line, 6));
 
 				--text.visible := to_field_visible (
 				--	vis_in		=> f (line,7),
 				--	schematic	=> false);
 
-				text.alignment.horizontal := to_alignment_horizontal (f (line,8));
+				text.alignment.horizontal := to_alignment_horizontal (f (line, 8));
 
-				text.alignment.vertical   := to_alignment_vertical (f (line,9));
+				text.alignment.vertical   := to_alignment_vertical (f (line, 9));
 
 				--text.style := to_text_style (style_in => f (line,9), text => false);
 
@@ -2275,7 +2275,7 @@ package body et_kicad_libraries is
 					when APPEARANCE_VIRTUAL =>
 
 						-- we insert into the given components list a new component
-						type_components_library.insert(
+						type_components_library.insert (
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like #PWR, #FLG
 							position	=> comp_cursor,
@@ -2307,7 +2307,7 @@ package body et_kicad_libraries is
 					when APPEARANCE_PCB =>
 
 						-- we insert into the given components list a new component
-						type_components_library.insert(
+						type_components_library.insert (
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like 74LS00
 							position	=> comp_cursor,
@@ -2336,7 +2336,7 @@ package body et_kicad_libraries is
 				end if;
 
 				exception
-					when event: others =>
+					when event : others =>
 						log (SEVERITY_ERROR, "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
 						-- CS: provide details about the problem (line number, ...)
@@ -2374,7 +2374,7 @@ package body et_kicad_libraries is
 				end if;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log (text => ada.exceptions.exception_message (event));
 							raise;
@@ -2436,7 +2436,7 @@ package body et_kicad_libraries is
 				end if;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log (text => ada.exceptions.exception_message (event));
 							raise;
@@ -2568,7 +2568,7 @@ package body et_kicad_libraries is
 				end if;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log (text => ada.exceptions.exception_message (event));
 							raise;
@@ -2641,14 +2641,14 @@ package body et_kicad_libraries is
 				if extra_unit_available then total := total + 1; end if;
 
 				-- In a loop we set tmp_unit_id for each unit and update the unit of the component.
-				for u in 1..total loop
+				for u in 1 .. total loop
 					tmp_unit_id := u;
 					set_unit_cursor (tmp_component_libraries);
 					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log (text => ada.exceptions.exception_message (event));
 							raise;
@@ -2688,7 +2688,7 @@ package body et_kicad_libraries is
 				-- At a certain log level we report the bare line of a draw object as it is:
 				--log (text => to_string (line), level => log_threshold + 2);
 
-				case type_library_draw'value (f (line,1)) is
+				case type_library_draw'value (f (line, 1)) is
 					when P => -- polyline
 						--log (text => draw_object & "polyline", level => log_threshold);
 						log (text => "polyline", level => log_threshold);
@@ -2706,7 +2706,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properties in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,3));
+						tmp_unit_id := to_unit_id (f (line, 3));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose polyline
@@ -2729,7 +2729,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,6));
+						tmp_unit_id := to_unit_id (f (line, 6));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose rectangle
@@ -2753,7 +2753,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,5));
+						tmp_unit_id := to_unit_id (f (line, 5));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose circle
@@ -2782,7 +2782,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,7));
+						tmp_unit_id := to_unit_id (f (line, 7));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose arc
@@ -2813,7 +2813,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,7));
+						tmp_unit_id := to_unit_id (f (line, 7));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose text
@@ -2842,7 +2842,7 @@ package body et_kicad_libraries is
 						log (text => to_string (line), level => log_threshold);
 						-- CS: output properties in a human readable form instead.
 
-						tmp_unit_id := to_unit_id (f (line,10));
+						tmp_unit_id := to_unit_id (f (line, 10));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose port
@@ -2904,7 +2904,7 @@ package body et_kicad_libraries is
 					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 
 					exception
-						when event:
+						when event :
 							others =>
 								log (text => ada.exceptions.exception_message (event));
 								raise;
@@ -2915,7 +2915,7 @@ package body et_kicad_libraries is
 	-- 			log (text => "footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
 
-				fp := type_package_proposal.to_bounded_string (f (line,1));
+				fp := type_package_proposal.to_bounded_string (f (line, 1));
 				log (text => type_package_proposal.to_string (fp), level => log_threshold);
 
 				do_it;
@@ -2945,7 +2945,7 @@ package body et_kicad_libraries is
 						-- CS: Do a cross check of prefix and reference -- "U"
 						-- The prefix is already defined in the component hearder.
 						-- Why this redundance ? Ask the kicad makers...
-						if strip_quotes (f (line,2)) = pac_device_prefix.to_string (tmp_prefix) then
+						if strip_quotes (f (line, 2)) = pac_device_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
 							log (SEVERITY_WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
@@ -3081,7 +3081,7 @@ package body et_kicad_libraries is
 				log_indentation_down;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log (text => ada.exceptions.exception_message (event));
 							raise;
@@ -3099,7 +3099,7 @@ package body et_kicad_libraries is
 				-- Store line in variable "line" (see ads)
 				-- The schematic library files use comments (#). But only the comments at the begin
 				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
-				line := read_line(
+				line := read_line (
 					line			=> get_line,
 					comment_mark	=> "#",
 					test_whole_line	=> false,
@@ -3121,7 +3121,7 @@ package body et_kicad_libraries is
 
 						if not component_entered then
 
-							if f (line,1) = def then
+							if f (line, 1) = def then
 								component_entered := true;
 
 								init_temp_variables;
@@ -3131,7 +3131,7 @@ package body et_kicad_libraries is
 
 								-- The commponent header provides the first component properties:
 								tmp_component_name := type_component_generic_name.to_bounded_string (
-														f (line,2)); -- 74LS00
+														f (line, 2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
 								-- NOTE: we test against the kicad specific character set that allows a tilde.
@@ -3157,7 +3157,7 @@ package body et_kicad_libraries is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := pac_device_prefix.to_bounded_string (f (line,3)); -- U
+								tmp_prefix := pac_device_prefix.to_bounded_string (f (line, 3)); -- U
 
 								-- Detect invalid characters in tmp_prefix:
 								-- NOTE: we test against the kicad specific character set that allows a #
@@ -3170,20 +3170,20 @@ package body et_kicad_libraries is
 									log (SEVERITY_WARNING, "expect 0 in field #4 !");
 								end if;
 
-								tmp_port_name_offset := mil_to_distance (mil => f (line,5)); -- relevant for supply pins only
-								tmp_terminal_name_visible := to_pin_visibile (f (line,6));
-								tmp_port_name_visible := to_port_visibile (f (line,7));
+								tmp_port_name_offset := mil_to_distance (mil => f (line, 5)); -- relevant for supply pins only
+								tmp_terminal_name_visible := to_pin_visibile (f (line, 6));
+								tmp_port_name_visible := to_port_visibile (f (line, 7));
 
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
-								tmp_units_total := type_units_total'value (f (line,8));
+								tmp_units_total := type_units_total'value (f (line, 8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
 									log (text => "with" & type_units_total'image (tmp_units_total) & " units", level => log_threshold + 2);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for
 									-- all units of the component (except extra units):
-									tmp_unit_swap_level := to_swap_level (f (line,9));
+									tmp_unit_swap_level := to_swap_level (f (line, 9));
 									log_indentation_down;
 								else
 									tmp_unit_swap_level := swap_level_default;
@@ -3198,7 +3198,7 @@ package body et_kicad_libraries is
 						else -- we are inside a component section and process subsections
 
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
-							if f (line,1) = enddef then
+							if f (line, 1) = enddef then
 								component_entered := false;
 
 								-- Set placeholders (reference, value, ...) in internal units.
@@ -3236,7 +3236,7 @@ package body et_kicad_libraries is
 										-- added to the component when the section "DRAW" is processed..
 
 										-- As long as none of those headers occurs, we read the text fields.
-										if f (line,1) = fplist then
+										if f (line, 1) = fplist then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_device_libraries.update_element (
@@ -3252,7 +3252,7 @@ package body et_kicad_libraries is
 											--log (text => "footprint/package filter begin", level => log_threshold + 1);
 											log (text => "footprint/package filter", level => log_threshold + 2);
 
-										elsif f (line,1) = et_kicad_libraries.draw then
+										elsif f (line, 1) = et_kicad_libraries.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_device_libraries.update_element (
@@ -3287,7 +3287,7 @@ package body et_kicad_libraries is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- that this subsection has been processed.
-										if f (line,1) = endfplist then
+										if f (line, 1) = endfplist then
 											active_section := none;
 											--log (text => "footprint/package filter end", level => log_threshold + 1);
 										else
@@ -3302,7 +3302,7 @@ package body et_kicad_libraries is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- thate this subsection has been processed.
-										if f (line,1) = enddraw then
+										if f (line, 1) = enddraw then
 											active_section := none;
 											log (text => "draw end", level => log_threshold + 2);
 										else
@@ -3314,7 +3314,7 @@ package body et_kicad_libraries is
 										-- If no subsection is being processed, we wait for the "draw" header (DRAW)
 										-- and set the active_section accordingly.
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
-										if f (line,1) = et_kicad_libraries.draw then
+										if f (line, 1) = et_kicad_libraries.draw then
 											active_section := draw;
 											log (text => "draw begin", level => log_threshold + 2);
 										end if;
@@ -3334,7 +3334,7 @@ package body et_kicad_libraries is
 			log_indentation_down;
 
 			exception
-				when event:
+				when event :
 					others =>
 						log (SEVERITY_ERROR, get_affected_line (line) & to_string (line), console => true);
 						log (text => ada.exceptions.exception_message (event));
@@ -3570,7 +3570,7 @@ package body et_kicad_libraries is
 				log_indentation_down;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log_indentation_reset;
 							put_line (ada.exceptions.exception_message (event));
@@ -3601,7 +3601,7 @@ package body et_kicad_libraries is
 			log_indentation_down;
 
 			exception
-				when event:
+				when event :
 					others =>
 						log_indentation_reset;
 						put_line (ada.exceptions.exception_message (event));

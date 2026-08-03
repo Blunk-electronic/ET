@@ -139,7 +139,7 @@ package body et_module_write_board_user_settings is
 				write (keyword => keyword_linewidth,
 					parameters => to_string (us.polygons_conductor.linewidth));
 
-				write (keyword => keyword_priority ,
+				write (keyword => keyword_priority,
 					parameters => to_string (us.polygons_conductor.priority_level));
 
 				write (keyword => keyword_isolation,

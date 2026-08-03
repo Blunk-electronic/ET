@@ -88,8 +88,8 @@ package body et_file_sections is
 -- GENERICS
 
 	package body gen_pac_sections_stack is
-		s : array (1..max) of item;
-		top : natural range 0..max;
+		s : array (1 .. max) of item;
+		top : natural range 0 .. max;
 
 		procedure push (x : in item) is
 		begin

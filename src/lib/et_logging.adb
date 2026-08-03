@@ -123,7 +123,7 @@ package body et_logging is
 
 	function indent (width : in type_indentation_level) return string is
 	begin
-		return (natural(width) * latin_1.space);
+		return (natural (width) * latin_1.space);
 	end indent;
 
 
@@ -207,7 +207,7 @@ package body et_logging is
 
 
 	function message_warning return string is
-		warning : constant string (1..9) := "WARNING #";
+		warning : constant string (1 .. 9) := "WARNING #";
 	begin
 		increment_warning_counter;
 		return warning & trim (warning_count, left) & " : ";
@@ -232,16 +232,16 @@ package body et_logging is
 		console : in boolean := false) is
 	begin
 		if file then
-			put(file_handle, identation * ' ' & text);
+			put (file_handle, identation * ' ' & text);
 			if lf then
-				new_line(file_handle);
+				new_line (file_handle);
 			end if;
 		end if;
 
 		if console then
-			put(standard_output,identation * ' ' & text);
+			put (standard_output, identation * ' ' & text);
 			if lf then
-				new_line(standard_output);
+				new_line (standard_output);
 			end if;
 		end if;
 	end write_message;

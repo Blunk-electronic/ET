@@ -307,7 +307,7 @@ package body et_kicad.schematic is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string(""),
+				prefix 		=> pac_device_prefix.to_bounded_string (""),
 				id 			=> 0,
 				id_width	=> 1);
 
@@ -348,7 +348,7 @@ package body et_kicad.schematic is
 							end if;
 
 						when true =>
-							if is_in (c, component_prefix_characters) or is_special(c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
+							if is_in (c, component_prefix_characters) or is_special (c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
 								r.prefix := r.prefix & c;
 							else
 								invalid_reference;
@@ -374,10 +374,10 @@ package body et_kicad.schematic is
 		-- All the characters within this range must be digits.
 		-- The significance of the digit is increased after each pass.
 		for i in reverse d .. text_in_justified'last loop
-			c := text_in_justified(i);
+			c := text_in_justified (i);
 
-			if is_digit(c) then
-				r.id := r.id + 10**digit * natural'value(1 * c);
+			if is_digit (c) then
+				r.id := r.id + 10**digit * natural'value (1 * c);
 			else
 				invalid_reference;
 			end if;
@@ -434,7 +434,7 @@ package body et_kicad.schematic is
 			 level => log_threshold);
 
 		-- depending on the component appearance there is more to report:
-		case type_components_schematic.element(component).appearance is
+		case type_components_schematic.element (component).appearance is
 			when APPEARANCE_PCB =>
 
 -- 				-- package
@@ -622,13 +622,13 @@ package body et_kicad.schematic is
 
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
-		function strip_f ( text : in string) return string is
+		function strip_f (text : in string) return string is
 		-- removes the heading character from the given string.
-		begin return text(text'first+1..text'last); end strip_f;
+		begin return text (text'first + 1 .. text'last); end strip_f;
 
-		function strip_id ( text : in string) return string is
+		function strip_id (text : in string) return string is
 		-- removes the trailing id from the given string.
-		begin return text(text'first..text'first); end strip_id;
+		begin return text (text'first .. text'first); end strip_id;
 
 	begin -- to_text_meaning
 		case schematic is
@@ -637,11 +637,11 @@ package body et_kicad.schematic is
 				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if f (line,1) = component_field_identifier then
+				if f (line, 1) = component_field_identifier then
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_component_field_id'value (f (line,2)) is -- "0.."
+					case type_component_field_id'value (f (line, 2)) is -- "0.."
 						when component_field_reference	=> meaning := NAME;
 						when component_field_value		=> meaning := VALUE;
 						when component_field_package	=> meaning := PACKGE;
@@ -658,9 +658,9 @@ package body et_kicad.schematic is
 				-- In a library the meaning of a text field is identified by "F0 .. F9".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if strip_id (f (line,1)) = component_field_identifier then
+				if strip_id (f (line, 1)) = component_field_identifier then
 
-					case type_component_field_id'value (strip_f (f (line,1))) is
+					case type_component_field_id'value (strip_f (f (line, 1))) is
 						when component_field_reference	=> meaning := NAME;
 						when component_field_value		=> meaning := VALUE;
 						when component_field_package	=> meaning := PACKGE;
@@ -711,7 +711,7 @@ package body et_kicad.schematic is
 	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
 		a : type_text_alignment_horizontal;
 	begin
-		case type_field_alignment_horizontal'value(text) is
+		case type_field_alignment_horizontal'value (text) is
 			when L => a := ALIGN_LEFT;
 			when C => a := ALIGN_CENTER;
 			when R => a := ALIGN_RIGHT;
@@ -725,9 +725,9 @@ package body et_kicad.schematic is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : type_text_alignment_vertical;
-		s : constant string (1..1) := text(text'first..text'first);
+		s : constant string (1 .. 1) := text (text'first .. text'first);
 	begin
-		case type_field_alignment_vertical'value(s) is
+		case type_field_alignment_vertical'value (s) is
 			when T => a := ALIGN_TOP;
 			when C => a := ALIGN_CENTER;
 			when B => a := ALIGN_BOTTOM;
@@ -853,7 +853,7 @@ package body et_kicad.schematic is
 			when true =>
 				-- If it is about a schematic component we just test if the first
 				-- character of the 3rd subfield is a hash sign.
-				if f (line,3) (f (line,3)'first)
+				if f (line, 3) (f (line, 3)'first)
 					= schematic_component_power_symbol_prefix then
 					comp_app := APPEARANCE_VIRTUAL;
 				else
@@ -863,7 +863,7 @@ package body et_kicad.schematic is
 			when false =>
 				-- If it is about a library component we test the whole letter
 				-- in subfield #10.
-				lca := type_library_component_appearance'value (f (line,10));
+				lca := type_library_component_appearance'value (f (line, 10));
 
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
@@ -894,7 +894,7 @@ package body et_kicad.schematic is
 		rep_in : type_alternative_representation;
 		rep_out : type_de_morgan_representation;
 	begin
-		rep_in := type_alternative_representation'value (f (line,3));
+		rep_in := type_alternative_representation'value (f (line, 3));
 
 		case rep_in is
 			when alternative_representation_yes =>
@@ -1136,7 +1136,7 @@ package body et_kicad.schematic is
 				log_indentation_down;
 
 				exception
-					when event:
+					when event :
 						others =>
 							log_indentation_reset;
 							put_line (ada.exceptions.exception_message (event));
@@ -1167,7 +1167,7 @@ package body et_kicad.schematic is
 			log_indentation_down;
 
 			exception
-				when event:
+				when event :
 					others =>
 						log_indentation_reset;
 						put_line (ada.exceptions.exception_message (event));
@@ -2080,7 +2080,7 @@ package body et_kicad.schematic is
 				-- search_list_project_lib_dirs assists search operations.
 					use type_library_directory;
 					directory_count 	: natural;
-					lib_dir_separator 	: constant string (1..1) := ";";
+					lib_dir_separator 	: constant string (1 .. 1) := ";";
 					lib_dir_name 		: type_library_directory.bounded_string;
 
 				begin -- locate_library_directories
@@ -2095,7 +2095,7 @@ package body et_kicad.schematic is
 						directory_count := ada.strings.fixed.count (directories, lib_dir_separator) + 1;
 
 						-- extract directory names and create a group for each of them:
-						for place in 1..directory_count loop
+						for place in 1 .. directory_count loop
 
 							-- get the directory name where "place" points to:
 							lib_dir_name := to_bounded_string (get_field_from_line (
@@ -2239,7 +2239,7 @@ package body et_kicad.schematic is
 				while not end_of_file loop
 
 					-- Save a line in variable "line" (see ads)
-					line := read_line(
+					line := read_line (
 								line => get_line,
 								comment_mark => "#", -- use constant comment_mark
 								number => positive (ada.text_io.line (current_input)),
@@ -2250,13 +2250,13 @@ package body et_kicad.schematic is
 						when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
 							-- test header [eeschema]
-							if f (line,1) = project_header_eeschema then
+							if f (line, 1) = project_header_eeschema then
 								clear_section_entered_flags;
 								section_eeschema_entered := true;
 							end if;
 
 							-- test header [eeschema/libraries]
-							if f (line,1) = project_header_eeschema_libraries then
+							if f (line, 1) = project_header_eeschema_libraries then
 								clear_section_entered_flags;
 								section_eeschema_libraries_entered := true;
 							end if;
@@ -2265,13 +2265,13 @@ package body et_kicad.schematic is
 							if section_eeschema_entered then
 
 								-- Get library directory names
-								if f (line,1) = project_keyword_library_directory then
-									log (text => "library directories are: " & f (line,2), level => log_threshold + 2);
+								if f (line, 1) = project_keyword_library_directory then
+									log (text => "library directories are: " & f (line, 2), level => log_threshold + 2);
 
 									-- The library directories must be
 									-- inserted in the search list of library directories (search_list_project_lib_dirs).
 									-- These directories assist search operations for both components and packages.
-									locate_library_directories (f (line,2), log_threshold + 3);
+									locate_library_directories (f (line, 2), log_threshold + 3);
 								end if;
 
 							end if;
@@ -2283,18 +2283,18 @@ package body et_kicad.schematic is
 								-- store them in search_list_component_libraries (see et_kicad.ads).
 								-- We ignore the index of LibName. Since we store the lib names in a
 								-- simple list their order remains unchanged anyway.
-								if f (line,1)(1..project_keyword_library_name'length)
+								if f (line, 1)(1 .. project_keyword_library_name'length)
 									= project_keyword_library_name then
 
 									-- The component library could have been referenced already. If so,
 									-- there is no need to append it again to search_list_component_libraries.
 									if not type_library_names.contains (
 										container 	=> search_list_component_libraries,
-										item		=> type_library_name.to_bounded_string (f (line,2))) then
+										item		=> type_library_name.to_bounded_string (f (line, 2))) then
 
 											type_library_names.append (
 												container	=> search_list_component_libraries,
-												new_item	=> type_library_name.to_bounded_string (f (line,2)));
+												new_item	=> type_library_name.to_bounded_string (f (line, 2)));
 
 											-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
 											-- in the project file. search_list_component_libraries assists search operations.
@@ -2302,7 +2302,7 @@ package body et_kicad.schematic is
 											-- is cleared as soon as another kicad project file is read.
 
 											-- For the log write something like "LibName bel_connectors_and_jumpers"
-											log (text => f (line,1) & " " & f (line,2), level => log_threshold + 2);
+											log (text => f (line, 1) & " " & f (line, 2), level => log_threshold + 2);
 									end if;
 
 								end if;
@@ -2447,11 +2447,11 @@ package body et_kicad.schematic is
 					opening_bracket : constant character := '(';
 					closing_bracket : constant character := ')';
 
-					term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
+					term_char_seq : constant string (1 .. 2) := latin_1.space & closing_bracket;
 					term_char_set : constant character_set := to_set (term_char_seq);
 
 					-- the section prefix is a workaround due to GNAT reserved keywords.
-					sec_prefix : constant string (1..4) := "sec_";
+					sec_prefix : constant string (1 .. 4) := "sec_";
 
 					-- These are the keywords used in the sym-lib tables:
 					type type_keyword is (
@@ -2470,7 +2470,7 @@ package body et_kicad.schematic is
 					package type_argument is new generic_bounded_length (argument_length_max);
 
 					-- After a section name, arguments follow. For each section arguments are counted:
-					type type_argument_counter is range 0..1;
+					type type_argument_counter is range 0 .. 1;
 
 					function to_string (arg_count : in type_argument_counter) return string is begin
 					-- Returns the given argument count as string.
@@ -2501,7 +2501,7 @@ package body et_kicad.schematic is
 					begin
 						-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 						-- the section image.
-						return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+						return to_lower (type_keyword'image (section)(sec_prefix'last + 1 .. len));
 						--return type_keyword'image (section);
 					end to_string;
 
@@ -2760,7 +2760,7 @@ package body et_kicad.schematic is
 						end case;
 
 						exception
-							when event:
+							when event :
 								others =>
 									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
 									log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
@@ -2811,7 +2811,7 @@ package body et_kicad.schematic is
 						log (text => return_to_section (section.name), level => log_threshold + 5);
 
 						exception
-							when event:
+							when event :
 								others =>
 									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
 									log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
@@ -3432,7 +3432,7 @@ package body et_kicad.schematic is
 
 		exception
 -- 			-- CS: log exception message
-			when event:
+			when event :
 				others =>
 					log (text => ada.exceptions.exception_message (event), console => true);
 					set_directory (current_working_directory);
@@ -4232,7 +4232,7 @@ package body et_kicad.schematic is
 
 		-- This component cursor points to the schematic component being processed.
 		use type_components_schematic;
-		component_cursor_sch: type_components_schematic.cursor;
+		component_cursor_sch : type_components_schematic.cursor;
 
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
@@ -4240,7 +4240,7 @@ package body et_kicad.schematic is
 
 		-- This component cursor points to the library component being processed.
 		use type_components_library;
-		component_cursor_lib: type_components_library.cursor;
+		component_cursor_lib : type_components_library.cursor;
 
 		-- CS: log_threshold for messages below
 
@@ -6967,7 +6967,7 @@ package body et_kicad.schematic is
 								-- Probing other ports would be a waste of time.
 								if same_path_and_sheet (
 									left => strand.position,
-									right => element (port_cursor).coordinates ) then
+									right => element (port_cursor).coordinates) then
 
 									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
 									if element (port_cursor).connected = NO then
@@ -7151,7 +7151,7 @@ package body et_kicad.schematic is
 			pragma unreferenced (module_name);
 			use type_components_schematic;
 
-			component_cursor: type_components_schematic.cursor;
+			component_cursor : type_components_schematic.cursor;
 
 			library_name	: pac_device_model_file.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
@@ -7209,7 +7209,7 @@ package body et_kicad.schematic is
 					log_indentation_down;
 
 					exception
-						when event:
+						when event :
 							others =>
 								log_indentation_reset;
 								log (text => ada.exceptions.exception_message (event), console => true);
@@ -7315,7 +7315,7 @@ package body et_kicad.schematic is
 		is
 			pragma unreferenced (module_name);
 			use type_components_schematic;
-			component_cursor: type_components_schematic.cursor;
+			component_cursor : type_components_schematic.cursor;
 
 			library_name	: pac_device_model_file.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;

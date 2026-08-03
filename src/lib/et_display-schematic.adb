@@ -85,7 +85,7 @@ package body et_display.schematic is
 	end nets_enabled;
 
 	function texts_enabled return boolean is begin
-		if layers.texts= ON then
+		if layers.texts = ON then
 			return true;
 		else
 			return false;
