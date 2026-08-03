@@ -856,9 +856,11 @@ package body et_canvas_schematic is
 
 				-- Advance to next sheet:
 				when GDK_KP_Add =>
-					active_sheet := active_sheet + 1;
-					update_sheet_number_display;
-					refresh;
+					if active_sheet < type_sheet'last then
+						active_sheet := active_sheet + 1;
+						update_sheet_number_display;
+						refresh;
+					end if;
 
 				-- Advance to previous sheet:
 				when GDK_KP_Subtract =>
@@ -1037,24 +1039,52 @@ package body et_canvas_schematic is
 
 
 
-	procedure update_sheet_number_display is begin
-		gtk_entry (cbox_sheet.get_child).set_text (to_string (active_sheet));
+	procedure update_sheet_number_display is
+		unused_found : boolean;
+	begin
+		unused_found :=
+			set_active_id (
+				cbox_sheet,
+				active_id => active_sheet'image);
 	end update_sheet_number_display;
 
 
-	procedure build_sheet_number_display is
-		spacing : gint;
+	procedure cb_sheet_change (
+		self : access gtk.combo_box.gtk_combo_box_record'class)
+	is
 	begin
-		spacing := 10;
+		active_sheet := type_sheet'value (self.get_active_id);
+		refresh;
+	end cb_sheet_change;
 
+
+	procedure build_sheet_number_display is
+		spacing : constant gint := 10;
+	begin
 		gtk_new_vbox (box_sheet);
 		set_spacing (box_sheet, spacing);
 		pack_start (box_v1, box_sheet, expand => false);
 
 		gtk_new (label_sheet, "SHEET (KEYPAD +/-)");
 		pack_start (box_sheet, label_sheet, expand => false);
-		gtk_new_with_entry (cbox_sheet);
+
+		gtk_new (cbox_sheet);
 		pack_start (box_sheet, cbox_sheet);
+
+		for sheet in type_sheet loop
+			cbox_sheet.append (
+				id		=> type_sheet'image (sheet),
+				text	=> type_sheet'image (sheet));
+		end loop;
+
+		set_wrap_width (
+			cbox_sheet,
+			width => 10);
+
+		on_changed (
+			cbox_sheet,
+			call	=> cb_sheet_change'access,
+			after	=> true);
 	end build_sheet_number_display;
 
 
