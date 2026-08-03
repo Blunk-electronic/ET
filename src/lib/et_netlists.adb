@@ -73,7 +73,7 @@ package body et_netlists is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 
@@ -100,7 +100,7 @@ package body et_netlists is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 
@@ -110,7 +110,7 @@ package body et_netlists is
 		return pac_net_name.bounded_string is
 	begin
 		return to_net_name (to_string (instance) & level_separator);
-	end;
+	end to_prefix;
 
 
 
@@ -166,7 +166,7 @@ package body et_netlists is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 
@@ -198,7 +198,7 @@ package body et_netlists is
 					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
 					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
 				end case;
-			end;
+			end count_netchanger_ports;
 
 
 			procedure count_submodule_ports (
@@ -208,7 +208,7 @@ package body et_netlists is
 					when MASTER => port_count.submodules.masters := port_count.submodules.masters + 1;
 					when SLAVE => port_count.submodules.slaves := port_count.submodules.slaves + 1;
 				end case;
-			end;
+			end count_submodule_ports;
 
 
 		begin -- query_ports
@@ -269,7 +269,7 @@ package body et_netlists is
 
 			-- CS: list affected ports
 			raise constraint_error;
-		end;
+		end contention_by_both;
 
 	begin
 		ports := get_port_count (net_cursor);

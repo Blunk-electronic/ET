@@ -52,7 +52,7 @@ package body et_assy_doc is
 	is begin
 		reset_line (type_line (line));
 		line.width := linewidth_default;
-	end;
+	end reset_line;
 
 
 
@@ -182,7 +182,7 @@ package body et_assy_doc is
 	is begin
 		reset_arc (type_arc (arc));
 		arc.width := linewidth_default;
-	end;
+	end reset_arc;
 
 
 
@@ -301,7 +301,7 @@ package body et_assy_doc is
 	is begin
 		reset_circle (type_circle (circle));
 		circle.width := linewidth_default;
-	end;
+	end reset_circle;
 
 
 
@@ -650,7 +650,7 @@ package body et_assy_doc is
 		log (text => "assembly doc circle face" & to_string (face) & space
 			 & to_string (element (cursor)),
 			level => log_threshold);
-	end;
+	end circle_assy_doc_properties;
 
 
 

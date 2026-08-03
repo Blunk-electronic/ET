@@ -48,11 +48,11 @@ package body et_logic is
 
 	function to_string (inverted : in type_output_inverted) return string is begin
 		return to_lower (type_output_inverted'image (inverted));
-	end;
+	end to_string;
 
 	function to_output_inverted (inverted : in string) return type_output_inverted is begin
 		return type_output_inverted'value (inverted);
-	end;
+	end to_output_inverted;
 
 
 

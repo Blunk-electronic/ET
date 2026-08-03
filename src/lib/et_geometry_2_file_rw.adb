@@ -53,7 +53,7 @@ package body et_geometry_2_file_rw is
 
 	procedure write_line (line : in type_line'class) is begin
 		write (keyword => keyword_start, parameters => to_string (get_A (line), FORMAT_2));
-		write (keyword => keyword_end  , parameters => to_string (get_B (line), FORMAT_2));
+		write (keyword => keyword_end, parameters => to_string (get_B (line), FORMAT_2));
 	end write_line;
 
 

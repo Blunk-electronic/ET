@@ -1961,13 +1961,13 @@ package body et_module_read is
 			pragma unreferenced (module_name);
 			begin
 				submods := module.submods;
-			end;
+			end get_submodules;
 
 
 			procedure query_module (cursor : in pac_submodules.cursor) is begin
 				-- Read the template file:
 				read_module (to_string (element (cursor).file), log_threshold + 1);
-			end;
+			end query_module;
 
 
 		begin -- read_submodule_files

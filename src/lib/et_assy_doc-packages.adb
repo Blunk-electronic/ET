@@ -98,7 +98,7 @@ package body et_assy_doc.packages is
 			when BOTTOM =>
 				append (assy_doc.bottom.zones, zone);
 		end case;
-	end;
+	end add_zone;
 
 
 
@@ -119,7 +119,7 @@ package body et_assy_doc.packages is
 			when BOTTOM =>
 				append (assy_doc.bottom.texts, text);
 		end case;
-	end;
+	end add_text;
 
 
 
@@ -140,7 +140,7 @@ package body et_assy_doc.packages is
 			when BOTTOM =>
 				append (assy_doc.bottom.placeholders, placeholder);
 		end case;
-	end;
+	end add_placeholder;
 
 
 end et_assy_doc.packages;

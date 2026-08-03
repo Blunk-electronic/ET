@@ -86,7 +86,7 @@ package body et_module_write_freetracks is
 
 			write (keyword => keyword_layer, parameters => to_string (line.layer));
 			section_mark (section_line, FOOTER);
-		end;
+		end write_line;
 
 
 		procedure write_arc (
@@ -94,7 +94,7 @@ package body et_module_write_freetracks is
 		is
 			arc : type_conductor_arc renames element (c);
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (arc);
 
 			write (keyword => keyword_width,
@@ -102,7 +102,7 @@ package body et_module_write_freetracks is
 
 			write (keyword => keyword_layer, parameters => to_string (arc.layer));
 			section_mark (section_arc , FOOTER);
-		end;
+		end write_arc;
 
 
 		procedure write_circle (
@@ -118,7 +118,7 @@ package body et_module_write_freetracks is
 
 			write (keyword => keyword_layer, parameters => to_string (circle.layer));
 			section_mark (section_circle, FOOTER);
-		end;
+		end write_circle;
 
 
 

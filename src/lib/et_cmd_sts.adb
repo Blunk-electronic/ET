@@ -60,7 +60,7 @@ package body et_cmd_sts is
 		origin	: in type_cmd_origin)
 	is begin
 		cmd.origin := origin;
-	end;
+	end set_origin;
 
 
 
@@ -70,7 +70,7 @@ package body et_cmd_sts is
 		return type_cmd_origin
 	is begin
 		return cmd.origin;
-	end;
+	end get_origin;
 
 
 
@@ -79,7 +79,7 @@ package body et_cmd_sts is
 		return string
 	is begin
 		return to_string (cmd.origin);
-	end;
+	end get_origin;
 
 
 
@@ -95,7 +95,7 @@ package body et_cmd_sts is
 			others => <>);
 	begin
 		return cmd;
-	end;
+	end to_single_cmd;
 
 
 
@@ -105,7 +105,7 @@ package body et_cmd_sts is
 		return positive
 	is begin
 		return get_line_number (cmd.fields);
-	end;
+	end get_line_number;
 
 
 
@@ -114,7 +114,7 @@ package body et_cmd_sts is
 		return string
 	is begin
 		return "line" & positive'image (get_line_number (cmd.fields)) & ": ";
-	end;
+	end get_line_number;
 
 
 
@@ -125,7 +125,7 @@ package body et_cmd_sts is
 		fields	: in type_fields_of_line)
 	is begin
 		cmd.fields := fields;
-	end;
+	end set_fields;
 
 
 
@@ -135,7 +135,7 @@ package body et_cmd_sts is
 		return string
 	is begin
 		return get_field (cmd.fields, place);
-	end;
+	end get_field;
 
 
 
@@ -145,7 +145,7 @@ package body et_cmd_sts is
 		return type_fields_of_line
 	is begin
 		return cmd.fields;
-	end;
+	end get_fields;
 
 
 
@@ -155,7 +155,7 @@ package body et_cmd_sts is
 		return string
 	is begin
 		return to_string (cmd.fields);
-	end;
+	end get_all_fields;
 
 
 
@@ -165,7 +165,7 @@ package body et_cmd_sts is
 		return natural
 	is begin
 		return natural (get_field_count (cmd.fields));
-	end;
+	end get_field_count;
 
 
 
@@ -175,7 +175,7 @@ package body et_cmd_sts is
 		return boolean
 	is begin
 		return cmd.complete;
-	end;
+	end is_complete;
 
 
 
@@ -183,14 +183,14 @@ package body et_cmd_sts is
 		cmd		: in out type_single_cmd)
 	is begin
 		cmd.complete := true;
-	end;
+	end set_complete;
 
 
 	procedure set_incomplete (
 		cmd		: in out type_single_cmd)
 	is begin
 		cmd.complete := false;
-	end;
+	end set_incomplete;
 
 
 
@@ -199,7 +199,7 @@ package body et_cmd_sts is
 		return boolean
 	is begin
 		return cmd.finalization_pending;
-	end;
+	end finalization_is_pending;
 
 
 
@@ -207,7 +207,7 @@ package body et_cmd_sts is
 		cmd		: in out type_single_cmd)
 	is begin
 		cmd.finalization_pending := true;
-	end;
+	end set_finalization_pending;
 
 
 
@@ -216,7 +216,7 @@ package body et_cmd_sts is
 		return string
 	is begin
 		return type_exit_code_command'image (exit_code);
-	end;
+	end to_string;
 
 
 
@@ -225,7 +225,7 @@ package body et_cmd_sts is
 		return type_exit_code_command
 	is begin
 		return cmd.exit_code;
-	end;
+	end get_exit_code;
 
 
 
@@ -235,7 +235,7 @@ package body et_cmd_sts is
 		code	: in type_exit_code_command)
 	is begin
 		cmd.exit_code := code;
-	end;
+	end set_exit_code;
 
 
 
@@ -244,7 +244,7 @@ package body et_cmd_sts is
 		cmd		: in out type_single_cmd)
 	is begin
 		cmd := (others	=> <>);
-	end;
+	end reset_cmd;
 
 
 
@@ -256,7 +256,7 @@ package body et_cmd_sts is
 			 & type_field_count'image (field) & " !",
 			 console => true);
 		raise constraint_error;
-	end;
+	end invalid_keyword;
 
 
 
@@ -320,7 +320,7 @@ package body et_cmd_sts is
 		-- A too long a command is not accepted.
 		-- The exit code must be set accordingly:
 		set_exit_code (cmd, 2);
-	end;
+	end command_too_long;
 
 
 

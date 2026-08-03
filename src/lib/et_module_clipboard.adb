@@ -48,7 +48,7 @@ package body et_module_clipboard is
 
 	procedure clear_clipboard is begin
 		clipboard := (others => <>);
-	end;
+	end clear_clipboard;
 
 
 

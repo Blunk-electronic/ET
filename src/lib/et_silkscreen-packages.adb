@@ -99,7 +99,7 @@ package body et_silkscreen.packages is
 			when BOTTOM =>
 				append (silkscreen.bottom.zones, zone);
 		end case;
-	end;
+	end add_zone;
 
 
 
@@ -121,7 +121,7 @@ package body et_silkscreen.packages is
 			when BOTTOM =>
 				append (silkscreen.bottom.texts, text);
 		end case;
-	end;
+	end add_text;
 
 
 
@@ -142,7 +142,7 @@ package body et_silkscreen.packages is
 			when BOTTOM =>
 				append (silkscreen.bottom.placeholders, placeholder);
 		end case;
-	end;
+	end add_placeholder;
 
 
 

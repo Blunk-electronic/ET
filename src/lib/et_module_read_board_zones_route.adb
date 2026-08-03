@@ -119,7 +119,7 @@ package body et_module_read_board_zones_route is
 		clear (signal_layers);
 
 		reset_contour (contour);
-	end;
+	end reset_scratch;
 
 
 
@@ -249,7 +249,7 @@ package body et_module_read_board_zones_route is
 				pac_route_solid.append (
 					container	=> route.zones.solid,
 					new_item	=> p);
-			end;
+			end connection_thermal;
 
 
 			procedure connection_solid is
@@ -269,7 +269,7 @@ package body et_module_read_board_zones_route is
 				pac_route_solid.append (
 					container	=> route.zones.solid,
 					new_item	=> p);
-			end;
+			end connection_solid;
 
 
 		begin -- solid_polygon
@@ -302,7 +302,7 @@ package body et_module_read_board_zones_route is
 				pac_route_hatched.append (
 					container	=> route.zones.hatched,
 					new_item	=> p);
-			end;
+			end connection_thermal;
 
 
 			procedure connection_solid is
@@ -323,7 +323,7 @@ package body et_module_read_board_zones_route is
 				pac_route_hatched.append (
 					container	=> route.zones.hatched,
 					new_item	=> p);
-			end;
+			end connection_solid;
 
 
 		begin

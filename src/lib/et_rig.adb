@@ -109,7 +109,7 @@ package body et_rig is
 		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
-	end;
+	end write_rig_configuration_header;
 
 
 	procedure write_rig_configuration_footer is
@@ -122,7 +122,7 @@ package body et_rig is
 		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " rig configuration file end");
 		new_line;
-	end;
+	end write_rig_configuration_footer;
 
 
 

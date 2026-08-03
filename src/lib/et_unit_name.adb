@@ -64,7 +64,7 @@ package body et_unit_name is
 	is begin
 		-- CS do character and length checks
 		return pac_unit_name.to_bounded_string (to_upper (unit_name));
-	end;
+	end to_unit_name;
 
 
 
@@ -81,7 +81,7 @@ package body et_unit_name is
 			return string
 		is begin
 			return "Unit " & to_string (name) & " not found !";
-		end;
+		end get_message_text;
 
 
 	begin

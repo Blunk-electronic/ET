@@ -47,12 +47,12 @@ package body et_netlist_name is
 
 	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
 		return pac_netlist_file_name.to_string (name);
-	end;
+	end to_string;
 
 
 	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
 		return pac_netlist_file_name.to_bounded_string (name);
-	end;
+	end to_file_name;
 
 
 

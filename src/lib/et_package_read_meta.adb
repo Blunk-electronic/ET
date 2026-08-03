@@ -65,34 +65,34 @@ package body et_package_read_meta is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_bom_relevant then -- bom_relevant yes/no
 			expect_field_count (line, 2);
-			pac_appearance := to_bom_relevant (f (line,2));
+			pac_appearance := to_bom_relevant (f (line, 2));
 
 			-- Depending on the appearance we create a virtual or real package
 			-- where pointer packge is pointing at:
 			case pac_appearance is
 				when BOM_RELEVANT_YES =>
-					packge := new type_package_model' (
+					packge := new type_package_model'(
 								appearance	=> BOM_RELEVANT_YES,
 								others		=> <>);
 
 				when BOM_RELEVANT_NO =>
-					packge := new type_package_model' (
+					packge := new type_package_model'(
 								appearance	=> BOM_RELEVANT_NO,
 								others		=> <>);
 			end case;
 
 		elsif kw = keyword_description then -- description "blabla"
 			expect_field_count (line, 2);
-			pac_description := to_package_description (f (line,2));
+			pac_description := to_package_description (f (line, 2));
 
 		elsif kw = keyword_assembly_technology then -- technology SMT/THT
 			expect_field_count (line, 2);
-			pac_technology := to_assembly_technology (f (line,2));
+			pac_technology := to_assembly_technology (f (line, 2));
 
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_meta;
 
 
 

@@ -92,13 +92,13 @@ package body et_package_write_conductors is
 		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is
 			arc : type_conductor_arc renames element (cursor);
 		begin
-			section_mark (section_arc , HEADER);
+			section_mark (section_arc, HEADER);
 			write_arc (element (cursor));
 
 			write (keyword => keyword_width,
 				parameters => to_string (arc.width));
 
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 

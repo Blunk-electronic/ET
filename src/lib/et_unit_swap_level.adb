@@ -48,11 +48,11 @@ package body et_unit_swap_level is
 
 	function to_string (swap_level : in type_swap_level) return string is begin
 		return type_swap_level'image (swap_level);
-	end;
+	end to_string;
 
 	function to_swap_level (swap_level : in string) return type_swap_level is begin
 		return type_swap_level'value (swap_level);
-	end;
+	end to_swap_level;
 
 
 

@@ -58,7 +58,7 @@ package body et_silkscreen.board is
 			when BOTTOM =>
 				silkscreen.bottom.lines.append (line);
 		end case;
-	end;
+	end add_line;
 
 
 
@@ -75,7 +75,7 @@ package body et_silkscreen.board is
 			when BOTTOM =>
 				silkscreen.bottom.arcs.append (arc);
 		end case;
-	end;
+	end add_arc;
 
 
 
@@ -91,7 +91,7 @@ package body et_silkscreen.board is
 			when BOTTOM =>
 				silkscreen.bottom.circles.append (circle);
 		end case;
-	end;
+	end add_circle;
 
 
 

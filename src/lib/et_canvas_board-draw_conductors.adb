@@ -681,7 +681,7 @@ procedure draw_conductors is
 			else
 				draw_vector_text (text);
 			end if;
-		end;
+		end draw;
 
 
 	begin
@@ -812,7 +812,7 @@ procedure draw_conductors is
 			position : type_vector_model := get_center (circle);
 
 			offset : constant type_vector_model :=
-				set (zero, + radius_base * text_position_layer_and_drill_factor);
+				set (zero, +radius_base * text_position_layer_and_drill_factor);
 
 			use pac_draw_text;
 		begin
@@ -846,7 +846,7 @@ procedure draw_conductors is
 		begin
 			if not drill_size_drawn then
 
-				offset := set (zero, - radius_base * text_position_layer_and_drill_factor);
+				offset := set (zero, -radius_base * text_position_layer_and_drill_factor);
 
 				move_by (position, offset);
 
@@ -1296,22 +1296,22 @@ procedure draw_conductors is
 
 				procedure query_line (line : in type_conductor_line) is begin
 					draw_line (line, draw_all_highlighted);
-				end;
+				end query_line;
 
 
 				procedure query_arc (arc : in type_conductor_arc) is begin
 					draw_arc (arc, draw_all_highlighted);
-				end;
+				end query_arc;
 
 
 				procedure query_zone_solid (zone : in type_route_solid) is begin
 					draw_fill_zone (zone, draw_all_highlighted);
-				end;
+				end query_zone_solid;
 
 
 				procedure query_zone_hatched (zone : in type_route_hatched) is begin
 					draw_fill_zone (zone, draw_all_highlighted);
-				end;
+				end query_zone_hatched;
 
 
 			begin
@@ -1372,35 +1372,35 @@ procedure draw_conductors is
 
 			procedure query_line (line : in type_conductor_line) is begin
 				draw_line (line);
-			end;
+			end query_line;
 
 			procedure query_arc (arc : in type_conductor_arc) is begin
 				draw_arc (arc);
-			end;
+			end query_arc;
 
 			procedure query_circle (circle : in type_conductor_circle) is begin
 				draw_circle (circle);
-			end;
+			end query_circle;
 
 			procedure query_zone_solid (zone : in type_floating_solid) is begin
 				draw_fill_zone (zone);
-			end;
+			end query_zone_solid;
 
 			procedure query_zone_hatched (zone : in type_floating_hatched) is begin
 				draw_fill_zone (zone);
-			end;
+			end query_zone_hatched;
 
 			procedure query_cutout (cutout : in type_cutout) is begin
 				draw_cutout (cutout);
-			end;
+			end query_cutout;
 
 			procedure query_placeholder (placeholder : in type_placeholder_conductor) is begin
 				draw_placeholder (placeholder);
-			end;
+			end query_placeholder;
 
 			procedure query_text (text : in type_conductor_text_board) is begin
 				draw_text (text);
-			end;
+			end query_text;
 
 
 		begin
@@ -1508,7 +1508,7 @@ procedure draw_conductors is
 				others			=> <>);
 		begin
 			draw_via (via);
-		end;
+		end build_via_through;
 
 
 		procedure build_via_drilled_from_top is
@@ -1522,7 +1522,7 @@ procedure draw_conductors is
 				others			=> <>);
 		begin
 			draw_via (via);
-		end;
+		end build_via_drilled_from_top;
 
 
 		procedure build_via_drilled_from_bottom is
@@ -1536,7 +1536,7 @@ procedure draw_conductors is
 				others			=> <>);
 		begin
 			draw_via (via);
-		end;
+		end build_via_drilled_from_bottom;
 
 
 		procedure build_via_buried is
@@ -1549,7 +1549,7 @@ procedure draw_conductors is
 				others			=> <>);
 		begin
 			draw_via (via);
-		end;
+		end build_via_buried;
 
 
 

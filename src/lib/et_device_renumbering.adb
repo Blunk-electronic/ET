@@ -89,7 +89,7 @@ package body et_device_renumbering is
 		else
 			return false;
 		end if;
-	end;
+	end below;
 
 
 
@@ -100,7 +100,7 @@ package body et_device_renumbering is
 		else
 			return false;
 		end if;
-	end;
+	end above;
 
 
 
@@ -115,7 +115,7 @@ package body et_device_renumbering is
 
 		-- Get the first child submodule:
 		return first_child (result);
-	end;
+	end get_first_child_submodule;
 
 
 
@@ -125,7 +125,7 @@ package body et_device_renumbering is
 		return count_type
 	is begin
 		return modules.node_count;
-	end;
+	end get_module_count;
 
 
 	function get_module_count (
@@ -133,7 +133,7 @@ package body et_device_renumbering is
 		return string
 	is begin
 		return count_type'image (modules.node_count);
-	end;
+	end get_module_count;
 
 
 

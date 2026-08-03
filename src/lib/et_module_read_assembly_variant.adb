@@ -93,7 +93,7 @@ package body et_module_read_assembly_variant is
 		pragma unreferenced (module_name);
 		begin
 			module.assembly_variants.active := active_assembly_variant;
-		end;
+		end set_variant;
 
 
 	begin
@@ -411,7 +411,7 @@ package body et_module_read_assembly_variant is
 								enclose_in_quotes (to_variant (submod_variant)) & " !",
 								console => true);
 
-							log (text => "Look up section " & section_assembly_variants (2..section_assembly_variants'last) &
+							log (text => "Look up section " & section_assembly_variants (2 .. section_assembly_variants'last) &
 									" to fix the issue !");
 
 							raise constraint_error;

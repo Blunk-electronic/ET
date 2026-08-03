@@ -39,7 +39,7 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_kicad is
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 end et_kicad;
 

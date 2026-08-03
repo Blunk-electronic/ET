@@ -50,7 +50,7 @@ package body et_net_segment is
 		segment.connectors := (others => <>);
 		segment.junctions := (others => <>);
 		segment.ports := (others => <>);
-	end;
+	end reset_net_segment;
 
 
 
@@ -85,7 +85,7 @@ package body et_net_segment is
 		-- Move the net labels of the new segment
 		-- by the given offset:
 		move_labels_by (segment_out.labels, offset);
-	end;
+	end copy_net_segment;
 
 
 
@@ -121,7 +121,7 @@ package body et_net_segment is
 				rename_device_ports (
 					segment.ports.B.devices, device_old, device_new);
 		end case;
-	end;
+	end rename_device_port;
 
 
 
@@ -133,7 +133,7 @@ package body et_net_segment is
 		if not segment.labels.contains (label) then
 			segment.labels.append (label);
 		end if;
-	end;
+	end add_label;
 
 
 
@@ -148,7 +148,7 @@ package body et_net_segment is
 		else
 			return false;
 		end if;
-	end;
+	end has_junctions;
 
 
 
@@ -162,7 +162,7 @@ package body et_net_segment is
 			when A => segment.junctions.A := true;
 			when B => segment.junctions.B := true;
 		end case;
-	end;
+	end set_junction;
 
 
 
@@ -174,7 +174,7 @@ package body et_net_segment is
 			when A => segment.junctions.A := false;
 			when B => segment.junctions.B := false;
 		end case;
-	end;
+	end clear_junction;
 
 
 
@@ -188,7 +188,7 @@ package body et_net_segment is
 			when A => return segment.junctions.A;
 			when B => return segment.junctions.B;
 		end case;
-	end;
+	end get_junction_status;
 
 
 
@@ -222,7 +222,7 @@ package body et_net_segment is
 			when A => return is_active (segment.connectors.A);
 			when B => return is_active (segment.connectors.B);
 		end case;
-	end;
+	end get_connector_status;
 
 
 
@@ -238,7 +238,7 @@ package body et_net_segment is
 		else
 			return false;
 		end if;
-	end;
+	end has_connectors;
 
 
 
@@ -256,7 +256,7 @@ package body et_net_segment is
 			when A => segment.connectors.A := c;
 			when B => segment.connectors.B := c;
 		end case;
-	end;
+	end set_connector;
 
 
 
@@ -273,7 +273,7 @@ package body et_net_segment is
 			when A => segment.connectors.A := c;
 			when B => segment.connectors.B := c;
 		end case;
-	end;
+	end delete_connector;
 
 
 
@@ -311,7 +311,7 @@ package body et_net_segment is
 			when A => return segment.connectors.A;
 			when B => return segment.connectors.B;
 		end case;
-	end;
+	end get_connector;
 
 
 
@@ -328,7 +328,7 @@ package body et_net_segment is
 		AB_end := to_AB_end (segment, NSWE_end);
 
 		return get_connector (segment, AB_end);
-	end;
+	end get_connector;
 
 
 
@@ -619,7 +619,7 @@ package body et_net_segment is
 			when A => return segment.ports.A;
 			when B => return segment.ports.B;
 		end case;
-	end;
+	end get_ports;
 
 
 
@@ -660,7 +660,7 @@ package body et_net_segment is
 		count := count + ports.submodules.length;
 
 		return natural (count);
-	end;
+	end get_port_count;
 
 
 
@@ -790,7 +790,7 @@ package body et_net_segment is
 			-- Overwrite the connectors of the given primary segment
 			-- with the new connectors:
 			primary.connectors := (tag_A, tag_B);
-		end;
+		end merge_connectors;
 
 
 	begin
@@ -1167,7 +1167,7 @@ package body et_net_segment is
 		return boolean
 	is begin
 		return get_junction_status (element (segment), AB_end);
-	end;
+	end get_junction_status;
 
 
 
@@ -1178,7 +1178,7 @@ package body et_net_segment is
 		return type_net_ports
 	is begin
 		return get_ports (element (segment), AB_end);
-	end;
+	end get_ports;
 
 
 
@@ -1205,7 +1205,7 @@ package body et_net_segment is
 		s : constant type_net_segment := element (segment);
 	begin
 		return has_ports (s, AB_end);
-	end;
+	end has_ports;
 
 
 
@@ -1230,7 +1230,7 @@ package body et_net_segment is
 		return type_vector_model
 	is begin
 		return get_A (element (segment));
-	end;
+	end get_A;
 
 
 
@@ -1239,7 +1239,7 @@ package body et_net_segment is
 		return type_vector_model
 	is begin
 		return get_B (element (segment));
-	end;
+	end get_B;
 
 
 
@@ -1252,7 +1252,7 @@ package body et_net_segment is
 			when A => return get_A (segment);
 			when B => return get_B (segment);
 		end case;
-	end;
+	end get_end_point;
 
 
 
@@ -1262,7 +1262,7 @@ package body et_net_segment is
 		return boolean
 	is begin
 		return is_moving (element (segment));
-	end;
+	end is_moving;
 
 
 
@@ -1272,7 +1272,7 @@ package body et_net_segment is
 		return boolean
 	is begin
 		return is_A_moving (element (segment));
-	end;
+	end is_A_moving;
 
 
 
@@ -1281,7 +1281,7 @@ package body et_net_segment is
 		return boolean
 	is begin
 		return is_B_moving (element (segment));
-	end;
+	end is_B_moving;
 
 
 
@@ -1363,7 +1363,7 @@ package body et_net_segment is
 		return boolean
 	is begin
 		return lines_overlap (element (s1), element (s2), test_touch);
-	end;
+	end segments_overlap;
 
 
 
@@ -1422,7 +1422,7 @@ package body et_net_segment is
 		return type_split_segment
 	is begin
 		return split_segment (element (segment), point);
-	end;
+	end split_segment;
 
 
 

@@ -132,7 +132,7 @@ package body et_canvas.drawing_frame is
 
 			-- Assemble the lower line:
 			set_A (l, (0.0, 0.0));
-			set_B (l, (  w, 0.0));
+			set_B (l, (w, 0.0));
 			draw_line;
 
 			-- Assemble the right line:

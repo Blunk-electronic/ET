@@ -104,7 +104,7 @@ package body et_module_read_nets is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then
 			expect_field_count (line, 2);
-			net_name := to_net_name (f (line,2));
+			net_name := to_net_name (f (line, 2));
 
 		elsif kw = keyword_class then
 			-- CS: imported kicad projects lack the class name sometimes.
@@ -117,7 +117,7 @@ package body et_module_read_nets is
 			-- net.class := et_pcb.to_net_class_name (f (line,2));
 
 			if get_field_count (line) = 2 then
-				net.class := to_net_class_name (f (line,2));
+				net.class := to_net_class_name (f (line, 2));
 			else
 				net.class := net_class_name_default;
 				log (text => message_warning & get_affected_line (line)
@@ -126,7 +126,7 @@ package body et_module_read_nets is
 
 		elsif kw = keyword_scope then
 			expect_field_count (line, 2);
-			net.scope := to_net_scope (f (line,2));
+			net.scope := to_net_scope (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -280,7 +280,7 @@ package body et_module_read_nets is
 	procedure insert_strands is begin
 		net.strands := strands;
 		pac_strands.clear (strands); -- clean up for next strand collection
-	end;
+	end insert_strands;
 
 
 
@@ -359,7 +359,7 @@ package body et_module_read_nets is
 
 		-- clean up for next segment collection
 		pac_net_segments.clear (net_segments);
-	end;
+	end insert_net_segments;
 
 
 
@@ -590,7 +590,7 @@ package body et_module_read_nets is
 
 		-- clean up for next label
 		net_label := (others => <>);
-	end;
+	end insert_net_label;
 
 
 

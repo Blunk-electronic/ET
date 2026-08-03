@@ -130,7 +130,7 @@ package body et_module_read_meta is
 
 			module.meta.schematic := meta_schematic;
 			module.meta.board := meta_board;
-		end;
+		end query_module;
 
 
 	begin
@@ -226,7 +226,7 @@ package body et_module_read_meta is
 			--else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_meta_schematic;
 
 
 
@@ -246,7 +246,7 @@ package body et_module_read_meta is
 			--else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_meta_board;
 
 
 

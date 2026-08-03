@@ -1017,10 +1017,8 @@ package et_canvas is
 		label_mode			: gtk_label;
 		label_mode_verb		: gtk_label;
 		label_mode_noun		: gtk_label;
-		-- cbox_mode_verb		: gtk_combo_box_text;
-		-- cbox_mode_noun		: gtk_combo_box_text;
-		cbox_mode_verb		: gtk_combo_box;
-		cbox_mode_noun		: gtk_combo_box;
+		cbox_mode_verb		: gtk_combo_box_text;
+		cbox_mode_noun		: gtk_combo_box_text;
 		grid_mode			: gtk_grid;
 	end record;
 
@@ -1846,7 +1844,7 @@ private
 	procedure cb_move (
 		button : access gtk_button_record'class);
 
-	access_cb_move: constant cb_gtk_button_void := cb_move'access;
+	access_cb_move : constant cb_gtk_button_void := cb_move'access;
 
 
 	-- This callback procedure is called each time the

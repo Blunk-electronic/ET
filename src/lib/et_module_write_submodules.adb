@@ -107,7 +107,7 @@ package body et_module_write_submodules is
 				-- direction master/slave
 
 			section_mark (section_port, FOOTER);
-		end;
+		end query_ports;
 
 
 

@@ -87,7 +87,7 @@ package body et_module_read_grid is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_drawing_grid_schematic;
 
 
 
@@ -116,7 +116,7 @@ package body et_module_read_grid is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_drawing_grid_board;
 
 
 

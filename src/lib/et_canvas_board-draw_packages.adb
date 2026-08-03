@@ -140,7 +140,7 @@ procedure draw_packages is
 				--put_line ("draw origin" & to_string (get_place (package_position));
 				set_color_origin (brightness);
 				draw_origin ((get_place (package_position), 0.0));
-			end;
+			end draw;
 
 		begin
 			if flip then
@@ -246,7 +246,7 @@ procedure draw_packages is
 					set_brightness (NORMAL);
 				end if;
 
-			end;
+			end build_text;
 
 
 		begin

@@ -1689,7 +1689,7 @@ package et_text_vectorized is
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
-				position: in pac_character_lines.cursor));
+				position : in pac_character_lines.cursor));
 
 
 		-- Returns the lines of the given vector text:

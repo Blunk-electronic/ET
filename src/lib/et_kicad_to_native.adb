@@ -142,8 +142,8 @@ package body et_kicad_to_native is
 		root : constant et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
 -- 		before	: constant string (1..15) := "position before";
 -- 		now		: constant string (1..15) := "position now   ";
-		before	: constant string (1..6) := "before";
-		now		: constant string (1..6) := "now   ";
+		before	: constant string (1 .. 6) := "before";
+		now		: constant string (1 .. 6) := "now   ";
 
 		-- This list of frames serves to map from sheet number to paper size:
 		schematic_frames : et_kicad.schematic.type_frames.list;
@@ -772,7 +772,7 @@ package body et_kicad_to_native is
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
 					poly_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
 
-					board_track : constant string (1..12) := "board track ";
+					board_track : constant string (1 .. 12) := "board track ";
 
 
 					procedure move_line (line : in out type_conductor_line) is
@@ -1007,7 +1007,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out type_silk_zone) is begin
 					log (text => board_silk_screen & "zone segments", level => log_threshold + log_threshold_add);
 					et_board_geometry.pac_contours.transpose_contour (polygon, layout_sheet_height);
-				end;
+				end move_polygon;
 
 
 				procedure move_text (text : in out type_silk_text) is
@@ -1226,7 +1226,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out type_doc_zone) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_geometry.pac_contours.transpose_contour (polygon, layout_sheet_height);
-				end;
+				end move_polygon;
 
 
 				procedure move_text (text : in out type_doc_text) is
@@ -2300,7 +2300,7 @@ package body et_kicad_to_native is
 			rotation	=> rotation);
 
 		return point_out;
-	end;
+	end to_native_coordinates;
 
 
 
@@ -2321,14 +2321,14 @@ package body et_kicad_to_native is
 			pac_symbol_lines.append (
 				container	=> native_shapes.lines,
 				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
-		end;
+		end copy_line;
 
 
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
 			pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
 				new_item	=> et_symbol_shapes.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
-		end;
+		end copy_arc;
 
 
 		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
@@ -2337,7 +2337,7 @@ package body et_kicad_to_native is
 				new_item	=> (
 					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
 					with filled => NO));
-		end;
+		end copy_circle;
 
 
 		-- Converts a polyline to single lines and appends them to native_shapes.lines.
@@ -2410,7 +2410,7 @@ package body et_kicad_to_native is
 				et_symbol_shapes.pac_symbol_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
-			end;
+			end append_line;
 
 			use pac_geometry_2;
 
@@ -2431,7 +2431,7 @@ package body et_kicad_to_native is
 			if width < zero then
 				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_X_AXIS);
 				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_X_AXIS);
-				width := - width;
+				width := -width;
 			end if;
 
 			height := get_distance (axis => AXIS_Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
@@ -2441,7 +2441,7 @@ package body et_kicad_to_native is
 			if height < zero then
 				rectangle.corner_A := invert (rectangle.corner_A, MIRROR_ALONG_Y_AXIS);
 				rectangle.corner_B := invert (rectangle.corner_B, MIRROR_ALONG_Y_AXIS);
-				height := - height;
+				height := -height;
 			end if;
 
 			log (text => "new start " & to_string (rectangle.corner_A)
@@ -2579,7 +2579,7 @@ package body et_kicad_to_native is
 		begin -- to_texts
 			et_kicad.schematic.type_texts.iterate (texts_in, query_texts'access);
 			return texts_out;
-		end;
+		end to_texts;
 
 
 
@@ -2606,7 +2606,7 @@ package body et_kicad_to_native is
 			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
-			characters : constant character_mapping := to_mapping ("./","_-");
+			characters : constant character_mapping := to_mapping ("./", "_-");
 
 		begin -- concatenate_lib_name_and_generic_name
 			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
@@ -2642,7 +2642,7 @@ package body et_kicad_to_native is
 			use pac_package_model_file;
 
 			-- In the containing directory . and / must be replaced by _ and -:
-			characters : constant character_mapping := to_mapping ("./","_-");
+			characters : constant character_mapping := to_mapping ("./", "_-");
 
 			model_copy : pac_package_model_file.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
 			model_return : pac_package_model_file.bounded_string;
@@ -3692,7 +3692,7 @@ package body et_kicad_to_native is
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> APPEARANCE_PCB,
 												ports		=> et_symbol_ports.pac_symbol_ports.empty_map, -- ports will come later
-												placeholders=> (
+												placeholders => (
 													name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
 													value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 													purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
@@ -3795,7 +3795,7 @@ package body et_kicad_to_native is
 					use pac_device_prefix;
 				begin
 					return to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
-				end;
+				end remove_leading_hash;
 
 
 			begin -- query_components

@@ -53,7 +53,7 @@ package body et_device_model_unit_internal is
 		else
 			return (others => <>);
 		end if;
-	end;
+	end get_placeholders;
 
 
 
@@ -64,7 +64,7 @@ package body et_device_model_unit_internal is
 		u : type_unit_internal renames element (unit);
 	begin
 		return get_placeholders (u);
-	end;
+	end get_placeholders;
 
 
 
@@ -99,7 +99,7 @@ package body et_device_model_unit_internal is
 		u : type_unit_internal renames element (unit);
 	begin
 		return u.symbol;
-	end;
+	end get_symbol;
 
 
 
@@ -111,7 +111,7 @@ package body et_device_model_unit_internal is
 		return pac_symbol_ports.map
 	is begin
 		return element (unit_cursor).symbol.ports;
-	end;
+	end get_ports_internal;
 
 
 

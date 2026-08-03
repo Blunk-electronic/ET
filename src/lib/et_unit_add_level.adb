@@ -50,11 +50,11 @@ package body et_unit_add_level is
 
 	function to_string (add_level : in type_add_level) return string is begin
 		return to_lower (type_add_level'image (add_level));
-	end;
+	end to_string;
 
 	function to_add_level (add_level : in string) return type_add_level is begin
 		return type_add_level'value (add_level);
-	end;
+	end to_add_level;
 
 
 

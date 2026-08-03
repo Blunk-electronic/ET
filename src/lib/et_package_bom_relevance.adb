@@ -52,7 +52,7 @@ package body et_package_bom_relevance is
 		s : constant string := to_lower (type_bom_relevant'image (bom_relevant));
 	begin
 		return s (bom_relevant_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 
@@ -61,7 +61,7 @@ package body et_package_bom_relevance is
 		return type_bom_relevant
 	is begin
 		return type_bom_relevant'value (bom_relevant_prefix & bom_relevant);
-	end;
+	end to_bom_relevant;
 
 
 end et_package_bom_relevance;

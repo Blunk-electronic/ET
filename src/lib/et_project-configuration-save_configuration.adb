@@ -103,7 +103,7 @@ begin -- save_configuration
 
 	log_indentation_down;
 
-exception when event:
+exception when event :
 	others =>
 		log (text => ada.exceptions.exception_message (event), console => true);
 		close (file_handle);

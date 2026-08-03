@@ -70,7 +70,7 @@ package body et_file_write is
 
 	procedure reset_tab_depth is begin
 		tab_depth := type_tab_depth'first;
-	end;
+	end reset_tab_depth;
 
 
 
@@ -99,7 +99,7 @@ package body et_file_write is
 		wrap		: in boolean := false;
 		as_comment	: in boolean := false)
 	is
-		parameters_wrapped : string (1..parameters'length + 2);
+		parameters_wrapped : string (1 .. parameters'length + 2);
 
 		-- If as_comment is true, returns "-- ". If false, returns "" :
 		function comment return string is begin

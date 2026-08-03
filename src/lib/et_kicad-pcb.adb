@@ -293,11 +293,11 @@ package body et_kicad.pcb is
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
+		term_char_seq : constant string (1 .. 2) := latin_1.space & closing_bracket;
 		term_char_set : constant character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
-		sec_prefix : constant string (1..4) := "sec_";
+		sec_prefix : constant string (1 .. 4) := "sec_";
 
 		-- These are the keywords used in the board file. They prelude a certain section.
 		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.
@@ -441,7 +441,7 @@ package body et_kicad.pcb is
 		package type_argument is new generic_bounded_length (argument_length_max);
 
 		-- After a section name, arguments follow. For each section arguments are counted:
-		type type_argument_counter is range 0..4;
+		type type_argument_counter is range 0 .. 4;
 
 		function to_string (arg_count : in type_argument_counter) return string is begin
 		-- Returns the given argument count as string.
@@ -478,7 +478,7 @@ package body et_kicad.pcb is
 		begin
 			-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 			-- the section image.
-			return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+			return to_lower (type_keyword'image (section)(sec_prefix'last + 1 .. len));
 		end to_string;
 
 		function enter_section (section : in type_keyword) return string is begin
@@ -3119,7 +3119,7 @@ package body et_kicad.pcb is
 			end case;
 
 		exception
-			when event:
+			when event :
 				others =>
 					log (SEVERITY_ERROR, "in " & file_name, console => true);
 					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
@@ -4564,7 +4564,7 @@ package body et_kicad.pcb is
 			log (text => return_to_section (section.name), level => log_threshold + 5);
 
 		exception
-			when event:
+			when event :
 				others =>
 					log (SEVERITY_ERROR, "in " & file_name, console => true);
 					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
@@ -5580,7 +5580,7 @@ package body et_kicad.pcb is
 				process		=> add_board_objects'access);
 
 		exception
-			when event:
+			when event :
 				others =>
 					log_indentation_reset;
 					log (text => ada.exceptions.exception_message (event), console => true);
@@ -5732,7 +5732,7 @@ package body et_kicad.pcb is
 		return terminals;
 
 	exception
-		when event:
+		when event :
 			others =>
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_message (event), console => true);

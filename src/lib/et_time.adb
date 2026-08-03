@@ -45,7 +45,7 @@ package body et_time is
 
 	function date_now return type_date is
 		now		: constant time := clock;
-		date	: string (1..19) := image (now, time_zone => utc_time_offset (now));
+		date	: string (1 .. 19) := image (now, time_zone => utc_time_offset (now));
 	begin
 		date (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return type_date (date);
@@ -68,7 +68,7 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : string (1..19) := image (time, time_zone => utc_time_offset (time));
+		now : string (1 .. 19) := image (time, time_zone => utc_time_offset (time));
 	begin
 		now (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return now;
@@ -79,7 +79,7 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : constant string (1..10) := image (time, time_zone => utc_time_offset (time)) (1..10);
+		now : constant string (1 .. 10) := image (time, time_zone => utc_time_offset (time)) (1 .. 10);
 	begin
 		return now;
 	end to_string_YMD;

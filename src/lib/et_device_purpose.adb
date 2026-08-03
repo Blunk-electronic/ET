@@ -62,7 +62,7 @@ package body et_device_purpose is
 		else
 			return true;
 		end if;
-	end;
+	end purpose_length_valid;
 
 
 	function get_length (

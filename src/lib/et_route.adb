@@ -50,7 +50,7 @@ package body et_route is
 		line	: in type_conductor_line)
 	is begin
 		route.lines.append (line);
-	end;
+	end add_line;
 
 
 
@@ -59,7 +59,7 @@ package body et_route is
 		arc		: in type_conductor_arc)
 	is begin
 		route.arcs.append (arc);
-	end;
+	end add_arc;
 
 
 

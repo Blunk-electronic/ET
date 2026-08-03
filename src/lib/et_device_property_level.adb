@@ -51,7 +51,7 @@ package body et_device_property_level is
 		return string
 	is begin
 		return type_properties_level'image (level);
-	end;
+	end to_string;
 
 
 
@@ -76,7 +76,7 @@ package body et_device_property_level is
 			error := true;
 			return DEVICE_PROPERTIES_LEVEL_1;
 		end if;
-	end;
+	end to_properties_level;
 
 
 

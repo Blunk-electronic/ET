@@ -330,7 +330,7 @@ package body et_module_write is
 				write_placeholders_conductor (module_cursor, log_threshold + 2);
 
 				section_mark (section_conductor, FOOTER);
-			end;
+			end write_conductors_floating;
 
 
 		begin -- query_board
@@ -420,7 +420,7 @@ package body et_module_write is
 
 		write_footer;
 
-	exception when event:
+	exception when event :
 		others =>
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (module_file_handle);

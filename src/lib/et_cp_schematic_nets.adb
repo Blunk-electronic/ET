@@ -585,7 +585,7 @@ package body et_cp_schematic_nets is
 
 			set_status (status_draw_net & " of net "
 				& net_name_to_string (object_net_name));
-		end;
+		end no_name_given;
 
 
 		procedure explicit_name_given is

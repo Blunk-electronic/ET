@@ -550,7 +550,7 @@ package body et_cp_board is
 
 
 		exception
-			when event: others =>
+			when event : others =>
 				-- log (text => ada.exceptions.exception_information (event), console => true);
 				log (text => ada.exceptions.exception_information (event));
 

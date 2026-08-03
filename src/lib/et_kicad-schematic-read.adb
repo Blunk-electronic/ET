@@ -107,7 +107,7 @@ is
 		--scratch : type_net_segment_base;
 		scratch : type_net_segment;
 
-		procedure set_picked (segment : in out type_wild_net_segment )
+		procedure set_picked (segment : in out type_wild_net_segment)
 		is begin
 			segment.picked := true;
 		end set_picked;
@@ -158,8 +158,8 @@ is
 		untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
 		-- Prodcedures that set the s,e or picked flag in a wild net segment.
-		procedure set_e (segment : in out type_wild_net_segment ) is begin segment.e := true; end set_e;
-		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
+		procedure set_e (segment : in out type_wild_net_segment) is begin segment.e := true; end set_e;
+		procedure set_s (segment : in out type_wild_net_segment) is begin segment.s := true; end set_s;
 
 		use type_wild_segments;
 		cursor : type_wild_segments.cursor;
@@ -175,7 +175,7 @@ is
 -- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
 -- 							 level => 1);
 
-				type_wild_segments.update_element(
+				type_wild_segments.update_element (
 						container => wild_segments,
 						position => segment_cursor,
 						process => set_e'access);
@@ -186,7 +186,7 @@ is
 -- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
 -- 							 level => 1);
 
-				type_wild_segments.update_element(
+				type_wild_segments.update_element (
 						container => wild_segments,
 						position => segment_cursor,
 						process => set_s'access);
@@ -491,7 +491,7 @@ is
 											new_item => ls);
 
 										-- Collect simple label (ls) in temporarily list of simple labels (lls).
-										type_simple_labels.append (lls,ls);
+										type_simple_labels.append (lls, ls);
 
 										-- Mark anonymous strand as processed.
 										anon_strand_a.processed := true;
@@ -606,7 +606,7 @@ is
 											new_item => lt);
 
 										-- Collect tag label (lt) in temporarily list of simple labels (llt).
-										type_tag_labels.append (llt,lt);
+										type_tag_labels.append (llt, lt);
 
 										-- Mark anonymous net as processed.
 										anon_strand_a.processed := true;
@@ -810,7 +810,7 @@ is
 			while segment_smashed loop
 
 				segment_cursor := wild_segments.first;
-				loop_s:
+				loop_s :
 				while segment_cursor /= type_wild_segments.no_element loop
 
 					segment := type_wild_segments.element (segment_cursor); -- get a segment
@@ -1067,13 +1067,13 @@ is
 	-- Aborts program if schematic version invalid.
 		use et_import;
 	begin
-		if f (line,1) = schematic_header_keyword_sys_name and
-			f (line,2) = schematic_header_keyword_schematic and
-			f (line,3) = schematic_header_keyword_file and
-			f (line,4) = schematic_header_keyword_version then
+		if f (line, 1) = schematic_header_keyword_sys_name and
+			f (line, 2) = schematic_header_keyword_schematic and
+			f (line, 3) = schematic_header_keyword_file and
+			f (line, 4) = schematic_header_keyword_version then
 				case cad_format is
 					when KICAD_V4 =>
-						if positive'value (f (line,5)) = schematic_version_v4 then
+						if positive'value (f (line, 5)) = schematic_version_v4 then
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
@@ -1084,13 +1084,13 @@ is
 						end if;
 
 					when KICAD_V5 =>
-						if positive'value (f (line,5)) = schematic_version_v5 then
+						if positive'value (f (line, 5)) = schematic_version_v5 then
 							-- CS: currently the version number must exactly match. Range check ?
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
 							log (SEVERITY_ERROR, "schematic version"
-									& positive'image(schematic_version_v5) & " required.",
+									& positive'image (schematic_version_v5) & " required.",
 								console => true);
 							raise constraint_error;
 						end if;
@@ -1152,10 +1152,10 @@ is
 					null;
 				else
 					-- append layer numbers to the sheet header
-					sheet_header.eelayer_a := positive'value(
+					sheet_header.eelayer_a := positive'value (
 						f (element (line_cursor), 2));
 
-					sheet_header.eelayer_b := natural'value(
+					sheet_header.eelayer_b := natural'value (
 						f (element (line_cursor), 3));
 				end if;
 			end if;
@@ -1350,7 +1350,7 @@ is
 		log_indentation_down;
 
 	exception
-		when event:
+		when event :
 			others =>
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_message (event));
@@ -1560,7 +1560,7 @@ is
 		log_indentation_down;
 
 	exception
-		when event:
+		when event :
 			others =>
 				log_indentation_reset;
 				--log (message_error , console => true);
@@ -1576,9 +1576,9 @@ is
 		result : boolean := false;
 	begin
 		-- CS test field count
-		if f (line,1) = schematic_keyword_wire then
-			if f (line,2) = schematic_keyword_wire then
-				if f (line,3) = schematic_keyword_line then
+		if f (line, 1) = schematic_keyword_wire then
+			if f (line, 2) = schematic_keyword_wire then
+				if f (line, 3) = schematic_keyword_line then
 					result := true;
 				end if;
 			end if;
@@ -1642,8 +1642,8 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 4 then
-			if f (line,1) = schematic_keyword_connection then
-				if f (line,2) = schematic_tilde then
+			if f (line, 1) = schematic_keyword_connection then
+				if f (line, 2) = schematic_tilde then
 					result := true;
 				end if;
 			end if;
@@ -1684,8 +1684,8 @@ is
 		set_path (junction.coordinates, path_to_sheet);
 		set_sheet (junction.coordinates, sheet_number);
 
-		set (junction.coordinates, AXIS_X, mil_to_distance (f (line,3)));
-		set (junction.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
+		set (junction.coordinates, AXIS_X, mil_to_distance (f (line, 3)));
+		set (junction.coordinates, AXIS_Y, mil_to_distance (f (line, 4)));
 
 		-- for the log
 		log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
@@ -1711,8 +1711,8 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 8 then
-			if 	f (line,1) = schematic_keyword_text and
-				f (line,2) = schematic_keyword_label_simple then
+			if 	f (line, 1) = schematic_keyword_text and
+				f (line, 2) = schematic_keyword_label_simple then
 					result := true;
 			end if;
 		end if;
@@ -1785,9 +1785,9 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 9 then
-			if f (line,1) = schematic_keyword_text and
-				(f (line,2) = schematic_keyword_label_hierarchic or
-				f (line,2) = schematic_keyword_label_global) then
+			if f (line, 1) = schematic_keyword_text and
+				(f (line, 2) = schematic_keyword_label_hierarchic or
+				f (line, 2) = schematic_keyword_label_global) then
 					result := true;
 			end if;
 		end if;
@@ -1870,8 +1870,8 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 8 then
-			if f (line,1) = schematic_keyword_text and
-				f (line,2) = schematic_keyword_note then
+			if f (line, 1) = schematic_keyword_text and
+				f (line, 2) = schematic_keyword_note then
 					result := true;
 			end if;
 		end if;
@@ -1896,7 +1896,7 @@ is
 			log (SEVERITY_WARNING, " text note at "
 				& et_kicad_coordinates.to_string (position => note.position, scope => SHEET)
 				& " might be misplaced !");
-		end;
+		end warn;
 
 	begin -- make_text_note
 		--log (text => "making text note ...", level => log_threshold);
@@ -1963,7 +1963,7 @@ is
 	-- The header is "$Comp"
 	begin
 		if get_field_count (line) = 1 then
-			if f (line,1) = schematic_component_header then
+			if f (line, 1) = schematic_component_header then
 				return true;
 			else
 				return false;
@@ -1980,7 +1980,7 @@ is
 	-- The footer is "$EndComp"
 	begin
 		if get_field_count (line) = 1 then
-			if f (line,1) = schematic_component_footer then
+			if f (line, 1) = schematic_component_footer then
 				return true;
 			else
 				return false;
@@ -2271,7 +2271,7 @@ is
 			log_indentation_down;
 
 		exception
-			when event:
+			when event :
 				others =>
 					log (SEVERITY_ERROR,
 						"invalid field in component " & to_string (reference)
@@ -2716,12 +2716,12 @@ is
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
 			use pac_unit_name;
 		begin
-			if to_string (unit_name) /= f (line,1) then
-				log (SEVERITY_ERROR, "invalid unit name '" & f (line,1) & "'", console => true);
+			if to_string (unit_name) /= f (line, 1) then
+				log (SEVERITY_ERROR, "invalid unit name '" & f (line, 1) & "'", console => true);
 				raise constraint_error;
 			end if;
 
-			if get_x (unit_position) /= mil_to_distance (f (line,2)) then
+			if get_x (unit_position) /= mil_to_distance (f (line, 2)) then
 -- 					log (text => "position invalid. expected '" & to_string (position.x)
 -- 						& "' found '"
 -- 						& field (line,2)
@@ -2729,7 +2729,7 @@ is
 				raise constraint_error; -- CS: write useful message
 			end if;
 
-			if get_y (unit_position) /= mil_to_distance (f (line,3)) then
+			if get_y (unit_position) /= mil_to_distance (f (line, 3)) then
 				raise constraint_error; -- CS: write useful message
 			end if;
 		end verify_unit_name_and_position;
@@ -2928,7 +2928,7 @@ is
 			-- extract the reference from field 3: example: Ref="#PWR03
 			-- NOTE: the trailing double quote is already gone.
 			ref := to_component_reference (
-					text_in 		=> f (line, 3) (6.. (f (line, 3)'last)),  -- #PWR03
+					text_in 		=> f (line, 3) (6 .. (f (line, 3)'last)),  -- #PWR03
 					leading_hash	=> true);
 
 -- 					log (text => "test", level => log_threshold + 1);
@@ -2953,7 +2953,7 @@ is
 
 		function generic_name (text : in string) return type_component_generic_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
-			ifs : constant string (1..1) := ":";
+			ifs : constant string (1 .. 1) := ":";
 
 			-- The separator must NOT be at first position in text.
 			-- CS: Text is limited to 200 characters which seems sufficient.
@@ -2967,7 +2967,7 @@ is
 
 		function extract_library_name (text : in string) return type_library_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
-			ifs : constant string (1..1) := ":";
+			ifs : constant string (1 .. 1) := ":";
 
 			-- The separator must NOT be at first position in text.
 			-- CS: Text is limited to 200 characters which seems sufficient.
@@ -3198,8 +3198,8 @@ is
 		result : boolean := false;
 	begin
 		-- CS test field count
-		if f (line,1) = schematic_keyword_no_connection then
-			if f (line,2) = schematic_tilde then
+		if f (line, 1) = schematic_keyword_no_connection then
+			if f (line, 2) = schematic_tilde then
 				result := true;
 			end if;
 		end if;
@@ -3229,8 +3229,8 @@ is
 		set_path (no_connection_flag.coordinates, path_to_sheet);
 		set_sheet (no_connection_flag.coordinates, sheet_number);
 
-		set (no_connection_flag.coordinates, AXIS_X, mil_to_distance (f (line,3)));
-		set (no_connection_flag.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
+		set (no_connection_flag.coordinates, AXIS_X, mil_to_distance (f (line, 3)));
+		set (no_connection_flag.coordinates, AXIS_Y, mil_to_distance (f (line, 4)));
 
 		-- for the log
 		log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
@@ -3308,14 +3308,14 @@ begin -- read
 					--	EELAYER END
 
 					if not sheet_header_entered then
-						if get_field_from_line (f (line,1), 1, latin_1.colon) = schematic_library then
+						if get_field_from_line (f (line, 1), 1, latin_1.colon) = schematic_library then
 							sheet_header_entered := true;
 							lines.append (line);
 						end if;
 					else -- we are inside the sheet header and wait for the footer
 						if get_field_count (line) = 2 then
-							if f (line,1) = schematic_eelayer
-								and f (line,2) = schematic_eelayer_end then
+							if f (line, 1) = schematic_eelayer
+								and f (line, 2) = schematic_eelayer_end then
 									sheet_header_entered := false;
 									lines.append (line);
 									make_sheet_header (lines);
@@ -3342,13 +3342,13 @@ begin -- read
 					-- $EndDescr
 
 					if not description_entered then
-						if f (line,1) = schematic_description_header then -- $Descr A4 11693 8268
+						if f (line, 1) = schematic_description_header then -- $Descr A4 11693 8268
 							description_entered := true; -- we are entering the sheet description
 
 							lines.append (line);
 						end if;
 					else -- we are inside the description
-						if f (line,1) = schematic_description_footer then -- $EndDescr
+						if f (line, 1) = schematic_description_footer then -- $EndDescr
 							description_entered := false; -- we are leaving the description
 							description_processed := true;
 
@@ -3377,11 +3377,11 @@ begin -- read
 
 					if sheet_count_total > 1 then -- read hierarchical GUI sheets
 						if not sheet_description_entered then
-							if f (line,1) = schematic_sheet_header then -- $Sheet
+							if f (line, 1) = schematic_sheet_header then -- $Sheet
 								sheet_description_entered := true;
 							end if;
 						else -- we are inside a sheet description
-							if f (line,1) = schematic_sheet_footer then -- $EndSheet
+							if f (line, 1) = schematic_sheet_footer then -- $EndSheet
 								sheet_description_entered := false; -- we are leaving the sheet description
 
 								make_gui_sheet (lines, log_threshold + 1);

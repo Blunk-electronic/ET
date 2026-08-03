@@ -294,7 +294,7 @@ package body et_package_read_conductors is
 
 		-- clean up for next text
 		reset_text (pac_text);
-	end;
+	end insert_conductor_text;
 
 
 
@@ -333,7 +333,7 @@ package body et_package_read_conductors is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_fill_zone;
 
 
 

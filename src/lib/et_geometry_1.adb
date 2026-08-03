@@ -84,13 +84,13 @@ package body et_geometry_1 is
 	begin
 		scratch := d * 1000.00 / 25.4;
 		return to_string (scratch);
-	end;
+	end distance_to_mil;
 
 
 
 	function to_string (f : in type_float) return string is begin
 		return type_float'image (f);
-	end;
+	end to_string;
 
 
 	function to_float (s : in string) return type_float is begin
@@ -703,7 +703,7 @@ package body et_geometry_1 is
 		else
 			return false;
 		end if;
-	end;
+	end "<";
 
 
 
@@ -879,7 +879,7 @@ package body et_geometry_1 is
 
 		procedure query_vector (c : in pac_vectors.cursor) is begin
 			put_line (to_string (element (c)));
-		end;
+		end query_vector;
 
 	begin
 		vectors.iterate (query_vector'access);
@@ -1065,7 +1065,7 @@ package body et_geometry_1 is
 			else
 				return false;
 			end if;
-		end;
+		end "<";
 
 		package pac_items is new doubly_linked_lists (type_item);
 		use pac_items;
@@ -1672,7 +1672,7 @@ package body et_geometry_1 is
 			& " / GX:" & to_string (boundaries.greatest_x)
 			& " / SY:" & to_string (boundaries.smallest_y)
 			& " / GY:" & to_string (boundaries.greatest_y);
-	end;
+	end to_string;
 
 
 
@@ -1829,7 +1829,7 @@ package body et_geometry_1 is
 -- 			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
 -- 			greatest_x, greatest_y : type_distance := type_distance'first;
 		null; -- CS
-	end;
+	end add;
 
 
 
@@ -2017,21 +2017,21 @@ package body et_geometry_1 is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 	procedure set_selected (
 		line : in out type_line_fine)
 	is begin
 		set_selected (line.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		line : in out type_line_fine)
 	is begin
 		clear_selected (line.status);
-	end;
+	end clear_selected;
 
 
 	function is_proposed (
@@ -2043,7 +2043,7 @@ package body et_geometry_1 is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -2051,14 +2051,14 @@ package body et_geometry_1 is
 		line : in out type_line_fine)
 	is begin
 		set_proposed (line.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		line : in out type_line_fine)
 	is begin
 		clear_proposed (line.status);
-	end;
+	end clear_proposed;
 
 
 	function is_moving (
@@ -2070,7 +2070,7 @@ package body et_geometry_1 is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 	procedure set_moving (
@@ -2460,7 +2460,7 @@ package body et_geometry_1 is
 
 
 	function normalize_arc (
-		arc: in type_arc_fine)
+		arc : in type_arc_fine)
 		return type_arc_fine
 	is begin
 		case arc.direction is
@@ -2734,7 +2734,7 @@ package body et_geometry_1 is
 
 
 	function normalize_arc (
-		arc: in type_arc_angles)
+		arc : in type_arc_angles)
 		return type_arc_angles
 	is
 		result : type_arc_angles;
@@ -3209,7 +3209,7 @@ package body et_geometry_1 is
 		return boolean
 	is
 		-- the distance from center to point:
-		DCP: constant type_float_positive :=
+		DCP : constant type_float_positive :=
 			get_distance_total (point, circle.center);
 	begin
 		if DCP = circle.radius then
@@ -3406,7 +3406,7 @@ package body et_geometry_1 is
 			unused_s := TWO_EXIST; -- secant
 
 			-- COMPUTE 1ST INTERSECTION:
-			x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
+			x := (DI * dy + sgn (dy) * dx * sqrt (d)) / b;
 			y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 1:
@@ -3417,7 +3417,7 @@ package body et_geometry_1 is
 			move_by (intersection_1, offset);
 
 			-- COMPUTE 2ND INTERSECTION:
-			x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
+			x := (DI * dy - sgn (dy) * dx * sqrt (d)) / b;
 			y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 2:

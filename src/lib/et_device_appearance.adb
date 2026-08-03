@@ -69,7 +69,7 @@ package body et_device_appearance is
 		else
 			return s (appearance_prefix'length + 1 .. s'last);
 		end if;
-	end;
+	end to_string;
 
 
 
@@ -78,7 +78,7 @@ package body et_device_appearance is
 		return type_appearance
 	is begin
 		return type_appearance'value (appearance_prefix & appearance);
-	end;
+	end to_appearance;
 
 
 

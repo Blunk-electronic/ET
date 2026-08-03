@@ -53,12 +53,12 @@ package body et_material is
 
 	function to_string (name : in type_file_name.bounded_string) return string is begin
 		return type_file_name.to_string (name);
-	end;
+	end to_string;
 
 
 	function to_file_name (name : in string) return type_file_name.bounded_string is begin
 		return type_file_name.to_bounded_string (name);
-	end;
+	end to_file_name;
 
 
 	procedure write_bom (
@@ -101,7 +101,7 @@ package body et_material is
 								extension				=> extension_bom
 							));
 			end if;
-		end;
+		end set_file_name;
 
 
 		bom_handle : ada.text_io.file_type;
@@ -168,7 +168,7 @@ package body et_material is
 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
 			-- put_line (bom_handle, comment_mark & " end of list");
 
-		end;
+		end eagle;
 
 
 
@@ -214,7 +214,7 @@ package body et_material is
 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
 			-- put_line (bom_handle, comment_mark & " end of list");
 
-		end;
+		end native;
 
 
 	begin -- write_bom
@@ -237,7 +237,7 @@ package body et_material is
 		close (bom_handle);
 
 	exception
-		when event: others =>
+		when event : others =>
 			if is_open (bom_handle) then
 				close (bom_handle);
 			end if;

@@ -84,7 +84,7 @@ package body et_string_processing is
 	function strip_directory_separator (text : in string) return string is
 	begin
 		if text (text'last) = '/' then -- CS: does not work with DOS/Windows
-			return text (text'first .. text'last-1);
+			return text (text'first .. text'last - 1);
 		else
 			return text;
 		end if;
@@ -117,10 +117,10 @@ package body et_string_processing is
 		text_exact 			: in string)
 		return boolean
 	is
-		count_asterisk		: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
-		count_question_mark	: constant natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.question);
-		pos_asterisk		: constant natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
-		pos_question_mark	: natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.question); -- first question mark
+		count_asterisk		: constant natural := ada.strings.fixed.count (text_with_wildcards, 1 * latin_1.asterisk);
+		count_question_mark	: constant natural := ada.strings.fixed.count (text_with_wildcards, 1 * latin_1.question);
+		pos_asterisk		: constant natural := ada.strings.fixed.index (text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
+		pos_question_mark	: natural := ada.strings.fixed.index (text_with_wildcards, 1 * latin_1.question); -- first question mark
 
 		length_text_with_wildcards	: constant natural := text_with_wildcards'length;
 		length_text_exact			: constant natural := text_exact'length;
@@ -156,7 +156,7 @@ package body et_string_processing is
 				elsif
 				-- If text_exact and text_with_wildcards match from first character to pos_asterisk-1 we have a match.
 				-- Example 1: text_exact is R415 and text_with_wildcards is R4*
-					text_with_wildcards(text_with_wildcards'first .. text_with_wildcards'first - 1 + pos_asterisk - 1) =
+					text_with_wildcards (text_with_wildcards'first .. text_with_wildcards'first - 1 + pos_asterisk - 1) =
 					text_exact         (text_exact'first          .. text_exact'first          - 1 + pos_asterisk - 1) then
 					match := true;
 -- 					put_line(standard_output,"match");
@@ -182,7 +182,7 @@ package body et_string_processing is
 		-- NOTE: tabulators will be left unchanged. no substituion with whitespace is done !
 	begin
 		if text_in'length > 0 then -- if line contains something
-			position_of_comment := index(text_in,comment_mark);
+			position_of_comment := index (text_in, comment_mark);
 			case position_of_comment is -- check position of comment
 				when 0 => -- no comment found -> return line as it is
 					return text_in;
@@ -208,17 +208,17 @@ package body et_string_processing is
 		line_length	: constant natural := text_in'last;	-- length of given text
 		char_pt		: natural := 1;				-- charcter pointer (points to character being processed inside the given line)
 		IFS1		: constant character := ' '; 				-- field separator space
-		IFS2		: constant character := character'val(9); -- field separator tabulator
+		IFS2		: constant character := character'val (9); -- field separator tabulator
 		field_ct	: type_field_count := 0; -- field counter (the first field found gets number 1 assigned)
 		field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
-		unused_inside_field: boolean := true;		 -- true if char_pt points inside a field
-		char_current: character;			 -- holds current character being processed
+		unused_inside_field : boolean := true;		 -- true if char_pt points inside a field
+		char_current : character;			 -- holds current character being processed
 		char_last	: character := ' ';		 -- holds character processed previous to char_current
 	begin
 		while char_pt <= line_length
 		loop
 			--put (char_pt);
-			char_current:= text_in(char_pt);
+			char_current := text_in (char_pt);
 			if char_current = IFS1 or char_current = IFS2 then
 				unused_inside_field := false;
 			else
@@ -227,14 +227,14 @@ package body et_string_processing is
 
 			-- count fields if character other than IFS found
 			if ((char_last = IFS1 or char_last = IFS2) and (char_current /= IFS1 and char_current /= IFS2)) then
-				field_ct:=field_ct+1;
+				field_ct := field_ct + 1;
 			end if;
 
 			-- save last character
-			char_last:=char_current;
+			char_last := char_current;
 
 			-- advance character pointer by one
-			char_pt:=char_pt+1;
+			char_pt := char_pt + 1;
 			--put (char_current); put (" --"); new_line;
 		end loop;
 		return field_ct;
@@ -292,10 +292,10 @@ package body et_string_processing is
 		text_in : in string)
 		return string
 	is
-		text_scratch : constant string (1..text_in'length) := text_in;
+		text_scratch : constant string (1 .. text_in'length) := text_in;
 
 		universal_string_length_max	: constant natural := 1000;
-		package type_universal_string is new generic_bounded_length(universal_string_length_max);
+		package type_universal_string is new generic_bounded_length (universal_string_length_max);
 		use type_universal_string;
 
 		s : type_universal_string.bounded_string; -- CS: might be not sufficient ! use type_long_string instead
@@ -303,19 +303,19 @@ package body et_string_processing is
 		l : constant natural := text_scratch'length;
 		sc : natural := natural'first;
 	begin
-		for c in 1..l loop
-			case text_scratch(c) is
+		for c in 1 .. l loop
+			case text_scratch (c) is
 				when latin_1.space =>
 					sc := sc + 1;
 				when others =>
 					if sc > 0 then
-						s := append(left => s, right => latin_1.space);
+						s := append (left => s, right => latin_1.space);
 					end if;
-					s := append(left => s, right => text_scratch(c));
+					s := append (left => s, right => text_scratch (c));
 					sc := 0;
 			end case;
 		end loop;
-		return to_string(s);
+		return to_string (s);
 	end trim_spaces;
 
 
@@ -341,14 +341,14 @@ package body et_string_processing is
 		return boolean
 	is
 		-- CS: This test is very crude currently as it tests only the first character.
-		first_character : constant character := text(text'first);
+		first_character : constant character := text (text'first);
 	begin
 		if is_digit (first_character) then
 			return true;
 		else
 			return false;
 		end if;
-	end;
+	end is_number;
 
 
 
@@ -396,8 +396,8 @@ package body et_string_processing is
 
 		if character_count > 0 then
 			unused_char_pt := 1;
-			for char_pt in 1..character_count loop
-				char_current := text_in(char_pt);
+			for char_pt in 1 .. character_count loop
+				char_current := text_in (char_pt);
 
 -- 				if char_current = ifs then
 -- 					inside_field := false;
@@ -507,7 +507,7 @@ package body et_string_processing is
 
 			-- As a safety measure, the pointer to the character being processed must be constrained
 			-- so that it never becomes greater than the acutal length of the given line:
-			subtype type_place is natural range 0..length;
+			subtype type_place is natural range 0 .. length;
 			place : type_place := type_place'first; -- the character position being tested
 
 			char : character; -- the character being tested
@@ -516,7 +516,7 @@ package body et_string_processing is
 			-- For safety reasons it is constrained.
 			-- The flag wrap_started goes true once a delimited field was found. It goes
 			-- false when the delimited field ends.
-			subtype type_offset is natural range 0..1;
+			subtype type_offset is natural range 0 .. 1;
 			offset : type_offset := type_offset'first;
 			wrap_started : boolean := false;
 
@@ -526,7 +526,7 @@ package body et_string_processing is
 			-- The given string text_a has a lower bound greater than zero.
 			-- Convert the given string text_a to a string that has the lower bound of 1.
 			-- Then append the new string to the list of strings.
-				text_b : constant string (1..text_a'length) := text_a;
+				text_b : constant string (1 .. text_a'length) := text_a;
 			begin
 				pac_list_of_strings.append (list, text_b);
 			end append;
@@ -582,7 +582,7 @@ package body et_string_processing is
 							-- the field is appended to the list.
 							if ifs_found then
 								field_entered := false;
-								append (line (field_start..place-1));
+								append (line (field_start .. place - 1));
 							end if;
 						end if;
 
@@ -590,7 +590,7 @@ package body et_string_processing is
 						-- the last charcter of a field, append the field to list.
 						if place = length then
 							if field_entered then
-								append (line (field_start..place));
+								append (line (field_start .. place));
 							end if;
 							exit;
 						end if;
@@ -638,7 +638,7 @@ package body et_string_processing is
 									null; -- skip ifs
 								else
 									field_entered := false;
-									append (line (field_start..place - 1 - offset));
+									append (line (field_start .. place - 1 - offset));
 									offset := 0; -- reset offset for next wrapped field
 								end if;
 							else
@@ -656,7 +656,7 @@ package body et_string_processing is
 						-- Rais alarm on missing delimiter at end of line (flag wrap_started still set).
 						if place = length then
 							if field_entered then
-								append (line (field_start..place - offset));
+								append (line (field_start .. place - offset));
 							end if;
 
 							if wrap_started then
@@ -773,7 +773,7 @@ package body et_string_processing is
 		raise constraint_error with
 			"invalid keyword '" & word & "' !";
 		-- raise constraint_error;
-	end;
+	end invalid_keyword;
 
 
 
@@ -834,7 +834,7 @@ package body et_string_processing is
 
 
 	function get_affected_line (
-		line : in type_fields_of_line )
+		line : in type_fields_of_line)
 		return string
 	is begin
 		return ("line" & positive'image (line.number) & ": ");

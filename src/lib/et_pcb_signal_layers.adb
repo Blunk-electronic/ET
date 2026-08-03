@@ -53,7 +53,7 @@ package body et_pcb_signal_layers is
 		return string
 	is begin
 		return type_signal_layer_category'image (category);
-	end;
+	end to_string;
 
 
 
@@ -110,7 +110,7 @@ package body et_pcb_signal_layers is
 			if cursor /= last_layer then
 				layer_string := layer_string & layer_term_separator;
 			end if;
-		end;
+		end query_layer;
 
 	begin -- to_string
 		-- the return string always starts with an opening bracket:
@@ -126,7 +126,7 @@ package body et_pcb_signal_layers is
 		layer_string := layer_string & layer_term_end;
 
 		return to_string (layer_string);
-	end;
+	end to_string;
 
 
 
@@ -149,7 +149,7 @@ package body et_pcb_signal_layers is
 
 		procedure reset_number is begin
 			number := to_bounded_string ("");
-		end;
+		end reset_number;
 
 		range_started : boolean := false;
 		range_start, range_end : type_signal_layer;
@@ -157,7 +157,7 @@ package body et_pcb_signal_layers is
 
 		procedure warning (layer : in type_signal_layer) is begin
 			log (SEVERITY_WARNING, "Multiple occurence of layer " & to_string (layer) & " !");
-		end;
+		end warning;
 
 
 		procedure insert_layer is
@@ -168,7 +168,7 @@ package body et_pcb_signal_layers is
 			else
 				warning (l);
 			end if;
-		end;
+		end insert_layer;
 
 
 		procedure insert_range is
@@ -188,7 +188,7 @@ package body et_pcb_signal_layers is
 					end if;
 				end loop;
 			end if;
-		end;
+		end insert_range;
 
 
 	begin -- to_layers

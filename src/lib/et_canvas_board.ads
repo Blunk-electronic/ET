@@ -52,6 +52,8 @@ with gtk;
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
+with gtk.combo_box;
+with gtk.combo_box_text;			use gtk.combo_box_text;
 
 with cairo;							use cairo;
 
@@ -260,6 +262,12 @@ package et_canvas_board is
 		canvas		: access gtk_widget_record'class;
 		context_in	: in cairo.cairo_context)
 		return boolean;
+
+
+-- VERB / NOUN:
+
+	procedure set_up_verb_combo;
+	procedure set_up_noun_combo;
 
 
 

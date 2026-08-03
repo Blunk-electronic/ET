@@ -49,7 +49,7 @@ package body et_conductor_text.boards is
 	is begin
 		reset_text (type_conductor_text (text));
 		text.layer := signal_layer_default;
-	end;
+	end reset_text;
 
 
 

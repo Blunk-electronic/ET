@@ -72,7 +72,7 @@ package body et_board_ops_groups is
 			log_indentation_up;
 			reset_status_objects (active_module, log_threshold + 1);
 			log_indentation_down;
-		end;
+		end reset_conductors;
 
 
 
@@ -85,7 +85,7 @@ package body et_board_ops_groups is
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
-		end;
+		end reset_devices;
 
 
 		procedure reset_assy_doc is
@@ -97,7 +97,7 @@ package body et_board_ops_groups is
 			log_indentation_up;
 			reset_status_objects (active_module, log_threshold + 1);
 			log_indentation_down;
-		end;
+		end reset_assy_doc;
 
 		-- CS:
 		-- Make separate procedures as in package et_schematic_ops_groups

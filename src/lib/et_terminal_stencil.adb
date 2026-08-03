@@ -51,7 +51,7 @@ package body et_terminal_stencil is
 		return string
 	is begin
 		return to_lower (type_stencil_shrink_mode'image (shape));
-	end;
+	end to_string;
 
 
 
@@ -60,7 +60,7 @@ package body et_terminal_stencil is
 		return type_stencil_shrink_mode
 	is begin
 		return type_stencil_shrink_mode'value (shape);
-	end;
+	end to_modification;
 
 
 

@@ -95,7 +95,7 @@ package body et_stopmask.packages is
 			when BOTTOM =>
 				append (stopmask.bottom.zones, zone);
 		end case;
-	end;
+	end add_zone;
 
 
 
@@ -115,7 +115,7 @@ package body et_stopmask.packages is
 			when BOTTOM =>
 				append (stopmask.bottom.texts, text);
 		end case;
-	end;
+	end add_text;
 
 
 

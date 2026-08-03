@@ -52,7 +52,7 @@ package body et_symbol_model is
 			when APPEARANCE_PCB		=> return true;
 			when APPEARANCE_VIRTUAL	=> return false;
 		end case;
-	end;
+	end is_real;
 
 
 
@@ -87,7 +87,7 @@ package body et_symbol_model is
 		else
 			return (others => <>);
 		end if;
-	end;
+	end get_placeholders;
 
 
 end et_symbol_model;

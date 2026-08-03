@@ -43,8 +43,8 @@ with ada.calendar;				use ada.calendar;
 package et_time is
 
 
-	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
-	type type_date is new string (1..19); -- "2017-08-17T14:17:25"
+	date_characters : character_set := to_set (span => ('0', '9')) or to_set ("-:T");
+	type type_date is new string (1 .. 19); -- "2017-08-17T14:17:25"
 
 
 	-- Returns the given date as string.

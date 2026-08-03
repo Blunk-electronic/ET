@@ -445,7 +445,7 @@ package body et_geometry_2a.contours is
 		contour : in out type_contour)
 	is begin
 		contour := (others => <>);
-	end;
+	end reset_contour;
 
 
 
@@ -459,7 +459,7 @@ package body et_geometry_2a.contours is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -597,7 +597,7 @@ package body et_geometry_2a.contours is
 			return string
 		is begin
 			return to_lower (get_field (arguments, place));
-		end;
+		end f;
 
 		l : type_line;
 		a : type_arc;
@@ -1193,13 +1193,13 @@ package body et_geometry_2a.contours is
 			procedure do_line (s : in out type_segment) is begin
 				move (s.segment_line.A);
 				move (s.segment_arc.B);
-			end;
+			end do_line;
 
 			procedure do_arc (s : in out type_segment) is begin
 				move (s.segment_arc.A);
 				move (s.segment_arc.B);
 				move (s.segment_arc.center);
-			end;
+			end do_arc;
 
 		begin -- move_segment
 			case element (c).shape is
@@ -1541,11 +1541,11 @@ package body et_geometry_2a.contours is
 
 			procedure do_line (s : in out type_segment) is begin
 				move_by (s.segment_line, offset);
-			end;
+			end do_line;
 
 			procedure do_arc (s : in out type_segment) is begin
 				move_by (s.segment_arc, offset);
-			end;
+			end do_arc;
 
 		begin -- move_segment
 			case element (c).shape is
@@ -1590,11 +1590,11 @@ package body et_geometry_2a.contours is
 
 			procedure do_line (s : in out type_segment) is begin
 				mirror_line (s.segment_line, axis);
-			end;
+			end do_line;
 
 			procedure do_arc (s : in out type_segment) is begin
 				mirror_arc (s.segment_arc, axis);
-			end;
+			end do_arc;
 
 		begin
 			case element (c).shape is
@@ -1638,11 +1638,11 @@ package body et_geometry_2a.contours is
 
 			procedure do_line (s : in out type_segment) is begin
 				rotate_line_by (s.segment_line, rotation);
-			end;
+			end do_line;
 
 			procedure do_arc (s : in out type_segment) is begin
 				rotate_arc_by (s.segment_arc, rotation);
-			end;
+			end do_arc;
 
 		begin -- rotate_segment
 			case element (c).shape is
@@ -2018,7 +2018,7 @@ package body et_geometry_2a.contours is
 
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_vector;
+			intersection : in type_vector;
 			segment		: in type_intersected_segment)
 			--center		: in type_vector_model := origin;
 			--radius		: in type_distance_positive := zero)

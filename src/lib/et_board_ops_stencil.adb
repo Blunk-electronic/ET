@@ -83,7 +83,7 @@ package body et_board_ops_stencil is
 						container	=> module.board.stencil.bottom.lines,
 						new_item	=> line);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -634,7 +634,7 @@ package body et_board_ops_stencil is
 						container	=> module.board.stencil.bottom.arcs,
 						new_item	=> arc);
 			end case;
-		end;
+		end add;
 
 
 	begin
@@ -1194,7 +1194,7 @@ package body et_board_ops_stencil is
 						new_item	=> circle);
 
 			end case;
-		end;
+		end add;
 
 
 	begin

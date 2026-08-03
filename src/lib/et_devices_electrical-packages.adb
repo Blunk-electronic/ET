@@ -62,7 +62,7 @@ package body et_devices_electrical.packages is
 		value	: in pac_device_value.bounded_string)
 	is begin
 		device.value := value;
-	end;
+	end set_value;
 
 
 	function get_value (
@@ -70,7 +70,7 @@ package body et_devices_electrical.packages is
 		return pac_device_value.bounded_string
 	is begin
 		return device.value;
-	end;
+	end get_value;
 
 
 	function get_value (
@@ -78,7 +78,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_value (device));
-	end;
+	end get_value;
 
 
 	function get_value (
@@ -99,7 +99,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_value;
 
 
 
@@ -111,7 +111,7 @@ package body et_devices_electrical.packages is
 		partcode	: in pac_device_partcode.bounded_string)
 	is begin
 		device.partcode := partcode;
-	end;
+	end set_partcode;
 
 
 	function get_partcode (
@@ -119,7 +119,7 @@ package body et_devices_electrical.packages is
 		return pac_device_partcode.bounded_string
 	is begin
 		return device.partcode;
-	end;
+	end get_partcode;
 
 
 	function get_partcode (
@@ -127,7 +127,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_partcode (device));
-	end;
+	end get_partcode;
 
 
 
@@ -149,7 +149,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_partcode;
 
 
 
@@ -161,7 +161,7 @@ package body et_devices_electrical.packages is
 		purpose	: in pac_device_purpose.bounded_string)
 	is begin
 		device.purpose := purpose;
-	end;
+	end set_purpose;
 
 
 	function get_purpose (
@@ -169,7 +169,7 @@ package body et_devices_electrical.packages is
 		return pac_device_purpose.bounded_string
 	is begin
 		return device.purpose;
-	end;
+	end get_purpose;
 
 
 	function get_purpose (
@@ -177,7 +177,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_purpose (device));
-	end;
+	end get_purpose;
 
 
 
@@ -199,7 +199,7 @@ package body et_devices_electrical.packages is
 		else
 			return true;
 		end if;
-	end;
+	end has_purpose;
 
 
 
@@ -211,7 +211,7 @@ package body et_devices_electrical.packages is
 		return pac_package_variant_name.bounded_string
 	is begin
 		return device.variant;
-	end;
+	end get_package_variant;
 
 
 
@@ -252,7 +252,7 @@ package body et_devices_electrical.packages is
 		d : type_device_electrical renames element (device);
 	begin
 		return get_available_package_variants (d);
-	end;
+	end get_available_package_variants;
 
 
 
@@ -265,7 +265,7 @@ package body et_devices_electrical.packages is
 		position	: in type_package_position)
 	is begin
 		device.position := position;
-	end;
+	end set_position;
 
 
 	function get_position (
@@ -273,7 +273,7 @@ package body et_devices_electrical.packages is
 		return type_package_position
 	is begin
 		return device.position;
-	end;
+	end get_position;
 
 
 
@@ -283,7 +283,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (device.position, format);
-	end;
+	end get_position;
 
 
 
@@ -292,7 +292,7 @@ package body et_devices_electrical.packages is
 		return type_rotation_model
 	is begin
 		return get_rotation (device.position);
-	end;
+	end get_rotation;
 
 
 	procedure set_rotation (
@@ -300,7 +300,7 @@ package body et_devices_electrical.packages is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation (device.position, rotation);
-	end;
+	end set_rotation;
 
 
 	procedure set_rotation_relative (
@@ -308,7 +308,7 @@ package body et_devices_electrical.packages is
 		rotation	: in type_rotation_model)
 	is begin
 		set_rotation_relative (device.position, rotation);
-	end;
+	end set_rotation_relative;
 
 
 
@@ -317,7 +317,7 @@ package body et_devices_electrical.packages is
 		face	: in type_face)
 	is begin
 		set_face (device.position, face);
-	end;
+	end set_face;
 
 
 
@@ -325,7 +325,7 @@ package body et_devices_electrical.packages is
 		device	: in out type_device_electrical)
 	is begin
 		toggle_face (device.position);
-	end;
+	end toggle_face;
 
 
 
@@ -336,7 +336,7 @@ package body et_devices_electrical.packages is
 		return type_face
 	is begin
 		return get_face (device.position);
-	end;
+	end get_face;
 
 
 
@@ -345,7 +345,7 @@ package body et_devices_electrical.packages is
 		return string
 	is begin
 		return to_string (get_face (device.position));
-	end;
+	end get_face;
 
 
 
@@ -354,7 +354,7 @@ package body et_devices_electrical.packages is
 		place	: in type_vector_model)
 	is begin
 		set_place (device.position, place);
-	end;
+	end set_place;
 
 
 
@@ -363,7 +363,7 @@ package body et_devices_electrical.packages is
 		offset	: in type_vector_model)
 	is begin
 		set_place_relative (device.position, offset);
-	end;
+	end set_place_relative;
 
 
 
@@ -372,7 +372,7 @@ package body et_devices_electrical.packages is
 		return type_vector_model
 	is begin
 		return get_place (device.position);
-	end;
+	end get_place;
 
 
 
@@ -383,7 +383,7 @@ package body et_devices_electrical.packages is
 	is begin
 		return et_board_geometry.pac_geometry_2.to_string (
 			get_place (device.position), format);
-	end;
+	end get_place;
 
 
 
@@ -405,7 +405,7 @@ package body et_devices_electrical.packages is
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
 		end if;
-	end;
+	end log_package_position;
 
 
 
@@ -539,12 +539,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						conductors := get_conductor_objects (packge, layer_category);
-						rotate_conductor_objects (conductors, + device.position.rotation);
+						rotate_conductor_objects (conductors, +device.position.rotation);
 
 					when BOTTOM =>
 						conductors := get_conductor_objects (packge, invert_category (layer_category));
 						mirror_conductor_objects (conductors);
-						rotate_conductor_objects (conductors, - device.position.rotation);
+						rotate_conductor_objects (conductors, -device.position.rotation);
 				end case;
 
 				move_conductor_objects (conductors, device.position.place);
@@ -580,12 +580,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						conductors := get_conductor_objects (packge, layer_category);
-						rotate_conductor_objects (conductors, + device.position.rotation);
+						rotate_conductor_objects (conductors, +device.position.rotation);
 
 					when BOTTOM =>
 						conductors := get_conductor_objects (packge, invert_category (layer_category));
 						mirror_conductor_objects (conductors);
-						rotate_conductor_objects (conductors, - device.position.rotation);
+						rotate_conductor_objects (conductors, -device.position.rotation);
 				end case;
 
 				move_conductor_objects (conductors, device.position.place);
@@ -625,11 +625,11 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_route_restrict_objects (packge, layer_category);
-						rotate_route_restrict_objects (restrict, + device.position.rotation);
+						rotate_route_restrict_objects (restrict, +device.position.rotation);
 					when BOTTOM =>
 						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 						mirror_route_restrict_objects (restrict);
-						rotate_route_restrict_objects (restrict, - device.position.rotation);
+						rotate_route_restrict_objects (restrict, -device.position.rotation);
 				end case;
 
 				move_route_restrict_objects (restrict, device.position.place);
@@ -666,11 +666,11 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_route_restrict_objects (packge, layer_category);
-						rotate_route_restrict_objects (restrict, + device.position.rotation);
+						rotate_route_restrict_objects (restrict, +device.position.rotation);
 					when BOTTOM =>
 						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 						mirror_route_restrict_objects (restrict);
-						rotate_route_restrict_objects (restrict, - device.position.rotation);
+						rotate_route_restrict_objects (restrict, -device.position.rotation);
 				end case;
 
 				move_route_restrict_objects (restrict, device.position.place);
@@ -710,12 +710,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_via_restrict_objects (packge, layer_category);
-						rotate_via_restrict_objects (restrict, + device.position.rotation);
+						rotate_via_restrict_objects (restrict, +device.position.rotation);
 
 					when BOTTOM =>
 						restrict := get_via_restrict_objects (packge, invert_category (layer_category));
 						mirror_via_restrict_objects (restrict);
-						rotate_via_restrict_objects (restrict, - device.position.rotation);
+						rotate_via_restrict_objects (restrict, -device.position.rotation);
 				end case;
 
 				move_via_restrict_objects (restrict, device.position.place);
@@ -753,24 +753,24 @@ package body et_devices_electrical.packages is
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_keepout_objects (packge, TOP);
-							rotate_keepout_objects (result, + rotation);
+							rotate_keepout_objects (result, +rotation);
 
 						when BOTTOM =>
 							result := get_keepout_objects (packge, BOTTOM);
 							mirror_keepout_objects (result);
-							rotate_keepout_objects (result, - rotation);
+							rotate_keepout_objects (result, -rotation);
 					end case;
 
 				when BOTTOM =>
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_keepout_objects (packge, BOTTOM);
-							rotate_keepout_objects (result, + rotation);
+							rotate_keepout_objects (result, +rotation);
 
 						when BOTTOM =>
 							result := get_keepout_objects (packge, TOP);
 							mirror_keepout_objects (result);
-							rotate_keepout_objects (result, - rotation);
+							rotate_keepout_objects (result, -rotation);
 					end case;
 			end case;
 		end if;
@@ -808,22 +808,22 @@ package body et_devices_electrical.packages is
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_stencil_objects (packge, TOP);
-							rotate_stencil_objects (result, + rotation);
+							rotate_stencil_objects (result, +rotation);
 						when BOTTOM =>
 							result := get_stencil_objects (packge, BOTTOM);
 							mirror_stencil_objects (result);
-							rotate_stencil_objects (result, - rotation);
+							rotate_stencil_objects (result, -rotation);
 					end case;
 
 				when BOTTOM =>
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_stencil_objects (packge, BOTTOM);
-							rotate_stencil_objects (result, + rotation);
+							rotate_stencil_objects (result, +rotation);
 						when BOTTOM =>
 							result := get_stencil_objects (packge, TOP);
 							mirror_stencil_objects (result);
-							rotate_stencil_objects (result, - rotation);
+							rotate_stencil_objects (result, -rotation);
 					end case;
 			end case;
 		end if;
@@ -863,24 +863,24 @@ package body et_devices_electrical.packages is
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_stopmask_objects (packge, TOP);
-							rotate_stopmask_objects (result, + rotation);
+							rotate_stopmask_objects (result, +rotation);
 
 						when BOTTOM =>
 							result := get_stopmask_objects (packge, BOTTOM);
 							mirror_stopmask_objects (result);
-							rotate_stopmask_objects (result, - rotation);
+							rotate_stopmask_objects (result, -rotation);
 					end case;
 
 				when BOTTOM =>
 					case get_face (device_cursor) is
 						when TOP =>
 							result := get_stopmask_objects (packge, BOTTOM);
-							rotate_stopmask_objects (result, + rotation);
+							rotate_stopmask_objects (result, +rotation);
 
 						when BOTTOM =>
 							result := get_stopmask_objects (packge, TOP);
 							mirror_stopmask_objects (result);
-							rotate_stopmask_objects (result, - rotation);
+							rotate_stopmask_objects (result, -rotation);
 					end case;
 			end case;
 
@@ -950,7 +950,7 @@ package body et_devices_electrical.packages is
 							-- overwrite the default placeholders: -- CS see spec of this function
 							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
-							rotate_silkscreen_objects (silkscreen, + rotation);
+							rotate_silkscreen_objects (silkscreen, +rotation);
 
 						when BOTTOM =>
 							silkscreen := get_silkscreen_objects (packge, BOTTOM);
@@ -959,7 +959,7 @@ package body et_devices_electrical.packages is
 							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
-							rotate_silkscreen_objects (silkscreen, - rotation);
+							rotate_silkscreen_objects (silkscreen, -rotation);
 					end case;
 
 
@@ -971,7 +971,7 @@ package body et_devices_electrical.packages is
 							-- overwrite the default placeholders: -- CS see spec of this function
 							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
-							rotate_silkscreen_objects (silkscreen, + rotation);
+							rotate_silkscreen_objects (silkscreen, +rotation);
 
 						when BOTTOM =>
 							silkscreen := get_silkscreen_objects (packge, TOP);
@@ -980,7 +980,7 @@ package body et_devices_electrical.packages is
 							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
-							rotate_silkscreen_objects (silkscreen, - rotation);
+							rotate_silkscreen_objects (silkscreen, -rotation);
 					end case;
 			end case;
 
@@ -1052,7 +1052,7 @@ package body et_devices_electrical.packages is
 							-- overwrite the default placeholders: -- CS see spec of this function
 							assy_doc.placeholders := device.placeholders.assy_doc.top;
 							convert_placeholders_to_texts;
-							rotate_assy_doc_objects (assy_doc, + rotation);
+							rotate_assy_doc_objects (assy_doc, +rotation);
 
 						when BOTTOM =>
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
@@ -1061,7 +1061,7 @@ package body et_devices_electrical.packages is
 							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
-							rotate_assy_doc_objects (assy_doc, - rotation);
+							rotate_assy_doc_objects (assy_doc, -rotation);
 					end case;
 
 				when BOTTOM =>
@@ -1072,7 +1072,7 @@ package body et_devices_electrical.packages is
 							-- overwrite the default placeholders: -- CS see spec of this function
 							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
 							convert_placeholders_to_texts;
-							rotate_assy_doc_objects (assy_doc, + rotation);
+							rotate_assy_doc_objects (assy_doc, +rotation);
 
 						when BOTTOM =>
 							assy_doc := get_assy_doc_objects (packge, TOP);
@@ -1081,7 +1081,7 @@ package body et_devices_electrical.packages is
 							assy_doc.placeholders := device.placeholders.assy_doc.top;
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
-							rotate_assy_doc_objects (assy_doc, - rotation);
+							rotate_assy_doc_objects (assy_doc, -rotation);
 					end case;
 			end case;
 
@@ -1118,10 +1118,10 @@ package body et_devices_electrical.packages is
 			case get_face (device_cursor) is
 				when TOP =>
 					mirror_holes (holes);
-					rotate_holes (holes, - rotation);
+					rotate_holes (holes, -rotation);
 
 				when BOTTOM =>
-					rotate_holes (holes, + rotation);
+					rotate_holes (holes, +rotation);
 			end case;
 
 			move_holes (holes, device.position.place);
@@ -1158,10 +1158,10 @@ package body et_devices_electrical.packages is
 			case get_face (device_cursor) is
 				when TOP =>
 					mirror_holes (holes);
-					rotate_holes (holes, - rotation);
+					rotate_holes (holes, -rotation);
 
 				when BOTTOM =>
-					rotate_holes (holes, + rotation);
+					rotate_holes (holes, +rotation);
 			end case;
 
 			move_holes (holes, device.position.place);

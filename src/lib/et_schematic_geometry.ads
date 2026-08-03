@@ -66,8 +66,8 @@ package et_schematic_geometry is
 
 	type type_distance_model is delta distance_smallest
 		digits distance_digits_left + distance_digits_right
-		range - 0.1 * (10 ** distance_digits_left) ..
-			  + 0.1 * (10 ** distance_digits_left);
+		range -0.1 * (10 ** distance_digits_left) ..
+			  +0.1 * (10 ** distance_digits_left);
 
 
 

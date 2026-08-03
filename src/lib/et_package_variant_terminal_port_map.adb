@@ -44,7 +44,7 @@
 package body et_package_variant_terminal_port_map is
 
 
-	procedure dummy is begin null; end;
+	procedure dummy is begin null; end dummy;
 
 
 

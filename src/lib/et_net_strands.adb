@@ -52,7 +52,7 @@ package body et_net_strands is
 		return type_distance_model
 	is begin
 		return position.place.x;
-	end;
+	end get_x;
 
 
 	function get_y (
@@ -60,7 +60,7 @@ package body et_net_strands is
 		return type_distance_model
 	is begin
 		return position.place.y;
-	end;
+	end get_y;
 
 
 
@@ -69,7 +69,7 @@ package body et_net_strands is
 		return type_sheet
 	is begin
 		return position.sheet;
-	end;
+	end get_sheet;
 
 
 
@@ -107,7 +107,7 @@ package body et_net_strands is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 
@@ -192,7 +192,7 @@ package body et_net_strands is
 		place	: in type_vector_model)
 	is begin
 		strand.position.place := place;
-	end;
+	end set_place;
 
 
 
@@ -206,7 +206,7 @@ package body et_net_strands is
 		else
 			return false;
 		end if;
-	end;
+	end has_segments;
 
 
 
@@ -230,7 +230,7 @@ package body et_net_strands is
 			end if;
 
 			result := result + count;
-		end;
+		end query_segment;
 
 
 	begin
@@ -292,7 +292,7 @@ package body et_net_strands is
 		sheet	: in type_sheet)
 	is begin
 		strand.position.sheet := sheet;
-	end;
+	end set_sheet;
 
 
 
@@ -302,7 +302,7 @@ package body et_net_strands is
 		offset	: in type_sheet_relative)
 	is begin
 		add (strand.position.sheet, offset);
-	end;
+	end move_strand;
 
 
 
@@ -719,7 +719,7 @@ package body et_net_strands is
 		return boolean
 	is begin
 		return has_ports (segment.segment, segment.AB_end);
-	end;
+	end has_ports;
 
 
 
@@ -728,7 +728,7 @@ package body et_net_strands is
 		return natural
 	is begin
 		return natural (segments.length);
-	end;
+	end get_length;
 
 
 
@@ -763,7 +763,7 @@ package body et_net_strands is
 					when CON_STS_NONE => null;
 				end case;
 			end if;
-		end;
+		end query_segment;
 
 	begin
 		-- Iterate through all segments of the given strand:
@@ -912,7 +912,7 @@ package body et_net_strands is
 		-- at the given A/B end:
 		procedure do_it (segment : in out type_net_segment) is begin
 			set_junction (segment, target_AB_end);
-		end;
+		end do_it;
 
 
 	begin
@@ -964,7 +964,7 @@ package body et_net_strands is
 			strand.segments.update_element (
 				position	=> connected_segment.segment,
 				process		=> query_segment'access);
-		end;
+		end query_connected_segment;
 
 
 	begin
@@ -1081,7 +1081,7 @@ package body et_net_strands is
 		return boolean
 	is begin
 		return has_element (segment.cursor);
-	end;
+	end has_element;
 
 
 
@@ -1091,7 +1091,7 @@ package body et_net_strands is
 		return pac_net_segments.cursor
 	is begin
 		return segment.cursor;
-	end;
+	end get_segment;
 
 
 
@@ -1100,7 +1100,7 @@ package body et_net_strands is
 		return type_start_end_point
 	is begin
 		return segment.AB_end;
-	end;
+	end get_end;
 
 
 
@@ -1506,7 +1506,7 @@ package body et_net_strands is
 			destination_AB := con.AB_end;
 			append_ports (destination_segment, ports_A, destination_AB);
 			strand.segments.replace_element (con.segment, destination_segment);
-		end;
+		end transfer_ports_A;
 
 
 		-- Transfers the ports on the B end of the start segment
@@ -1523,7 +1523,7 @@ package body et_net_strands is
 			destination_AB := con.AB_end;
 			append_ports (destination_segment, ports_B, destination_AB);
 			strand.segments.replace_element (con.segment, destination_segment);
-		end;
+		end transfer_ports_B;
 
 
 
@@ -1581,7 +1581,7 @@ package body et_net_strands is
 			transfer_ports_A;
 			collect (segments_A);
 			log_indentation_down;
-		end;
+		end walk_along_A_end;
 
 
 		-- Initiates the search for segments on the B end
@@ -1603,7 +1603,7 @@ package body et_net_strands is
 			transfer_ports_B;
 			collect (segments_B);
 			log_indentation_down;
-		end;
+		end walk_along_B_end;
 
 
 
@@ -1613,7 +1613,7 @@ package body et_net_strands is
 			c : pac_net_segments.cursor := start_segment;
 		begin
 			strand.segments.delete (c);
-		end;
+		end delete_start_segment;
 		pragma unreferenced (delete_start_segment);
 
 
@@ -1632,7 +1632,7 @@ package body et_net_strands is
 				log (text => "no segments on B end. nothing to do.", level => log_threshold);
 				do_split := false;
 			end if;
-		end;
+		end precheck;
 
 
 
@@ -1832,7 +1832,7 @@ package body et_net_strands is
 			strand.segments.clear;
 			empty := true;
 			split := false;
-		end;
+		end delete_last_segment;
 
 
 	begin
@@ -1879,14 +1879,14 @@ package body et_net_strands is
 		strand : in out type_strand)
 	is begin
 		set_proposed (strand.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		strand : in out type_strand)
 	is begin
 		clear_proposed (strand.status);
-	end;
+	end clear_proposed;
 
 
 	function is_proposed (
@@ -1907,14 +1907,14 @@ package body et_net_strands is
 		strand : in out type_strand)
 	is begin
 		set_selected (strand.status);
-	end;
+	end set_selected;
 
 
 	procedure clear_selected (
 		strand : in out type_strand)
 	is begin
 		clear_selected (strand.status);
-	end;
+	end clear_selected;
 
 
 	function is_selected (
@@ -1937,7 +1937,7 @@ package body et_net_strands is
 		operation	: in type_status_operation)
 	is begin
 		modify_status (strand.status, operation);
-	end;
+	end modify_status;
 
 
 
@@ -1945,7 +1945,7 @@ package body et_net_strands is
 		strand		: in out type_strand)
 	is begin
 		reset_status (strand.status);
-	end;
+	end reset_status;
 
 
 
@@ -1967,7 +1967,7 @@ package body et_net_strands is
 		return type_strand_position
 	is begin
 		return strand.position;
-	end;
+	end get_position;
 
 
 
@@ -1976,7 +1976,7 @@ package body et_net_strands is
 		return string
 	is begin
 		return to_string (strand.position);
-	end;
+	end get_position;
 
 
 
@@ -2058,7 +2058,7 @@ package body et_net_strands is
 		return boolean
 	is begin
 		return has_segments (element (strand));
-	end;
+	end has_segments;
 
 
 
@@ -2068,7 +2068,7 @@ package body et_net_strands is
 		return boolean
 	is begin
 		return is_proposed (element (strand));
-	end;
+	end is_proposed;
 
 
 	function is_selected (
@@ -2076,7 +2076,7 @@ package body et_net_strands is
 		return boolean
 	is begin
 		return is_selected (element (strand));
-	end;
+	end is_selected;
 
 
 
@@ -2087,7 +2087,7 @@ package body et_net_strands is
 		return string
 	is begin
 		return get_position (element (strand));
-	end;
+	end get_position;
 
 
 

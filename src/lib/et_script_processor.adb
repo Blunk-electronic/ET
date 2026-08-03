@@ -78,7 +78,7 @@ package body et_script_processor is
 			log (text => get_line_number (cmd) & "cmd: "
 				& enclose_in_quotes (get_all_fields (cmd)),
 				level => log_threshold);
-		end;
+		end log_command;
 
 
 	begin
@@ -187,7 +187,7 @@ package body et_script_processor is
 		return exit_code;
 
 
-	exception when event: others =>
+	exception when event : others =>
 		log_indentation_down;
 		log (text => ada.exceptions.exception_information (event));
 
@@ -244,7 +244,7 @@ package body et_script_processor is
 		return exit_code;
 
 
-	exception when event: others =>
+	exception when event : others =>
 		log (text => ada.exceptions.exception_information (event));
 
 		if is_open (previous_input) then
@@ -316,7 +316,7 @@ package body et_script_processor is
 		return exit_code;
 
 
-	exception when event: others =>
+	exception when event : others =>
 		set_input (standard_input);
 
 		log (text => ada.exceptions.exception_information (event));

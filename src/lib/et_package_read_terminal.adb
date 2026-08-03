@@ -65,60 +65,60 @@ package body et_package_read_terminal is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name 1,2,H7
 			expect_field_count (line, 2);
-			terminal_name := to_terminal_name (f (line,2));
+			terminal_name := to_terminal_name (f (line, 2));
 
 		elsif kw = keyword_assembly_technology then -- technology tht
 			expect_field_count (line, 2);
-			terminal_technology := to_assembly_technology (f (line,2));
+			terminal_technology := to_assembly_technology (f (line, 2));
 
 		elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
 			expect_field_count (line, 7);
-			terminal_position := to_position (line,2);
+			terminal_position := to_position (line, 2);
 
 		elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
 			expect_field_count (line, 2);
-			tht_width_inner_layers := to_distance (f (line,2));
+			tht_width_inner_layers := to_distance (f (line, 2));
 
 		elsif kw = keyword_tht_hole then -- hole drilled/milled
 			expect_field_count (line, 2);
-			tht_hole := to_tht_hole (f (line,2));
+			tht_hole := to_tht_hole (f (line, 2));
 
 		elsif kw = keyword_drill_size then -- drill_size 0.8
 			expect_field_count (line, 2);
-			tht_drill_size := to_distance (f (line,2));
+			tht_drill_size := to_distance (f (line, 2));
 
 		elsif kw = keyword_face then -- face top/bottom
 			expect_field_count (line, 2);
-			smt_pad_face := to_face (f (line,2));
+			smt_pad_face := to_face (f (line, 2));
 
 		elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
 			expect_field_count (line, 2);
-			smt_stop_mask_status := to_stop_mask_status (f (line,2));
+			smt_stop_mask_status := to_stop_mask_status (f (line, 2));
 
 		elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
 			expect_field_count (line, 2);
-			smt_stop_mask_shape := to_shape (f (line,2));
+			smt_stop_mask_shape := to_shape (f (line, 2));
 
 		elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
 			expect_field_count (line, 2);
-			tht_stop_mask_shape_top := to_shape (f (line,2));
+			tht_stop_mask_shape_top := to_shape (f (line, 2));
 
 		elsif kw = keyword_stop_mask_shape_bottom then -- keyword_stop_mask_shape_bottom user_specific
 			expect_field_count (line, 2);
-			tht_stop_mask_shape_bottom := to_shape (f (line,2));
+			tht_stop_mask_shape_bottom := to_shape (f (line, 2));
 
 		elsif kw = keyword_solder_paste_status then -- solder_paste_status applied/none
 			expect_field_count (line, 2);
-			smt_solder_paste_status := to_solder_paste_status (f (line,2));
+			smt_solder_paste_status := to_solder_paste_status (f (line, 2));
 
 		elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
 			expect_field_count (line, 2);
-			smt_stencil_shape := to_modification (f (line,2));
+			smt_stencil_shape := to_modification (f (line, 2));
 
 		elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
 			expect_field_count (line, 2);
 			--smt_stencil_shrink := to_scale (f (line,2));
-			smt_stencil_shrink := to_distance (f (line,2));
+			smt_stencil_shrink := to_distance (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -145,7 +145,7 @@ package body et_package_read_terminal is
 		end case;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_conductor_tht;
 
 
 
@@ -163,7 +163,7 @@ package body et_package_read_terminal is
 		end case;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stopmask_tht;
 
 
 
@@ -172,7 +172,7 @@ package body et_package_read_terminal is
 		tht_millings := contour;
 
 		reset_contour (contour);
-	end;
+	end assign_plated_millings;
 
 
 
@@ -183,7 +183,7 @@ package body et_package_read_terminal is
 		smt_pad_shape := contour;
 
 		reset_contour (contour);
-	end;
+	end assign_contour_conductor_smt;
 
 
 
@@ -193,7 +193,7 @@ package body et_package_read_terminal is
 		smt_stop_mask_contours := (contour with null record);
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stopmask_smt;
 
 
 
@@ -203,7 +203,7 @@ package body et_package_read_terminal is
 		smt_stencil_contours := (contour with null record);
 
 		reset_contour (contour);
-	end;
+	end assign_contour_stencil_smt;
 
 
 

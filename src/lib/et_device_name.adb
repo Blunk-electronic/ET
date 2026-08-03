@@ -58,13 +58,13 @@ package body et_device_name is
 		return string
 	is begin
 		return latin_1.space & trim (type_name_index'image (index), left);
-	end;
+	end to_string;
 
 
 
 	function to_index (index : in string) return type_name_index is begin
 		return type_name_index'value (index);
-	end;
+	end to_index;
 
 
 
@@ -89,7 +89,7 @@ package body et_device_name is
 		text_in_justified : constant string (1 .. text_in'length) := to_upper (text_in);
 
 		r : type_device_name := (
-				prefix		=> pac_device_prefix.to_bounded_string(""),
+				prefix		=> pac_device_prefix.to_bounded_string (""),
 				id 			=> 0,
 				id_width	=> 1);
 
@@ -202,7 +202,7 @@ package body et_device_name is
 
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
-	end;
+	end "<";
 
 
 
@@ -228,7 +228,7 @@ package body et_device_name is
 		end if;
 
 		return result;
-	end;
+	end "=";
 
 
 
@@ -242,7 +242,7 @@ package body et_device_name is
 		else
 			return false;
 		end if;
-	end;
+	end is_default_name;
 
 
 
@@ -254,7 +254,7 @@ package body et_device_name is
 
 		-- The width of the given id is obtained by converting the id to a string
 		-- and then by measuring its length:
-		id_width_given	: constant natural := trim (natural'image (name.id),left)'length;
+		id_width_given	: constant natural := trim (natural'image (name.id), left)'length;
 
 		-- Finally the number of zeros to prepend is the difference of wanted
 		-- and given digits:
@@ -263,11 +263,11 @@ package body et_device_name is
 		case lz is
 			when 0 => -- no leading zeroes
 				return pac_device_prefix.to_string (name.prefix)
-					& trim (natural'image (name.id),left);
+					& trim (natural'image (name.id), left);
 
 			when others => -- leading zeros required
 				return pac_device_prefix.to_string (name.prefix)
-					& lz * '0' & trim (natural'image (name.id),left);
+					& lz * '0' & trim (natural'image (name.id), left);
 		end case;
 	end to_string;
 
@@ -284,7 +284,7 @@ package body et_device_name is
 		return pac_device_prefix.bounded_string
 	is begin
 		return name.prefix;
-	end;
+	end get_prefix;
 
 
 
@@ -307,7 +307,7 @@ package body et_device_name is
 		return type_name_index
 	is begin
 		return name.id;
-	end;
+	end get_index;
 
 
 
@@ -323,7 +323,7 @@ package body et_device_name is
 		name.id_width := trim (natural'image (index), left)'length;
 		-- CS: Do something more elegant to determine the
 		-- number of digits of the index.
-	end;
+	end set_index;
 
 
 
@@ -366,7 +366,7 @@ package body et_device_name is
 		end if;
 
 		return device_name;
-	end;
+	end to_device_name;
 
 
 
@@ -382,7 +382,7 @@ package body et_device_name is
 			prefix	=> get_prefix (name),
 			index	=> name.id + offset);
 		-- the width of the index is calculated automatically by to_device_name.
-	end;
+	end offset_index;
 
 
 
@@ -414,7 +414,7 @@ package body et_device_name is
 			log (text => "device name " & to_string (device_name) & " -> no offset",
 				level => log_threshold);
 		end if;
-	end;
+	end apply_offset;
 
 
 
@@ -426,7 +426,7 @@ package body et_device_name is
 		return pac_device_names.set
 	is begin
 		return union (left, right);
-	end;
+	end merge_device_names;
 
 
 
@@ -491,7 +491,7 @@ package body et_device_name is
 			return string
 		is begin
 			return "Device " & to_string (name) & " not found !";
-		end;
+		end get_message_text;
 
 
 	begin
@@ -530,7 +530,7 @@ package body et_device_name is
 			return string
 		is begin
 			return "Device " & to_string (name) & " already exists !";
-		end;
+		end get_message_text;
 
 
 	begin

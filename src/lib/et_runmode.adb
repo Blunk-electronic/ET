@@ -44,13 +44,13 @@ package body et_runmode is
 
 	function to_runmode (mode : in string) return type_runmode is begin
 		return type_runmode'value (runmode_prefix & mode);
-	end;
+	end to_runmode;
 
 	function to_string (mode : in type_runmode) return string is
 		s : constant string := type_runmode'image (mode);
 	begin
 		return s (runmode_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 
 

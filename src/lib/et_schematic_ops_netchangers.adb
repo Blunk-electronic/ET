@@ -84,7 +84,7 @@ package body et_schematic_ops_netchangers is
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
-	end;
+	end dragging_not_possible;
 
 
 
@@ -97,7 +97,7 @@ package body et_schematic_ops_netchangers is
 			console => true
 			);
 		raise constraint_error;
-	end;
+	end relative_rotation_invalid;
 	pragma unreferenced (relative_rotation_invalid);
 
 
@@ -109,7 +109,7 @@ package body et_schematic_ops_netchangers is
 	is begin
 		log (SEVERITY_WARNING, "Netchanger "
 			& to_string (index) & " not found !");
-	end;
+	end netchanger_not_found;
 
 
 
@@ -134,12 +134,12 @@ package body et_schematic_ops_netchangers is
 				index : type_netchanger_id renames key (c);
 			begin
 				result.append (index);
-			end;
+			end query_netchanger;
 
 
 		begin
 			module.netchangers.iterate (query_netchanger'access);
-		end;
+		end query_module;
 
 
 	begin
@@ -169,7 +169,7 @@ package body et_schematic_ops_netchangers is
 			pragma unreferenced (module_name);
 		begin
 			result := module.netchangers.first;
-		end;
+		end query_module;
 
 
 	begin
@@ -201,7 +201,7 @@ package body et_schematic_ops_netchangers is
 			pragma unreferenced (module_name);
 		begin
 			result := get_netchanger (module.netchangers, index);
-		end;
+		end query_module;
 
 
 	begin
@@ -229,7 +229,7 @@ package body et_schematic_ops_netchangers is
 			get_position_schematic (netchanger_cursor));
 
 		return result;
-	end;
+	end get_netchanger_position;
 
 
 
@@ -362,7 +362,7 @@ package body et_schematic_ops_netchangers is
 			-- All iterations abort prematurely once all ports have been deleted.
 			function all_ports_deleted return boolean is begin
 				return deleted_ports.master and deleted_ports.slave;
-			end;
+			end all_ports_deleted;
 
 
 			procedure query_strands (
@@ -387,7 +387,7 @@ package body et_schematic_ops_netchangers is
 								to_string (key (net_cursor)) & " " &
 								to_string (segment_cursor),
 								level => log_threshold + 1);
-						end;
+						end delete_port;
 
 
 					begin -- query_ports
@@ -1638,7 +1638,7 @@ package body et_schematic_ops_netchangers is
 				if get_sheet (netchanger) = sheet_old then
 					move_netchanger (netchanger, offset);
 				end if;
-			end;
+			end query_netchanger;
 
 
 		begin
@@ -1704,7 +1704,7 @@ package body et_schematic_ops_netchangers is
 					move_netchangers (
 						module_cursor	=> module_cursor,
 						sheet_old		=> i, -- the current sheet
-						offset			=> - 1, -- one sheet down
+						offset			=> -1, -- one sheet down
 						log_threshold	=> log_threshold + 1);
 
 					log_indentation_down;
@@ -1798,7 +1798,7 @@ package body et_schematic_ops_netchangers is
 				else
 					set_rotation (netchanger, rotation);
 				end if;
-			end;
+			end rotate;
 
 
 			use pac_netchangers;
@@ -2562,7 +2562,7 @@ package body et_schematic_ops_netchangers is
 				end if;
 
 				-- CS: log message
-			end;
+			end set_direction;
 
 
 
@@ -2657,7 +2657,7 @@ package body et_schematic_ops_netchangers is
 		return string
 	is begin
 		return get_netchanger_name (object.netchanger_cursor);
-	end;
+	end get_object_name;
 
 
 
@@ -2666,7 +2666,7 @@ package body et_schematic_ops_netchangers is
 		return type_netchanger_id
 	is begin
 		return get_netchanger_id (object.netchanger_cursor);
-	end;
+	end get_object_id;
 
 
 
@@ -2675,7 +2675,7 @@ package body et_schematic_ops_netchangers is
 		return type_rotation_0_90
 	is begin
 		return get_rotation (object.netchanger_cursor);
-	end;
+	end get_rotation;
 
 
 	function get_direction (
@@ -2683,7 +2683,7 @@ package body et_schematic_ops_netchangers is
 		return type_netchanger_direction
 	is begin
 		return get_direction (object.netchanger_cursor);
-	end;
+	end get_direction;
 
 
 
@@ -3761,7 +3761,7 @@ package body et_schematic_ops_netchangers is
 			-- Reset netchangers:
 			reset_status_netchangers (module_cursor, log_threshold + 1);
 			-- CS notes, properties, ...
-		end;
+		end reset_devices;
 
 
 	begin

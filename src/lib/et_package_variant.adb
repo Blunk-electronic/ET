@@ -52,7 +52,7 @@ package body et_package_variant is
 		return pac_package_variant_name.bounded_string
 	is begin
 		return key (variants.first);
-	end;
+	end get_first_package_variant;
 
 
 
@@ -62,7 +62,7 @@ package body et_package_variant is
 		return natural
 	is begin
 		return natural (variants.length);
-	end;
+	end get_variant_count;
 
 
 

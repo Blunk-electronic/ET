@@ -67,7 +67,7 @@ package body et_board_ops_user_settings is
 			pragma unreferenced (module_name);
 		begin
 			settings := module.board.user_settings;
-		end;
+		end query_module;
 	begin
 		pac_generic_modules.query_element (module, query_module'access);
 

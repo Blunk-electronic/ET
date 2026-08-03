@@ -58,7 +58,7 @@ package body et_package_model_name is
 		return string
 	is begin
 		return pac_package_model_file.to_string (name);
-	end;
+	end to_string;
 
 
 
@@ -68,7 +68,7 @@ package body et_package_model_name is
 		return pac_package_model_file.bounded_string
 	is begin
 		return pac_package_model_file.to_bounded_string (name);
-	end;
+	end to_package_model_name;
 
 
 

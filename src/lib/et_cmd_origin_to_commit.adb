@@ -50,7 +50,7 @@ package body et_cmd_origin_to_commit is
 			when ORIGIN_CONSOLE => return DO_COMMIT;
 			when ORIGIN_SCRIPT => return NO_COMMIT;
 		end case;
-	end;
+	end to_commit_design;
 
 
 

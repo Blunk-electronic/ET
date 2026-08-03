@@ -78,7 +78,7 @@ package body et_symbol_read_text is
 			expect_field_count (line, 5);
 
 			-- extract the text position starting at field 2
-			symbol_text_position := to_vector_model (line,2);
+			symbol_text_position := to_vector_model (line, 2);
 
 		elsif kw = keyword_content then -- content "dummy NAND gate"
 			expect_field_count (line, 2);

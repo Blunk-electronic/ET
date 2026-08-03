@@ -68,7 +68,7 @@ package body et_drawing_frame_rw is
 			p : type_field_count_positive)
 		is begin
 			invalid_keyword (f (line, p));
-		end;
+		end error;
 
 
 	begin
@@ -83,7 +83,7 @@ package body et_drawing_frame_rw is
 
 		-- CS exception handler in case x or y value is invalid
 		return position;
-	end;
+	end to_position;
 
 
 
@@ -119,14 +119,14 @@ package body et_drawing_frame_rw is
 
 				-- CS in the future, if a line has a width, write it here
 				section_mark (section_line, FOOTER);
-			end;
+			end write;
 
 
 		begin -- write lines
 			section_mark (section_lines, HEADER);
 			iterate (lines, write'access);
 			section_mark (section_lines, FOOTER);
-		end;
+		end write_lines;
 
 
 		procedure write_placeholder (ph : in type_placeholder) is begin
@@ -135,7 +135,7 @@ package body et_drawing_frame_rw is
 
 			-- size
 			write (keyword => keyword_size, parameters => to_string (ph.size)); -- size 20
-		end;
+		end write_placeholder;
 
 
 		procedure write_text (text : in type_static_text) is begin
@@ -152,7 +152,7 @@ package body et_drawing_frame_rw is
 				   parameters => to_string (text.content)); -- content "motor driver"
 
 			section_mark (section_text, FOOTER);
-		end;
+		end write_text;
 
 
 
@@ -161,7 +161,7 @@ package body et_drawing_frame_rw is
 
 			procedure write (cursor : in pac_static_texts.cursor) is begin
 				write_text (element (cursor));
-			end;
+			end write;
 
 		begin -- write_texts
 			iterate (texts, write'access);
@@ -229,7 +229,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_approved_date, HEADER);
 			write_placeholder (ph.approved_date);
 			section_mark (section_approved_date, FOOTER);
-		end;
+		end write_placeholders_basic;
 
 
 
@@ -247,7 +247,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_sheet_category, HEADER);
 			write_placeholder (ph.sheet_category);
 			section_mark (section_sheet_category, FOOTER);
-		end;
+		end write_placeholders_schematic;
 
 
 
@@ -337,7 +337,7 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-	exception when event: others =>
+	exception when event : others =>
 		log (text => ada.exceptions.exception_message (event));
 		if is_open (file_handle) then
 			close (file_handle);
@@ -382,14 +382,14 @@ package body et_drawing_frame_rw is
 
 				-- CS in the future, if a line has a width, write it here
 				section_mark (section_line, FOOTER);
-			end;
+			end write;
 
 
 		begin -- write lines
 			section_mark (section_lines, HEADER);
 			iterate (lines, write'access);
 			section_mark (section_lines, FOOTER);
-		end;
+		end write_lines;
 
 
 
@@ -399,7 +399,7 @@ package body et_drawing_frame_rw is
 
 			-- size
 			write (keyword => keyword_size, parameters => to_string (ph.size)); -- size 20
-		end;
+		end write_placeholder;
 
 
 
@@ -417,7 +417,7 @@ package body et_drawing_frame_rw is
 				   parameters => to_string (text.content)); -- content "motor driver"
 
 			section_mark (section_text, FOOTER);
-		end;
+		end write_text;
 
 
 
@@ -431,7 +431,7 @@ package body et_drawing_frame_rw is
 			-- content
 			write (keyword => keyword_content, wrap => true,
 				   parameters => to_string (cm.content));
-		end;
+		end write_cam_marker;
 
 
 
@@ -440,7 +440,7 @@ package body et_drawing_frame_rw is
 
 			procedure write (cursor : in pac_static_texts.cursor) is begin
 				write_text (element (cursor));
-			end;
+			end write;
 
 		begin -- write_texts
 			iterate (texts, write'access);
@@ -508,7 +508,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_approved_date, HEADER);
 			write_placeholder (ph.approved_date);
 			section_mark (section_approved_date, FOOTER);
-		end;
+		end write_placeholders_basic;
 
 
 
@@ -522,7 +522,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_signal_layer, HEADER);
 			write_placeholder (ph.signal_layer);
 			section_mark (section_signal_layer, FOOTER);
-		end;
+		end write_placeholders_pcb;
 
 
 
@@ -566,7 +566,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_signal_layer, FOOTER);
 
 			section_mark (section_cam_markers, FOOTER);
-		end;
+		end write_cam_markers;
 
 
 		procedure write_title_block is
@@ -656,7 +656,7 @@ package body et_drawing_frame_rw is
 		set_output (standard_output);
 		close (file_handle);
 
-	exception when event: others =>
+	exception when event : others =>
 		log (text => ada.exceptions.exception_message (event));
 		if is_open (file_handle) then
 			close (file_handle);
@@ -684,14 +684,14 @@ package body et_drawing_frame_rw is
 			frame : type_frame_schematic;
 		begin
 			write_schematic (frame, file_name, log_threshold + 1);
-		end;
+		end do_schematic;
 
 
 		procedure do_board is
 			frame : type_frame_pcb_pre;
 		begin
 			write_board (frame, file_name, log_threshold + 1);
-		end;
+		end do_board;
 
 
 	begin
@@ -775,7 +775,7 @@ package body et_drawing_frame_rw is
 			log (SEVERITY_ERROR, text => "invalid domain ", console => true);
 			-- CS improve message
 			raise constraint_error;
-		end;
+		end invalid_domain;
 
 
 
@@ -818,7 +818,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_general_stuff;
 
 
 		-- TEMPORARILY VARIABLES AND CONTAINERS
@@ -842,7 +842,7 @@ package body et_drawing_frame_rw is
 				expect_field_count (line, 5);
 				tb_position := to_position (line);
 			end if;
-		end;
+		end read_title_block_position;
 
 
 
@@ -860,7 +860,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_line_properties;
 
 
 
@@ -883,7 +883,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_text_properties;
 
 
 
@@ -903,11 +903,11 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_placeholder_properties;
 
 
 
-		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
+		procedure reset_placeholder is begin tb_placeholder := (others => <>); end reset_placeholder;
 
 
 
@@ -930,7 +930,7 @@ package body et_drawing_frame_rw is
 			clear (tb_lines);
 			clear (tb_texts);
 			tb_placeholders_common := (others => <>);
-		end;
+		end assemble_title_block;
 
 
 
@@ -1389,7 +1389,7 @@ package body et_drawing_frame_rw is
 			log (SEVERITY_ERROR, text => "invalid domain ", console => true);
 			-- CS improve message
 			raise constraint_error;
-		end;
+		end invalid_domain;
 
 
 
@@ -1432,7 +1432,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_general_stuff;
 
 
 
@@ -1457,7 +1457,7 @@ package body et_drawing_frame_rw is
 				expect_field_count (line, 5);
 				tb_position := to_position (line);
 			end if;
-		end;
+		end read_title_block_position;
 
 
 
@@ -1475,7 +1475,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_line_properties;
 
 
 
@@ -1499,7 +1499,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_text_properties;
 
 
 
@@ -1523,7 +1523,7 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_cam_marker_properties;
 
 
 
@@ -1543,13 +1543,13 @@ package body et_drawing_frame_rw is
 			else
 				invalid_keyword (kw);
 			end if;
-		end;
+		end read_placeholder_properties;
 
 
 
-		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
+		procedure reset_placeholder is begin tb_placeholder := (others => <>); end reset_placeholder;
 
-		procedure reset_cam_marker is begin tb_cam_marker := (others => <>); end;
+		procedure reset_cam_marker is begin tb_cam_marker := (others => <>); end reset_cam_marker;
 
 
 		procedure assemble_title_block is
@@ -1570,7 +1570,7 @@ package body et_drawing_frame_rw is
 			clear (tb_lines);
 			clear (tb_texts);
 			tb_placeholders_common := (others => <>);
-		end;
+		end assemble_title_block;
 
 
 

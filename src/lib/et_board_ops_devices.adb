@@ -93,7 +93,7 @@ package body et_board_ops_devices is
 		return string
 	is begin
 		return to_string (key (object.cursor));
-	end;
+	end get_device_name;
 
 
 
@@ -103,7 +103,7 @@ package body et_board_ops_devices is
 		return type_device_name
 	is begin
 		return key (object.cursor);
-	end;
+	end get_device_name;
 
 
 
@@ -339,7 +339,7 @@ package body et_board_ops_devices is
 						set_place_relative (device, point); -- preserve angle and face
 
 				end case;
-			end;
+			end move_electrical;
 
 
 			procedure move_non_electrical (
@@ -356,7 +356,7 @@ package body et_board_ops_devices is
 						set_place_relative (device, point); -- preserve angle and face
 
 				end case;
-			end;
+			end move_non_electrical;
 
 
 
@@ -474,7 +474,7 @@ package body et_board_ops_devices is
 					when RELATIVE =>
 						set_rotation_relative (device, rotation); -- preserve x/y and face
 				end case;
-			end;
+			end rotate_electrical;
 
 
 			procedure rotate_non_electrical (
@@ -490,7 +490,7 @@ package body et_board_ops_devices is
 					when RELATIVE =>
 						set_rotation_relative (device, rotation); -- preserve x/y and face
 				end case;
-			end;
+			end rotate_non_electrical;
 
 
 		begin
@@ -747,7 +747,7 @@ package body et_board_ops_devices is
 			pragma unreferenced (module_name);
 		begin
 			result := find (module.devices_non_electric, device);
-		end;
+		end query_devices;
 
 	begin
 		pac_generic_modules.query_element (
@@ -871,7 +871,7 @@ package body et_board_ops_devices is
 		return string
 	is begin
 		return to_string (key (object.cursor));
-	end;
+	end get_device_name;
 
 
 
@@ -880,7 +880,7 @@ package body et_board_ops_devices is
 		return type_device_name
 	is begin
 		return key (object.cursor);
-	end;
+	end get_device_name;
 
 
 
@@ -1654,7 +1654,7 @@ package body et_board_ops_devices is
 			begin
 				log (text => "reset_electrical", level => log_threshold + 1);
 				reset_placeholder_positions (device);
-			end;
+			end reset_electrical;
 
 
 			procedure reset_non_electrical (
@@ -1665,7 +1665,7 @@ package body et_board_ops_devices is
 			begin
 				log (text => "reset_non_electrical", level => log_threshold + 1);
 				reset_placeholder_positions (device);
-			end;
+			end reset_non_electrical;
 
 
 		begin
@@ -1773,7 +1773,7 @@ package body et_board_ops_devices is
 
 				-- log (text => "new: " & to_string (device.placeholders),
 					 -- level => log_threshold + 2);
-			end;
+			end move_electrical;
 
 
 			procedure move_non_electrical (
@@ -1787,7 +1787,7 @@ package body et_board_ops_devices is
 
 				-- log (text => "new: " & to_string (device.placeholders),
 					 -- level => log_threshold + 2);
-			end;
+			end move_non_electrical;
 
 
 		begin
@@ -1917,7 +1917,7 @@ package body et_board_ops_devices is
 
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
-			end;
+			end rotate_electrical;
 
 
 			procedure rotate_non_electrical (
@@ -1930,7 +1930,7 @@ package body et_board_ops_devices is
 
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
-			end;
+			end rotate_non_electrical;
 
 
 		begin
@@ -2028,7 +2028,7 @@ package body et_board_ops_devices is
 		else
 			return get_device_name (placeholder.device_non_electrical);
 		end if;
-	end;
+	end get_device_name;
 
 
 
@@ -2038,7 +2038,7 @@ package body et_board_ops_devices is
 		return string
 	is begin
 		return to_string (get_device_name (placeholder));
-	end;
+	end get_device_name;
 
 
 
@@ -2050,7 +2050,7 @@ package body et_board_ops_devices is
 		use pac_text_placeholders;
 	begin
 		return get_place (element (placeholder.placeholder));
-	end;
+	end get_place;
 
 
 
@@ -2060,7 +2060,7 @@ package body et_board_ops_devices is
 		return string
 	is begin
 		return to_string (placeholder.layer);
-	end;
+	end get_layer;
 
 
 
@@ -2070,7 +2070,7 @@ package body et_board_ops_devices is
 		return type_placeholder_meaning
 	is begin
 		return get_meaning (placeholder.placeholder);
-	end;
+	end get_meaning;
 
 
 
@@ -2342,7 +2342,7 @@ package body et_board_ops_devices is
 
 						log_indentation_down;
 					end if;
-				end;
+				end query_device;
 
 			begin
 				log (text => "query_electrical_devices", level => log_threshold + 1);
@@ -2399,7 +2399,7 @@ package body et_board_ops_devices is
 					end if;
 
 					log_indentation_down;
-				end;
+				end query_device;
 
 
 			begin
@@ -2824,7 +2824,7 @@ package body et_board_ops_devices is
 
 							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
-						end;
+						end query_placeholder;
 
 					begin
 						-- Get the placeholders of the candidate device according
@@ -2908,7 +2908,7 @@ package body et_board_ops_devices is
 
 							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
-						end;
+						end query_placeholder;
 
 					begin
 						log (text => to_string (name), level => log_threshold + 2);
@@ -3448,7 +3448,7 @@ package body et_board_ops_devices is
 		begin
 			submod_cursor := find (module.submods, instance);
 			position := element (submod_cursor).position_in_board;
-		end;
+		end query_submodules;
 
 	begin -- get_position
 		-- locate the given module
@@ -3808,7 +3808,7 @@ package body et_board_ops_devices is
 				mirror (terminal_position, MIRROR_ALONG_Y_AXIS);
 
 				-- Rotate the terminal position (x/y) by the rotation of the package:
-				rotate_by (terminal_position, - terminal_rotation);
+				rotate_by (terminal_position, -terminal_rotation);
 
 
 			when TOP =>

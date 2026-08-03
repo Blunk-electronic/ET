@@ -53,7 +53,7 @@ package body et_units is
 		else
 			return false;
 		end if;
-	end;
+	end is_real;
 
 
 
@@ -83,7 +83,7 @@ package body et_units is
 		return type_mirror
 	is begin
 		return unit.mirror_status;
-	end;
+	end get_mirror_status;
 
 
 
@@ -92,7 +92,7 @@ package body et_units is
 		mirror	: in type_mirror)
 	is begin
 		unit.mirror_status := mirror;
-	end;
+	end set_mirror_status;
 
 
 
@@ -100,7 +100,7 @@ package body et_units is
 		unit	: in out type_unit)
 	is begin
 		toggle_along_y (unit.mirror_status);
-	end;
+	end toggle_mirror_status;
 
 
 
@@ -136,7 +136,7 @@ package body et_units is
 
 		-- Assign the new rotation:
 		set_rotation (unit, r_actual);
-	end;
+	end rotate_by;
 
 
 
@@ -165,7 +165,7 @@ package body et_units is
 		offset	: in type_vector_model)
 	is begin
 		move_by (unit.position, offset);
-	end;
+	end move_unit;
 
 
 
@@ -174,7 +174,7 @@ package body et_units is
 		offset	: in type_sheet_relative)
 	is begin
 		move_by_sheets (unit.position, offset);
-	end;
+	end move_unit;
 
 
 
@@ -256,7 +256,7 @@ package body et_units is
 		unit : in out type_unit)
 	is begin
 		set_selected (unit.status);
-	end;
+	end set_selected;
 
 
 
@@ -264,7 +264,7 @@ package body et_units is
 		unit : in out type_unit)
 	is begin
 		clear_selected (unit.status);
-	end;
+	end clear_selected;
 
 
 	function is_selected (
@@ -276,7 +276,7 @@ package body et_units is
 		else
 			return false;
 		end if;
-	end;
+	end is_selected;
 
 
 
@@ -284,14 +284,14 @@ package body et_units is
 		unit : in out type_unit)
 	is begin
 		set_proposed (unit.status);
-	end;
+	end set_proposed;
 
 
 	procedure clear_proposed (
 		unit : in out type_unit)
 	is begin
 		clear_proposed (unit.status);
-	end;
+	end clear_proposed;
 
 
 	function is_proposed (
@@ -303,7 +303,7 @@ package body et_units is
 		else
 			return false;
 		end if;
-	end;
+	end is_proposed;
 
 
 
@@ -312,14 +312,14 @@ package body et_units is
 		unit : in out type_unit)
 	is begin
 		set_moving (unit.status);
-	end;
+	end set_moving;
 
 
 	procedure clear_moving (
 		unit : in out type_unit)
 	is begin
 		clear_moving (unit.status);
-	end;
+	end clear_moving;
 
 
 	function is_moving (
@@ -331,7 +331,7 @@ package body et_units is
 		else
 			return false;
 		end if;
-	end;
+	end is_moving;
 
 
 
@@ -350,7 +350,7 @@ package body et_units is
 		unit : in out type_unit)
 	is begin
 		reset_status (unit.status);
-	end;
+	end reset_status;
 
 
 
@@ -371,7 +371,7 @@ package body et_units is
 		else
 			return (others => <>);
 		end if;
-	end;
+	end get_placeholders;
 
 
 
@@ -476,7 +476,7 @@ package body et_units is
 		return type_unit
 	is begin
 		return element (unit_cursor);
-	end;
+	end get_unit;
 
 
 
@@ -496,7 +496,7 @@ package body et_units is
 		return type_rotation_model
 	is begin
 		return get_rotation (element (unit));
-	end;
+	end get_rotation;
 
 
 
@@ -505,7 +505,7 @@ package body et_units is
 		return type_mirror
 	is begin
 		return element (unit).mirror_status;
-	end;
+	end get_mirror_status;
 
 
 
@@ -566,7 +566,7 @@ package body et_units is
 		return boolean
 	is begin
 		return is_proposed (element (unit));
-	end;
+	end is_proposed;
 
 
 	function is_selected (
@@ -574,7 +574,7 @@ package body et_units is
 		return boolean
 	is begin
 		return is_selected (element (unit));
-	end;
+	end is_selected;
 
 
 
@@ -585,7 +585,7 @@ package body et_units is
 		return boolean
 	is begin
 		return is_moving (element (unit));
-	end;
+	end is_moving;
 
 
 
@@ -639,7 +639,7 @@ package body et_units is
 
 		procedure query_unit (cursor : pac_units.cursor) is begin
 			list.insert (key (cursor), element (cursor).position);
-		end;
+		end query_unit;
 
 	begin
 		iterate (units, query_unit'access);
@@ -655,7 +655,7 @@ package body et_units is
 		return pac_port_name.bounded_string
 	is begin
 		return key (port);
-	end;
+	end get_port_name;
 
 
 

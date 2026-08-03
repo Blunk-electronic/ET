@@ -47,7 +47,7 @@ package body et_device_placeholders is
 		return string
 	is begin
 		return to_lower (type_placeholder_meaning'image (text_meaning));
-	end;
+	end to_string;
 
 
 	function to_meaning (
@@ -55,7 +55,7 @@ package body et_device_placeholders is
 		return type_placeholder_meaning
 	is begin
 		return type_placeholder_meaning'value (text_meaning);
-	end;
+	end to_meaning;
 
 
 
@@ -64,7 +64,7 @@ package body et_device_placeholders is
 		return string
 	is begin
 		return to_lower (type_anchor_mode'image (mode));
-	end;
+	end to_string;
 
 
 
@@ -73,7 +73,7 @@ package body et_device_placeholders is
 		return type_anchor_mode
 	is begin
 		return type_anchor_mode'value (mode);
-	end;
+	end to_anchor_mode;
 
 
 

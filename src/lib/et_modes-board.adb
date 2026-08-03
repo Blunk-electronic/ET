@@ -48,7 +48,7 @@ package body et_modes.board is
 		s : constant string := type_verb'image (verb);
 	begin
 		return s (verb_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 	function to_verb (verb : in string) return type_verb is begin
 	-- Prepends the verb_prefix to the given string and returns a type_verb.
@@ -58,7 +58,7 @@ package body et_modes.board is
 	exception when others =>
 		log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 		raise;
-	end;
+	end to_verb;
 
 
 
@@ -66,7 +66,7 @@ package body et_modes.board is
 		s : constant string := type_noun'image (noun);
 	begin
 		return s (noun_prefix'length + 1 .. s'last);
-	end;
+	end to_string;
 
 	function to_noun (noun : in string) return type_noun is begin
 		return type_noun'value (noun_prefix & noun);
@@ -74,14 +74,14 @@ package body et_modes.board is
 	exception when others =>
 		log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 		raise;
-	end;
+	end to_noun;
 
 
 
 	procedure reset_verb_and_noun is begin
 		verb := verb_default;
 		noun := noun_default;
-	end;
+	end reset_verb_and_noun;
 
 
 end et_modes.board;

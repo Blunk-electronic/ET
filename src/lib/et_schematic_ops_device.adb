@@ -254,7 +254,7 @@ package body et_schematic_ops_device is
 			pragma unreferenced (module_name);
 		begin
 			result := find (module.devices, device);
-		end;
+		end query_devices;
 
 	begin
 		pac_generic_modules.query_element (
@@ -285,7 +285,7 @@ package body et_schematic_ops_device is
 			pragma unreferenced (module_name);
 		begin
 			result := module.devices.first;
-		end;
+		end query_module;
 
 	begin
 		pac_generic_modules.query_element (
@@ -581,7 +581,7 @@ package body et_schematic_ops_device is
 			begin
 				-- CS log value old and value new
 				device.value := value;
-			end;
+			end set_value;
 
 
 		begin
@@ -683,7 +683,7 @@ package body et_schematic_ops_device is
 			begin
 				device.purpose := purpose;
 				-- CS log purpose before and after
-			end;
+			end set_purpose;
 
 
 		begin
@@ -773,7 +773,7 @@ package body et_schematic_ops_device is
 			begin
 				device.partcode := partcode;
 				-- CS log old and new partcode
-			end;
+			end set_partcode;
 
 
 		begin
@@ -1197,7 +1197,7 @@ package body et_schematic_ops_device is
 					pragma unreferenced (coordinates);
 				begin
 					device.done := true;
-				end;
+				end set_done;
 
 
 			begin -- mark_units_done
@@ -1234,7 +1234,7 @@ package body et_schematic_ops_device is
 					if category (name_before) = cat then
 
 						log (text => "device " & to_string (name_before) &
-							" unit " & to_string (element (cursor).unit), level => log_threshold +1);
+							" unit " & to_string (element (cursor).unit), level => log_threshold + 1);
 						log_indentation_up;
 
 						update_index;
@@ -1280,7 +1280,7 @@ package body et_schematic_ops_device is
 
 			return result;
 
-		exception when event:
+		exception when event :
 			others =>
 				log (text => ada.exceptions.exception_message (event), console => true);
 			raise;

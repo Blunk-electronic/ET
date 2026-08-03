@@ -125,7 +125,7 @@ package body et_package_write is
 		log_indentation_down;
 
 
-	exception when event: others =>
+	exception when event : others =>
 		log (text => ada.exceptions.exception_message (event));
 		log_indentation_down;
 

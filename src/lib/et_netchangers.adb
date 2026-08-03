@@ -53,7 +53,7 @@ package body et_netchangers is
 		return type_netchanger_id
 	is begin
 		return type_netchanger_id'value (id);
-	end;
+	end to_netchanger_id;
 
 
 
@@ -62,7 +62,7 @@ package body et_netchangers is
 		return string
 	is begin
 		return trim (type_netchanger_id'image (id), left);
-	end;
+	end to_string;
 
 
 
@@ -72,7 +72,7 @@ package body et_netchangers is
 		return string
 	is begin
 		return netchanger_prefix & to_string (id);
-	end;
+	end get_netchanger_name;
 
 
 
@@ -87,7 +87,7 @@ package body et_netchangers is
 			when BACKWARD =>
 				direction := FORWARD;
 		end case;
-	end;
+	end toggle_direction;
 
 
 
@@ -97,7 +97,7 @@ package body et_netchangers is
 		return type_netchanger_direction
 	is begin
 		return type_netchanger_direction'value (direction);
-	end;
+	end to_netchanger_direction;
 
 
 	function to_string (
@@ -105,7 +105,7 @@ package body et_netchangers is
 		return string
 	is begin
 		return type_netchanger_direction'image (direction);
-	end;
+	end to_string;
 
 
 
@@ -125,7 +125,7 @@ package body et_netchangers is
 		netchanger.position_sch := (others => <>);
 		netchanger.position_brd := (others => <>);
 		netchanger.direction := type_netchanger_direction'first;
-	end;
+	end reset_netchanger;
 
 
 
@@ -134,7 +134,7 @@ package body et_netchangers is
 		return string
 	is begin
 		return get_netchanger_name (key (netchanger_cursor));
-	end;
+	end get_netchanger_name;
 
 
 
@@ -143,7 +143,7 @@ package body et_netchangers is
 		return type_netchanger_id
 	is begin
 		return key (netchanger_cursor);
-	end;
+	end get_netchanger_id;
 
 
 
@@ -153,7 +153,7 @@ package body et_netchangers is
 		return pac_netchangers.cursor
 	is begin
 		return netchangers.find (index);
-	end;
+	end get_netchanger;
 
 
 

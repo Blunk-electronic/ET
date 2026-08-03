@@ -85,8 +85,8 @@ package et_kicad_general is
 
 
 -- TIMESTAMP
-	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only
-	type type_timestamp is new string (1..8); -- like "3459A3C1"
+	timestamp_characters : character_set := to_set (ranges => (('A', 'F'), ('0', '9'))); -- CS: upper case letters only
+	type type_timestamp is new string (1 .. 8); -- like "3459A3C1"
 	timestamp_default : constant type_timestamp := "00000000";
 
 	procedure check_timestamp (timestamp : in type_timestamp);

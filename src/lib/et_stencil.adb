@@ -574,7 +574,7 @@ package body et_stencil is
 		log (text => "solder paste (stencil) circle face" & to_string (face) & space
 			& to_string (element (cursor)),
 			level => log_threshold);
-	end;
+	end circle_stencil_properties;
 
 
 	procedure line_stencil_properties (

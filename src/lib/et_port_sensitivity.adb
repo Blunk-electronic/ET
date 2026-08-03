@@ -47,21 +47,21 @@ package body et_port_sensitivity is
 
 	function to_string (sensitivity : in type_sensitivity_edge) return string is begin
 		return to_lower (type_sensitivity_edge'image (sensitivity));
-	end;
+	end to_string;
 
 	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge is begin
 		return type_sensitivity_edge'value (sensitivity);
-	end;
+	end to_sensitivity_edge;
 
 
 
 	function to_string (sensitivity : in type_sensitivity_level) return string is begin
 		return to_lower (type_sensitivity_level'image (sensitivity));
-	end;
+	end to_string;
 
 	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level is begin
 		return type_sensitivity_level'value (sensitivity);
-	end;
+	end to_sensitivity_level;
 
 
 end et_port_sensitivity;

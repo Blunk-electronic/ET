@@ -221,6 +221,11 @@ package et_canvas_schematic is
 		return boolean;
 
 
+-- VERB / NOUN:
+
+	procedure set_up_verb_combo;
+	procedure set_up_noun_combo;
+
 
 -- UNDO / REDO:
 

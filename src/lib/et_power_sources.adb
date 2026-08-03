@@ -54,7 +54,7 @@ package body et_power_sources is
 		B : constant positive := level_string'length;
 	begin
 		return level_string (A .. B);
-	end;
+	end to_string;
 
 
 
@@ -63,7 +63,7 @@ package body et_power_sources is
 	function to_power_level (level : in string) return type_power_level is
 	begin
 		return type_power_level'value ("LEVEL_" & level);
-	end;
+	end to_power_level;
 
 
 

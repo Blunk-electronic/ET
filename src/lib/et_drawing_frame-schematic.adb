@@ -51,14 +51,14 @@ package body et_drawing_frame.schematic is
 		lines_sch : constant type_lines (1 .. 10) := (
 			-- outer lines
 			((  0,  0),(220,  0)),
-			((220,  0),(220, 40)),
-			((220, 40),(  0, 40)),
+			((220,  0), (220, 40)),
+			((220, 40), (  0, 40)),
 			((  0, 40),(  0,  0)),
 
 			-- inner lines
 			(( 89,  0),( 89, 40)), -- vertical
-			((119, 20),(119,  0)), -- vertical
-			((150, 20),(150,  0)), -- vertical
+			((119, 20), (119,  0)), -- vertical
+			((150, 20), (150,  0)), -- vertical
 			(( 89, 15),(220, 15)), -- horizontal
 			(( 89, 20),(220, 20)), -- horizontal
 			(( 89, 25),(220, 25))  -- horizontal
@@ -81,24 +81,24 @@ package body et_drawing_frame.schematic is
 		type type_texts is array (positive range <>) of type_static_text;
 
 		texts_sch : constant type_texts (1 .. 14) := (
-			(position => (  2, 36), size => 3, content => to_content ("Company:")),
-			(position => (  2, 31), size => 3, content => to_content ("Project:")),
-			(position => (  2, 26), size => 3, content => to_content ("Module:")),
-			(position => (  2, 21), size => 3, content => to_content ("Variant:")),
-			(position => (  2, 16), size => 3, content => to_content ("Customer:")),
-			(position => (  2, 11), size => 3, content => to_content ("Partcode:")),
-			(position => (  2,  6), size => 3, content => to_content ("Drwg. No:")),
-			(position => (  2,  1), size => 3, content => to_content ("Revision:")),
+			(position => (2, 36), size => 3, content => to_content ("Company:")),
+			(position => (2, 31), size => 3, content => to_content ("Project:")),
+			(position => (2, 26), size => 3, content => to_content ("Module:")),
+			(position => (2, 21), size => 3, content => to_content ("Variant:")),
+			(position => (2, 16), size => 3, content => to_content ("Customer:")),
+			(position => (2, 11), size => 3, content => to_content ("Partcode:")),
+			(position => (2,  6), size => 3, content => to_content ("Drwg. No:")),
+			(position => (2,  1), size => 3, content => to_content ("Revision:")),
 
 			--(position => (120, 16), size => 3, content => to_content ("date")),
 			--(position => (152, 16), size => 3, content => to_content ("name")),
-			(position => ( 90, 11), size => 3, content => to_content ("edited:")),
-			(position => ( 90,  6), size => 3, content => to_content ("checked:")),
-			(position => ( 90,  1), size => 3, content => to_content ("approved")),
+			(position => (90, 11), size => 3, content => to_content ("edited:")),
+			(position => (90,  6), size => 3, content => to_content ("checked:")),
+			(position => (90,  1), size => 3, content => to_content ("approved")),
 
-			(position => ( 90, 35), size => 3, content => to_content ("SHEET DESCRIPTION:")),
+			(position => (90, 35), size => 3, content => to_content ("SHEET DESCRIPTION:")),
 			(position => (192, 21), size => 3, content => to_content ("SHEET")),
-			(position => ( 90, 21), size => 3, content => to_content ("CAT:"))
+			(position => (90, 21), size => 3, content => to_content ("CAT:"))
 			);
 
 
@@ -116,18 +116,18 @@ package body et_drawing_frame.schematic is
 
 	begin -- apply_defaults_schematic
 		-- type_title_bock (basic stuff):
-		frame.title_block_schematic.position										:= ( 55,  6);
+		frame.title_block_schematic.position										:= (55,  6);
 		frame.title_block_schematic.lines := make_lines (lines_sch);
-		frame.title_block_schematic.placeholders_common.project_name.position 				:= ( 30, 31);
-		frame.title_block_schematic.placeholders_common.module_file_name.position 			:= ( 30, 26);
-		frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
+		frame.title_block_schematic.placeholders_common.project_name.position 				:= (30, 31);
+		frame.title_block_schematic.placeholders_common.module_file_name.position 			:= (30, 26);
+		frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= (30, 21);
 		frame.title_block_schematic.static_texts := make_texts (texts_sch);
 
-		frame.title_block_schematic.placeholders_additional.company.position 		:= ( 30, 36);
-		frame.title_block_schematic.placeholders_additional.customer.position 		:= ( 30, 16);
-		frame.title_block_schematic.placeholders_additional.partcode.position 		:= ( 30, 11);
-		frame.title_block_schematic.placeholders_additional.drawing_number.position	:= ( 30,  6);
-		frame.title_block_schematic.placeholders_additional.revision.position 		:= ( 30,  1);
+		frame.title_block_schematic.placeholders_additional.company.position 		:= (30, 36);
+		frame.title_block_schematic.placeholders_additional.customer.position 		:= (30, 16);
+		frame.title_block_schematic.placeholders_additional.partcode.position 		:= (30, 11);
+		frame.title_block_schematic.placeholders_additional.drawing_number.position	:= (30,  6);
+		frame.title_block_schematic.placeholders_additional.revision.position 		:= (30,  1);
 
 		frame.title_block_schematic.placeholders_additional.drawn_by.position 		:= (152, 11);
 		frame.title_block_schematic.placeholders_additional.checked_by.position 	:= (152,  6);
@@ -138,7 +138,7 @@ package body et_drawing_frame.schematic is
 		frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
 
 		frame.title_block_schematic.placeholders_additional.sheet_number.position 		:= (210, 21);
-		frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
+		frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= (90, 30);
 		frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
 
 	end apply_defaults_schematic;
@@ -163,13 +163,13 @@ package body et_drawing_frame.schematic is
 
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
-	end;
+	end to_string;
 
 
 
 	function to_category (cat : in string) return type_schematic_sheet_category is begin
 		return type_schematic_sheet_category'value (cat);
-	end;
+	end to_category;
 
 
 
@@ -179,7 +179,7 @@ package body et_drawing_frame.schematic is
 		return type_sheet
 	is begin
 		return type_sheet (descriptions.length);
-	end;
+	end get_sheet_count;
 
 
 
@@ -196,7 +196,7 @@ package body et_drawing_frame.schematic is
 		cursor := frames.descriptions.to_cursor (sheet);
 
 		return has_element (cursor);
-	end;
+	end sheet_exists;
 
 
 
@@ -210,7 +210,7 @@ package body et_drawing_frame.schematic is
 	begin
 		sheet := to_index (sheet_cursor);
 		return to_string (sheet);
-	end;
+	end get_sheet;
 
 
 
@@ -224,7 +224,7 @@ package body et_drawing_frame.schematic is
 	begin
 		category := element (sheet_cursor).category;
 		return to_string (category);
-	end;
+	end get_category;
 
 
 
@@ -238,7 +238,7 @@ package body et_drawing_frame.schematic is
 	begin
 		content := element (sheet_cursor).content;
 		return to_string (content);
-	end;
+	end get_content;
 
 
 
@@ -252,7 +252,7 @@ package body et_drawing_frame.schematic is
 		use pac_schematic_descriptions;
 	begin
 		return type_sheet (frames.descriptions.length);
-	end;
+	end get_sheet_count;
 
 
 
@@ -275,7 +275,7 @@ package body et_drawing_frame.schematic is
 
 			-- Delete the sheet:
 			frames.descriptions.delete (cursor);
-		end;
+		end do_it;
 
 
 	begin
@@ -306,7 +306,7 @@ package body et_drawing_frame.schematic is
 			description	: in out type_schematic_description)
 		is begin
 			description.category := cat;
-		end;
+		end query_sheet;
 
 
 	begin

@@ -90,7 +90,7 @@ package body et_schematic_coordinates is
 		end if;
 
 		return result;
-	end;
+	end "<";
 
 
 
@@ -104,7 +104,7 @@ package body et_schematic_coordinates is
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
-	end;
+	end move;
 
 
 
@@ -114,7 +114,7 @@ package body et_schematic_coordinates is
 		offset		: in type_vector_model)
 	is begin
 		move_by (position.place, offset);
-	end;
+	end move_by;
 
 
 
@@ -130,7 +130,7 @@ package body et_schematic_coordinates is
 		result.sheet := sheet;
 
 		return result;
-	end;
+	end to_position;
 
 
 
@@ -148,7 +148,7 @@ package body et_schematic_coordinates is
 		set_sheet (p, sheet);
 		set_rotation (p, rotation);
 		return p;
-	end;
+	end to_position;
 
 
 
@@ -165,7 +165,7 @@ package body et_schematic_coordinates is
 		p.sheet := sheet;
 		set_rotation (p, rotation);
 		return p;
-	end;
+	end to_position_relative;
 
 
 
@@ -348,7 +348,7 @@ package body et_schematic_coordinates is
 		offset		: in type_sheet_relative)
 	is begin
 		add (position.sheet, offset);
-	end;
+	end move_by_sheets;
 
 
 

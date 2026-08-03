@@ -79,7 +79,7 @@ package et_geometry_2a is
 
 
 
-	function get_info (editor: in string)
+	function get_info (editor : in string)
 		return string;
 
 
@@ -459,7 +459,7 @@ package et_geometry_2a is
 
 	procedure set (
 		point	: in out type_vector_model;
-		position: in type_vector_model);
+		position : in type_vector_model);
 
 
 
@@ -490,7 +490,7 @@ package et_geometry_2a is
 
 
 	function to_vector_model (
-		x,y : in string)
+		x, y : in string)
 		return type_vector_model;
 
 
@@ -1593,7 +1593,7 @@ package et_geometry_2a is
 	-- Changes the direction of an arc to CCW (mathematical sense)
 	-- by swapping start and end point. If direction is already CCW
 	-- then nothing happens.
-	function normalize_arc (arc: in type_arc) return type_arc'class;
+	function normalize_arc (arc : in type_arc) return type_arc'class;
 
 	-- Returns true if start and end point of arc are equal:
 	function zero_length (arc : in type_arc) return boolean;
@@ -2018,7 +2018,7 @@ package et_geometry_2a is
 	-- is required:
 
 	subtype type_zone_radius is type_float_positive
-		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
+		range 0.0 .. type_float_positive (type_distance_positive'last / 100.0);
 
 
 	type type_catch_zone is private;

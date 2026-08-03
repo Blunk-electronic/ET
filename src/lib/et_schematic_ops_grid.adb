@@ -63,7 +63,7 @@ package body et_schematic_ops_grid is
 		begin
 			-- Set the grid in the database:
 			module.grid := grid;
-		end;
+		end do_it;
 
 
 	begin -- set_grid
@@ -100,7 +100,7 @@ package body et_schematic_ops_grid is
 		begin
 			-- Set the grid in the database:
 			module.grid := grid;
-		end;
+		end do_it;
 
 
 	begin -- set_grid
@@ -137,7 +137,7 @@ package body et_schematic_ops_grid is
 		begin
 			-- Get the grid from the database:
 			result := module.grid;
-		end;
+		end do_it;
 
 
 	begin

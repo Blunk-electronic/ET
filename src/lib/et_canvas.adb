@@ -77,7 +77,7 @@ package body et_canvas is
 		s_in : in type_zoom_factor)
 	is begin
 		S := s_in;
-	end;
+	end set_zoom_factor;
 
 
 
@@ -195,7 +195,7 @@ package body et_canvas is
 		-- debug : boolean := false;
 	begin
 		result.x := type_distance
-			(( (P.x - T.x) - F.x) / type_logical_pixels (zf));
+			(((P.x - T.x) - F.x) / type_logical_pixels (zf));
 
 		result.y := type_distance
 			((-(P.y - T.y) - F.y) / type_logical_pixels (zf));
@@ -317,7 +317,7 @@ package body et_canvas is
 
 	begin
 		x :=   Bw * (S_max - 1.0);
-		y := - Bh * S_max;
+		y := -Bh * S_max;
 
 		-- Set the base-offset:
 		F := (x, y);
@@ -325,7 +325,7 @@ package body et_canvas is
 		-- Output a warning if the base-offset is outside
 		-- the canvas dimensions:
 		if  x >   type_logical_pixels (canvas_size.width) or
-			y < - type_logical_pixels (canvas_size.height) then
+			y < -type_logical_pixels (canvas_size.height) then
 
 			put_line ("WARNING: base-offset outside canvas !");
 			put_line (" F: " & to_string (F));
@@ -722,7 +722,7 @@ package body et_canvas is
 
 				area := (others => <>);
 			end if;
-		end;
+		end compute_area;
 
 
 	begin
@@ -789,7 +789,7 @@ package body et_canvas is
 
 	procedure reset_group_area_keyboard is begin
 		group_area_keyboard := (others => <>);
-	end;
+	end reset_group_area_keyboard;
 
 
 
@@ -915,12 +915,12 @@ package body et_canvas is
 
 	procedure set_group_moving is begin
 		group_is_moving := true;
-	end;
+	end set_group_moving;
 
 
 	procedure set_group_not_moving is begin
 		group_is_moving := false;
-	end;
+	end set_group_not_moving;
 
 
 
@@ -928,12 +928,12 @@ package body et_canvas is
 
 	procedure set_group_being_copied is begin
 		group_is_being_copied := true;
-	end;
+	end set_group_being_copied;
 
 
 	procedure set_group_not_being_copied is begin
 		group_is_being_copied := false;
-	end;
+	end set_group_not_being_copied;
 
 
 
@@ -942,12 +942,12 @@ package body et_canvas is
 
 	procedure set_group_being_pasted is begin
 		group_is_being_pasted := true;
-	end;
+	end set_group_being_pasted;
 
 
 	procedure set_group_not_being_pasted is begin
 		group_is_being_pasted := false;
-	end;
+	end set_group_not_being_pasted;
 
 
 
@@ -957,7 +957,7 @@ package body et_canvas is
 		return type_vector_model
 	is begin
 		return get_object_tool_position - object_point_of_attack;
-	end;
+	end get_group_offset;
 
 
 
@@ -1111,7 +1111,7 @@ package body et_canvas is
 		-- Regarding y: T is in the canvas system (CS2)
 		-- where the y-axis goes downward. So we must multiply by -1:
 		T.x :=   type_logical_pixels (dx) * type_logical_pixels (S);
-		T.y := - type_logical_pixels (dy) * type_logical_pixels (S);
+		T.y := -type_logical_pixels (dy) * type_logical_pixels (S);
 		if debug then
 			put_line ("T: " & to_string (T));
 		end if;
@@ -1310,7 +1310,7 @@ package body et_canvas is
 	begin
 		put_line ("set initial scrollbar settings");
 
-		scrollbar_v_init.upper := - F.y;
+		scrollbar_v_init.upper := -F.y;
 
 		scrollbar_v_init.lower := scrollbar_v_init.upper -
 			type_logical_pixels (bounding_box.height);
@@ -1682,15 +1682,15 @@ package body et_canvas is
 
 		-- compute the maximal base-offset:
 		F_max.x :=   Bw * (S_max - 1.0);
-		F_max.y := - Bh * S_max;
+		F_max.y := -Bh * S_max;
 
 		if debug then
 			put_line (" F_max : " & to_string (F_max));
 		end if;
 
 		-- compute the canvas width and height:
-		canvas_size.width  := positive (  F_max.x + Bw * S_max);
-		canvas_size.height := positive (- F_max.y + Bh * (S_max - 1.0));
+		canvas_size.width  := positive (F_max.x + Bw * S_max);
+		canvas_size.height := positive (-F_max.y + Bh * (S_max - 1.0));
 
 		if debug then
 			put_line (" Cw    : " & positive'image (canvas_size.width));
@@ -2288,15 +2288,15 @@ package body et_canvas is
 		gtk_new (mode_display.label_mode_verb, "VERB");
 		set_halign (mode_display.label_mode_verb, align_start);
 
-		gtk_new_with_entry (mode_display.cbox_mode_verb);
-		set_halign (mode_display.cbox_mode_verb, align_end);
+		gtk_new (mode_display.cbox_mode_verb);
+		set_halign (mode_display.cbox_mode_verb, align => align_fill);
 
 
 		gtk_new (mode_display.label_mode_noun, "NOUN");
 		set_halign (mode_display.label_mode_noun, align_start);
 
-		gtk_new_with_entry (mode_display.cbox_mode_noun);
-		set_halign (mode_display.cbox_mode_noun, align_end);
+		gtk_new (mode_display.cbox_mode_noun);
+		set_halign (mode_display.cbox_mode_noun, align => align_fill);
 
 
 		gtk_new (mode_display.grid_mode);
@@ -3791,7 +3791,7 @@ package body et_canvas is
 	procedure reset_editing_process is begin
 		log (text => "editing_process full RESET", level => log_threshold);
 		editing_process := (others => <>);
-	end;
+	end reset_editing_process;
 
 
 
@@ -3831,18 +3831,18 @@ package body et_canvas is
 		log (text => "editing_process.runnning SET", level => log_threshold);
 		editing_process.running := true;
 		editing_process.escape_counter := 0;
-	end;
+	end set_edit_process_running;
 
 
 	procedure reset_edit_process_running is begin
 		log (text => "editing_process.runnning RESET", level => log_threshold);
 		editing_process.running := false;
-	end;
+	end reset_edit_process_running;
 
 
 	function edit_process_running return boolean is begin
 		return editing_process.running;
-	end;
+	end edit_process_running;
 
 
 
@@ -3854,18 +3854,18 @@ package body et_canvas is
 	procedure set_finalizing_granted is begin
 		editing_process.finalizing_granted := true;
 		log (text => "editing_process.finalizing_granted SET", level => log_threshold);
-	end;
+	end set_finalizing_granted;
 
 
 	procedure reset_finalizing_granted is begin
 		editing_process.finalizing_granted := false;
 		log (text => "editing_process.finalizing_granted RESET", level => log_threshold);
-	end;
+	end reset_finalizing_granted;
 
 
 	function finalizing_granted return boolean is begin
 		return editing_process.finalizing_granted;
-	end;
+	end finalizing_granted;
 
 
 
@@ -3887,13 +3887,13 @@ package body et_canvas is
 		log (text => "ESC key pressed. editing_process.escape_counter"
 			& type_escape_count'image (editing_process.escape_counter),
 			level => log_threshold);
-	end;
+	end escape_key_pressed;
 
 
 
 	function get_escape_counter return type_escape_count is begin
 		return editing_process.escape_counter;
-	end;
+	end get_escape_counter;
 
 
 
@@ -3901,7 +3901,7 @@ package body et_canvas is
 	procedure reset_escape_counter is begin
 		log (text => "editing_process.escape_counter RESET", level => log_threshold);
 		editing_process.escape_counter := 0;
-	end;
+	end reset_escape_counter;
 
 
 
@@ -3945,7 +3945,7 @@ package body et_canvas is
 				& status_press_space & status_set_B & status_hint_for_abort);
 
 		end if;
-	end;
+	end status_bar_path_show_A;
 
 
 
@@ -4473,7 +4473,7 @@ package body et_canvas is
 				 to_gdouble_positive (m.x),
 				 to_gdouble_positive (m.y),
 				 to_gdouble_positive (r),
-				 0.0, 6.3 ); -- start and end angle in radians
+				 0.0, 6.3); -- start and end angle in radians
 
 
 			if filled = YES then
@@ -4610,8 +4610,8 @@ package body et_canvas is
 					to_gdouble_positive (m.x),
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r),
-					- gdouble (to_radians (get_angle_start (a))),
-					- gdouble (to_radians (get_angle_end (a))));
+					-gdouble (to_radians (get_angle_start (a))),
+					-gdouble (to_radians (get_angle_end (a))));
 
 			else
 				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
@@ -4619,8 +4619,8 @@ package body et_canvas is
 					to_gdouble_positive (m.x),
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r),
-					- gdouble (to_radians (get_angle_start (a))),
-					- gdouble (to_radians (get_angle_end (a))));
+					-gdouble (to_radians (get_angle_start (a))),
+					-gdouble (to_radians (get_angle_end (a))));
 
 			end if;
 
@@ -4696,14 +4696,14 @@ package body et_canvas is
 	is
 		l : type_line;
 	begin
-		set_A (l, (x => - origin_arm_length, y => 0.0));
-		set_B (l, (x => + origin_arm_length, y => 0.0));
+		set_A (l, (x => -origin_arm_length, y => 0.0));
+		set_B (l, (x => +origin_arm_length, y => 0.0));
 
 		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 
 
-		set_A (l, (x => 0.0, y => - origin_arm_length));
-		set_B (l, (x => 0.0, y => + origin_arm_length));
+		set_A (l, (x => 0.0, y => -origin_arm_length));
+		set_B (l, (x => 0.0, y => +origin_arm_length));
 
 		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 	end draw_origin;
@@ -5152,7 +5152,7 @@ package body et_canvas is
 		color : in type_color)
 	is begin
 		color_background := color;
-	end;
+	end set_color_background;
 
 
 

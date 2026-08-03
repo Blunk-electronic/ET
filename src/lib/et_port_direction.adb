@@ -51,7 +51,7 @@ package body et_port_direction is
 		return string
 	is begin
 		return to_lower (type_port_direction'image (direction));
-	end;
+	end to_string;
 
 
 
@@ -60,7 +60,7 @@ package body et_port_direction is
 		return type_port_direction
 	is begin
 		return type_port_direction'value (direction);
-	end;
+	end to_port_direction;
 
 
 

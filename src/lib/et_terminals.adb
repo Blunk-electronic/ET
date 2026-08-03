@@ -50,7 +50,7 @@ package body et_terminals is
 		result : type_terminal_position (THT);
 	begin
 		return result;
-	end;
+	end to_position;
 
 
 
@@ -63,7 +63,7 @@ package body et_terminals is
 			& " rotation: " & to_string (position.rotation)
 			& " face: " & to_string (position.face)
 			& " technology: " & to_string (position.technology);
-	end;
+	end to_string;
 
 
 
@@ -192,7 +192,7 @@ package body et_terminals is
 		return pac_terminal_name.bounded_string
 	is begin
 		return key (terminal_cursor);
-	end;
+	end get_terminal_name;
 
 
 
@@ -201,7 +201,7 @@ package body et_terminals is
 		return string
 	is begin
 		return to_string (get_terminal_name (terminal_cursor));
-	end;
+	end get_terminal_name;
 
 
 

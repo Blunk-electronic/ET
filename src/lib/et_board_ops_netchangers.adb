@@ -84,7 +84,7 @@ package body et_board_ops_netchangers is
 				pragma unreferenced (index);
 			begin
 				result := get_place (netchanger);
-			end;
+			end query_netchanger;
 
 
 			use et_schematic_ops_netchangers;
@@ -309,7 +309,7 @@ package body et_board_ops_netchangers is
 		return string
 	is begin
 		return get_netchanger_name (object.netchanger_cursor);
-	end;
+	end get_object_name;
 
 
 
@@ -318,7 +318,7 @@ package body et_board_ops_netchangers is
 		return type_netchanger_id
 	is begin
 		return get_netchanger_id (object.netchanger_cursor);
-	end;
+	end get_object_id;
 
 
 
@@ -841,7 +841,7 @@ package body et_board_ops_netchangers is
 			-- Reset netchangers:
 			reset_status_netchangers (module_cursor, log_threshold + 1);
 			-- CS notes, properties, ...
-		end;
+		end reset_devices;
 
 
 	begin
