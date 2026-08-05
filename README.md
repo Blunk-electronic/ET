@@ -71,6 +71,9 @@ Start ET along with the demo project:
 et --open-project demo
 ```
 
+The directory you are currently in contains some other test projects
+which are currently not used.
+
 Now you should see the schematic editor and the layout editor window with a
 useless dummy project.
 
@@ -82,6 +85,12 @@ et --open-project demo --log-level 5
 The debug and messages log can be found in file ET/reports/messages.log.
 The greater the log level, the more messages will the log file contain.
 
+Useful for testing is the feature to execute a script right away on opening
+the project:
+
+```sh
+et --open-project demo --log-level 4 --script demo/test_schematic_group.scr 
+```
 
 
 ### Documentation
