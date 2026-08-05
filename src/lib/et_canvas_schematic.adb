@@ -1045,7 +1045,7 @@ package body et_canvas_schematic is
 		unused_found :=
 			set_active_id (
 				cbox_sheet,
-				active_id => active_sheet'image);
+				active_id => to_string (active_sheet));
 	end update_sheet_number_display;
 
 
@@ -1053,7 +1053,7 @@ package body et_canvas_schematic is
 		self : access gtk.combo_box.gtk_combo_box_record'class)
 	is
 	begin
-		active_sheet := type_sheet'value (self.get_active_id);
+		active_sheet := to_sheet (self.get_active_id);
 		refresh;
 	end cb_sheet_change;
 
@@ -1073,8 +1073,8 @@ package body et_canvas_schematic is
 
 		for sheet in type_sheet loop
 			cbox_sheet.append (
-				id		=> type_sheet'image (sheet),
-				text	=> type_sheet'image (sheet));
+				id		=> to_string (sheet),
+				text	=> to_string (sheet));
 		end loop;
 
 		set_wrap_width (
