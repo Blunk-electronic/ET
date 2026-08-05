@@ -39,6 +39,51 @@ this <https://github.com/Blunk-electronic/ET_training/blob/master/demo/heater_dr
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>-->
 
 
+### Demo Project
+A dummy project to test the code and to show features can be found in the
+repository at <https://github.com/Blunk-electronic/ET_training>. You should clone 
+it in a test directory like:
+
+```sh
+cd tmp
+git clone git@github.com:Blunk-electronic/ET_training.git
+```
+
+Parallel to to the demo project you need the component libraries:
+
+```sh
+git clone git@github.com:Blunk-electronic/ET_component_library.git
+```
+
+Finally you shuld have these two directories:
+```sh
+ls
+ET_component_library  ET_training
+```
+
+Now change in to the demo project:
+```sh
+cd ET_training
+```
+
+Start ET along with the demo project:
+```sh
+et --open-project demo
+```
+
+Now you should see the schematic editor and the layout editor window with a
+useless dummy project.
+
+For debugging the log level can be specified:
+```sh
+et --open-project demo --log-level 5
+```
+
+The debug and messages log can be found in file ET/reports/messages.log.
+The greater the log level, the more messages will the log file contain.
+
+
+
 ### Documentation
 
 User Manual <http://www.blunk-electronic.de/ET/pdf/caesystemet.pdf>
