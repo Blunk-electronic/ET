@@ -179,6 +179,43 @@ package et_modes.board is
 
 	expect_entry : type_expect_entry := expect_entry_default;
 
+	type type_noun_array_of_boolean is array (type_noun) of boolean;
+
+	type type_verb_for_noun is record
+		show_noun	: type_noun_array_of_boolean;
+		activate	: type_noun;
+	end record
+	with dynamic_predicate =>
+		type_verb_for_noun.show_noun (type_verb_for_noun.activate);
+
+	for_verb : constant array (type_verb) of type_verb_for_noun := (
+		VERB_NONE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_ADD		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_DEVICE),
+		VERB_CLEAR		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_COPY		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_VALUE),
+		VERB_DELETE		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_DEVICE),
+		VERB_DEFINE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_DISPLAY	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_DRAW		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_EXECUTE	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_EXIT		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_FILL		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_FLIP		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_MAKE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_MOVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_PLACE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_QUIT		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_REMOVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_RENAME		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_RESTORE	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_ROUTE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_ROTATE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_SAVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_SET		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_SHOW		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_UPDATE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
+		VERB_ZOOM		=> ((NOUN_ZOOM => true,								others => false), activate => NOUN_ZOOM));
+
 end et_modes.board;
 
 -- Soli Deo Gloria
