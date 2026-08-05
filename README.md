@@ -77,6 +77,10 @@ which are currently not used.
 Now you should see the schematic editor and the layout editor window with a
 useless dummy project.
 
+![demo_schematic](img/et_demo_schematic.png)
+
+![demo_board](img/et_demo_board.png)
+
 For debugging the log level can be specified:
 ```sh
 et --open-project demo --log-level 5
