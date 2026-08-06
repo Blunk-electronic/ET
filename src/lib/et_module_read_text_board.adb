@@ -391,7 +391,7 @@ package body et_module_read_text_board is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "insert placeholder",
+			& " insert placeholder",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -587,7 +587,7 @@ package body et_module_read_text_board is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "build conductor text",
+			& " build conductor text",
 			level => log_threshold);
 
 		log_indentation_up;
