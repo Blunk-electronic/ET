@@ -104,6 +104,17 @@ with et_mirroring;
 
 package body et_canvas_board is
 
+	-- These flags suppress cb_verb_changed / cb_noun_changed while
+	-- update_mode_display (or set_up_noun_combo) is programmatically
+	-- syncing the combo boxes to the already-current verb/noun state.
+	-- Without this, set_active_id below can synchronously re-fire the
+	-- "changed" signal and re-enter the real handlers with state that
+	-- has already been updated by the caller (e.g. a keyboard shortcut),
+	-- corrupting the per-verb noun memory:
+	verb_combo_updating : boolean := false;
+	noun_combo_updating : boolean := false;
+	noun_handler_connected : boolean := false;
+
 
 	procedure set_title_bar (
 		-- CS project name
@@ -129,14 +140,19 @@ package body et_canvas_board is
 		unused_found : boolean;
 	begin
 		-- show the drawing mode
+		verb_combo_updating := true;
 		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_verb,
 				active_id => v);
+		verb_combo_updating := false;
+
+		noun_combo_updating := true;
 		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_noun,
 				active_id => n);
+		noun_combo_updating := false;
 	end update_mode_display;
 
 
@@ -857,8 +873,17 @@ package body et_canvas_board is
 	is
 		use et_modes.board;
 	begin
+		if verb_combo_updating then
+			return;
+		end if;
+
 		put_line ("cb_verb_changed");
-		verb := to_verb (self.get_active_id);
+
+		-- Remember the noun of the verb being left so it can be
+		-- restored the next time this verb is selected:
+		noun_last (verb) := noun;
+
+		set_verb (to_verb (self.get_active_id));
 		set_up_noun_combo;
 	end cb_verb_changed;
 
@@ -878,9 +903,6 @@ package body et_canvas_board is
 	end set_up_verb_combo;
 
 
-	noun_combo_updating : boolean := false;
-	noun_handler_connected : boolean := false;
-
 	procedure cb_noun_changed (
 		self : access gtk.combo_box.gtk_combo_box_record'class)
 	is
@@ -891,7 +913,7 @@ package body et_canvas_board is
 		end if;
 
 		put_line ("cb_noun_changed");
-		noun := to_noun (self.get_active_id);
+		set_noun (to_noun (self.get_active_id));
 	end cb_noun_changed;
 
 	procedure set_up_noun_combo is
@@ -905,7 +927,7 @@ package body et_canvas_board is
 		mode_display.cbox_mode_noun.remove_all;
 
 		for noun in type_noun loop
-			if for_verb (verb).show_noun (noun) then
+			if show_nouns_for_verb (verb) (noun) then
 				mode_display.cbox_mode_noun.append (
 					id		=> to_string (noun),
 					text	=> to_string (noun));
@@ -914,7 +936,13 @@ package body et_canvas_board is
 
 		unused_found :=
 			mode_display.cbox_mode_noun.set_active_id (
-				active_id	=> to_string (for_verb (verb).activate));
+				active_id	=> to_string (noun_last (verb)));
+		pragma assert (unused_found);
+
+		-- Keep the internal noun state in sync with what was just
+		-- restored on the combo box (cb_noun_changed is suppressed
+		-- below while noun_combo_updating is true):
+		set_noun (noun_last (verb));
 
 		noun_combo_updating := false;
 

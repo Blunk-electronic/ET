@@ -84,7 +84,8 @@ package et_modes.board is
 
 	verb_default : constant type_verb := VERB_NONE;
 
-	verb : type_verb := verb_default;
+	function verb return type_verb;
+	procedure set_verb (verb : type_verb);
 
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
@@ -165,7 +166,8 @@ package et_modes.board is
 
 	noun_default : constant type_noun := NOUN_NONE;
 
-	noun : type_noun := noun_default;
+	function noun return type_noun;
+	procedure set_noun (noun : type_noun);
 
 
 	function to_string (noun : in type_noun) return string;
@@ -181,40 +183,61 @@ package et_modes.board is
 
 	type type_noun_array_of_boolean is array (type_noun) of boolean;
 
-	type type_verb_for_noun is record
-		show_noun	: type_noun_array_of_boolean;
-		activate	: type_noun;
-	end record
-	with dynamic_predicate =>
-		type_verb_for_noun.show_noun (type_verb_for_noun.activate);
+	show_nouns_for_verb : constant array (type_verb) of type_noun_array_of_boolean := (
+		VERB_NONE		=> (NOUN_NONE => true,								others => false),
+		VERB_ADD		=> (NOUN_DEVICE .. NOUN_VALUE => true,				others => false),
+		VERB_CLEAR		=> (NOUN_NONE => true,								others => false),
+		VERB_COPY		=> (NOUN_DEVICE .. NOUN_VALUE => true,				others => false),
+		VERB_DELETE		=> (NOUN_DEVICE .. NOUN_VALUE => true,				others => false),
+		VERB_DEFINE		=> (NOUN_NONE => true,								others => false),
+		VERB_DISPLAY	=> (NOUN_NONE => true,								others => false),
+		VERB_DRAW		=> (NOUN_NONE => true,								others => false),
+		VERB_EXECUTE	=> (NOUN_NONE => true,								others => false),
+		VERB_EXIT		=> (NOUN_NONE => true,								others => false),
+		VERB_FILL		=> (NOUN_NONE => true,								others => false),
+		VERB_FLIP		=> (NOUN_NONE => true,								others => false),
+		VERB_MAKE		=> (NOUN_NONE => true,								others => false),
+		VERB_MOVE		=> (NOUN_NONE => true,								others => false),
+		VERB_PLACE		=> (NOUN_NONE => true,								others => false),
+		VERB_QUIT		=> (NOUN_NONE => true,								others => false),
+		VERB_REMOVE		=> (NOUN_NONE => true,								others => false),
+		VERB_RENAME		=> (NOUN_NONE => true,								others => false),
+		VERB_RESTORE	=> (NOUN_NONE => true,								others => false),
+		VERB_ROUTE		=> (NOUN_NONE => true,								others => false),
+		VERB_ROTATE		=> (NOUN_NONE => true,								others => false),
+		VERB_SAVE		=> (NOUN_NONE => true,								others => false),
+		VERB_SET		=> (NOUN_NONE => true,								others => false),
+		VERB_SHOW		=> (NOUN_NONE => true,								others => false),
+		VERB_UPDATE		=> (NOUN_NONE => true,								others => false),
+		VERB_ZOOM		=> (NOUN_ZOOM => true,								others => false));
 
-	for_verb : constant array (type_verb) of type_verb_for_noun := (
-		VERB_NONE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_ADD		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_DEVICE),
-		VERB_CLEAR		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_COPY		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_VALUE),
-		VERB_DELETE		=> ((NOUN_DEVICE .. NOUN_VALUE => true,				others => false), activate => NOUN_DEVICE),
-		VERB_DEFINE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_DISPLAY	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_DRAW		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_EXECUTE	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_EXIT		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_FILL		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_FLIP		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_MAKE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_MOVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_PLACE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_QUIT		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_REMOVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_RENAME		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_RESTORE	=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_ROUTE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_ROTATE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_SAVE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_SET		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_SHOW		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_UPDATE		=> ((NOUN_NONE => true,								others => false), activate => NOUN_NONE),
-		VERB_ZOOM		=> ((NOUN_ZOOM => true,								others => false), activate => NOUN_ZOOM));
+	noun_last : array (type_verb) of type_noun := (
+		VERB_NONE		=> NOUN_NONE,
+		VERB_ADD		=> NOUN_DEVICE,
+		VERB_CLEAR		=> NOUN_NONE,
+		VERB_COPY		=> NOUN_VALUE,
+		VERB_DELETE		=> NOUN_DEVICE,
+		VERB_DEFINE		=> NOUN_NONE,
+		VERB_DISPLAY	=> NOUN_NONE,
+		VERB_DRAW		=> NOUN_NONE,
+		VERB_EXECUTE	=> NOUN_NONE,
+		VERB_EXIT		=> NOUN_NONE,
+		VERB_FILL		=> NOUN_NONE,
+		VERB_FLIP		=> NOUN_NONE,
+		VERB_MAKE		=> NOUN_NONE,
+		VERB_MOVE		=> NOUN_NONE,
+		VERB_PLACE		=> NOUN_NONE,
+		VERB_QUIT		=> NOUN_NONE,
+		VERB_REMOVE		=> NOUN_NONE,
+		VERB_RENAME		=> NOUN_NONE,
+		VERB_RESTORE	=> NOUN_NONE,
+		VERB_ROUTE		=> NOUN_NONE,
+		VERB_ROTATE		=> NOUN_NONE,
+		VERB_SAVE		=> NOUN_NONE,
+		VERB_SET		=> NOUN_NONE,
+		VERB_SHOW		=> NOUN_NONE,
+		VERB_UPDATE		=> NOUN_NONE,
+		VERB_ZOOM		=> NOUN_ZOOM);
 
 end et_modes.board;
 

@@ -153,8 +153,9 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_schematic.set_up_canvas;
 
-		-- Set up noun combo. This calls set_up_noun_combo:
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
+		set_up_noun_combo;
 
 		-- Activate the main window:
 		log (text => "show schematic window", level => log_threshold + 1);
@@ -249,8 +250,9 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_board.set_up_canvas;
 
-		-- Set up noun combo. This calls set_up_noun_combo:
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
+		set_up_noun_combo;
 
 		-- Activate the main window:
 		log (text => "show board window", level => log_threshold + 1);

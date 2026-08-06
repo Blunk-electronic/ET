@@ -75,7 +75,7 @@ is
 	begin
 		case key is
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_add_device);
 
 				-- When adding devices, we enforce the default grid
@@ -132,7 +132,7 @@ is
 	begin
 		case key is
 			when key_noun_zone =>
-				noun := NOUN_ZONE;
+				set_noun (NOUN_ZONE);
 				clear_zones (active_module, log_threshold + 1);
 
 				set_status ("conductor zones cleared");
@@ -147,7 +147,7 @@ is
 	procedure copy is begin
 		case key is
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_copy);
 
 
@@ -186,27 +186,27 @@ is
 	begin
 		case key is
 			when key_noun_assy =>
-				noun := NOUN_ASSY;
+				set_noun (NOUN_ASSY);
 				set_status (et_canvas_board_assy_doc.status_delete_object);
 
 			when key_noun_silkscreen =>
-				noun := NOUN_SILKSCREEN;
+				set_noun (NOUN_SILKSCREEN);
 				set_status (et_canvas_board_silkscreen.status_delete_object);
 
 			when key_noun_stopmask =>
-				noun := NOUN_STOPMASK;
+				set_noun (NOUN_STOPMASK);
 				set_status (et_canvas_board_stopmask.status_delete_object);
 
 			when key_noun_stencil =>
-				noun := NOUN_STENCIL;
+				set_noun (NOUN_STENCIL);
 				set_status (et_canvas_board_stencil.status_delete_object);
 
 			when key_noun_keepout =>
-				noun := NOUN_KEEPOUT;
+				set_noun (NOUN_KEEPOUT);
 				set_status (et_canvas_board_keepout.status_delete_object);
 
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_delete_device);
 
 				-- NOTE: This applies for non-electrical devices.
@@ -214,17 +214,17 @@ is
 
 
 			when key_noun_outline =>
-				noun := NOUN_OUTLINE;
+				set_noun (NOUN_OUTLINE);
 				set_status (et_canvas_board_outline.status_delete_object);
 
 
 			when key_noun_via =>
-				noun := NOUN_VIA;
+				set_noun (NOUN_VIA);
 				set_status (et_canvas_board_vias.status_delete_via);
 
 
 			when key_noun_conductors =>
-				noun := NOUN_CONDUCTORS;
+				set_noun (NOUN_CONDUCTORS);
 				set_status (et_canvas_board_conductors.status_delete_object);
 
 			-- when key_noun_track =>
@@ -233,7 +233,7 @@ is
 
 
 			when key_noun_freetrack =>
-				noun := NOUN_FREETRACK;
+				set_noun (NOUN_FREETRACK);
 				set_status (et_canvas_board_conductors.status_delete_object);
 
 
@@ -367,7 +367,7 @@ is
 	begin
 		case key is
 			when key_noun_zone =>
-				noun := NOUN_ZONE;
+				set_noun (NOUN_ZONE);
 				fill_zones (active_module, log_threshold + 1);
 
 				set_status ("conductor zones filled");
@@ -383,7 +383,7 @@ is
 	begin
 		case key is
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (status_flip_device);
 
 
@@ -418,23 +418,23 @@ is
 	procedure move is begin
 		case key is
 			when key_noun_assy =>
-				noun := NOUN_ASSY;
+				set_noun (NOUN_ASSY);
 				set_status (et_canvas_board_assy_doc.status_move_object);
 
 			when key_noun_silkscreen =>
-				noun := NOUN_SILKSCREEN;
+				set_noun (NOUN_SILKSCREEN);
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
 			when key_noun_stopmask =>
-				noun := NOUN_STOPMASK;
+				set_noun (NOUN_STOPMASK);
 				set_status (et_canvas_board_stopmask.status_move_object);
 
 			when key_noun_stencil =>
-				noun := NOUN_STENCIL;
+				set_noun (NOUN_STENCIL);
 				set_status (et_canvas_board_stencil.status_move_object);
 
 			when key_noun_keepout =>
-				noun := NOUN_KEEPOUT;
+				set_noun (NOUN_KEEPOUT);
 				set_status (et_canvas_board_keepout.status_move_object);
 
 			-- when key_noun_track =>
@@ -442,31 +442,31 @@ is
 			-- 	set_status (et_canvas_board_tracks.status_move_track);
 
 			when key_noun_conductors =>
-				noun := NOUN_CONDUCTORS;
+				set_noun (NOUN_CONDUCTORS);
 				set_status (et_canvas_board_conductors.status_move_object);
 
 			when key_noun_freetrack =>
-				noun := NOUN_FREETRACK;
+				set_noun (NOUN_FREETRACK);
 				set_status (et_canvas_board_conductors.status_move_object);
 
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_move_device);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_board_netchangers.status_move_netchanger);
 
 			when key_noun_outline =>
-				noun := NOUN_OUTLINE;
+				set_noun (NOUN_OUTLINE);
 				set_status (et_canvas_board_outline.status_move_object);
 
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;
+				set_noun (NOUN_PLACEHOLDER);
 				set_status (et_canvas_board_devices.status_move_placeholder);
 
 			when key_noun_via =>
-				noun := NOUN_VIA;
+				set_noun (NOUN_VIA);
 				set_status (et_canvas_board_vias.status_move_via);
 
 			-- when key_noun_text =>
@@ -622,13 +622,13 @@ is
 	begin
 		case key is
 			when key_noun_line =>
-				noun := NOUN_LINE;
+				set_noun (NOUN_LINE);
 				show_line_properties;
 				set_status (status_draw_line);
 
 
 			when key_noun_arc =>
-				noun := NOUN_ARC;
+				set_noun (NOUN_ARC);
 				-- CS show_arc_properties;
 				-- CS set_status (status_draw_arc);
 
@@ -668,13 +668,13 @@ is
 	begin
 		case key is
 			when key_noun_text =>
-				noun := NOUN_TEXT;
+				set_noun (NOUN_TEXT);
 				show_text_properties;
 				set_status (status_place_text);
 
 
 			when key_noun_via =>
-				noun := NOUN_VIA;
+				set_noun (NOUN_VIA);
 				show_via_properties;
 
 
@@ -699,7 +699,7 @@ is
 	procedure rename is begin
 		case key is
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_rename_device);
 
 			-- If space pressed then the operator wishes to operate
@@ -735,12 +735,12 @@ is
 	procedure rotate is begin
 		case key is
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_rotate_device);
 
 
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;
+				set_noun (NOUN_PLACEHOLDER);
 				set_status (et_canvas_board_devices.status_rotate_placeholder);
 
 
@@ -781,7 +781,7 @@ is
 	begin
 		case key is
 			when key_noun_net =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 
 				show_track_properties;
 				set_status (status_draw_track);
@@ -842,15 +842,15 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_show_device);
 
 			when key_noun_net =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				set_status (et_canvas_board_tracks.status_show_net);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_board_netchangers.status_show_netchanger);
 
 
@@ -908,7 +908,7 @@ is
 	begin
 		case key is
 			when key_noun_ratsnest =>
-				noun := NOUN_RATSNEST;
+				set_noun (NOUN_RATSNEST);
 				update_ratsnest (active_module, log_threshold + 1);
 
 				-- CS set_status (status_ratsnest_updated);
@@ -959,63 +959,63 @@ begin -- key_pressed
 
 						-- As long as no valid noun has been entered
 						-- display the default noun:
-						noun := noun_default;
+						set_noun (noun_default);
 
 						case key is
 							when key_verb_add =>
-								verb := VERB_ADD;
+								set_verb (VERB_ADD);
 								status_enter_noun;
 
 							when key_verb_clear =>
-								verb := VERB_CLEAR;
+								set_verb (VERB_CLEAR);
 								status_enter_noun;
 
 							when key_verb_copy =>
-								verb := VERB_COPY;
+								set_verb (VERB_COPY);
 								status_enter_noun;
 
 							when key_verb_delete =>
-								verb := VERB_DELETE;
+								set_verb (VERB_DELETE);
 								status_enter_noun;
 
 							when key_verb_draw =>
-								verb := VERB_DRAW;
+								set_verb (VERB_DRAW);
 								status_enter_noun;
 
 							when key_verb_fill =>
-								verb := VERB_FILL;
+								set_verb (VERB_FILL);
 								status_enter_noun;
 
 							when key_verb_flip =>
-								verb := VERB_FLIP;
+								set_verb (VERB_FLIP);
 								status_enter_noun;
 
 							when key_verb_move =>
-								verb := VERB_MOVE;
+								set_verb (VERB_MOVE);
 								status_enter_noun;
 
 							when key_verb_place =>
-								verb := VERB_PLACE;
+								set_verb (VERB_PLACE);
 								status_enter_noun;
 
 							when key_verb_rename =>
-								verb := VERB_RENAME;
+								set_verb (VERB_RENAME);
 								status_enter_noun;
 
 							when key_verb_rotate =>
-								verb := VERB_ROTATE;
+								set_verb (VERB_ROTATE);
 								status_enter_noun;
 
 							when key_verb_route =>
-								verb := VERB_ROUTE;
+								set_verb (VERB_ROUTE);
 								status_enter_noun;
 
 							when key_verb_show =>
-								verb := VERB_SHOW;
+								set_verb (VERB_SHOW);
 								status_enter_noun;
 
 							when key_verb_update =>
-								verb := VERB_UPDATE;
+								set_verb (VERB_UPDATE);
 								status_enter_noun;
 
 
@@ -1027,6 +1027,12 @@ begin -- key_pressed
 								expect_entry := EXP_VERB;
 								status_verb_invalid;
 						end case;
+
+						-- Refresh the noun combo box for the (possibly new) verb.
+						-- This must be done explicitly here because update_mode_display
+						-- (called further down) only reflects verb/noun in the combo
+						-- boxes, it does not repopulate the list of available nouns:
+						set_up_noun_combo;
 
 						---- Clean up: ???
 						---- Some toolbars or property bars must be removed:

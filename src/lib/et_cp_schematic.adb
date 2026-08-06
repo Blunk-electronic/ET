@@ -111,7 +111,7 @@ package body et_cp_schematic is
 		procedure set_verb_and_noun is begin
 			-- Set the verb.
 			-- Read it from field 3:
-			verb := to_verb (get_field (cmd, 3));
+			set_verb (to_verb (get_field (cmd, 3)));
 
 
 			-- There are some very short commands which do not require a noun.
@@ -120,7 +120,7 @@ package body et_cp_schematic is
 				when VERB_EXIT | VERB_QUIT => null; -- no noun
 
 				-- Set the noun. Read it from field 4:
-				when others => noun := to_noun (get_field (cmd, 4));
+				when others => set_noun (to_noun (get_field (cmd, 4)));
 			end case;
 		end set_verb_and_noun;
 
