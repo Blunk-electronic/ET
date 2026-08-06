@@ -61,7 +61,7 @@ is
 	use et_canvas_schematic_group;
 
 
-	point : type_vector_model renames get_cursor_position;
+	point : constant type_vector_model := get_cursor_position;
 
 	-- CS global variable for the tool KEYBOARD
 
