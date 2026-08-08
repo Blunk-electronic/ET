@@ -132,7 +132,7 @@ procedure et is
 	unused_frame_name_save_as	: et_drawing_frame.type_template_name;
 	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 
-	script_name				: pac_script_name.bounded_string;
+	script_name				: type_script_name;
 
 	dummy_name : constant string := "dummy";
 
@@ -523,7 +523,7 @@ procedure et is
 
 		generic_module_name : pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;
-		script_name_tmp : pac_script_name.bounded_string;
+		script_name_tmp : type_script_name;
 	begin
 		-- If no generic modules available at all, create an untitled module:
 		if get_count (generic_modules) = 0 then
@@ -552,7 +552,7 @@ procedure et is
 
 		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.
 		-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
-		if pac_script_name.length (script_name) > 0 then
+		if get_length (script_name) > 0 then
 			script_name_tmp := to_script_name (simple_name (to_string (script_name))); -- rename_nets.scr
 		end if;
 

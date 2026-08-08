@@ -71,7 +71,7 @@ package body et_script_processor is
 		-- The single command to be executed:
 		cmd : type_single_cmd;
 
-		script_name : constant pac_script_name.bounded_string := to_script_name (file);
+		script_name : constant type_script_name := to_script_name (file);
 
 
 		procedure log_command is begin
@@ -260,7 +260,7 @@ package body et_script_processor is
 
 
 	function execute_script_headless (
-		script_name		: in pac_script_name.bounded_string;
+		script_name		: in type_script_name;
 		log_threshold	: in type_log_level)
 		return type_exit_code_script
 	is
@@ -269,10 +269,10 @@ package body et_script_processor is
 		use ada.directories;
 
 		-- Here we backup the current working directory:
-		projects_directory : pac_script_name.bounded_string;
+		projects_directory : type_script_name;
 
 		-- Here we store the directory where the script resides:
-		script_directory : pac_script_name.bounded_string;
+		script_directory : type_script_name;
 
 	begin
 		log (text => row_separator_double, level => log_threshold);

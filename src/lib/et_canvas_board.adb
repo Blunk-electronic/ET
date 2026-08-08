@@ -1345,7 +1345,7 @@ package body et_canvas_board is
 
 
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string)
+		script : in type_script_name)
 	is
 		use ada.directories;
 		use et_project_name;

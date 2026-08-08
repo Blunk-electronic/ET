@@ -335,7 +335,7 @@ package et_canvas_schematic is
 	-- to be executed.
 	-- Resets verb and noun in all domains:
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string);
+		script : in type_script_name);
 
 
 	-- Executes a command as typed on the console by the operator

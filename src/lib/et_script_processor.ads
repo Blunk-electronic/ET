@@ -99,7 +99,7 @@ package et_script_processor is
 	--    from inside a script ! This would be a nested script.
 	--    For this mode the procedure execute_nested_script is provided.
 	function execute_script_headless (
-		script_name		: in pac_script_name.bounded_string;
+		script_name		: in type_script_name;
 		log_threshold	: in type_log_level)
 		return type_exit_code_script;
 

@@ -93,7 +93,7 @@ package body et_cp is
 
 
 	procedure execute_script_command (
-		script_name		: in pac_script_name.bounded_string;
+		script_name		: in type_script_name;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is

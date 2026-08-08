@@ -57,7 +57,7 @@ package et_gui_2 is
 		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr
+		script			: in type_script_name; -- rename_nets.scr
 		log_threshold	: in type_log_level
 		);
 
