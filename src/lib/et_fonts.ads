@@ -47,15 +47,17 @@ package et_fonts is
 
 	package pac_font_family is new generic_bounded_length (font_family_length_max);
 
+	type type_font_family is new pac_font_family.bounded_string;
+
 
 	function to_string (
-		family : in pac_font_family.bounded_string)
+		family : in type_font_family)
 		return string;
 
 
 	function to_family (
 		family : in string)
-		return pac_font_family.bounded_string;
+		return type_font_family;
 
 
 	type type_family is (
@@ -71,7 +73,7 @@ package et_fonts is
 
 
 	type type_font is record
-		family	: pac_font_family.bounded_string; -- string := "monospace";
+		family	: type_font_family; -- string := "monospace";
 		slant	: cairo_font_slant :=  CAIRO_FONT_SLANT_NORMAL;
 		weight	: cairo_font_weight := CAIRO_FONT_WEIGHT_NORMAL;
 	end record;

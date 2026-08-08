@@ -43,19 +43,19 @@ package body et_fonts is
 
 
 	function to_string (
-		family : in pac_font_family.bounded_string)
+		family : in type_font_family)
 		return string
 	is begin
-		return pac_font_family.to_string (family);
+		return pac_font_family.to_string (pac_font_family.bounded_string (family));
 	end to_string;
 
 
 
 	function to_family (
 		family : in string)
-		return pac_font_family.bounded_string
+		return type_font_family
 	is begin
-		return pac_font_family.to_bounded_string (family);
+		return type_font_family (pac_font_family.to_bounded_string (family));
 	end to_family;
 
 
