@@ -355,10 +355,9 @@ procedure et is
 
 	procedure backup_projects_root_directory is
 		use et_project;
-		use et_project.pac_root_directory;
 	begin
 		-- CS: log ?
-		projects_root_dir := to_bounded_string (current_directory);
+		projects_root_dir := type_root_directory (pac_root_directory.to_bounded_string (current_directory));
 	end backup_projects_root_directory;
 	pragma unreferenced (backup_projects_root_directory);
 
@@ -367,7 +366,6 @@ procedure et is
 
 	procedure restore_projects_root_directory is
 		use et_project;
-		use et_project.pac_root_directory;
 	begin
 		log_indentation_reset;
 		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",

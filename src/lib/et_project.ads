@@ -87,7 +87,9 @@ package et_project is
 
 	package pac_root_directory is new generic_bounded_length (projects_root_dir_length);
 
-	projects_root_dir : pac_root_directory.bounded_string;
+	type type_root_directory is new pac_root_directory.bounded_string;
+
+	projects_root_dir : type_root_directory;
 
 
 
