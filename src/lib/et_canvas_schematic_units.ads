@@ -388,7 +388,7 @@ package et_canvas_schematic_units is
 
 		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
-		value		: pac_device_value.bounded_string; -- 100k
+		value		: type_device_value; -- 100k
 
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
@@ -533,7 +533,7 @@ package et_canvas_schematic_units is
 		-- The name of the unit:
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 
-		value		: pac_device_value.bounded_string; -- 100k
+		value		: type_device_value; -- 100k
 
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;

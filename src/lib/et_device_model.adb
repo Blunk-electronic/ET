@@ -154,7 +154,7 @@ package body et_device_model is
 
 	function get_default_value (
 		device_model : in type_device_model)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		if is_real (device_model) then
 			return device_model.value;

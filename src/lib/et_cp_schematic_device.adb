@@ -336,7 +336,7 @@ package body et_cp_schematic_device is
 
 		name : type_device_name;
 
-		value : pac_device_value.bounded_string; -- 470R
+		value : type_device_value; -- 470R
 	begin
 		log (text => "set value", level => log_threshold);
 		log_indentation_up;

@@ -64,7 +64,7 @@ package et_material is
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
 	type type_bom_device is record
-		value		: pac_device_value.bounded_string;	-- 7400
+		value		: type_device_value;	-- 7400
 		packge		: pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: type_device_partcode; -- IC_PAC_S_SO16_VAL7400
 		purpose		: pac_device_purpose.bounded_string; 	-- brightness_control

@@ -94,7 +94,7 @@ procedure draw_units is
 	procedure draw_unit (
 		symbol			: in type_symbol_model;
 		device_name		: in type_device_name;
-		device_value	: in pac_device_value.bounded_string; -- like 100R or TL084
+		device_value	: in type_device_value; -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := empty_purpose; -- like "brightness control"
 		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
@@ -984,7 +984,7 @@ procedure draw_units is
 
 
 			-- The name, value and purpose of the candidate device if it is real:
-			device_value : pac_device_value.bounded_string; -- like 100R or TL084
+			device_value : type_device_value; -- like 100R or TL084
 			device_purpose : pac_device_purpose.bounded_string; -- like "brightness control"
 
 

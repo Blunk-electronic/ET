@@ -352,7 +352,7 @@ package et_kicad_libraries is
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
-		value			: pac_device_value.bounded_string; -- 74LS00
+		value			: type_device_value; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
 
 		case appearance is

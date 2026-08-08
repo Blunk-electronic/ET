@@ -109,7 +109,7 @@ procedure draw_packages is
 	brightness : type_brightness := NORMAL;
 
 	device_name 	: et_device_name.type_device_name;
-	device_value	: et_device_value.pac_device_value.bounded_string;
+	device_value	: et_device_value.type_device_value;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 
 	-- Placeholders for name, value, purpose:

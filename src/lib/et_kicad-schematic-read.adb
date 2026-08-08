@@ -3111,7 +3111,7 @@ is
 						field_value := to_field;
 
 						declare
-							unused_value : pac_device_value.bounded_string;
+							unused_value : type_device_value;
 						begin
 							unused_value := to_value_with_check (
 									value 						=> content (field_value),

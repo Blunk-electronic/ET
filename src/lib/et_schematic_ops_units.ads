@@ -958,7 +958,7 @@ package et_schematic_ops_units is
 	procedure set_value (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_value		: in pac_device_value.bounded_string;
+		new_value		: in type_device_value;
 		log_threshold	: in type_log_level);
 
 

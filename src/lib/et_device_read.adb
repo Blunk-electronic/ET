@@ -99,7 +99,7 @@ package body et_device_read is
 		-- VARIABLES FOR TEMPORARILY STORAGE:
 
 		prefix		: pac_device_prefix.bounded_string; -- T, IC
-		value		: pac_device_value.bounded_string; -- BC548
+		value		: type_device_value; -- BC548
 		partcode	: type_device_partcode; -- IC_PAC_S_SOT23_VAL_
 		-- NOTE: Please find other global variables in
 		-- package spec et_device_read_unit.
@@ -182,7 +182,7 @@ package body et_device_read is
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
-					if pac_device_value.length (value) > 0 then
+					if pac_device_value.length (pac_device_value.bounded_string (value)) > 0 then
 						if not value_valid (value, prefix) then
 							log (SEVERITY_WARNING, "default value of device model " &
 								to_string (file_name) &

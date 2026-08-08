@@ -685,7 +685,7 @@ package body et_canvas_schematic_units is
 	procedure cb_new_value_entered (
 		self : access gtk_entry_record'class)
 	is
-		device_value_new : pac_device_value.bounded_string;
+		device_value_new : type_device_value;
 
 
 		-- Sets the value of the selected object:
@@ -777,7 +777,7 @@ package body et_canvas_schematic_units is
 
 		procedure do_it is
 			device	: type_device_name; -- IC1
-			value	: pac_device_value.bounded_string;
+			value	: type_device_value;
 		begin
 			-- Get the name of the selected device:
 			device := get_device_name (object.unit.device_cursor);

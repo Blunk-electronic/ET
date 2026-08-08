@@ -110,7 +110,7 @@ package body et_module_read_device_electrical is
 	device_name			: et_device_name.type_device_name; -- C12
 	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
 
-	device_value		: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_value		: et_device_value.type_device_value; -- 470R
 	device_appearance	: et_units.type_appearance_schematic;
 
 
@@ -460,7 +460,7 @@ package body et_module_read_device_electrical is
 				-- clean up temporarily variables for next device
 				-- CS ? device_name		:= (others => <>);
 				device_model_name	:= to_file_name ("");
-				device_value		:= pac_device_value.to_bounded_string ("");
+				device_value		:= type_device_value (pac_device_value.to_bounded_string (""));
 				device_purpose		:= pac_device_purpose.to_bounded_string ("");
 				device_partcode 	:= type_device_partcode (pac_device_partcode.to_bounded_string (""));
 				device_variant		:= to_variant_name ("");

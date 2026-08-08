@@ -2093,7 +2093,7 @@ package body et_kicad_libraries is
 
 					when VALUE =>
 						declare
-							unused_value : pac_device_value.bounded_string;
+							unused_value : type_device_value;
 						begin
 							unused_value := to_value_with_check (
 								value 						=> content (text),

@@ -59,7 +59,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_value (
 		device	: in out type_device_electrical;
-		value	: in pac_device_value.bounded_string)
+		value	: in type_device_value)
 	is begin
 		device.value := value;
 	end set_value;
@@ -67,7 +67,7 @@ package body et_devices_electrical.packages is
 
 	function get_value (
 		device	: in type_device_electrical)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return device.value;
 	end get_value;
@@ -83,7 +83,7 @@ package body et_devices_electrical.packages is
 
 	function get_value (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return pac_devices_electrical.element (device).value;
 	end get_value;

@@ -241,7 +241,7 @@ package body et_devices_non_electrical is
 
 	procedure set_value (
 		device	: in out type_device_non_electrical;
-		value	: in pac_device_value.bounded_string)
+		value	: in type_device_value)
 	is begin
 		device.value := value;
 	end set_value;
@@ -249,7 +249,7 @@ package body et_devices_non_electrical is
 
 	function get_value (
 		device	: in type_device_non_electrical)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return device.value;
 	end get_value;
@@ -792,7 +792,7 @@ package body et_devices_non_electrical is
 
 	function get_value (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin

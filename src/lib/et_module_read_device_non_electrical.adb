@@ -87,7 +87,7 @@ package body et_module_read_device_non_electrical is
 
 	device_name		: et_device_name.type_device_name; -- C12
 
-	device_value	: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_value	: et_device_value.type_device_value; -- 470R
 
 	device_partcode	: et_device_partcode.type_device_partcode;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;

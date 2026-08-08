@@ -2087,7 +2087,7 @@ package body et_conventions is
 	function compose_partcode_root (
 		prefix		: in pac_device_prefix.bounded_string;			-- R
 		packge		: in pac_package_name.bounded_string;	-- S_0805
-		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
+		value 		: in type_device_value := to_value ("")) -- 100R
 		return type_device_partcode
 	is
 		use pac_device_partcode;
@@ -2245,7 +2245,7 @@ package body et_conventions is
 		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
 		packge			: in pac_package_name.bounded_string;	-- S_0805
-		value 			: in pac_device_value.bounded_string; -- 100R
+		value 			: in type_device_value; -- 100R
 		log_threshold	: in type_log_level)
 	is
 
@@ -2972,7 +2972,7 @@ package body et_conventions is
 
 
 	function value_valid (
-		value 	: in pac_device_value.bounded_string; -- 100R, 1A5
+		value 	: in type_device_value; -- 100R, 1A5
 		prefix	: in pac_device_prefix.bounded_string) -- R, F
 		return boolean
 	is
@@ -2984,7 +2984,7 @@ package body et_conventions is
 		use et_string_processing;
 
 		component_category : type_device_category;
-		value_length : constant natural := pac_device_value.length (value);
+		value_length : constant natural := pac_device_value.length (pac_device_value.bounded_string (value));
 
 		procedure value_invalid is begin
 			log (SEVERITY_WARNING, "value " & enclose_in_quotes (to_string (value)) &

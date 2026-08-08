@@ -175,7 +175,7 @@ package et_device_library is
 	-- string will be returned:
 	function get_default_value (
 		device_cursor : in pac_device_models.cursor)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 

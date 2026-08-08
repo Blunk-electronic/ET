@@ -105,7 +105,7 @@ package et_devices_electrical is
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
-				value		: pac_device_value.bounded_string; -- 470R
+				value		: type_device_value; -- 470R
 
 				partcode	: type_device_partcode; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)

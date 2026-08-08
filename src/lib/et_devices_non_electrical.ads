@@ -125,7 +125,7 @@ package et_devices_non_electrical is
 		-- to the device !
 
 		-- A value will rarely be assigned. But in case it is required:
-		value : pac_device_value.bounded_string;
+		value : type_device_value;
 
 		-- The partcode:
 		partcode : type_device_partcode;
@@ -233,12 +233,12 @@ package et_devices_non_electrical is
 
 	procedure set_value (
 		device	: in out type_device_non_electrical;
-		value	: in pac_device_value.bounded_string);
+		value	: in type_device_value);
 
 
 	function get_value (
 		device	: in type_device_non_electrical)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function get_value (
@@ -563,7 +563,7 @@ package et_devices_non_electrical is
 
 	function get_value (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function get_value (

@@ -103,7 +103,7 @@ package et_device_model is
 			-- If a device appears in both schematic and layout it comes
 			-- with at least one package/footprint variant. We store variants in a map.
 			when APPEARANCE_PCB =>
-				value		: pac_device_value.bounded_string; -- 74LS00
+				value		: type_device_value; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: pac_package_variants.map;
 
@@ -212,7 +212,7 @@ package et_device_model is
 	-- string will be returned:
 	function get_default_value (
 		device_model : in type_device_model)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 

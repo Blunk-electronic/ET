@@ -554,7 +554,7 @@ package body et_schematic_ops_device is
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		value				: in pac_device_value.bounded_string; -- 470R
+		value				: in type_device_value; -- 470R
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
