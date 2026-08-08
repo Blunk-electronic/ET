@@ -80,7 +80,7 @@ package body et_netlists is
 
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
-		use pac_module_instance_name;
+		use et_module_instance;
 		use et_net_names;
 		result : boolean := false;
 	begin
@@ -106,7 +106,7 @@ package body et_netlists is
 
 
 
-	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
+	function to_prefix (instance : in type_module_instance_name) -- OSC1
 		return et_net_names.type_net_name is
 	begin
 		return to_net_name (to_string (instance) & level_separator);
@@ -327,7 +327,7 @@ package body et_netlists is
 	-- given port of a submodule instance.
 	function contains (
 		net_cursor		: in pac_netlist_nets.cursor;
-		submodule		: in pac_module_instance_name.bounded_string; -- OSC1
+		submodule		: in type_module_instance_name; -- OSC1
 		port			: in et_net_names.type_net_name) -- clock_out
 		return boolean
 	is
@@ -341,7 +341,7 @@ package body et_netlists is
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
 			use et_net_names;
-			use pac_module_instance_name;
+			use et_module_instance;
 		begin
 			while port_cursor /= pac_submodule_ports_extended.no_element loop
 
@@ -574,7 +574,7 @@ package body et_netlists is
 
 
 		procedure query_submodules (submodule_cursor : in pac_netlist_modules.cursor) is
-			use pac_module_instance_name;
+			use et_module_instance;
 
 
 			procedure query_nets (module : in type_netlist_module) is

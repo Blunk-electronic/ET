@@ -49,7 +49,7 @@ package body et_net_ports_submodules is
 		left, right : in type_net_submodule_port)
 		return boolean
 	is
-		use pac_module_instance_name;
+		use et_module_instance;
 		use et_net_names;
 	begin
 		if left.module_name < right.module_name then

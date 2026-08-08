@@ -295,7 +295,7 @@ package et_net_segment is
 	-- given submodule:
 	procedure delete_submodule_ports (
 		segment	: in out type_net_segment;
-		module	: in pac_module_instance_name.bounded_string);
+		module	: in type_module_instance_name);
 
 
 	-- Returns true if the net segment

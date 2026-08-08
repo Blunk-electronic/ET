@@ -250,10 +250,10 @@ package et_submodules is
 
 
 
-	use pac_module_instance_name;
+	use et_module_instance;
 
 	package pac_submodules is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
+		key_type		=> type_module_instance_name, -- MOT_DRV_3
 		element_type	=> type_submodule);
 
 

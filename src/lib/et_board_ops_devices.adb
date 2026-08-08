@@ -3431,7 +3431,7 @@ package body et_board_ops_devices is
 	-- CS: This function is misplaced here. Move it to the correspoinding package.
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string) -- OSC1
+		instance		: in type_module_instance_name) -- OSC1
 		return type_position
 	is
 		position : type_position := origin_zero_rotation; -- to be returned

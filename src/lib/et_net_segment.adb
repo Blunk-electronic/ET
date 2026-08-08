@@ -518,13 +518,13 @@ package body et_net_segment is
 
 	procedure delete_submodule_ports (
 		segment	: in out type_net_segment;
-		module	: in pac_module_instance_name.bounded_string)
+		module	: in type_module_instance_name)
 	is
 		use pac_net_submodule_ports;
 		port_cursor : pac_net_submodule_ports.cursor;
 		port : type_net_submodule_port;
 
-		use pac_module_instance_name;
+		use et_module_instance;
 	begin
 		-- Delete at A end:
 		port_cursor := segment.ports.A.submodules.first;

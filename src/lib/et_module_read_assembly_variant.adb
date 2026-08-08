@@ -128,7 +128,7 @@ package body et_module_read_assembly_variant is
 		device			: type_device_variant_access;
 		device_cursor	: pac_device_variants.cursor;
 
-		submod_name		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_name		: type_module_instance_name; -- MOT_DRV_3
 		submod_var		: type_assembly_variant_name; -- low_cost
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
@@ -386,7 +386,7 @@ package body et_module_read_assembly_variant is
 				pragma unreferenced (variant_name);
 				use pac_submodule_variants;
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
-				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
+				submod_name		: type_module_instance_name; -- CLK_GENERATOR
 				submod_variant	: type_assembly_variant_name; -- fixed_frequency
 				use et_schematic_ops_submodules;
 			begin

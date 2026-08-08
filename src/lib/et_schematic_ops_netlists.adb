@@ -130,7 +130,7 @@ package body et_schematic_ops_netlists is
 	-- The submodule must exist in the module.
 	function port_direction (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
+		submod_instance	: in type_module_instance_name; -- OSC1
 		port_name		: in type_net_name) -- clock_out
 		return type_netchanger_port_name
 	is
@@ -146,7 +146,7 @@ package body et_schematic_ops_netlists is
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submod		: in et_submodules.type_submodule)
 			is
 				use et_submodules.pac_submodule_ports;
@@ -456,7 +456,7 @@ package body et_schematic_ops_netlists is
 
 			parent_name : pac_module_name.bounded_string; -- water_pump
 
-			submodule_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+			submodule_instance	: type_module_instance_name; -- MOT_DRV_3
 
 			offset : type_name_index;
 

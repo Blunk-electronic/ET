@@ -55,7 +55,7 @@ with et_assembly_variant_name;	use et_assembly_variant_name;
 
 package et_assembly_variants is
 
-	use pac_module_instance_name;
+	use et_module_instance;
 
 	use et_assembly_variant_name;
 
@@ -109,7 +109,7 @@ package et_assembly_variants is
 
 	-- Variants of submodules are collected in a map.
 	package pac_submodule_variants is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
+		key_type		=> type_module_instance_name, -- MOT_DRV_3
 		element_type	=> type_submodule_variant);
 
 

@@ -55,7 +55,7 @@ package body et_netlist_submodules is
 		left, right : in type_submodule_port_extended)
 		return boolean
 	is
-		use pac_module_instance_name;
+		use et_module_instance;
 		use et_net_names;
 
 		result : boolean := false;

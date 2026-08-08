@@ -48,7 +48,7 @@ package body et_device_renumbering is
 
 	function "<" (left, right : in type_renumber_module) return boolean is
 		use pac_module_name;
-		use pac_module_instance_name;
+		use et_module_instance;
 		result : boolean;
 	begin
 		if left.name < right.name then

@@ -64,7 +64,7 @@ package et_board_ops_submodule is
 	--  - The submodule instance must exist in the module.
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string) -- OSC1
+		instance		: in type_module_instance_name) -- OSC1
 		return type_position;
 
 
@@ -75,7 +75,7 @@ package et_board_ops_submodule is
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;

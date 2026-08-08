@@ -84,7 +84,7 @@ package et_schematic_ops_submodules is
 
 
 	procedure submodule_not_found (
-		name : in pac_module_instance_name.bounded_string);
+		name : in type_module_instance_name);
 
 
 	procedure port_not_at_edge (
@@ -115,7 +115,7 @@ package et_schematic_ops_submodules is
 	-- in module indicated by module_cursor:
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance : in pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_instance : in type_module_instance_name; -- MOT_DRV_3
 		port_name		: in type_net_name) -- RESET
 		return boolean;
 
@@ -125,7 +125,7 @@ package et_schematic_ops_submodules is
 	-- Returns the sheet/x/y position of the given submodule port.
 	function get_submodule_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_name		: in type_module_instance_name; -- MOT_DRV_3
 		port_name		: in type_net_name; -- RESET
 		log_threshold	: in type_log_level)
 		return type_object_position;
@@ -142,7 +142,7 @@ package et_schematic_ops_submodules is
 	-- jet and probably not a good idea.
 	procedure insert_port (
 		module			: in pac_generic_modules.cursor;		-- the module
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
+		instance		: in type_module_instance_name; -- OSC
 		port			: in type_net_name; -- clock_output
 		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level);
@@ -152,7 +152,7 @@ package et_schematic_ops_submodules is
 	-- Adds a port to a submodule instance (the box in the parent sheet).
 	procedure add_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		port_name		: in type_net_name; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 
@@ -178,7 +178,7 @@ package et_schematic_ops_submodules is
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 	procedure delete_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		port_name		: in type_net_name; -- clk_out
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -191,7 +191,7 @@ package et_schematic_ops_submodules is
 	-- Connects submodule port with segment end or start points AFTER the move.
 	procedure move_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
+		instance		: in type_module_instance_name; -- OSC
 		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
@@ -208,7 +208,7 @@ package et_schematic_ops_submodules is
 	-- to another is not possible.
 	procedure drag_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
+		instance		: in type_module_instance_name; -- OSC
 		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
@@ -240,7 +240,7 @@ package et_schematic_ops_submodules is
 	procedure add_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		position		: in type_object_position; -- sheet, lower left corner x/y
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -251,7 +251,7 @@ package et_schematic_ops_submodules is
 	-- instance in the nets:
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		instance		: in pac_module_instance_name.bounded_string;
+		instance		: in type_module_instance_name;
 		position		: in type_object_position; -- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level);
 
@@ -260,7 +260,7 @@ package et_schematic_ops_submodules is
 	-- Removes a submodule instance from the schematic.
 	procedure delete_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -270,7 +270,7 @@ package et_schematic_ops_submodules is
 	-- Connects submodule ports with segment end or start points AFTER the move.
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
@@ -285,7 +285,7 @@ package et_schematic_ops_submodules is
 	-- to another is not possible.
 	procedure drag_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -295,8 +295,8 @@ package et_schematic_ops_submodules is
 	-- Copies a submodule instance.
 	procedure copy_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		instance_origin	: in type_module_instance_name; -- OSC1
+		instance_new	: in type_module_instance_name; -- CLOCK_GENERATOR
 		destination		: in type_object_position; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -305,8 +305,8 @@ package et_schematic_ops_submodules is
 	-- Renames a submodule instance.
 	procedure rename_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_old	: in pac_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		instance_old	: in type_module_instance_name; -- OSC1
+		instance_new	: in type_module_instance_name; -- CLOCK_GENERATOR
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -317,7 +317,7 @@ package et_schematic_ops_submodules is
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in type_assembly_variant_name; -- low_cost
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		variant_submod	: in type_assembly_variant_name; -- fixed_frequency
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -328,7 +328,7 @@ package et_schematic_ops_submodules is
 	procedure remove_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in type_assembly_variant_name; -- low_cost
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -338,7 +338,7 @@ package et_schematic_ops_submodules is
 	-- The module being searched in must be in the rig already.
 	function submodule_instance_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in pac_module_instance_name.bounded_string) -- OSC1
+		instance	: in type_module_instance_name) -- OSC1
 		return boolean;
 
 
@@ -349,7 +349,7 @@ package et_schematic_ops_submodules is
 	-- The module being searched in must be in the rig already.
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in pac_module_instance_name.bounded_string; -- OSC1
+		instance	: in type_module_instance_name; -- OSC1
 		variant		: in type_assembly_variant_name) -- low_cost
 		return boolean;
 
@@ -367,7 +367,7 @@ package et_schematic_ops_submodules is
 	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in type_assembly_variant_name; -- low_cost
-		submod	: in pac_module_instance_name.bounded_string) -- OSC1
+		submod	: in type_module_instance_name) -- OSC1
 		return pac_submodule_variants.cursor;
 
 
@@ -377,7 +377,7 @@ package et_schematic_ops_submodules is
 	procedure set_submodule_file (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

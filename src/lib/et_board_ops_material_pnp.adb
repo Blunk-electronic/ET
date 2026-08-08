@@ -342,7 +342,7 @@ package body et_board_ops_material_pnp is
 				use pac_renumber_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_instance	: type_module_instance_name; -- MOT_DRV_3
 				offset			: type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;

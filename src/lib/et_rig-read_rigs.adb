@@ -95,7 +95,7 @@ is
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
-		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
+		instance_name : type_module_instance_name; -- DRV_1
 		assembly_variant : type_assembly_variant_name; -- low_cost
 
 
@@ -105,7 +105,7 @@ is
 		end clear_module_instance;
 
 		purpose_A, purpose_B : type_device_purpose; -- power_in, power_out
-		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
+		instance_A, instance_B : type_module_instance_name; -- DRV_1, PWR
 
 
 		procedure clear_connector is begin
@@ -161,7 +161,7 @@ is
 					connection_cursor : pac_module_connections.cursor;
 
 					use pac_device_purpose;
-					use pac_module_instance_name;
+					use et_module_instance;
 				begin
 					-- If NONE of the four elements that make a module connection is specified,
 					-- then do nothing. Otherwise ALL of them must be specified.

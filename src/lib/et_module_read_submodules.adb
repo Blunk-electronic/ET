@@ -69,7 +69,7 @@ package body et_module_read_submodules is
 
 	submodule_port_name	: type_net_name; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
-	submodule_name 		: et_module_instance.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_name 		: et_module_instance.type_module_instance_name; -- MOT_DRV_3
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 

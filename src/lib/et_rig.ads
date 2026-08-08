@@ -55,9 +55,9 @@ package et_rig is
 
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_module_connection is record
-		instance_A	: pac_module_instance_name.bounded_string; -- LMX_2
+		instance_A	: type_module_instance_name; -- LMX_2
 		purpose_A	: type_device_purpose; -- pwr_in
-		instance_B	: pac_module_instance_name.bounded_string; -- PWR
+		instance_B	: type_module_instance_name; -- PWR
 		purpose_B	: type_device_purpose; -- pwr_out
 
 		-- CS
