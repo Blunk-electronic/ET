@@ -43,16 +43,16 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_unit_name is
 
 	function get_length (
-		unit : in pac_unit_name.bounded_string)
+		unit : in type_unit_name)
 		return natural
 	is begin
-		return natural (length (unit));
+		return natural (length (pac_unit_name.bounded_string (unit)));
 	end get_length;
 
 
 
 
-	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
+	-- function to_string (unit_name : in type_unit_name) return string is begin
 	-- 	return pac_unit_name.to_string (unit_name);
 	-- end;
 
@@ -60,10 +60,10 @@ package body et_unit_name is
 
 	function to_unit_name (
 		unit_name : in string)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is begin
 		-- CS do character and length checks
-		return pac_unit_name.to_bounded_string (to_upper (unit_name));
+		return type_unit_name (pac_unit_name.to_bounded_string (to_upper (unit_name)));
 	end to_unit_name;
 
 
@@ -73,11 +73,11 @@ package body et_unit_name is
 
 	procedure message_unit_not_found (
 		severity	: in type_message_severity;
-		name		: in pac_unit_name.bounded_string)
+		name		: in type_unit_name)
 	is
 
 		function get_message_text (
-			name : in pac_unit_name.bounded_string)
+			name : in type_unit_name)
 			return string
 		is begin
 			return "Unit " & to_string (name) & " not found !";

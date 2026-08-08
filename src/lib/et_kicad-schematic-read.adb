@@ -2039,7 +2039,7 @@ is
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
 
 		alternative_references		: type_alternative_references.list;
-		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
+		unit_name					: type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
 		orientation					: et_schematic_geometry.type_rotation_model;
 		mirror						: type_mirror;
@@ -2891,7 +2891,7 @@ is
 
 			path	: type_fields_of_line; -- 59F17F77 5A991798
 			ref		: type_device_name; -- #PWR03
-			unit	: pac_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
+			unit	: type_unit_name; -- 1 -- CS is this really about unit names ?
 
 			path_segment : type_timestamp;
 			alt_ref_path : type_alternative_reference_path.list;
@@ -3063,8 +3063,8 @@ is
 
 				-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 				-- be a string as well. Therefore we handle the unit id as string.
-				unit_name := pac_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
-					f (element (line_cursor), 2)); -- the unit id
+				unit_name := type_unit_name (pac_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
+					f (element (line_cursor), 2))); -- the unit id
 
 				-- Read DeMorgan flag:
 				alternative_representation := to_alternative_representation (

@@ -150,7 +150,7 @@ package body et_module_write_devices_electrical is
 
 
 			use et_device_appearance;
-			use et_unit_name.pac_unit_name;
+			use et_unit_name;
 
 
 		begin -- query_units

@@ -113,7 +113,7 @@ package body et_cp_schematic_unit is
 		--
 		procedure do_it (
 			device	: in type_device_name; -- IC45
-			unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
+			unit	: in type_unit_name := to_unit_name (""); -- A, B, ..
 			mode	: in type_device_search_mode := SEARCH_MODE_FIRST_UNIT)
 		is
 
@@ -121,7 +121,7 @@ package body et_cp_schematic_unit is
 			-- From its output we can tell whether the specified
 			-- unit exists and - more important - where it is located
 			-- in the drawing:
-			function locate_unit (unit : in pac_unit_name.bounded_string)
+			function locate_unit (unit : in type_unit_name)
 				return type_unit_query
 			is begin
 				return get_unit_position (
@@ -398,7 +398,7 @@ package body et_cp_schematic_unit is
 			procedure show_mode_2 is
 				error : boolean := false;
 				device_name : type_device_name;
-				unit_name : pac_unit_name.bounded_string;
+				unit_name : type_unit_name;
 
 				-- In order to tell the command processor that
 				-- an operation is meant to apply to the current sheet,
@@ -538,7 +538,7 @@ package body et_cp_schematic_unit is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
+		unit_name	: type_unit_name;
 	begin
 		log (text => "delete unit", level => log_threshold);
 		log_indentation_up;
@@ -603,7 +603,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 		begin
 			device_name := to_device_name (get_field (cmd, 5));
 			unit_name := to_unit_name (get_field (cmd, 6));
@@ -677,7 +677,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 			coordinates : type_coordinates;
 			sheet		: type_sheet_relative;
 			destination	: type_vector_model;
@@ -756,7 +756,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 			coordinates : type_coordinates;
 			rotation	: type_rotation_model;
 		begin
@@ -830,7 +830,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 		begin
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name := to_unit_name (get_field (cmd, 6)); -- A
@@ -897,7 +897,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 			sheet		: type_sheet;
 			place		: type_vector_model;
 			rotation	: type_rotation;
@@ -973,7 +973,7 @@ package body et_cp_schematic_unit is
 
 		procedure do_it is
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 			rotation	: type_rotation_documentation;
 		begin
 			-- Set the meaning according to the active noun:
@@ -1068,7 +1068,7 @@ package body et_cp_schematic_unit is
 		procedure do_it is
 			meaning : type_placeholder_meaning;
 			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
+			unit_name	: type_unit_name;
 			coordinates : type_coordinates;
 			place		: type_vector_model;
 		begin

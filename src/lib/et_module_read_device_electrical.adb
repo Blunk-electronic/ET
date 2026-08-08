@@ -562,7 +562,7 @@ package body et_module_read_device_electrical is
 
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
-	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
+	device_unit_name		: et_unit_name.type_unit_name; -- GPIO_BANK_1
 	device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
 
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);

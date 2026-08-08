@@ -91,7 +91,7 @@ package body et_device_write_package_variant is
 			procedure write_terminal (
 				terminal_cursor : in pac_terminal_port_map.cursor)
 			is
-				use et_unit_name.pac_unit_name;
+				use et_unit_name;
 				use et_terminal_name;
 			begin
 				write (keyword => keyword_terminal, parameters =>

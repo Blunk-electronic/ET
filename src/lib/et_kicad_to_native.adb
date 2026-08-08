@@ -498,7 +498,7 @@ package body et_kicad_to_native is
 
 
 				procedure change_path (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out et_kicad.schematic.type_unit_schematic)
 				is begin
 					log (text => "unit " & to_string (unit_name), level => log_threshold + 4);
@@ -3391,7 +3391,7 @@ package body et_kicad_to_native is
 
 
 					procedure copy_ports (
-						unit_name	: in pac_unit_name.bounded_string;
+						unit_name	: in type_unit_name;
 						unit		: in out type_unit_internal)
 					is
 						pragma unreferenced (unit_name);

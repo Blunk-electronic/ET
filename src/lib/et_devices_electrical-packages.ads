@@ -578,7 +578,7 @@ package et_devices_electrical.packages is
 	-- The given device must be real. Otherwise a constraint error will be raised:
 	function get_terminal (
 		device	: in pac_devices_electrical.cursor;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor;
 

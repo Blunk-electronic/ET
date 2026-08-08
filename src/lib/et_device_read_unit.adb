@@ -63,7 +63,7 @@ with et_keywords;					use et_keywords;
 package body et_device_read_unit is
 
 
-	unit_name		: pac_unit_name.bounded_string; -- IO_BANK_2
+	unit_name		: type_unit_name; -- IO_BANK_2
 	unit_position	: type_vector_model := origin; -- the position of the unit inside the device editor
 	unit_swap_level	: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
 	unit_add_level	: et_unit_add_level.type_add_level := et_unit_add_level.add_level_default;

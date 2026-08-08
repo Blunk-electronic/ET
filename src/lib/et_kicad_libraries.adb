@@ -392,7 +392,7 @@ package body et_kicad_libraries is
 
 
 		procedure locate (
-			name : in pac_unit_name.bounded_string;
+			name : in type_unit_name;
 			unit : in type_unit_library)
 		is
 			pragma unreferenced (name);
@@ -1503,9 +1503,9 @@ package body et_kicad_libraries is
 
 
 			-- returns the given unit id as pac_unit_name
-			function to_unit_name (id : in type_unit_id) return pac_unit_name.bounded_string is
+			function to_unit_name (id : in type_unit_id) return type_unit_name is
 			begin
-				return pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
+				return type_unit_name (pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left)));
 			end to_unit_name;
 
 
@@ -2464,7 +2464,7 @@ package body et_kicad_libraries is
 				procedure insert (
 				-- Inserts the given element in the unit.
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
-					key		: in pac_unit_name.bounded_string;
+					key		: in type_unit_name;
 					unit	: in out type_unit_library) is
 					pragma unreferenced (key);
 					unused_pos		: natural := 0; -- helps to trace the program position where an exception occured
@@ -2581,7 +2581,7 @@ package body et_kicad_libraries is
 
 				procedure set (
 				-- Sets the properties of the placeholders in the current unit.
-					key		: in pac_unit_name.bounded_string;
+					key		: in type_unit_name;
 					unit	: in out type_unit_library) is
 				pragma unreferenced (key);
 				begin

@@ -1822,7 +1822,7 @@ package body et_canvas_schematic_units is
 		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_name;
-		unit_name : pac_unit_name.bounded_string;
+		unit_name : type_unit_name;
 
 		-- If package variants are available, then
 		-- they are stored here temporaily:

@@ -85,7 +85,7 @@ package body et_device_model is
 
 	function get_name_internal (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is
 		use pac_units_internal;
 	begin
@@ -95,7 +95,7 @@ package body et_device_model is
 
 	function get_name_external (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is
 		use pac_units_external;
 	begin
@@ -107,7 +107,7 @@ package body et_device_model is
 
 	procedure locate_internal (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_internal.cursor)
 	is begin
 		cursor := model.units_internal.find (unit);
@@ -117,7 +117,7 @@ package body et_device_model is
 
 	procedure locate_external (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_external.cursor)
 	is begin
 		cursor := model.units_external.find (unit);

@@ -325,8 +325,8 @@ package et_kicad_libraries is
 
 
 	package type_units_library is new indefinite_ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		"<"				=> pac_unit_name."<",
+		key_type		=> type_unit_name, -- like "I/O-Bank 3" "A" or "B"
+		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_library);
 
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
@@ -449,7 +449,7 @@ package et_kicad_libraries is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
-		part		: pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
+		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 

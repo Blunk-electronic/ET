@@ -90,7 +90,7 @@ package body et_net_ports_devices is
 
 	function to_device_port (
 		device	: in type_device_name;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		port	: in pac_port_name.bounded_string)
 		return type_device_port
 	is

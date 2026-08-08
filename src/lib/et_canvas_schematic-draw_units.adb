@@ -96,7 +96,7 @@ procedure draw_units is
 		device_name		: in type_device_name;
 		device_value	: in type_device_value; -- like 100R or TL084
 		device_purpose	: in type_device_purpose := empty_purpose; -- like "brightness control"
-		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+		unit_name		: in type_unit_name; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 		-- The unit count is required in order to decide whether a suffix
 		-- for the unit name is to be drawn. If the device has only a single unit,
@@ -991,7 +991,7 @@ procedure draw_units is
 
 			-- This procedure queries a unit:
 			procedure query_unit (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit)
 			is
 				-- Get the position of the unit candidate as it is

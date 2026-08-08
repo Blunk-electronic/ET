@@ -387,7 +387,7 @@ package et_canvas_schematic_units is
 		device		: pac_device_models.cursor;
 
 		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
-		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
+		name		: type_unit_name; -- A, B, PWR_IO3
 		value		: type_device_value; -- 100k
 
 		-- The total number of units provided by the device model:
@@ -531,7 +531,7 @@ package et_canvas_schematic_units is
 		device		: pac_device_models.cursor;
 
 		-- The name of the unit:
-		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
+		name		: type_unit_name; -- A, B, PWR_IO3
 
 		value		: type_device_value; -- 100k
 

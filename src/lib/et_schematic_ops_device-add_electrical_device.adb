@@ -443,7 +443,7 @@ is
 
 		-- This is the place where we temporarily keep the name
 		-- of the unit to be added:
-		unit_name : pac_unit_name.bounded_string;
+		unit_name : type_unit_name;
 
 
 

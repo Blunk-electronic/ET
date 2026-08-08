@@ -191,7 +191,7 @@ package body et_device_read_package_variant is
 		position	: pac_terminal_port_map.cursor;
 
 		terminal	: pac_terminal_name.bounded_string; -- H5, 14
-		unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
+		unit		: type_unit_name; -- PWR, IO_BANK_2
 		port		: pac_port_name.bounded_string; -- VCC
 
 		place : type_field_count_positive := 1; -- the field being read from given line

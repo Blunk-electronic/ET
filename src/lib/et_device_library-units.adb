@@ -55,7 +55,7 @@ package body et_device_library.units is
 
 	function provides_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return boolean
 	is
 		found : boolean := false;
@@ -232,14 +232,14 @@ package body et_device_library.units is
 
 	function get_first_unit (
 		device_cursor : in pac_device_models.cursor)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is
 		fu : constant type_device_units := get_first_unit (device_cursor);
 
 		use pac_units_internal;
 		use pac_units_external;
 
-		unit_name : pac_unit_name.bounded_string; -- to be returned
+		unit_name : type_unit_name; -- to be returned
 	begin
 		-- The first unit is either internal or external.
 
@@ -268,7 +268,7 @@ package body et_device_library.units is
 
 	function get_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_device_units
 	is
 		cursors : type_device_units; -- to be returned
@@ -378,7 +378,7 @@ package body et_device_library.units is
 
 	function locate_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
+		unit_name		: in type_unit_name) -- like "I/O-Bank 3"
 		return type_unit_cursors
 	is
 		use pac_units_external;
@@ -487,7 +487,7 @@ package body et_device_library.units is
 
 			-- Query ports of internal unit.
 			procedure query_ports (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit_internal) is
 			pragma unreferenced (unit_name);
 			begin
@@ -497,7 +497,7 @@ package body et_device_library.units is
 
 			-- Query ports of external unit.
 			procedure query_symbols (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit_external)
 			is
 				pragma unreferenced (unit_name);
@@ -578,7 +578,7 @@ package body et_device_library.units is
 
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return pac_symbol_ports.map
 	is
 		ports : pac_symbol_ports.map; -- to be returned

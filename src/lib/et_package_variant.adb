@@ -109,7 +109,7 @@ package body et_package_variant is
 
 	function get_terminal (
 		variant	: in pac_package_variants.cursor;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		port	: in pac_port_name.bounded_string)
 		return pac_terminal_name.bounded_string
 	is

@@ -52,7 +52,7 @@ procedure copy_unit (
 is
 	-- Since the name of the unit to be copied is used frequently
 	-- here, we store it in a constant:
-	unit_name : constant pac_unit_name.bounded_string :=
+	unit_name : constant type_unit_name :=
 		get_unit_name (unit_cursor);
 
 

@@ -96,7 +96,7 @@ package et_package_variant is
 	is record
 		case linked is
 			when TRUE =>
-				unit	: pac_unit_name.bounded_string; -- A, B, GPIO1, ...
+				unit	: type_unit_name; -- A, B, GPIO1, ...
 				port	: pac_port_name.bounded_string; -- IN1, IN2, ...
 			when FALSE => null;
 		end case;
@@ -118,7 +118,7 @@ package et_package_variant is
 	-- unit and port. If no terminal found, then an exception is raised:
 	function get_terminal (
 		variant	: in pac_package_variants.cursor;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		port	: in pac_port_name.bounded_string)
 		return pac_terminal_name.bounded_string;
 
@@ -126,7 +126,7 @@ package et_package_variant is
 
 	type type_terminal is record
 		name	: pac_terminal_name.bounded_string; -- H7
-		unit	: pac_unit_name.bounded_string; -- IO-BANK1
+		unit	: type_unit_name; -- IO-BANK1
 		port	: pac_port_name.bounded_string; -- GPIO3
 	end record;
 

@@ -50,7 +50,7 @@ package et_package_variant_terminal_port_map is
 
 	type type_port_in_terminal_port_map is record
 		name	: pac_port_name.bounded_string; -- CLK, CE, VSS -- CS rename to port
-		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
+		unit	: type_unit_name; -- GPIO_BANK_3
 	end record;
 
 

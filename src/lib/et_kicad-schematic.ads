@@ -184,7 +184,7 @@ package et_kicad.schematic is
 	-- Adds a unit into the given commponent.
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in type_log_level);
 
@@ -192,15 +192,15 @@ package et_kicad.schematic is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	package type_units_schematic is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string,
-		"<"				=> pac_unit_name."<",
+		key_type		=> type_unit_name,
+		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_schematic);
 
 
 
 	-- Returns true if the unit with the given name exists in the given list of units.
 	function unit_exists (
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
@@ -210,7 +210,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function position_of_unit ( -- CS rename to get_unit_position
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position;
 
@@ -220,7 +220,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function mirror_style_of_unit ( -- CS rename to get_unit_mirror_style
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return type_mirror;
 
@@ -230,7 +230,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function orientation_of_unit ( -- CS rename to get_unit_orientation
-		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name 	: in type_unit_name; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model;
 
@@ -252,7 +252,7 @@ package et_kicad.schematic is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
-		part		: pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
+		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);

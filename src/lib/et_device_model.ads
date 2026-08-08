@@ -151,14 +151,14 @@ package et_device_model is
 	-- If no internal unit exists, then an exception is raised:
 	function get_name_internal (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 	-- Returns the name of the external unit.
 	-- If no external unit exists, then an exception is raised:
 	function get_name_external (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 
@@ -171,7 +171,7 @@ package et_device_model is
 	-- units then the result is no_element:
 	procedure locate_internal (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_internal.cursor);
 
 
@@ -182,7 +182,7 @@ package et_device_model is
 	-- units then the result is no_element:
 	procedure locate_external (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_external.cursor);
 
 

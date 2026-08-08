@@ -211,7 +211,7 @@ package body et_schematic_ops_nets is
 					-- Look at units on the given sheet of place:
 					if get_sheet (unit_position) = get_sheet (place) then
 						log (text => "device " & to_string (key (device_cursor)) & " unit " &
-							 pac_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
+							 to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
 						ports := get_ports_from_symbol_model (
@@ -5549,7 +5549,7 @@ package body et_schematic_ops_nets is
 					use pac_device_ports;
 					use pac_port_name;
 
-					use et_unit_name.pac_unit_name;
+					use et_unit_name;
 
 					use pac_devices_electrical;
 				begin

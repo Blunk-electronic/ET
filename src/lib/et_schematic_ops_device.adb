@@ -133,7 +133,7 @@ package body et_schematic_ops_device is
 				procedure sort (
 					unit_cursor : in pac_units.cursor)
 				is
-					unit_name : constant pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_name : constant type_unit_name := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : constant type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : pac_renumber_devices.cursor;
@@ -358,7 +358,7 @@ package body et_schematic_ops_device is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		all_units		: in boolean;
-		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		unit_name		: in type_unit_name := unit_name_default;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
@@ -440,7 +440,7 @@ package body et_schematic_ops_device is
 		device_name		: in type_device_name;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
-		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		unit_name		: in type_unit_name := unit_name_default;
 		linebreaks		: in boolean := false;
 		log_threshold	: in type_log_level)
 		return string
@@ -1110,7 +1110,7 @@ package body et_schematic_ops_device is
 	procedure copy_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- IC45
-		unit_name_explicit	: in pac_unit_name.bounded_string; -- D
+		unit_name_explicit	: in type_unit_name; -- D
 		destination			: in type_object_position; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
 		device_created		: out type_device_name;

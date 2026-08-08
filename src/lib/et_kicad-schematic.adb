@@ -114,7 +114,7 @@ package body et_kicad.schematic is
 
 
 	function unit_exists (
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean
 	is
@@ -130,7 +130,7 @@ package body et_kicad.schematic is
 
 
 	function position_of_unit (
-		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name 	: in type_unit_name; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position
 	is
@@ -143,7 +143,7 @@ package body et_kicad.schematic is
 
 
 	function mirror_style_of_unit (
-		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name 	: in type_unit_name; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return type_mirror
 	is
@@ -157,7 +157,7 @@ package body et_kicad.schematic is
 
 
 	function orientation_of_unit (
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model
 	is
@@ -4260,7 +4260,7 @@ package body et_kicad.schematic is
 			-- The port cursor of the unit indicates the port of a unit.
 			port_cursor : type_ports_library.cursor;
 
-			unit_name_lib : pac_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_name_lib : type_unit_name; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
@@ -4969,7 +4969,7 @@ package body et_kicad.schematic is
 					use type_units_library;
 					unit : type_units_library.cursor := component.units.first;
 
-					use et_unit_name.pac_unit_name;
+					use et_unit_name;
 
 
 					procedure query_units_sch (
@@ -5444,7 +5444,7 @@ package body et_kicad.schematic is
 
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in type_log_level)
 	is
@@ -5456,7 +5456,7 @@ package body et_kicad.schematic is
 			inserted	: boolean := false;
 			cursor		: type_units_schematic.cursor;
 
-			use et_unit_name.pac_unit_name;
+			use et_unit_name;
 
 		begin
 			component.units.insert (

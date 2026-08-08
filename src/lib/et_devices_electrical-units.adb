@@ -130,7 +130,7 @@ package body et_devices_electrical.units is
 
 	function locate_unit (
 		device	: in type_device_electrical;
-		unit	: in pac_unit_name.bounded_string)
+		unit	: in type_unit_name)
 		return pac_units.cursor
 	is begin
 		return find (device.units, unit);
@@ -142,7 +142,7 @@ package body et_devices_electrical.units is
 
 	function to_string (
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- C
+		unit_name		: in type_unit_name; -- C
 		query_result	: in type_unit_query)
 		return string
 	is
@@ -242,14 +242,14 @@ package body et_devices_electrical.units is
 
 	function get_full_name (
 		device		: in type_device_name;
-		unit		: in pac_unit_name.bounded_string;
+		unit		: in type_unit_name;
 		unit_count	: in type_unit_count)
 		return string
 	is begin
 		if unit_count > 1 then
 			return to_string (device)
 				& device_unit_separator
-				& pac_unit_name.to_string (unit);
+				& to_string (unit);
 		else
 			return to_string (device);
 		end if;
@@ -263,7 +263,7 @@ package body et_devices_electrical.units is
 
 	function get_position (
 		device	: in type_device_electrical;
-		unit	: in pac_unit_name.bounded_string)
+		unit	: in type_unit_name)
 		return type_object_position
 	is
 		-- Locate the given unit in the device:
@@ -274,7 +274,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_unit (
-			unit_name	: in pac_unit_name.bounded_string;
+			unit_name	: in type_unit_name;
 			unit		: in type_unit)
 		is
 			pragma unreferenced (unit_name);
@@ -342,7 +342,7 @@ package body et_devices_electrical.units is
 
 	function get_unit_position (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_unit_query
 	is
 		exists : boolean := false;
@@ -466,7 +466,7 @@ package body et_devices_electrical.units is
 		-- the actual name of the unit must be known.
 		-- So we translate the given unit cursor to a unit name
 		-- like A, C, IO_BANK_1:
-		unit_name : constant pac_unit_name.bounded_string := key (unit);
+		unit_name : constant type_unit_name := key (unit);
 
 
 
@@ -543,7 +543,7 @@ package body et_devices_electrical.units is
 
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return pac_symbol_ports.map
 	is
 		ports : pac_symbol_ports.map; -- to be returned
@@ -696,7 +696,7 @@ package body et_devices_electrical.units is
 
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_default_text_positions
 	is
 		use pac_device_models;
@@ -1021,7 +1021,7 @@ package body et_devices_electrical.units is
 	-- 	device		: in type_device_electrical;
 	-- 	level		: in type_properties_level;
 	-- 	all_units	: in boolean := true;
-	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
+	-- 	unit		: in type_unit_name := unit_name_default)
 	-- 	return string
 	-- is
 	-- begin
@@ -1252,13 +1252,13 @@ package body et_devices_electrical.units is
 	procedure select_unit (
 		device		: in out type_device_electrical;
 		all_units	: in boolean;
-		unit_name	: in pac_unit_name.bounded_string)
+		unit_name	: in type_unit_name)
 	is
 		unit_cursor : pac_units.cursor := device.units.first;
 
 
 		procedure query_unit (
-			unit_name	: in pac_unit_name.bounded_string;
+			unit_name	: in type_unit_name;
 			unit		: in out type_unit)
 		is
 			pragma unreferenced (unit_name);
