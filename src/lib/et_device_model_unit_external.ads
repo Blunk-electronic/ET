@@ -104,7 +104,7 @@ package et_device_model_unit_external is
 
 	function get_symbol_model_file ( -- CS rename to get_symbol_model_name
 		unit	: in pac_units_external.cursor)
-		return pac_symbol_model_name.bounded_string;
+		return type_symbol_model_name;
 
 
 	function get_symbol_model_name (

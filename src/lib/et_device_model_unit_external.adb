@@ -56,7 +56,7 @@ package body et_device_model_unit_external is
 
 
 		procedure query_symbol (
-			symbol_name	: in pac_symbol_model_name.bounded_string;
+			symbol_name	: in type_symbol_model_name;
 			symbol		: in type_symbol_model)
 		is
 			pragma unreferenced (symbol_name);
@@ -81,7 +81,7 @@ package body et_device_model_unit_external is
 
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
-		return pac_symbol_model_name.bounded_string
+		return type_symbol_model_name
 	is
 		u : type_unit_external renames element (unit);
 		use pac_symbol_models;
@@ -97,7 +97,7 @@ package body et_device_model_unit_external is
 		unit	: in pac_units_external.cursor)
 		return string
 	is begin
-		return pac_symbol_model_name.to_string (
+		return to_string (
 			get_symbol_model_file (unit));
 	end get_symbol_model_name;
 
@@ -112,7 +112,7 @@ package body et_device_model_unit_external is
 		return pac_symbol_models.cursor
 	is
 		result : pac_symbol_models.cursor;
-		symbol_file : pac_symbol_model_name.bounded_string; -- *.sym
+		symbol_file : type_symbol_model_name; -- *.sym
 	begin
 		symbol_file := get_symbol_model_file (unit);
 
@@ -132,7 +132,7 @@ package body et_device_model_unit_external is
 		result : pac_points.list;
 
 		-- The name of the associated symbol model file:
-		sym_name : pac_symbol_model_name.bounded_string;
+		sym_name : type_symbol_model_name;
 		-- like /libraries/symbols/NAND.sym
 
 		-- The cursor of the actual symbol in

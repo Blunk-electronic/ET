@@ -776,7 +776,7 @@ package body et_devices_electrical.units is
 
 
 			procedure query_symbol (
-				symbol_name	: in pac_symbol_model_name.bounded_string;
+				symbol_name	: in type_symbol_model_name;
 				symbol		: in type_symbol_model)
 			is
 				pragma unreferenced (symbol_name);
