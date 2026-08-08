@@ -55,10 +55,12 @@ package et_pick_and_place is
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
 	package pac_pnp_file_name is new generic_bounded_length (file_name_length_max);
 
+	type type_pnp_file_name is new pac_pnp_file_name.bounded_string;
+
 	extension_pnp : constant string := "pnp";
 
-	function to_string (name : in pac_pnp_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string;
+	function to_string (name : in type_pnp_file_name) return string;
+	function to_file_name (name : in string) return type_pnp_file_name;
 
 	type type_device is record
 		position : et_board_coordinates.type_package_position; -- x/y, rotation and face

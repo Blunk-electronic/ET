@@ -54,12 +54,12 @@ with et_pcb_sides;				use et_pcb_sides;
 
 package body et_pick_and_place is
 
-	function to_string (name : in pac_pnp_file_name.bounded_string) return string is begin
-		return pac_pnp_file_name.to_string (name);
+	function to_string (name : in type_pnp_file_name) return string is begin
+		return pac_pnp_file_name.to_string (pac_pnp_file_name.bounded_string (name));
 	end to_string;
 
-	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string is begin
-		return pac_pnp_file_name.to_bounded_string (name);
+	function to_file_name (name : in string) return type_pnp_file_name is begin
+		return type_pnp_file_name (pac_pnp_file_name.to_bounded_string (name));
 	end to_file_name;
 
 
@@ -71,7 +71,7 @@ package body et_pick_and_place is
 		log_threshold	: in type_log_level)
 	is
 
-		file_name : pac_pnp_file_name.bounded_string;
+		file_name : type_pnp_file_name;
 
 		pnp_handle : ada.text_io.file_type;
 		device_cursor : pac_devices.cursor := pnp.first;
