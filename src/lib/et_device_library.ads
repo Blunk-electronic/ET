@@ -106,7 +106,7 @@ package et_device_library is
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_device_models.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 	-- Returns the name of the device model for

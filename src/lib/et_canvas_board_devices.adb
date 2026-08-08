@@ -551,7 +551,7 @@ package body et_canvas_board_devices is
 		name : gvalue;
 
 		use et_device_prefix;
-		prefix : pac_device_prefix.bounded_string; -- FD1
+		prefix : type_device_prefix; -- FD1
 	begin
 		log (text => "cb_package_prefix_selected", level => log_threshold);
 		log_indentation_up;

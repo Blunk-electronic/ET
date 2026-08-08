@@ -779,7 +779,7 @@ package body et_conventions is
 
 
 	function category (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return type_device_category
 	is
 		use pac_device_prefixes;
@@ -1813,7 +1813,7 @@ package body et_conventions is
 
 
 	function requires_operator_interaction (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return type_component_requires_operator_interaction
 	is
 		cat : type_device_category;
@@ -2085,7 +2085,7 @@ package body et_conventions is
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
 	function compose_partcode_root (
-		prefix		: in pac_device_prefix.bounded_string;			-- R
+		prefix		: in type_device_prefix;			-- R
 		packge		: in pac_package_name.bounded_string;	-- S_0805
 		value 		: in type_device_value := to_value ("")) -- 100R
 		return type_device_partcode
@@ -2646,7 +2646,7 @@ package body et_conventions is
 
 
 
-			prefix 		: pac_device_prefix.bounded_string;
+			prefix 		: type_device_prefix;
 			cat 		: type_device_category;
 
 			abbrevation	: pac_unit_abbrevation.bounded_string;
@@ -2677,7 +2677,7 @@ package body et_conventions is
 						-- Test if prefix is not too long, if it contains only allowed characters.
 						-- We test against the default character set as specified in et_libraries.
 						check_prefix_length (get_field (element (line_cursor), 1));
-						prefix := pac_device_prefix.to_bounded_string (get_field (element (line_cursor), 1));
+						prefix := type_device_prefix (pac_device_prefix.to_bounded_string (get_field (element (line_cursor), 1)));
 						check_prefix_characters (prefix);
 
 						-- build the component category from field #2:
@@ -2973,7 +2973,7 @@ package body et_conventions is
 
 	function value_valid (
 		value 	: in type_device_value; -- 100R, 1A5
-		prefix	: in pac_device_prefix.bounded_string) -- R, F
+		prefix	: in type_device_prefix) -- R, F
 		return boolean
 	is
 		-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
@@ -3189,7 +3189,7 @@ package body et_conventions is
 
 
 
-	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean is
+	function prefix_valid (prefix : in type_device_prefix) return boolean is
 		use pac_device_prefix;
 		use pac_device_prefixes;
 		result : boolean := true;

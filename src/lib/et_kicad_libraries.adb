@@ -128,7 +128,7 @@ package body et_kicad_libraries is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	procedure check_prefix_characters (
-		prefix 		: in pac_device_prefix.bounded_string;
+		prefix 		: in type_device_prefix;
 		characters	: in character_set)
 	is
 		use pac_device_prefix;
@@ -167,12 +167,12 @@ package body et_kicad_libraries is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string (""),
+				prefix 		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 				id 			=> 0,
 				id_width	=> 1);
 
 		c : character;
-		p : pac_device_prefix.bounded_string;
+		p : type_device_prefix;
 
 		procedure invalid_reference is begin
 			log (SEVERITY_ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
@@ -479,7 +479,7 @@ package body et_kicad_libraries is
 
 
 
-	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in type_device_prefix) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 	begin
@@ -1341,7 +1341,7 @@ package body et_kicad_libraries is
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
-			tmp_prefix				: pac_device_prefix.bounded_string; -- IC -- CS: rename to prefix
+			tmp_prefix				: type_device_prefix; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_appearance; -- CS: rename to appearance
 
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
@@ -2088,7 +2088,7 @@ package body et_kicad_libraries is
 					when NAME =>
 						check_prefix_length (content (text));
 						check_prefix_characters (
-							prefix		=> pac_device_prefix.to_bounded_string (content (text)),
+							prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string (content (text))),
 							characters	=> component_prefix_characters);
 
 					when VALUE =>
@@ -2945,7 +2945,7 @@ package body et_kicad_libraries is
 						-- CS: Do a cross check of prefix and reference -- "U"
 						-- The prefix is already defined in the component hearder.
 						-- Why this redundance ? Ask the kicad makers...
-						if strip_quotes (f (line, 2)) = pac_device_prefix.to_string (tmp_prefix) then
+						if strip_quotes (f (line, 2)) = to_string (tmp_prefix) then
 							null; -- fine
 						else
 							log (SEVERITY_WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
@@ -3157,7 +3157,7 @@ package body et_kicad_libraries is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := pac_device_prefix.to_bounded_string (f (line, 3)); -- U
+								tmp_prefix := type_device_prefix (pac_device_prefix.to_bounded_string (f (line, 3))); -- U
 
 								-- Detect invalid characters in tmp_prefix:
 								-- NOTE: we test against the kicad specific character set that allows a #

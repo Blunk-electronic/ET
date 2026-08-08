@@ -982,7 +982,7 @@ package body et_schematic_ops_device is
 
 	function get_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- C
+		prefix			: in type_device_prefix; -- C
 		log_threshold	: in type_log_level)
 		return pac_devices_electrical.map
 	is
@@ -1038,7 +1038,7 @@ package body et_schematic_ops_device is
 
 	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string;
+		prefix			: in type_device_prefix;
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is

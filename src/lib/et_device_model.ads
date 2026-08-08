@@ -87,7 +87,7 @@ package et_device_model is
 
 
 	type type_device_model (appearance : type_appearance) is record
-		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
+		prefix			: type_device_prefix; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
 

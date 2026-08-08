@@ -156,9 +156,9 @@ package et_conventions is
 
 	-- Device prefixes and their category are liked via this map:
 	package pac_device_prefixes is new ordered_maps (
-		key_type 		=> pac_device_prefix.bounded_string, -- IC
+		key_type 		=> type_device_prefix, -- IC
 		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
-		"<" 			=> pac_device_prefix."<");
+		"<" 			=> et_device_prefix."<");
 
 	-- After reading the conventions, we store the
 	-- allowed device prefixes for the design here:
@@ -174,7 +174,7 @@ package et_conventions is
 
 	-- Returns the category of the given device prefix. If no category could be
 	-- found, returns category UNKNOWN.
-	function category (prefix : in pac_device_prefix.bounded_string) return
+	function category (prefix : in type_device_prefix) return
 		type_device_category;
 
 
@@ -280,7 +280,7 @@ package et_conventions is
 	-- Returns NO if prefixs does not require interaction or if no prefixes
 	-- specified at all (in conventions file section COMPONENT_PREFIXES).
 	function requires_operator_interaction (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return type_component_requires_operator_interaction;
 
 
@@ -451,14 +451,14 @@ package et_conventions is
 	-- Returns false if any violation has been detected.
 	function value_valid (
 		value 	: in type_device_value;
-		prefix	: in pac_device_prefix.bounded_string)
+		prefix	: in type_device_prefix)
 		return boolean;
 
 
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false.
 	-- Returns true if no prefixes specified or if prefix is valid.
-	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean;
+	function prefix_valid (prefix : in type_device_prefix) return boolean;
 
 
 	-- Tests if the given device name has a valid prefix as specified in the conventions file.

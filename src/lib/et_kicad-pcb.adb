@@ -269,7 +269,7 @@ package body et_kicad.pcb is
 		use et_device_prefix;
 	begin
 		return ((
-			prefix		=> pac_device_prefix.to_bounded_string (""),
+			prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 			id			=> name_index_default,
 			id_width	=> 1));
 	end default_component_reference;

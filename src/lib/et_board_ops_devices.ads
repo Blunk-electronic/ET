@@ -316,7 +316,7 @@ package et_board_ops_devices is
 	-- Returns all non-electrical devices that have the given prefix:
 	function get_non_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- FD
+		prefix			: in type_device_prefix; -- FD
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.map;
 
@@ -327,7 +327,7 @@ package et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
-		prefix			: in pac_device_prefix.bounded_string; -- FD
+		prefix			: in type_device_prefix; -- FD
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

@@ -66,7 +66,7 @@ package body et_device_library is
 
 	function get_prefix (
 		cursor	: in pac_device_models.cursor)
-		return pac_device_prefix.bounded_string
+		return type_device_prefix
 	is begin
 		return element (cursor).prefix;
 	end get_prefix;

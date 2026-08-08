@@ -415,7 +415,7 @@ package et_devices_non_electrical is
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_devices_non_electrical.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 

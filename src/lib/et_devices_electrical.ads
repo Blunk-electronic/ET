@@ -247,7 +247,7 @@ package et_devices_electrical is
 
 	function get_prefix (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 

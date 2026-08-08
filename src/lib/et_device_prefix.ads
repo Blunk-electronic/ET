@@ -51,15 +51,16 @@ package et_device_prefix is
 	package pac_device_prefix is new generic_bounded_length (prefix_length_max);
 	use pac_device_prefix;
 
+	type type_device_prefix is new pac_device_prefix.bounded_string;
 
 	function to_string (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return string;
 
 
 	function to_prefix (
 		prefix : in string)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 	-- Tests if the given prefix is longer than allowed.
@@ -70,7 +71,7 @@ package et_device_prefix is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 	procedure check_prefix_characters (
-		prefix : in pac_device_prefix.bounded_string);
+		prefix : in type_device_prefix);
 
 
 	-- Predefined prefixes:

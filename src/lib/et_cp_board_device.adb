@@ -291,7 +291,7 @@ package body et_cp_board_device is
 			model : constant pac_package_model_file.bounded_string :=
 				to_package_model_name (get_field (cmd, 5));
 
-			prefix : constant pac_device_prefix.bounded_string :=
+			prefix : constant type_device_prefix :=
 				to_prefix (get_field (cmd, 6));
 
 			xy : constant type_vector_model := set (

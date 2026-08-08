@@ -267,7 +267,7 @@ package body et_kicad.schematic is
 
 
 	procedure check_prefix_characters (
-		prefix 		: in pac_device_prefix.bounded_string;
+		prefix 		: in type_device_prefix;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
@@ -307,12 +307,12 @@ package body et_kicad.schematic is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string (""),
+				prefix 		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 				id 			=> 0,
 				id_width	=> 1);
 
 		c : character;
-		p : pac_device_prefix.bounded_string;
+		p : type_device_prefix;
 
 
 		procedure invalid_reference is
@@ -517,7 +517,7 @@ package body et_kicad.schematic is
 
 
 
-	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in type_device_prefix) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 	begin

@@ -98,7 +98,7 @@ package body et_device_read is
 
 		-- VARIABLES FOR TEMPORARILY STORAGE:
 
-		prefix		: pac_device_prefix.bounded_string; -- T, IC
+		prefix		: type_device_prefix; -- T, IC
 		value		: type_device_value; -- BC548
 		partcode	: type_device_partcode; -- IC_PAC_S_SOT23_VAL_
 		-- NOTE: Please find other global variables in
