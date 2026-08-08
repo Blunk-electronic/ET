@@ -190,7 +190,7 @@ package body et_schematic_ops_units is
 	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in pac_port_name.bounded_string) -- CE
+		port_name		: in type_port_name) -- CE
 		return boolean
 	is
 		result : boolean := false; -- to be returned. goes true once the target has been found
@@ -213,7 +213,7 @@ package body et_schematic_ops_units is
 				unit_cursor : pac_units.cursor := device.units.first;
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
-				use pac_port_name;
+				use et_port_names;
 			begin
 				while unit_cursor /= pac_units.no_element loop
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
@@ -268,7 +268,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name := to_unit_name (""); -- A
-		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
+		port_name		: in type_port_name := to_port_name ("")) -- CE
 		return boolean
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found
@@ -290,7 +290,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
-				use pac_port_name;
+				use et_port_names;
 			begin
 				if contains (device.units, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
@@ -698,7 +698,7 @@ package body et_schematic_ops_units is
 						--    build a device port.
 						-- 3. The device port is then deleted on the A/B end of the segment:
 						procedure delete_port (AB_end : in type_start_end_point) is
-							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							port_name : type_port_name; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
 						begin
@@ -846,7 +846,7 @@ package body et_schematic_ops_units is
 						--    build a device port.
 						-- 3. The device port is then added to the A/B end of the segment:
 						procedure add_port (AB_end : in type_start_end_point) is
-							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							port_name : type_port_name; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
 						begin
@@ -998,7 +998,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		port_name		: in pac_port_name.bounded_string) -- CE
+		port_name		: in type_port_name) -- CE
 		return type_port_properties_access
 	is
 		properties : type_port_properties_access; -- to be returned
@@ -1035,7 +1035,7 @@ package body et_schematic_ops_units is
 					pragma unreferenced (variant_name);
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
-					use pac_port_name;
+					use et_port_names;
 					use pac_unit_name;
 				begin
 					while terminal_cursor /= pac_terminal_port_map.no_element loop
@@ -2304,7 +2304,7 @@ package body et_schematic_ops_units is
 
 		use pac_dragged_ports;
 		port_cursor : pac_dragged_ports.cursor := port_drag_list.ports.first;
-		port_name : pac_port_name.bounded_string;
+		port_name : type_port_name;
 		port_drag : type_drag;
 		port_sheet : type_sheet renames port_drag_list.sheet;
 

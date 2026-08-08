@@ -398,7 +398,7 @@ package et_units is
 
 
 
-	use pac_port_name;
+	use et_port_names;
 
 	-- When units are dragged about the sheet then connected
 	-- net segments must be dragged along.
@@ -407,7 +407,7 @@ package et_units is
 	-- The list tells which port is to be moved from an
 	-- old to a new position:
 	package pac_dragged_ports is new ordered_maps (
-		key_type		=> pac_port_name.bounded_string,
+		key_type		=> type_port_name,
 		element_type	=> type_drag);
 
 	use pac_dragged_ports;
@@ -415,7 +415,7 @@ package et_units is
 
 	function get_port_name (
 		port : in pac_dragged_ports.cursor)
-		return pac_port_name.bounded_string;
+		return type_port_name;
 
 
 	-- Creates from two portlists a list of ports to be dragged:

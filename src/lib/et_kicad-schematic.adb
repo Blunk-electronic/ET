@@ -487,7 +487,7 @@ package body et_kicad.schematic is
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif pac_port_name.">" (left.name, right.name) then
+		elsif et_port_names.">" (left.name, right.name) then
 			result := true;
 
 		else
@@ -3927,7 +3927,7 @@ package body et_kicad.schematic is
 		use type_ports;
 
 
-		function to_net_name (port_name : in pac_port_name.bounded_string)
+		function to_net_name (port_name : in type_port_name)
 		-- Converts the given port name to a net name.
 			return pac_net_name.bounded_string is
 		begin
@@ -4825,7 +4825,7 @@ package body et_kicad.schematic is
 				-- returns "false".
 				function connected_by_other_unit return boolean is
 					port_cursor_secondary : type_ports.cursor := ports.first;
-					use pac_port_name;
+					use et_port_names;
 				begin
 					-- search the portlist but skip the port of origin
 					while port_cursor_secondary /= type_ports.no_element loop
@@ -6740,7 +6740,7 @@ package body et_kicad.schematic is
 				ports		: in pac_ports_with_reference.set)
 			is
 				port_cursor : pac_ports_with_reference.cursor;
-				use pac_port_name;
+				use et_port_names;
 				use pac_ports_with_reference;
 			begin
 				log (text => "querying ports ...", level => log_threshold + 2);
@@ -7352,7 +7352,7 @@ package body et_kicad.schematic is
 					is
 						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
-						use pac_port_name;
+						use et_port_names;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 						unused_terminal_found : boolean := false;
 					begin

@@ -358,7 +358,7 @@ package et_kicad.schematic is
 
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: type_port_name; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: et_kicad_libraries.type_port_direction; -- example: "passive"
 		style			: type_port_style;
@@ -412,7 +412,7 @@ package et_kicad.schematic is
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: type_device_name;		-- N409
-		name		: pac_port_name.bounded_string;	-- 2
+		name		: type_port_name;	-- 2
 	end record;
 
 

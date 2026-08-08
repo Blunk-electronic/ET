@@ -112,7 +112,7 @@ package et_schematic_ops_units is
 	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in pac_port_name.bounded_string) -- CE
+		port_name		: in type_port_name) -- CE
 		return boolean;
 
 
@@ -123,7 +123,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name := to_unit_name (""); -- A
-		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
+		port_name		: in type_port_name := to_port_name ("")) -- CE
 		return boolean;
 
 
@@ -269,7 +269,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		port_name		: in pac_port_name.bounded_string) -- CE
+		port_name		: in type_port_name) -- CE
 		return type_port_properties_access;
 
 
@@ -415,7 +415,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name) -- C
--- 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
+-- 		port_name		: in et_symbols.type_port_name) -- CE
 		return type_unit_query;
 
 

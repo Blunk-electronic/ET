@@ -97,7 +97,7 @@ package et_package_variant is
 		case linked is
 			when TRUE =>
 				unit	: type_unit_name; -- A, B, GPIO1, ...
-				port	: pac_port_name.bounded_string; -- IN1, IN2, ...
+				port	: type_port_name; -- IN1, IN2, ...
 			when FALSE => null;
 		end case;
 	end record;
@@ -119,7 +119,7 @@ package et_package_variant is
 	function get_terminal (
 		variant	: in pac_package_variants.cursor;
 		unit	: in type_unit_name;
-		port	: in pac_port_name.bounded_string)
+		port	: in type_port_name)
 		return pac_terminal_name.bounded_string;
 
 
@@ -127,7 +127,7 @@ package et_package_variant is
 	type type_terminal is record
 		name	: pac_terminal_name.bounded_string; -- H7
 		unit	: type_unit_name; -- IO-BANK1
-		port	: pac_port_name.bounded_string; -- GPIO3
+		port	: type_port_name; -- GPIO3
 	end record;
 
 

@@ -71,7 +71,7 @@ package et_net_ports_devices is
 		-- CS cursor to the unit instead ?
 		-- could improve performance.
 
-		port_name	: pac_port_name.bounded_string; -- IN1
+		port_name	: type_port_name; -- IN1
 		-- CS cursor to the port instead ?
 		-- could improve performance.
 	end record;
@@ -88,7 +88,7 @@ package et_net_ports_devices is
 	function to_device_port (
 		device	: in type_device_name;
 		unit	: in type_unit_name;
-		port	: in pac_port_name.bounded_string)
+		port	: in type_port_name)
 		return type_device_port;
 
 

@@ -192,7 +192,7 @@ package body et_device_read_package_variant is
 
 		terminal	: pac_terminal_name.bounded_string; -- H5, 14
 		unit		: type_unit_name; -- PWR, IO_BANK_2
-		port		: pac_port_name.bounded_string; -- VCC
+		port		: type_port_name; -- VCC
 
 		place : type_field_count_positive := 1; -- the field being read from given line
 

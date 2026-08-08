@@ -1179,7 +1179,7 @@ package body et_devices_electrical.packages is
 	function get_terminal (
 		device	: in pac_devices_electrical.cursor;
 		unit	: in type_unit_name;
-		port	: in pac_port_name.bounded_string)
+		port	: in type_port_name)
 		return et_terminals.pac_terminals.cursor
 	is
 		use pac_terminals;

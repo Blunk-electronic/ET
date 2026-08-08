@@ -110,7 +110,7 @@ package body et_package_variant is
 	function get_terminal (
 		variant	: in pac_package_variants.cursor;
 		unit	: in type_unit_name;
-		port	: in pac_port_name.bounded_string)
+		port	: in type_port_name)
 		return pac_terminal_name.bounded_string
 	is
 		use pac_terminal_name;
@@ -124,7 +124,7 @@ package body et_package_variant is
 		is
 			pragma unreferenced (name);
 			use pac_unit_name;
-			use pac_port_name;
+			use et_port_names;
 			use pac_terminal_port_map;
 			c : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 		begin

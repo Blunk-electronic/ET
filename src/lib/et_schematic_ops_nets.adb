@@ -5547,7 +5547,7 @@ package body et_schematic_ops_nets is
 
 				procedure query_port (p : in pac_device_ports.cursor) is
 					use pac_device_ports;
-					use pac_port_name;
+					use et_port_names;
 
 					use et_unit_name;
 

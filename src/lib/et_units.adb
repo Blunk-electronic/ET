@@ -652,7 +652,7 @@ package body et_units is
 
 	function get_port_name (
 		port : in pac_dragged_ports.cursor)
-		return pac_port_name.bounded_string
+		return type_port_name
 	is begin
 		return key (port);
 	end get_port_name;

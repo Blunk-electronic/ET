@@ -168,7 +168,7 @@ package et_device_library.units is
 	-- Returns the properties of the given port of the given device.
 	function get_properties (
 		device_cursor	: in pac_device_models.cursor;
-		port_name		: in pac_port_name.bounded_string)
+		port_name		: in type_port_name)
 		return pac_symbol_ports.cursor;
 
 	type type_port_properties_access is access type_port_properties;

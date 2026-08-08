@@ -50,7 +50,7 @@ package body et_net_ports_devices is
 		left, right : in type_device_port)
 		return boolean
 	is
-		use pac_port_name;
+		use et_port_names;
 		use pac_unit_name;
 	begin
 		-- compare device names:
@@ -91,7 +91,7 @@ package body et_net_ports_devices is
 	function to_device_port (
 		device	: in type_device_name;
 		unit	: in type_unit_name;
-		port	: in pac_port_name.bounded_string)
+		port	: in type_port_name)
 		return type_device_port
 	is
 		result : type_device_port;

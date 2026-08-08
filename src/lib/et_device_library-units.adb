@@ -464,7 +464,7 @@ package body et_device_library.units is
 
 	function get_properties (
 		device_cursor	: in pac_device_models.cursor;
-		port_name		: in pac_port_name.bounded_string)
+		port_name		: in type_port_name)
 		return pac_symbol_ports.cursor
 	is
 
