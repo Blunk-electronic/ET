@@ -67,7 +67,7 @@ package et_material is
 		value		: type_device_value;	-- 7400
 		packge		: pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: type_device_partcode; -- IC_PAC_S_SO16_VAL7400
-		purpose		: pac_device_purpose.bounded_string; 	-- brightness_control
+		purpose		: type_device_purpose; 	-- brightness_control
 	end record;
 
 

@@ -158,7 +158,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_purpose (
 		device	: in out type_device_electrical;
-		purpose	: in pac_device_purpose.bounded_string)
+		purpose	: in type_device_purpose)
 	is begin
 		device.purpose := purpose;
 	end set_purpose;
@@ -166,7 +166,7 @@ package body et_devices_electrical.packages is
 
 	function get_purpose (
 		device	: in type_device_electrical)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return device.purpose;
 	end get_purpose;
@@ -183,7 +183,7 @@ package body et_devices_electrical.packages is
 
 	function get_purpose (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return pac_devices_electrical.element (device).purpose;
 	end get_purpose;

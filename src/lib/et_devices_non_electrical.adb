@@ -320,7 +320,7 @@ package body et_devices_non_electrical is
 
 	procedure set_purpose (
 		device	: in out type_device_non_electrical;
-		purpose	: in pac_device_purpose.bounded_string)
+		purpose	: in type_device_purpose)
 	is begin
 		device.purpose := purpose;
 	end set_purpose;
@@ -328,7 +328,7 @@ package body et_devices_non_electrical is
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return device.purpose;
 	end get_purpose;
@@ -843,7 +843,7 @@ package body et_devices_non_electrical is
 
 	function get_purpose (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin

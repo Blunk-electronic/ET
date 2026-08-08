@@ -95,7 +95,7 @@ procedure draw_units is
 		symbol			: in type_symbol_model;
 		device_name		: in type_device_name;
 		device_value	: in type_device_value; -- like 100R or TL084
-		device_purpose	: in pac_device_purpose.bounded_string := empty_purpose; -- like "brightness control"
+		device_purpose	: in type_device_purpose := empty_purpose; -- like "brightness control"
 		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 		-- The unit count is required in order to decide whether a suffix
@@ -985,7 +985,7 @@ procedure draw_units is
 
 			-- The name, value and purpose of the candidate device if it is real:
 			device_value : type_device_value; -- like 100R or TL084
-			device_purpose : pac_device_purpose.bounded_string; -- like "brightness control"
+			device_purpose : type_device_purpose; -- like "brightness control"
 
 
 

@@ -114,7 +114,7 @@ package et_devices_electrical is
 				-- The purpose indicates what the device is doing.
 				-- It is usually required for devices that require interaction
 				-- with the user of a PCBA:
-				purpose		: pac_device_purpose.bounded_string; -- brightness_control
+				purpose		: type_device_purpose; -- brightness_control
 
 				-- The package variant:
 				variant		: pac_package_variant_name.bounded_string; -- D, N

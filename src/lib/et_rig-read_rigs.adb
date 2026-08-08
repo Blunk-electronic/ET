@@ -104,12 +104,12 @@ is
 			instance_name := to_instance_name ("");
 		end clear_module_instance;
 
-		purpose_A, purpose_B : pac_device_purpose.bounded_string; -- power_in, power_out
+		purpose_A, purpose_B : type_device_purpose; -- power_in, power_out
 		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
 
 
 		procedure clear_connector is begin
-			purpose_A := pac_device_purpose.to_bounded_string ("");
+			purpose_A := type_device_purpose (pac_device_purpose.to_bounded_string (""));
 			purpose_A := purpose_B;
 			instance_A := to_instance_name ("");
 			instance_B := instance_A;

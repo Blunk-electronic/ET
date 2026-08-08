@@ -131,7 +131,7 @@ package et_devices_non_electrical is
 		partcode : type_device_partcode;
 
 		-- A purpose will rarely be assigned. But in case it is required:
-		purpose : pac_device_purpose.bounded_string;
+		purpose : type_device_purpose;
 
 		status : type_object_status;
 	end record;
@@ -279,12 +279,12 @@ package et_devices_non_electrical is
 
 	procedure set_purpose (
 		device	: in out type_device_non_electrical;
-		purpose	: in pac_device_purpose.bounded_string);
+		purpose	: in type_device_purpose);
 
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function get_purpose (
@@ -594,7 +594,7 @@ package et_devices_non_electrical is
 
 	function get_purpose (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function get_purpose (

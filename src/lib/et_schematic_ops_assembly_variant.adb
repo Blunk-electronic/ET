@@ -452,7 +452,7 @@ package body et_schematic_ops_assembly_variant is
 		device			: in type_device_name; -- R1
 		value			: in type_device_value; -- 220R
 		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_220R
-		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
+		purpose			: in type_device_purpose := type_device_purpose (pac_device_purpose.to_bounded_string ("")); -- set temperature
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module

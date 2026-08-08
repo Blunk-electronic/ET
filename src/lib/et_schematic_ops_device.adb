@@ -658,7 +658,7 @@ package body et_schematic_ops_device is
 	procedure set_purpose (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
+		purpose				: in type_device_purpose; -- brightness_control
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is

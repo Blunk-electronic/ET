@@ -80,7 +80,7 @@ package et_assembly_variants is
 			when YES =>
 				value		: type_device_value; -- 470R
 				partcode	: type_device_partcode;
-				purpose		: pac_device_purpose.bounded_string;
+				purpose		: type_device_purpose;
 
 			when NO =>
 				null;

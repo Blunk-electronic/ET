@@ -115,7 +115,7 @@ package body et_module_read_device_electrical is
 
 
 	device_partcode	: et_device_partcode.type_device_partcode;
-	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
+	device_purpose	: et_device_purpose.type_device_purpose;
 	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
 
 
@@ -461,7 +461,7 @@ package body et_module_read_device_electrical is
 				-- CS ? device_name		:= (others => <>);
 				device_model_name	:= to_file_name ("");
 				device_value		:= type_device_value (pac_device_value.to_bounded_string (""));
-				device_purpose		:= pac_device_purpose.to_bounded_string ("");
+				device_purpose		:= type_device_purpose (pac_device_purpose.to_bounded_string (""));
 				device_partcode 	:= type_device_partcode (pac_device_partcode.to_bounded_string (""));
 				device_variant		:= to_variant_name ("");
 				-- CS use constant for emtpy variant

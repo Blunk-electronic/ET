@@ -66,27 +66,28 @@ package et_device_purpose is
 	package pac_device_purpose is new generic_bounded_length (purpose_length_max);
 	use pac_device_purpose;
 
+	type type_device_purpose is new pac_device_purpose.bounded_string;
 
 
 	-- If no purpose is required, then this default should be used:
-	empty_purpose : constant pac_device_purpose.bounded_string := to_bounded_string ("");
+	empty_purpose : constant type_device_purpose := type_device_purpose (pac_device_purpose.to_bounded_string (""));
 
 
-	function to_string (purpose : in pac_device_purpose.bounded_string) return string;
+	function to_string (purpose : in type_device_purpose) return string;
 
 	function purpose_length_valid (purpose : in string) return boolean;
 	-- Returns true if given purpose is too long. Issues warning.
 
 
 	function get_length (
-		purpose : in pac_device_purpose.bounded_string)
+		purpose : in type_device_purpose)
 		return natural;
 
 
 
 
 	function purpose_characters_valid (
-		purpose		: in pac_device_purpose.bounded_string;
+		purpose		: in type_device_purpose;
 		characters	: in character_set := purpose_characters)
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
@@ -99,12 +100,12 @@ package et_device_purpose is
 	-- Tests the given purpose for length and invalid characters.
 		purpose 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	-- Returns true if purpose is an empty string:
 	function is_empty (
-		purpose : in pac_device_purpose.bounded_string)
+		purpose : in type_device_purpose)
 		return boolean;
 
 

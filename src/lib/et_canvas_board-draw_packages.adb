@@ -110,7 +110,7 @@ procedure draw_packages is
 
 	device_name 	: et_device_name.type_device_name;
 	device_value	: et_device_value.type_device_value;
-	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
+	device_purpose	: et_device_purpose.type_device_purpose;
 
 	-- Placeholders for name, value, purpose:
 	device_placeholders	: et_device_placeholders.packages.type_text_placeholders;

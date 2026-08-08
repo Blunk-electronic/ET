@@ -397,7 +397,7 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
-		purpose : pac_device_purpose.bounded_string; -- brightness_control
+		purpose : type_device_purpose; -- brightness_control
 	begin
 		log (text => "set purpose", level => log_threshold);
 		log_indentation_up;

@@ -965,7 +965,7 @@ package et_schematic_ops_units is
 	procedure set_purpose (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_purpose		: in pac_device_purpose.bounded_string;
+		new_purpose		: in type_device_purpose;
 		log_threshold	: in type_log_level);
 
 

@@ -46,8 +46,8 @@ with et_exceptions;				use et_exceptions;
 
 package body et_device_purpose is
 
-	function to_string (purpose : in pac_device_purpose.bounded_string) return string is begin
-		return pac_device_purpose.to_string (purpose);
+	function to_string (purpose : in type_device_purpose) return string is begin
+		return pac_device_purpose.to_string (pac_device_purpose.bounded_string (purpose));
 	end to_string;
 
 
@@ -66,10 +66,10 @@ package body et_device_purpose is
 
 
 	function get_length (
-		purpose : in pac_device_purpose.bounded_string)
+		purpose : in type_device_purpose)
 		return natural
 	is begin
-		return natural (length (purpose));
+		return natural (length (pac_device_purpose.bounded_string (purpose)));
 	end get_length;
 
 
@@ -77,7 +77,7 @@ package body et_device_purpose is
 	function purpose_characters_valid (
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
-		purpose		: in pac_device_purpose.bounded_string;
+		purpose		: in type_device_purpose;
 		characters	: in character_set := purpose_characters)
 		return boolean
 	is
@@ -117,14 +117,14 @@ package body et_device_purpose is
 	-- Tests the given purpose for length and invalid characters.
 		purpose 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return pac_device_purpose.bounded_string is
+		return type_device_purpose is
 			pragma unreferenced (error_on_invalid_character);
 
-		purpose_out : pac_device_purpose.bounded_string; -- to be returned
+		purpose_out : type_device_purpose; -- to be returned
 	begin
 		-- Test length of given purpose:
 		if purpose_length_valid (purpose) then
-			purpose_out := pac_device_purpose.to_bounded_string (purpose);
+			purpose_out := type_device_purpose (pac_device_purpose.to_bounded_string (purpose));
 		else
 			purpose_invalid (purpose);
 		end if;
@@ -144,7 +144,7 @@ package body et_device_purpose is
 
 
 	function is_empty (
-		purpose : in pac_device_purpose.bounded_string)
+		purpose : in type_device_purpose)
 		return boolean
 	is begin
 		if purpose = empty_purpose then

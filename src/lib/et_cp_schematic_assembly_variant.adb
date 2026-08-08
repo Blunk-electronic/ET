@@ -193,7 +193,7 @@ package body et_cp_schematic_assembly_variant is
 
 		value : type_device_value; -- 470R
 		partcode : type_device_partcode; -- R_PAC_S_0805_VAL_100R
-		purpose : pac_device_purpose.bounded_string; -- brightness_control
+		purpose : type_device_purpose; -- brightness_control
 	begin
 		log (text => "mount device", level => log_threshold);
 		log_indentation_up;
