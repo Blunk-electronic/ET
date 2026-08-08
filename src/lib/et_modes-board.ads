@@ -84,7 +84,8 @@ package et_modes.board is
 
 	verb_default : constant type_verb := VERB_NONE;
 
-	verb : type_verb := verb_default;
+	function verb return type_verb;
+	procedure set_verb (verb : type_verb);
 
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
@@ -165,7 +166,8 @@ package et_modes.board is
 
 	noun_default : constant type_noun := NOUN_NONE;
 
-	noun : type_noun := noun_default;
+	function noun return type_noun;
+	procedure set_noun (noun : type_noun);
 
 
 	function to_string (noun : in type_noun) return string;
@@ -178,6 +180,79 @@ package et_modes.board is
 
 
 	expect_entry : type_expect_entry := expect_entry_default;
+
+	type type_noun_array_of_boolean is array (type_noun) of boolean;
+
+	-- These tables are derived from the noun handling of each verb
+	-- in procedure parse of et_cp_board.adb:
+	show_nouns_for_verb : constant array (type_verb) of type_noun_array_of_boolean := (
+		VERB_NONE		=> (NOUN_NONE => true,								others => false),
+		VERB_ADD		=> (NOUN_DEVICE | NOUN_LAYER | NOUN_LIBRARY => true,	others => false),
+		VERB_CLEAR		=> (NOUN_ZONE => true,								others => false),
+		VERB_COPY		=> (NOUN_DEVICE => true,							others => false),
+		VERB_DELETE		=> (NOUN_DEVICE | NOUN_GROUP | NOUN_LAYER | NOUN_HOLE | NOUN_OUTLINE | NOUN_SILKSCREEN
+							| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STENCIL | NOUN_STOPMASK | NOUN_VIA
+							| NOUN_ROUTE_RESTRICT | NOUN_VIA_RESTRICT | NOUN_FREETRACK | NOUN_TRACK => true,
+							others => false),
+		VERB_DEFINE		=> (NOUN_GROUP => true,							others => false),
+		VERB_DISPLAY	=> (NOUN_SILKSCREEN | NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOPMASK | NOUN_STENCIL
+							| NOUN_ORIGINS | NOUN_CONDUCTORS | NOUN_OUTLINE | NOUN_RATSNEST | NOUN_RESTRICT
+							| NOUN_VIAS => true,							others => false),
+		VERB_DRAW		=> (NOUN_HOLE | NOUN_OUTLINE | NOUN_SILKSCREEN | NOUN_ASSY | NOUN_KEEPOUT
+							| NOUN_ROUTE_RESTRICT | NOUN_STENCIL | NOUN_STOPMASK | NOUN_VIA_RESTRICT => true,
+							others => false),
+		VERB_EXECUTE	=> (NOUN_SCRIPT => true,							others => false),
+		VERB_EXIT		=> (NOUN_NONE => true,								others => false),
+		VERB_FILL		=> (NOUN_ZONE => true,								others => false),
+		VERB_FLIP		=> (NOUN_DEVICE => true,							others => false),
+		VERB_MAKE		=> (NOUN_BOM | NOUN_PNP => true,					others => false),
+		VERB_MOVE		=> (NOUN_FRAME | NOUN_CURSOR | NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE
+							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_VIA => true,
+							others => false),
+		VERB_PLACE		=> (NOUN_VIA | NOUN_TEXT | NOUN_PLACEHOLDER => true,	others => false),
+		VERB_QUIT		=> (NOUN_NONE => true,								others => false),
+		VERB_REMOVE		=> (NOUN_LIBRARY => true,							others => false),
+		VERB_RENAME		=> (NOUN_DEVICE => true,							others => false),
+		VERB_RESTORE	=> (NOUN_PLACEHOLDERS => true,						others => false),
+		VERB_ROUTE		=> (NOUN_FREETRACK | NOUN_NET => true,				others => false),
+		VERB_ROTATE		=> (NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE => true,
+							others => false),
+		VERB_SAVE		=> (NOUN_MODULE => true,							others => false),
+		VERB_SET		=> (NOUN_GRID | NOUN_COLOR | NOUN_CURSOR | NOUN_ZOOM | NOUN_SCALE | NOUN_ZONE
+							| NOUN_VIA | NOUN_NETCHANGER => true,			others => false),
+		VERB_SHOW		=> (NOUN_MODULE | NOUN_DEVICE | NOUN_NET | NOUN_NETCHANGER => true,
+							others => false),
+		VERB_UPDATE		=> (NOUN_RATSNEST => true,							others => false),
+		VERB_ZOOM		=> (NOUN_ZOOM => true,								others => false));
+
+	-- Initialized to the first noun listed for the verb above:
+	noun_last : array (type_verb) of type_noun := (
+		VERB_NONE		=> NOUN_NONE,
+		VERB_ADD		=> NOUN_DEVICE,
+		VERB_CLEAR		=> NOUN_ZONE,
+		VERB_COPY		=> NOUN_DEVICE,
+		VERB_DELETE		=> NOUN_DEVICE,
+		VERB_DEFINE		=> NOUN_GROUP,
+		VERB_DISPLAY	=> NOUN_SILKSCREEN,
+		VERB_DRAW		=> NOUN_HOLE,
+		VERB_EXECUTE	=> NOUN_SCRIPT,
+		VERB_EXIT		=> NOUN_NONE,
+		VERB_FILL		=> NOUN_ZONE,
+		VERB_FLIP		=> NOUN_DEVICE,
+		VERB_MAKE		=> NOUN_BOM,
+		VERB_MOVE		=> NOUN_FRAME,
+		VERB_PLACE		=> NOUN_VIA,
+		VERB_QUIT		=> NOUN_NONE,
+		VERB_REMOVE		=> NOUN_LIBRARY,
+		VERB_RENAME		=> NOUN_DEVICE,
+		VERB_RESTORE	=> NOUN_PLACEHOLDERS,
+		VERB_ROUTE		=> NOUN_FREETRACK,
+		VERB_ROTATE		=> NOUN_DEVICE,
+		VERB_SAVE		=> NOUN_MODULE,
+		VERB_SET		=> NOUN_GRID,
+		VERB_SHOW		=> NOUN_MODULE,
+		VERB_UPDATE		=> NOUN_RATSNEST,
+		VERB_ZOOM		=> NOUN_ZOOM);
 
 end et_modes.board;
 

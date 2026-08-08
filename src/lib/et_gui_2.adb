@@ -153,7 +153,7 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_schematic.set_up_canvas;
 
-		-- Set up verb and noun combo
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
 		set_up_noun_combo;
 
@@ -250,7 +250,7 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_board.set_up_canvas;
 
-		-- Set up verb and noun combo
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
 		set_up_noun_combo;
 

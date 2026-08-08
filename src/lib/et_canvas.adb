@@ -2290,6 +2290,7 @@ package body et_canvas is
 
 		gtk_new (mode_display.cbox_mode_verb);
 		set_halign (mode_display.cbox_mode_verb, align => align_fill);
+		set_hexpand (mode_display.cbox_mode_verb, true);
 
 
 		gtk_new (mode_display.label_mode_noun, "NOUN");
@@ -2297,6 +2298,7 @@ package body et_canvas is
 
 		gtk_new (mode_display.cbox_mode_noun);
 		set_halign (mode_display.cbox_mode_noun, align => align_fill);
+		set_hexpand (mode_display.cbox_mode_noun, true);
 
 
 		gtk_new (mode_display.grid_mode);

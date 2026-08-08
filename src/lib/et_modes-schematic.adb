@@ -42,6 +42,21 @@ with et_logging;				use et_logging;
 
 package body et_modes.schematic is
 
+	noun_body : type_noun := noun_default;
+	verb_body : type_verb := verb_default;
+
+
+
+	function verb return type_verb
+	is (verb_body);
+
+	procedure set_verb (verb : type_verb) is
+	begin
+		verb_body := verb;
+	end set_verb;
+
+
+
 	function to_string (verb : in type_verb) return string is
 	-- Removes the domain_prefix from verb and returns the remainder as string.
 	-- VERB_ADD becomes ADD.
@@ -62,6 +77,16 @@ package body et_modes.schematic is
 
 
 
+	function noun return type_noun
+	is (noun_body);
+
+	procedure set_noun (noun : type_noun) is
+	begin
+		noun_body := noun;
+	end set_noun;
+
+
+
 	function to_string (noun : in type_noun) return string is
 		s : constant string := type_noun'image (noun);
 	begin
@@ -78,8 +103,8 @@ package body et_modes.schematic is
 
 
 	procedure reset_verb_and_noun is begin
-		verb := verb_default;
-		noun := noun_default;
+		set_verb (verb_default);
+		set_noun (noun_default);
 	end reset_verb_and_noun;
 
 

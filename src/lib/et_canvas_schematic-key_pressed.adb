@@ -73,7 +73,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 				-- CS set_status
 				reset_objects (active_module, log_threshold + 1);
 
@@ -87,48 +87,48 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_schematic_units.status_delete_device);
 
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 				-- CS set_status
 				et_schematic_ops_groups.delete_group (
 					module_cursor	=> active_module,
 					log_threshold	=> log_threshold + 1);
 
 			when key_noun_connector =>
-				noun := NOUN_NET_CONNECTOR;
+				set_noun (NOUN_NET_CONNECTOR);
 				set_status (et_canvas_schematic_nets.status_delete_connector);
 
 			when key_noun_label =>
-				noun := NOUN_NET_LABEL;
+				set_noun (NOUN_NET_LABEL);
 				set_status (et_canvas_schematic_nets.status_delete_label);
 
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_delete_unit);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_delete_netchanger);
 
 			when key_noun_net_all_sheets =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_net =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_strand =>
-				noun := NOUN_STRAND;
+				set_noun (NOUN_STRAND);
 				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_segment =>
-				noun := NOUN_SEGMENT;
+				set_noun (NOUN_SEGMENT);
 				set_status (et_canvas_schematic_nets.status_delete);
 
 
@@ -214,7 +214,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 				-- CS set_status (hints on how to define the group
 				-- via mouse or keyboard)
 
@@ -260,7 +260,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_dissolve_netchanger);
 
 
@@ -304,7 +304,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 				set_status (et_canvas_schematic_group.status_drag_group);
 
 				-- When dragging groups, we enforce the default grid
@@ -313,7 +313,7 @@ is
 
 
 			when key_noun_segment =>
-				noun := NOUN_SEGMENT;
+				set_noun (NOUN_SEGMENT);
 				set_status (et_canvas_schematic_nets.status_drag);
 
 				-- When dragging net segments, we enforce the default grid
@@ -322,7 +322,7 @@ is
 
 
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_drag);
 
 				-- When dragging units, we enforce the default grid
@@ -331,7 +331,7 @@ is
 
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_drag_netchanger);
 
 				-- When dragging netchangers, we enforce the default grid
@@ -411,7 +411,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_net =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 
 				set_status (status_draw_net);
 
@@ -462,7 +462,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_mirror);
 
 
@@ -501,15 +501,15 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_label =>
-				noun := NOUN_NET_LABEL;
+				set_noun (NOUN_NET_LABEL);
 				set_status (et_canvas_schematic_nets.status_move_label);
 
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;
+				set_noun (NOUN_PLACEHOLDER);
 				set_status (et_canvas_schematic_units.status_move_placeholder);
 
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_move_placeholder);
 
 				-- When moving units, we enforce the default grid
@@ -518,7 +518,7 @@ is
 
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_move_netchanger);
 
 				-- When moving netchangers, we enforce the default grid
@@ -592,14 +592,14 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_label =>
-				noun := NOUN_NET_LABEL;
+				set_noun (NOUN_NET_LABEL);
 				set_status (et_canvas_schematic_nets.status_place_label);
 
 				-- For placing simple net labels, the fine grid is required:
 				-- CS self.set_grid (FINE);
 
 			when key_noun_connector =>
-				noun := NOUN_NET_CONNECTOR;
+				set_noun (NOUN_NET_CONNECTOR);
 				set_status (et_canvas_schematic_nets.status_place_connector);
 
 			-- If space pressed, then the operator wishes to operate via keyboard:
@@ -654,15 +654,15 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_placeholder =>
-				noun := NOUN_PLACEHOLDER;
+				set_noun (NOUN_PLACEHOLDER);
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_rotate);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_rotate_netchanger);
 
 
@@ -717,7 +717,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_schematic_units.status_add);
 
 				-- When adding units, we enforce the default grid
@@ -730,7 +730,7 @@ is
 
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_add_netchanger);
 
 				-- In the preview set the name of the
@@ -823,7 +823,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 				set_status (et_canvas_schematic_group.status_copy_group);
 
 				-- When copying groups, we enforce the default grid
@@ -832,7 +832,7 @@ is
 
 
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_schematic_units.status_copy);
 
 				-- When copying units, we enforce the default grid
@@ -841,7 +841,7 @@ is
 
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_copy_netchanger);
 
 				-- When copying netchangers, we enforce the default grid
@@ -938,7 +938,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_unit =>
-				noun := NOUN_UNIT;
+				set_noun (NOUN_UNIT);
 				set_status (et_canvas_schematic_units.status_fetch);
 
 
@@ -991,7 +991,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
-				noun := NOUN_GROUP;
+				set_noun (NOUN_GROUP);
 
 				set_status (et_canvas_schematic_group.status_paste_group);
 
@@ -1029,23 +1029,23 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_partcode =>
-				noun := NOUN_PARTCODE;
+				set_noun (NOUN_PARTCODE);
 				set_status (et_canvas_schematic_units.status_set_partcode);
 
 			when key_noun_purpose =>
-				noun := NOUN_PURPOSE;
+				set_noun (NOUN_PURPOSE);
 				set_status (et_canvas_schematic_units.status_set_purpose);
 
 			when key_noun_value =>
-				noun := NOUN_VALUE;
+				set_noun (NOUN_VALUE);
 				set_status (et_canvas_schematic_units.status_set_value);
 
 			when key_noun_package_variant =>
-				noun := NOUN_VARIANT;
+				set_noun (NOUN_VARIANT);
 				set_status (et_canvas_schematic_units.status_set_variant);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_set_netchanger);
 
 
@@ -1100,19 +1100,19 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_schematic_units.status_show_device);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_show_netchanger);
 
 			when key_noun_net =>
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				set_status (et_canvas_schematic_nets.status_show_net);
 
 			when key_noun_label =>
-				noun := NOUN_NET_LABEL;
+				set_noun (NOUN_NET_LABEL);
 				-- CS set_status (et_canvas_schematic_nets.status_show_label);
 
 
@@ -1169,24 +1169,24 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
-				noun := NOUN_DEVICE;
+				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_schematic_units.status_rename_device);
 
 			when key_noun_netchanger =>
-				noun := NOUN_NETCHANGER;
+				set_noun (NOUN_NETCHANGER);
 				set_status (et_canvas_schematic_netchangers.status_rename_netchanger);
 
 			when key_noun_strand => -- rename strand
-				noun := NOUN_STRAND;
+				set_noun (NOUN_STRAND);
 				set_status (et_canvas_schematic_nets.status_rename_net_strand);
 
 			when key_noun_net => -- rename all strands on current sheet
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 
 			when key_noun_net_all_sheets => -- rename everywhere: all strands on all sheets
-				noun := NOUN_NET;
+				set_noun (NOUN_NET);
 				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 
@@ -1286,76 +1286,76 @@ begin -- key_pressed
 
 						-- As long as no valid noun has been entered
 						-- display the default noun:
-						noun := noun_default;
+						set_noun (noun_default);
 
 						-- EVALUATE KEY FOR VERB:
 						case key is
 							when key_verb_clear =>
-								verb := VERB_CLEAR;
+								set_verb (VERB_CLEAR);
 								status_enter_noun;
 
 							when key_verb_delete =>
-								verb := VERB_DELETE;
+								set_verb (VERB_DELETE);
 								status_enter_noun;
 
 							when key_verb_add =>
-								verb := VERB_ADD;
+								set_verb (VERB_ADD);
 								status_enter_noun;
 
 							when key_verb_copy =>
-								verb := VERB_COPY;
+								set_verb (VERB_COPY);
 								status_enter_noun;
 
 							when key_verb_define =>
-								verb := VERB_DEFINE;
+								set_verb (VERB_DEFINE);
 								status_enter_noun;
 
 							when key_verb_dissolve =>
-								verb := VERB_DISSOLVE;
+								set_verb (VERB_DISSOLVE);
 								status_enter_noun;
 
 							when key_verb_drag =>
-								verb := VERB_DRAG;
+								set_verb (VERB_DRAG);
 								status_enter_noun;
 
 							when key_verb_draw =>
-								verb := VERB_DRAW;
+								set_verb (VERB_DRAW);
 								status_enter_noun;
 
 							when key_verb_paste =>
-								verb := VERB_PASTE;
+								set_verb (VERB_PASTE);
 								status_enter_noun;
 
 							when key_verb_show =>
-								verb := VERB_SHOW;
+								set_verb (VERB_SHOW);
 								status_enter_noun;
 
 							when key_verb_fetch =>
-								verb := VERB_FETCH;
+								set_verb (VERB_FETCH);
 								status_enter_noun;
 
 							when key_verb_mirror =>
-								verb := VERB_MIRROR;
+								set_verb (VERB_MIRROR);
 								status_enter_noun;
 
 							when key_verb_move =>
-								verb := VERB_MOVE;
+								set_verb (VERB_MOVE);
 								status_enter_noun;
 
 							when key_verb_rename =>
-								verb := VERB_RENAME;
+								set_verb (VERB_RENAME);
 								status_enter_noun;
 
 							when key_verb_place =>
-								verb := VERB_PLACE;
+								set_verb (VERB_PLACE);
 								status_enter_noun;
 
 							when key_verb_rotate =>
-								verb := VERB_ROTATE;
+								set_verb (VERB_ROTATE);
 								status_enter_noun;
 
 							when key_verb_set =>
-								verb := VERB_SET;
+								set_verb (VERB_SET);
 								status_enter_noun;
 
 							when others =>
@@ -1366,6 +1366,12 @@ begin -- key_pressed
 								expect_entry := EXP_VERB;
 								status_verb_invalid;
 						end case;
+
+						-- Refresh the noun combo box for the (possibly new) verb.
+						-- This must be done explicitly here because update_mode_display
+						-- (called further down) only reflects verb/noun in the combo
+						-- boxes, it does not repopulate the list of available nouns:
+						set_up_noun_combo;
 
 
 					when EXP_NOUN =>
