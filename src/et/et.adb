@@ -108,7 +108,7 @@ procedure et is
 	project_name_open 		: pac_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: pac_project_name.bounded_string; -- the "save as" name of the project
 
-	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_file_name		: type_module_file_name;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 
 	package_name_create		: type_package_model_name; -- the package to be created like libraries/packages/S_SO14.pac
@@ -520,7 +520,6 @@ procedure et is
 	procedure launch_schematic_and_board_editor is
 		use et_gui_2;
 		use pac_generic_modules;
-		use pac_module_file_name;
 		use pac_module_name;
 		use et_module_ops;
 
@@ -547,7 +546,7 @@ procedure et is
 			else
 				-- Convert the optionally given module file name to a module name.
 				generic_module_name := to_module_name (remove_extension (
-					simple_name (pac_module_file_name.to_string (module_file_name))));
+					simple_name (pac_module_file_name.to_string (pac_module_file_name.bounded_string (module_file_name)))));
 
 				module_cursor := find (generic_modules, generic_module_name);
 			end if;
