@@ -46,7 +46,7 @@ with et_file_write;					use et_file_write;
 separate (et_project.configuration)
 
 procedure save_configuration (
-	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+	project_name 	: in type_project_name; -- blood_sample_analyzer
 	log_threshold 	: in type_log_level)
 is
 	-- backup the previous output destination

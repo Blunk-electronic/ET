@@ -103,10 +103,10 @@ procedure et is
 	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
 -- 	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
-	project_name_create		: pac_project_name.bounded_string; -- the project to be created
-	project_name_import		: pac_project_name.bounded_string; -- the project to be imported
-	project_name_open 		: pac_project_name.bounded_string; -- the project to be opened
-	project_name_save_as	: pac_project_name.bounded_string; -- the "save as" name of the project
+	project_name_create		: type_project_name; -- the project to be created
+	project_name_import		: type_project_name; -- the project to be imported
+	project_name_open 		: type_project_name; -- the project to be opened
+	project_name_save_as	: type_project_name; -- the "save as" name of the project
 
 	module_file_name		: type_module_file_name;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened

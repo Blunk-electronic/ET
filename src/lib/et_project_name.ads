@@ -51,23 +51,25 @@ package et_project_name is
 
 	use pac_project_name;
 
+	type type_project_name is new pac_project_name.bounded_string;
+
 
 
 	function get_length (
-		project_name : in pac_project_name.bounded_string)
+		project_name : in type_project_name)
 		return natural;
 
 
 
 	function to_string (
-		project_name : in pac_project_name.bounded_string)
+		project_name : in type_project_name)
 		return string;
 
 
 
 	function to_project_name (
 		name : in string)
-		return pac_project_name.bounded_string;
+		return type_project_name;
 
 
 
@@ -75,7 +77,7 @@ package et_project_name is
 	-- of the current working directory.
 	-- Raises constraint error otherwise.
 	procedure validate_project_name (
-		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		project_name	: in type_project_name; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
 

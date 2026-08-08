@@ -62,7 +62,7 @@ package body et_gui_2 is
 
 
 	procedure init_schematic (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		log_threshold_in : in type_log_level)
@@ -191,7 +191,7 @@ package body et_gui_2 is
 
 
 	procedure init_board (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in : in type_log_level)
 	is
@@ -286,7 +286,7 @@ package body et_gui_2 is
 
 
 	procedure single_module (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr

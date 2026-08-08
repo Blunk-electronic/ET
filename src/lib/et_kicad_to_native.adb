@@ -2514,7 +2514,7 @@ package body et_kicad_to_native is
 
 
 	procedure to_native (
-		project_name	: in pac_project_name.bounded_string;
+		project_name	: in type_project_name;
 		log_threshold	: in type_log_level)
 	is
 		use et_project;

@@ -125,7 +125,7 @@ package body et_project is
 
 
 	procedure create_project_directory (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level)
 	is
@@ -320,7 +320,7 @@ package body et_project is
 
 
 	procedure create_project_directory_bare (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
@@ -367,7 +367,7 @@ package body et_project is
 
 
 	procedure validate_project (
-		project_name	: in pac_project_name.bounded_string;
+		project_name	: in type_project_name;
 		log_threshold 	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
@@ -389,7 +389,7 @@ package body et_project is
 
 
 	procedure open_project (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level)
 	is
 		use ada.directories;
@@ -456,7 +456,7 @@ package body et_project is
 
 
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
+		destination		: in type_project_name; -- blood_sample_analyzer_experimental
 		log_threshold 	: in type_log_level)
 	is
 		use et_rig;
@@ -471,7 +471,7 @@ package body et_project is
 
 		-- break down destination into path and project name:
 		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
-		name : constant pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
+		name : constant type_project_name := to_project_name (simple_name (to_string (destination)));
 
 
 		-- Saves a project internal module or a submodule (indicated by module_cursor).

@@ -51,35 +51,35 @@ package body et_project_name is
 
 
 	function get_length (
-		project_name : in pac_project_name.bounded_string)
+		project_name : in type_project_name)
 		return natural
 	is begin
-		return natural (length (project_name));
+		return natural (length (pac_project_name.bounded_string (project_name)));
 	end get_length;
 
 
 
 
 	function to_string (
-		project_name : in pac_project_name.bounded_string)
+		project_name : in type_project_name)
 		return string
 	is begin
-		return pac_project_name.to_string (project_name);
+		return pac_project_name.to_string (pac_project_name.bounded_string (project_name));
 	end to_string;
 
 
 	function to_project_name (
 		name : in string)
-		return pac_project_name.bounded_string
+		return type_project_name
 	is begin
-		return pac_project_name.to_bounded_string (name);
+		return type_project_name (pac_project_name.to_bounded_string (name));
 	end to_project_name;
 
 
 
 
 	procedure validate_project_name (
-		project_name	: in pac_project_name.bounded_string;
+		project_name	: in type_project_name;
 		log_threshold 	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);

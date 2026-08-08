@@ -2011,7 +2011,7 @@ package body et_kicad.schematic is
 
 
 	procedure import_design (
-		project			: in pac_project_name.bounded_string;
+		project			: in type_project_name;
 		log_threshold	: in type_log_level)
 	is
 		use et_kicad_packages;

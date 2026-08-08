@@ -90,14 +90,14 @@ package body et_import is
 
 
 	procedure validate_project (
-		name		: in pac_project_name.bounded_string;
+		name		: in type_project_name;
 		cad_format	: in type_cad_format := UNKNOWN)
 	is
 	pragma unreferenced (cad_format);
 	-- CS: currently this is just a test, whether the directory "name" exists.
 	-- CS: do a more detailled check depending on cad format (look for project files).
 	begin
-		if exists (pac_project_name.to_string (name)) then
+		if exists (to_string (name)) then
 			null; -- fine
 		else
 			log (SEVERITY_ERROR, "project '" & to_string (name)

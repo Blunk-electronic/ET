@@ -61,7 +61,7 @@ package et_kicad_to_native is
 	-- from the package_libraries) are ignored !
 	-- Creates a directory named after project_name and saves the module in that directory.
 	procedure to_native (
-		project_name	: in pac_project_name.bounded_string;
+		project_name	: in type_project_name;
 		log_threshold	: in type_log_level);
 
 end et_kicad_to_native;

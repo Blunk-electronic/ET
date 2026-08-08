@@ -565,7 +565,7 @@ package et_kicad.schematic is
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	procedure import_design (
 		--first_instance 	: in boolean := false;
-		project			: in pac_project_name.bounded_string;
+		project			: in type_project_name;
 		log_threshold	: in type_log_level);
 
 

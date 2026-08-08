@@ -110,7 +110,7 @@ package et_project is
 -- ACTIVE PROJECT:
 
 	-- Here we store the name of the currently open project:
-	active_project : pac_project_name.bounded_string;
+	active_project : type_project_name;
 
 
 
@@ -122,7 +122,7 @@ package et_project is
 	-- Creates a default rig configuration file.
 	-- Already existing projects in given project_path are overwritten.
 	procedure create_project_directory (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level);
 
@@ -131,7 +131,7 @@ package et_project is
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	procedure create_project_directory_bare (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level);
 
 
@@ -140,7 +140,7 @@ package et_project is
 	-- in the current directory.
 	-- Assigns to the global variable "current_project" the given project_name.
 	procedure open_project (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
 
@@ -160,7 +160,7 @@ package et_project is
 	-- This way comments will be preserved.
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
+		destination		: in type_project_name; -- blood_sample_analyzer_experimental
 		log_threshold 	: in type_log_level);
 
 
