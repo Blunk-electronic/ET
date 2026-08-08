@@ -2293,7 +2293,7 @@ is
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
-			return pac_device_model_file.bounded_string -- the full library name like "../libraries/resistors.lib"
+			return type_device_model_name -- the full library name like "../libraries/resistors.lib"
 		is
 			use type_device_libraries;
 			-- use pac_device_model_file;
@@ -2301,13 +2301,13 @@ is
 			component_found : boolean := false; -- goes true once the given component was found in any library
 
 			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
-			library : pac_device_model_file.bounded_string; -- the full library name to be returned
+			library : type_device_model_name; -- the full library name to be returned
 
 
 			-- Queries the components in the current library. Exits prematurely once the
 			-- given generic component was found.
 			procedure query_components (
-				lib_name 	: in pac_device_model_file.bounded_string;
+				lib_name 	: in type_device_model_name;
 				components 	: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
@@ -2383,7 +2383,7 @@ is
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold 	: in type_log_level)
-			return pac_device_model_file.bounded_string
+			return type_device_model_name
 		is
 			use type_lib_table;
 			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
@@ -2392,13 +2392,13 @@ is
 
 			use type_library_name;
 
-			full_name : pac_device_model_file.bounded_string;
+			full_name : type_device_model_name;
 			component_found : boolean := false;
 
 
 			-- Seaches a component library for the given generic component.
 			procedure search_component (
-				lib_name	: in pac_device_model_file.bounded_string;
+				lib_name	: in type_device_model_name;
 				lib			: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
@@ -2486,7 +2486,7 @@ is
 		-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 		-- Tests if a footprint has been associated with the component.
 
-			full_component_library_name : pac_device_model_file.bounded_string;
+			full_component_library_name : type_device_model_name;
 
 			use et_import;
 

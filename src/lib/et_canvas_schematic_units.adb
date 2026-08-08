@@ -1815,7 +1815,7 @@ package body et_canvas_schematic_units is
 		button : access gtk_file_chooser_button_record'class)
 	is
 		-- The delected device model file (*.dev) is stored here:
-		device_model_file : pac_device_model_file.bounded_string;
+		device_model_file : type_device_model_name;
 
 		use pac_device_models;
 		-- This cursor points to the device model in the library:
@@ -2315,7 +2315,7 @@ package body et_canvas_schematic_units is
 		use pac_devices_electrical;
 
 
-		device_model : pac_device_model_file.bounded_string;
+		device_model : type_device_model_name;
 		device_cursor_lib : pac_device_models.cursor;
 
 		unused_units_total : type_unit_count;

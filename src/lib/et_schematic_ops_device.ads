@@ -135,7 +135,7 @@ package et_schematic_ops_device is
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string; -- 7400.dev
+		return type_device_model_name; -- 7400.dev
 
 
 
@@ -314,7 +314,7 @@ package et_schematic_ops_device is
 	-- existing unit.
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		device_model	: in type_device_model_name; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in type_object_position; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;

@@ -353,7 +353,7 @@ package body et_schematic_ops_units is
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		device_model : pac_device_model_file.bounded_string;
+		device_model : type_device_model_name;
 		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_names;
@@ -1021,7 +1021,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_variants (
-				model	: in pac_device_model_file.bounded_string;
+				model	: in type_device_model_name;
 				device	: in type_device_model)
 			is
 				pragma unreferenced (model);

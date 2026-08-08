@@ -56,7 +56,7 @@ package body et_device_library.packages is
 		result : pac_package_variants.cursor;
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -91,7 +91,7 @@ package body et_device_library.packages is
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model) is
 		pragma unreferenced (device_name);
 		begin
@@ -154,7 +154,7 @@ package body et_device_library.packages is
 		package_model : pac_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);

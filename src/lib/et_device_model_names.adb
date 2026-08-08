@@ -44,29 +44,29 @@ package body et_device_model_names is
 
 
 	function get_length (
-		model_name : in pac_device_model_file.bounded_string)
+		model_name : in type_device_model_name)
 		return natural
 	is
 		use pac_device_model_file;
 	begin
-		return natural (length (model_name));
+		return natural (length (pac_device_model_file.bounded_string (model_name)));
 	end get_length;
 
 
 
 
-	function to_string (name : in pac_device_model_file.bounded_string)
+	function to_string (name : in type_device_model_name)
 		return string is
 	begin
-		return pac_device_model_file.to_string (name);
+		return pac_device_model_file.to_string (pac_device_model_file.bounded_string (name));
 	end to_string;
 
 
 
 	function to_file_name (name : in string)
-		return pac_device_model_file.bounded_string is
+		return type_device_model_name is
 	begin
-		return pac_device_model_file.to_bounded_string (name);
+		return type_device_model_name (pac_device_model_file.to_bounded_string (name));
 	end to_file_name;
 
 

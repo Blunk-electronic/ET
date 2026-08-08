@@ -108,7 +108,7 @@ package body et_module_read_device_electrical is
 	device				: access et_devices_electrical.type_device_electrical;
 
 	device_name			: et_device_name.type_device_name; -- C12
-	device_model_name	: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
 
 	device_value		: et_device_value.pac_device_value.bounded_string; -- 470R
 	device_appearance	: et_units.type_appearance_schematic;
@@ -382,7 +382,7 @@ package body et_module_read_device_electrical is
 
 
 				procedure query_variants (
-					model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+					model	: in type_device_model_name; -- libraries/devices/7400.dev
 					dev_lib	: in type_device_model) -- a device in the library
 				is
 					use et_package_library;

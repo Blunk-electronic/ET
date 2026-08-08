@@ -59,7 +59,7 @@ separate (et_schematic_ops_device)
 
 procedure add_electrical_device (
 	module_cursor	: in pac_generic_modules.cursor;
-	device_model	: in pac_device_model_file.bounded_string;
+	device_model	: in type_device_model_name;
 	variant			: in pac_package_variant_name.bounded_string;
 	destination		: in type_object_position;
 	commit_design	: in type_commit_design := DO_COMMIT;

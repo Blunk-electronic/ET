@@ -62,7 +62,7 @@ package body et_device_library.units is
 
 
 		procedure query_internal (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -74,7 +74,7 @@ package body et_device_library.units is
 
 
 		procedure query_external (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -114,7 +114,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -278,7 +278,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -390,7 +390,7 @@ package body et_device_library.units is
 		cursor_internal : pac_units_internal.cursor;
 
 		procedure query_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model) is
 		pragma unreferenced (model);
 		begin
@@ -472,7 +472,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+			model	: in type_device_model_name; -- ../libraries/devices/logic_ttl/7400.dev
 			device	: in type_device_model) is
 				pragma unreferenced (model);
 
@@ -585,7 +585,7 @@ package body et_device_library.units is
 
 
 		procedure query_internal_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -601,7 +601,7 @@ package body et_device_library.units is
 
 
 		procedure query_external_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);

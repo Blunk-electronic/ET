@@ -48,7 +48,7 @@ package body et_device_library is
 
 
 	--function hash_device_model (
-		--model	: in pac_device_model_file.bounded_string)
+		--model	: in type_device_model_name)
 		--return hash_type
 	--is
 	--begin
@@ -76,7 +76,7 @@ package body et_device_library is
 
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is begin
 		return key (cursor);
 	end get_device_model_file;
@@ -85,7 +85,7 @@ package body et_device_library is
 
 
 	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string;
+		device_name		: in type_device_model_name;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level)
 	is
@@ -124,7 +124,7 @@ package body et_device_library is
 
 
 	function get_device_model (
-		model : in pac_device_model_file.bounded_string)
+		model : in type_device_model_name)
 		return pac_device_models.cursor
 	is
 		cursor : constant pac_device_models.cursor := find (device_library, model);
@@ -139,7 +139,7 @@ package body et_device_library is
 
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is begin
 		return key (device_cursor);
 	end get_device_model_name;

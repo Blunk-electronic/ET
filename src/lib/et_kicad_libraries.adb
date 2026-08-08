@@ -256,7 +256,7 @@ package body et_kicad_libraries is
 
 
 	function to_package_name (
-		library_name	: in pac_device_model_file.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return pac_package_name.bounded_string
@@ -320,7 +320,7 @@ package body et_kicad_libraries is
 
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
-		library			: in pac_device_model_file.bounded_string; -- ../lib/transistors.lib
+		library			: in type_device_model_name; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 	begin
@@ -2260,7 +2260,7 @@ package body et_kicad_libraries is
 			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
-				key			: in pac_device_model_file.bounded_string;
+				key			: in type_device_model_name;
 				components	: in out type_components_library.map)
 			is
 				pragma unreferenced (key);
@@ -2361,7 +2361,7 @@ package body et_kicad_libraries is
 				end locate_unit;
 
 				procedure locate_component (
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in type_components_library.map) is
 				pragma unreferenced (key, components);
 				begin
@@ -2418,7 +2418,7 @@ package body et_kicad_libraries is
 				end insert_unit;
 
 				procedure locate_component (
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin
@@ -2537,7 +2537,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
@@ -2625,7 +2625,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
@@ -2893,7 +2893,7 @@ package body et_kicad_libraries is
 					end insert_footprint;
 
 					procedure locate_component (
-						key			: in pac_device_model_file.bounded_string;
+						key			: in type_device_model_name;
 						components	: in out type_components_library.map) is
 					pragma unreferenced (key);
 					begin
@@ -2989,7 +2989,7 @@ package body et_kicad_libraries is
 			procedure build_package_variant is
 
 				procedure locate_component (
-					lib_name	: in pac_device_model_file.bounded_string;
+					lib_name	: in type_device_model_name;
 					components	: in out type_components_library.map)
 				is
 					pragma unreferenced (lib_name);
@@ -3433,7 +3433,7 @@ package body et_kicad_libraries is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in pac_device_model_file.bounded_string; 	-- ../lbr/bel_logic.lib
+		component_library 	: in type_device_model_name; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
@@ -3451,7 +3451,7 @@ package body et_kicad_libraries is
 
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
-			library_name	: in pac_device_model_file.bounded_string;
+			library_name	: in type_device_model_name;
 			components 		: in out type_components_library.map)
 		is
 			pragma unreferenced (library_name);
@@ -3697,7 +3697,7 @@ package body et_kicad_libraries is
 
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
-		library		: in pac_device_model_file.bounded_string;
+		library		: in type_device_model_name;
 		component	: in type_component_generic_name.bounded_string)
 		return type_components_library.cursor is
 
@@ -3708,7 +3708,7 @@ package body et_kicad_libraries is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in pac_device_model_file.bounded_string;
+			library 	: in type_device_model_name;
 			components	: in type_components_library.map) is
 		pragma unreferenced (library);
 		begin

@@ -122,9 +122,9 @@ procedure et is
 	symbol_name_save_as		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
-	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
-	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
+	device_name_create		: type_device_model_name; -- the device to be created like libraries/devices/TL084.dev
+	device_name_open		: type_device_model_name; -- the device to be opened
+	device_name_save_as		: type_device_model_name; -- the device to be saved as
 	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
 	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs

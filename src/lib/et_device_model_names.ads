@@ -59,18 +59,20 @@ package et_device_model_names is
 		generic_bounded_length (device_model_file_name_length_max);
 	-- CS rename to pac_device_model_name
 
+	type type_device_model_name is new pac_device_model_file.bounded_string;
+
 	-- use pac_device_model_file;
 
 
 
 	function get_length (
-		model_name : in pac_device_model_file.bounded_string)
+		model_name : in type_device_model_name)
 		return natural;
 
 
-	function to_string (name : in pac_device_model_file.bounded_string) return string;
+	function to_string (name : in type_device_model_name) return string;
 
-	function to_file_name (name : in string) return pac_device_model_file.bounded_string;
+	function to_file_name (name : in string) return type_device_model_name;
 	-- CS rename to to_device_model_name
 
 

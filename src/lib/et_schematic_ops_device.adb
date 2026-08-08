@@ -331,7 +331,7 @@ package body et_schematic_ops_device is
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is
 		cursor : pac_devices_electrical.cursor;
 	begin
@@ -1097,7 +1097,7 @@ package body et_schematic_ops_device is
 
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_model	: in pac_device_model_file.bounded_string;
+		device_model	: in type_device_model_name;
 		variant			: in pac_package_variant_name.bounded_string;
 		destination		: in type_object_position;
 		commit_design	: in type_commit_design := DO_COMMIT;

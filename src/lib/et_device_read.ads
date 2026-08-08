@@ -50,7 +50,7 @@ package et_device_read is
 	-- whether all conductor layers are are in
 	-- range type_signal_layer'first .. deepest conductor layer.
 	procedure read_device (
-		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in type_device_model_name; -- ../lbr/logic_ttl/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		-- CS error : out boolean;
 		-- CS device_curosr : out pac_devices_lib.cursor;

@@ -471,7 +471,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_internal_units (
-			model_name		: in pac_device_model_file.bounded_string;
+			model_name		: in type_device_model_name;
 			device_model	: in type_device_model)
 		is
 			pragma unreferenced (model_name);
@@ -490,7 +490,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_external_units (
-			model_name		: in pac_device_model_file.bounded_string;
+			model_name		: in type_device_model_name;
 			device_model	: in type_device_model)
 		is
 			pragma unreferenced (model_name);
@@ -707,7 +707,7 @@ package body et_devices_electrical.units is
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
 
-		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		model : type_device_model_name; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_device_models.cursor;
 
 		use et_symbol_text;
@@ -727,7 +727,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_internal_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -764,7 +764,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_external_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -1142,7 +1142,7 @@ package body et_devices_electrical.units is
 
 
 		procedure query_model (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);

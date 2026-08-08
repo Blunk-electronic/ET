@@ -157,7 +157,7 @@ package et_devices_electrical is
 
 	function get_device_model_file (
 		device : type_device_electrical)
-		return pac_device_model_file.bounded_string; -- *.dev
+		return type_device_model_name; -- *.dev
 	-- CS rename to get_device_model_name
 
 
@@ -225,7 +225,7 @@ package et_devices_electrical is
 
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
-		return pac_device_model_file.bounded_string; -- *.dev
+		return type_device_model_name; -- *.dev
 
 
 

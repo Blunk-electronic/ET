@@ -73,7 +73,7 @@ package body et_device_read is
 
 
 	procedure read_device (
-		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		file_name 		: in type_device_model_name; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level)
 	is

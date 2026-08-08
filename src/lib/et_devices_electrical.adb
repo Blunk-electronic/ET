@@ -75,7 +75,7 @@ package body et_devices_electrical is
 
 	function get_device_model_file (
 		device : type_device_electrical)
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is
 		use pac_device_models;
 	begin
@@ -104,7 +104,7 @@ package body et_devices_electrical is
 		return pac_device_models.cursor
 	is
 		use et_device_model_names;
-		model_file : pac_device_model_file.bounded_string;
+		model_file : type_device_model_name;
 	begin
 		-- The name of the device model file is THE link
 		-- from device in schematic to device in library:
@@ -182,7 +182,7 @@ package body et_devices_electrical is
 
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is begin
 		return get_device_model_file (element (device));
 	end get_device_model_file;

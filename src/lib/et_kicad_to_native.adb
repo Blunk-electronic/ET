@@ -2525,7 +2525,7 @@ package body et_kicad_to_native is
 -- 						et_project.type_et_project_path.to_bounded_string (
 -- 							compose (et_general.work_directory, et_project.directory_import));
 
-		prefix_devices_dir : constant pac_device_model_file.bounded_string := -- libraries/devices
+		prefix_devices_dir : constant type_device_model_name := -- libraries/devices
 			to_file_name (compose (
 				directory_libraries, directory_libraries_devices));
 
@@ -2596,14 +2596,14 @@ package body et_kicad_to_native is
 		-- generic component name and device model extension
 		-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 		function concatenate_lib_name_and_generic_name (
-			library	: in pac_device_model_file.bounded_string; -- ../../lbr/bel_logic.lib
+			library	: in type_device_model_name; -- ../../lbr/bel_logic.lib
 			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
-			return pac_device_model_file.bounded_string
+			return type_device_model_name
 		is
 
 			use pac_device_model_file;
-			dir : pac_device_model_file.bounded_string; -- ../../lbr
-			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
+			dir : type_device_model_name; -- ../../lbr
+			name : type_device_model_name; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
@@ -2611,7 +2611,7 @@ package body et_kicad_to_native is
 		begin -- concatenate_lib_name_and_generic_name
 			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
 
-			pac_device_model_file.translate (dir, characters); -- __-__-lbr
+			translate (dir, characters); -- __-__-lbr
 			--log (text => "dir " & et_libraries.to_string (dir));
 
 			name := to_file_name (base_name (to_string (name => library))); -- bel_logic
@@ -2675,7 +2675,7 @@ package body et_kicad_to_native is
 			component_cursor_native	: pac_devices_electrical.cursor;
 			component_inserted		: boolean;
 
-			model_name : pac_device_model_file.bounded_string;
+			model_name : type_device_model_name;
 
 
 			-- Copies the kicad units to the native component.
@@ -3339,7 +3339,7 @@ package body et_kicad_to_native is
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
 
 			use pac_device_model_file;
-			component_library_name : pac_device_model_file.bounded_string; -- lbr/logic.lib
+			component_library_name : type_device_model_name; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:
 			use et_kicad_packages.type_libraries;
@@ -3349,7 +3349,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_components (
-				library_name	: in pac_device_model_file.bounded_string; -- lbr/logic.lib
+				library_name	: in type_device_model_name; -- lbr/logic.lib
 				library			: in et_kicad_libraries.type_components_library.map)
 			is
 				pragma unreferenced (library_name);
@@ -3360,7 +3360,7 @@ package body et_kicad_to_native is
 
 				use et_kicad_libraries.type_component_generic_name;
 				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
-				device_model : pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+				device_model : type_device_model_name; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : pac_device_models.cursor;
 				inserted : boolean;
@@ -3369,7 +3369,7 @@ package body et_kicad_to_native is
 
 				-- Transfers the kicad units to native units in the current native ET device.
 				procedure copy_units (
-					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in type_device_model_name; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model)
 				is
 					pragma unreferenced (device_name);
@@ -3740,7 +3740,7 @@ package body et_kicad_to_native is
 				-- The package associated with a variant must be changed so that it becomes
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
 				procedure rename_package_model_in_variants (
-					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in type_device_model_name; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model)
 				is
 					pragma unreferenced (device_name);
