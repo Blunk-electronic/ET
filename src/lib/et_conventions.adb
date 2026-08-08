@@ -1802,7 +1802,7 @@ package body et_conventions is
 
 
 	function to_abbrevation (unit : in type_unit_of_measurement)
-		return pac_unit_abbrevation.bounded_string
+		return type_unit_abbrevation
 	is
 		use pac_units_of_measurement;
 	begin
@@ -2649,7 +2649,7 @@ package body et_conventions is
 			prefix 		: type_device_prefix;
 			cat 		: type_device_category;
 
-			abbrevation	: pac_unit_abbrevation.bounded_string;
+			abbrevation	: type_unit_abbrevation;
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
@@ -2715,7 +2715,7 @@ package body et_conventions is
 						-- Build the unit abbrevation from field #1:
 						-- Test if abbrevation contains only allowed characters.
 						-- We test against the character set specified for abbrevations of units of measurement.
-						abbrevation := pac_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1));
+						abbrevation := type_unit_abbrevation (pac_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1)));
 						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
 
 						-- Build the unit of measurement from field #2:
@@ -3009,7 +3009,7 @@ package body et_conventions is
 			-- goes true once a valid abbrevation of a unit of measurement is found
 			unit_ok 	: boolean := false;
 
-			use pac_unit_abbrevation;
+			use et_units_of_measurement;
 
 
 			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
@@ -3019,7 +3019,7 @@ package body et_conventions is
 				return boolean
 			is
 				use pac_device_value;
-				abbrevation : constant pac_unit_abbrevation.bounded_string := to_abbrevation (unit);
+				abbrevation : constant type_unit_abbrevation := to_abbrevation (unit);
 			begin
 				if index (value, to_string (abbrevation), place) = place then
 					-- abbrevation valid. advance place to end of abbrevation.

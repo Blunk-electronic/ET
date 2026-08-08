@@ -259,7 +259,7 @@ package et_conventions is
 	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
 	-- actual abbrevation like R or V.
 	function to_abbrevation (unit : in type_unit_of_measurement)
-		return pac_unit_abbrevation.bounded_string;
+		return type_unit_abbrevation;
 
 
 
