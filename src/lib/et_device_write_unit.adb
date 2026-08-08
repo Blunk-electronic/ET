@@ -70,7 +70,7 @@ package body et_device_write_unit is
 
 
 	procedure write_internal_units (
-		units 			: in pac_units_internal.map;
+		units			: in pac_units_internal.map;
 		log_threshold	: in type_log_level)
 	is
 		use pac_units_internal;
@@ -117,7 +117,7 @@ package body et_device_write_unit is
 
 
 	procedure write_external_units (
-		units 			: in pac_units_external.map;
+		units			: in pac_units_external.map;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);

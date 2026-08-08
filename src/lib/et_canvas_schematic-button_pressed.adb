@@ -586,7 +586,7 @@ begin -- button_pressed
 
 	-- CS
 	-- exception when event: others =>
-	-- 	set_status (exception_message (event));
+	--	set_status (exception_message (event));
 	--  reset_selections;
 	--  redraw;
 

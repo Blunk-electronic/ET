@@ -37,7 +37,7 @@
 
 
 
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 with et_string_processing;		use et_string_processing;
 with ada.directories;			use ada.directories;
 with ada.strings;				use ada.strings;
@@ -113,10 +113,10 @@ package body et_logging is
 	end log_indentation_reset;
 
 
--- 	procedure log_indentation_operation (operation : in type_log_identation_operation) is
--- 	begin
--- 		null;
--- 	end log_indentation_operation;
+--	procedure log_indentation_operation (operation : in type_log_identation_operation) is
+--	begin
+--		null;
+--	end log_indentation_operation;
 
 
 
@@ -160,7 +160,7 @@ package body et_logging is
 		end write_text;
 
 	begin -- log
-		-- 		if level < no_logging then
+		--		if level < no_logging then
 
 		if importance = SEVERITY_WARNING then
 			increment_warning_counter;
@@ -201,7 +201,7 @@ package body et_logging is
 
 			end if;
 
--- 		end if;
+--		end if;
 	end log;
 
 
@@ -277,7 +277,7 @@ package body et_logging is
 		use et_directory_and_file_ops;
 	begin
 		return compose (
-			containing_directory 	=> compose (work_directory, report_directory),
+			containing_directory	=> compose (work_directory, report_directory),
 			name					=> "messages",
 			extension				=> report_extension
 			);

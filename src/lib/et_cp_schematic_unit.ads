@@ -61,7 +61,7 @@ package et_cp_schematic_unit is
 	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -70,7 +70,7 @@ package et_cp_schematic_unit is
 	-- of a device like "schematic led_driver delete unit IC1 C":
 	procedure delete_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -81,7 +81,7 @@ package et_cp_schematic_unit is
 	-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
 	procedure drag_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -94,7 +94,7 @@ package et_cp_schematic_unit is
 	-- example 2: schematic led_driver move unit IC1 C absolute 2 210 100
 	procedure move_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -107,7 +107,7 @@ package et_cp_schematic_unit is
 	-- example 2: schematic led_driver rotate unit IC1 B absolute 90
 	procedure rotate_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -119,7 +119,7 @@ package et_cp_schematic_unit is
 	-- example 1: schematic led_driver mirror unit IC1 A
 	procedure mirror_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -131,7 +131,7 @@ package et_cp_schematic_unit is
 	-- "schematic demo fetch unit IC1 C 1 70 100 -90"
 	procedure fetch_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -146,7 +146,7 @@ package et_cp_schematic_unit is
 	-- Example: "schematic led_driver rotate value IC1 A horizontal"
 	procedure rotate_unit_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -157,7 +157,7 @@ package et_cp_schematic_unit is
 	-- Example: "schematic led_driver move value IC1 A relative -5 0"
 	procedure move_unit_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

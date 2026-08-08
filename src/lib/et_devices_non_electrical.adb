@@ -1428,7 +1428,7 @@ package body et_devices_non_electrical is
 		result : pac_text_content.bounded_string;
 	begin
 		case placeholder.meaning is
-			when NAME 		=> result := to_content (to_string (key (device_cursor)));
+			when NAME		=> result := to_content (to_string (key (device_cursor)));
 			-- CS
 			--when VALUE		=> result := to_content (to_string (device.value));
 			--when PURPOSE	=> result := to_content (to_string (device.purpose));
@@ -1573,14 +1573,14 @@ package body et_devices_non_electrical is
 
 					-- Vectorize the content of the placeholder:
 					-- text.vectors := vectorize_text (
-					-- 	content		=> text.content,
-					-- 	size		=> ph.size,
-					-- 	--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-					-- 	rotation	=> get_rotation (ph.position),
-					-- 	position	=> ph.position.place,
-					-- 	mirror		=> MIRROR_NO,
-					-- 	line_width	=> ph.line_width,
-					-- 	alignment	=> ph.alignment); -- right, bottom
+					--	content		=> text.content,
+					--	size		=> ph.size,
+					--	--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+					--	rotation	=> get_rotation (ph.position),
+					--	position	=> ph.position.place,
+					--	mirror		=> MIRROR_NO,
+					--	line_width	=> ph.line_width,
+					--	alignment	=> ph.alignment); -- right, bottom
 
 					assy_doc.texts.append (text);
 				end if;

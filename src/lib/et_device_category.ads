@@ -51,7 +51,7 @@ package et_device_category is
 		ANTENNA,
 		BATTERY,
 		BUZZER,
--- 		CABLE,
+--		CABLE,
 		CAPACITOR,
 		CAPACITOR_ADJUSTABLE,	-- adjustable capacitor (also known as trimmer)
 		CONNECTOR,				-- component where another component of opposide gender is plugged
@@ -92,7 +92,7 @@ package et_device_category is
 		TRIAC,
 		TUBE,					-- triodes, pentodes, thyratrons, klystrons, ...
 		UNKNOWN					-- not specified
--- 		WIRE
+--		WIRE
 		);
 
 

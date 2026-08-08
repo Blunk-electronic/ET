@@ -37,7 +37,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with ada.numerics;
@@ -874,7 +874,7 @@ package et_geometry_1 is
 -- LINE
 
 	type type_line_fine is record
-		A, B 	: type_vector; -- start and end point
+		A, B	: type_vector; -- start and end point
 		status	: type_object_status;
 	end record;
 
@@ -996,7 +996,7 @@ package et_geometry_1 is
 
 
 	procedure modify_status (
-		line 		: in out type_line_fine;
+		line		: in out type_line_fine;
 		operation	: in type_status_operation);
 
 
@@ -1093,7 +1093,7 @@ package et_geometry_1 is
 
 	function to_arc_fine (
 		center		: in type_vector;
-		A, B 		: in type_vector; -- start and end point
+		A, B		: in type_vector; -- start and end point
 		direction	: in type_direction_of_rotation)
 		return type_arc_fine;
 
@@ -1328,8 +1328,8 @@ package et_geometry_1 is
 
 
 	-- type type_nearest_arc_segment is record
-	-- 	index : positive;
-	-- 	distance	: type_float_positive);
+	--	index : positive;
+	--	distance	: type_float_positive);
 	-- end record;
 
 

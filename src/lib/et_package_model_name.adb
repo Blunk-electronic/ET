@@ -41,7 +41,7 @@
 -- with ada.characters;			use ada.characters;
 --
 -- with ada.strings;				use ada.strings;
--- with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.fixed;		use ada.strings.fixed;
 --
 -- with et_logging;				use et_logging;
 -- with et_string_processing;		use et_string_processing;

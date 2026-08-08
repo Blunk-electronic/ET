@@ -130,7 +130,7 @@ is
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
 
 					-- when NOUN_TRACK =>
-					-- 	et_canvas_board_tracks.move_track (MOUSE, snap_point);
+					--	et_canvas_board_tracks.move_track (MOUSE, snap_point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
@@ -146,7 +146,7 @@ is
 						et_canvas_board_outline.move_object (MOUSE, snap_point);
 
 					-- when NOUN_TEXT =>
-					-- 	et_canvas_board_texts.move_text (MOUSE, snap_point);
+					--	et_canvas_board_texts.move_text (MOUSE, snap_point);
 
 					when NOUN_VIA =>
 						et_canvas_board_vias.move_object (MOUSE, snap_point);
@@ -235,7 +235,7 @@ is
 						et_canvas_board_conductors.delete_object (event.point);
 
 					-- when NOUN_TRACK =>
-					-- 	et_canvas_board_tracks.ripup (event.point);
+					--	et_canvas_board_tracks.ripup (event.point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.delete_object (event.point);
@@ -319,9 +319,9 @@ is
 						end if;
 
 					-- when NOUN_TRACK =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_tracks.select_track;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_tracks.select_track;
+					--	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
@@ -344,9 +344,9 @@ is
 						end if;
 
 					-- when NOUN_TEXT =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_texts.select_text;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_texts.select_text;
+					--	end if;
 
 					when NOUN_VIA =>
 						if clarification_pending then
@@ -445,18 +445,18 @@ is
 
 
 					-- when NOUN_TRACK =>
-					-- 	-- As long as a clarification of the
-					-- 	-- segment is pending, a right click
-					-- 	-- advances to the next segment.
-					-- 	-- If no clarification is requested, then
-					-- 	-- a right click changes the ripup mode:
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_tracks.select_track;
-					-- 	else
-					-- 		-- select ripup mode
-					-- 		next_ripup_mode;
-					-- 		set_status (to_string (ripup_mode));
-					-- 	end if;
+					--	-- As long as a clarification of the
+					--	-- segment is pending, a right click
+					--	-- advances to the next segment.
+					--	-- If no clarification is requested, then
+					--	-- a right click changes the ripup mode:
+					--	if clarification_pending then
+					--		et_canvas_board_tracks.select_track;
+					--	else
+					--		-- select ripup mode
+					--		next_ripup_mode;
+					--		set_status (to_string (ripup_mode));
+					--	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
@@ -539,7 +539,7 @@ begin -- button_pressed
 
 	-- CS
 	-- exception when event: others =>
-	-- 	set_status (exception_message (event));
+	--	set_status (exception_message (event));
 	-- CS reset_selections;
 	-- redraw;
 

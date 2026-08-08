@@ -64,7 +64,7 @@ package et_cp_project is
 	procedure execute_project_command (
 		cmd				: in out type_single_cmd;
 		verb			: in type_verb_project;
-		noun 			: in type_noun_project;
+		noun			: in type_noun_project;
 		log_threshold	: in type_log_level);
 
 

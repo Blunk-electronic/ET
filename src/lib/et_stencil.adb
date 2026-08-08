@@ -551,7 +551,7 @@ package body et_stencil is
 	procedure arc_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_arcs;
 		arc : type_stencil_arc;
@@ -567,7 +567,7 @@ package body et_stencil is
 	procedure circle_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_circles;
 	begin
@@ -580,7 +580,7 @@ package body et_stencil is
 	procedure line_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_lines;
 		line : type_stencil_line;

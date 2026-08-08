@@ -38,7 +38,7 @@
 -- DESCRIPTION:
 --
 
-with ada.strings.bounded;       	use ada.strings.bounded;
+with ada.strings.bounded;	use ada.strings.bounded;
 
 with et_generic_modules;			use et_generic_modules;
 with et_modes.schematic;

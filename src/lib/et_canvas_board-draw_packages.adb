@@ -108,7 +108,7 @@ procedure draw_packages is
 
 	brightness : type_brightness := NORMAL;
 
-	device_name 	: et_device_name.type_device_name;
+	device_name	: et_device_name.type_device_name;
 	device_value	: et_device_value.pac_device_value.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 
@@ -170,7 +170,7 @@ procedure draw_packages is
 			use et_device_purpose;
 		begin
 			case placeholder.meaning is
-				when NAME 		=> result := to_content (to_string (device_name));
+				when NAME		=> result := to_content (to_string (device_name));
 				when VALUE		=> result := to_content (to_string (device_value));
 				when PURPOSE	=> result := to_content (to_string (device_purpose));
 			end case;
@@ -847,7 +847,7 @@ procedure draw_packages is
 		draw_via_restrict;
 		draw_holes;
 
- 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
+		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
 
 	end draw_package;
@@ -1019,7 +1019,7 @@ procedure draw_packages is
 
 
 begin
--- 	put_line ("draw packages ...");
+--	put_line ("draw packages ...");
 
 
 	pac_generic_modules.query_element (

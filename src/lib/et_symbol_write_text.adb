@@ -41,7 +41,7 @@
 -- - use renames
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -74,7 +74,7 @@ package body et_symbol_write_text is
 	is begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
--- 		write (keyword => keyword_style, parameters => to_string (t.style));
+--		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & space & to_string (t.alignment.vertical)

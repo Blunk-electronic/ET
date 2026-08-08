@@ -36,7 +36,7 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 
 
 
@@ -147,7 +147,7 @@ package body et_geometry_1.et_polygons.clipping is
 					splice (
 						target	=> vertices_tmp_1, -- primary
 						before	=> pac_vertices.no_element,
-						source 	=> vertices_tmp_2); -- will be emptied
+						source	=> vertices_tmp_2); -- will be emptied
 
 					-- If we have reached the start point then the sub-polygon
 					-- is complete.
@@ -178,7 +178,7 @@ package body et_geometry_1.et_polygons.clipping is
 						splice (
 							target	=> vertices_tmp_1, -- primary
 							before	=> pac_vertices.no_element,
-							source 	=> vertices_tmp_2); -- will be emtied
+							source	=> vertices_tmp_2); -- will be emtied
 
 						-- Switch to polygon B and get intersections
 						-- until (and including) an entering intersection

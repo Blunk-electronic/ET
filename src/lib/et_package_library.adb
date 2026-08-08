@@ -47,73 +47,73 @@ package body et_package_library is
 
 
 
--- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
--- 	-- Checks whether the given track clearance is in range of type_track_clearance.
--- 	begin
--- 		if clearance not in type_track_clearance then
--- 			log (ERROR, "track clearance invalid ! Allowed range is"
--- 				 & to_string (type_track_clearance'first) & " .."
--- 				 & to_string (type_track_clearance'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_clearance;
+--	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
+--	-- Checks whether the given track clearance is in range of type_track_clearance.
+--	begin
+--		if clearance not in type_track_clearance then
+--			log (ERROR, "track clearance invalid ! Allowed range is"
+--				 & to_string (type_track_clearance'first) & " .."
+--				 & to_string (type_track_clearance'last),
+--				 console => true);
+--			raise constraint_error;
+--		end if;
+--	end validate_track_clearance;
 --
--- 	procedure validate_track_width (track_width : in type_distance_positive) is
--- 	-- Checks whether the given width is in range of type_track_width.
--- 	begin
--- 		if track_width not in type_track_width then
--- 			log (ERROR, "track width invalid ! Allowed range is"
--- 				 & to_string (type_track_width'first) & " .."
--- 				 & to_string (type_track_width'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_width;
+--	procedure validate_track_width (track_width : in type_distance_positive) is
+--	-- Checks whether the given width is in range of type_track_width.
+--	begin
+--		if track_width not in type_track_width then
+--			log (ERROR, "track width invalid ! Allowed range is"
+--				 & to_string (type_track_width'first) & " .."
+--				 & to_string (type_track_width'last),
+--				 console => true);
+--			raise constraint_error;
+--		end if;
+--	end validate_track_width;
 
--- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is
--- 	-- Checks whether the given restring width is in range of type_restring_width.
--- 	begin
--- 		if restring_width not in type_restring_width then
--- 			log (ERROR, "restring width invalid ! Allowed range is"
--- 				 & to_string (type_restring_width'first) & " .."
--- 				 & to_string (type_restring_width'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_restring_width;
-
-
+--	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is
+--	-- Checks whether the given restring width is in range of type_restring_width.
+--	begin
+--		if restring_width not in type_restring_width then
+--			log (ERROR, "restring width invalid ! Allowed range is"
+--				 & to_string (type_restring_width'first) & " .."
+--				 & to_string (type_restring_width'last),
+--				 console => true);
+--			raise constraint_error;
+--		end if;
+--	end validate_restring_width;
 
 
 
--- 	procedure log_plated_millings (
--- 		millings 		: in type_plated_millings;
--- 		log_threshold	: in type_log_level)
--- 		is
--- -- 		use pac_pcb_contour_lines;
--- -- 		use pac_pcb_contour_arcs;
--- -- 		use pac_pcb_contour_circles;
+
+
+--	procedure log_plated_millings (
+--		millings		: in type_plated_millings;
+--		log_threshold	: in type_log_level)
+--		is
+-- --		use pac_pcb_contour_lines;
+-- --		use pac_pcb_contour_arcs;
+-- --		use pac_pcb_contour_circles;
 -- --
--- -- 		procedure line (cursor : in pac_pcb_contour_lines.cursor) is begin
--- -- 			line_pcb_contour_properties (cursor, log_threshold);
--- -- 		end;
+-- --		procedure line (cursor : in pac_pcb_contour_lines.cursor) is begin
+-- --			line_pcb_contour_properties (cursor, log_threshold);
+-- --		end;
 -- --
--- -- 		procedure arc (cursor : in pac_pcb_contour_arcs.cursor) is begin
--- -- 			arc_pcb_contour_properties (cursor, log_threshold);
--- -- 		end;
+-- --		procedure arc (cursor : in pac_pcb_contour_arcs.cursor) is begin
+-- --			arc_pcb_contour_properties (cursor, log_threshold);
+-- --		end;
 -- --
--- -- 		procedure circle (cursor : in pac_pcb_contour_circles.cursor) is begin
--- -- 			circle_pcb_contour_properties (cursor, log_threshold);
--- -- 		end;
+-- --		procedure circle (cursor : in pac_pcb_contour_circles.cursor) is begin
+-- --			circle_pcb_contour_properties (cursor, log_threshold);
+-- --		end;
 --
--- 	begin -- log_plated_millings
--- 		null;
+--	begin -- log_plated_millings
+--		null;
 -- -- CS
--- -- 		iterate (millings.lines, line'access);
--- -- 		iterate (millings.arcs, arc'access);
--- -- 		iterate (millings.circles, circle'access);
--- 	end log_plated_millings;
+-- --		iterate (millings.lines, line'access);
+-- --		iterate (millings.arcs, arc'access);
+-- --		iterate (millings.circles, circle'access);
+--	end log_plated_millings;
 
 
 
@@ -138,7 +138,7 @@ package body et_package_library is
 
 
 	procedure create_package (
-		package_name 	: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name	: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level)
 	is begin
@@ -485,7 +485,7 @@ package body et_package_library is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	--procedure line_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_lines.cursor;
-		--log_threshold 	: in type_log_level)
+		--log_threshold	: in type_log_level)
 	--is
 		--use pac_pcb_contour_lines;
 		--line : type_pcb_contour_line;
@@ -497,7 +497,7 @@ package body et_package_library is
 
 	--procedure arc_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_arcs.cursor;
-		--log_threshold 	: in type_log_level)
+		--log_threshold	: in type_log_level)
 	--is
 		--use pac_pcb_contour_arcs;
 		--arc : type_pcb_contour_arc;
@@ -509,7 +509,7 @@ package body et_package_library is
 
 	--procedure circle_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_circles.cursor;
-		--log_threshold 	: in type_log_level)
+		--log_threshold	: in type_log_level)
 	--is
 		--use pac_pcb_contour_circles;
 		--circle : type_pcb_contour_circle;
@@ -525,101 +525,101 @@ package body et_package_library is
 
 
 
--- 	procedure terminal_properties (
--- 	-- Logs the properties of the given terminal.
--- 		terminal		: in type_terminal;
--- 		name			: in pac_terminal_name.bounded_string;
--- 		log_threshold 	: in type_log_level) is
--- 		use et_pcb_coordinates;
--- 		log_threshold_1 : type_log_level := log_threshold + 1;
+--	procedure terminal_properties (
+--	-- Logs the properties of the given terminal.
+--		terminal		: in type_terminal;
+--		name			: in pac_terminal_name.bounded_string;
+--		log_threshold	: in type_log_level) is
+--		use et_pcb_coordinates;
+--		log_threshold_1 : type_log_level := log_threshold + 1;
 --
--- -- 		use type_pad_lines;
--- -- 		use type_pad_arcs;
--- -- 		use type_pad_circles;
--- -- 		use type_pad_polygons;
+-- --		use type_pad_lines;
+-- --		use type_pad_arcs;
+-- --		use type_pad_circles;
+-- --		use type_pad_polygons;
 --
--- -- 		procedure line (cursor : in type_pad_lines.cursor) is begin
--- -- 			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
--- -- 		end line;
+-- --		procedure line (cursor : in type_pad_lines.cursor) is begin
+-- --			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
+-- --		end line;
 -- --
--- -- 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
--- -- 			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
--- -- 		end arc;
+-- --		procedure arc (cursor : in type_pad_arcs.cursor) is begin
+-- --			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
+-- --		end arc;
 -- --
--- -- 		procedure circle (cursor : in type_pad_circles.cursor) is begin
--- -- 			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
--- -- 		end circle;
+-- --		procedure circle (cursor : in type_pad_circles.cursor) is begin
+-- --			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
+-- --		end circle;
 -- --
--- -- 		procedure polygon (cursor : in type_pad_polygons.cursor) is
--- -- 			use type_polygon_points;
--- -- 			points : type_polygon_points.set := element (cursor).corners;
+-- --		procedure polygon (cursor : in type_pad_polygons.cursor) is
+-- --			use type_polygon_points;
+-- --			points : type_polygon_points.set := element (cursor).corners;
 -- --
--- -- 			procedure point (cursor : in type_polygon_points.cursor) is begin
--- -- 				log (text => to_string (element (cursor)), level => log_threshold + 1);
--- -- 			end point;
+-- --			procedure point (cursor : in type_polygon_points.cursor) is begin
+-- --				log (text => to_string (element (cursor)), level => log_threshold + 1);
+-- --			end point;
 -- --
--- -- 		begin -- polygon
--- -- 			log (text => "polygon with corners", level => log_threshold + 1);
--- -- 			log_indentation_up;
--- -- 			iterate (points, point'access);
--- -- 			log_indentation_down;
--- -- 		end polygon;
+-- --		begin -- polygon
+-- --			log (text => "polygon with corners", level => log_threshold + 1);
+-- --			log_indentation_up;
+-- --			iterate (points, point'access);
+-- --			log_indentation_down;
+-- --		end polygon;
 --
--- 	begin -- terminal_properties
--- 		log (text => "terminal name " & to_string (name)
--- 			& " technology" & to_string (terminal.technology)
--- 			& to_string (type_point (terminal.position))
--- 			& " rotation" & to_string (rot (terminal.position)),
--- 			level => log_threshold);
+--	begin -- terminal_properties
+--		log (text => "terminal name " & to_string (name)
+--			& " technology" & to_string (terminal.technology)
+--			& to_string (type_point (terminal.position))
+--			& " rotation" & to_string (rot (terminal.position)),
+--			level => log_threshold);
 --
--- 		log_indentation_up;
+--		log_indentation_up;
 --
--- 		case terminal.technology is
--- 			when THT =>
+--		case terminal.technology is
+--			when THT =>
 --
--- 				-- log pad_shape_top/bottom
--- 				log (text => "pad contour top", level => log_threshold + 1);
--- -- 				iterate (terminal.pad_shape_tht.top.lines, line'access);
--- -- 				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
--- -- 				iterate (terminal.pad_shape_tht.top.circles, circle'access);
--- -- 				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
+--				-- log pad_shape_top/bottom
+--				log (text => "pad contour top", level => log_threshold + 1);
+-- --				iterate (terminal.pad_shape_tht.top.lines, line'access);
+-- --				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
+-- --				iterate (terminal.pad_shape_tht.top.circles, circle'access);
+-- --				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
 --
--- 				log (text => "pad contour bottom", level => log_threshold + 1);
--- -- 				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
--- -- 				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
--- -- 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
--- -- 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
+--				log (text => "pad contour bottom", level => log_threshold + 1);
+-- --				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
+-- --				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
+-- --				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
+-- --				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
 --
--- 				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
+--				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
 --
--- 				case terminal.tht_hole is
--- 					when DRILLED =>
--- 						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1);
--- 					when MILLED =>
--- 						if log_level >= log_threshold_1 then
--- 							log (text => "plated milling contour ");
--- 							log_indentation_up;
--- 								log_plated_millings (terminal.millings, log_threshold_1);
--- 							log_indentation_down;
--- 						end if;
--- 				end case;
+--				case terminal.tht_hole is
+--					when DRILLED =>
+--						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1);
+--					when MILLED =>
+--						if log_level >= log_threshold_1 then
+--							log (text => "plated milling contour ");
+--							log_indentation_up;
+--								log_plated_millings (terminal.millings, log_threshold_1);
+--							log_indentation_down;
+--						end if;
+--				end case;
 --
--- 			when SMT =>
+--			when SMT =>
 --
--- 				-- log pad_shape
--- 				log (text => "pad contour", level => log_threshold + 1);
--- -- 				iterate (terminal.pad_shape.lines, line'access);
--- -- 				iterate (terminal.pad_shape.arcs, arc'access);
--- -- 				iterate (terminal.pad_shape.circles, circle'access);
--- -- 				iterate (terminal.pad_shape.polygons, polygon'access);
+--				-- log pad_shape
+--				log (text => "pad contour", level => log_threshold + 1);
+-- --				iterate (terminal.pad_shape.lines, line'access);
+-- --				iterate (terminal.pad_shape.arcs, arc'access);
+-- --				iterate (terminal.pad_shape.circles, circle'access);
+-- --				iterate (terminal.pad_shape.polygons, polygon'access);
 --
--- 				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
--- 				log (text => "stop mask" & to_string (terminal.stop_mask), level => log_threshold_1);
--- 				log (text => "solder paste" & to_string (terminal.solder_paste), level => log_threshold_1);
--- 		end case;
+--				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
+--				log (text => "stop mask" & to_string (terminal.stop_mask), level => log_threshold_1);
+--				log (text => "solder paste" & to_string (terminal.solder_paste), level => log_threshold_1);
+--		end case;
 --
--- 		log_indentation_down;
--- 	end terminal_properties;
+--		log_indentation_down;
+--	end terminal_properties;
 
 
 end et_package_library;

@@ -136,9 +136,9 @@ begin
 					end if;
 
 				-- when NOUN_NON_ELECTRICAL_DEVICE =>
-				-- 	if edit_process_running then
-				-- 		redraw_board;
-				-- 	end if;
+				--	if edit_process_running then
+				--		redraw_board;
+				--	end if;
 
 				when NOUN_OUTLINE =>
 					if edit_process_running then

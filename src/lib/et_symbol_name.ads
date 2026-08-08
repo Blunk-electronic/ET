@@ -42,7 +42,7 @@
 -- - rename this package to et_symbol_model_name
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 
 
 package et_symbol_name is

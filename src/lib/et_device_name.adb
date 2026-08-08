@@ -42,8 +42,8 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
@@ -90,7 +90,7 @@ package body et_device_name is
 
 		r : type_device_name := (
 				prefix		=> pac_device_prefix.to_bounded_string (""),
-				id 			=> 0,
+				id			=> 0,
 				id_width	=> 1);
 
 		c : character;
@@ -333,7 +333,7 @@ package body et_device_name is
 
 
 	function to_device_name (
-		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
+		prefix	: in pac_device_prefix.bounded_string;	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name
@@ -498,13 +498,13 @@ package body et_device_name is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;
@@ -537,13 +537,13 @@ package body et_device_name is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;

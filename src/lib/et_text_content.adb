@@ -93,8 +93,8 @@ package body et_text_content is
 	begin
 		invalid_character_position := index (
 			source	=> content,
-			set 	=> characters,
-			test 	=> outside);
+			set	=> characters,
+			test	=> outside);
 
 		if invalid_character_position > 0 then
 			log (SEVERITY_WARNING, "Text " & enclose_in_quotes (to_string (content))
@@ -137,8 +137,8 @@ package body et_text_content is
 
 				invalid_character_position := index (
 					source	=> content,
-					set 	=> characters,
-					test 	=> outside);
+					set	=> characters,
+					test	=> outside);
 
 				-- If there is an invalid character, replace it at the detected
 				-- position. Eventually there are no more invalid characters

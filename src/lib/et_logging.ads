@@ -68,7 +68,7 @@ package et_logging is
 	-- routing tables). However, it is limited to a reasonable value. See above.
 	type type_log_level is range 0 .. log_level_max;
 
--- 	no_logging : constant type_log_level := type_log_level'last;
+--	no_logging : constant type_log_level := type_log_level'last;
 
 	-- Returns the given log level as string.
 	function to_string (
@@ -160,11 +160,11 @@ package et_logging is
 
 	procedure write_message (
 		file_handle	: in ada.text_io.file_type;
-		identation 	: in natural := 0;
-		text 		: in string;
-		lf   		: in boolean := true;
-		file 		: in boolean := true;
-		console 	: in boolean := false);
+		identation	: in natural := 0;
+		text		: in string;
+		lf		: in boolean := true;
+		file		: in boolean := true;
+		console	: in boolean := false);
 
 
 	report_handle : ada.text_io.file_type; -- CS rename to log_handle

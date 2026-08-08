@@ -102,23 +102,23 @@ package body et_pcb_stack is
 
 
 	-- function signal_layer_valid (
-	-- 	signal_layer 	: in type_signal_layer;
-	-- 	check_layers	: in et_pcb_stack.type_layer_check)
-	-- 	return boolean
+	--	signal_layer	: in type_signal_layer;
+	--	check_layers	: in et_pcb_stack.type_layer_check)
+	--	return boolean
 	-- is
-	-- 	result : boolean := false;
+	--	result : boolean := false;
 	-- begin
-	-- 	if check_layers.check = YES then
-	-- 		if signal_layer <= check_layers.deepest_layer then
-	-- 			result := true;
-	-- 		else
-	-- 			result := false;
-	-- 		end if;
-	-- 	else
-	-- 		result := true; -- no layer check requested
-	-- 	end if;
+	--	if check_layers.check = YES then
+	--		if signal_layer <= check_layers.deepest_layer then
+	--			result := true;
+	--		else
+	--			result := false;
+	--		end if;
+	--	else
+	--		result := true; -- no layer check requested
+	--	end if;
  --
-	-- 	return result;
+	--	return result;
 	-- end signal_layer_valid;
 
 
@@ -126,23 +126,23 @@ package body et_pcb_stack is
 
 
 
--- 	procedure signal_layer_invalid (
--- 		line			: in type_fields_of_line;
--- 		signal_layer	: in type_signal_layer;
--- 		check_layers	: in et_pcb_stack.type_layer_check)
--- 	is begin
--- 		--log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
--- 			 --" is deeper than the deepest signal layer " &
--- 			 --to_string (check_layers.deepest_layer) & " !" &
--- 		--" Objects in this layer will be ignored !");
+--	procedure signal_layer_invalid (
+--		line			: in type_fields_of_line;
+--		signal_layer	: in type_signal_layer;
+--		check_layers	: in et_pcb_stack.type_layer_check)
+--	is begin
+--		--log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
+--			 --" is deeper than the deepest signal layer " &
+--			 --to_string (check_layers.deepest_layer) & " !" &
+--		--" Objects in this layer will be ignored !");
 --
--- 		-- CS raise semantic_error_1 with
--- 		raise constraint_error with
--- 			"ERROR: " & get_affected_line (line)
--- 			& "Signal layer " & to_string (signal_layer)
--- 			& " is deeper than the deepest signal layer "
--- 			& to_string (check_layers.deepest_layer) & " !";
--- 	end signal_layer_invalid;
+--		-- CS raise semantic_error_1 with
+--		raise constraint_error with
+--			"ERROR: " & get_affected_line (line)
+--			& "Signal layer " & to_string (signal_layer)
+--			& " is deeper than the deepest signal layer "
+--			& to_string (check_layers.deepest_layer) & " !";
+--	end signal_layer_invalid;
 
 
 

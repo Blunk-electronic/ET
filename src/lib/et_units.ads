@@ -45,7 +45,7 @@
 --
 --   ToDo:
 
-with ada.containers;    		        use ada.containers;
+with ada.containers;		        use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
@@ -252,7 +252,7 @@ package et_units is
 
 
 	procedure modify_status (
-		unit 		: in out type_unit;
+		unit		: in out type_unit;
 		operation	: in type_status_operation);
 
 
@@ -302,7 +302,7 @@ package et_units is
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	package pac_units is new indefinite_ordered_maps (
 		key_type		=> pac_unit_name.bounded_string,
-		element_type 	=> type_unit);
+		element_type	=> type_unit);
 
 	use pac_units;
 

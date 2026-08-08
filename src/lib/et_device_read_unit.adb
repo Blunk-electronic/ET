@@ -68,7 +68,7 @@ package body et_device_read_unit is
 	unit_swap_level	: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
 	unit_add_level	: et_unit_add_level.type_add_level := et_unit_add_level.add_level_default;
 
-	unit_external 	: type_unit_external;
+	unit_external	: type_unit_external;
 	unit_external_model_name : pac_symbol_model_name.bounded_string;
 
 

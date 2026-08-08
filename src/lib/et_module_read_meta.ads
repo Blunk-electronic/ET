@@ -83,7 +83,7 @@ package et_module_read_meta is
 
 
 	procedure read_preferred_lib_schematic (
- 		line : in type_fields_of_line);
+		line : in type_fields_of_line);
 
 
 	procedure read_preferred_lib_board (

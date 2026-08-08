@@ -171,7 +171,7 @@ procedure draw_route_restrict is
 
 
 begin -- route_restrict
--- 	put_line ("draw route restrict ...");
+--	put_line ("draw route restrict ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

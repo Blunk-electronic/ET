@@ -155,7 +155,7 @@ package body et_module_read_board_outline is
 			pragma unreferenced (module_name);
 		begin
 			append (
-				container 	=> module.board.board_contour.holes,
+				container	=> module.board.board_contour.holes,
 				new_item	=> (contour with null record));
 
 			-- CS procedure add_hole

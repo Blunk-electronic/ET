@@ -41,7 +41,7 @@
 
 
 -- with ada.strings;				use ada.strings;
--- with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.fixed;		use ada.strings.fixed;
 
 -- with ada.exceptions;
 
@@ -51,29 +51,29 @@ package body et_conductors_floating_package is
 
 
 
--- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
--- 	-- Checks whether the given track clearance is in range of type_track_clearance.
--- 	begin
--- 		if clearance not in type_track_clearance then
--- 			log (ERROR, "track clearance invalid ! Allowed range is"
--- 				 & to_string (type_track_clearance'first) & " .."
--- 				 & to_string (type_track_clearance'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_clearance;
+--	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
+--	-- Checks whether the given track clearance is in range of type_track_clearance.
+--	begin
+--		if clearance not in type_track_clearance then
+--			log (ERROR, "track clearance invalid ! Allowed range is"
+--				 & to_string (type_track_clearance'first) & " .."
+--				 & to_string (type_track_clearance'last),
+--				 console => true);
+--			raise constraint_error;
+--		end if;
+--	end validate_track_clearance;
 --
--- 	procedure validate_track_width (track_width : in type_distance_positive) is
--- 	-- Checks whether the given width is in range of type_track_width.
--- 	begin
--- 		if track_width not in type_track_width then
--- 			log (ERROR, "track width invalid ! Allowed range is"
--- 				 & to_string (type_track_width'first) & " .."
--- 				 & to_string (type_track_width'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_width;
+--	procedure validate_track_width (track_width : in type_distance_positive) is
+--	-- Checks whether the given width is in range of type_track_width.
+--	begin
+--		if track_width not in type_track_width then
+--			log (ERROR, "track width invalid ! Allowed range is"
+--				 & to_string (type_track_width'first) & " .."
+--				 & to_string (type_track_width'last),
+--				 console => true);
+--			raise constraint_error;
+--		end if;
+--	end validate_track_width;
 
 
 

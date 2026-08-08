@@ -163,9 +163,9 @@ package body et_geometry_1.et_polygons.offsetting is
 				result := get_intersection (lp, ls);
 
 				-- CS exception hanlder
--- 						log (text => "lines overlap", level => log_threshold + 2);
--- 						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
--- 						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
+--						log (text => "lines overlap", level => log_threshold + 2);
+--						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
+--						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
 			end compute_intersection;
 
 

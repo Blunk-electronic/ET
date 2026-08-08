@@ -37,7 +37,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_terminal_name;			use et_terminal_name;
@@ -57,9 +57,9 @@ package et_package_variant_terminal_port_map is
 
 
 	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
+		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
 		"<"				=> pac_terminal_name."<",
-		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
+		element_type	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 
 

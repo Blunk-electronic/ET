@@ -246,7 +246,7 @@ package body et_board_ops_signal_layers is
 
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in pac_signal_layers.set)
+		layers			: in pac_signal_layers.set)
 	is
 		use pac_signal_layers;
 

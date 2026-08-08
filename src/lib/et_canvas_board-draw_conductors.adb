@@ -182,7 +182,7 @@ procedure draw_conductors is
 
 
 	procedure draw_line (
-		line 			: in type_conductor_line;
+		line			: in type_conductor_line;
 		force_highlight	: in boolean := false)
 	is
 
@@ -224,7 +224,7 @@ procedure draw_conductors is
 
 
 	procedure draw_arc (
-		arc 			: in type_conductor_arc;
+		arc			: in type_conductor_arc;
 		force_highlight	: in boolean := false)
 	is
 
@@ -262,7 +262,7 @@ procedure draw_conductors is
 
 
 	procedure draw_circle (
-		circle 			: in type_conductor_circle;
+		circle			: in type_conductor_circle;
 		force_highlight	: in boolean := false)
 	is
 
@@ -445,7 +445,7 @@ procedure draw_conductors is
 
 
 	procedure draw_fill_zone (
-		zone 			: in type_route_solid;
+		zone			: in type_route_solid;
 		force_highlight	: in boolean := false)
 	is
 
@@ -595,7 +595,7 @@ procedure draw_conductors is
 
 
 
--- 	TEXT PLACEHOLDERS AND TEXTS:
+--	TEXT PLACEHOLDERS AND TEXTS:
 
 	procedure draw_placeholder (
 		placeholder : in type_placeholder_conductor)
@@ -719,7 +719,7 @@ procedure draw_conductors is
 	-- then the via will be drawn highlighted no matter whether it
 	-- is selected or not:
 	procedure draw_via ( -- CS: move to separate package (like draw_terminal ?)
-		via 			: in type_via;
+		via			: in type_via;
 		force_highlight	: in boolean := false)
 	is
 		-- By default the via is drawn with normal brightness.
@@ -1287,10 +1287,10 @@ procedure draw_conductors is
 				-- are not to be tested whether they are selected:
 				draw_all_highlighted : boolean := false;
 
-				line_cursor 		: pac_conductor_lines.cursor := net.route.lines.first;
+				line_cursor		: pac_conductor_lines.cursor := net.route.lines.first;
 				arc_cursor			: pac_conductor_arcs.cursor := net.route.arcs.first;
 				-- CS: circles
-				zone_solid_cursor 	: pac_route_solid.cursor := net.route.zones.solid.first;
+				zone_solid_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
 				zone_hatched_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 				-- CS: cutout_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
@@ -1361,7 +1361,7 @@ procedure draw_conductors is
 			objects : type_conductors_floating renames module.board.conductors_floating;
 
 			line_cursor			: pac_conductor_lines.cursor	:= objects.lines.first;
-			arc_cursor			: pac_conductor_arcs.cursor  	:= objects.arcs.first;
+			arc_cursor			: pac_conductor_arcs.cursor	:= objects.arcs.first;
 			circle_cursor		: pac_conductor_circles.cursor	:= objects.circles.first;
 			zone_solid_cursor	: pac_floating_solid.cursor		:= objects.zones.solid.first;
 			zone_hatched_cursor	: pac_floating_hatched.cursor	:= objects.zones.hatched.first;
@@ -1500,7 +1500,7 @@ procedure draw_conductors is
 
 		procedure build_via_through is
 			via : constant type_via := (
-				category 		=> THROUGH,
+				category		=> THROUGH,
 				diameter		=> preliminary_via.drill.diameter,
 				position		=> position,
 				restring_inner	=> preliminary_via.restring_inner,

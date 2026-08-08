@@ -270,12 +270,12 @@ is
 				-- circle.radius := drill_size * 0.5;
 
 				-- draw_circle (
-				-- 	circle		=> circle,
-				-- 	pos			=> get_position (package_position),
-				-- 	filled		=> YES,
-				-- 	width		=> zero,
-				-- 	mirror		=> mirror_style,
-				-- 	do_stroke	=> true);
+				--	circle		=> circle,
+				--	pos			=> get_position (package_position),
+				--	filled		=> YES,
+				--	width		=> zero,
+				--	mirror		=> mirror_style,
+				--	do_stroke	=> true);
 
 
 				-- restore default compositing operator:

@@ -361,7 +361,7 @@ package body et_board_ops_silkscreen is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			top	: pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			bottom	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
 
@@ -441,7 +441,7 @@ package body et_board_ops_silkscreen is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			top_items		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
 
@@ -914,7 +914,7 @@ package body et_board_ops_silkscreen is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
+			top	: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			bottom	: pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 
 
@@ -993,7 +993,7 @@ package body et_board_ops_silkscreen is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
+			top_items		: pac_silk_arcs.list renames module.board.silkscreen.top.arcs;
 			bottom_items	: pac_silk_arcs.list renames module.board.silkscreen.bottom.arcs;
 
 
@@ -1538,7 +1538,7 @@ package body et_board_ops_silkscreen is
 					count := count + 1;
 					log (text => to_string (segment), level => log_threshold + 1);
 				end if;
-   			end query_segment;
+			end query_segment;
 
 
 
@@ -1926,7 +1926,7 @@ package body et_board_ops_silkscreen is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
@@ -2535,7 +2535,7 @@ package body et_board_ops_silkscreen is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_silk_texts.list renames module.board.silkscreen.top.texts;
+			top_items		: pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			bottom_items	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
 
 
@@ -2613,7 +2613,7 @@ package body et_board_ops_silkscreen is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_silk_texts.list renames module.board.silkscreen.top.texts;
+			top	: pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			bottom	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
 
 
@@ -3035,7 +3035,7 @@ package body et_board_ops_silkscreen is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_placeholders_non_conductor.list renames module.board.silkscreen.top.placeholders;
+			top_items		: pac_placeholders_non_conductor.list renames module.board.silkscreen.top.placeholders;
 			bottom_items	: pac_placeholders_non_conductor.list renames module.board.silkscreen.bottom.placeholders;
 
 
@@ -3182,8 +3182,8 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_segment  	: type_object_segment;
+		result_category	: type_object_category := CAT_VOID;
+		result_segment	: type_object_segment;
 		result_line			: type_object_line;
 		result_arc			: type_object_arc;
 		result_text			: type_object_text;
@@ -3919,12 +3919,12 @@ package body et_board_ops_silkscreen is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.silkscreen.top.lines.first;
-				arc_cursor    	:= module.board.silkscreen.top.arcs.first;
+				line_cursor	:= module.board.silkscreen.top.lines.first;
+				arc_cursor	:= module.board.silkscreen.top.arcs.first;
 				circle_cursor	:= module.board.silkscreen.top.circles.first;
 			else
-				line_cursor   	:= module.board.silkscreen.bottom.lines.first;
-				arc_cursor    	:= module.board.silkscreen.bottom.arcs.first;
+				line_cursor	:= module.board.silkscreen.bottom.lines.first;
+				arc_cursor	:= module.board.silkscreen.bottom.arcs.first;
 				circle_cursor	:= module.board.silkscreen.bottom.circles.first;
 			end if;
 

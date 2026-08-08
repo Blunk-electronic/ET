@@ -59,7 +59,7 @@ package et_project is
 	directory_projects		: constant string := "projects";
 
 	-- native library directories
-	directory_libraries 				: constant string := "libraries";
+	directory_libraries				: constant string := "libraries";
 	directory_libraries_devices			: constant string := "devices";
 	directory_libraries_symbols			: constant string := "symbols";
 	directory_libraries_packages		: constant string := "packages";
@@ -68,10 +68,10 @@ package et_project is
 
 	-- supplementary stuff of a project
 	directory_dru			: constant string := "pcb-design-rules";
--- 	directory_cam			: constant string := "CAM";
--- 	directory_net_classes	: constant string := "net_classes";
+--	directory_cam			: constant string := "CAM";
+--	directory_net_classes	: constant string := "net_classes";
 	directory_templates		: constant string := "templates";
--- 	directory_settings		: constant string := "settings";
+--	directory_settings		: constant string := "settings";
 	directory_reports		: constant string := "reports";
 	directory_documentation	: constant string := "documentation";
 	directory_miscellaneous	: constant string := "miscellaneous";
@@ -141,7 +141,7 @@ package et_project is
 	-- Assigns to the global variable "current_project" the given project_name.
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 
@@ -161,7 +161,7 @@ package et_project is
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

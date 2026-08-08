@@ -125,7 +125,7 @@ package body et_board_coordinates is
 
 
 	function to_package_position (
-		point 		: in type_vector_model;
+		point		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
 		return type_package_position

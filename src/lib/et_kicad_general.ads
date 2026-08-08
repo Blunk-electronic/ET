@@ -37,8 +37,8 @@
 --
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
@@ -65,12 +65,12 @@ package et_kicad_general is
 	host_name_pcbnew_dummy_v5	: constant string := "kicad";
 
 
-    encoding_default 					: constant string := "utf-8";
+    encoding_default					: constant string := "utf-8";
 
-	file_extension_project   			: constant string := "pro";
-	file_extension_schematic 			: constant string := "sch";
+	file_extension_project			: constant string := "pro";
+	file_extension_schematic			: constant string := "sch";
 	file_extension_schematic_lib		: constant string := "lib";
-	file_extension_board	 			: constant string := "kicad_pcb";
+	file_extension_board				: constant string := "kicad_pcb";
 
 	schematic_version_v4	: constant positive := 2; -- CS use dedicated type for schematic version
     schematic_version_v5	: constant positive := 4;
@@ -80,7 +80,7 @@ package et_kicad_general is
 	-- If lines of a file are to be collected we use this simple list:
 	package pac_lines_of_file is new doubly_linked_lists (
 		element_type	=> type_fields_of_line,
-		"=" 			=> lines_equally);
+		"="			=> lines_equally);
 
 
 
@@ -120,7 +120,7 @@ package et_kicad_general is
 	-- This list applies for both component and package search operations.
 	package type_project_lib_dirs is new doubly_linked_lists (
 		element_type	=> type_library_directory.bounded_string,
-		"=" 			=> type_library_directory."=");
+		"="			=> type_library_directory."=");
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
 

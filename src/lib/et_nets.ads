@@ -37,7 +37,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
@@ -95,7 +95,7 @@ package et_nets is
 		route	: et_route.type_net_route; -- routing information -> pcb related
 
 		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
-		class 	: pac_net_class_name.bounded_string := net_class_name_default;
+		class	: pac_net_class_name.bounded_string := net_class_name_default;
 	end record;
 
 

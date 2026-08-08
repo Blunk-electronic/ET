@@ -85,7 +85,7 @@ package et_device_partcode is
 
 	function to_partcode (
 	-- Tests the given value for length and invalid characters.
-		partcode 					: in string;
+		partcode					: in string;
 		error_on_invalid_character	: in boolean := true)
 		return pac_device_partcode.bounded_string;
 

@@ -41,8 +41,8 @@ package et_csv is
 
 	file_extension		: constant string := "csv";
 
-	row_separator_1 	: constant string := "----------";
-	row_separator_2 	: constant string := "--------------------";
+	row_separator_1	: constant string := "----------";
+	row_separator_2	: constant string := "--------------------";
 
 	columns_max : constant natural := 1000; -- CS this is the limit of columns a csv file can have.
 	type type_column is range 0 .. columns_max;
@@ -62,7 +62,7 @@ package et_csv is
 		file	: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
 		text	: in string := "";
 		ifs		: in character := ascii.semicolon; -- field separator
-		delim 	: in character := ascii.quotation);  -- text delimiter
+		delim	: in character := ascii.quotation);  -- text delimiter
 
 
 	procedure put_lf (

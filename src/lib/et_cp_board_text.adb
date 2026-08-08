@@ -80,7 +80,7 @@ package body et_cp_board_text is
 
 	procedure place_text (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -99,7 +99,7 @@ package body et_cp_board_text is
 			use et_board_ops_assy_doc;
 		begin
 			add_text (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				face			=> face,
 				text			=> text,
 
@@ -114,7 +114,7 @@ package body et_cp_board_text is
 			use et_board_ops_silkscreen;
 		begin
 			add_text (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				face			=> face,
 				text			=> text,
 
@@ -129,7 +129,7 @@ package body et_cp_board_text is
 			use et_board_ops_stopmask;
 		begin
 			add_text (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				face			=> face,
 				text			=> text,
 
@@ -149,7 +149,7 @@ package body et_cp_board_text is
 
 			-- This procedure automatically cares for mirroring:
 			add_text (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				signal_layer	=> signal_layer,
 				text			=> text,
 
@@ -238,7 +238,7 @@ package body et_cp_board_text is
 
 	procedure place_text_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -268,7 +268,7 @@ package body et_cp_board_text is
 			ph.size := size;
 
 			add_placeholder (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				placeholder		=> ph,
 				face			=> face,
 
@@ -291,7 +291,7 @@ package body et_cp_board_text is
 			ph.size := size;
 
 			add_placeholder (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				placeholder		=> ph,
 				face			=> face,
 
@@ -314,7 +314,7 @@ package body et_cp_board_text is
 			ph.size := size;
 
 			add_placeholder (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				placeholder		=> ph,
 				face			=> face,
 
@@ -340,7 +340,7 @@ package body et_cp_board_text is
 
 			-- This procedure automatically cares for mirroring:
 			add_placeholder (
-				module_cursor 	=> module,
+				module_cursor	=> module,
 				placeholder		=> ph,
 
 				-- Depending on the origin of the command,

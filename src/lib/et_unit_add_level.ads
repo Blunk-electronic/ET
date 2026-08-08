@@ -44,8 +44,8 @@ package et_unit_add_level is
 	-- CS use prefix
 
 	type type_add_level is (
-		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
-		REQUEST, 	-- for power supply
+		NEXT,		-- should be default. for things like logic gates, multi-OP-Amps, ...
+		REQUEST,	-- for power supply
 		CAN,		-- OPTIONAl units. things like relay contacts
 		ALWAYS,		-- units that SHOULD be used always
 		MUST);		-- units that MUST be used. things like relay coils.

@@ -100,7 +100,7 @@ package body et_net_labels is
 
 
 	procedure modify_status (
-		label 		: in out type_net_label_base;
+		label		: in out type_net_label_base;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (label.status, operation);

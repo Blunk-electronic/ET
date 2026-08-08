@@ -55,13 +55,13 @@ package et_scripting_interactive_schematic is
 	procedure dummy;
 
 	-- procedure unit_selection_cancelled (
-	-- 	self : access gtk_menu_shell_record'class);
+	--	self : access gtk_menu_shell_record'class);
 
 
 	-- If the operator selects a unit from the menu,
 	-- then this procedure is called:
 	-- procedure unit_selected_on_fetch (
-	-- 	self : access gtk_menu_item_record'class);
+	--	self : access gtk_menu_item_record'class);
 
 
 	type type_unit_being_deleted is record
@@ -73,9 +73,9 @@ package et_scripting_interactive_schematic is
 
 
 	-- procedure menu_propose_units_on_delete (
-	-- 	device			: in type_device_name;
-	-- 	units			: in pac_unit_names.list;
-	-- 	log_threshold	: in type_log_level);
+	--	device			: in type_device_name;
+	--	units			: in pac_unit_names.list;
+	--	log_threshold	: in type_log_level);
 
 
 	-- Proposes units on a menu if list "units" has
@@ -84,9 +84,9 @@ package et_scripting_interactive_schematic is
 	-- this single unit will be granted to be drawn.
 	-- If "units" is empty, nothing happens.
 	-- procedure menu_propose_units_on_fetch (
-	-- 	device			: in type_device_name; -- R2
-	-- 	units			: in pac_unit_names.list;
-	-- 	log_threshold	: in type_log_level);
+	--	device			: in type_device_name; -- R2
+	--	units			: in pac_unit_names.list;
+	--	log_threshold	: in type_log_level);
 
 
 	-- Makes the unit_move a selected unit.
@@ -107,7 +107,7 @@ package et_scripting_interactive_schematic is
 	-- The connected net segments are identified and collected in
 	-- container segments_being_dragged.
 	-- procedure unit_selected_on_move (
-	-- 	self : access gtk_menu_item_record'class);
+	--	self : access gtk_menu_item_record'class);
 
 	-- Proposes units on a menu if list "units" has
 	-- more than one item.
@@ -119,8 +119,8 @@ package et_scripting_interactive_schematic is
 	-- container segments_being_dragged.
 	-- If "units" is empty, nothing happens.
 	-- procedure menu_propose_units_on_move (
-	-- 	units			: in pac_unit_names.list;
-	-- 	log_threshold	: in type_log_level);
+	--	units			: in pac_unit_names.list;
+	--	log_threshold	: in type_log_level);
 
 
 	-- Makes the placeholder_move a selected placeholder.
@@ -149,7 +149,7 @@ package et_scripting_interactive_schematic is
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
 	-- procedure set_variant (
-	-- 	device : in type_device_name);
+	--	device : in type_device_name);
 
 
 

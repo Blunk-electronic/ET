@@ -75,7 +75,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure dragging_not_possible (
-		port 		: in string;
+		port		: in string;
 		position	: in type_object_position) is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
@@ -1122,7 +1122,7 @@ package body et_schematic_ops_netchangers is
 
 			-- insert the new netchanger in the module
 			insert (
-				container 	=> module.netchangers,
+				container	=> module.netchangers,
 				key			=> index,
 				new_item	=> netchanger,
 				position	=> cursor,
@@ -1186,7 +1186,7 @@ package body et_schematic_ops_netchangers is
 	procedure movable_test (
 		module_cursor		: in pac_generic_modules.cursor;
 		index				: in type_netchanger_id;
-		location 			: in type_object_position; -- only sheet number matters
+		location			: in type_object_position; -- only sheet number matters
 		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
 		log_threshold		: in type_log_level)
 	is
@@ -1947,8 +1947,8 @@ package body et_schematic_ops_netchangers is
 			set_position (netchanger, destination);
 
 			-- log (text => "new netchanger position: "
-			-- 	 & to_string (destination),
-			-- 	 level => log_threshold + 1);
+			--	 & to_string (destination),
+			--	 level => log_threshold + 1);
 
 			-- Since no valid rotation was provided
 			-- by the caller (default 0 degrees),
@@ -1958,7 +1958,7 @@ package body et_schematic_ops_netchangers is
 
 			-- Insert the new netchanger in the module:
 			insert (
-				container 	=> module.netchangers,
+				container	=> module.netchangers,
 				key			=> index_new,
 				new_item	=> netchanger,
 				position	=> netchanger_cursor,
@@ -2084,7 +2084,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Insert the new netchanger in the module:
 				insert (
-					container 	=> module.netchangers,
+					container	=> module.netchangers,
 					key			=> index_new,
 					new_item	=> netchanger,
 					position	=> netchanger_cursor,
@@ -3048,7 +3048,7 @@ package body et_schematic_ops_netchangers is
 
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
-				netchanger 	: in type_netchanger)
+				netchanger	: in type_netchanger)
 			is begin
 				if is_selected (netchanger) then
 
@@ -3540,7 +3540,7 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
+		result_category	: type_object_category := CAT_VOID;
 		result_netchanger	: type_object_netchanger;
 
 		use pac_netchangers;

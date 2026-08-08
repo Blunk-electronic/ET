@@ -506,7 +506,7 @@ package body et_geometry_2a is
 
 
 	function to_string (
-		v 		: in type_vector_model;
+		v		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string
 	is
@@ -614,14 +614,14 @@ package body et_geometry_2a is
 
 
 	-- function add (
-	-- 	v1, v2 : in type_vector_model)
-	-- 	return type_vector_model
+	--	v1, v2 : in type_vector_model)
+	--	return type_vector_model
 	-- is
-	-- 	r : type_vector_model;
+	--	r : type_vector_model;
 	-- begin
-	-- 	r.x := v1.x + v2.x;
-	-- 	r.y := v1.y + v2.y;
-	-- 	return r;
+	--	r.x := v1.x + v2.x;
+	--	r.y := v1.y + v2.y;
+	--	return r;
 	-- end add;
 
 
@@ -753,7 +753,7 @@ package body et_geometry_2a is
 		-- compute new y   -- (sin rotation) * distance_to_origin
 		scratch := sin (type_float (rotation), units_per_cycle);
 		set (
-			axis 	=> AXIS_Y,
+			axis	=> AXIS_Y,
 			point	=> point,
 			value	=> to_distance (scratch * distance_to_origin)
 			);
@@ -900,7 +900,7 @@ package body et_geometry_2a is
 
 	procedure set (
 		point	: in out type_vector_model;
-		axis 	: in type_axis_2d;
+		axis	: in type_axis_2d;
 		value	: in type_position_axis)
 	is begin
 		case axis is
@@ -968,7 +968,7 @@ package body et_geometry_2a is
 
 
 	function to_vector_model (
-		d 		: in type_vector_model;
+		d		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model
 	is
@@ -1218,7 +1218,7 @@ package body et_geometry_2a is
 
 
 	procedure move_points (
-		points 	: in out pac_points.list;
+		points	: in out pac_points.list;
 		offset	: in type_vector_model)
 	is
 		use pac_points;
@@ -1239,7 +1239,7 @@ package body et_geometry_2a is
 
 
 	procedure rotate_points (
-		points 		: in out pac_points.list;
+		points		: in out pac_points.list;
 		rotation	: in type_rotation)
 	is
 		use pac_points;
@@ -1260,7 +1260,7 @@ package body et_geometry_2a is
 
 
 	procedure mirror_points (
-		points 	: in out pac_points.list;
+		points	: in out pac_points.list;
 		mirror	: in type_mirror)
 	is
 		use pac_points;
@@ -1391,7 +1391,7 @@ package body et_geometry_2a is
 
 
 	procedure set_position (
-		area 		: in out type_area;
+		area		: in out type_area;
 		position	: in type_vector_model)
 	is begin
 		area.position := position;
@@ -1400,7 +1400,7 @@ package body et_geometry_2a is
 
 
 	procedure set_width (
-		area 	: in out type_area;
+		area	: in out type_area;
 		width	: in type_distance_positive)
 	is begin
 		area.width := width;
@@ -1410,7 +1410,7 @@ package body et_geometry_2a is
 
 
 	procedure set_height (
-		area 	: in out type_area;
+		area	: in out type_area;
 		height	: in type_distance_positive)
 	is begin
 		area.height := height;
@@ -1747,7 +1747,7 @@ package body et_geometry_2a is
 
 
 	function get_end_point (
-		line 	: in type_line;
+		line	: in type_line;
 		AB_end	: in type_start_end_point)
 		return type_vector_model
 	is begin
@@ -2272,7 +2272,7 @@ package body et_geometry_2a is
 
 
 	procedure modify_status (
-		line 		: in out type_line;
+		line		: in out type_line;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (line.status, operation);
@@ -2371,7 +2371,7 @@ package body et_geometry_2a is
 
 
 	procedure reset_status (
-		line 	: in out type_line)
+		line	: in out type_line)
 	is begin
 		reset_status (line.status);
 
@@ -2824,7 +2824,7 @@ package body et_geometry_2a is
 
 
 	function split_line (
-		line 	: in type_line;
+		line	: in type_line;
 		point	: in type_vector_model)
 		return type_split_line
 	is begin
@@ -2864,7 +2864,7 @@ package body et_geometry_2a is
 
 
 	function split_line (
-		line 	: in type_line;
+		line	: in type_line;
 		points	: in pac_points.list)
 		return type_split_line
 	is
@@ -2896,7 +2896,7 @@ package body et_geometry_2a is
 				end if;
 
 				-- CS if p = get_A (line) or p = get_B (line) then
-				-- 	null; -- skip
+				--	null; -- skip
 
 				if i = 1 then
 					-- Build the first line. It starts where
@@ -3231,7 +3231,7 @@ package body et_geometry_2a is
 			A			=> to_vector_model (get_A (arc)),
 			B			=> to_vector_model (get_B (arc)),
 			direction	=> get_direction (arc),
-			others 		=> <>);
+			others		=> <>);
 
 		return result;
 	end to_arc_coarse;
@@ -3349,7 +3349,7 @@ package body et_geometry_2a is
 
 
 	procedure modify_status (
-		arc 		: in out type_arc;
+		arc		: in out type_arc;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (arc.status, operation);
@@ -3358,7 +3358,7 @@ package body et_geometry_2a is
 
 
 	procedure reset_status (
-		arc 		: in out type_arc)
+		arc		: in out type_arc)
 	is begin
 		reset_status (arc.status);
 	end reset_status;
@@ -3520,7 +3520,7 @@ package body et_geometry_2a is
 	function get_arc_B (
 		center	: in type_vector_model;
 		A		: in type_vector_model;
-		angle 	: in type_angle) -- unit is degrees
+		angle	: in type_angle) -- unit is degrees
 		return type_vector_model
 	is
 		arc : type_arc;
@@ -3681,7 +3681,7 @@ package body et_geometry_2a is
 
 
 	function get_bounding_box (
-		arc 	: in type_arc;
+		arc	: in type_arc;
 		width	: in type_distance_positive)
 		return type_area
 	is
@@ -3886,7 +3886,7 @@ package body et_geometry_2a is
 
 
 	procedure modify_status (
-		circle 		: in out type_circle;
+		circle		: in out type_circle;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (circle.status, operation);
@@ -3895,7 +3895,7 @@ package body et_geometry_2a is
 
 
 	procedure reset_status (
-		circle 		: in out type_circle)
+		circle		: in out type_circle)
 	is begin
 		reset_status (circle.status);
 	end reset_status;
@@ -3988,7 +3988,7 @@ package body et_geometry_2a is
 
 
 	function get_bounding_box (
-		circle 	: in type_circle;
+		circle	: in type_circle;
 		width	: in type_distance_positive)
 		return type_area
 	is
@@ -4116,7 +4116,7 @@ package body et_geometry_2a is
 
 	procedure set (
 		position	: in out type_position;
-		axis 		: in type_axis_2d;
+		axis		: in type_axis_2d;
 		value		: in type_position_axis)
 	is begin
 		case axis is

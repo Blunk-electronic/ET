@@ -361,7 +361,7 @@ package body et_board_ops_assy_doc is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			top	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
 
@@ -439,7 +439,7 @@ package body et_board_ops_assy_doc is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			top_items		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
 
@@ -519,7 +519,7 @@ package body et_board_ops_assy_doc is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			top_items		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
 			proceed : boolean := true;
@@ -1034,7 +1034,7 @@ package body et_board_ops_assy_doc is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
+			top	: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
 			bottom	: pac_doc_arcs.list renames module.board.assy_doc.bottom.arcs;
 
 
@@ -1113,7 +1113,7 @@ package body et_board_ops_assy_doc is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
+			top_items		: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
 			bottom_items	: pac_doc_arcs.list renames module.board.assy_doc.bottom.arcs;
 
 
@@ -2075,7 +2075,7 @@ package body et_board_ops_assy_doc is
 					ps := proposed_segments.find (segment);
 
 					-- log (text => "proposed segment A: " & to_string (segment.segment),
-					-- 	level => log_threshold + 1);
+					--	level => log_threshold + 1);
 
 					-- Advance to the next proposed segment:
 					next (ps);
@@ -2091,7 +2091,7 @@ package body et_board_ops_assy_doc is
 					segment := element (ps);
 
 					-- log (text => "proposed segment B: " & to_string (segment.segment),
-					-- 	level => log_threshold + 1);
+					--	level => log_threshold + 1);
 
 			end case;
 		end query_module;
@@ -2209,7 +2209,7 @@ package body et_board_ops_assy_doc is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
@@ -2817,7 +2817,7 @@ package body et_board_ops_assy_doc is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_doc_texts.list renames module.board.assy_doc.top.texts;
+			top_items		: pac_doc_texts.list renames module.board.assy_doc.top.texts;
 			bottom_items	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
 
 
@@ -2895,7 +2895,7 @@ package body et_board_ops_assy_doc is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_doc_texts.list renames module.board.assy_doc.top.texts;
+			top	: pac_doc_texts.list renames module.board.assy_doc.top.texts;
 			bottom	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
 
 
@@ -3317,7 +3317,7 @@ package body et_board_ops_assy_doc is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_placeholders_non_conductor.list renames module.board.assy_doc.top.placeholders;
+			top_items		: pac_placeholders_non_conductor.list renames module.board.assy_doc.top.placeholders;
 			bottom_items	: pac_placeholders_non_conductor.list renames module.board.assy_doc.bottom.placeholders;
 
 
@@ -3465,8 +3465,8 @@ package body et_board_ops_assy_doc is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_segment  	: type_object_segment;
+		result_category	: type_object_category := CAT_VOID;
+		result_segment	: type_object_segment;
 		result_line			: type_object_line;
 		result_arc			: type_object_arc;
 		result_text			: type_object_text;
@@ -4210,12 +4210,12 @@ package body et_board_ops_assy_doc is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.assy_doc.top.lines.first;
-				arc_cursor    	:= module.board.assy_doc.top.arcs.first;
+				line_cursor	:= module.board.assy_doc.top.lines.first;
+				arc_cursor	:= module.board.assy_doc.top.arcs.first;
 				circle_cursor	:= module.board.assy_doc.top.circles.first;
 			else
-				line_cursor   	:= module.board.assy_doc.bottom.lines.first;
-				arc_cursor    	:= module.board.assy_doc.bottom.arcs.first;
+				line_cursor	:= module.board.assy_doc.bottom.lines.first;
+				arc_cursor	:= module.board.assy_doc.bottom.arcs.first;
 				circle_cursor	:= module.board.assy_doc.bottom.circles.first;
 			end if;
 

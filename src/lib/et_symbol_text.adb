@@ -46,7 +46,7 @@ package body et_symbol_text is
 
 
 	procedure write_text_properies (
-		text 			: in type_symbol_text;
+		text			: in type_symbol_text;
 		log_threshold	: in type_log_level)
 	is begin
 		log_indentation_up;
@@ -66,8 +66,8 @@ package body et_symbol_text is
 		log (text => "size" & to_string (text.size), level => log_threshold + 1);
 
 		-- style
--- 		log (text => "style " & to_lower (type_symbol_text_style'image (text.style)),
--- 			 level => log_threshold + 1);
+--		log (text => "style " & to_lower (type_symbol_text_style'image (text.style)),
+--			 level => log_threshold + 1);
 
 		-- rotation
 		log (text => to_string (text.rotation), level => log_threshold + 1);
@@ -80,7 +80,7 @@ package body et_symbol_text is
 		log (text => to_string (text.alignment),
 			level => log_threshold + 1);
 
--- 		log_indentation_down;
+--		log_indentation_down;
 		log_indentation_down;
 	end write_text_properies;
 

@@ -154,11 +154,11 @@ package et_canvas_schematic_nets is
 
 
 	-- status_delete : constant string :=
-	-- 	status_click_left
-	-- 	& "or "
-	-- 	& status_press_space
-	-- 	& "to delete net segment."
-	-- 	& status_hint_for_abort;
+	--	status_click_left
+	--	& "or "
+	--	& status_press_space
+	--	& "to delete net segment."
+	--	& status_hint_for_abort;
 
 
 

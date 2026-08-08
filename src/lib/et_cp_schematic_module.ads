@@ -50,7 +50,7 @@ package et_cp_schematic_module is
 
 	-- Creates a new module and sets it active:
 	procedure create_module (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -62,7 +62,7 @@ package et_cp_schematic_module is
 	-- and updates the editor window according
 	-- to the activated module:
 	procedure show_module (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -72,7 +72,7 @@ package et_cp_schematic_module is
 	-- 2. schematic demo delete module pwr_supply
 	procedure delete_module (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -81,7 +81,7 @@ package et_cp_schematic_module is
 	-- 2. schematic demo save module pwr_supply
 	procedure save_module (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

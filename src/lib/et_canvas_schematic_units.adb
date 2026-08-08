@@ -746,7 +746,7 @@ package body et_canvas_schematic_units is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_new_value_entered;
 
@@ -921,7 +921,7 @@ package body et_canvas_schematic_units is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_new_purpose_entered;
 
@@ -1097,7 +1097,7 @@ package body et_canvas_schematic_units is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_new_partcode_entered;
 
@@ -1479,7 +1479,7 @@ package body et_canvas_schematic_units is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_rename_new_name_entered;
 
@@ -2501,7 +2501,7 @@ package body et_canvas_schematic_units is
 		-- Clean up for next unit to be fetched:
 		reset_status_units (active_module, log_threshold + 1);
 		reset_unit_fetch;
-  	end cb_fetch_menu_destroy;
+	end cb_fetch_menu_destroy;
 
 
 
@@ -2537,9 +2537,9 @@ package body et_canvas_schematic_units is
 			& " unit " & unit_name & " selected.");
 
 		-- exception
-		-- 	when event: others =>
-		-- 		-- log (text => ada.exceptions.exception_information (event), console => true);
-		-- 		log (text => ada.exceptions.exception_information (event));
+		--	when event: others =>
+		--		-- log (text => ada.exceptions.exception_information (event), console => true);
+		--		log (text => ada.exceptions.exception_information (event));
 
 	end cb_fetch_menu_unit_select;
 
@@ -2692,7 +2692,7 @@ package body et_canvas_schematic_units is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else

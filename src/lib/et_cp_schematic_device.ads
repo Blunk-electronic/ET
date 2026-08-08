@@ -52,7 +52,7 @@ package et_cp_schematic_device is
 	-- example: "schematic demo add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D"
 	procedure add_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -62,7 +62,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure rename_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -74,7 +74,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure delete_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -86,7 +86,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure copy_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -97,7 +97,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure set_device_value (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -108,7 +108,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure set_device_purpose (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -120,7 +120,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure set_device_partcode (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -132,7 +132,7 @@ package et_cp_schematic_device is
 	-- happens and a warning is output:
 	procedure set_device_package_variant (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -140,7 +140,7 @@ package et_cp_schematic_device is
 	-- Renumbers devices according to the sheet number.
 	procedure renumber_devices (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

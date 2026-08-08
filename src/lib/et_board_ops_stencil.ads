@@ -359,10 +359,10 @@ package et_board_ops_stencil is
 				segment		: type_object_segment;
 
 			when CAT_LINE =>
-				line 		: type_object_line;
+				line		: type_object_line;
 
 			when CAT_ARC =>
-				arc 		: type_object_arc;
+				arc		: type_object_arc;
 
 		end case;
 	end record;

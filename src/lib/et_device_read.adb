@@ -43,7 +43,7 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 
 with ada.directories;
 
@@ -73,7 +73,7 @@ package body et_device_read is
 
 
 	procedure read_device (
-		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level)
 	is
@@ -91,7 +91,7 @@ package body et_device_read is
 
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
-			max 	=> max_section_depth);
+			max	=> max_section_depth);
 
 
 
@@ -115,7 +115,7 @@ package body et_device_read is
 		-- - predefined partcode
 		procedure read_meta (
 			line			: in type_fields_of_line;
-			log_threshold 	: in type_log_level)
+			log_threshold	: in type_log_level)
 		is
 			kw : constant string := f (line, 1);
 		begin
@@ -575,11 +575,11 @@ package body et_device_read is
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark_default,
+					comment_mark	=> comment_mark_default,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then

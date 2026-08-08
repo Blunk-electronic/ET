@@ -37,7 +37,7 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 
 with et_logging;				use et_logging;
 with et_string_processing;		use et_string_processing;
@@ -86,8 +86,8 @@ package body et_device_purpose is
 	begin
 		invalid_character_position := index (
 			source	=> purpose,
-			set 	=> characters,
-			test 	=> outside);
+			set	=> characters,
+			test	=> outside);
 
 		if invalid_character_position > 0 then
 			log (SEVERITY_WARNING, "purpose " & enclose_in_quotes (to_string (purpose))
@@ -115,7 +115,7 @@ package body et_device_purpose is
 
 	function to_purpose (
 	-- Tests the given purpose for length and invalid characters.
-		purpose 					: in string;
+		purpose					: in string;
 		error_on_invalid_character	: in boolean := true)
 		return pac_device_purpose.bounded_string is
 			pragma unreferenced (error_on_invalid_character);

@@ -238,7 +238,7 @@ package body et_module_read_device_electrical is
 					file_name		=> device_model_name,
 					check_layers	=> (
 						check			=> YES,
-						deepest_layer 	=> get_deepest_conductor_layer (module_cursor)),
+						deepest_layer	=> get_deepest_conductor_layer (module_cursor)),
 					log_threshold	=> log_threshold + 3);
 
 				log_indentation_down;
@@ -462,7 +462,7 @@ package body et_module_read_device_electrical is
 				device_model_name	:= to_file_name ("");
 				device_value		:= pac_device_value.to_bounded_string ("");
 				device_purpose		:= pac_device_purpose.to_bounded_string ("");
-				device_partcode 	:= pac_device_partcode.to_bounded_string ("");
+				device_partcode	:= pac_device_partcode.to_bounded_string ("");
 				device_variant		:= to_variant_name ("");
 				-- CS use constant for emtpy variant
 			end clean_up;
@@ -651,11 +651,11 @@ package body et_module_read_device_electrical is
 							status			=> get_default_status,
 							position		=> device_unit_position,
 							appearance		=> APPEARANCE_PCB,
-							placeholders 	=> (
+							placeholders	=> (
 								-- The placeholders for reference, value and purpose have
 								-- been built and can now be assigned to the unit:
 								name		=> unit_placeholder_reference,
-								value 		=> unit_placeholder_value,
+								value		=> unit_placeholder_value,
 								purpose		=> unit_placeholder_purpose)));
 			end case;
 
@@ -682,9 +682,9 @@ package body et_module_read_device_electrical is
 
 		-- CS
 		-- update_element (
-		-- 	container	=> generic_modules,
-		-- 	position	=> module_cursor,
-		-- 	process		=> query_module'access);
+		--	container	=> generic_modules,
+		--	position	=> module_cursor,
+		--	process		=> query_module'access);
 		insert_unit;
 
 		log_indentation_down;
@@ -744,10 +744,10 @@ package body et_module_read_device_electrical is
 
 			unit_placeholder.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
--- 											elsif kw = keyword_style then -- stlye italic
--- 												expect_field_count (line, 2);
+--											elsif kw = keyword_style then -- stlye italic
+--												expect_field_count (line, 2);
 --
--- 												unit_placeholder.style := et_symbol_model.to_text_style (f (line, 2));
+--												unit_placeholder.style := et_symbol_model.to_text_style (f (line, 2));
 
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);

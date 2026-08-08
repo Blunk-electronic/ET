@@ -67,7 +67,7 @@ package body et_cp_board_silkscreen is
 
 	procedure draw_silkscreen (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -121,7 +121,7 @@ package body et_cp_board_silkscreen is
 								B => to_vector_model (get_field (cmd, 10), get_field (cmd, 11))));
 
 							add_line (
-								module_name 	=> key (module),
+								module_name	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								line			=> (line_tmp with width_tmp),
 
@@ -151,7 +151,7 @@ package body et_cp_board_silkscreen is
 								direction	=> to_direction (get_field (cmd, 14))));
 
 							add_arc (
-								module_name 	=> key (module),
+								module_name	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								arc				=> (arc_tmp with width_tmp),
 
@@ -179,7 +179,7 @@ package body et_cp_board_silkscreen is
 								radius		=> to_radius (get_field (cmd, 10))));
 
 							add_circle (
-								module_name 	=> key (module),
+								module_name	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								circle			=> (circle_tmp with width_tmp),
 
@@ -226,7 +226,7 @@ package body et_cp_board_silkscreen is
 
 	procedure delete_silkscreen (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -241,7 +241,7 @@ package body et_cp_board_silkscreen is
 				radius	=> to_zone_radius (get_field (cmd, 8)));
 
 			delete_object (
-				module_name 	=> key (module),
+				module_name	=> key (module),
 				face			=> to_face (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,
 

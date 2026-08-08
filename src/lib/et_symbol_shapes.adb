@@ -41,7 +41,7 @@
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
--- with ada.exceptions; 			use ada.exceptions;
+-- with ada.exceptions;			use ada.exceptions;
 
 
 

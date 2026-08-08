@@ -82,8 +82,8 @@ package body et_kicad_coordinates is
 
 
 	function to_string (
-		path 		: in type_path_to_submodule.list;
-		top_module 	: in boolean := true) return string is
+		path		: in type_path_to_submodule.list;
+		top_module	: in boolean := true) return string is
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
 
@@ -105,13 +105,13 @@ package body et_kicad_coordinates is
 			while submodule /= type_path_to_submodule.no_element loop
 				result := result & hierarchy_separator
 					& to_unbounded_string (to_string (element (submodule)));
--- 					& hierarchy_separator;
+--					& hierarchy_separator;
 				next (submodule);
 			end loop;
 		end if;
--- 		if result = hierarchy_separator then
--- 			result := result & " (top module)";
--- 		end if;
+--		if result = hierarchy_separator then
+--			result := result & " (top module)";
+--		end if;
 
 		--return to_string ("location " & result);
 		return to_string (result);
@@ -190,41 +190,41 @@ package body et_kicad_coordinates is
 		position.path := path;
 	end set_path;
 
--- 	procedure check_submodule_name_length (name : in string) is
--- 	-- Checks if the given submodule name is not longer than allowed.
--- 		use et_string_processing;
--- 	begin
--- 		if name'length > submodule_name_length_max then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of characters for module name is"
--- 				 & positive'image (submodule_name_length_max) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_name_length;
+--	procedure check_submodule_name_length (name : in string) is
+--	-- Checks if the given submodule name is not longer than allowed.
+--		use et_string_processing;
+--	begin
+--		if name'length > submodule_name_length_max then
+--			log_indentation_reset;
+--			log (message_error & "max. number of characters for module name is"
+--				 & positive'image (submodule_name_length_max) & " !",
+--				console => true);
+--			raise constraint_error;
+--		end if;
+--	end check_submodule_name_length;
 --
--- 	procedure check_submodule_name_characters (
--- 	-- Checks for forbidden characters in submodule name.
--- 		name : in type_submodule_name.bounded_string;
--- 		characters : in character_set := submodule_name_characters) is
--- 		use et_string_processing;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		-- Test given submodule name and get position of possible invalid characters.
--- 		invalid_character_position := index (
--- 			source => name,
--- 			set => characters,
--- 			test => outside);
+--	procedure check_submodule_name_characters (
+--	-- Checks for forbidden characters in submodule name.
+--		name : in type_submodule_name.bounded_string;
+--		characters : in character_set := submodule_name_characters) is
+--		use et_string_processing;
+--		invalid_character_position : natural := 0;
+--	begin
+--		-- Test given submodule name and get position of possible invalid characters.
+--		invalid_character_position := index (
+--			source => name,
+--			set => characters,
+--			test => outside);
 --
--- 		-- Evaluate position of invalid character.
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "invalid character in submodule name '"
--- 				& to_string (name) & "' at position" & natural'image (invalid_character_position),
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_name_characters;
+--		-- Evaluate position of invalid character.
+--		if invalid_character_position > 0 then
+--			log_indentation_reset;
+--			log (message_error & "invalid character in submodule name '"
+--				& to_string (name) & "' at position" & natural'image (invalid_character_position),
+--				console => true);
+--			raise constraint_error;
+--		end if;
+--	end check_submodule_name_characters;
 
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
 	-- Returns the given submodule name as string.
@@ -239,41 +239,41 @@ package body et_kicad_coordinates is
 	end to_submodule_name;
 
 
--- 	function to_string (
--- 		path : in type_path_to_submodule.list;
--- 		top_module : in boolean := true) return string is
--- 	-- Returns the given path as string with hierarchy_separator.
--- 	-- If top_module = false, the name of the top module is omitted.
+--	function to_string (
+--		path : in type_path_to_submodule.list;
+--		top_module : in boolean := true) return string is
+--	-- Returns the given path as string with hierarchy_separator.
+--	-- If top_module = false, the name of the top module is omitted.
 --
--- 		use type_path_to_submodule;
--- 		use ada.strings.unbounded;
+--		use type_path_to_submodule;
+--		use ada.strings.unbounded;
 --
--- 		submodule : type_path_to_submodule.cursor := path.first;
--- 		result : unbounded_string;
--- 	begin
--- 		-- If top_module is false, advance cursor right to next module.
--- 		if not top_module then
--- 			next (submodule);
--- 		end if;
+--		submodule : type_path_to_submodule.cursor := path.first;
+--		result : unbounded_string;
+--	begin
+--		-- If top_module is false, advance cursor right to next module.
+--		if not top_module then
+--			next (submodule);
+--		end if;
 --
--- 		if is_empty (path) then
--- 			result := to_unbounded_string (hierarchy_separator);
--- 		else
--- 			-- Loop through list of submodules and collect their names in "result".
--- 			while submodule /= type_path_to_submodule.no_element loop
--- 				result := result & hierarchy_separator
--- 					& to_unbounded_string (to_string (element (submodule)));
--- -- 					& hierarchy_separator;
--- 				next (submodule);
--- 			end loop;
--- 		end if;
--- -- 		if result = hierarchy_separator then
--- -- 			result := result & " (top module)";
--- -- 		end if;
+--		if is_empty (path) then
+--			result := to_unbounded_string (hierarchy_separator);
+--		else
+--			-- Loop through list of submodules and collect their names in "result".
+--			while submodule /= type_path_to_submodule.no_element loop
+--				result := result & hierarchy_separator
+--					& to_unbounded_string (to_string (element (submodule)));
+-- --					& hierarchy_separator;
+--				next (submodule);
+--			end loop;
+--		end if;
+-- --		if result = hierarchy_separator then
+-- --			result := result & " (top module)";
+-- --		end if;
 --
--- 		--return to_string ("location " & result);
--- 		return to_string (result);
--- 	end to_string;
+--		--return to_string ("location " & result);
+--		return to_string (result);
+--	end to_string;
 
 
 

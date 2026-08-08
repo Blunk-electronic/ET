@@ -129,7 +129,7 @@ package et_net_connectors is
 
 
 	procedure modify_status (
-		connector 	: in out type_net_connector;
+		connector	: in out type_net_connector;
 		operation	: in type_status_operation);
 
 

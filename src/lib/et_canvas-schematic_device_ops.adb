@@ -55,7 +55,7 @@ package body et_canvas.schematic_device_ops is
 
 	procedure make_store_for_prefixes (
 		prefixes	: in pac_device_prefixes.map;
-		store 		: in out gtk_list_store)
+		store		: in out gtk_list_store)
 	is
 		column_0 : constant := 0; -- for the prefix name
 		column_1 : constant := 1; -- for the prefix index
@@ -291,7 +291,7 @@ package body et_canvas.schematic_device_ops is
 
 	procedure make_store_for_variants (
 		variants	: in pac_package_variants.map;
-		store 		: in out gtk_list_store)
+		store		: in out gtk_list_store)
 	is
 		column_0 : constant := 0; -- for the variant name
 		column_1 : constant := 1; -- for the variant index
@@ -409,7 +409,7 @@ package body et_canvas.schematic_device_ops is
 		device	: in type_device_name;
 		text	: in string)
 	is
-		box 		: gtk_vbox;
+		box		: gtk_vbox;
 		buffer		: gtk_text_buffer;
 		text_view	: gtk_text_view;
 

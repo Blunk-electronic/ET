@@ -38,8 +38,8 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 with gnat.directory_operations;
 
@@ -61,10 +61,10 @@ package body et_directory_and_file_ops is
 		--use gnat.directory_operations;
 		--use et_string_processing;
 
--- 		function do_it (path : in string) return string is begin
--- 			log ("full path is " & path, log_threshold + 1);
--- 			return path;
--- 		end;
+--		function do_it (path : in string) return string is begin
+--			log ("full path is " & path, log_threshold + 1);
+--			return path;
+--		end;
 
 	begin -- expand
 		place_prefix := index (name_in, prefix);
@@ -102,7 +102,7 @@ package body et_directory_and_file_ops is
 	function directory_entries (
 		target_directory	: in string;						-- ../lbr
 		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
-		pattern				: in string) 						-- *.txt
+		pattern				: in string)						-- *.txt
 		return pac_directory_entries.list is
 
 		use ada.directories;

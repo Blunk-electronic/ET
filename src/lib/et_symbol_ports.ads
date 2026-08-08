@@ -40,7 +40,7 @@
 -- - rename this package to et_symbol_port (singular)
 --
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_symbol_port_general;			use et_symbol_port_general;

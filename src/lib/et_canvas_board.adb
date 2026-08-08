@@ -274,10 +274,10 @@ package body et_canvas_board is
 		-- This procedure contains all the actions required
 		-- to set the focus on the canvas:
 		-- procedure focus_canvas is begin
-		-- 	backup_scrollbar_settings;
-		-- 	canvas.grab_focus;
-		-- 	restore_scrollbar_settings;
-		-- 	status_clear;
+		--	backup_scrollbar_settings;
+		--	canvas.grab_focus;
+		--	restore_scrollbar_settings;
+		--	status_clear;
 		-- end focus_canvas;
 
 
@@ -1187,7 +1187,7 @@ package body et_canvas_board is
 -- MOUSE BUTTON RELEASED
 
 	-- CS procedure button_released (
-	-- 	event	: in type_mouse_event)
+	--	event	: in type_mouse_event)
 	-- is separate;
 
 
@@ -1388,11 +1388,11 @@ package body et_canvas_board is
 		console.prepend_text (line_as_typed_by_operator);
 
 		fields := read_line (
-			line 			=> line_as_typed_by_operator,
+			line			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> et_script_processor.comment_mark,
+			comment_mark	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
-			ifs 			=> space); -- fields are separated by space
+			ifs			=> space); -- fields are separated by space
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
@@ -1480,11 +1480,11 @@ package body et_canvas_board is
 		console.prepend_text (get_text (self));
 
 		fields := read_line (
-			line 			=> line_as_typed_by_operator,
+			line			=> line_as_typed_by_operator,
 			number			=> 1, -- this is the one and only line
-			comment_mark 	=> et_script_processor.comment_mark,
+			comment_mark	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
-			ifs 			=> space); -- fields are separated by space
+			ifs			=> space); -- fields are separated by space
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 

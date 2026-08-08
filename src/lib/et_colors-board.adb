@@ -149,11 +149,11 @@ package body et_colors.board is
 
 
 	-- procedure set_color_cursor (context : in cairo_context) is begin
-	-- 	set_source_rgb (
-	-- 		context,
-	-- 		cursor.red,
-	-- 		cursor.green,
-	-- 		cursor.blue);
+	--	set_source_rgb (
+	--		context,
+	--		cursor.red,
+	--		cursor.green,
+	--		cursor.blue);
 	-- end set_color_cursor;
 
 
@@ -208,7 +208,7 @@ package body et_colors.board is
 	begin
 		-- Modify the given color by the given brightness:
 		case brightness is
-			when DARK 	=>	c := dim (color, dim_factor_dark);
+			when DARK	=>	c := dim (color, dim_factor_dark);
 			when NORMAL	=>	c := dim (color, dim_factor_default);
 			when BRIGHT	=>	c := dim (color, dim_factor_bright);
 		end case;
@@ -340,7 +340,7 @@ package body et_colors.board is
 	procedure set_color_silkscreen (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity)
+		opacity	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
@@ -357,7 +357,7 @@ package body et_colors.board is
 	procedure set_color_assy_doc (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity)
+		opacity	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
@@ -375,7 +375,7 @@ package body et_colors.board is
 	procedure set_color_stop_mask (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity)
+		opacity	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
@@ -399,7 +399,7 @@ package body et_colors.board is
 	procedure set_color_stencil (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity)
+		opacity	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>

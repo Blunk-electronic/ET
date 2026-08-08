@@ -236,7 +236,7 @@ package body et_module_read_device_non_electrical is
 
 			procedure clean_up is begin
 				-- clean up for next non-electrical device:
-				device 				:= (others => <>);
+				device				:= (others => <>);
 				device_name			:= (others => <>);
 				device_position		:= package_position_default;
 				text_placeholders	:= (others => <>);

@@ -41,7 +41,7 @@
 separate (et_schematic_ops_units)
 
 procedure copy_unit (
-	module_cursor 	: in pac_generic_modules.cursor;
+	module_cursor	: in pac_generic_modules.cursor;
 	device_cursor	: in pac_devices_electrical.cursor;
 	unit_cursor		: in pac_units.cursor;
 	sheet			: in type_sheet_relative;

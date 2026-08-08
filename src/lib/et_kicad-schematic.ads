@@ -39,8 +39,8 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 
 with et_logging;				use et_logging;
 with et_kicad_coordinates;		use et_kicad_coordinates;
@@ -185,7 +185,7 @@ package et_kicad.schematic is
 	procedure add_unit (
 		reference		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		unit 			: in type_unit_schematic;
+		unit			: in type_unit_schematic;
 		log_threshold	: in type_log_level);
 
 
@@ -221,7 +221,7 @@ package et_kicad.schematic is
 	-- The unit is an element in the given list of units.
 	function mirror_style_of_unit ( -- CS rename to get_unit_mirror_style
 		name	: in pac_unit_name.bounded_string; -- the unit being inquired
-		units 	: in type_units_schematic.map) -- the list of units
+		units	: in type_units_schematic.map) -- the list of units
 		return type_mirror;
 
 
@@ -230,8 +230,8 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function orientation_of_unit ( -- CS rename to get_unit_orientation
-		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
-		units 	: in type_units_schematic.map) -- the list of units
+		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		units	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model;
 
 
@@ -304,10 +304,10 @@ package et_kicad.schematic is
 
 
 	-- The components of a module are collected in a map.
- 	package type_components_schematic is new indefinite_ordered_maps (
-		key_type 		=> type_device_name, -- something like "IC43"
-		"<" 			=> et_device_name."<",
- 		element_type 	=> type_component_schematic);
+	package type_components_schematic is new indefinite_ordered_maps (
+		key_type		=> type_device_name, -- something like "IC43"
+		"<"			=> et_device_name."<",
+		element_type	=> type_component_schematic);
 
 
 
@@ -333,7 +333,7 @@ package et_kicad.schematic is
 
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
-		component 		: in type_components_schematic.cursor;
+		component		: in type_components_schematic.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -359,7 +359,7 @@ package et_kicad.schematic is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: et_kicad_coordinates.type_position;
+		coordinates	: et_kicad_coordinates.type_position;
 		direction		: et_kicad_libraries.type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: type_appearance_schematic;
@@ -397,9 +397,9 @@ package et_kicad.schematic is
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
-		port 			: in type_port_with_reference;
+		port			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 		return et_package_variant.type_terminal;
 
 
@@ -418,8 +418,8 @@ package et_kicad.schematic is
 
 	-- This is a set of ports as we need in the netlist.
 	package pac_ports_with_reference is new ordered_sets (
-		element_type 	=> type_port_with_reference,
-		"<" 			=> compare_ports);
+		element_type	=> type_port_with_reference,
+		"<"			=> compare_ports);
 
 	-- This is the netlist of a single submodule:
 	-- It does also contain ports of virtual components (power symbols) except
@@ -439,7 +439,7 @@ package et_kicad.schematic is
 
 	type type_net_label_appearance is (
 		SIMPLE,	-- a label that shows just the name of the net
-		TAG 	-- a lable that shows the net name, the sheet name and the row/column
+		TAG	-- a lable that shows the net name, the sheet name and the row/column
 		);		-- where the net continues
 	-- CS rename to type_label_category
 
@@ -486,7 +486,7 @@ package et_kicad.schematic is
 
 	function to_string (
 		junction	: in type_net_junction;
-		scope 		: in et_kicad_coordinates.type_scope)
+		scope		: in et_kicad_coordinates.type_scope)
 		return string;
 	-- Returns the position of the given junction as string.
 
@@ -494,8 +494,8 @@ package et_kicad.schematic is
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 
 	type type_net_segment_base is tagged record
-		coordinates_start 	: et_kicad_coordinates.type_position;
-		coordinates_end   	: et_kicad_coordinates.type_position; -- CS type_vector_model ?
+		coordinates_start	: et_kicad_coordinates.type_position;
+		coordinates_end	: et_kicad_coordinates.type_position; -- CS type_vector_model ?
 	end record;
 
 	function length (segment : in type_net_segment_base)
@@ -503,8 +503,8 @@ package et_kicad.schematic is
 	-- Returns the length of the given net segment.
 
 	type type_net_segment is new type_net_segment_base with record
-		label_list_simple 	: type_simple_labels.list;
-		label_list_tag    	: type_tag_labels.list;
+		label_list_simple	: type_simple_labels.list;
+		label_list_tag	: type_tag_labels.list;
 		junctions			: type_junctions.list;
 	end record;
 
@@ -533,7 +533,7 @@ package et_kicad.schematic is
 	type type_strand is record
 		position	: et_kicad_coordinates.type_position; -- x/y/sheet -- CS only sheet matters
 		name		: pac_net_name.bounded_string; -- example "CPU_CLOCK"
-		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
+		scope		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
 	end record;
 
@@ -545,7 +545,7 @@ package et_kicad.schematic is
 	package type_strands is new doubly_linked_lists (type_strand);
 
 	type type_net is new type_net_base with record
-		scope 		: type_net_scope := type_net_scope'first; -- example "local"
+		scope		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands.list;
 		-- CS differential status
 	end record;
@@ -564,7 +564,7 @@ package et_kicad.schematic is
 	-- Inserts the created (sub)module in the module collection (see type_modules).
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	procedure import_design (
-		--first_instance 	: in boolean := false;
+		--first_instance	: in boolean := false;
 		project			: in pac_project_name.bounded_string;
 		log_threshold	: in type_log_level);
 
@@ -734,7 +734,7 @@ package et_kicad.schematic is
 	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible
 
 
-	field_style_default 	: constant string := "NN";
+	field_style_default	: constant string := "NN";
 	field_style_bold		: constant string := "NB";
 	field_style_italic		: constant string := "IN";
 	field_style_italic_bold	: constant string := "IB";
@@ -749,7 +749,7 @@ package et_kicad.schematic is
 
 	-- orientation of HIERARCHICAL SHEET PORTS
 	type type_sheet_port_orientation is (
-		L, 	-- on the left edge of the box
+		L,	-- on the left edge of the box
 		R);	-- on the right edge of the box
 
 
@@ -792,16 +792,16 @@ package et_kicad.schematic is
 
 -- IMPORT
 
-	schematic_version_valid 	: boolean := false;
+	schematic_version_valid	: boolean := false;
 	sheet_header_entered		: boolean := false;
 	description_entered			: boolean := false;
 	description_processed		: boolean := false;
 	sheet_description_entered	: boolean := false;
 
-	component_entered 			: boolean := false;
+	component_entered			: boolean := false;
 	net_segment_entered			: boolean := false;
 	simple_label_entered		: boolean := false;
-	tag_label_entered 			: boolean := false;
+	tag_label_entered			: boolean := false;
 	note_entered				: boolean := false;
 
 
@@ -825,9 +825,9 @@ package et_kicad.schematic is
 
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
-		segments 	: type_net_segments.list; -- the net segments
-		name 		: pac_net_name.bounded_string;	-- the strand name (derived from net labels)
-		scope 		: type_strand_scope := type_strand_scope'first; -- the scope (derived from net labels)
+		segments	: type_net_segments.list; -- the net segments
+		name		: pac_net_name.bounded_string;	-- the strand name (derived from net labels)
+		scope		: type_strand_scope := type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
 	end record;
 
@@ -878,7 +878,7 @@ package et_kicad.schematic is
 
     package type_hierarchic_sheets is new ordered_maps (
         key_type		=> type_hierarchic_sheet_name,
-		"<" 			=> compare_hierarchic_sheets,
+		"<"			=> compare_hierarchic_sheets,
 		element_type	=> type_hierarchic_sheet);
 
 
@@ -925,13 +925,13 @@ package et_kicad.schematic is
 	-- Returns the component power flag status.
 		return type_power_flag;
 
--- 	function purpose ( -- CS move to et_schematic or et_project
--- 	-- Returns the purpose of the given component in the given module.
--- 	-- If no purpose specified for the component, an empty string is returned.
--- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in et_libraries.type_device_name; -- X701
--- 		log_threshold	: in type_log_level)
--- 		return et_libraries.type_component_purpose.bounded_string;
+--	function purpose ( -- CS move to et_schematic or et_project
+--	-- Returns the purpose of the given component in the given module.
+--	-- If no purpose specified for the component, an empty string is returned.
+--		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		reference		: in et_libraries.type_device_name; -- X701
+--		log_threshold	: in type_log_level)
+--		return et_libraries.type_component_purpose.bounded_string;
 
 	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
@@ -948,14 +948,14 @@ package et_kicad.schematic is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 
 	function components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 
 	function real_components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
@@ -1067,23 +1067,23 @@ package et_kicad.schematic is
 		return pac_net_name.bounded_string;
 
 
--- 	procedure write_statistics (log_threshold : in type_log_level);  -- CS this is general and should be in et_schematic
--- 	-- Writes the statistics on components and nets of the modules.
--- 	-- Distinguishes between CAD and CAM related things.
+--	procedure write_statistics (log_threshold : in type_log_level);  -- CS this is general and should be in et_schematic
+--	-- Writes the statistics on components and nets of the modules.
+--	-- Distinguishes between CAD and CAM related things.
 
--- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
--- 	-- Outputs an warning message on multiple usage of a purpose of a component category.
--- 		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
--- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold	: in type_log_level);
+--	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
+--	-- Outputs an warning message on multiple usage of a purpose of a component category.
+--		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+--		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+--		log_threshold	: in type_log_level);
 
--- 	function multiple_purpose ( -- CS move to et_schematic or et_project
--- 	-- Returns the number of occurences of components with the given purpose and category.
--- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
--- 		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
--- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold	: in type_log_level)
--- 		return natural;
+--	function multiple_purpose ( -- CS move to et_schematic or et_project
+--	-- Returns the number of occurences of components with the given purpose and category.
+--	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+--		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+--		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+--		log_threshold	: in type_log_level)
+--		return natural;
 
 
 

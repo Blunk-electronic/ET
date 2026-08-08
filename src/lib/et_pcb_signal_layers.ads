@@ -39,11 +39,11 @@
 
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.ordered_sets;
 
-with et_string_processing; 		use et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_mirroring;				use et_mirroring;
 
 

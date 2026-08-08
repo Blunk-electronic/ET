@@ -145,7 +145,7 @@ package body et_net_strands is
 
 	function to_strand_position (
 		line			: in type_fields_of_line;
-		from 			: in type_field_count_positive;
+		from			: in type_field_count_positive;
 		log_threshold	: in type_log_level)
 		return type_strand_position
 	is
@@ -734,7 +734,7 @@ package body et_net_strands is
 
 
 	function get_connected_segments (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		strand		: in type_strand)
 		return pac_connected_segments.list
@@ -807,7 +807,7 @@ package body et_net_strands is
 
 
 	function has_connected_segments (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		strand		: in type_strand)
 		return boolean

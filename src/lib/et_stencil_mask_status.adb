@@ -41,7 +41,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.fixed;		use ada.strings.fixed;
 
 
 package body et_stencil_mask_status is

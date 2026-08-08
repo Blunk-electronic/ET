@@ -38,7 +38,7 @@
 
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 
 
 package et_package_variant_name is
@@ -79,8 +79,8 @@ package et_package_variant_name is
 
 
 	-- function to_string (
-	-- 	variant : in pac_package_variant_name.bounded_string)
-	-- 	return string;
+	--	variant : in pac_package_variant_name.bounded_string)
+	--	return string;
 
 
 	function to_variant_name (

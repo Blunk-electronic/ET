@@ -38,7 +38,7 @@
 --   to do:
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
@@ -315,7 +315,7 @@ package et_assy_doc is
 
 	-- This is the base type for assy doc objects in general:
 	type type_assy_doc is tagged record
-		lines 	: pac_doc_lines.list;
+		lines	: pac_doc_lines.list;
 		arcs	: pac_doc_arcs.list;
 		circles	: pac_doc_circles.list;
 		zones	: pac_doc_zones.list;
@@ -327,25 +327,25 @@ package et_assy_doc is
 	procedure line_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given arc of assembly documentation
 	procedure arc_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given circle of assembly documentation
 	procedure circle_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given text:
 	-- procedure text_assy_doc_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_doc_texts.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_doc_texts.cursor;
+	--	log_threshold	: in type_log_level);
 
 
 end et_assy_doc;

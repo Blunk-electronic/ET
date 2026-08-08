@@ -91,7 +91,7 @@ package body et_module_write_device_non_electrical is
 
 			procedure query_placeholders (
 				device_name : in type_device_name;
-				device 		: in type_device_non_electrical)
+				device		: in type_device_non_electrical)
 			is
 				pragma unreferenced (device_name);
 				use et_device_placeholders;

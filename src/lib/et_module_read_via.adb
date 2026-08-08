@@ -64,8 +64,8 @@ package body et_module_read_via is
 	use pac_geometry_2;
 
 
-	drill 				: type_drill;
-	via_category 		: et_vias.type_via_category;
+	drill				: type_drill;
+	via_category		: et_vias.type_via_category;
 	via_restring_inner	: type_restring_width; -- CS default DRC
 	via_restring_outer	: type_restring_width; -- CS default DRC
 	via_layers_buried	: et_vias.type_buried_layers;

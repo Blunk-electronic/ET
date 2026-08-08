@@ -142,7 +142,7 @@ package body et_design_rules_board is
 
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is separate;
 
 

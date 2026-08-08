@@ -52,7 +52,7 @@ package et_cp_schematic_display is
 	-- Example: "schematic display nets on/off"
 	-- If on/off is left off, then the layer will be enabled:
 	procedure display (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

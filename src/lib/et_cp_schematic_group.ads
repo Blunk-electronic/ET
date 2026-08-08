@@ -51,7 +51,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo define group 2  5 5  100 40
 	procedure define_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -59,7 +59,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo clear group
 	procedure clear_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -67,7 +67,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo delete group
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -77,7 +77,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo move group 100 20
 	procedure drag_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -86,7 +86,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo copy group 1 10 -20
 	procedure copy_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -95,7 +95,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo copy group 1 10 -20
 	procedure paste_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

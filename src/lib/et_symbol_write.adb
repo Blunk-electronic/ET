@@ -104,7 +104,7 @@ package body et_symbol_write is
 		log_indentation_up;
 
 		create (
-			file 	=> file_handle,
+			file	=> file_handle,
 			mode	=> out_file,
 			name	=> to_string (file_name));
 

@@ -98,8 +98,8 @@ package body et_module_read_text_schematic is
 			expect_field_count (line, 2);
 			schematic_text.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
--- 			elsif kw = keyword_style then -- style normal/italic
--- 				expect_field_count (line, 2);
+--			elsif kw = keyword_style then -- style normal/italic
+--				expect_field_count (line, 2);
 			-- schematic_text.font := et_symbol_model.to_text_style (f (line, 2)); -- CS
 			-- CS: currently font and style are ignored.
 

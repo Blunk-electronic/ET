@@ -388,7 +388,7 @@ package body et_schematic_ops_groups is
 
 
 	procedure set_group_as_moving (
-  		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 
@@ -456,7 +456,7 @@ package body et_schematic_ops_groups is
 
 
 	procedure set_group_as_not_moving (
-  		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 

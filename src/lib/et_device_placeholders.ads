@@ -103,8 +103,8 @@ package et_device_placeholders is
 
 	-- CS ?
 	-- type type_rotation_mode is (
-	-- 	MODE_ROTATE_WITH_PACKAGE
-	-- 	...);
+	--	MODE_ROTATE_WITH_PACKAGE
+	--	...);
 
 
 end et_device_placeholders;

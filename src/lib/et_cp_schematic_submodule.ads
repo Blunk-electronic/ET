@@ -55,7 +55,7 @@ package et_cp_schematic_submodule is
 		module			: in pac_generic_modules.cursor;
 		-- parent module (where the submodule is to be inserted)
 
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -65,14 +65,14 @@ package et_cp_schematic_submodule is
 	-- example 2: schematic demo move submodule OSC1 absolute 4 150 100
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure drag_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -80,7 +80,7 @@ package et_cp_schematic_submodule is
 	procedure copy_submodule (
 		module			: in pac_generic_modules.cursor;
 		 -- parent module (where the submodule is to be copied)
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -88,49 +88,49 @@ package et_cp_schematic_submodule is
 	procedure delete_submodule (
 		module			: in pac_generic_modules.cursor;
 		 -- parent module (where the submodule is to be deleted)
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure rename_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure mount_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure remove_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure set_submodule_file (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure build_submodules_tree (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure check_submodules_integrity (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -140,25 +140,25 @@ package et_cp_schematic_submodule is
 
 	procedure add_port_to_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	procedure drag_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	procedure delete_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	procedure move_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

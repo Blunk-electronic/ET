@@ -45,7 +45,7 @@
 --
 --
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_logging;				use et_logging;
@@ -74,7 +74,7 @@ package et_device_library is
 	--subtype type_t is type_device_model (PCB);
 
 	--package pac_devices_lib2 is new hashed_maps (
-		--key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
+		--key_type		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		--element_type	=> type_t,
 		--hash			=> hash_device_model,
 		--equivalent_keys	=> pac_device_model_file."=",
@@ -94,7 +94,7 @@ package et_device_library is
 	-- is also the key to the device library:
 
 	package pac_device_models is new indefinite_ordered_maps (
-		key_type 		=> pac_device_model_file.bounded_string,
+		key_type		=> pac_device_model_file.bounded_string,
 		"<"				=> pac_device_model_file."<",
 		element_type	=> type_device_model);
 

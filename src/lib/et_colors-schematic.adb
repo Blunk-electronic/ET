@@ -70,7 +70,7 @@ package body et_colors.schematic is
 		c : type_color;
 	begin
 		case brightness is
-			when DARK 	=>	c := dim (color, dim_factor_dark);
+			when DARK	=>	c := dim (color, dim_factor_dark);
 			when NORMAL	=>	c := dim (color, dim_factor_default);
 			when BRIGHT	=>	c := dim (color, dim_factor_bright);
 		end case;

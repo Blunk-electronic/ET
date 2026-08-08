@@ -102,13 +102,13 @@ package et_device_library.packages is
 		return pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 
-	-- 	function terminal_name (
--- 	-- Returns the name of the terminal name of the given device according to the given variant.
--- 	-- The given device must be real. Means appearance SCH_PCB.
--- 		device_cursor	: in pac_device_models.cursor;
--- 		port_name		: in pac_port_name.bounded_string;
--- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
--- 		return pac_terminal_name.bounded_string; -- 14, H4
+	--	function terminal_name (
+--	-- Returns the name of the terminal name of the given device according to the given variant.
+--	-- The given device must be real. Means appearance SCH_PCB.
+--		device_cursor	: in pac_device_models.cursor;
+--		port_name		: in pac_port_name.bounded_string;
+--		variant			: in pac_package_variant_name.bounded_string) -- D, N
+--		return pac_terminal_name.bounded_string; -- 14, H4
 
 
 

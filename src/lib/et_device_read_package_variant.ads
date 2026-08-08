@@ -52,7 +52,7 @@ package et_device_read_package_variant is
 
 
 	procedure read_package_variant (
-		line 			: in type_fields_of_line;
+		line			: in type_fields_of_line;
 		check_layers	: in type_layer_check := (check => NO);
 		log_threshold	: in type_log_level);
 
@@ -69,7 +69,7 @@ package et_device_read_package_variant is
 
 
 	procedure read_terminal_port_assignment (
-		line 			: in type_fields_of_line;
+		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
 

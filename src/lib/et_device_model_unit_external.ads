@@ -44,7 +44,7 @@
 -- - Rename everything containing the term "unit" to "symbol".
 
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_schematic_geometry;				use et_schematic_geometry;

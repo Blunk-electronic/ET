@@ -196,7 +196,7 @@ package body et_text is
 
 
 		procedure modify_status (
-			text 		: in out type_text;
+			text		: in out type_text;
 			operation	: in et_object_status.type_status_operation)
 		is begin
 			modify_status (text.status, operation);
@@ -206,7 +206,7 @@ package body et_text is
 
 
 		procedure reset_status (
-			text 		: in out type_text)
+			text		: in out type_text)
 		is begin
 			reset_status (text.status);
 		end reset_status;

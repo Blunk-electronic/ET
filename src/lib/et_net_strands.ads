@@ -37,7 +37,7 @@
 --
 
 
-with ada.containers; 				use ada.containers;
+with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -117,7 +117,7 @@ package et_net_strands is
 	-- and the position output ?
 	function to_strand_position (
 		line			: in type_fields_of_line;
-		from 			: in type_field_count_positive;
+		from			: in type_field_count_positive;
 		log_threshold	: in type_log_level)
 		return type_strand_position;
 
@@ -268,7 +268,7 @@ package et_net_strands is
 	-- with the given primary segment at the given end (A/B).
 	-- NOTE; The primary segment must belong to the given strand.
 	function get_connected_segments (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		strand		: in type_strand)
 		return pac_connected_segments.list;
@@ -277,7 +277,7 @@ package et_net_strands is
 	-- Returns true if the given primary segment has
 	-- any segments connected at the given end (A/B):
 	function has_connected_segments (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		strand		: in type_strand)
 		return boolean;

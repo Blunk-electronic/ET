@@ -107,9 +107,9 @@ package body et_module_read_board_zones_route is
 		unused_fill_spacing		:= type_track_clearance'first;
 		board_fill_style	:= fill_style_default;
 		--board_hatching		:= (others => <>);
-		board_easing 		:= (others => <>);
+		board_easing		:= (others => <>);
 		relief_properties	:= (others => <>);
-		pad_connection 		:= type_pad_connection'first;
+		pad_connection		:= type_pad_connection'first;
 
 		contour_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;

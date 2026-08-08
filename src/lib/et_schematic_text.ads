@@ -41,7 +41,7 @@
 with et_sheets;							use et_sheets;
 with et_schematic_geometry;				use et_schematic_geometry;
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_text_content;					use et_text_content;

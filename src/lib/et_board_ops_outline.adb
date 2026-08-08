@@ -1406,7 +1406,7 @@ package body et_board_ops_outline is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 
 		if commit_design = DO_COMMIT then
@@ -1600,9 +1600,9 @@ package body et_board_ops_outline is
 					end if;
 
 					-- if not mr.successful then
-					-- 	log_indentation_up;
-					-- 	log (text => "hole contour rejected", level => log_threshold + 1);
-					-- 	log_indentation_down;
+					--	log_indentation_up;
+					--	log (text => "hole contour rejected", level => log_threshold + 1);
+					--	log_indentation_down;
 					-- end if;
 
 				else -- closed candidate contour
@@ -1741,7 +1741,7 @@ package body et_board_ops_outline is
 		return type_object
 	is
 		result_category			: type_object_category := CAT_VOID;
-		result_outer_segment 	: type_object_outer_contour_segment;
+		result_outer_segment	: type_object_outer_contour_segment;
 		result_hole_segment		: type_object_hole_segment;
 
 		use pac_contours;

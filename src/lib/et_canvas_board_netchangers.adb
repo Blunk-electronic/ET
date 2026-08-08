@@ -427,10 +427,10 @@ package body et_canvas_board_netchangers is
 						-- CS
 						null;
 						-- set_status (get_properties (
-						-- 	device_cursor	=> object.unit.device_cursor,
-						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1,
-						-- 	all_units		=> false,
-						-- 	unit_cursor		=> object.unit.unit_cursor));
+						--	device_cursor	=> object.unit.device_cursor,
+						--	level			=> DEVICE_PROPERTIES_LEVEL_1,
+						--	all_units		=> false,
+						--	unit_cursor		=> object.unit.unit_cursor));
 
 					when others =>
 						status_clear;
@@ -458,7 +458,7 @@ package body et_canvas_board_netchangers is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else

@@ -40,7 +40,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.strings; 					use ada.strings;
+with ada.strings;					use ada.strings;
 
 with ada.exceptions;
 with ada.directories;
@@ -70,8 +70,8 @@ package body et_project.configuration is
 
 
 	procedure read_configuration (
-		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in type_log_level)
+		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold	: in type_log_level)
 		is separate;
 
 
@@ -103,8 +103,8 @@ package body et_project.configuration is
 
 
 	procedure save_configuration (
-		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in type_log_level)
+		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold	: in type_log_level)
 		is separate;
 
 

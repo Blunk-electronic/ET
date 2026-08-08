@@ -53,7 +53,7 @@ package body et_unit_name is
 
 
 	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
-	-- 	return pac_unit_name.to_string (unit_name);
+	--	return pac_unit_name.to_string (unit_name);
 	-- end;
 
 
@@ -88,13 +88,13 @@ package body et_unit_name is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;

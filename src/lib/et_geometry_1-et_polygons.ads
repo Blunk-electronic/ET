@@ -36,9 +36,9 @@
 --
 --
 --  description:
--- 	This package and its child packages base on the Weiler-Atherton algorithm.
+--	This package and its child packages base on the Weiler-Atherton algorithm.
 --  Find basics here:
--- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
+--	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
@@ -51,7 +51,7 @@
 --     If required, move them to et_geometry_1 so that other callers can make use of them.
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.ordered_sets;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -142,7 +142,7 @@ package et_geometry_1.et_polygons is
 	-- NOTE: The polygon does not change its appearance. Only the order
 	-- of the edges is changed !
 	procedure rotate (
-		polygon 	: in out type_polygon;
+		polygon	: in out type_polygon;
 		direction	: in type_direction_of_rotation := CCW);
 
 
@@ -335,8 +335,8 @@ package et_geometry_1.et_polygons is
 	-- means if they are equal in outline and size.
 	-- The start points of the two polygons do not matter.
 	function are_congruent (
-		polygon_A 	: in type_polygon;
-		polygon_B 	: in type_polygon;
+		polygon_A	: in type_polygon;
+		polygon_B	: in type_polygon;
 		debug		: in boolean := false)
 		return boolean;
 
@@ -907,7 +907,7 @@ package et_geometry_1.et_polygons is
 	-- figuring out whether a certain vertex of the primary polygon is inside,
 	-- outside, on an edge or on a vertex of the secondary polygon.
 	function get_vertices (
-		polygon_primary 	: in type_polygon;
+		polygon_primary	: in type_polygon;
 		polygon_secondary	: in type_polygon;
 		intersections		: in pac_intersections.list;
 		AB					: in type_AB_polygon)

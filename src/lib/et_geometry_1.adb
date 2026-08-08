@@ -1185,7 +1185,7 @@ package body et_geometry_1 is
 
 			--set_angle (result, to_rotation (arctan (
 			set_angle (result, arctan (
-					x 		=> dx,
+					x		=> dx,
 					y		=> dy,
 					cycle	=> units_per_cycle));
 		else
@@ -1826,8 +1826,8 @@ package body et_geometry_1 is
 		b1 : in out type_boundaries;
 		b2 : in type_boundaries)
 	is begin
--- 			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
--- 			greatest_x, greatest_y : type_distance := type_distance'first;
+--			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
+--			greatest_x, greatest_y : type_distance := type_distance'first;
 		null; -- CS
 	end add;
 
@@ -2089,7 +2089,7 @@ package body et_geometry_1 is
 
 
 	procedure modify_status (
-		line 		: in out type_line_fine;
+		line		: in out type_line_fine;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (line.status, operation);
@@ -2741,15 +2741,15 @@ package body et_geometry_1 is
 	begin
 		case arc.direction is
 			when CW =>
-				result.center 		:= arc.center;
-				result.radius 		:= arc.radius;
+				result.center		:= arc.center;
+				result.radius		:= arc.radius;
 				result.angle_start	:= to_angle_positive (arc.angle_end);
 				result.angle_end	:= to_angle_positive (arc.angle_start);
 				result.direction	:= CCW;
 
 			when CCW =>
-				result.center 		:= arc.center;
-				result.radius 		:= arc.radius;
+				result.center		:= arc.center;
+				result.radius		:= arc.radius;
 				result.angle_start	:= to_angle_positive (arc.angle_start);
 				result.angle_end	:= to_angle_positive (arc.angle_end);
 				result.direction	:= arc.direction;
@@ -3516,8 +3516,8 @@ package body et_geometry_1 is
 						oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
 					begin
 						-- if debug then
-						-- 	put_line (boolean'image (oa_1));
-						-- 	put_line (boolean'image (oa_2));
+						--	put_line (boolean'image (oa_1));
+						--	put_line (boolean'image (oa_2));
 						-- end if;
 
 						if oa_1 and oa_2 then

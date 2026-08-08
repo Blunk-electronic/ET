@@ -137,7 +137,7 @@ package body et_schematic_coordinates is
 
 
 	function to_position (
-		point 		: in type_vector_model;
+		point		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position
@@ -154,7 +154,7 @@ package body et_schematic_coordinates is
 
 
 	function to_position_relative (
-		point 		: in type_vector_model;
+		point		: in type_vector_model;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position_relative
@@ -314,7 +314,7 @@ package body et_schematic_coordinates is
 
 
 	procedure set_rotation (
-		position 	: in out type_object_position;
+		position	: in out type_object_position;
 		rotation	: in type_rotation_model)
 	is begin
 		position.rotation := rotation;

@@ -56,7 +56,7 @@ package body et_package_read_meta is
 
 
 	procedure read_meta (
-		line 			: in type_fields_of_line;
+		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);

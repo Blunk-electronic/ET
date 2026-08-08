@@ -41,8 +41,8 @@
 separate (et_project.configuration)
 
 procedure read_configuration (
-	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-	log_threshold 	: in type_log_level)
+	project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+	log_threshold	: in type_log_level)
 is
 	use et_string_processing;
 	use ada.directories;
@@ -66,7 +66,7 @@ is
 
 	package pac_sections_stack is new gen_pac_sections_stack (
 		item	=> type_file_section,
-		max 	=> max_section_depth);
+		max	=> max_section_depth);
 
 
 
@@ -224,10 +224,10 @@ is
 		-- read the file line by line
 		while not end_of_file loop
 			line := read_line (
-				line 			=> get_line,
+				line			=> get_line,
 				number			=> positive (ada.text_io.line (current_input)),
 				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> space); -- fields are separated by space
+				ifs			=> space); -- fields are separated by space
 
 			-- we are interested in lines that contain something. emtpy lines are skipped:
 			if get_field_count (line) > 0 then

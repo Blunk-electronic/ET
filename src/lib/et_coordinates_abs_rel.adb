@@ -63,10 +63,10 @@ package body et_coordinates_abs_rel is
 	is begin
 		return type_coordinates'value (coordinates);
 
--- 			exception
--- 				when event: others =>
--- 					log (text => ada.exceptions.exception_information (event), console => true);
--- 					raise;
+--			exception
+--				when event: others =>
+--					log (text => ada.exceptions.exception_information (event), console => true);
+--					raise;
 	end to_coordinates;
 
 

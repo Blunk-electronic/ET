@@ -275,7 +275,7 @@ package body et_fill_zones is
 	procedure make_islands_and_lakes (
 		zone			: in out type_zone;
 		linewidth		: in type_track_width;
-		islands 		: in pac_polygon_list.list;
+		islands		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
 		fill			: in boolean;
 		log_threshold	: in type_log_level)
@@ -373,7 +373,7 @@ package body et_fill_zones is
 					declare
 						style : constant type_style := (
 							style		=> SOLID,
-	   						linewidth	=> linewidth);
+							linewidth	=> linewidth);
 					begin
 						while island_cursor /= pac_islands.no_element loop
 							fill_island (
@@ -688,55 +688,55 @@ package body et_fill_zones is
 
 
 
--- 	procedure route_fill_zone_properties (
--- 	-- Logs the properties of the given fill_zone of a route
--- 		cursor			: in pac_conductor_fill_zones_signal.cursor;
--- 		log_threshold 	: in et_string_processing.type_log_level) is
--- 		use pac_conductor_fill_zones_signal;
--- 		use type_fill_zone_points;
--- 		points : type_fill_zone_points.set;
--- 		point_cursor : type_fill_zone_points.cursor;
--- 	begin
--- 		-- general stuff
--- 		log (text => "fill_zone" &
--- 			 " " & text_fill_zone_signal_layer & to_string (element (cursor).layer) &
--- 			 " " & text_fill_zone_width_min & to_string (element (cursor).width_min) &
--- 			 " " & text_fill_zone_pad_connection & to_string (element (cursor).pad_connection) &
--- 			 " " & text_fill_zone_priority_level & to_string (element (cursor).priority_level) &
--- 			 " " & text_fill_zone_isolation_gap & to_string (element (cursor).isolation_gap) &
--- 			 " " & text_fill_zone_corner_easing & to_string (element (cursor).corner_easing) &
--- 			 " " & text_fill_zone_easing_radius & to_string (element (cursor).easing_radius),
--- 			 level => log_threshold);
+--	procedure route_fill_zone_properties (
+--	-- Logs the properties of the given fill_zone of a route
+--		cursor			: in pac_conductor_fill_zones_signal.cursor;
+--		log_threshold	: in et_string_processing.type_log_level) is
+--		use pac_conductor_fill_zones_signal;
+--		use type_fill_zone_points;
+--		points : type_fill_zone_points.set;
+--		point_cursor : type_fill_zone_points.cursor;
+--	begin
+--		-- general stuff
+--		log (text => "fill_zone" &
+--			 " " & text_fill_zone_signal_layer & to_string (element (cursor).layer) &
+--			 " " & text_fill_zone_width_min & to_string (element (cursor).width_min) &
+--			 " " & text_fill_zone_pad_connection & to_string (element (cursor).pad_connection) &
+--			 " " & text_fill_zone_priority_level & to_string (element (cursor).priority_level) &
+--			 " " & text_fill_zone_isolation_gap & to_string (element (cursor).isolation_gap) &
+--			 " " & text_fill_zone_corner_easing & to_string (element (cursor).corner_easing) &
+--			 " " & text_fill_zone_easing_radius & to_string (element (cursor).easing_radius),
+--			 level => log_threshold);
 --
--- 		log_indentation_up;
+--		log_indentation_up;
 --
--- 		-- type depended stuff
--- 		case element (cursor).pad_connection is
--- 			when THERMAL =>
--- 				log (text => text_fill_zone_pad_technology & to_string (element (cursor).thermal_technology) &
--- 					" " & text_fill_zone_thermal_width & to_string (element (cursor).thermal_width) &
--- 					" " & text_fill_zone_thermal_gap & to_string (element (cursor).thermal_gap),
--- 					level => log_threshold);
+--		-- type depended stuff
+--		case element (cursor).pad_connection is
+--			when THERMAL =>
+--				log (text => text_fill_zone_pad_technology & to_string (element (cursor).thermal_technology) &
+--					" " & text_fill_zone_thermal_width & to_string (element (cursor).thermal_width) &
+--					" " & text_fill_zone_thermal_gap & to_string (element (cursor).thermal_gap),
+--					level => log_threshold);
 --
--- 			when SOLID =>
--- 				log (text => text_fill_zone_pad_technology & to_string (element (cursor).solid_technology),
--- 					level => log_threshold);
+--			when SOLID =>
+--				log (text => text_fill_zone_pad_technology & to_string (element (cursor).solid_technology),
+--					level => log_threshold);
 --
--- 			when NONE =>
--- 				null;
--- 		end case;
+--			when NONE =>
+--				null;
+--		end case;
 --
--- 		-- corner points
--- 		log (text => text_fill_zone_corner_points, level => log_threshold);
--- 		points := element (cursor).corners;
--- 		point_cursor := points.first;
--- 		while point_cursor /= type_fill_zone_points.no_element loop
--- 			log (text => to_string (element (point_cursor)), level => log_threshold);
--- 			next (point_cursor);
--- 		end loop;
+--		-- corner points
+--		log (text => text_fill_zone_corner_points, level => log_threshold);
+--		points := element (cursor).corners;
+--		point_cursor := points.first;
+--		while point_cursor /= type_fill_zone_points.no_element loop
+--			log (text => to_string (element (point_cursor)), level => log_threshold);
+--			next (point_cursor);
+--		end loop;
 --
--- 		log_indentation_down;
--- 	end route_fill_zone_properties;
+--		log_indentation_down;
+--	end route_fill_zone_properties;
 
 
 

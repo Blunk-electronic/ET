@@ -832,7 +832,7 @@ is
 				electric			: in boolean;
 				device_electric		: in pac_devices_electrical.cursor;
 				device_non_electric	: in pac_devices_non_electrical.cursor;
-				mirror 				: in type_mirror)
+				mirror				: in type_mirror)
 			is
 				use et_package_library;
 				use pac_package_models;
@@ -883,7 +883,7 @@ is
 						arc : type_conductor_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
 							offset_2	=> origin,
@@ -964,7 +964,7 @@ is
 						arc : type_silk_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
@@ -1061,7 +1061,7 @@ is
 						arc : type_doc_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
@@ -1195,7 +1195,7 @@ is
 						arc : type_stop_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
@@ -1294,7 +1294,7 @@ is
 						arc : type_stencil_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
@@ -1378,7 +1378,7 @@ is
 						arc : type_route_restrict_arc renames element (c);
 					begin
 						b := get_bounding_box (
-							arc 		=> arc,
+							arc		=> arc,
 							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,

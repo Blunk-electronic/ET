@@ -55,7 +55,7 @@ package et_silkscreen.board is
 	-- Because silkscreen is about two sides of the board this
 	-- composite is required:
 	type type_silkscreen_both_sides is record
-		top 	: type_silkscreen_board;
+		top	: type_silkscreen_board;
 		bottom	: type_silkscreen_board;
 	end record;
 

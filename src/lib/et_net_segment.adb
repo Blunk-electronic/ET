@@ -56,10 +56,10 @@ package body et_net_segment is
 
 	-- CS: See specification !
 	-- procedure move_start_by (
-	-- 	segment	: in out type_net_segment;
-	-- 	offset	: in type_vector_model)
+	--	segment	: in out type_net_segment;
+	--	offset	: in type_vector_model)
 	-- is begin
-	-- 	null;
+	--	null;
 	-- end;
 
 
@@ -340,7 +340,7 @@ package body et_net_segment is
 		return boolean
 	is
 	begin
-		if 	in_ports (segment.ports.A, port) or
+		if	in_ports (segment.ports.A, port) or
 			in_ports (segment.ports.B, port) then
 
 			return true;
@@ -625,7 +625,7 @@ package body et_net_segment is
 
 
 	function get_ports (
-		segment 	: in type_net_segment;
+		segment	: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return type_net_ports
 	is
@@ -846,7 +846,7 @@ package body et_net_segment is
 
 
 	function get_connect_status (
-		primary 	: in type_net_segment;
+		primary	: in type_net_segment;
 		AB_end		: in type_start_end_point;
 		secondary	: in type_net_segment)
 		return type_connect_status
@@ -1145,7 +1145,7 @@ package body et_net_segment is
 
 		-- The result is a single net segment with ports, junctions and labels:
 		result := (line with
-			ports 		=> (PRA, PRB),
+			ports		=> (PRA, PRB),
 			junctions	=> (JRA, JRB),
 			labels		=> LR,
 			connectors	=> (TRA, TRB));
@@ -1316,14 +1316,14 @@ package body et_net_segment is
 
 	function between_A_and_B (
 		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
+		segment	: in pac_net_segments.cursor)
 		return boolean
 	is
 		use pac_geometry_sch;
 		dist : type_distance_point_line;
 	begin
 		dist := get_distance (
-			point 		=> get_center (catch_zone),
+			point		=> get_center (catch_zone),
 			line		=> element (segment),
 			line_range	=> BETWEEN_END_POINTS);
 
@@ -1374,22 +1374,22 @@ package body et_net_segment is
 
 	function on_segment (
 		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
+		segment	: in pac_net_segments.cursor)
 		return boolean
 	is
 		use pac_geometry_sch;
 		dist : type_distance_point_line;
 	begin
 		dist := get_distance (
-			point 		=> get_center (catch_zone),
+			point		=> get_center (catch_zone),
 			line		=> element (segment),
 			line_range	=> WITH_END_POINTS);
 
--- 		log (text =>
--- 			"catch zone" & to_string (catch_zone)
--- 			& " distance " & to_string (distance (dist))
--- 			& " out of range " & boolean'image (out_of_range (dist))
--- 			);
+--		log (text =>
+--			"catch zone" & to_string (catch_zone)
+--			& " distance " & to_string (distance (dist))
+--			& " out of range " & boolean'image (out_of_range (dist))
+--			);
 
 		if (not out_of_range (dist))
 		and in_radius (get_distance (dist), get_radius (catch_zone)) then
@@ -1404,7 +1404,7 @@ package body et_net_segment is
 
 	function on_segment (
 		point		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor)
+		segment	: in pac_net_segments.cursor)
 		return boolean
 	is
 		s : constant type_net_segment := element (segment);
@@ -1429,7 +1429,7 @@ package body et_net_segment is
 
 
 	function get_connect_status (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		secondary	: in pac_net_segments.cursor)
 		return type_connect_status

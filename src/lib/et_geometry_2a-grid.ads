@@ -137,7 +137,7 @@ package et_geometry_2a.grid is
 
 	-- This procedure changes the given grid:
 	procedure next_grid_density (
-		grid 		: in out type_grid;
+		grid		: in out type_grid;
 		direction	: in type_grid_direction);
 
 
