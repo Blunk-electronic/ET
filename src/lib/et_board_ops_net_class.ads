@@ -62,7 +62,7 @@ package et_board_ops_net_class is
 	-- Otherwise constraint error is raised.
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		class	: in type_net_class_name) -- hi-voltage, si-critical
 		return type_net_class;
 
 
@@ -80,7 +80,7 @@ package et_board_ops_net_class is
 	function get_class_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor)  -- GND, RESET_N, ...
-		return pac_net_class_name.bounded_string;
+		return type_net_class_name;
 
 
 
@@ -91,7 +91,7 @@ package et_board_ops_net_class is
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		net_class		: in pac_net_class_name.bounded_string; -- pwr
+		net_class		: in type_net_class_name; -- pwr
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

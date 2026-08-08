@@ -500,7 +500,7 @@ package body et_cp_schematic_nets is
 			use et_board_ops_net_class;
 			use et_net_class_name;
 			net_name : type_net_name;
-			net_class : pac_net_class_name.bounded_string;
+			net_class : type_net_class_name;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
 			net_class := to_net_class_name (get_field (cmd, 6));

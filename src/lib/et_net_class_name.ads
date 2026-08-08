@@ -53,20 +53,22 @@ package et_net_class_name is
 
 	use pac_net_class_name;
 
+	type type_net_class_name is new pac_net_class_name.bounded_string;
 
 
-	net_class_name_default : constant pac_net_class_name.bounded_string :=
-		pac_net_class_name.to_bounded_string ("default");
+
+	net_class_name_default : constant type_net_class_name :=
+		type_net_class_name (pac_net_class_name.to_bounded_string ("default"));
 
 
 	function to_string (
-		net_class_name : in pac_net_class_name.bounded_string)
+		net_class_name : in type_net_class_name)
 		return string;
 
 
 	function to_net_class_name (
 		net_class_name : in string)
-		return pac_net_class_name.bounded_string;
+		return type_net_class_name;
 
 
 

@@ -50,10 +50,10 @@ with et_net_class_name;				use et_net_class_name;
 package et_net_classes is
 
 
-	use pac_net_class_name;
+	use et_net_class_name;
 
 	package pac_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
+		key_type		=> type_net_class_name,
 		element_type	=> type_net_class);
 
 
@@ -68,7 +68,7 @@ package et_net_classes is
 
 	function get_net_class_name (
 		class_cursor	: in pac_net_classes.cursor)
-		return pac_net_class_name.bounded_string;
+		return type_net_class_name;
 
 
 	function get_net_class_name (

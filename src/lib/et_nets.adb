@@ -58,7 +58,7 @@ package body et_nets is
 
 	function get_class_name (
 		net : in type_net)
-		return pac_net_class_name.bounded_string
+		return type_net_class_name
 	is begin
 		return net.class;
 	end get_class_name;

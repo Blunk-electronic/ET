@@ -472,9 +472,9 @@ package et_kicad.pcb is
 
 	-- Since there are lots of net classes, they are stored in a map:
 	package type_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
+		key_type		=> type_net_class_name,
 		element_type	=> type_net_class_kicad,
-		"<"				=> pac_net_class_name."<"
+		"<"				=> et_net_class_name."<"
 		);
 
 

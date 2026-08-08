@@ -55,7 +55,7 @@ package body et_board_ops_net_class is
 
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		class	: in type_net_class_name) -- hi-voltage, si-critical
 		return type_net_class
 	is
 		result : type_net_class;
@@ -67,7 +67,7 @@ package body et_board_ops_net_class is
 		is
 			pragma unreferenced (module_name);
 			use et_net_classes.pac_net_classes;
-			use pac_net_class_name;
+			use et_net_class_name;
 		begin
 			if class = net_class_name_default then
 				null;
@@ -106,7 +106,7 @@ package body et_board_ops_net_class is
 		is
 			pragma unreferenced (module_name);
 			use et_net_classes.pac_net_classes;
-			use pac_net_class_name;
+			use et_net_class_name;
 			use pac_nets;
 		begin
 			if net = et_nets.pac_nets.no_element then -- freetrack
@@ -141,9 +141,9 @@ package body et_board_ops_net_class is
 	function get_class_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor)
-		return pac_net_class_name.bounded_string
+		return type_net_class_name
 	is
-		result : pac_net_class_name.bounded_string;
+		result : type_net_class_name;
 
 
 		procedure query_module (
@@ -182,7 +182,7 @@ package body et_board_ops_net_class is
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		net_class		: in pac_net_class_name.bounded_string; -- pwr
+		net_class		: in type_net_class_name; -- pwr
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -208,7 +208,7 @@ package body et_board_ops_net_class is
 				net		: in out type_net)
 			is
 				pragma unreferenced (name);
-				use pac_net_class_name;
+				use et_net_class_name;
 			begin
 				if net.class = net_class then
 					log (text => "Net already in class "
