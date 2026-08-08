@@ -108,7 +108,7 @@ package body et_netlist_cat_1 is
 		use et_netlist_name;
 
 		-- The netlist file:
-		file_name	: pac_netlist_file_name.bounded_string;
+		file_name	: type_netlist_file_name;
 		file_handle	: ada.text_io.file_type;
 
 

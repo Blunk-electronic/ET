@@ -84,7 +84,7 @@ package body et_netlists_export is
 		log_threshold	: in type_log_level)
 	is
 
-		file_name : pac_netlist_file_name.bounded_string;
+		file_name : type_netlist_file_name;
 
 
 		procedure set_file_name is
