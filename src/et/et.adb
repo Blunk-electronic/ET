@@ -127,9 +127,9 @@ procedure et is
 	device_name_save_as		: type_device_model_name; -- the device to be saved as
 	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
-	frame_name_open			: et_drawing_frame.pac_template_name.bounded_string;
-	unused_frame_name_save_as	: et_drawing_frame.pac_template_name.bounded_string;
+	frame_name_create		: et_drawing_frame.type_template_name; -- the frame to be created like lib/frames/A3_landscape.frs
+	frame_name_open			: et_drawing_frame.type_template_name;
+	unused_frame_name_save_as	: et_drawing_frame.type_template_name;
 	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 
 	script_name				: pac_script_name.bounded_string;
@@ -579,7 +579,7 @@ procedure et is
 		use pac_package_model_file;
 		use et_symbol_name;
 		use pac_device_model_file;
-		use et_drawing_frame.pac_template_name;
+		use et_drawing_frame;
 		use et_script_processor;
 
 		exit_code_script : type_exit_code_script;

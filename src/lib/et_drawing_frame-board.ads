@@ -46,12 +46,12 @@ package et_drawing_frame.board is
 	template_pcb_extension : constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
 
 
-	template_pcb_default : constant pac_template_name.bounded_string :=
-		pac_template_name.to_bounded_string (
+	template_pcb_default : constant type_template_name :=
+		type_template_name (pac_template_name.to_bounded_string (
 			compose (
 				name		=> template_file_name_dummy,
 				extension	=> template_pcb_extension)
-				);
+				));
 
 
 
@@ -123,7 +123,7 @@ package et_drawing_frame.board is
 
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame_pcb is record
-		template	: pac_template_name.bounded_string := template_pcb_default;
+		template	: type_template_name := template_pcb_default;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frb
 
 		--frame		: type_frame (DOMAIN_PCB) := make_default_frame (DOMAIN_PCB);

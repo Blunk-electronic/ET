@@ -72,8 +72,8 @@ package body et_module_read_frames is
 	sheet_description_text		: pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
-	frame_template_schematic	: pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
-	frame_template_board		: pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
+	frame_template_schematic	: type_template_name;	-- $ET_FRAMES/drawing_frame_version_1.frs
+	frame_template_board		: type_template_name;	-- $ET_FRAMES/drawing_frame_version_2.frb
 	frame_board_position		: type_position; -- x 0 y 0
 
 

@@ -49,7 +49,7 @@ package et_drawing_frame_rw is
 
 	-- Creates and saves a frame in given file_name.
 	procedure create_frame (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		domain			: in type_domain;
 		log_threshold	: in type_log_level);
 
@@ -58,14 +58,14 @@ package et_drawing_frame_rw is
 	-- Saves the given schematic frame in file_name.
 	procedure save_frame_schematic (
 		frame			: in type_frame_schematic;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level);
 
 
 	-- Saves the given board frame in file_name.
 	procedure save_frame_board (
 		frame			: in type_frame_pcb_pre;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level);
 
 
@@ -73,7 +73,7 @@ package et_drawing_frame_rw is
 	-- Reads a frame template for the schematic as given by file_name and returns
 	-- a schematic frame.
 	function read_frame_schematic (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 		return type_frame_schematic;
 
@@ -82,7 +82,7 @@ package et_drawing_frame_rw is
 	-- Reads a frame template for the board as given by file_name and returns
 	-- a schematic frame.
 	function read_frame_board (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 		return type_frame_pcb_pre;
 

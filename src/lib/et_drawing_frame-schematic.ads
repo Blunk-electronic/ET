@@ -54,12 +54,12 @@ package et_drawing_frame.schematic is
 
 
 	-- default file names:
-	template_schematic_default : constant pac_template_name.bounded_string :=
-		pac_template_name.to_bounded_string (
+	template_schematic_default : constant type_template_name :=
+		type_template_name (pac_template_name.to_bounded_string (
 			compose (
 				name		=> template_file_name_dummy,
 				extension	=> template_schematic_extension)
-				);
+				));
 
 
 
@@ -170,7 +170,7 @@ package et_drawing_frame.schematic is
 
 	-- The final drawing frames:
 	type type_frames_schematic is record
-		template		: pac_template_name.bounded_string := template_schematic_default;
+		template		: type_template_name := template_schematic_default;
 			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
 		--frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
