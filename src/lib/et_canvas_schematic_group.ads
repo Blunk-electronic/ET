@@ -86,7 +86,7 @@ package et_canvas_schematic_group is
 		status_click_left
 		& "or "
 		& status_press_space
-		& "to copy the group."
+		& "to set reference point of group."
 		& status_hint_for_abort;
 
 
@@ -104,7 +104,11 @@ package et_canvas_schematic_group is
 		point	: in type_vector_model);
 
 
+	procedure copy_group_to_clipboard (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
+	
 
 -- PASTE:
 

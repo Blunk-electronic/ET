@@ -266,7 +266,9 @@ package body et_cp_schematic_group is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		procedure do_it is
+		-- This procedure makes a simple copy
+		-- of the current group:
+		procedure do_simple_copy is
 			sheet		: type_sheet_relative;
 			offset		: type_vector_model;
 		begin
@@ -277,7 +279,7 @@ package body et_cp_schematic_group is
 				y => get_field (cmd, 7));
 
 
-			copy_group (
+			copy_group_simple (
 				module_cursor	=> module,
 				sheet			=> sheet,
 				offset			=> offset,
@@ -287,17 +289,55 @@ package body et_cp_schematic_group is
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
-		end do_it;
+		end do_simple_copy;
 
 
+		
+		-- This procedure copies the current group into
+		-- the clipboard with the center of the group
+		-- as reference point:
+		procedure copy_to_clipboard_center is begin
+		
+			copy_group_to_clipboard (
+				module_cursor	=> module,
+				log_threshold	=> log_threshold + 2);
+										
+		end copy_to_clipboard_center;
+
+
+		
+		-- This procedure copies the current group into
+		-- the clipboard with a user specified reference point:
+		procedure copy_to_clipboard_ref_point is 
+			reference_point	: type_vector_model;
+		begin
+			reference_point := to_vector_model (
+				x => get_field (cmd, 5),
+				y => get_field (cmd, 6));
+		
+			copy_group_to_clipboard (
+				module_cursor	=> module,
+				auto_center		=> false,
+				reference_point	=> reference_point,
+				log_threshold	=> log_threshold + 2);
+
+		end copy_to_clipboard_ref_point;
+
+		
 	begin
 		log (text => "copy group", level => log_threshold);
 		log_indentation_up;
 
 
 		case cmd_field_count is
+			when 4 =>
+				copy_to_clipboard_center;
+
+			when 6 =>
+				copy_to_clipboard_ref_point;
+				
 			when 7 =>
-				do_it;
+				do_simple_copy;
 
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -329,12 +369,12 @@ package body et_cp_schematic_group is
 
 
 		procedure do_it is
-			sheet		: type_sheet_relative;
-			offset		: type_vector_model;
+			sheet	: type_sheet;
+			place	: type_vector_model;
 		begin
-			sheet := to_sheet_relative (get_field (cmd, 5));
+			sheet := to_sheet (get_field (cmd, 5));
 
-			offset := to_vector_model (
+			place := to_vector_model (
 				x => get_field (cmd, 6),
 				y => get_field (cmd, 7));
 
@@ -342,7 +382,7 @@ package body et_cp_schematic_group is
 			paste_group (
 				module_cursor	=> module,
 				sheet			=> sheet,
-				offset			=> offset,
+				place			=> place,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:

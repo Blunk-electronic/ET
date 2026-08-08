@@ -42,6 +42,8 @@
 
 with et_schematic_geometry;				use et_schematic_geometry;
 use et_schematic_geometry.pac_geometry_2;
+with et_schematic_coordinates;			use et_schematic_coordinates;
+
 
 with et_sheets;							use et_sheets;
 
@@ -66,9 +68,17 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure sets the "selected"-flag of all
-	-- objects which are inside the given zone on the
-	-- given sheet:
+	group_reference_point : type_object_position;
+	
+	
+		
+	-- This procedure:
+	-- 1. sets the "selected"-flag of all
+	--    objects which are inside the given zone on the
+	--    given sheet. 
+	-- 2. It sets the sheet of group_reference_point
+	--    as specified in argument sheet. This is only relevant
+	--    if the clipboard is used for copying.
 	procedure define_group_rectangular (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
@@ -114,7 +124,7 @@ package et_schematic_ops_groups is
 
 	-- This procedure copies a group of objects
 	-- This affects all objects whose "selected"-flag is set:
-	procedure copy_group (
+	procedure copy_group_simple (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
@@ -122,12 +132,37 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure pastes a group of objects
-	-- This affects all objects which are in the clipboard:
+	
+
+	
+	
+	-- This procedure copies the current group of objects
+	-- into the clipboard. 
+	-- 1. If auto_center is true, then
+	--    the center of the group is used as reference point.
+	-- 2. If auto_center is false, then the explicitly given 
+	--    reference_point is used.
+	-- 3. The x/y component of the global group_reference_point
+	--    is set according to the specified reference_point
+	--    or as the auto genereated center of the group.
+	procedure copy_group_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		auto_center		: in boolean := true;
+		reference_point	: in type_vector_model := origin;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- This procedure pastes the content of the clipboard
+	-- at the given sheet and place.
+	-- The global group_reference_point (set by procedures
+	-- define_group_rectangular and copy_group_to_clipboard)
+	-- is used to compute the offset by which the group is 
+	-- to be pasted:
 	procedure paste_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;
-		offset			: in type_vector_model; -- x/y
+		sheet			: in type_sheet;
+		place			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

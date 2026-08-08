@@ -102,7 +102,7 @@ package et_schematic_verb_noun_keys is
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
 	key_clarify			: constant gdk_key_type := GDK_page_down;
-
+	key_to_clipboard	: constant gdk_key_type := GDK_LC_l;
 
 end et_schematic_verb_noun_keys;
 

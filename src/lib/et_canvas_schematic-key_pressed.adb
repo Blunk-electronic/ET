@@ -43,6 +43,7 @@ with et_schematic_ops_nets;
 with et_schematic_ops_groups;
 
 
+
 separate (et_canvas_schematic)
 
 procedure key_pressed (
@@ -816,7 +817,9 @@ is
 
 
 
-	procedure copy is begin
+	procedure copy is 
+		use et_module_clipboard;
+	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
@@ -853,9 +856,16 @@ is
 						-- When copying a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						et_canvas_schematic_group.copy_group (
-							KEYBOARD, get_cursor_position);
 
+						if copy_to_clipboard then
+							et_canvas_schematic_group.copy_group_to_clipboard (
+								KEYBOARD, get_cursor_position);
+						else
+							et_canvas_schematic_group.copy_group (
+								KEYBOARD, get_cursor_position);
+						end if;
+
+						
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (KEYBOARD, point);
 
@@ -866,6 +876,24 @@ is
 				end case;
 
 
+			-- If the operator wants to use the
+			-- clipboard for copying a group:
+			when key_to_clipboard =>
+				case noun is
+					when NOUN_GROUP =>
+						toggle_copy_to_clipboard;
+
+						-- CS: move this stuff to toggle_copy_to_clipboard ?:
+						if copy_to_clipboard_enabled then
+							set_status ("copy to clipboard");
+						else
+							status_clear;
+						end if;
+						
+					when others => null;
+				end case;
+				
+				
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is

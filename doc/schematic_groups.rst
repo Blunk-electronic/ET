@@ -104,6 +104,10 @@ Drag a Group
 Copy Group
 ^^^^^^^^^^
 
+Single Copy
++++++++++++
+
+	A single copy of a group can be made this way.
 	A group can be copied to a given place.
 	The copy is placed with an offset relative
 	to the original group.
@@ -120,13 +124,41 @@ Copy Group
 
 
 
+Multiple Copy
++++++++++++++
 
-Paste Group
-^^^^^^^^^^^
+	If a group is to be copied multiple times then
+	the clipboard must be used.
+	These commands copy the current group into the clipboard.
+
+	Without arguments the center of the current
+	group is taken as reference point:
 
 	.. code-block::
 	
-		paste group -1  10 20
+		copy group
+
+	|VNS| C g
+
+
+
+	The reference point can explicitly be specified by x and y
+	coordinates:
+
+	.. code-block::
+	
+		copy group 54 30
+
+
+
+	To paste the content of the clipboard the
+	absolute destination must be specified. The group
+	will then be placed with its reference point at
+	the specified destination:
+
+	.. code-block::
+	
+		paste group 3  50 70
 
 	|VNS| P g
 

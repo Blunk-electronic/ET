@@ -159,21 +159,6 @@ package body et_schematic_ops_groups is
 		end group_net_segments;
 
 
-		procedure copy_to_clipboard is
-			use et_schematic_ops_units;
-		begin
-			log (text => "copy selected objects to clipboard",
-				 level => log_threshold + 1);
-
-			log_indentation_up;
-
-			copy_selected_units_to_clipboard (
-				module_cursor, log_threshold + 2);
-
-			log_indentation_down;
-		end copy_to_clipboard;
-
-
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " define rectangular group (schematic)",
@@ -181,6 +166,10 @@ package body et_schematic_ops_groups is
 
 		log_indentation_up;
 
+		-- Set the sheet of the reference point.
+		-- This is only relevant if the clipboard is used:
+		set_sheet (group_reference_point, sheet);
+		
 		-- CS: this should be depended on
 		-- the currently displayed layers:
 		group_units;
@@ -189,9 +178,6 @@ package body et_schematic_ops_groups is
 
 		-- CS texts,
 		-- Do not group placeholders of units !
-
-		-- Copy selected objects to clipboard:
-		copy_to_clipboard;
 
 		log_indentation_down;
 	end define_group_rectangular;
@@ -521,7 +507,7 @@ package body et_schematic_ops_groups is
 
 
 
-	procedure copy_group (
+	procedure copy_group_simple (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;
 		offset			: in type_vector_model; -- x/y
@@ -574,7 +560,7 @@ package body et_schematic_ops_groups is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-				& " copy group by sheet(s) " & relative_to_string (sheet)
+				& " simple copy group by sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (offset),
 			level => log_threshold);
 
@@ -614,21 +600,77 @@ package body et_schematic_ops_groups is
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
-	end copy_group;
+	end copy_group_simple;
 
 
 
 
 
 
+	
+
+	
+
+	procedure copy_group_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		auto_center		: in boolean := true;
+		reference_point	: in type_vector_model := origin;
+		log_threshold	: in type_log_level)
+	is
+
+		-- procedure copy_to_clipboard is
+		-- 	use et_schematic_ops_units;
+		-- begin
+		-- 	log (text => "copy selected objects to clipboard",
+		-- 		 level => log_threshold + 1);
+  -- 
+		-- 	log_indentation_up;
+  -- 
+		-- 	copy_selected_units_to_clipboard (
+		-- 		module_cursor, log_threshold + 2);
+  -- 
+		-- 	log_indentation_down;
+		-- end copy_to_clipboard;
+
+		
+	begin
+		if auto_center then
+			log (text => "module " & to_string (module_cursor)
+				& " copy group to clipboard."
+				& " reference point: auto center.",
+				level => log_threshold);
+
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " copy group to clipboard."
+				& " reference point: " & to_string (reference_point),
+				level => log_threshold);
+		end if;
+			
+		log_indentation_up;
+
+		-- CS set x/y of group_reference_point
+
+		-- Copy selected objects to clipboard:
+		-- copy_to_clipboard;
+
+
+		log_indentation_down;
+	end copy_group_to_clipboard;
+
+
+
+	
+
+	
 
 
 
 
 	procedure paste_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative;
-		offset			: in type_vector_model; -- x/y
+		sheet			: in type_sheet;
+		place			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -638,8 +680,8 @@ package body et_schematic_ops_groups is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-				& " paste group by sheet(s) " & relative_to_string (sheet)
-				& " offset " & to_string (offset),
+			& " paste group at sheet " & to_string (sheet)
+			& " place " & to_string (place),
 			level => log_threshold);
 
 
