@@ -90,8 +90,11 @@ package body et_devices_electrical is
 		return string
 	is
 		use pac_device_models;
+
+		full_name     : constant string := to_string (key (device.model_cursor));
+		relative_name : constant string := to_relative_name (full_name);
 	begin
-		return to_string (key (device.model_cursor));
+		return relative_name;
 	end get_device_model_name;
 
 

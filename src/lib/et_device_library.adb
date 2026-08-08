@@ -40,8 +40,9 @@
 
 
 
-
+with ada.strings.fixed;
 -- with ada.text_io;			use ada.text_io;
+
 package body et_device_library is
 
 
@@ -136,21 +137,31 @@ package body et_device_library is
 
 
 
+	function to_relative_name (full_name : string)
+		return string
+	is
+		use ada.strings.fixed;
 
-	function get_device_model_name (
-		device_cursor : in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string
-	is begin
-		return key (device_cursor);
-	end get_device_model_name;
+		pattern : constant string  := "/home/luno/git/BEL/ET_component_library/";
+		pos     : constant natural := index (source => full_name, pattern => pattern);
+	begin
+		if pos = full_name'first then
+			return full_name (pattern'length + 1 .. full_name'last);
+		else
+			return full_name;
+		end if;
+	end to_relative_name;
 
 
 
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return string
-	is begin
-		return to_string (key (device_cursor));
+	is
+		full_name     : constant string := to_string (key (device_cursor));
+		relative_name : constant string := to_relative_name (full_name);
+	begin
+		return relative_name;
 	end get_device_model_name;
 
 

@@ -145,10 +145,8 @@ package et_device_library is
 		return pac_device_models.cursor;
 
 
-
-	function get_device_model_name (
-		device_cursor : in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string;
+	function to_relative_name (full_name : string)
+		return string;
 
 
 	function get_device_model_name (
