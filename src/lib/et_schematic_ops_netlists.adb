@@ -225,7 +225,7 @@ package body et_schematic_ops_netlists is
 
 	procedure collect_nets (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
 		netlist_tree 	: in out pac_netlist_modules.tree;
@@ -430,7 +430,7 @@ package body et_schematic_ops_netlists is
 	-- Another stack keeps record of the assembly variant
 	-- at the submodule level.
 	package stack_variant is new et_generic_stacks.stack_lifo (
-		item	=> pac_assembly_variant_name.bounded_string,
+		item	=> type_assembly_variant_name,
 		max 	=> et_submodules.nesting_depth_max);
 
 
@@ -438,10 +438,10 @@ package body et_schematic_ops_netlists is
 
 	procedure query_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant_name	: in pac_assembly_variant_name.bounded_string;
+		variant_name	: in type_assembly_variant_name;
 		netlist_tree 	: in out pac_netlist_modules.tree;
 		netlist_cursor 	: in out pac_netlist_modules.cursor;
-		variant			: in out pac_assembly_variant_name.bounded_string;
+		variant			: in out type_assembly_variant_name;
 		log_threshold	: in type_log_level)
 	is
 
@@ -646,11 +646,11 @@ package body et_schematic_ops_netlists is
 
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
-		use pac_assembly_variant_name;
+		use et_assembly_variant_name;
 
 
 		procedure make_for_variant (
-			variant_name : in pac_assembly_variant_name.bounded_string)
+			variant_name : in type_assembly_variant_name)
 		is
 			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
 			-- own netlist) is required. In the course of this procedure the netlist_tree is built
@@ -661,7 +661,7 @@ package body et_schematic_ops_netlists is
 			netlist_cursor : pac_netlist_modules.cursor := pac_netlist_modules.root (netlist_tree);
 
 
-			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant : type_assembly_variant_name; -- low_cost
 
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : pac_module_netlist.tree;
@@ -674,7 +674,7 @@ package body et_schematic_ops_netlists is
 			is
 
 				procedure assign_netlist (
-					variant		: in pac_assembly_variant_name.bounded_string;
+					variant		: in type_assembly_variant_name;
 					netlist		: in out pac_module_netlist.tree)
 				is begin
 					-- overwrite the current netlist by the new netlist:
@@ -787,7 +787,7 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

@@ -227,13 +227,13 @@ package et_module is
 	-- Returns true if the given assembly variant exists:
 	function variant_exists (
 		module	: in type_generic_module;
-		variant	: in pac_assembly_variant_name.bounded_string)
+		variant	: in type_assembly_variant_name)
 		return boolean;
 
 
 	function get_active_variant (
 		module	: in type_generic_module)
-		return pac_assembly_variant_name.bounded_string;
+		return type_assembly_variant_name;
 
 
 	-- Returns the number of available assembly variants.

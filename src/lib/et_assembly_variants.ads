@@ -57,7 +57,7 @@ package et_assembly_variants is
 
 	use pac_module_instance_name;
 
-	use pac_assembly_variant_name;
+	use et_assembly_variant_name;
 
 
 
@@ -102,7 +102,7 @@ package et_assembly_variants is
 	-- NOTE: In contrast to a device, there is no option not to mount a submodule.
 	-- There might be further extensions in the future, so we use a record:
 	type type_submodule_variant is record
-		variant : pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
+		variant : type_assembly_variant_name; -- low_cost, fixed_frequency
 	end record;
 
 
@@ -127,7 +127,7 @@ package et_assembly_variants is
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
 	package pac_assembly_variants is new ordered_maps (
-		key_type		=> pac_assembly_variant_name.bounded_string, -- "low_cost"
+		key_type		=> type_assembly_variant_name, -- "low_cost"
 		element_type	=> type_assembly_variant);
 
 	use pac_assembly_variants;
@@ -150,7 +150,7 @@ package et_assembly_variants is
 	-- If active is an empty string, then the default variant is active.
 	type type_module_assembly_variants is record
 		variants	: pac_assembly_variants.map;
-		active		: pac_assembly_variant_name.bounded_string;
+		active		: type_assembly_variant_name;
 	end record;
 
 
@@ -165,7 +165,7 @@ package et_assembly_variants is
 	-- the list of variants:
 	function variant_exists (
 		variants	: in type_module_assembly_variants;
-		variant		: in pac_assembly_variant_name.bounded_string)
+		variant		: in type_assembly_variant_name)
 		return boolean;
 
 

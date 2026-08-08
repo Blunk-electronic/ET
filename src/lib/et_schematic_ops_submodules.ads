@@ -316,9 +316,9 @@ package et_schematic_ops_submodules is
 	-- will be overwritten without warning.
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_parent	: in type_assembly_variant_name; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in type_assembly_variant_name; -- fixed_frequency
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -327,7 +327,7 @@ package et_schematic_ops_submodules is
 	-- of the submodule being mounted.
 	procedure remove_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_parent	: in type_assembly_variant_name; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -350,7 +350,7 @@ package et_schematic_ops_submodules is
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
+		variant		: in type_assembly_variant_name) -- low_cost
 		return boolean;
 
 
@@ -366,7 +366,7 @@ package et_schematic_ops_submodules is
 	-- is no_element.
 	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant	: in type_assembly_variant_name; -- low_cost
 		submod	: in pac_module_instance_name.bounded_string) -- OSC1
 		return pac_submodule_variants.cursor;
 

@@ -101,7 +101,7 @@ package body et_netlist_cat_1 is
 
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level)
 	is
@@ -117,7 +117,7 @@ package body et_netlist_cat_1 is
 		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 			use et_export;
 
 			module_name : constant pac_module_name.bounded_string :=

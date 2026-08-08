@@ -80,7 +80,7 @@ package body et_netlists_export is
 	procedure write_netlist (
 		netlist			: in pac_module_netlist.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level)
 	is
 
@@ -90,7 +90,7 @@ package body et_netlists_export is
 		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then
@@ -272,7 +272,7 @@ package body et_netlists_export is
 	function make_netlist (
 		modules			: in pac_netlist_modules.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_module_netlist.tree

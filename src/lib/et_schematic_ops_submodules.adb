@@ -2989,9 +2989,9 @@ package body et_schematic_ops_submodules is
 
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_parent	: in type_assembly_variant_name; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in type_assembly_variant_name; -- fixed_frequency
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3014,7 +3014,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure mount (
-				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in type_assembly_variant_name; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
@@ -3122,7 +3122,7 @@ package body et_schematic_ops_submodules is
 
 	procedure remove_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_parent	: in type_assembly_variant_name; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -3145,7 +3145,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure remove (
-				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in type_assembly_variant_name; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
@@ -3279,7 +3279,7 @@ package body et_schematic_ops_submodules is
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
+		variant		: in type_assembly_variant_name) -- low_cost
 		return boolean
 	is
 		variant_found : boolean := false; -- to be returned
@@ -3354,7 +3354,7 @@ package body et_schematic_ops_submodules is
 
 	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant	: in type_assembly_variant_name; -- low_cost
 		submod	: in pac_module_instance_name.bounded_string) -- OSC1
 		return pac_submodule_variants.cursor
 	is
@@ -3372,7 +3372,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_submodules (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant_name	: in type_assembly_variant_name;
 				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
@@ -4079,10 +4079,10 @@ package body et_schematic_ops_submodules is
 
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
-		use pac_assembly_variant_name;
+		use et_assembly_variant_name;
 
 
-		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in type_assembly_variant_name) is
 
 			use et_material;
 			bill_of_material : pac_bom_devices.map;
@@ -4092,7 +4092,7 @@ package body et_schematic_ops_submodules is
 			-- If offset is zero, we are dealing with the top module.
 			procedure collect (
 				module_cursor	: in pac_generic_modules.cursor;
-				variant			: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant_name;
 				offset			: in type_name_index)
 			is
 
@@ -4305,10 +4305,10 @@ package body et_schematic_ops_submodules is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_generic_stacks.stack_lifo (
-				item	=> pac_assembly_variant_name.bounded_string,
+				item	=> type_assembly_variant_name,
 				max 	=> et_submodules.nesting_depth_max);
 
-			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant : type_assembly_variant_name; -- low_cost
 
 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -4455,7 +4455,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

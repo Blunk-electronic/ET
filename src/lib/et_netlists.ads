@@ -333,7 +333,7 @@ package et_netlists is
 
 
 
-	use pac_assembly_variant_name;
+	use et_assembly_variant_name;
 
 
 	-- As there are assembly variants, for each of them
@@ -343,7 +343,7 @@ package et_netlists is
 	-- The element is a tree of netlists. It provides info on primary
 	-- and secondary net dependencies:
 	package pac_module_netlists is new ordered_maps (
-		key_type		=> pac_assembly_variant_name.bounded_string,
+		key_type		=> type_assembly_variant_name,
 		element_type	=> pac_module_netlist.tree);
 
 

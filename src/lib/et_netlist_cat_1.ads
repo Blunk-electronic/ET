@@ -120,7 +120,7 @@ package et_netlist_cat_1 is
 	-- Overwrites an already existing netlist.
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		variant			: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant			: in type_assembly_variant_name; -- low_cost
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level);
 

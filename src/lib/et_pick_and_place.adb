@@ -66,7 +66,7 @@ package body et_pick_and_place is
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level)
 	is
@@ -80,7 +80,7 @@ package body et_pick_and_place is
 		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

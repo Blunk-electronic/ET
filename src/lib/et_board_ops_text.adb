@@ -57,8 +57,8 @@ package body et_board_ops_text is
 		use et_meta;
 		meta : constant type_meta_board := m.meta.board;
 
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
+		use et_assembly_variant_name;
+		variant : constant type_assembly_variant_name := m.assembly_variants.active;
 
 		result : pac_text_content.bounded_string;
 	begin

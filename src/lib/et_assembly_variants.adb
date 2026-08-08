@@ -75,7 +75,7 @@ package body et_assembly_variants is
 		cursor : pac_device_variants.cursor;
 
 		procedure query_devices (
-			variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+			variant_name	: in type_assembly_variant_name; -- low_cost
 			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
@@ -131,7 +131,7 @@ package body et_assembly_variants is
 
 	function variant_exists (
 		variants	: in type_module_assembly_variants;
-		variant		: in pac_assembly_variant_name.bounded_string)
+		variant		: in type_assembly_variant_name)
 		return boolean
 	is begin
 		return contains (variants.variants, variant);

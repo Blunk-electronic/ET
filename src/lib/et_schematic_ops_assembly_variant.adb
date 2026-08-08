@@ -71,7 +71,7 @@ package body et_schematic_ops_assembly_variant is
 
 
 
-	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string) is
+	procedure assembly_variant_not_found (variant : in type_assembly_variant_name) is
 	begin
 		log (SEVERITY_ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
@@ -84,7 +84,7 @@ package body et_schematic_ops_assembly_variant is
 
 	function get_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant_name	: in pac_assembly_variant_name.bounded_string)
+		variant_name	: in type_assembly_variant_name)
 		return pac_assembly_variants.cursor
 	is
 		module : type_generic_module renames element (module_cursor);
@@ -99,7 +99,7 @@ package body et_schematic_ops_assembly_variant is
 
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
-		return pac_assembly_variant_name.bounded_string
+		return type_assembly_variant_name
 	is begin
 		return element (module_cursor).assembly_variants.active;
 	end get_active_assembly_variant;
@@ -112,7 +112,7 @@ package body et_schematic_ops_assembly_variant is
 		module_cursor	: in pac_generic_modules.cursor)
 		return et_assembly_variants.pac_assembly_variants.cursor
 	is
-		variant : constant pac_assembly_variant_name.bounded_string :=
+		variant : constant type_assembly_variant_name :=
 			get_active_assembly_variant (module_cursor);
 
 		use et_assembly_variants;
@@ -150,7 +150,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure create_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -201,7 +201,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure delete_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -256,7 +256,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure describe_assembly_variant (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level)
 	is
@@ -272,7 +272,7 @@ package body et_schematic_ops_assembly_variant is
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure assign_description (
-				name		: in pac_assembly_variant_name.bounded_string;
+				name		: in type_assembly_variant_name;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 			pragma unreferenced (name);
 			begin
@@ -326,7 +326,7 @@ package body et_schematic_ops_assembly_variant is
 
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant	: in type_assembly_variant_name; -- low_cost
 		device	: in type_device_name)
 		return boolean
 	is
@@ -343,7 +343,7 @@ package body et_schematic_ops_assembly_variant is
 
 
 			procedure query_devices (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant_name	: in type_assembly_variant_name;
 				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
@@ -398,7 +398,7 @@ package body et_schematic_ops_assembly_variant is
 
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant	: in type_assembly_variant_name; -- low_cost
 		device	: in type_device_name)
 		return pac_device_variants.cursor
 	is
@@ -414,7 +414,7 @@ package body et_schematic_ops_assembly_variant is
 			variant_cursor : pac_assembly_variants.cursor;
 
 			procedure query_devices (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant_name	: in type_assembly_variant_name;
 				variant			: in type_assembly_variant) is
 				pragma unreferenced (variant_name);
 				use pac_device_variants;
@@ -448,7 +448,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure mount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in type_device_value; -- 220R
 		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_220R
@@ -480,7 +480,7 @@ package body et_schematic_ops_assembly_variant is
 
 
 			procedure insert_device (
-				name		: in pac_assembly_variant_name.bounded_string;
+				name		: in type_assembly_variant_name;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_device_variants;
@@ -564,7 +564,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure unmount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level)
 	is
@@ -582,7 +582,7 @@ package body et_schematic_ops_assembly_variant is
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure insert_device (
-				name		: in pac_assembly_variant_name.bounded_string;
+				name		: in type_assembly_variant_name;
 				variant		: in out et_assembly_variants.type_assembly_variant)
 			is
 				pragma unreferenced (name);
@@ -659,7 +659,7 @@ package body et_schematic_ops_assembly_variant is
 
 	procedure remove_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level)
 	is
@@ -679,7 +679,7 @@ package body et_schematic_ops_assembly_variant is
 
 
 			procedure delete_device (
-				name		: in pac_assembly_variant_name.bounded_string;
+				name		: in type_assembly_variant_name;
 				variant		: in out et_assembly_variants.type_assembly_variant)
 			is
 				pragma unreferenced (name);

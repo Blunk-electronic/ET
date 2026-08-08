@@ -92,7 +92,7 @@ package et_material is
 	procedure write_bom (
 		bom				: in pac_bom_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 

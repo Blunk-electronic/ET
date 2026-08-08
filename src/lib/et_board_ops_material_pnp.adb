@@ -84,9 +84,9 @@ package body et_board_ops_material_pnp is
 		use et_device_name;
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
-		use pac_assembly_variant_name;
+		use et_assembly_variant_name;
 
-		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in type_assembly_variant_name) is
 
 			-- Here we collect the pick and place data in the first step. It will then
 			-- be passed to procedure et_pick_and_place.write_pnp.
@@ -99,7 +99,7 @@ package body et_board_ops_material_pnp is
 			-- If offset is zero, we are dealing with the top module.
 			-- The submodule position in the parent module is added to the device position.
 				module_cursor		: in pac_generic_modules.cursor;
-				variant				: in pac_assembly_variant_name.bounded_string;
+				variant				: in type_assembly_variant_name;
 				offset				: in type_name_index;
 				position_in_board	: in type_position) -- submod pos. in parent
 			is
@@ -322,10 +322,10 @@ package body et_board_ops_material_pnp is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_generic_stacks.stack_lifo (
-				item	=> pac_assembly_variant_name.bounded_string,
+				item	=> type_assembly_variant_name,
 				max 	=> et_submodules.nesting_depth_max);
 
-			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant : type_assembly_variant_name; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_generic_stacks.stack_lifo (
@@ -505,7 +505,7 @@ package body et_board_ops_material_pnp is
 
 
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

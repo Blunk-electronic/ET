@@ -96,7 +96,7 @@ is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
 		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
-		assembly_variant : pac_assembly_variant_name.bounded_string; -- low_cost
+		assembly_variant : type_assembly_variant_name; -- low_cost
 
 
 		procedure clear_module_instance is begin

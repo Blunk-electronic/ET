@@ -142,7 +142,7 @@ package et_generic_modules is
 	-- which is always provided. The return is true in that case.
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor;
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
+		variant		: in type_assembly_variant_name) -- low_cost
 		return boolean;
 
 

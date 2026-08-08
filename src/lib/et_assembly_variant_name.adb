@@ -44,7 +44,7 @@ package body et_assembly_variant_name is
 
 
 	function is_default (
-		variant : in pac_assembly_variant_name.bounded_string)
+		variant : in type_assembly_variant_name)
 		return boolean
 	is begin
 		if variant = default_assembly_variant then
@@ -57,20 +57,20 @@ package body et_assembly_variant_name is
 
 
 	function to_variant (
-		variant : in pac_assembly_variant_name.bounded_string)
+		variant : in type_assembly_variant_name)
 		return string
 	is begin
-		return pac_assembly_variant_name.to_string (variant);
+		return pac_assembly_variant_name.to_string (pac_assembly_variant_name.bounded_string (variant));
 	end to_variant;
 
 
 
 	function to_variant (
 		variant : in string)
-		return pac_assembly_variant_name.bounded_string
+		return type_assembly_variant_name
 	is begin
 		-- CS lenght and character check
-		return pac_assembly_variant_name.to_bounded_string (variant);
+		return type_assembly_variant_name (pac_assembly_variant_name.to_bounded_string (variant));
 	end to_variant;
 
 

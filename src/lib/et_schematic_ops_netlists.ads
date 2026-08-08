@@ -75,7 +75,7 @@ package et_schematic_ops_netlists is
 	-- If offset is zero, we are dealing with the top module.
 	procedure collect_nets (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
 		netlist_tree 	: in out pac_netlist_modules.tree;
@@ -104,7 +104,7 @@ package et_schematic_ops_netlists is
 	procedure query_submodules (
 		-- The cursor to the top-module of the whole design:
 		module_cursor	: in pac_generic_modules.cursor;
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- of top module
+		variant_name	: in type_assembly_variant_name; -- of top module
 
 		-- This is the netlist_tree to be extended with
 		-- submodules "Sub-Childs" of the candidate submodule
@@ -114,7 +114,7 @@ package et_schematic_ops_netlists is
 		-- This cursor points to the submodule to be examined:
 		netlist_cursor 	: in out pac_netlist_modules.cursor;
 
-		variant			: in out pac_assembly_variant_name.bounded_string;
+		variant			: in out type_assembly_variant_name;
 		log_threshold	: in type_log_level);
 
 
