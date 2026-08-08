@@ -72,6 +72,8 @@ package et_commit is
 	commit_message_length_max : constant positive := 50;
 	package pac_commit_message is new generic_bounded_length (commit_message_length_max);
 
+	type type_commit_message is new pac_commit_message.bounded_string;
+
 
 	generic
 		type type_item is private;
@@ -82,7 +84,7 @@ package et_commit is
 			stage		: type_commit_stage;
 			item		: type_item;
 			timestamp	: ada.calendar.time; -- the time of the commit
-			message		: pac_commit_message.bounded_string;
+			message		: type_commit_message;
 			domain		: type_domain; -- schematic, board
 		end record;
 
@@ -94,7 +96,7 @@ package et_commit is
 			index	: in type_commit_index;
 			stage	: in type_commit_stage;
 			item	: in type_item;
-			message	: in pac_commit_message.bounded_string;
+			message	: in type_commit_message;
 			domain	: in type_domain)
 			return type_commit;
 

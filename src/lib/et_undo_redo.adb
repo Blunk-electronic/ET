@@ -76,7 +76,6 @@ package body et_undo_redo is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_commit_message;
 
 
 			procedure commit_nets is
@@ -263,7 +262,6 @@ package body et_undo_redo is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_commit_message;
 
 
 			procedure commit_nets is
@@ -452,7 +450,6 @@ package body et_undo_redo is
 		use et_board_ops_ratsnest;
 
 		use pac_undo_message;
-		use pac_commit_message;
 
 		domain : type_domain;
 
@@ -753,7 +750,6 @@ package body et_undo_redo is
 	is
 		use et_board_ops_ratsnest;
 		use pac_redo_message;
-		use pac_commit_message;
 
 		domain : type_domain;
 
