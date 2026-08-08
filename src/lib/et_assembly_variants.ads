@@ -79,7 +79,7 @@ package et_assembly_variants is
 		case mounted is
 			when YES =>
 				value		: pac_device_value.bounded_string; -- 470R
-				partcode	: pac_device_partcode.bounded_string;
+				partcode	: type_device_partcode;
 				purpose		: pac_device_purpose.bounded_string;
 
 			when NO =>

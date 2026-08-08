@@ -5838,7 +5838,7 @@ package body et_schematic_ops_units is
 	procedure set_partcode (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_partcode	: in pac_device_partcode.bounded_string;
+		new_partcode	: in type_device_partcode;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)

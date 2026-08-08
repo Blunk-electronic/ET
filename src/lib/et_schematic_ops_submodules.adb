@@ -4112,9 +4112,9 @@ package body et_schematic_ops_submodules is
 					end test_inserted;
 
 
-					procedure test_partcode (partcode : in pac_device_partcode.bounded_string) is
+					procedure test_partcode (partcode : in type_device_partcode) is
 					begin
-						if pac_device_partcode.length (partcode) = 0 then
+						if is_empty (partcode) then
 							log (SEVERITY_WARNING, text => "device " & to_string (device_name) &
 								" has no partcode !");
 						end if;

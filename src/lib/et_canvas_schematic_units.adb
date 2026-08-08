@@ -1036,7 +1036,7 @@ package body et_canvas_schematic_units is
 	procedure cb_new_partcode_entered (
 		self : access gtk_entry_record'class)
 	is
-		device_partcode_new : pac_device_partcode.bounded_string;
+		device_partcode_new : type_device_partcode;
 
 
 		-- Sets the partcode of the selected object:
@@ -1131,7 +1131,7 @@ package body et_canvas_schematic_units is
 
 		procedure do_it is
 			device	: type_device_name; -- IC1
-			partcode	: pac_device_partcode.bounded_string;
+			partcode	: type_device_partcode;
 		begin
 			-- Get the name of the selected device:
 			device := get_device_name (object.unit.device_cursor);

@@ -108,7 +108,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_partcode (
 		device		: in out type_device_electrical;
-		partcode	: in pac_device_partcode.bounded_string)
+		partcode	: in type_device_partcode)
 	is begin
 		device.partcode := partcode;
 	end set_partcode;
@@ -116,7 +116,7 @@ package body et_devices_electrical.packages is
 
 	function get_partcode (
 		device	: in type_device_electrical)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return device.partcode;
 	end get_partcode;
@@ -133,7 +133,7 @@ package body et_devices_electrical.packages is
 
 	function get_partcode (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return pac_devices_electrical.element (device).partcode;
 	end get_partcode;

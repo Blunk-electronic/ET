@@ -100,7 +100,7 @@ package body et_device_read is
 
 		prefix		: pac_device_prefix.bounded_string; -- T, IC
 		value		: pac_device_value.bounded_string; -- BC548
-		partcode	: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		partcode	: type_device_partcode; -- IC_PAC_S_SOT23_VAL_
 		-- NOTE: Please find other global variables in
 		-- package spec et_device_read_unit.
 

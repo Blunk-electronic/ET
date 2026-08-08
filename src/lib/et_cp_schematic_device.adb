@@ -454,7 +454,7 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode : type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		name : type_device_name;
 	begin
 		log (text => "set partcode", level => log_threshold);

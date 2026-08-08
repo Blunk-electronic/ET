@@ -748,7 +748,7 @@ package body et_schematic_ops_device is
 	procedure set_partcode (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is

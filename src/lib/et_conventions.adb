@@ -1910,11 +1910,11 @@ package body et_conventions is
 	end check_schematic_text_size;
 
 
--- 	function to_string (partcode : in pac_device_partcode.bounded_string) return string is begin
+-- 	function to_string (partcode : in type_device_partcode) return string is begin
 -- 		return pac_device_partcode.to_string (partcode);
 -- 	end to_string;
 --
--- 	function to_partcode (partcode : in string) return pac_device_partcode.bounded_string is begin
+-- 	function to_partcode (partcode : in string) return type_device_partcode is begin
 -- 		return pac_device_partcode.to_bounded_string (partcode);
 -- 	end to_partcode;
 --
@@ -1932,7 +1932,7 @@ package body et_conventions is
 -- 	end check_partcode_length;
 --
 -- 	procedure check_partcode_characters (
--- 		partcode	: in pac_device_partcode.bounded_string;
+-- 		partcode	: in type_device_partcode;
 -- 		characters	: in character_set := component_partcode_characters) is
 -- 	-- Tests if the given partcode contains only valid characters as specified
 -- 	-- by given character set.
@@ -2088,11 +2088,11 @@ package body et_conventions is
 		prefix		: in pac_device_prefix.bounded_string;			-- R
 		packge		: in pac_package_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is
 		use pac_device_partcode;
 
-		base : constant pac_device_partcode.bounded_string :=
+		base : constant type_device_partcode :=
 			to_bounded_string (
 				to_string (prefix)				-- R
 				& partcode_keyword_separator				-- _
@@ -2117,7 +2117,7 @@ package body et_conventions is
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
 	-- Starts the validation from the given character position.
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
 		log_threshold	: in type_log_level)
 	is
@@ -2174,7 +2174,7 @@ package body et_conventions is
 
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
-					keyword_end := pac_device_partcode.index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
 					log (text => "keyword " & enclose_in_quotes (to_string (keyword)), level => log_threshold + 2);
@@ -2186,7 +2186,7 @@ package body et_conventions is
 					validate_partcode_keyword (keyword);
 
 					-- A keyword must occur only once:
-					if pac_device_partcode.count (partcode, to_string (keyword)) > 1 then
+					if et_device_partcode.count (partcode, to_string (keyword)) > 1 then
 						log (SEVERITY_WARNING, "keyword " & enclose_in_quotes (to_string (keyword)) & " can be used only once !");
 					end if;
 				else
@@ -2211,13 +2211,13 @@ package body et_conventions is
 					keyword_follows := true;
 
 					-- The argument can now be sliced from argument_start to the place before the separator:
-					argument := to_partcode_keyword_argument (pac_device_partcode.slice (partcode, argument_start, place - 1));
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place - 1));
 					validate_argument (keyword, argument);
 
 				elsif place = len then -- last argument in partcode
 
 					-- The argument can now be sliced from argument_start to the end of the partcode:
-					argument := to_partcode_keyword_argument (pac_device_partcode.slice (partcode, argument_start, place));
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place));
 					validate_argument (keyword, argument);
 				end if;
 
@@ -2231,7 +2231,7 @@ package body et_conventions is
 		when event :
 			others =>
 			log (SEVERITY_WARNING, "Error in optional keywords of partcode " &
-				 enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
+				 enclose_in_quotes (to_string (partcode)) &
 				 " at position" & positive'image (place) & " !");
 
 			log (text => ada.exceptions.exception_message (event));
@@ -2242,7 +2242,7 @@ package body et_conventions is
 
 
 	procedure validate_partcode (
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
 		packge			: in pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
@@ -2253,12 +2253,12 @@ package body et_conventions is
 		use pac_device_partcode;
 
 		place : natural;
-		partcode_root : pac_device_partcode.bounded_string;
+		partcode_root : type_device_partcode;
 
 		procedure partcode_invalid is begin
 			log (SEVERITY_WARNING, "device " & to_string (device_name)
-				 & " partcode invalid ! Found " & enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
-				". Expected " & enclose_in_quotes (pac_device_partcode.to_string (partcode_root)) & " !");
+				 & " partcode invalid ! Found " & enclose_in_quotes (to_string (partcode)) &
+				". Expected " & enclose_in_quotes (to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
 
@@ -2280,7 +2280,7 @@ package body et_conventions is
 			-- The root of the partcode must be the very first part of the given partcode.
 			-- In that case other keywords can be checked.
 			-- If the root partcode is somewhere else or too long, issue warning.
-			place := index (partcode, pac_device_partcode.to_string (partcode_root));
+			place := index (partcode, to_string (partcode_root));
 
 			if place = 1 and length (partcode) = length (partcode_root) then
 

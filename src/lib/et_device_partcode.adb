@@ -50,17 +50,17 @@ package body et_device_partcode is
 
 
 	function get_length (
-		partcode : in pac_device_partcode.bounded_string)
+		partcode : in type_device_partcode)
 		return natural
 	is begin
-		return natural (length (partcode));
+		return natural (length (pac_device_partcode.bounded_string (partcode)));
 	end get_length;
 
 
 
 
-	function to_string (partcode : in pac_device_partcode.bounded_string) return string is begin
-		return pac_device_partcode.to_string (partcode);
+	function to_string (partcode : in type_device_partcode) return string is begin
+		return pac_device_partcode.to_string (pac_device_partcode.bounded_string (partcode));
 	end to_string;
 
 
@@ -78,7 +78,7 @@ package body et_device_partcode is
 
 
 	function partcode_characters_valid (
-		partcode	: in pac_device_partcode.bounded_string;
+		partcode	: in type_device_partcode;
 		characters	: in character_set := partcode_characters) return boolean is
 	-- Tests if the given partcode contains only valid characters as specified
 	-- by given character set. Returns false if not. Issues warning.
@@ -110,8 +110,8 @@ package body et_device_partcode is
 	end partcode_invalid;
 
 
-	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean is begin
-		if pac_device_partcode.length (partcode) = 0 then
+	function is_empty (partcode : in type_device_partcode) return boolean is begin
+		if pac_device_partcode.length (pac_device_partcode.bounded_string (partcode)) = 0 then
 			return true;
 		else
 			return false;
@@ -123,14 +123,14 @@ package body et_device_partcode is
 	-- Tests the given value for length and invalid characters.
 		partcode 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return pac_device_partcode.bounded_string is
+		return type_device_partcode is
 			pragma unreferenced (error_on_invalid_character);
 
-		partcode_out : pac_device_partcode.bounded_string; -- to be returned
+		partcode_out : type_device_partcode; -- to be returned
 	begin
 		-- Test length of given partcode
 		if partcode_length_valid (partcode) then
-			partcode_out := pac_device_partcode.to_bounded_string (partcode);
+			partcode_out := type_device_partcode (pac_device_partcode.to_bounded_string (partcode));
 		else
 			partcode_invalid (partcode);
 		end if;

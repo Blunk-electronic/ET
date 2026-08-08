@@ -57,23 +57,23 @@ package et_device_partcode is
 
 	package pac_device_partcode is new generic_bounded_length (partcode_length_max);
 	use pac_device_partcode;
-
+	type type_device_partcode is new pac_device_partcode.bounded_string;
 
 	function get_length (
-		partcode : in pac_device_partcode.bounded_string)
+		partcode : in type_device_partcode)
 		return natural;
 
 
 
 	partcode_default : constant string := "N/A"; -- means not assigned
 
-	function to_string (partcode : in pac_device_partcode.bounded_string) return string;
+	function to_string (partcode : in type_device_partcode) return string;
 
 	function partcode_length_valid (partcode : in string) return boolean;
 	-- Returns true if length of given partcode is ok. Issues warning if not.
 
 	function partcode_characters_valid (
-		partcode	: in pac_device_partcode.bounded_string;
+		partcode	: in type_device_partcode;
 		characters	: in character_set := partcode_characters) return boolean;
 	-- Tests if the given partcode contains only valid characters as specified
 	-- by given character set. Returns false if not. Issues warning.
@@ -81,13 +81,13 @@ package et_device_partcode is
 	procedure partcode_invalid (partcode : in string);
 	-- Issues error message and raises constraint error.
 
-	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean;
+	function is_empty (partcode : in type_device_partcode) return boolean;
 
 	function to_partcode (
 	-- Tests the given value for length and invalid characters.
 		partcode 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 

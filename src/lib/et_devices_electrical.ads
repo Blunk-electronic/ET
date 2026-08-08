@@ -107,7 +107,7 @@ package et_devices_electrical is
 			when APPEARANCE_PCB =>
 				value		: pac_device_value.bounded_string; -- 470R
 
-				partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				partcode	: type_device_partcode; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)
 				-- usually no partcode is required.
 

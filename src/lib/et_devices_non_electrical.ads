@@ -128,7 +128,7 @@ package et_devices_non_electrical is
 		value : pac_device_value.bounded_string;
 
 		-- The partcode:
-		partcode : pac_device_partcode.bounded_string;
+		partcode : type_device_partcode;
 
 		-- A purpose will rarely be assigned. But in case it is required:
 		purpose : pac_device_purpose.bounded_string;
@@ -256,12 +256,12 @@ package et_devices_non_electrical is
 
 	procedure set_partcode (
 		device		: in out type_device_non_electrical;
-		partcode	: in pac_device_partcode.bounded_string);
+		partcode	: in type_device_partcode);
 
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function get_partcode (
@@ -578,7 +578,7 @@ package et_devices_non_electrical is
 
 	function get_partcode (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function get_partcode (

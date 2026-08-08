@@ -280,7 +280,7 @@ package body et_devices_non_electrical is
 
 	procedure set_partcode (
 		device		: in out type_device_non_electrical;
-		partcode	: in pac_device_partcode.bounded_string)
+		partcode	: in type_device_partcode)
 	is begin
 		device.partcode := partcode;
 	end set_partcode;
@@ -288,7 +288,7 @@ package body et_devices_non_electrical is
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return device.partcode;
 	end get_partcode;
@@ -818,7 +818,7 @@ package body et_devices_non_electrical is
 
 	function get_partcode (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
