@@ -78,7 +78,7 @@ package body et_cp_board_netchanger is
 
 	procedure show_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -212,7 +212,7 @@ package body et_cp_board_netchanger is
 
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -265,7 +265,7 @@ package body et_cp_board_netchanger is
 
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -274,22 +274,22 @@ package body et_cp_board_netchanger is
 		-- CS log message
 		null;
 
--- 		case cmd_field_count is
--- 			when 8 =>
--- 				drag_netchanger (
--- 					module_name 	=> key (module),
--- 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
--- 					coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
--- 					point			=> type_vector_model (set (
--- 										x => to_distance (get_field (cmd, 7)),
--- 										y => to_distance (get_field (cmd, 8)))),
--- 					log_threshold	=> log_threshold + 1);
+--		case cmd_field_count is
+--			when 8 =>
+--				drag_netchanger (
+--					module_name	=> key (module),
+--					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
+--					coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
+--					point			=> type_vector_model (set (
+--										x => to_distance (get_field (cmd, 7)),
+--										y => to_distance (get_field (cmd, 8)))),
+--					log_threshold	=> log_threshold + 1);
 --
--- 			when 9 .. type_field_count'last =>
--- 				command_too_long (cmd, cmd_field_count - 1);
+--			when 9 .. type_field_count'last =>
+--				command_too_long (cmd, cmd_field_count - 1);
 --
--- 			when others => command_incomplete (cmd);
--- 		end case;
+--			when others => command_incomplete (cmd);
+--		end case;
 	end drag_netchanger;
 
 
@@ -300,7 +300,7 @@ package body et_cp_board_netchanger is
 
 	procedure set_netchanger_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:

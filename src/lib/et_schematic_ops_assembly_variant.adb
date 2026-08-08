@@ -122,7 +122,7 @@ package body et_schematic_ops_assembly_variant is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module 		: in type_generic_module)
+			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 		begin
@@ -377,10 +377,10 @@ package body et_schematic_ops_assembly_variant is
 
 
 	begin
--- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 			" variant " & enclose_in_quotes (to_variant (variant)) &
--- 			" querying device " & to_string (device),
--- 			level => log_threshold);
+--		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+--			" variant " & enclose_in_quotes (to_variant (variant)) &
+--			" querying device " & to_string (device),
+--			level => log_threshold);
 
 		pac_generic_modules.query_element (
 			position	=> module,

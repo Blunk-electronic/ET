@@ -87,7 +87,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure dragging_not_possible (
-		port 		: in string;
+		port		: in string;
 		position	: in type_object_position) is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
@@ -563,7 +563,7 @@ package body et_schematic_ops_submodules is
 					is begin
 						-- If port sits on the A or B end of the segment,
 						-- then insert it at this end:
-						if 	get_A (segment) = get_place (position) then
+						if	get_A (segment) = get_place (position) then
 							insert_submodule_port (segment, A, (instance, port)); -- OSC1, clock_output
 
 							-- signal iterations in upper levels to cancel
@@ -712,7 +712,7 @@ package body et_schematic_ops_submodules is
 				-- Test whether the submodule provides the given port.
 				if submodule_port_exists (
 					module		=> submod_cursor,
-					port 		=> port_name, -- clock_output
+					port		=> port_name, -- clock_output
 					direction	=> direction -- master/slave
 					) then
 
@@ -761,7 +761,7 @@ package body et_schematic_ops_submodules is
 
 				log_indentation_up;
 
- 				-- insert the given port in the submodule
+				-- insert the given port in the submodule
 				update_element (
 					container	=> module.submods,
 					position	=> submod_cursor,
@@ -1050,7 +1050,7 @@ package body et_schematic_ops_submodules is
 
 				log_indentation_up;
 
- 				-- insert the given port in the submodule
+				-- insert the given port in the submodule
 				update_element (
 					container	=> module.submods,
 					position	=> submod_cursor,
@@ -1323,7 +1323,7 @@ package body et_schematic_ops_submodules is
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in pac_module_instance_name.bounded_string;
 		port_name		: in pac_net_name.bounded_string;
-		point 			: in type_object_position;
+		point			: in type_object_position;
 		log_threshold	: in type_log_level)
 	is
 		ports : type_net_ports;
@@ -2066,7 +2066,7 @@ package body et_schematic_ops_submodules is
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor; -- the module
 		instance		: in pac_module_instance_name.bounded_string; -- the submodule instance
-		position		: in type_object_position; 		-- the location in the schematic (only sheet matters)
+		position		: in type_object_position;		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level)
 	is
 
@@ -2459,7 +2459,7 @@ package body et_schematic_ops_submodules is
 		type type_drag is record
 			name	: pac_net_name.bounded_string;
 			before	: type_object_position;
-			after 	: type_object_position;
+			after	: type_object_position;
 		end record;
 
 		-- Since there are lots of submodule ports we store the drag points in a simple list:
@@ -3480,11 +3480,11 @@ package body et_schematic_ops_submodules is
 
 					if not submodule_port_exists (
 						module		=> test_mod_cursor,
-						port 		=> key (port_cursor), -- clock_output
+						port		=> key (port_cursor), -- clock_output
 						direction	=> element (port_cursor).direction -- master/slave
 						) then
 
- 						port_not_provided (key (port_cursor));
+						port_not_provided (key (port_cursor));
 					end if;
 
 					next (port_cursor);
@@ -3896,7 +3896,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-   			module_name	: in pac_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3942,7 +3942,7 @@ package body et_schematic_ops_submodules is
 		-- tree_cursor is pointing at:
 		package stack is new et_generic_stacks.stack_lifo (
 			item	=> pac_renumber_modules.cursor,
-			max 	=> et_submodules.nesting_depth_max);
+			max	=> et_submodules.nesting_depth_max);
 
 
 		procedure query_module (
@@ -4300,13 +4300,13 @@ package body et_schematic_ops_submodules is
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> pac_renumber_modules.cursor,
-				max 	=> et_submodules.nesting_depth_max);
+				max	=> et_submodules.nesting_depth_max);
 
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> pac_assembly_variant_name.bounded_string,
-				max 	=> et_submodules.nesting_depth_max);
+				max	=> et_submodules.nesting_depth_max);
 
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
@@ -4315,8 +4315,8 @@ package body et_schematic_ops_submodules is
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is
 				use pac_renumber_modules;
-				module_name 	: pac_module_name.bounded_string; -- motor_driver
-				parent_name 	: pac_module_name.bounded_string; -- water_pump
+				module_name	: pac_module_name.bounded_string; -- motor_driver
+				parent_name	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
@@ -4471,7 +4471,7 @@ package body et_schematic_ops_submodules is
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
 		build_submodules_tree (
-			module_cursor 	=> module_cursor,
+			module_cursor	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make netlist of default variant
@@ -4601,7 +4601,7 @@ package body et_schematic_ops_submodules is
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_generic_stacks.stack_lifo (
 			item	=> pac_renumber_modules.cursor,
-			max 	=> et_submodules.nesting_depth_max);
+			max	=> et_submodules.nesting_depth_max);
 
 		-- For calculating the device index offset of submodule instances:
 		-- The highest used device name index across the module is stored here.
@@ -4783,7 +4783,7 @@ package body et_schematic_ops_submodules is
 		log_indentation_up;
 
 		-- locate the given top module
--- 		module_cursor := locate_module (module_name);
+--		module_cursor := locate_module (module_name);
 
 		-- The first module being processed now is the given top module.
 		-- Its highest used device index extends the total index range.

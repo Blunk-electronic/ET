@@ -40,7 +40,7 @@
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 
 
 
@@ -251,7 +251,7 @@ package body et_geometry_1.et_polygons.cropping is
 					splice (
 						target	=> vertices_tmp_1, -- primary
 						before	=> pac_vertices.no_element,
-						source 	=> vertices_tmp_2); -- will be emptied
+						source	=> vertices_tmp_2); -- will be emptied
 
 					--put_line ("C3");
 
@@ -284,7 +284,7 @@ package body et_geometry_1.et_polygons.cropping is
 						splice (
 							target	=> vertices_tmp_1, -- primary
 							before	=> pac_vertices.no_element,
-							source 	=> vertices_tmp_2); -- will be emtied
+							source	=> vertices_tmp_2); -- will be emtied
 
 						--put_line ("D");
 

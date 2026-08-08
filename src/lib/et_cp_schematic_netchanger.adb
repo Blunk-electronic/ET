@@ -75,7 +75,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure add_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -88,7 +88,7 @@ package body et_cp_schematic_netchanger is
 		case cmd_field_count is
 			when 8 =>
 				add_netchanger (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					place			=> to_position (
 						sheet => to_sheet (get_field (cmd, 5)),
 						point => set
@@ -125,7 +125,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -146,7 +146,7 @@ package body et_cp_schematic_netchanger is
 				if netchanger_exists (module, index) then
 
 					move_netchanger (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						index			=> index,
 						coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 						sheet			=> to_sheet_relative (get_field (cmd, 7)),
@@ -183,7 +183,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -204,7 +204,7 @@ package body et_cp_schematic_netchanger is
 				if netchanger_exists (module, index) then
 
 					drag_netchanger (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						index			=> index,
 						coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
 						point			=> set (
@@ -246,7 +246,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure delete_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -302,7 +302,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure rotate_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -332,7 +332,7 @@ package body et_cp_schematic_netchanger is
 					if is_0_or_90 (rotation) then
 
 						rotate_netchanger (
-							module_cursor 	=> module,
+							module_cursor	=> module,
 							index			=> index,
 							rotation		=> to_rotation (get_field (cmd, 6)), -- 90
 
@@ -372,7 +372,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure set_netchanger_direction (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -395,7 +395,7 @@ package body et_cp_schematic_netchanger is
 				if netchanger_exists (module, index) then
 
 					set_netchanger_direction (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						index			=> index,
 						direction		=> to_netchanger_direction (get_field (cmd, 6)), -- forward
 
@@ -430,7 +430,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure rename_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -488,7 +488,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure copy_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -553,7 +553,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure dissolve_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -607,7 +607,7 @@ package body et_cp_schematic_netchanger is
 
 	procedure show_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:

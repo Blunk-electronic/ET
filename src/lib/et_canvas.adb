@@ -159,7 +159,7 @@ package body et_canvas is
 
 
 	function virtual_to_canvas (
-		V 			: in type_vector_model;
+		V			: in type_vector_model;
 		zf			: in type_zoom_factor;
 		translate	: in boolean)
 		return type_logical_pixels_vector
@@ -210,7 +210,7 @@ package body et_canvas is
 
 
 	function real_to_canvas (
-		M 	: in type_vector_model;
+		M	: in type_vector_model;
 		zf	: in type_zoom_factor)
 		return type_logical_pixels_vector
 	is
@@ -1252,8 +1252,8 @@ package body et_canvas is
 		-- CS: Attempt to disable auto-scrolling of scrollbars
 		-- when the canvas get the focus:
 		-- set_focus_hadjustment (
-		-- 	container	=> swin,
-		-- 	adjustment	=> scrollbar_h_adj);
+		--	container	=> swin,
+		--	adjustment	=> scrollbar_h_adj);
 
 		-- scrollbar_h.set_can_focus (false);
 		-- swin.grab_focus;
@@ -1366,26 +1366,26 @@ package body et_canvas is
 		-- was not successful because the canvas size can not be changed
 		-- for some unknown reason after initialization:
 
--- 		declare
--- 			w, h : gint;
--- 			a : gtk_allocation;
--- 		begin
--- 			w := gint (scrollbar_h_init.lower + scrollbar_h_init.upper);
--- 			h := gint (scrollbar_v_init.lower + scrollbar_v_init.upper);
+--		declare
+--			w, h : gint;
+--			a : gtk_allocation;
+--		begin
+--			w := gint (scrollbar_h_init.lower + scrollbar_h_init.upper);
+--			h := gint (scrollbar_v_init.lower + scrollbar_v_init.upper);
 --
--- 			canvas.get_allocation (a);
--- 			a.width := w;
--- 			a.height := h;
--- 			-- canvas.set_allocation (a);
--- 			-- canvas.size_allocate (a);
--- 			-- canvas.set_size_request (w, h);
+--			canvas.get_allocation (a);
+--			a.width := w;
+--			a.height := h;
+--			-- canvas.set_allocation (a);
+--			-- canvas.size_allocate (a);
+--			-- canvas.set_size_request (w, h);
 --
--- 			if debug then
--- 				show_canvas_size;
--- 				-- put_line ("x/y : " & gint'image (a.x) & "/"
--- 					& gint'image (a.y));
--- 			end if;
--- 		end;
+--			if debug then
+--				show_canvas_size;
+--				-- put_line ("x/y : " & gint'image (a.x) & "/"
+--					& gint'image (a.y));
+--			end if;
+--		end;
 		----------------------------------------------------------------------
 
 
@@ -1495,7 +1495,7 @@ package body et_canvas is
 		-- could be used to switch between current dimensions and initial
 		-- dimensions:
 		-- sw := type_zoom_factor
-		-- 	(type_distance (swin_size_initial.width) / area.width);
+		--	(type_distance (swin_size_initial.width) / area.width);
 		-- sh := type_zoom_factor
 		--	(type_distance (swin_size_initial.height) / area.height);
 
@@ -2461,7 +2461,7 @@ package body et_canvas is
 
 					-- Draw a very small circle with its center at CP:
 					-- arc (context, CP.x, CP.y,
-					-- 	 radius => grid_radius_dots, angle1 => 0.0,
+					--	 radius => grid_radius_dots, angle1 => 0.0,
 					--    angle2 => 6.3);
 					-- stroke (context);
 
@@ -3236,8 +3236,8 @@ package body et_canvas is
 
 		-- Output the button id, x and y position:
 		put_line ("cb_window_button_pressed "
-		 	& "button" & guint'image (event.button) & " "
-		 	& to_string (point));
+			& "button" & guint'image (event.button) & " "
+			& to_string (point));
 
 		return event_handled;
 	end cb_window_button_pressed;
@@ -3255,56 +3255,56 @@ package body et_canvas is
 		-- put_line ("cb_main_window_size_allocate " & image (clock));
 
 		-- put_line ("cb_window_size_allocate. (x/y/w/h): "
-		-- 	& gint'image (allocation.x)
-		-- 	& " /" & gint'image (allocation.y)
-		-- 	& " /" & gint'image (allocation.width)
-		-- 	& " /" & gint'image (allocation.height));
+		--	& gint'image (allocation.x)
+		--	& " /" & gint'image (allocation.y)
+		--	& " /" & gint'image (allocation.width)
+		--	& " /" & gint'image (allocation.height));
 	end cb_main_window_size_allocate;
 
 
 
 
 
--- 	function cb_main_window_key_pressed (
--- 		window	: access gtk_widget_record'class;
--- 		event	: gdk_event_key)
--- 		return boolean
--- 	is
--- 		debug : boolean := true;
+--	function cb_main_window_key_pressed (
+--		window	: access gtk_widget_record'class;
+--		event	: gdk_event_key)
+--		return boolean
+--	is
+--		debug : boolean := true;
 --
--- 		event_handled : boolean;
--- 		key : gdk_key_type := event.keyval;
--- 	begin
--- 		if debug then
--- 			put_line ("cb_main_window_key_pressed");
--- 		end if;
---
---
--- 		case key is
--- 			when GDK_ESCAPE =>
--- 				if debug then
--- 					put_line ("ESC");
--- 				end if;
---
--- 				escape_key_pressed;
---
--- 				if get_escape_counter = 2 then
--- 					clear_out_properties_box;
--- 				end if;
---
--- 				event_handled := false;
+--		event_handled : boolean;
+--		key : gdk_key_type := event.keyval;
+--	begin
+--		if debug then
+--			put_line ("cb_main_window_key_pressed");
+--		end if;
 --
 --
--- 			when others =>
--- 				if debug then
--- 					put_line ("other key");
--- 				end if;
+--		case key is
+--			when GDK_ESCAPE =>
+--				if debug then
+--					put_line ("ESC");
+--				end if;
 --
--- 				event_handled := false;
--- 		end case;
+--				escape_key_pressed;
 --
--- 		return event_handled;
--- 	end cb_main_window_key_pressed;
+--				if get_escape_counter = 2 then
+--					clear_out_properties_box;
+--				end if;
+--
+--				event_handled := false;
+--
+--
+--			when others =>
+--				if debug then
+--					put_line ("other key");
+--				end if;
+--
+--				event_handled := false;
+--		end case;
+--
+--		return event_handled;
+--	end cb_main_window_key_pressed;
 
 
 
@@ -3538,10 +3538,10 @@ package body et_canvas is
 
 		-- put_line ("cb_swin_size_allocate " & image (clock));
 		-- put_line ("cb_swin_size_allocate. (x/y/w/h): "
-		-- 	& gint'image (allocation.x)
-		-- 	& " /" & gint'image (allocation.y)
-		-- 	& " /" & gint'image (allocation.width)
-		-- 	& " /" & gint'image (allocation.height));
+		--	& gint'image (allocation.x)
+		--	& " /" & gint'image (allocation.y)
+		--	& " /" & gint'image (allocation.width)
+		--	& " /" & gint'image (allocation.height));
 
 		-- This procedure is called on many occasions. We are interested
 		-- only in cases where the size changes.
@@ -3745,21 +3745,21 @@ package body et_canvas is
 -- CANVAS:
 
 --
--- 	procedure cb_canvas_size_allocate (
--- 		canvas		: access gtk_widget_record'class;
--- 		allocation	: gtk_allocation)
--- 	is begin
--- 		null;
--- 		-- new_line;
--- 		-- put_line ("cb_canvas_size_allocate");
+--	procedure cb_canvas_size_allocate (
+--		canvas		: access gtk_widget_record'class;
+--		allocation	: gtk_allocation)
+--	is begin
+--		null;
+--		-- new_line;
+--		-- put_line ("cb_canvas_size_allocate");
 --
--- 		-- put_line ("cb_canvas_size_allocate. (x/y/w/h): "
--- 		--  & gint'image (allocation.x)
--- 		-- 	& " /" & gint'image (allocation.y)
--- 		-- 	& " /" & gint'image (allocation.width)
--- 		-- 	& " /" & gint'image (allocation.height));
+--		-- put_line ("cb_canvas_size_allocate. (x/y/w/h): "
+--		--  & gint'image (allocation.x)
+--		--	& " /" & gint'image (allocation.y)
+--		--	& " /" & gint'image (allocation.width)
+--		--	& " /" & gint'image (allocation.height));
 --
--- 	end cb_canvas_size_allocate;
+--	end cb_canvas_size_allocate;
 
 
 

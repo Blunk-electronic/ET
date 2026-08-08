@@ -65,7 +65,7 @@ package et_net_junction is
 
 	junction_symbol : type_circle := type_circle (to_circle (
 			center	=> origin,
-			radius 	=> junction_radius));
+			radius	=> junction_radius));
 
 
 

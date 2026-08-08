@@ -139,7 +139,7 @@ package body et_net_connectors is
 
 
 	procedure modify_status (
-		connector 	: in out type_net_connector;
+		connector	: in out type_net_connector;
 		operation	: in type_status_operation)
 	is begin
 		if connector.active then

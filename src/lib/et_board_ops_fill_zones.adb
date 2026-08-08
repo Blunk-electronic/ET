@@ -245,10 +245,10 @@ package body et_board_ops_fill_zones is
 
 	procedure get_polygons_of_connected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		offset					: in type_float_positive;
-		net_cursor 				: in pac_nets.cursor;
+		net_cursor				: in pac_nets.cursor;
 		polygons				: in out pac_polygon_list.list;
 		with_reliefes			: in boolean;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
@@ -399,10 +399,10 @@ package body et_board_ops_fill_zones is
 
 	procedure get_polygons_of_nets (
 		module_cursor			: in pac_generic_modules.cursor;
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 		zone					: in type_polygon;
 		linewidth				: in type_track_width;
-		layer 					: in type_signal_layer;
+		layer					: in type_signal_layer;
 		zone_clearance			: in type_track_clearance;
 		bottom_layer			: in type_signal_layer;
 		parent_net				: in pac_nets.cursor;
@@ -612,7 +612,7 @@ package body et_board_ops_fill_zones is
 
 	procedure get_polygons_of_unconnected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		zone_clearance			: in type_track_clearance;
 		linewidth				: in type_track_width;
@@ -746,7 +746,7 @@ package body et_board_ops_fill_zones is
 
 	procedure get_polygons_of_non_electrical_devices (
 		module_cursor			: in pac_generic_modules.cursor;
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		zone_clearance			: in type_track_clearance;
 		linewidth				: in type_track_width;
@@ -861,7 +861,7 @@ package body et_board_ops_fill_zones is
 
 	procedure get_polygons_of_electrical_devices (
 		module_cursor			: in pac_generic_modules.cursor;
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		zone_clearance			: in type_track_clearance;
 		linewidth				: in type_track_width;
@@ -980,7 +980,7 @@ package body et_board_ops_fill_zones is
 		zone					: in pac_polygons.type_polygon;
 		zone_clearance			: in type_track_clearance;
 		linewidth				: in type_track_width;
-		layer 					: in type_signal_layer;
+		layer					: in type_signal_layer;
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
@@ -1067,10 +1067,10 @@ package body et_board_ops_fill_zones is
 		zone				: in type_polygon;
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
-		layer 				: in type_signal_layer;
+		layer				: in type_signal_layer;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
-		clearance_to_edge 	: in type_distance_positive;
+		clearance_to_edge	: in type_distance_positive;
 
 		polygons				: out pac_polygon_list.list;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
@@ -1138,8 +1138,8 @@ package body et_board_ops_fill_zones is
 			log_indentation_up;
 
 			get_polygons_of_unconnected_terminals (
-			 	module_cursor		=> module_cursor,
-			 	layer_category		=> layer_category,
+				module_cursor		=> module_cursor,
+				layer_category		=> layer_category,
 				zone				=> zone,
 				zone_clearance		=> zone_clearance,
 				linewidth			=> linewidth,
@@ -1360,9 +1360,9 @@ package body et_board_ops_fill_zones is
 		zone				: in out type_zone'class;
 		outer_contour		: in type_polygon;
 		linewidth			: in type_track_width;
-		layer 				: in type_signal_layer;
+		layer				: in type_signal_layer;
 		clearance			: in type_track_clearance;
-		clearance_to_edge 	: in type_distance_positive;
+		clearance_to_edge	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection := pad_connection_default;
 		relief_properties	: in type_relief_properties := relief_properties_default;
@@ -1598,7 +1598,7 @@ package body et_board_ops_fill_zones is
 	procedure fill_connected_zones (
 		module_cursor		: in pac_generic_modules.cursor;
 		board_outer_contour : in type_polygon;
-		nets 				: in pac_net_names.list := no_net_names;
+		nets				: in pac_net_names.list := no_net_names;
 		design_rules		: in type_design_rules_board;
 		log_threshold		: in type_log_level)
 	is
@@ -2048,7 +2048,7 @@ package body et_board_ops_fill_zones is
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names)
+		nets			: in pac_net_names.list := no_net_names)
 	is
 		-- Get the design rules:
 		design_rules : constant type_design_rules_board :=
@@ -2399,7 +2399,7 @@ package body et_board_ops_fill_zones is
 	procedure clear_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names)
+		nets			: in pac_net_names.list := no_net_names)
 	is
 		-- CS: Most of this stuff can be moved to et_fill_zones.boards
 		-- so that solid and hatched zones inherit from primitive operations

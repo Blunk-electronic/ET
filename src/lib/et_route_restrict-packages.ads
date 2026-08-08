@@ -46,7 +46,7 @@ package et_route_restrict.packages is
 
 
 	type type_one_side is record
-		lines 		: pac_route_restrict_lines.list;
+		lines		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
 		circles		: pac_route_restrict_circles.list;
 		zones		: pac_route_restrict_zones.list;

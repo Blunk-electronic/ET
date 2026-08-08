@@ -50,7 +50,7 @@ separate (et_rig)
 
 procedure save_rig (
 	rig_cursor		: in pac_rigs.cursor;
-	log_threshold 	: in type_log_level)
+	log_threshold	: in type_log_level)
 is
 
 	use pac_rigs;
@@ -101,8 +101,8 @@ begin -- save_rig_configuration
 
 	-- compose the full file name
 	file_name := pac_file_name.to_bounded_string (compose (
-		name 		=> pac_file_name.to_string (key (rig_cursor)), -- fully_equipped
-		extension 	=> file_extension)); -- conf
+		name		=> pac_file_name.to_string (key (rig_cursor)), -- fully_equipped
+		extension	=> file_extension)); -- conf
 
 	-- create the file
 	create (

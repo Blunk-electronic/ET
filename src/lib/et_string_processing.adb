@@ -37,9 +37,9 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
+with ada.strings.unbounded;	use ada.strings.unbounded;
 
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 with ada.characters.handling;	use ada.characters.handling;
 
 --with ada.exceptions;
@@ -64,21 +64,21 @@ package body et_string_processing is
 
 
 
--- 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
--- 	-- Checks whether updated is later or equal commissioned.
--- 	begin
--- 		if updated < commissioned then -- if updated before commissioned
--- 			write_message (
--- 				file_handle => current_output,
--- 				text => message_error & "The time of update is before the time of commission !"
--- 					& latin_1.lf
--- 					& "commissioned : " & string(commissioned) & latin_1.lf
--- 					& "updated      : " & string(updated),
--- 					console => true);
+--	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
+--	-- Checks whether updated is later or equal commissioned.
+--	begin
+--		if updated < commissioned then -- if updated before commissioned
+--			write_message (
+--				file_handle => current_output,
+--				text => message_error & "The time of update is before the time of commission !"
+--					& latin_1.lf
+--					& "commissioned : " & string(commissioned) & latin_1.lf
+--					& "updated      : " & string(updated),
+--					console => true);
 --
--- 			raise constraint_error;
--- 		end if;
--- 	end check_updated_vs_commissioned;
+--			raise constraint_error;
+--		end if;
+--	end check_updated_vs_commissioned;
 
 
 	function strip_directory_separator (text : in string) return string is
@@ -114,7 +114,7 @@ package body et_string_processing is
 
 	function wildcard_match (
 		text_with_wildcards : in string;
-		text_exact 			: in string)
+		text_exact			: in string)
 		return boolean
 	is
 		count_asterisk		: constant natural := ada.strings.fixed.count (text_with_wildcards, 1 * latin_1.asterisk);
@@ -159,7 +159,7 @@ package body et_string_processing is
 					text_with_wildcards (text_with_wildcards'first .. text_with_wildcards'first - 1 + pos_asterisk - 1) =
 					text_exact         (text_exact'first          .. text_exact'first          - 1 + pos_asterisk - 1) then
 					match := true;
--- 					put_line(standard_output,"match");
+--					put_line(standard_output,"match");
 				end if;
 
 			-- CS: currently more than one asterisk results in a no-match
@@ -173,7 +173,7 @@ package body et_string_processing is
 
 
 	function remove_comment_from_line (
-		text_in 		: in string;			-- the input string
+		text_in		: in string;			-- the input string
 		comment_mark	: in string;			-- the comment mark (like "--" or "#"
 		test_whole_line : in boolean := true)	-- when false, cares for the comment mark at line begin only
 		return string							-- further comment marks are ignored
@@ -207,7 +207,7 @@ package body et_string_processing is
 	is
 		line_length	: constant natural := text_in'last;	-- length of given text
 		char_pt		: natural := 1;				-- charcter pointer (points to character being processed inside the given line)
-		IFS1		: constant character := ' '; 				-- field separator space
+		IFS1		: constant character := ' ';				-- field separator space
 		IFS2		: constant character := character'val (9); -- field separator tabulator
 		field_ct	: type_field_count := 0; -- field counter (the first field found gets number 1 assigned)
 		field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
@@ -325,7 +325,7 @@ package body et_string_processing is
 		path_in : in string)
 		return string
 	is begin
-		if 	path_in (path_in'last) = '/' or -- on linux
+		if	path_in (path_in'last) = '/' or -- on linux
 			path_in (path_in'last) = '\' then -- on windows
 
 			return path_in (path_in'first .. path_in'last - 1);
@@ -353,11 +353,11 @@ package body et_string_processing is
 
 
 	function get_field_from_line (
-		text_in 	: in string;
-		position 	: in type_field_count_positive;
-		ifs 		: in character := latin_1.space;
-		trailer 	: in boolean := false;
-		trailer_to 	: in character := latin_1.semicolon)
+		text_in	: in string;
+		position	: in type_field_count_positive;
+		ifs		: in character := latin_1.space;
+		trailer	: in boolean := false;
+		trailer_to	: in character := latin_1.semicolon)
 		return string
 	is
 		length_max : constant natural := 1000; -- CS: increase if nessecary
@@ -399,11 +399,11 @@ package body et_string_processing is
 			for char_pt in 1 .. character_count loop
 				char_current := text_in (char_pt);
 
--- 				if char_current = ifs then
--- 					inside_field := false;
--- 				else
--- 					inside_field := true;
--- 				end if;
+--				if char_current = ifs then
+--					inside_field := false;
+--				else
+--					inside_field := true;
+--				end if;
 
 				-- CS: if ifs is space and fields are separated by a single ht, they are currently
 				-- not split up. fix it !
@@ -436,10 +436,10 @@ package body et_string_processing is
 				end if;
 
 
--- 				-- count fields if ifs is followed by a non-ifs character
--- 				if (char_last = ifs and char_current /= ifs) then
--- 					field_ct := field_ct + 1;
--- 				end if;
+--				-- count fields if ifs is followed by a non-ifs character
+--				if (char_last = ifs and char_current /= ifs) then
+--					field_ct := field_ct + 1;
+--				end if;
 
 				case trailer is
 					when false =>
@@ -723,9 +723,9 @@ package body et_string_processing is
 
 		line.fields := left.fields & right.fields;
 		line.field_count := left.field_count + right.field_count;
--- 		if right.field_count > 0 then
--- 			null;
--- 		end if;
+--		if right.field_count > 0 then
+--			null;
+--		end if;
 		return line;
 	end append_field;
 
@@ -886,7 +886,7 @@ package body et_string_processing is
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in type_field_count;		-- the min. number of fields to expect
-		warn			: in boolean := true) 		-- warn if too many fields
+		warn			: in boolean := true)		-- warn if too many fields
 	is
 		count_found : constant type_field_count := get_field_count (line);
 

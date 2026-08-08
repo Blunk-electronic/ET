@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                     		      RIPUP                                     --
+--		      RIPUP                                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

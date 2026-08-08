@@ -101,7 +101,7 @@ package et_canvas_board is
 	procedure update_mode_display;
 
 
--- 	use pac_net_name;
+--	use pac_net_name;
 
 
 	-- This procedure should be called each time after the current active module

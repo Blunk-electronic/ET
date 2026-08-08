@@ -54,7 +54,7 @@ package et_cp_board_stencil is
 	-- board demo draw stencil top line 2 0 0 line 50 0
 	procedure draw_stencil (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -66,7 +66,7 @@ package et_cp_board_stencil is
 	-- board led_driver delete stencil top 40 50 1
 	procedure delete_stencil (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

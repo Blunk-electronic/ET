@@ -75,7 +75,7 @@ package et_schematic.statistics is
 	procedure statistics_set (
 		cat			: in type_statistics_category;
 		increment	: in boolean := true;
-		number 		: in count_type := 0);
+		number		: in count_type := 0);
 
 	function statistics_query (cat : in type_statistics_category) return count_type;
 	-- Returns the number objects as specified by given category.

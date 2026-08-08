@@ -43,7 +43,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_schematic_text;					use et_schematic_text;
@@ -77,7 +77,7 @@ package et_symbol_text is
 
 	-- Outputs the properties of the given text.
 	procedure write_text_properies (
-		text 			: in type_symbol_text;
+		text			: in type_symbol_text;
 		log_threshold	: in type_log_level);
 
 

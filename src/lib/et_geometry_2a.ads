@@ -41,7 +41,7 @@
 --
 
 
-with ada.containers; 				use ada.containers;
+with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
@@ -73,7 +73,7 @@ package et_geometry_2a is
 	use pac_geometry_1;
 	use pac_float_numbers_functions;
 
-	zero 		: constant type_distance := 0.0;
+	zero		: constant type_distance := 0.0;
 	far_left	: constant type_distance := axis_min;
 	far_right	: constant type_distance := axis_max;
 
@@ -316,7 +316,7 @@ package et_geometry_2a is
 	-- FORMAT_2 : x 4.5 y 5.6
 	-- FORMAT_3 : 4.5 5.6
 	function to_string (
-		v 		: in type_vector_model;
+		v		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
@@ -453,7 +453,7 @@ package et_geometry_2a is
 
 	procedure set (
 		point	: in out type_vector_model;
-		axis 	: in type_axis_2d;
+		axis	: in type_axis_2d;
 		value	: in type_position_axis);
 
 
@@ -484,7 +484,7 @@ package et_geometry_2a is
 
 
 	function to_vector_model (
-		d 		: in type_vector_model;
+		d		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model;
 
@@ -601,17 +601,17 @@ package et_geometry_2a is
 
 
 	procedure move_points (
-		points 	: in out pac_points.list;
+		points	: in out pac_points.list;
 		offset	: in type_vector_model);
 
 
 	procedure rotate_points (
-		points 		: in out pac_points.list;
+		points		: in out pac_points.list;
 		rotation	: in type_rotation);
 
 
 	procedure mirror_points (
-		points 	: in out pac_points.list;
+		points	: in out pac_points.list;
 		mirror	: in type_mirror);
 
 
@@ -661,19 +661,19 @@ package et_geometry_2a is
 
 	-- Sets the position of the area:
 	procedure set_position (
-		area 		: in out type_area;
+		area		: in out type_area;
 		position	: in type_vector_model);
 
 
 	-- Sets the width of the area:
 	procedure set_width (
-		area 	: in out type_area;
+		area	: in out type_area;
 		width	: in type_distance_positive);
 
 
 	-- Sets the height of the area:
 	procedure set_height (
-		area 	: in out type_area;
+		area	: in out type_area;
 		height	: in type_distance_positive);
 
 
@@ -840,7 +840,7 @@ package et_geometry_2a is
 
 
 	type type_line_base is abstract tagged record
-		A, B 		: type_vector_model; -- start and end point
+		A, B		: type_vector_model; -- start and end point
 		status		: type_object_status;
 		status_AB	: type_AB_status;
 	end record;
@@ -873,7 +873,7 @@ package et_geometry_2a is
 	-- Returns the end point of the given line
 	-- as requested by argument AB_end:
 	function get_end_point (
-		line 	: in type_line;
+		line	: in type_line;
 		AB_end	: in type_start_end_point)
 		return type_vector_model;
 
@@ -1072,7 +1072,7 @@ package et_geometry_2a is
 
 
 	procedure modify_status (
-		line 		: in out type_line;
+		line		: in out type_line;
 		operation	: in type_status_operation);
 
 
@@ -1127,7 +1127,7 @@ package et_geometry_2a is
 
 	-- Resets all status flags to default:
 	procedure reset_status (
-		line 	: in out type_line);
+		line	: in out type_line);
 
 
 	-- Moves a line by the given offset.
@@ -1363,7 +1363,7 @@ package et_geometry_2a is
 	-- as the given split point, then the result is
 	-- a single line, namely the given line without any change:
 	function split_line (
-		line 	: in type_line;
+		line	: in type_line;
 		point	: in type_vector_model)
 		return type_split_line;
 
@@ -1378,7 +1378,7 @@ package et_geometry_2a is
 	-- CS: Currently it is assumed that none of the given
 	-- split points is equal to the A or B end of the line:
 	function split_line (
-		line 	: in type_line;
+		line	: in type_line;
 		points	: in pac_points.list)
 		return type_split_line;
 
@@ -1576,12 +1576,12 @@ package et_geometry_2a is
 
 
 	procedure modify_status (
-		arc 		: in out type_arc;
+		arc		: in out type_arc;
 		operation	: in type_status_operation);
 
 
 	procedure reset_status (
-		arc 		: in out type_arc);
+		arc		: in out type_arc);
 
 
 
@@ -1656,7 +1656,7 @@ package et_geometry_2a is
 	function get_arc_B (
 		center	: in type_vector_model;
 		A		: in type_vector_model;	-- start point
-		angle 	: in type_angle) -- CS: type_angle_positive ?
+		angle	: in type_angle) -- CS: type_angle_positive ?
 		return type_vector_model;
 
 
@@ -1699,7 +1699,7 @@ package et_geometry_2a is
 	-- It respects the linewidth of the circumfence.
 	-- CS: For simlicity the given arc is theated like a circle.
 	function get_bounding_box (
-		arc 	: in type_arc;
+		arc	: in type_arc;
 		width	: in type_distance_positive)
 		return type_area;
 
@@ -1812,12 +1812,12 @@ package et_geometry_2a is
 
 
 	procedure modify_status (
-		circle 		: in out type_circle;
+		circle		: in out type_circle;
 		operation	: in type_status_operation);
 
 
 	procedure reset_status (
-		circle 		: in out type_circle);
+		circle		: in out type_circle);
 
 
 
@@ -1869,7 +1869,7 @@ package et_geometry_2a is
 	-- Returns the bounding-box of the given circle.
 	-- It respects the linewidth of the circumfence:
 	function get_bounding_box (
-		circle 	: in type_circle;
+		circle	: in type_circle;
 		width	: in type_distance_positive)
 		return type_area;
 
@@ -1885,7 +1885,7 @@ package et_geometry_2a is
 	-- of the place (x/y) and the rotation of the object about
 	-- its origin:
 	type type_position is tagged record -- CS make private ?
-		place 		: type_vector_model := origin;
+		place		: type_vector_model := origin;
 		rotation	: type_rotation := zero_rotation;
 	end record;
 
@@ -1936,7 +1936,7 @@ package et_geometry_2a is
 
 	procedure set (
 		position	: in out type_position;
-		axis 		: in type_axis_2d;
+		axis		: in type_axis_2d;
 		value		: in type_position_axis);
 
 

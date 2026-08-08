@@ -178,7 +178,7 @@ package body et_module_ops is
 
 				write_module (
 					module_cursor	=> module_cursor,
-					log_threshold 	=> log_threshold + 1);
+					log_threshold	=> log_threshold + 1);
 
 			else
 				log (SEVERITY_WARNING, "module " & enclose_in_quotes (to_string (module_name)) &

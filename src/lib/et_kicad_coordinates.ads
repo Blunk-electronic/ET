@@ -36,8 +36,8 @@
 --   history of changes:
 --
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
@@ -57,12 +57,12 @@ package et_kicad_coordinates is
 	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
 
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length_max : constant positive := 100;
+	submodule_name_length_max : constant positive := 100;
 	package type_submodule_name is new generic_bounded_length (submodule_name_length_max);
 	use type_submodule_name;
 
--- 	procedure check_submodule_name_length (name : in string);
--- 	-- Checks if the given submodule name is not longer than allowed.
+--	procedure check_submodule_name_length (name : in string);
+--	-- Checks if the given submodule name is not longer than allowed.
 
 	submodule_name_characters : character_set := to_set
 		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("-_");
@@ -80,7 +80,7 @@ package et_kicad_coordinates is
         element_type => type_submodule_name.bounded_string);
 
 	function to_string (
-		path 		: in type_path_to_submodule.list;
+		path		: in type_path_to_submodule.list;
 		top_module	: in boolean := true) return string;
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
@@ -131,7 +131,7 @@ package et_kicad_coordinates is
 
 	type type_scope is (
 		XY, -- only x an y pos.
-		SHEET, 	-- coordinates sheet related
+		SHEET,	-- coordinates sheet related
 		MODULE); -- coordinates with the module in scope
 
 	function to_string (

@@ -116,7 +116,7 @@ package body et_module_read_board_zones is
 		unused_board_filled	:= filled_default;
 		board_fill_style	:= fill_style_default;
 		--board_hatching		:= (others => <>);
-		board_easing 		:= (others => <>);
+		board_easing		:= (others => <>);
 
 		contour_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
@@ -429,7 +429,7 @@ package body et_module_read_board_zones is
 					pac_floating_solid.append (
 						container	=> module.board.conductors_floating.zones.solid,
 						new_item	=> (contour with
-							fill_style 	=> SOLID,
+							fill_style	=> SOLID,
 							easing		=> board_easing,
 							islands		=> no_islands,
 							properties	=> (signal_layer, contour_priority),
@@ -440,7 +440,7 @@ package body et_module_read_board_zones is
 					pac_floating_hatched.append (
 						container	=> module.board.conductors_floating.zones.hatched,
 						new_item	=> (contour with
-							fill_style 	=> HATCHED,
+							fill_style	=> HATCHED,
 							easing		=> board_easing,
 							islands		=> no_islands,
 							properties	=> (signal_layer, contour_priority),

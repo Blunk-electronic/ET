@@ -68,7 +68,7 @@ package body et_cp_board_restrict is
 
 	procedure draw_route_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_board_ops_route_restrict;
@@ -143,7 +143,7 @@ package body et_cp_board_restrict is
 							layers_tmp := to_layers (get_field (cmd, 5)); -- [1,3,5-9]
 
 							draw_route_restrict_line (
-								module_name 	=> key (module),
+								module_name	=> key (module),
 								line			=> (line_tmp with layers_tmp),
 
 								-- Depending on the origin of the command,
@@ -172,7 +172,7 @@ package body et_cp_board_restrict is
 								direction	=> to_direction (get_field (cmd, 13))));
 
 							draw_route_restrict_arc (
-								module_name 	=> key (module),
+								module_name	=> key (module),
 								arc				=> (arc_tmp with layers_tmp),
 
 								-- Depending on the origin of the command,
@@ -201,7 +201,7 @@ package body et_cp_board_restrict is
 
 								-- Circle is not filled.
 								draw_route_restrict_circle (
-									module_name 	=> key (module),
+									module_name	=> key (module),
 									circle			=> (circle_tmp with layers_tmp),
 
 									-- Depending on the origin of the command,
@@ -220,7 +220,7 @@ package body et_cp_board_restrict is
 
 								---- Circle is filled.
 								--draw_route_restrict_circle (
-									--module_name 	=> module,
+									--module_name	=> module,
 									--circle			=>
 												--(
 												--layers		=> to_layers (get_field (cmd, 5)), -- [1,3,5-9]
@@ -258,7 +258,7 @@ package body et_cp_board_restrict is
 
 	procedure draw_via_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_board_ops_via_restrict;
@@ -318,7 +318,7 @@ package body et_cp_board_restrict is
 
 	procedure delete_route_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_board_ops_route_restrict;
@@ -335,7 +335,7 @@ package body et_cp_board_restrict is
 				radius	=> to_zone_radius (get_field (cmd, 7)));
 
 			delete_route_restrict (
-				module_name 	=> key (module),
+				module_name	=> key (module),
 				catch_zone		=> catch_zone,
 
 				-- Depending on the origin of the command,
@@ -374,7 +374,7 @@ package body et_cp_board_restrict is
 
 	procedure delete_via_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);
@@ -392,14 +392,14 @@ package body et_cp_board_restrict is
 
 			-- CS
 			-- delete_via_restrict (
-			-- 	module_name 	=> key (module),
-			-- 	catch_zone		=> catch_zone,
+			--	module_name	=> key (module),
+			--	catch_zone		=> catch_zone,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
 				-- commit_design	=> to_commit_design (cmd),
 
-			-- 	log_threshold	=> log_threshold + 1);
+			--	log_threshold	=> log_threshold + 1);
 
 		end do_it;
 

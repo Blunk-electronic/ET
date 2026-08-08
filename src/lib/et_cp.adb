@@ -60,30 +60,30 @@ package body et_cp is
 -- CS move this stuff to a separate package:
 
 	-- procedure expect_number (field : in count_type) is begin
-	-- 	log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);
-	-- 	raise constraint_error;
+	--	log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);
+	--	raise constraint_error;
 	-- end;
 
 
 	-- procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
-	-- 	log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
-	-- 		 " expected in field no. " & count_type'image (field) & " !" , console => true);
-	-- 	raise constraint_error;
+	--	log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
+	--		 " expected in field no. " & count_type'image (field) & " !" , console => true);
+	--	raise constraint_error;
 	-- end;
 
 
 	-- procedure expect_value_center_x (field : in count_type) is begin
-	-- 	log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
-	-- 		 console => true);
-	-- 	raise constraint_error;
+	--	log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
+	--		 console => true);
+	--	raise constraint_error;
 	-- end;
 
 
 	-- procedure expect_keyword_filled (field : in count_type) is begin
-	-- 	log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
-	-- 		" in field no." & count_type'image (field) & " !",
-	-- 		 console => true);
-	-- 	raise constraint_error;
+	--	log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
+	--		" in field no." & count_type'image (field) & " !",
+	--		 console => true);
+	--	raise constraint_error;
 	-- end;
 
 
@@ -217,7 +217,7 @@ package body et_cp is
 		-- was executed as single command.
 		-- like
 		-- if not is_complete (cmd) then
-		-- 	propose_arguments;
+		--	propose_arguments;
 		-- end if;
 
 		-- CS exception handler if command is incomplete
@@ -230,8 +230,8 @@ package body et_cp is
 
 		-- exception when event: others =>
   --
-		-- 	log_indentation_down;
-		-- 	raise;
+		--	log_indentation_down;
+		--	raise;
 
 	end execute_script_command;
 

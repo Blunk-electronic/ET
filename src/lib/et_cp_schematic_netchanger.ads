@@ -52,7 +52,7 @@ package et_cp_schematic_netchanger is
 	-- Example: "schematic led_driver add netchanger 2 60 30 0"
 	procedure add_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -62,7 +62,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -72,7 +72,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -82,7 +82,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure delete_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -94,7 +94,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure rotate_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -104,7 +104,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure set_netchanger_direction (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -114,7 +114,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure rename_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -124,7 +124,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure copy_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -134,7 +134,7 @@ package et_cp_schematic_netchanger is
 	-- happens and a warning is output:
 	procedure dissolve_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -151,7 +151,7 @@ package et_cp_schematic_netchanger is
 	-- of the view:
 	procedure show_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

@@ -43,7 +43,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
+with ada.strings.fixed;			use ada.strings.fixed;
 
 with glib;								use glib;
 with glib.values;
@@ -538,12 +538,12 @@ package body et_canvas_board_lines is
 
 
 		-- procedure make_apply_button is begin
-		-- 	gtk_new_vbox (box_button, homogeneous => false);
-		-- 	pack_start (box_v4, box_button, padding => box_properties_spacing);
+		--	gtk_new_vbox (box_button, homogeneous => false);
+		--	pack_start (box_v4, box_button, padding => box_properties_spacing);
   --
-		-- 	gtk_new (button_apply, "Apply");
-		-- 	pack_start (box_button, button_apply, padding => box_properties_spacing);
-		-- 	button_apply.on_clicked (button_apply_clicked'access);
+		--	gtk_new (button_apply, "Apply");
+		--	pack_start (box_button, button_apply, padding => box_properties_spacing);
+		--	button_apply.on_clicked (button_apply_clicked'access);
 		-- end make_apply_button;
 
 	begin

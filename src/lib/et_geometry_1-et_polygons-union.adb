@@ -37,7 +37,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 
 
 --pragma optimize (time);
@@ -149,7 +149,7 @@ package body et_geometry_1.et_polygons.union is
 				splice (
 					target	=> vertices_tmp_1, -- primary
 					before	=> pac_vertices.no_element,
-					source 	=> vertices_tmp_2); -- will be emptied
+					source	=> vertices_tmp_2); -- will be emptied
 
 			end append_secondary;
 

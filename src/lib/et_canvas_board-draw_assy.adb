@@ -261,7 +261,7 @@ is
 
 begin
 
--- 	put_line ("draw board assembly documentation ...");
+--	put_line ("draw board assembly documentation ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

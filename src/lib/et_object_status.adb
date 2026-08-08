@@ -198,7 +198,7 @@ package body et_object_status is
 
 
 	procedure modify_status (
-		status 		: in out type_object_status;
+		status		: in out type_object_status;
 		operation	: in type_status_operation)
 	is begin
 		case operation.flag is
@@ -244,7 +244,7 @@ package body et_object_status is
 
 
 	procedure reset_status (
-		status 		: in out type_object_status)
+		status		: in out type_object_status)
 	is begin
 		status := object_status_default;
 	end reset_status;

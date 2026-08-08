@@ -47,7 +47,7 @@ package et_cp_schematic_script is
 
 
 	procedure execute_script (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

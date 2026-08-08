@@ -39,7 +39,7 @@
 
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_primitive_objects;		use et_primitive_objects;
@@ -199,7 +199,7 @@ package et_fill_zones is
 	procedure make_islands_and_lakes (
 		zone			: in out type_zone;
 		linewidth		: in type_track_width;
-		islands 		: in pac_polygon_list.list;
+		islands		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
 		fill			: in boolean;
 		log_threshold	: in type_log_level);

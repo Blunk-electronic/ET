@@ -83,7 +83,7 @@ package body et_cp_schematic_nets is
 
 	procedure export_netlist (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_schematic_ops_netlists_2;
@@ -109,7 +109,7 @@ package body et_cp_schematic_nets is
 					when NETLIST_CAT_1 =>
 
 						make_netlist_cat_1 (
-							module_cursor 	=> module,
+							module_cursor	=> module,
 							variant			=> to_variant (get_field (cmd, 5)),
 							log_threshold	=> log_threshold + 1);
 
@@ -140,7 +140,7 @@ package body et_cp_schematic_nets is
 
 	procedure set_net_scope (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -158,7 +158,7 @@ package body et_cp_schematic_nets is
 			if net_exists (module, net_name) then
 
 				set_scope (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					net_name		=> net_name,
 					scope			=> scope,
 
@@ -202,7 +202,7 @@ package body et_cp_schematic_nets is
 
 	procedure show_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -289,7 +289,7 @@ package body et_cp_schematic_nets is
 
 	procedure place_net_connector (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -342,7 +342,7 @@ package body et_cp_schematic_nets is
 
 	procedure delete_net_connector (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);
@@ -368,7 +368,7 @@ package body et_cp_schematic_nets is
 
 	procedure place_net_label (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -416,7 +416,7 @@ package body et_cp_schematic_nets is
 
 	procedure delete_net_label (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -464,7 +464,7 @@ package body et_cp_schematic_nets is
 
 	procedure move_net_label (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);
@@ -489,7 +489,7 @@ package body et_cp_schematic_nets is
 
 	procedure set_net_class (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -556,7 +556,7 @@ package body et_cp_schematic_nets is
 
 	procedure draw_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -633,7 +633,7 @@ package body et_cp_schematic_nets is
 				module_cursor	=> module,
 				net_name		=> object_net_name,
 				A				=> A,
-				B 				=> B,
+				B				=> B,
 
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -711,7 +711,7 @@ package body et_cp_schematic_nets is
 
 	procedure delete_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -804,7 +804,7 @@ package body et_cp_schematic_nets is
 
 	procedure rename_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -941,7 +941,7 @@ package body et_cp_schematic_nets is
 
 	procedure delete_net_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -993,7 +993,7 @@ package body et_cp_schematic_nets is
 
 	procedure drag_net_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -1048,7 +1048,7 @@ package body et_cp_schematic_nets is
 
 	procedure delete_net_strand (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:

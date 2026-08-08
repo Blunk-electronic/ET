@@ -37,7 +37,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_module_instance;		use et_module_instance;
@@ -101,12 +101,12 @@ package et_net_segment is
 	-- 3. Unknown: How to move the label if the segment
 	--    is stretched or contracted ?
 	-- overriding procedure move_start_by (
-	-- 	segment	: in out type_net_segment;
-	-- 	offset	: in type_vector_model);
+	--	segment	: in out type_net_segment;
+	--	offset	: in type_vector_model);
 
 	-- overriding procedure move_end_by (
-	-- 	segment	: in out type_net_segment;
-	-- 	offset	: in type_vector_model);
+	--	segment	: in out type_net_segment;
+	--	offset	: in type_vector_model);
 
 
 
@@ -325,7 +325,7 @@ package et_net_segment is
 	-- Returns the ports that are connected with
 	-- the given NSWE end of a segment:
 	function get_ports (
-		segment 	: in type_net_segment;
+		segment	: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return type_net_ports;
 
@@ -428,7 +428,7 @@ package et_net_segment is
 	-- 3. If neither condition 1 nor 2 is met, then
 	--    the return is CON_STS_NONE:
 	function get_connect_status (
-		primary 	: in type_net_segment;
+		primary	: in type_net_segment;
 		AB_end		: in type_start_end_point;
 		secondary	: in type_net_segment)
 		return type_connect_status;
@@ -609,7 +609,7 @@ package et_net_segment is
 	-- the greater can be the distance to the segment:
 	function on_segment (
 		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
+		segment	: in pac_net_segments.cursor)
 		return boolean;
 
 
@@ -617,7 +617,7 @@ package et_net_segment is
 	-- the given segment:
 	function on_segment (
 		point		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor)
+		segment	: in pac_net_segments.cursor)
 		return boolean;
 
 
@@ -635,7 +635,7 @@ package et_net_segment is
 	-- Similar to function get_connect_status (see above),
 	-- but takes cursors to the primary and secondary segment:
 	function get_connect_status (
-		primary 	: in pac_net_segments.cursor;
+		primary	: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point;
 		secondary	: in pac_net_segments.cursor)
 		return type_connect_status;

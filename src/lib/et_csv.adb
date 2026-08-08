@@ -37,8 +37,8 @@
 --
 
 with et_logging;				use et_logging;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 --with et_string_processing;
 
@@ -67,7 +67,7 @@ package body et_csv is
 		file	: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
 		text	: in string := "";
 		ifs		: in character := ascii.semicolon; -- field separator
-		delim 	: in character := ascii.quotation) is  -- text delimiter
+		delim	: in character := ascii.quotation) is  -- text delimiter
 	begin
 		put (file, delim & trim (text, both) & delim & ifs);
 		next_column;

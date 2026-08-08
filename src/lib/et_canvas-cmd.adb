@@ -314,7 +314,7 @@ package body et_canvas.cmd is
 					set_grid_to_scale;
 
 					-- put_line ("grid spacing x/y:"
-					-- 	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
+					--	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
 
 					update_grid_display;
 					update_scale_display;
@@ -429,7 +429,7 @@ package body et_canvas.cmd is
 		-- was executed as single command.
 		-- like
 		-- if not is_complete (cmd) then
-		-- 	propose_arguments;
+		--	propose_arguments;
 		-- end if;
 
 				log_indentation_down;

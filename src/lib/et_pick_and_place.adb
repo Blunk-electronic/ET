@@ -117,10 +117,10 @@ package body et_pick_and_place is
 			column_x			: constant string := "X";
 			column_y			: constant string := "Y";
 			column_rotation		: constant string := "ROTATION";
--- 			column_value		: constant string := "VALUE";
--- 			column_package		: constant string := "PACKAGE";
--- 			column_partcode		: constant string := "PARTCODE";
--- 			column_purpose		: constant string := "PURPOSE";
+--			column_value		: constant string := "VALUE";
+--			column_package		: constant string := "PACKAGE";
+--			column_partcode		: constant string := "PARTCODE";
+--			column_purpose		: constant string := "PURPOSE";
 
 			procedure query_device (cursor : in pac_devices.cursor) is
 				use pac_devices;
@@ -132,10 +132,10 @@ package body et_pick_and_place is
 				put_field (file => pnp_handle, text => to_string (get_x (element (cursor).position))); -- X
 				put_field (file => pnp_handle, text => to_string (get_y (element (cursor).position))); -- Y
 				put_field (file => pnp_handle, text => to_string (get_rotation (element (cursor).position))); -- rotation
--- 				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
--- 				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
--- 				put_field (file => pnp_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R
--- 				put_field (file => pnp_handle, text => to_string (element (cursor).purpose)); -- purpose
+--				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
+--				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
+--				put_field (file => pnp_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R
+--				put_field (file => pnp_handle, text => to_string (element (cursor).purpose)); -- purpose
 
 				put_lf (file => pnp_handle, field_count => et_csv.column);
 			end query_device;
@@ -175,7 +175,7 @@ package body et_pick_and_place is
 
 		case format is
 			when NATIVE => native;
--- 			when EAGLE => eagle;
+--			when EAGLE => eagle;
 			when others => raise constraint_error;
 		end case;
 

@@ -40,9 +40,9 @@
 -- with ada.text_io;			use ada.text_io;
 with ada.characters;
 
--- with ada.strings; 				use ada.strings;
--- with ada.strings.fixed; 		use ada.strings.fixed;
--- with ada.strings.bounded; 		use ada.strings.bounded;
+-- with ada.strings;				use ada.strings;
+-- with ada.strings.fixed;		use ada.strings.fixed;
+-- with ada.strings.bounded;		use ada.strings.bounded;
 
 
 package body et_device_appearance is

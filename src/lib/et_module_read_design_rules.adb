@@ -61,7 +61,7 @@ package body et_module_read_design_rules is
 
 
 	rules : type_design_rules := (others => <>);
-	-- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
+	--	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 		-- CS ERC rules ?
 
 

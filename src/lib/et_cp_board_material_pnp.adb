@@ -55,7 +55,7 @@ package body et_cp_board_material_pnp is
 
 	procedure export_pick_and_place (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -67,7 +67,7 @@ package body et_cp_board_material_pnp is
 		case cmd_field_count is
 			when 4 =>
 				make_pick_and_place (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>

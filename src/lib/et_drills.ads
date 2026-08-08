@@ -112,7 +112,7 @@ package et_drills is
 
 
 	procedure modify_status (
-		drill 		: in out type_drill;
+		drill		: in out type_drill;
 		operation	: in type_status_operation);
 
 

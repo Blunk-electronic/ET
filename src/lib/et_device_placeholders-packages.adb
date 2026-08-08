@@ -360,7 +360,7 @@ package body et_device_placeholders.packages is
 	procedure placeholder_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_text_placeholders;
 		placeholder : type_text_placeholder renames element (cursor);
@@ -475,27 +475,27 @@ package body et_device_placeholders.packages is
 				set_anchor_mode (p, RELATIVE);
 				set_place (p, point);
 
--- 				CS: This is experimental stuff. It moves the placeholder
+--				CS: This is experimental stuff. It moves the placeholder
 --				independend of the rotation of the package to the
 --				given relative position. If this stuff is not required
 --				anymore then delete the declarations (above) and the parameter
 --				"offset" of this procedure.
 --
--- 				-- Get the current absolute position:
--- 				tp_1 := get_absolute_position (p, package_position);
--- 				-- put_line ("tp1 " & to_string (tp_1));
+--				-- Get the current absolute position:
+--				tp_1 := get_absolute_position (p, package_position);
+--				-- put_line ("tp1 " & to_string (tp_1));
 --
--- 				tp_2 := tp_1;
--- 				move_by (tp_2, offset);
--- 				-- put_line ("tp2 " & to_string (tp_2));
+--				tp_2 := tp_1;
+--				move_by (tp_2, offset);
+--				-- put_line ("tp2 " & to_string (tp_2));
 --
--- 				rotate_by (tp_2, -a, tp_1);
--- 				-- put_line ("tp2 " & to_string (tp_2));
+--				rotate_by (tp_2, -a, tp_1);
+--				-- put_line ("tp2 " & to_string (tp_2));
 --
--- 				-- Get the new relative position:
--- 				move_by (tp_2, invert (pp));
--- 				-- put_line ("tp2 " & to_string (tp_2));
--- 				set_place (p, tp_2);
+--				-- Get the new relative position:
+--				move_by (tp_2, invert (pp));
+--				-- put_line ("tp2 " & to_string (tp_2));
+--				set_place (p, tp_2);
 
 				-- put_line ("new " & to_string (get_place (p)));
 			end move_relative;
@@ -737,7 +737,7 @@ package body et_device_placeholders.packages is
 
 			-- Test whether the placeholder is in the
 			-- given catch zone:
-		 	if in_catch_zone (
+			if in_catch_zone (
 				zone	=> catch_zone,
 				point	=> pos)
 			then

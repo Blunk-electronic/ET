@@ -75,7 +75,7 @@ package body et_schematic_ops_netlists is
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
+		ports			: in pac_device_ports.set)
 		return pac_device_ports_extended.set
 	is
 		ports_extended : pac_device_ports_extended.set; -- to be returned
@@ -183,7 +183,7 @@ package body et_schematic_ops_netlists is
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_net_submodule_ports.set)
+		ports			: in pac_net_submodule_ports.set)
 		return pac_submodule_ports_extended.set
 	is
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
@@ -194,7 +194,7 @@ package body et_schematic_ops_netlists is
 			port : type_net_submodule_port := element (port_cursor);
 			direction : type_netchanger_port_name; -- master/slave
 		begin
- 			-- get the direction of the current submodule port
+			-- get the direction of the current submodule port
 			direction := port_direction (module_cursor, port.module_name, port.port_name);
 
 			pac_submodule_ports_extended.insert (
@@ -228,8 +228,8 @@ package body et_schematic_ops_netlists is
 		variant			: in pac_assembly_variant_name.bounded_string;
 		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
 		offset			: in type_name_index;
-		netlist_tree 	: in out pac_netlist_modules.tree;
-		netlist_cursor 	: in pac_netlist_modules.cursor;
+		netlist_tree	: in out pac_netlist_modules.tree;
+		netlist_cursor	: in pac_netlist_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
 		-- CS: rework, simplify code
@@ -417,21 +417,21 @@ package body et_schematic_ops_netlists is
 	-- go trough the design structure:
 	package stack_netlist is new et_generic_stacks.stack_lifo (
 		item	=> pac_netlist_modules.cursor,
-		max 	=> et_submodules.nesting_depth_max);
+		max	=> et_submodules.nesting_depth_max);
 
 
 	-- A stack keeps record of the submodule level where
 	-- tree_cursor is pointing at.
 	package stack_level is new et_generic_stacks.stack_lifo (
 		item	=> pac_renumber_modules.cursor,
-		max 	=> et_submodules.nesting_depth_max);
+		max	=> et_submodules.nesting_depth_max);
 
 
 	-- Another stack keeps record of the assembly variant
 	-- at the submodule level.
 	package stack_variant is new et_generic_stacks.stack_lifo (
 		item	=> pac_assembly_variant_name.bounded_string,
-		max 	=> et_submodules.nesting_depth_max);
+		max	=> et_submodules.nesting_depth_max);
 
 
 
@@ -439,8 +439,8 @@ package body et_schematic_ops_netlists is
 	procedure query_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in pac_assembly_variant_name.bounded_string;
-		netlist_tree 	: in out pac_netlist_modules.tree;
-		netlist_cursor 	: in out pac_netlist_modules.cursor;
+		netlist_tree	: in out pac_netlist_modules.tree;
+		netlist_cursor	: in out pac_netlist_modules.cursor;
 		variant			: in out pac_assembly_variant_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is
@@ -452,7 +452,7 @@ package body et_schematic_ops_netlists is
 			top_module_name	: in pac_module_name.bounded_string;
 			top_module		: in type_generic_module)
 		is
-			submodule_name 	: pac_module_name.bounded_string;
+			submodule_name	: pac_module_name.bounded_string;
 
 			parent_name : pac_module_name.bounded_string; -- water_pump
 
@@ -638,7 +638,7 @@ package body et_schematic_ops_netlists is
 
 
 	procedure make_netlists (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		write_files		: in boolean := false;
 		log_threshold	: in type_log_level)
 	is
@@ -735,7 +735,7 @@ package body et_schematic_ops_netlists is
 				new_item	=> (
 					generic_name	=> key (make_netlists.module_cursor),
 					instance_name	=> to_instance_name (""), -- the top module has no instance name
-					others 			=> <>)
+					others			=> <>)
 				);
 			-- netlist_cursor now points at the top module in netlist_tree.
 
@@ -768,7 +768,7 @@ package body et_schematic_ops_netlists is
 			netlist := make_netlist (
 				modules			=> netlist_tree,
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
-				variant_name	=> variant_name, 	-- low_cost, empty if default variant
+				variant_name	=> variant_name,	-- low_cost, empty if default variant
 				write_file		=> write_files,
 				log_threshold	=> log_threshold);
 
@@ -803,7 +803,7 @@ package body et_schematic_ops_netlists is
 		-- to the current design structure.
 		-- All further operations rely on this tree:
 		et_schematic_ops_submodules.build_submodules_tree (
-			module_cursor 	=> module_cursor,
+			module_cursor	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make netlist of default variant

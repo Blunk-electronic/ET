@@ -39,7 +39,7 @@
 -- - clean up
 
 
-with ada.containers;            	use ada.containers;
+with ada.containers;	use ada.containers;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
@@ -120,7 +120,7 @@ package et_rig is
 	-- in a *.rig file.
 	procedure save_rig (
 		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 	-- Assumes the current working directory is a project.
@@ -131,7 +131,7 @@ package et_rig is
 	-- in et_project.modules.generic_modules.
 	-- Use this procedure when opening a project.
 	procedure read_rigs (
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

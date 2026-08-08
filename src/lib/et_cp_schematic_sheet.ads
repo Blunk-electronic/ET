@@ -54,7 +54,7 @@ package et_cp_schematic_sheet is
 	-- sheet number and sets it active.
 	-- It updates the sheet number display accordingly:
 	procedure show_sheet (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -63,7 +63,7 @@ package et_cp_schematic_sheet is
 	-- Example: "module demo delete sheet 2"
 	procedure delete_sheet (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -73,7 +73,7 @@ package et_cp_schematic_sheet is
 	-- Example: "module demo set sheet 2 development"
 	procedure set_sheet_category (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

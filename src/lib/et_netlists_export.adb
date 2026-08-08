@@ -293,7 +293,7 @@ package body et_netlists_export is
 		-- This must be done each time a secondary net is discovered.
 		package stack is new et_generic_stacks.stack_lifo (
 			item	=> pac_module_netlist.cursor,
-			max 	=> nesting_depth_max);
+			max	=> nesting_depth_max);
 
 
 		procedure find_dependencies ( -- prespecification only. see body below.
@@ -335,10 +335,10 @@ package body et_netlists_export is
 						new_item	=> (element (glob_net.net) with key (glob_net.net)));
 
 					-- CS: Make sure the net is not connected via a port with the parent module.
--- 					if not contains (
--- 						net_cursor		=> net_cursor,
--- 						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
--- 						port			=> key (glob_net.net).base_name) then -- clock_out
+--					if not contains (
+--						net_cursor		=> net_cursor,
+--						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
+--						port			=> key (glob_net.net).base_name) then -- clock_out
 
 					log (text => "submodule " &
 						enclose_in_quotes (to_string (pac_netlist_modules.element (glob_net.submodule).generic_name)) &
@@ -351,12 +351,12 @@ package body et_netlists_export is
 					-- restore netlist cursor as it was before diving into the secondary net
 					netlist_cursor := stack.pop;
 
--- 					else
--- 						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
--- 							 " is already connected with its parent module via a port. Remove port in " &
--- 							 "parent module or set scope of this net to local !");
--- 						raise constraint_error;
--- 					end if;
+--					else
+--						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
+--							 " is already connected with its parent module via a port. Remove port in " &
+--							 "parent module or set scope of this net to local !");
+--						raise constraint_error;
+--					end if;
 				end query_nets;
 
 

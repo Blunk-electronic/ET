@@ -634,7 +634,7 @@ is
 						-- Rotate simple label:
 						null; -- CS
 						-- if label.ready then
-						-- 	toggle_rotation (label.rotation_simple);
+						--	toggle_rotation (label.rotation_simple);
 						-- end if;
 
 					when others => null;
@@ -1241,7 +1241,7 @@ begin -- key_pressed
 	log (text => "key pressed (schematic): " & to_string (key),
 		 level => log_threshold);
 
--- 		put_line ("schematic: evaluating other key ...");
+--		put_line ("schematic: evaluating other key ...");
 		-- put_line (gdk_key_type'image (key));
 
 	case key is
@@ -1256,22 +1256,22 @@ begin -- key_pressed
 			-- Then we call the corresponding subprogram for the actual job right away here:
 
 			--if single_cmd.finalization_pending and primary_tool = KEYBOARD then
--- 			if finalization_is_pending (cmd) then
+--			if finalization_is_pending (cmd) then
 --
--- 				if key = key_space then
+--				if key = key_space then
 --
--- 					case verb is
--- 						when VERB_DELETE	=> delete;
--- 						when VERB_DRAG		=> drag;
--- 						when VERB_DRAW		=> draw;
--- 						when VERB_FETCH		=> fetch;
--- 						when VERB_MOVE		=> move;
--- 						when VERB_PLACE		=> place;
--- 						when others			=> null;
--- 					end case;
+--					case verb is
+--						when VERB_DELETE	=> delete;
+--						when VERB_DRAG		=> drag;
+--						when VERB_DRAW		=> draw;
+--						when VERB_FETCH		=> fetch;
+--						when VERB_MOVE		=> move;
+--						when VERB_PLACE		=> place;
+--						when others			=> null;
+--					end case;
 --
--- 				end if;
--- 			else
+--				end if;
+--			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
 
 				case expect_entry is
@@ -1412,10 +1412,10 @@ begin -- key_pressed
 
 	-- CS
 	-- exception when event: others =>
-	-- 	set_status (exception_message (event));
-	-- 	reset_selections;
-	-- 	redraw;
-	-- 	update_mode_display;
+	--	set_status (exception_message (event));
+	--	reset_selections;
+	--	redraw;
+	--	update_mode_display;
 
 end key_pressed;
 

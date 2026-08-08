@@ -41,7 +41,7 @@
 -- 3. rework
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.vectors;
 
@@ -75,8 +75,8 @@ package et_pcb_stack is -- CS rename to et_pcb_layer_stack ?
 
 
 	--use pac_geometry_brd;
--- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
--- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
+--	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
+--	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
 
 	use pac_geometry_2;
 
@@ -145,18 +145,18 @@ package et_pcb_stack is -- CS rename to et_pcb_layer_stack ?
 	-- Returns false otherwise.
 	-- If no layer check requested, returns true.
 	-- function signal_layer_valid (
-	-- 	signal_layer 	: in type_signal_layer;
-	-- 	check_layers	: in et_pcb_stack.type_layer_check)
-	-- 	return boolean;
+	--	signal_layer	: in type_signal_layer;
+	--	check_layers	: in et_pcb_stack.type_layer_check)
+	--	return boolean;
 
 
 
 	-- Issues a warning that the given signal layer is deeper than the deepest
 	-- signal layer of the pcb stack.
 	-- procedure signal_layer_invalid (
-	-- 	line			: in type_fields_of_line;
-	-- 	signal_layer	: in type_signal_layer;
-	-- 	check_layers	: in type_layer_check);
+	--	line			: in type_fields_of_line;
+	--	signal_layer	: in type_signal_layer;
+	--	check_layers	: in type_layer_check);
 
 
 end et_pcb_stack;

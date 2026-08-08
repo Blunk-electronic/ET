@@ -43,7 +43,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
+with ada.strings.fixed;			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;
 --with ada.characters.handling;		use ada.characters.handling;
 
@@ -772,7 +772,7 @@ package body et_canvas_board_texts is
 			when LAYER_CAT_ASSY =>
 
 				et_board_ops_assy_doc.add_text (
-					module_cursor 	=> active_module,
+					module_cursor	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
@@ -782,7 +782,7 @@ package body et_canvas_board_texts is
 			when LAYER_CAT_SILKSCREEN =>
 
 				et_board_ops_silkscreen.add_text (
-					module_cursor 	=> active_module,
+					module_cursor	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
@@ -791,7 +791,7 @@ package body et_canvas_board_texts is
 			when LAYER_CAT_STOPMASK =>
 
 				et_board_ops_stopmask.add_text (
-					module_cursor 	=> active_module,
+					module_cursor	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
@@ -800,7 +800,7 @@ package body et_canvas_board_texts is
 			when LAYER_CAT_CONDUCTOR =>
 
 				et_board_ops_conductors.add_text (
-					module_cursor 	=> active_module,
+					module_cursor	=> active_module,
 					signal_layer	=> object_signal_layer,
 					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);

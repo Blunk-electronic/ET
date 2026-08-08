@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.vectors;
 
@@ -197,7 +197,7 @@ package et_device_placeholders.packages is
 	procedure placeholder_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

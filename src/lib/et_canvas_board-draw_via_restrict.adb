@@ -124,7 +124,7 @@ procedure draw_via_restrict is
 
 
 begin -- draw_via_restrict
--- 	put_line ("draw via restrict ...");
+--	put_line ("draw via restrict ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

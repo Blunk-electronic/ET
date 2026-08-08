@@ -686,7 +686,7 @@ package body et_cp_schematic is
 		-- set the focus to the canvas:
 		-- CS: remove ?
 		-- if runmode /= MODE_HEADLESS then
-		-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
+		--	canvas.grab_focus; -- NOTE ! calls "cb_draw"
 		-- end if;
 
 		log_indentation_down;
@@ -696,8 +696,8 @@ package body et_cp_schematic is
 
 				-- CS
 				-- evaluate_exception (
-				-- 	name	=> exception_name (event),
-				-- 	message	=> exception_message (event));
+				--	name	=> exception_name (event),
+				--	message	=> exception_message (event));
 
 				-- raise;
 	end execute_schematic_command;

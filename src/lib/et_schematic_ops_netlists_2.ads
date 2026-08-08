@@ -59,14 +59,14 @@ package et_schematic_ops_netlists_2 is
 	-- and the terminal name.
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
+		ports			: in pac_device_ports.set)
 		return pac_device_ports_extended.set;
 
 
 	-- Adds further properties to the given submodule ports:
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_net_submodule_ports.set)
+		ports			: in pac_net_submodule_ports.set)
 		return pac_submodule_ports_extended.set;
 
 
@@ -75,7 +75,7 @@ package et_schematic_ops_netlists_2 is
 	-- Generates for the given assembly variant of a
 	-- generic module a netlist of category 1:
 	procedure make_netlist_cat_1 (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
 		log_threshold	: in type_log_level);
 

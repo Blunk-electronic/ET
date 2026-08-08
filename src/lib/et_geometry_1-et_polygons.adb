@@ -370,7 +370,7 @@ package body et_geometry_1.et_polygons is
 
 
 	procedure rotate (
-		polygon 	: in out type_polygon;
+		polygon	: in out type_polygon;
 		direction	: in type_direction_of_rotation := CCW)
 	is
 		scratch : type_edge;
@@ -1068,8 +1068,8 @@ package body et_geometry_1.et_polygons is
 
 
 	function are_congruent (
-		polygon_A 	: in type_polygon;
-		polygon_B 	: in type_polygon;
+		polygon_A	: in type_polygon;
+		polygon_B	: in type_polygon;
 		debug		: in boolean := false)
 		return boolean
 	is

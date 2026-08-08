@@ -118,7 +118,7 @@ package et_modes.board is
 
 		NOUN_KEEPOUT,
 
-		NOUN_LAYER, 	-- signal layer with dielectic
+		NOUN_LAYER,	-- signal layer with dielectic
 		NOUN_LEVEL,
 		NOUN_LIBRARY,
 		NOUN_LINE,

@@ -109,7 +109,7 @@ package et_board_ops_fill_zones is
 
 		-- This is specifies whether the affected
 		-- conductor layer is a top, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 
 		-- This is the zone that is to be filled.
 		-- We will be searching for therminals of device packages
@@ -120,7 +120,7 @@ package et_board_ops_fill_zones is
 		offset					: in type_float_positive;
 
 		-- This is the net for which terminals are searched for:
-		net_cursor 				: in pac_nets.cursor;
+		net_cursor				: in pac_nets.cursor;
 
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygon_list.list;
@@ -153,7 +153,7 @@ package et_board_ops_fill_zones is
 
 		-- This specifies whether the affected
 		-- conductor layer is a top, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 
 		-- This is the zone inside which objects are searched for:
 		zone					: in type_polygon;
@@ -163,7 +163,7 @@ package et_board_ops_fill_zones is
 		linewidth				: in type_track_width;
 
 		-- The targeted signal layer:
-		layer 					: in type_signal_layer;
+		layer					: in type_signal_layer;
 
 		-- The clearance of the zone to foreign objects:
 		zone_clearance			: in type_track_clearance;
@@ -200,7 +200,7 @@ package et_board_ops_fill_zones is
 
 		-- This is specifies whether the affected
 		-- conductor layer is a top, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 
 		-- This is the zone inside which therminals
 		-- are searched for:
@@ -230,7 +230,7 @@ package et_board_ops_fill_zones is
 
 		-- This is specifies whether the affected
 		-- conductor layer is a top or, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 
 		-- This is the zone inside which texts are searched for:
 		zone					: in pac_polygons.type_polygon;
@@ -265,7 +265,7 @@ package et_board_ops_fill_zones is
 
 		-- This is specifies whether the affected
 		-- conductor layer is a top or, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
+		layer_category			: in type_signal_layer_category;
 
 		-- This is the zone inside which texts are searched for:
 		zone					: in pac_polygons.type_polygon;
@@ -305,7 +305,7 @@ package et_board_ops_fill_zones is
 		linewidth				: in type_track_width;
 
 		-- The targeted signal layer:
-		layer 					: in type_signal_layer;
+		layer					: in type_signal_layer;
 
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygons.pac_polygon_list.list;
@@ -331,10 +331,10 @@ package et_board_ops_fill_zones is
 		zone				: in type_polygon;
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
-		layer 				: in type_signal_layer;
+		layer				: in type_signal_layer;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
-		clearance_to_edge 	: in type_distance_positive;
+		clearance_to_edge	: in type_distance_positive;
 
 		polygons				: out pac_polygon_list.list;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
@@ -358,9 +358,9 @@ package et_board_ops_fill_zones is
 		outer_contour		: in type_polygon;
 
 		linewidth			: in type_track_width;
-		layer 				: in type_signal_layer;
+		layer				: in type_signal_layer;
 		clearance			: in type_track_clearance;
-		clearance_to_edge 	: in type_distance_positive;
+		clearance_to_edge	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection := pad_connection_default;
 		relief_properties	: in type_relief_properties := relief_properties_default;
@@ -377,7 +377,7 @@ package et_board_ops_fill_zones is
 	procedure fill_connected_zones (
 		module_cursor		: in pac_generic_modules.cursor;
 		board_outer_contour : in type_polygon;
-		nets 				: in pac_net_names.list := no_net_names;
+		nets				: in pac_net_names.list := no_net_names;
 		design_rules		: in type_design_rules_board;
 		log_threshold		: in type_log_level);
 
@@ -399,7 +399,7 @@ package et_board_ops_fill_zones is
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+		nets			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 
 
@@ -425,7 +425,7 @@ package et_board_ops_fill_zones is
 	procedure clear_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+		nets			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 
 end et_board_ops_fill_zones;

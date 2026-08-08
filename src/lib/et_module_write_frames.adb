@@ -121,7 +121,7 @@ package body et_module_write_frames is
 				-- Write the schematic frame template
 				-- like "template ../frames/dummy.frs":
 				write (
-					keyword 	=> keyword_template,
+					keyword	=> keyword_template,
 					parameters	=> to_string (module.frames.template));
 
 				write_sheet_descriptions;

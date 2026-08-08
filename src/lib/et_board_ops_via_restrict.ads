@@ -63,10 +63,10 @@ package et_board_ops_via_restrict is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	-- procedure delete_via_restrict (
-	-- 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	-- 	point			: in type_vector_model; -- x/y
-	-- 	accuracy		: in type_accuracy;
-	-- 	log_threshold	: in type_log_level);
+	--	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	--	point			: in type_vector_model; -- x/y
+	--	accuracy		: in type_accuracy;
+	--	log_threshold	: in type_log_level);
 
 
 

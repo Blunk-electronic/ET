@@ -79,7 +79,7 @@ package body et_cp_schematic_unit is
 
 	procedure show_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -531,7 +531,7 @@ package body et_cp_schematic_unit is
 
 	procedure delete_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -557,7 +557,7 @@ package body et_cp_schematic_unit is
 				case cmd_field_count is
 					when 6 =>
 						delete_unit (
-							module_cursor 	=> module,
+							module_cursor	=> module,
 							device_name		=> device_name,
 							unit_name		=> unit_name,
 
@@ -594,7 +594,7 @@ package body et_cp_schematic_unit is
 
 	procedure drag_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -616,7 +616,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					drag_unit (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						coordinates		=> to_coordinates (get_field (cmd, 7)), -- relative/absolute
@@ -668,7 +668,7 @@ package body et_cp_schematic_unit is
 
 	procedure move_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -698,7 +698,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					move_unit (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						coordinates		=> coordinates,
@@ -747,7 +747,7 @@ package body et_cp_schematic_unit is
 
 	procedure rotate_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -772,7 +772,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					rotate_unit (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						coordinates		=> coordinates,
@@ -821,7 +821,7 @@ package body et_cp_schematic_unit is
 
 	procedure mirror_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -842,7 +842,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					mirror_unit (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 
@@ -888,7 +888,7 @@ package body et_cp_schematic_unit is
 
 	procedure fetch_unit (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -959,7 +959,7 @@ package body et_cp_schematic_unit is
 
 	procedure rotate_unit_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -1005,7 +1005,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					rotate_placeholder (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						rotation		=> rotation,
@@ -1055,7 +1055,7 @@ package body et_cp_schematic_unit is
 
 	procedure move_unit_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -1102,7 +1102,7 @@ package body et_cp_schematic_unit is
 				if unit_exists (module, device_name, unit_name) then
 
 					move_placeholder (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 						unit_name		=> unit_name,
 						coordinates		=> coordinates,

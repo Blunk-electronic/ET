@@ -117,7 +117,7 @@ is
 
 
 begin -- draw_keepout
--- 	put_line ("draw keepout ...");
+--	put_line ("draw keepout ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

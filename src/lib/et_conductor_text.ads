@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
@@ -98,7 +98,7 @@ package et_conductor_text is
 	---- Logs the properties of the given text.
 	--procedure text_conductor_properties (
 		--cursor			: in pac_conductor_texts_board.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 
 end et_conductor_text;

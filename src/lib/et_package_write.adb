@@ -63,7 +63,7 @@ package body et_package_write is
 
 
 	procedure write_package (
-		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in type_package_model; -- the actual package model
 		log_threshold	: in type_log_level)
 	is
@@ -76,7 +76,7 @@ package body et_package_write is
 		log_indentation_up;
 
 		create (
-			file 	=> file_handle,
+			file	=> file_handle,
 			mode	=> out_file,
 			name	=> to_string (file_name));
 

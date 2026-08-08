@@ -57,7 +57,7 @@ package et_cp_board_via is
 	-- is taken from the DRU settings.
 	procedure set_via_properties (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -67,7 +67,7 @@ package et_cp_board_via is
 	-- CS: Take into account class settings (via drill size).
 	procedure place_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -75,14 +75,14 @@ package et_cp_board_via is
 	-- This procedure parses a command to move a via.
 	procedure move_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- This procedure parses a command to delete a via.
 	procedure delete_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

@@ -52,7 +52,7 @@ package et_terminal_tht is
 
 
 	procedure log_plated_millings (
-		millings 		: in type_contour;
+		millings		: in type_contour;
 		log_threshold	: in type_log_level);
 
 

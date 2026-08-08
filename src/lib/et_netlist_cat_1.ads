@@ -64,7 +64,7 @@ package et_netlist_cat_1 is
 	-- These constants are used when the netlist
 	-- is written to a file:
 
-	comment_mark 			: constant string := "#";
+	comment_mark			: constant string := "#";
 
 	format_version			: constant string := "1.0";
 	identifier_net			: constant string := "net";

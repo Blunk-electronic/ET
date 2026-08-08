@@ -228,8 +228,8 @@ is
 				set_status (et_canvas_board_conductors.status_delete_object);
 
 			-- when key_noun_track =>
-			-- 	noun := NOUN_TRACK;
-			-- 	set_status (et_canvas_board_tracks.status_delete_object);
+			--	noun := NOUN_TRACK;
+			--	set_status (et_canvas_board_tracks.status_delete_object);
 
 
 			when key_noun_freetrack =>
@@ -261,7 +261,7 @@ is
 						et_canvas_board_devices.delete_object (point);
 
 						-- when NOUN_TRACK =>
-					-- 	et_canvas_board_tracks.ripup (point);
+					--	et_canvas_board_tracks.ripup (point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.delete_object (point);
@@ -284,8 +284,8 @@ is
 					when NOUN_KEEPOUT =>
 						et_canvas_board_keepout.delete_object (point);
 --
--- 					when NOUN_VIA =>
--- 						delete_via (KEYBOARD, point);
+--					when NOUN_VIA =>
+--						delete_via (KEYBOARD, point);
 
 					when others => null;
 				end case;
@@ -326,10 +326,10 @@ is
 						end if;
 
 --
--- 					when NOUN_VIA =>
--- 						if clarification_pending then
--- 							select_via;
--- 						end if;
+--					when NOUN_VIA =>
+--						if clarification_pending then
+--							select_via;
+--						end if;
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
@@ -342,9 +342,9 @@ is
 						end if;
 
 					-- when NOUN_TRACK =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_tracks.select_track;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_tracks.select_track;
+					--	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
@@ -438,8 +438,8 @@ is
 				set_status (et_canvas_board_keepout.status_move_object);
 
 			-- when key_noun_track =>
-			-- 	noun := NOUN_TRACK;
-			-- 	set_status (et_canvas_board_tracks.status_move_track);
+			--	noun := NOUN_TRACK;
+			--	set_status (et_canvas_board_tracks.status_move_track);
 
 			when key_noun_conductors =>
 				set_noun (NOUN_CONDUCTORS);
@@ -470,8 +470,8 @@ is
 				set_status (et_canvas_board_vias.status_move_via);
 
 			-- when key_noun_text =>
-			-- 	noun := NOUN_TEXT;
-			-- 	set_status (et_canvas_board_texts.status_move_text);
+			--	noun := NOUN_TEXT;
+			--	set_status (et_canvas_board_texts.status_move_text);
 
 
 
@@ -497,7 +497,7 @@ is
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
 
 					-- when NOUN_TRACK =>
-					-- 	et_canvas_board_tracks.move_track (KEYBOARD, point);
+					--	et_canvas_board_tracks.move_track (KEYBOARD, point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
@@ -515,7 +515,7 @@ is
 						et_canvas_board_devices.move_object (KEYBOARD, point);
 
 					-- when NOUN_TEXT =>
-					-- 	et_canvas_board_texts.move_text (KEYBOARD, point);
+					--	et_canvas_board_texts.move_text (KEYBOARD, point);
 
 					when NOUN_VIA =>
 						et_canvas_board_vias.move_object (KEYBOARD, point);
@@ -528,14 +528,14 @@ is
 			when key_clarify =>
 				case noun is
 					-- when NOUN_NAME =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_devices.clarify_placeholder;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_devices.clarify_placeholder;
+					--	end if;
      --
 					-- when NOUN_PURPOSE =>
-					-- 	if clarification_pending then
-					-- 		clarify_placeholder;
-					-- 	end if;
+					--	if clarification_pending then
+					--		clarify_placeholder;
+					--	end if;
 
 					when NOUN_ASSY =>
 						if clarification_pending then
@@ -568,9 +568,9 @@ is
 						end if;
 
 					-- when NOUN_TRACK =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_tracks.select_track;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_tracks.select_track;
+					--	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
@@ -593,9 +593,9 @@ is
 						end if;
 
 					-- when NOUN_TEXT =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_texts.select_text;
-					-- 	end if;
+					--	if clarification_pending then
+					--		et_canvas_board_texts.select_text;
+					--	end if;
 
 					when NOUN_VIA =>
 						if clarification_pending then
@@ -603,9 +603,9 @@ is
 						end if;
 
 					-- when NOUN_VALUE =>
-					-- 	if clarification_pending then
-					-- 		clarify_placeholder;
-					-- 	end if;
+					--	if clarification_pending then
+					--		clarify_placeholder;
+					--	end if;
 
 					when others => null;
 				end case;
@@ -926,7 +926,7 @@ begin -- key_pressed
 
 
 	--put_line ("board: evaluating other key ...");
--- 		put_line (gdk_modifier_type'image (key_ctrl));
+--		put_line (gdk_modifier_type'image (key_ctrl));
 
 	case key is
 
@@ -938,13 +938,13 @@ begin -- key_pressed
 			-- If the command is waiting for finalization, usually by pressing
 			-- the space key, AND the primary tool is the keyboard, then
 			-- we call the corresponding subprogram right away here:
--- 			if finalization_is_pending (cmd) and primary_tool = KEYBOARD then
--- 				case verb is
--- 					when VERB_PLACE		=> place;
--- 					when others			=> null;
--- 				end case;
+--			if finalization_is_pending (cmd) and primary_tool = KEYBOARD then
+--				case verb is
+--					when VERB_PLACE		=> place;
+--					when others			=> null;
+--				end case;
 --
--- 			else
+--			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
 
 				case expect_entry is

@@ -110,14 +110,14 @@ package et_schematic_ops_groups is
 	-- This procedure sets the "moving" flag of all
 	-- objects which are selected (which are in the group):
 	procedure set_group_as_moving (
-  		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
 	-- This procedure clears the "moving" flag of all
 	-- objects (regardless whether they are selcted or not):
 	procedure set_group_as_not_moving (
-  		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 

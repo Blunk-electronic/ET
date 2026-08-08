@@ -36,7 +36,7 @@
 --   history of changes:
 --
 --   ToDo:
--- 	  - rework procedures so that a module cursor
+--	  - rework procedures so that a module cursor
 --		is used instead the module_name.
 --
 

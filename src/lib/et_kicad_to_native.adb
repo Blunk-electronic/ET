@@ -42,7 +42,7 @@ with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_module_board;
 with et_board_geometry;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 with ada.directories;			use ada.directories;
 with gnat.source_info;
 
@@ -140,8 +140,8 @@ package body et_kicad_to_native is
 			et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
 
 		root : constant et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
--- 		before	: constant string := "position before";
--- 		now		: constant string := "position now   ";
+--		before	: constant string := "position before";
+--		now		: constant string := "position now   ";
 		before	: constant string := "before";
 		now		: constant string := "now   ";
 
@@ -225,7 +225,7 @@ package body et_kicad_to_native is
 			use et_schematic_geometry;
 			use pac_geometry_2;
 
-			sheet_number 		: type_sheet;
+			sheet_number		: type_sheet;
 			sheet_paper_size	: et_drawing_frame.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: type_position_axis;
@@ -263,7 +263,7 @@ package body et_kicad_to_native is
 			use et_schematic_geometry;
 			use pac_geometry_2;
 
-			sheet_number 		: type_sheet;
+			sheet_number		: type_sheet;
 			sheet_paper_size	: et_drawing_frame.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: type_position_axis;
@@ -702,7 +702,7 @@ package body et_kicad_to_native is
 							et_kicad.schematic.type_simple_labels.update_element (
 								container	=> segment.label_list_simple,
 								position	=> simple_label_cursor,
-								process 	=> move_simple_label'access);
+								process	=> move_simple_label'access);
 							next (simple_label_cursor);
 						end loop;
 
@@ -711,7 +711,7 @@ package body et_kicad_to_native is
 							et_kicad.schematic.type_tag_labels.update_element (
 								container	=> segment.label_list_tag,
 								position	=> tag_label_cursor,
-								process 	=> move_tag_label'access);
+								process	=> move_tag_label'access);
 							next (tag_label_cursor);
 						end loop;
 
@@ -720,7 +720,7 @@ package body et_kicad_to_native is
 							et_kicad.schematic.type_junctions.update_element (
 								container	=> segment.junctions,
 								position	=> junction_cursor,
-								process 	=> change_path_of_junction'access);
+								process	=> change_path_of_junction'access);
 							next (junction_cursor);
 						end loop;
 
@@ -841,7 +841,7 @@ package body et_kicad_to_native is
 					-- Move lines:
 					while line_cursor /= pac_conductor_lines.no_element loop
 						pac_conductor_lines.update_element (
-							container 	=> net.route.lines,
+							container	=> net.route.lines,
 							position	=> line_cursor,
 							process		=> move_line'access);
 
@@ -851,7 +851,7 @@ package body et_kicad_to_native is
 					-- Move arcs:
 					while arc_cursor /= pac_conductor_arcs.no_element loop
 						pac_conductor_arcs.update_element (
-							container 	=> net.route.arcs,
+							container	=> net.route.arcs,
 							position	=> arc_cursor,
 							process		=> move_arc'access);
 
@@ -861,7 +861,7 @@ package body et_kicad_to_native is
 					-- Move vias:
 					while via_cursor /= pac_vias.no_element loop
 						pac_vias.update_element (
-							container 	=> net.route.vias,
+							container	=> net.route.vias,
 							position	=> via_cursor,
 							process		=> move_via'access);
 
@@ -870,7 +870,7 @@ package body et_kicad_to_native is
 
 					while poly_cursor /= pac_route_solid.no_element loop
 						pac_route_solid.update_element (
-							container 	=> net.route.zones.solid,
+							container	=> net.route.zones.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
 
@@ -2287,7 +2287,7 @@ package body et_kicad_to_native is
 
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 	function to_native_coordinates (
-		point 		: in et_kicad_coordinates.type_position;
+		point		: in et_kicad_coordinates.type_position;
 		rotation	: in et_schematic_geometry.type_rotation_model := et_schematic_geometry.pac_geometry_2.zero_rotation)
 		return et_schematic_coordinates.type_object_position
 	is
@@ -2520,10 +2520,10 @@ package body et_kicad_to_native is
 		use et_project;
 		use et_package_name;
 
--- 		-- When the native project is created we need a project path and a project name:
--- 		project_path : et_project.type_et_project_path.bounded_string :=
--- 						et_project.type_et_project_path.to_bounded_string (
--- 							compose (et_general.work_directory, et_project.directory_import));
+--		-- When the native project is created we need a project path and a project name:
+--		project_path : et_project.type_et_project_path.bounded_string :=
+--						et_project.type_et_project_path.to_bounded_string (
+--							compose (et_general.work_directory, et_project.directory_import));
 
 		prefix_devices_dir : constant pac_device_model_file.bounded_string := -- libraries/devices
 			to_file_name (compose (
@@ -2715,7 +2715,7 @@ package body et_kicad_to_native is
 								status			=> get_default_status,
 								position		=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
-												rotation 	=> element (unit_cursor_kicad).rotation),
+												rotation	=> element (unit_cursor_kicad).rotation),
 								appearance	=> APPEARANCE_VIRTUAL);
 
 							et_units.pac_units.insert (
@@ -2732,7 +2732,7 @@ package body et_kicad_to_native is
 								status			=> get_default_status,
 								position		=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
-												rotation 	=> element (unit_cursor_kicad).rotation),
+												rotation	=> element (unit_cursor_kicad).rotation),
 								appearance		=> APPEARANCE_PCB,
 
 								-- and stuff that comes with a real device:
@@ -2798,23 +2798,23 @@ package body et_kicad_to_native is
 								-- NOTE: The value of virtual components (like power symbols)
 								-- is discarded here.
 
-								others 		=> <>), -- unit list is empty at this time
+								others		=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
 
 
 					when APPEARANCE_PCB =>
--- 						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
+--						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
 --
--- 						log (text => "placeholders silk bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
+--						log (text => "placeholders silk bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
 --
--- 						log (text => "placeholders assy top" & count_type'image (et_package_library.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
+--						log (text => "placeholders assy top" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
 --
--- 						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
+--						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
 
 
 						-- The link to the device model is a composition
@@ -2838,7 +2838,7 @@ package body et_kicad_to_native is
 
 								position		=> element (component_cursor_kicad).position,
 								placeholders	=> element (component_cursor_kicad).text_placeholders,
-								others 			=> <>), -- unit list is empty at this time
+								others			=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
 				end case;
@@ -3100,7 +3100,7 @@ package body et_kicad_to_native is
 					while port_cursor_kicad /= pac_ports_with_reference.no_element loop
 
 						-- compare sheet numbers
-						if 	et_kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) =
+						if	et_kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) =
 							et_kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
 							declare
@@ -3292,7 +3292,7 @@ package body et_kicad_to_native is
 							-- convert the kicad net scope to native net scope
 							scope	=> to_net_scope (et_kicad.schematic.to_string (
 										element (kicad_net_cursor).scope)),
-							others 	=> <>)
+							others	=> <>)
 					);
 
 				-- insert strands (schematic related)
@@ -3693,11 +3693,11 @@ package body et_kicad_to_native is
 												appearance	=> APPEARANCE_PCB,
 												ports		=> et_symbol_ports.pac_symbol_ports.empty_map, -- ports will come later
 												placeholders => (
-													name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
+													name		=> element (unit_cursor_kicad).symbol.name,	-- placeholder
 													value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 													purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
 																	meaning	=> PURPOSE,
-																	others 	=> <>)))
+																	others	=> <>)))
 										));
 
 							when APPEARANCE_VIRTUAL => -- virtual unit
@@ -3819,7 +3819,7 @@ package body et_kicad_to_native is
 								key			=> device_model,
 								new_item	=> (
 									appearance		=> APPEARANCE_VIRTUAL,
-									prefix 			=> remove_leading_hash (element (component_cursor).prefix),
+									prefix			=> remove_leading_hash (element (component_cursor).prefix),
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
 									-- NOTE: Kicad value of power symbols is discarded.
@@ -3836,7 +3836,7 @@ package body et_kicad_to_native is
 								key			=> device_model,
 								new_item	=> (
 									appearance		=> APPEARANCE_PCB,
-									prefix 			=> element (component_cursor).prefix,
+									prefix			=> element (component_cursor).prefix,
 									value			=> element (component_cursor).value,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <>, -- kicad components do not have external symbols
@@ -3922,7 +3922,7 @@ package body et_kicad_to_native is
 						new_item	=> (et_package_model.type_package_base (element (package_cursor_kicad)) with
 							silkscreen	=> element (package_cursor_kicad).silk_screen,
 							assy_doc	=> element (package_cursor_kicad).assembly_documentation,
-							terminals 	=> element (package_cursor_kicad).terminals)
+							terminals	=> element (package_cursor_kicad).terminals)
 							-- NOTE: The kicad timestamp is discarded here.
 						);
 
@@ -4075,7 +4075,7 @@ package body et_kicad_to_native is
 			-- For each kicad design we create a native project.
 			et_project.create_project_directory (
 				project_name	=> project_name, -- blood_sample_analyzer
-				log_threshold 	=> log_threshold + 2);
+				log_threshold	=> log_threshold + 2);
 
 			-- Clear scratch module because in the following everything goes there.
 			module := (others => <>);
@@ -4112,7 +4112,7 @@ package body et_kicad_to_native is
 			begin
 				-- insert the scratch module in the list
 				insert (
-					container 	=> module_list,
+					container	=> module_list,
 					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
 					new_item	=> module); -- the native generic scratch module
 

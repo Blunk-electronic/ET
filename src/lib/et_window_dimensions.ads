@@ -42,7 +42,7 @@ package et_window_dimensions is
 	-- CS derive a type from gint like
 	-- type type_device_pixels is new glib.gint;
 	-- subtype type_device_pixels_positive is type_device_pixels
-	-- 	range 0 .. 1_000_000; -- CS use a reasonable limit
+	--	range 0 .. 1_000_000; -- CS use a reasonable limit
 
 
 	type type_window_size is record

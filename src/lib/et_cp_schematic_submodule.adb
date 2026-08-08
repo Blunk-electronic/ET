@@ -76,7 +76,7 @@ package body et_cp_schematic_submodule is
 
 	procedure add_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -92,7 +92,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 11 =>
 				add_submodule (
-					module_name 	=> key (module), -- parent module (where the submodule is to be inserted)
+					module_name	=> key (module), -- parent module (where the submodule is to be inserted)
 					file			=> to_submodule_path (get_field (cmd, 5)),
 					instance		=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
 					position		=> to_position
@@ -136,7 +136,7 @@ package body et_cp_schematic_submodule is
 
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -151,7 +151,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 9 =>
 				move_submodule (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 					sheet			=> to_sheet_relative (get_field (cmd, 7)),
@@ -186,7 +186,7 @@ package body et_cp_schematic_submodule is
 
 	procedure drag_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -199,7 +199,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 8 =>
 				drag_submodule (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 					point			=> set (
@@ -232,7 +232,7 @@ package body et_cp_schematic_submodule is
 
 	procedure copy_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -247,7 +247,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 9 =>
 				copy_submodule (
-					module_name 	=> key (module), -- parent module (where the submodule is to be copied)
+					module_name	=> key (module), -- parent module (where the submodule is to be copied)
 					instance_origin	=> to_instance_name (get_field (cmd, 5)), -- submodule instance name
 					instance_new	=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
 					destination		=> to_position
@@ -287,7 +287,7 @@ package body et_cp_schematic_submodule is
 
 	procedure delete_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -301,7 +301,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 5 =>
 				delete_submodule (
-					module_name 	=> key (module), -- parent module (where the submodule is to be deleted)
+					module_name	=> key (module), -- parent module (where the submodule is to be deleted)
 					instance		=> to_instance_name (get_field (cmd, 5)), -- submodule instance name
 
 					-- Depending on the origin of the command,
@@ -330,7 +330,7 @@ package body et_cp_schematic_submodule is
 
 	procedure rename_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -374,7 +374,7 @@ package body et_cp_schematic_submodule is
 
 	procedure mount_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -418,7 +418,7 @@ package body et_cp_schematic_submodule is
 
 	procedure remove_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -460,7 +460,7 @@ package body et_cp_schematic_submodule is
 
 	procedure set_submodule_file (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -475,7 +475,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 6 =>
 				set_submodule_file (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					file			=> to_submodule_path (get_field (cmd, 6)),
 
@@ -506,7 +506,7 @@ package body et_cp_schematic_submodule is
 
 	procedure build_submodules_tree (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -519,7 +519,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 4 =>
 				build_submodules_tree (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>
@@ -544,7 +544,7 @@ package body et_cp_schematic_submodule is
 
 	procedure check_submodules_integrity (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -557,7 +557,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 4 =>
 				check_integrity (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>
@@ -584,7 +584,7 @@ package body et_cp_schematic_submodule is
 
 	procedure add_port_to_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -598,7 +598,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 9 =>
 				add_port (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 					position		=> set
@@ -634,7 +634,7 @@ package body et_cp_schematic_submodule is
 
 	procedure drag_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -648,7 +648,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 9 =>
 				drag_port (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 					coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute
@@ -684,7 +684,7 @@ package body et_cp_schematic_submodule is
 
 	procedure delete_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -698,7 +698,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 6 =>
 				delete_port (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 
@@ -727,7 +727,7 @@ package body et_cp_schematic_submodule is
 
 	procedure move_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -741,7 +741,7 @@ package body et_cp_schematic_submodule is
 		case cmd_field_count is
 			when 9 =>
 				move_port (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
 					coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute

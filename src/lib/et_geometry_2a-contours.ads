@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
@@ -142,12 +142,12 @@ package et_geometry_2a.contours is
 
 
 	procedure modify_status (
-		segment 	: in out type_segment;
+		segment	: in out type_segment;
 		operation	: in type_status_operation);
 
 
 	procedure reset_status (
-		segment 	: in out type_segment);
+		segment	: in out type_segment);
 
 
 
@@ -459,9 +459,9 @@ package et_geometry_2a.contours is
 
 	-- -- Returns the boundaries of the given contour.
 	-- function get_boundaries (
-	-- 	contour		: in type_contour;
-	-- 	line_width	: in type_distance_positive)
-	-- 	return type_boundaries;
+	--	contour		: in type_contour;
+	--	line_width	: in type_distance_positive)
+	--	return type_boundaries;
 
 	-- Computes the bounding-box of a contour
 	-- with the given border-wdith:

@@ -64,7 +64,7 @@ package body et_cp_board_signal_layer is
 
 	procedure add_signal_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -78,7 +78,7 @@ package body et_cp_board_signal_layer is
 			layer.dielectric.thickness := to_distance (get_field (cmd, 6));
 
 			add_layer (
-				module_name 	=> key (module),
+				module_name	=> key (module),
 				layer			=> layer,
 
 				-- Depending on the origin of the command,
@@ -118,7 +118,7 @@ package body et_cp_board_signal_layer is
 
 	procedure delete_signal_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -127,7 +127,7 @@ package body et_cp_board_signal_layer is
 
 		procedure do_it is begin
 			delete_layer (
-				module_name 	=> key (module),
+				module_name	=> key (module),
 				layer			=> to_signal_layer (get_field (cmd, 5)),
 
 				-- Depending on the origin of the command,

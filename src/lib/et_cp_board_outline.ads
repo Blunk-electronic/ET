@@ -52,7 +52,7 @@ package et_cp_board_outline is
 	-- Example: board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_board_outline (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -61,7 +61,7 @@ package et_cp_board_outline is
 	-- Example: board demo draw hole line 2 9 line 2 1 line 8 9
 	procedure draw_board_hole (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -70,7 +70,7 @@ package et_cp_board_outline is
 	-- Example: board demo delete outline 0 20
 	procedure delete_outline_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -79,7 +79,7 @@ package et_cp_board_outline is
 	-- Example: board demo delete hole 0 20
 	procedure delete_hole_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

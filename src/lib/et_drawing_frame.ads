@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_axes;					use et_axes;
@@ -201,7 +201,7 @@ package et_drawing_frame is
 	-- FORMAT_2 : x 4.5 y 5.6
 	-- FORMAT_3 : 4.5 5.6
 	function to_string (
-		p 		: in type_position;
+		p		: in type_position;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
@@ -263,8 +263,8 @@ package et_drawing_frame is
 		checked_date	: type_placeholder;
 		approved_date	: type_placeholder;
 
--- 		created_date	: type_placeholder;
--- 		edited_date		: type_placeholder;
+--		created_date	: type_placeholder;
+--		edited_date		: type_placeholder;
 	end record;
 
 
@@ -359,13 +359,13 @@ package et_drawing_frame is
 
 	-- Sets the position of a frame:
 	procedure set_position (
-		frame 		: in out type_frame_general;
+		frame		: in out type_frame_general;
 		position	: in type_position);
 
 
 	-- Gets the position of a frame:
 	function get_position (
-		frame 		: in type_frame_general)
+		frame		: in type_frame_general)
 		return type_position;
 
 

@@ -97,7 +97,7 @@ package et_module is
 		netchangers		: pac_netchangers.map;
 
 		-- general notes in schematic, not related to drawing frames !
-		texts       	: et_schematic_text.pac_texts.list;
+		texts	: et_schematic_text.pac_texts.list;
 
 		-- The nets of the module (incl. routing information for the board)
 		-- containing:
@@ -106,7 +106,7 @@ package et_module is
 		-- - ports of devices, netchangers and submodules
 		-- On adding, moving or deleting units the structure in
 		-- selector "net" must be updated:
-		nets 	    	: et_nets.pac_nets.map;
+		nets		: et_nets.pac_nets.map;
 
 		-- The assembly variants of the module:
 		-- - devices that are mounted or not

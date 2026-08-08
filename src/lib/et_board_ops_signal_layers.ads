@@ -100,7 +100,7 @@ package et_board_ops_signal_layers is
 	-- according to the current layer stack of the given module.
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in pac_signal_layers.set);
+		layers			: in pac_signal_layers.set);
 
 
 

@@ -297,7 +297,7 @@ package body et_geometry_2a.contours is
 
 
 	procedure modify_status (
-		segment 	: in out type_segment;
+		segment	: in out type_segment;
 		operation	: in type_status_operation)
 	is begin
 		case segment.shape is
@@ -312,7 +312,7 @@ package body et_geometry_2a.contours is
 
 
 	procedure reset_status (
-		segment 	: in out type_segment)
+		segment	: in out type_segment)
 	is begin
 		clear_proposed (segment);
 		clear_selected (segment);
@@ -1237,48 +1237,48 @@ package body et_geometry_2a.contours is
 
 
 
--- 	function get_boundaries (
--- 		contour		: in type_contour;
--- 		line_width	: in type_distance_positive)
--- 		return type_boundaries
--- 	is
--- 		result : type_boundaries; -- to be returned
+--	function get_boundaries (
+--		contour		: in type_contour;
+--		line_width	: in type_distance_positive)
+--		return type_boundaries
+--	is
+--		result : type_boundaries; -- to be returned
 --
--- 		half_width : constant type_float_positive := type_float (line_width) * 0.5;
---
---
--- 		procedure query_segment (c : in pac_segments.cursor) is begin
--- 			case element (c).shape is
--- 				when LINE =>
--- 					union (result, get_boundaries (element (c).segment_line, zero));
---
--- 				when ARC =>
--- 					union (result, get_boundaries (element (c).segment_arc, zero));
--- 			end case;
--- 		end query_segment;
+--		half_width : constant type_float_positive := type_float (line_width) * 0.5;
 --
 --
--- 	begin -- get_boundaries
--- 		if contour.contour.circular then
+--		procedure query_segment (c : in pac_segments.cursor) is begin
+--			case element (c).shape is
+--				when LINE =>
+--					union (result, get_boundaries (element (c).segment_line, zero));
 --
--- 			-- Get the boundaries of the single circle:
--- 			union (result, get_boundaries (contour.contour.circle, zero));
---
--- 		else
--- 			-- Iterate lines and arcs:
--- 			contour.contour.segments.iterate (query_segment'access);
--- 		end if;
+--				when ARC =>
+--					union (result, get_boundaries (element (c).segment_arc, zero));
+--			end case;
+--		end query_segment;
 --
 --
--- 		-- Extend the boundaries by half the line width;
--- 		result.smallest_x := result.smallest_x - half_width;
--- 		result.smallest_y := result.smallest_y - half_width;
+--	begin -- get_boundaries
+--		if contour.contour.circular then
 --
--- 		result.greatest_x := result.greatest_x + half_width;
--- 		result.greatest_y := result.greatest_y + half_width;
+--			-- Get the boundaries of the single circle:
+--			union (result, get_boundaries (contour.contour.circle, zero));
 --
--- 		return result;
--- 	end get_boundaries;
+--		else
+--			-- Iterate lines and arcs:
+--			contour.contour.segments.iterate (query_segment'access);
+--		end if;
+--
+--
+--		-- Extend the boundaries by half the line width;
+--		result.smallest_x := result.smallest_x - half_width;
+--		result.smallest_y := result.smallest_y - half_width;
+--
+--		result.greatest_x := result.greatest_x + half_width;
+--		result.greatest_y := result.greatest_y + half_width;
+--
+--		return result;
+--	end get_boundaries;
 
 
 	function get_bounding_box (

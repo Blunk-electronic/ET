@@ -289,7 +289,7 @@ package body et_board_ops_stencil is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_stencil_lines.list renames module.board.stencil.top.lines;
+			top	: pac_stencil_lines.list renames module.board.stencil.top.lines;
 			bottom	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 
 
@@ -366,7 +366,7 @@ package body et_board_ops_stencil is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_stencil_lines.list renames module.board.stencil.top.lines;
+			top_items		: pac_stencil_lines.list renames module.board.stencil.top.lines;
 			bottom_items	: pac_stencil_lines.list renames module.board.stencil.bottom.lines;
 
 
@@ -844,7 +844,7 @@ package body et_board_ops_stencil is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
+			top	: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			bottom	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 
 
@@ -923,7 +923,7 @@ package body et_board_ops_stencil is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
+			top_items		: pac_stencil_arcs.list renames module.board.stencil.top.arcs;
 			bottom_items	: pac_stencil_arcs.list renames module.board.stencil.bottom.arcs;
 
 
@@ -1861,7 +1861,7 @@ package body et_board_ops_stencil is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
@@ -1990,8 +1990,8 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_segment  	: type_object_segment;
+		result_category	: type_object_category := CAT_VOID;
+		result_segment	: type_object_segment;
 		result_line			: type_object_line;
 		result_arc			: type_object_arc;
 		-- result_circle		: type_object_circle;
@@ -2550,12 +2550,12 @@ package body et_board_ops_stencil is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.stencil.top.lines.first;
-				arc_cursor    	:= module.board.stencil.top.arcs.first;
+				line_cursor	:= module.board.stencil.top.lines.first;
+				arc_cursor	:= module.board.stencil.top.arcs.first;
 				circle_cursor	:= module.board.stencil.top.circles.first;
 			else
-				line_cursor   	:= module.board.stencil.bottom.lines.first;
-				arc_cursor    	:= module.board.stencil.bottom.arcs.first;
+				line_cursor	:= module.board.stencil.bottom.lines.first;
+				arc_cursor	:= module.board.stencil.bottom.arcs.first;
 				circle_cursor	:= module.board.stencil.bottom.circles.first;
 			end if;
 

@@ -57,7 +57,7 @@ package et_cp_board_device is
 	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -69,7 +69,7 @@ package et_cp_board_device is
 	-- Example 3: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45 bottom
 	procedure add_non_electrical_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -80,7 +80,7 @@ package et_cp_board_device is
 	-- Example: "board led_driver delete device FD1"
 	procedure delete_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -90,7 +90,7 @@ package et_cp_board_device is
 	-- Example: "board led_driver copy device FD1 230 100"
 	procedure copy_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -98,7 +98,7 @@ package et_cp_board_device is
 
 	procedure move_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -109,7 +109,7 @@ package et_cp_board_device is
 	-- Example: board led_driver rotate device IC20 relative 10
 	procedure rotate_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -119,7 +119,7 @@ package et_cp_board_device is
 	-- Example: board led_driver rename device FD1 FD2
 	procedure rename_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -131,7 +131,7 @@ package et_cp_board_device is
 	-- Example: board led_driver flip device IC20 bottom/top
 	procedure flip_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -143,7 +143,7 @@ package et_cp_board_device is
 	-- Example: "board led_driver move value IC1 assy_doc bottom 2 relative -5 0"
 	procedure move_device_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -154,7 +154,7 @@ package et_cp_board_device is
 	-- Example: "board led_driver rotate value IC1 assy_doc bottom 2 relative -10"
 	procedure rotate_device_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -165,7 +165,7 @@ package et_cp_board_device is
 	-- Example: "board led_driver restore placeholders R1"
 	procedure restore_device_placeholders (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

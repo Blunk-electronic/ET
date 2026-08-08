@@ -63,7 +63,7 @@ package et_file_write is
 
 	-- Writes a line in the current output.
 	procedure write (
-		keyword 	: in string;
+		keyword	: in string;
 		parameters	: in string;
 		wrap		: in boolean := false;  -- when true, parameters will be enclosed in qotes (like "BEL Systems")
 		as_comment	: in boolean := false); -- when true, the whole line will be put as comment

@@ -56,7 +56,7 @@ package body et_symbol_read_body is
 
 
 
-	symbol_line 	: type_symbol_line;
+	symbol_line	: type_symbol_line;
 	symbol_arc		: type_symbol_arc;
 	symbol_circle	: type_symbol_circle;
 

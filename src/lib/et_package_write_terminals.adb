@@ -42,7 +42,7 @@
 
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 
 with et_keywords;						use et_keywords;
 with et_file_sections;					use et_file_sections;

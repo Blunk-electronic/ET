@@ -157,10 +157,10 @@ package et_modes.schematic is
 		NOUN_TEXT_SIZE,
 
 		NOUN_UNIT,
--- 		UNIT_NAME,
--- 		UNIT_PARTCODE,
--- 		UNIT_PURPOSE,
-		-- 		UNIT_VALUE
+--		UNIT_NAME,
+--		UNIT_PARTCODE,
+--		UNIT_PURPOSE,
+		--		UNIT_VALUE
 
 		NOUN_VARIANT,
 		NOUN_VALUE,

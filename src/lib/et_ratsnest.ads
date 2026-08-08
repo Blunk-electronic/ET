@@ -39,7 +39,7 @@
 --		-
 --		-
 
-with ada.containers; 				use ada.containers;
+with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
@@ -164,7 +164,7 @@ package et_ratsnest is
 	-- It searches in the list of isolated nodes:
 	function get_nearest_neighbor_of_node (
 		isolated_nodes	: in pac_vectors.list;
-		node_in 		: in type_vector)
+		node_in		: in type_vector)
 		return type_vector;
 
 

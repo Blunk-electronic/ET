@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
@@ -79,7 +79,7 @@ package et_conductor_segment is
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
-		line 		: in type_conductor_line;
+		line		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
@@ -150,7 +150,7 @@ package et_conductor_segment is
 	procedure line_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 
@@ -172,7 +172,7 @@ package et_conductor_segment is
 
 
 	function to_polygon (
-		arc 		: in type_conductor_arc;
+		arc		: in type_conductor_arc;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
@@ -240,7 +240,7 @@ package et_conductor_segment is
 	procedure arc_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 
@@ -258,14 +258,14 @@ package et_conductor_segment is
 
 	-- Converts the outer edge of a conductor circle to a polygon:
 	function to_polygon_outside (
-		circle 		: in type_conductor_circle;
+		circle		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
 
 	-- Converts the inner edge of a conductor circle to a polygon:
 	function to_polygon_inside (
-		circle 		: in type_conductor_circle;
+		circle		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
@@ -320,7 +320,7 @@ package et_conductor_segment is
 	procedure circle_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

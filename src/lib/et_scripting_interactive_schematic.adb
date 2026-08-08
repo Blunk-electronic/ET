@@ -81,7 +81,7 @@ package body et_scripting_interactive_schematic is
 
 	-- procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	-- begin
-	-- 	set_status ("Unit selection cancelled");
+	--	set_status ("Unit selection cancelled");
 	-- end unit_selection_cancelled;
 
 
@@ -119,238 +119,238 @@ package body et_scripting_interactive_schematic is
 
 
 
--- 	procedure menu_propose_units_on_delete (
--- 		device			: in type_device_name;
--- 		units			: in pac_unit_names.list;
--- 		log_threshold	: in type_log_level)
--- 	is
--- 		use gtk.menu;
--- 		use gtk.menu_item;
--- 		use pac_unit_names;
--- 		use pac_unit_name;
+--	procedure menu_propose_units_on_delete (
+--		device			: in type_device_name;
+--		units			: in pac_unit_names.list;
+--		log_threshold	: in type_log_level)
+--	is
+--		use gtk.menu;
+--		use gtk.menu_item;
+--		use pac_unit_names;
+--		use pac_unit_name;
 --
--- 		unit_name : pac_unit_name.bounded_string;
+--		unit_name : pac_unit_name.bounded_string;
 --
--- 		m : gtk_menu; -- the menu
--- 		i : gtk_menu_item; -- an item on the menu
---
---
--- 		procedure query_name (c : in pac_unit_names.cursor) is begin
--- 			-- Build the menu item. NOTE: The actual unit name must be
--- 			-- the 2nd string of the entry.
--- 			i := gtk_menu_item_new_with_label (
--- 				"unit " & to_string (element (c)));
---
--- 			-- Connect the item with the "activate" signal:
--- 			i.on_activate (unit_selected_on_delete'access);
---
--- 			m.append (i);
--- 			i.show;
--- 		end query_name;
+--		m : gtk_menu; -- the menu
+--		i : gtk_menu_item; -- an item on the menu
 --
 --
--- 	begin -- menu_propose_units_on_delete
--- 		log (text => "proposing units of " & to_string (device)
--- 			 & " for deleting ... ",
--- 			 level => log_threshold);
+--		procedure query_name (c : in pac_unit_names.cursor) is begin
+--			-- Build the menu item. NOTE: The actual unit name must be
+--			-- the 2nd string of the entry.
+--			i := gtk_menu_item_new_with_label (
+--				"unit " & to_string (element (c)));
 --
--- 		case length (units) is
--- 			when 0 =>
--- 				-- no menu required
--- 				set_status ("No more units of " & to_string (device) & " available !");
+--			-- Connect the item with the "activate" signal:
+--			i.on_activate (unit_selected_on_delete'access);
 --
--- 			when 1 =>
--- 				-- no menu required
--- 				unit_name := element (units.first);
+--			m.append (i);
+--			i.show;
+--		end query_name;
 --
--- 				unit_delete.unit := unit_name;
 --
--- 				et_schematic_ops.units.delete_unit (
--- 					module_cursor	=> active_module,
--- 					device_name		=> unit_delete.device,
--- 					unit_name		=> unit_delete.unit,
--- 					log_threshold	=> log_threshold + 1);
+--	begin -- menu_propose_units_on_delete
+--		log (text => "proposing units of " & to_string (device)
+--			 & " for deleting ... ",
+--			 level => log_threshold);
 --
--- 				status_clear;
+--		case length (units) is
+--			when 0 =>
+--				-- no menu required
+--				set_status ("No more units of " & to_string (device) & " available !");
 --
--- 				-- CS redraw;
+--			when 1 =>
+--				-- no menu required
+--				unit_name := element (units.first);
 --
--- 			when others =>
--- 				-- show available units in a menu
--- 				m := gtk_menu_new;
+--				unit_delete.unit := unit_name;
 --
--- 				-- In case the operator closes the menu (via ESC for example)
--- 				m.on_cancel (unit_selection_cancelled'access);
+--				et_schematic_ops.units.delete_unit (
+--					module_cursor	=> active_module,
+--					device_name		=> unit_delete.device,
+--					unit_name		=> unit_delete.unit,
+--					log_threshold	=> log_threshold + 1);
 --
--- 				units.iterate (query_name'access);
+--				status_clear;
 --
--- 				m.show;
+--				-- CS redraw;
 --
--- 				m.popup
--- 					(
--- 					-- CS func => set_position'access,
+--			when others =>
+--				-- show available units in a menu
+--				m := gtk_menu_new;
 --
--- 					-- button 0 means: this is not triggered by a key press
--- 					-- or a button click:
--- 					button => 0,
+--				-- In case the operator closes the menu (via ESC for example)
+--				m.on_cancel (unit_selection_cancelled'access);
 --
--- 					-- get_current_event_time causes the menu to remain
--- 					-- until a 2nd click.
--- 					activate_time => gtk.main.get_current_event_time);
+--				units.iterate (query_name'access);
 --
--- 				status_select_unit;
--- 		end case;
+--				m.show;
 --
--- 	end menu_propose_units_on_delete;
+--				m.popup
+--					(
+--					-- CS func => set_position'access,
+--
+--					-- button 0 means: this is not triggered by a key press
+--					-- or a button click:
+--					button => 0,
+--
+--					-- get_current_event_time causes the menu to remain
+--					-- until a 2nd click.
+--					activate_time => gtk.main.get_current_event_time);
+--
+--				status_select_unit;
+--		end case;
+--
+--	end menu_propose_units_on_delete;
 
 
 
 
 -- FETCH UNIT:
 
--- 	procedure unit_selected_on_fetch (
--- 		self : access gtk_menu_item_record'class)
--- 	is
--- 		name : constant string := extract_unit_name (self.get_label);
--- 	begin
--- 		set_status ("selected unit " & name);
--- 		unit_add.name := to_unit_name (name);
+--	procedure unit_selected_on_fetch (
+--		self : access gtk_menu_item_record'class)
+--	is
+--		name : constant string := extract_unit_name (self.get_label);
+--	begin
+--		set_status ("selected unit " & name);
+--		unit_add.name := to_unit_name (name);
 --
--- 		-- Allow drawing the unit:
--- 		unit_add.via_fetch := true;
+--		-- Allow drawing the unit:
+--		unit_add.via_fetch := true;
 --
--- 		-- single_cmd.finalization_pending := true;
+--		-- single_cmd.finalization_pending := true;
 --
--- 		-- CS redraw;
--- 	end unit_selected_on_fetch;
+--		-- CS redraw;
+--	end unit_selected_on_fetch;
 
 
 
--- 	procedure menu_propose_units_on_fetch (
--- 		device			: in type_device_name;
--- 		units			: in pac_unit_names.list;
--- 		log_threshold	: in type_log_level)
--- 	is
--- 		use gtk.menu;
--- 		use gtk.menu_item;
--- 		use pac_unit_names;
--- 		use pac_unit_name;
+--	procedure menu_propose_units_on_fetch (
+--		device			: in type_device_name;
+--		units			: in pac_unit_names.list;
+--		log_threshold	: in type_log_level)
+--	is
+--		use gtk.menu;
+--		use gtk.menu_item;
+--		use pac_unit_names;
+--		use pac_unit_name;
 --
--- 		unit_name : pac_unit_name.bounded_string;
+--		unit_name : pac_unit_name.bounded_string;
 --
--- 		m : gtk_menu; -- the menu
--- 		i : gtk_menu_item; -- an item on the menu
---
---
--- 		procedure query_name (c : in pac_unit_names.cursor) is begin
--- 			-- Build the menu item. NOTE: The actual unit name must be
--- 			-- the 2nd string of the entry.
--- 			i := gtk_menu_item_new_with_label (
--- 				"unit " & to_string (element (c)));
---
--- 			-- Connect the item with the "activate" signal:
--- 			i.on_activate (unit_selected_on_fetch'access);
---
--- 			m.append (i);
--- 			i.show;
--- 		end query_name;
+--		m : gtk_menu; -- the menu
+--		i : gtk_menu_item; -- an item on the menu
 --
 --
--- 	begin -- menu_propose_units_on_fetch
--- 		log (text => "proposing units of " & to_string (device)
--- 			 & " for fetching ... ",
--- 			 level => log_threshold);
+--		procedure query_name (c : in pac_unit_names.cursor) is begin
+--			-- Build the menu item. NOTE: The actual unit name must be
+--			-- the 2nd string of the entry.
+--			i := gtk_menu_item_new_with_label (
+--				"unit " & to_string (element (c)));
 --
--- 		case length (units) is
--- 			when 0 =>
--- 				-- no menu required
--- 				set_status ("No more units of " & to_string (device) & " available !");
+--			-- Connect the item with the "activate" signal:
+--			i.on_activate (unit_selected_on_fetch'access);
 --
--- 			when 1 =>
--- 				-- no menu required
--- 				unit_name := element (units.first);
+--			m.append (i);
+--			i.show;
+--		end query_name;
 --
--- 				set_status ("selected single available unit "
--- 					& to_string (unit_name)
--- 					& " of " & to_string (device));
 --
--- 				unit_add.name := unit_name;
+--	begin -- menu_propose_units_on_fetch
+--		log (text => "proposing units of " & to_string (device)
+--			 & " for fetching ... ",
+--			 level => log_threshold);
 --
--- 				-- Allow drawing the unit:
--- 				unit_add.via_fetch := true;
+--		case length (units) is
+--			when 0 =>
+--				-- no menu required
+--				set_status ("No more units of " & to_string (device) & " available !");
 --
--- 				-- single_cmd.finalization_pending := true;
+--			when 1 =>
+--				-- no menu required
+--				unit_name := element (units.first);
 --
--- 				-- CS redraw;
+--				set_status ("selected single available unit "
+--					& to_string (unit_name)
+--					& " of " & to_string (device));
 --
--- 			when others =>
--- 				-- show available units in a menu
--- 				m := gtk_menu_new;
+--				unit_add.name := unit_name;
 --
--- 				-- In case the operator closes the menu (via ESC for example)
--- 				m.on_cancel (unit_selection_cancelled'access);
+--				-- Allow drawing the unit:
+--				unit_add.via_fetch := true;
 --
--- 				units.iterate (query_name'access);
+--				-- single_cmd.finalization_pending := true;
 --
--- 				m.show;
+--				-- CS redraw;
 --
--- 				m.popup
--- 					(
--- 					-- CS func => set_position'access,
+--			when others =>
+--				-- show available units in a menu
+--				m := gtk_menu_new;
 --
--- 					-- button 0 means: this is not triggered by a key press
--- 					-- or a button click:
--- 					button => 0,
+--				-- In case the operator closes the menu (via ESC for example)
+--				m.on_cancel (unit_selection_cancelled'access);
 --
--- 					-- get_current_event_time causes the menu to remain
--- 					-- until a 2nd click.
--- 					activate_time => gtk.main.get_current_event_time);
+--				units.iterate (query_name'access);
 --
--- 				status_select_unit;
+--				m.show;
 --
--- 		end case;
+--				m.popup
+--					(
+--					-- CS func => set_position'access,
 --
--- 	end menu_propose_units_on_fetch;
+--					-- button 0 means: this is not triggered by a key press
+--					-- or a button click:
+--					button => 0,
+--
+--					-- get_current_event_time causes the menu to remain
+--					-- until a 2nd click.
+--					activate_time => gtk.main.get_current_event_time);
+--
+--				status_select_unit;
+--
+--		end case;
+--
+--	end menu_propose_units_on_fetch;
 
 
 
 
 -- MOVE / DRAG / ROTATE
 
--- 	procedure select_unit_for_move is
--- 		use pac_proposed_units;
--- 		su : type_selected_unit;
+--	procedure select_unit_for_move is
+--		use pac_proposed_units;
+--		su : type_selected_unit;
 --
--- 		use pac_geometry_2;
--- 		pos : type_vector_model;
+--		use pac_geometry_2;
+--		pos : type_vector_model;
 --
--- 	begin
--- 		-- Append the cursors of the device and unit to the list of proposed units.
--- 		-- There will be only one single item in that list.
--- 		proposed_units.append (new_item => (
--- 			device	=> locate_device (active_module, object_device_name),
--- 			unit	=> locate_unit (active_module, object_device_name, object_unit_name)));
+--	begin
+--		-- Append the cursors of the device and unit to the list of proposed units.
+--		-- There will be only one single item in that list.
+--		proposed_units.append (new_item => (
+--			device	=> locate_device (active_module, object_device_name),
+--			unit	=> locate_unit (active_module, object_device_name, object_unit_name)));
 --
--- 		-- Set the selected unit. This signals the GUI which unit is to be
--- 		-- drawn at the cursor or mouse position:
--- 		selected_unit := proposed_units.first;
+--		-- Set the selected unit. This signals the GUI which unit is to be
+--		-- drawn at the cursor or mouse position:
+--		selected_unit := proposed_units.first;
 --
 --
--- 		-- Move the cursor to the unit:
--- 		su := element (selected_unit);
+--		-- Move the cursor to the unit:
+--		su := element (selected_unit);
 --
--- 		-- Get the x/y position of the unit:
--- 		--pos := pac_geometry_sch.type_vector_model (position (
--- 				--device	=> su.device,
--- 				--unit	=> su.unit));
+--		-- Get the x/y position of the unit:
+--		--pos := pac_geometry_sch.type_vector_model (position (
+--				--device	=> su.device,
+--				--unit	=> su.unit));
 --
--- 		pos := get_position (
--- 				device	=> su.device,
--- 				unit	=> su.unit).place;
+--		pos := get_position (
+--				device	=> su.device,
+--				unit	=> su.unit).place;
 --
--- 		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+--		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 --
--- 	end select_unit_for_move;
+--	end select_unit_for_move;
 
 
 
@@ -369,244 +369,244 @@ package body et_scripting_interactive_schematic is
 
 
 
--- 	-- The interactive completition process of moving, dragging or rotating
--- 	-- a unit comes to an end here.
--- 	procedure finish_unit_move is begin
--- 		select_unit_for_move;
+--	-- The interactive completition process of moving, dragging or rotating
+--	-- a unit comes to an end here.
+--	procedure finish_unit_move is begin
+--		select_unit_for_move;
 --
--- 		-- use the current primary tool for moving the unit:
--- 		object_tool := primary_tool;
+--		-- use the current primary tool for moving the unit:
+--		object_tool := primary_tool;
 --
--- 		case verb is
--- 			when VERB_DRAG =>
--- 				-- If we are about to drag a unit, then the connected
--- 				-- net segments must be identified:
--- 				-- CS find_attached_segments;
+--		case verb is
+--			when VERB_DRAG =>
+--				-- If we are about to drag a unit, then the connected
+--				-- net segments must be identified:
+--				-- CS find_attached_segments;
 --
--- 				-- Allow drawing the unit:
--- 				set_edit_process_running;
+--				-- Allow drawing the unit:
+--				set_edit_process_running;
 --
--- 				-- single_cmd.finalization_pending := true;
+--				-- single_cmd.finalization_pending := true;
 --
--- 			when VERB_MOVE =>
--- 				-- Allow drawing the unit:
--- 				set_edit_process_running;
+--			when VERB_MOVE =>
+--				-- Allow drawing the unit:
+--				set_edit_process_running;
 --
--- 				-- single_cmd.finalization_pending := true;
+--				-- single_cmd.finalization_pending := true;
 --
--- 			when VERB_ROTATE =>
--- 				-- rotate_selected_unit;
--- 				null;
--- 				-- CS ?
+--			when VERB_ROTATE =>
+--				-- rotate_selected_unit;
+--				null;
+--				-- CS ?
 --
--- 			when others => raise constraint_error; -- CS should never happen
--- 		end case;
+--			when others => raise constraint_error; -- CS should never happen
+--		end case;
 --
--- 		-- CS redraw;
--- 	end finish_unit_move;
---
-
-
-
--- 	procedure finish_placeholder_move is begin
--- 		select_placeholder_for_move;
---
--- 		-- use the current primary tool for moving the unit:
--- 		placeholder_move.tool := primary_tool;
---
--- 		-- Map from the current noun to the category of the placeholder:
--- 		placeholder_move.category := to_category;
---
--- 		case verb is
--- 			when VERB_MOVE =>
---
--- 				-- Allow drawing the placeholder:
--- 				placeholder_move.being_moved := true;
---
--- 				-- single_cmd.finalization_pending := true;
---
--- 			when VERB_ROTATE =>
--- 				rotate_selected_placeholder (placeholder_move.category);
--- 				reset_placeholder;
---
--- 			when others => raise constraint_error; -- CS should never happen
--- 		end case;
--- 		-- CS redraw;
--- 	end finish_placeholder_move;
+--		-- CS redraw;
+--	end finish_unit_move;
 --
 
 
 
--- 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
--- 		name : constant string := extract_unit_name (self.get_label);
--- 	begin
--- 		set_status ("selected unit " & name);
+--	procedure finish_placeholder_move is begin
+--		select_placeholder_for_move;
 --
--- 		-- Now we know the unit name:
--- 		case noun is
--- 			when NOUN_UNIT =>
--- 				object_unit_name := to_unit_name (name);
+--		-- use the current primary tool for moving the unit:
+--		placeholder_move.tool := primary_tool;
 --
--- 				finish_unit_move;
+--		-- Map from the current noun to the category of the placeholder:
+--		placeholder_move.category := to_category;
 --
--- 			when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
--- 				placeholder_move.unit := to_unit_name (name);
+--		case verb is
+--			when VERB_MOVE =>
 --
--- 				finish_placeholder_move;
+--				-- Allow drawing the placeholder:
+--				placeholder_move.being_moved := true;
 --
--- 			when others => raise constraint_error; -- CS should never happen
--- 		end case;
+--				-- single_cmd.finalization_pending := true;
 --
--- 	end unit_selected_on_move;
+--			when VERB_ROTATE =>
+--				rotate_selected_placeholder (placeholder_move.category);
+--				reset_placeholder;
+--
+--			when others => raise constraint_error; -- CS should never happen
+--		end case;
+--		-- CS redraw;
+--	end finish_placeholder_move;
+--
+
+
+
+--	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
+--		name : constant string := extract_unit_name (self.get_label);
+--	begin
+--		set_status ("selected unit " & name);
+--
+--		-- Now we know the unit name:
+--		case noun is
+--			when NOUN_UNIT =>
+--				object_unit_name := to_unit_name (name);
+--
+--				finish_unit_move;
+--
+--			when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+--				placeholder_move.unit := to_unit_name (name);
+--
+--				finish_placeholder_move;
+--
+--			when others => raise constraint_error; -- CS should never happen
+--		end case;
+--
+--	end unit_selected_on_move;
 
 
 
 
--- 	procedure menu_propose_units_on_move (
--- 		units			: in pac_unit_names.list;
--- 		log_threshold	: in type_log_level)
--- 	is
--- 		use gtk.menu;
--- 		use gtk.menu_item;
--- 		use pac_unit_names;
--- 		use pac_unit_name;
--- 		use pac_proposed_units;
+--	procedure menu_propose_units_on_move (
+--		units			: in pac_unit_names.list;
+--		log_threshold	: in type_log_level)
+--	is
+--		use gtk.menu;
+--		use gtk.menu_item;
+--		use pac_unit_names;
+--		use pac_unit_name;
+--		use pac_proposed_units;
 --
--- 		m : gtk_menu; -- the menu
--- 		i : gtk_menu_item; -- an item on the menu
---
---
--- 		procedure query_name (c : in pac_unit_names.cursor) is begin
--- 			-- Build the menu item. NOTE: The actual unit name must be
--- 			-- the 2nd string of the entry.
--- 			i := gtk_menu_item_new_with_label (
--- 				"unit " & to_string (element (c)));
---
--- 			-- Connect the item with the "activate" signal:
--- 			i.on_activate (unit_selected_on_move'access);
---
--- 			m.append (i);
--- 			i.show;
--- 		end query_name;
+--		m : gtk_menu; -- the menu
+--		i : gtk_menu_item; -- an item on the menu
 --
 --
--- 	begin -- menu_propose_units_on_move
--- 		case noun is
--- 			when NOUN_UNIT =>
--- 				log (text => "proposing units of " & to_string (object_device_name) & " ... ",
--- 					level => log_threshold);
+--		procedure query_name (c : in pac_unit_names.cursor) is begin
+--			-- Build the menu item. NOTE: The actual unit name must be
+--			-- the 2nd string of the entry.
+--			i := gtk_menu_item_new_with_label (
+--				"unit " & to_string (element (c)));
 --
--- 			when NOUN_NAME =>
--- 				log (text => "proposing units of " & to_string (placeholder_move.device) & " ... ",
--- 					 level => log_threshold);
+--			-- Connect the item with the "activate" signal:
+--			i.on_activate (unit_selected_on_move'access);
 --
--- 			when others => null;
--- 		end case;
---
--- 		-- The number of given units determines the
--- 		-- next actions:
--- 		case length (units) is
--- 			when 0 => -- no menu required
--- 				case noun is
--- 					when NOUN_UNIT =>
--- 						set_status ("No units of " & to_string (object_device_name) & " on this sheet !");
---
--- 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
--- 						set_status ("No units of " & to_string (placeholder_move.device) & " on this sheet !");
---
--- 					when others => raise constraint_error; -- CS should never happen
--- 				end case;
---
--- 			when 1 => -- No menu required. We know the device and unit name:
--- 				case noun is
--- 					when NOUN_UNIT =>
--- 						object_unit_name := element (units.first);
---
--- 						set_status ("selected single available unit "
--- 							& to_string (object_unit_name)
--- 							& " of " & to_string (object_device_name));
---
--- 						finish_unit_move;
+--			m.append (i);
+--			i.show;
+--		end query_name;
 --
 --
--- 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
--- 						placeholder_move.unit := element (units.first);
+--	begin -- menu_propose_units_on_move
+--		case noun is
+--			when NOUN_UNIT =>
+--				log (text => "proposing units of " & to_string (object_device_name) & " ... ",
+--					level => log_threshold);
 --
--- 						set_status ("selected single available unit "
--- 							& to_string (placeholder_move.unit)
--- 							& " of " & to_string (placeholder_move.device));
+--			when NOUN_NAME =>
+--				log (text => "proposing units of " & to_string (placeholder_move.device) & " ... ",
+--					 level => log_threshold);
 --
--- 						finish_placeholder_move;
+--			when others => null;
+--		end case;
 --
--- 					when others => raise constraint_error; -- CS should never happen
--- 				end case;
+--		-- The number of given units determines the
+--		-- next actions:
+--		case length (units) is
+--			when 0 => -- no menu required
+--				case noun is
+--					when NOUN_UNIT =>
+--						set_status ("No units of " & to_string (object_device_name) & " on this sheet !");
+--
+--					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+--						set_status ("No units of " & to_string (placeholder_move.device) & " on this sheet !");
+--
+--					when others => raise constraint_error; -- CS should never happen
+--				end case;
+--
+--			when 1 => -- No menu required. We know the device and unit name:
+--				case noun is
+--					when NOUN_UNIT =>
+--						object_unit_name := element (units.first);
+--
+--						set_status ("selected single available unit "
+--							& to_string (object_unit_name)
+--							& " of " & to_string (object_device_name));
+--
+--						finish_unit_move;
 --
 --
--- 			when others =>
--- 				-- At the moment we know only the device name.
--- 				-- The unit name will be made known when the operator
--- 				-- selects a unit from the menu.
+--					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+--						placeholder_move.unit := element (units.first);
 --
--- 				-- show available units in a menu
--- 				m := gtk_menu_new;
+--						set_status ("selected single available unit "
+--							& to_string (placeholder_move.unit)
+--							& " of " & to_string (placeholder_move.device));
 --
--- 				-- In case the operator closes the menu (via ESC for example)
--- 				m.on_cancel (unit_selection_cancelled'access);
+--						finish_placeholder_move;
 --
--- 				units.iterate (query_name'access);
+--					when others => raise constraint_error; -- CS should never happen
+--				end case;
 --
--- 				m.show;
 --
--- 				m.popup
--- 					(
--- 					-- CS func => set_position'access,
+--			when others =>
+--				-- At the moment we know only the device name.
+--				-- The unit name will be made known when the operator
+--				-- selects a unit from the menu.
 --
--- 					-- button 0 means: this is not triggered by a key press
--- 					-- or a button click:
--- 					button => 0,
+--				-- show available units in a menu
+--				m := gtk_menu_new;
 --
--- 					-- get_current_event_time causes the menu to remain
--- 					-- until a 2nd click.
--- 					activate_time => gtk.main.get_current_event_time);
+--				-- In case the operator closes the menu (via ESC for example)
+--				m.on_cancel (unit_selection_cancelled'access);
 --
--- 				status_select_unit;
+--				units.iterate (query_name'access);
 --
--- 		end case;
+--				m.show;
 --
--- 	end menu_propose_units_on_move;
+--				m.popup
+--					(
+--					-- CS func => set_position'access,
+--
+--					-- button 0 means: this is not triggered by a key press
+--					-- or a button click:
+--					button => 0,
+--
+--					-- get_current_event_time causes the menu to remain
+--					-- until a 2nd click.
+--					activate_time => gtk.main.get_current_event_time);
+--
+--				status_select_unit;
+--
+--		end case;
+--
+--	end menu_propose_units_on_move;
 
 
 
--- 	procedure select_placeholder_for_move is
--- 		use pac_proposed_placeholders;
--- 		sp : type_selected_placeholder;
+--	procedure select_placeholder_for_move is
+--		use pac_proposed_placeholders;
+--		sp : type_selected_placeholder;
 --
--- 		use pac_geometry_2;
--- 		pos : type_vector_model;
--- 	begin
--- 		-- Append the cursors of the device and unit to the list of proposed placeholders.
--- 		-- There will be only one single item in that list.
--- 		proposed_placeholders.append (new_item => (
--- 			device	=> locate_device (active_module, placeholder_move.device),
--- 			unit	=> locate_unit (active_module, placeholder_move.device, placeholder_move.unit)));
+--		use pac_geometry_2;
+--		pos : type_vector_model;
+--	begin
+--		-- Append the cursors of the device and unit to the list of proposed placeholders.
+--		-- There will be only one single item in that list.
+--		proposed_placeholders.append (new_item => (
+--			device	=> locate_device (active_module, placeholder_move.device),
+--			unit	=> locate_unit (active_module, placeholder_move.device, placeholder_move.unit)));
 --
--- 		-- Set the selected placeholder. This signals the GUI which placeholder is to be
--- 		-- drawn at the cursor or mouse position:
--- 		selected_placeholder := proposed_placeholders.first;
+--		-- Set the selected placeholder. This signals the GUI which placeholder is to be
+--		-- drawn at the cursor or mouse position:
+--		selected_placeholder := proposed_placeholders.first;
 --
 --
--- 		-- Move the cursor to the placeholder:
--- 		sp := element (selected_placeholder);
+--		-- Move the cursor to the placeholder:
+--		sp := element (selected_placeholder);
 --
--- 		-- Get the x/y position of the placeholder:
--- 		pos := get_position (
--- 				device		=> sp.device,
--- 				unit		=> sp.unit,
--- 				category	=> to_category); -- maps from noun to placeholder category
+--		-- Get the x/y position of the placeholder:
+--		pos := get_position (
+--				device		=> sp.device,
+--				unit		=> sp.unit,
+--				category	=> to_category); -- maps from noun to placeholder category
 --
--- 		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+--		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 --
--- 	end select_placeholder_for_move;
+--	end select_placeholder_for_move;
 --
 
 
@@ -615,15 +615,15 @@ package body et_scripting_interactive_schematic is
 	-- after selection:
 	-- procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
 	-- begin
-	-- 	-- Apply the variant to the device. The device is indicated by the
-	-- 	-- global variable set_variant_device. It has been set by
-	-- 	-- the other procedure set_variant (see below):
-	-- 	set_variant (
-	-- 		module	=> active_module,
-	-- 		device	=> set_variant_device,
-	-- 		variant	=> extract_variant_name (self.get_label));
+	--	-- Apply the variant to the device. The device is indicated by the
+	--	-- global variable set_variant_device. It has been set by
+	--	-- the other procedure set_variant (see below):
+	--	set_variant (
+	--		module	=> active_module,
+	--		device	=> set_variant_device,
+	--		variant	=> extract_variant_name (self.get_label));
  --
-	-- 	-- CS redraw;
+	--	-- CS redraw;
 	-- end variant_selected;
 
 	--function variant_selection_key_event (
@@ -654,62 +654,62 @@ package body et_scripting_interactive_schematic is
 
 
 
--- 	procedure set_variant (
--- 		device : in type_device_name)
--- 	is
--- 		use pac_variants;
--- 		variants : pac_variants.map;
--- 		device_cursor_sch : pac_devices_sch.cursor;
+--	procedure set_variant (
+--		device : in type_device_name)
+--	is
+--		use pac_variants;
+--		variants : pac_variants.map;
+--		device_cursor_sch : pac_devices_sch.cursor;
 --
 --
--- 		procedure show_variants_menu is
--- 			m : gtk_menu;
--- 			i : gtk_menu_item;
+--		procedure show_variants_menu is
+--			m : gtk_menu;
+--			i : gtk_menu_item;
 --
 --
--- 			procedure query_variant (c : in pac_variants.cursor) is begin
--- 				-- Build the menu item:
--- 				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
--- 				i.on_activate (variant_selected'access);
--- 				m.append (i);
--- 				i.show;
--- 			end query_variant;
+--			procedure query_variant (c : in pac_variants.cursor) is begin
+--				-- Build the menu item:
+--				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
+--				i.on_activate (variant_selected'access);
+--				m.append (i);
+--				i.show;
+--			end query_variant;
 --
 --
--- 		begin
--- 			m := gtk_menu_new;
--- 			--m.on_key_press_event (variant_selection_key_event'access);
+--		begin
+--			m := gtk_menu_new;
+--			--m.on_key_press_event (variant_selection_key_event'access);
 --
--- 			variants.iterate (query_variant'access);
+--			variants.iterate (query_variant'access);
 --
--- 			m.show;
--- 			m.popup;
+--			m.show;
+--			m.popup;
 --
--- 		end show_variants_menu;
+--		end show_variants_menu;
 --
 --
--- 	begin -- set_variant
--- 		device_cursor_sch := locate_device (active_module, device);
+--	begin -- set_variant
+--		device_cursor_sch := locate_device (active_module, device);
 --
--- 		-- Setting a package variant is possible for real devices only:
--- 		if is_real (device_cursor_sch) then
--- 			variants := get_available_variants (active_module, device);
+--		-- Setting a package variant is possible for real devices only:
+--		if is_real (device_cursor_sch) then
+--			variants := get_available_variants (active_module, device);
 --
--- 			if length (variants) > 1 then
+--			if length (variants) > 1 then
 --
--- 				-- Store device cursor temporarily here.
--- 				-- Required by procedure variant_selected. See above.
--- 				set_variant_device := device_cursor_sch;
+--				-- Store device cursor temporarily here.
+--				-- Required by procedure variant_selected. See above.
+--				set_variant_device := device_cursor_sch;
 --
--- 				show_variants_menu;
--- 			else
--- 				set_status ("Device has only one package variant !");
--- 			end if;
--- 		else
--- 			set_status ("ERROR : Device is virtual and does not have a package !");
--- 		end if;
+--				show_variants_menu;
+--			else
+--				set_status ("Device has only one package variant !");
+--			end if;
+--		else
+--			set_status ("ERROR : Device is virtual and does not have a package !");
+--		end if;
 --
--- 	end set_variant;
+--	end set_variant;
 
 
 

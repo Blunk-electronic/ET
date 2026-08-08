@@ -40,8 +40,8 @@ with et_string_processing;		use et_string_processing;
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 
 with et_file_sections;			use et_file_sections;
@@ -94,7 +94,7 @@ package body et_file_write is
 
 
 	procedure write (
-		keyword 	: in string;
+		keyword	: in string;
 		parameters	: in string;
 		wrap		: in boolean := false;
 		as_comment	: in boolean := false)

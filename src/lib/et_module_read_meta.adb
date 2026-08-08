@@ -255,7 +255,7 @@ package body et_module_read_meta is
 
 
 	procedure read_preferred_lib_schematic (
- 		line : in type_fields_of_line)
+		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 		lib : pac_library_path_schematic.bounded_string;
@@ -284,7 +284,7 @@ package body et_module_read_meta is
 
 
 	procedure read_preferred_lib_board (
- 		line : in type_fields_of_line)
+		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 		lib : pac_library_path_board.bounded_string;

@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
@@ -271,7 +271,7 @@ package et_stencil is
 
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
-		lines 	: pac_stencil_lines.list;
+		lines	: pac_stencil_lines.list;
 		arcs	: pac_stencil_arcs.list;
 		circles	: pac_stencil_circles.list;
 		zones	: pac_stencil_zones.list;
@@ -304,19 +304,19 @@ package et_stencil is
 	procedure arc_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given circle of stencil
 	procedure circle_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given line of stencil
 	procedure line_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

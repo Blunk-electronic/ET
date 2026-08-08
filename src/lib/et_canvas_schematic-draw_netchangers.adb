@@ -77,7 +77,7 @@ procedure draw_netchangers is
 	-- Depending on the rotation of the port (as defined in the
 	-- netchanger symbol) the start (A) and end (B) of the line is computed here:
 	procedure draw_port (
-		name 				: in type_netchanger_port_name;
+		name				: in type_netchanger_port_name;
 		port				: in type_netchanger_port;
 		netchanger_position	: in type_position)
 	is
@@ -384,7 +384,7 @@ procedure draw_netchangers is
 	-- netchanger depending on the direction of the
 	-- netchanger candidate:
 	procedure draw_ports (
-		position 	: in type_position;
+		position	: in type_position;
 		direction	: in type_netchanger_direction)
 	is begin
 		case direction is
@@ -622,7 +622,7 @@ procedure draw_netchangers is
 
 
 begin
--- 	put_line ("draw netchangers (schematic)");
+--	put_line ("draw netchangers (schematic)");
 
 
 	pac_generic_modules.query_element (

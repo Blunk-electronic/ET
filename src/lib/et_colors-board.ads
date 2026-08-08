@@ -73,10 +73,10 @@ package et_colors.board is
 	-- styles in the future:
 
 	cursor				: type_color := white; -- CS currently ignored
-	background 			: type_color := black;
+	background			: type_color := black;
 	frame				: type_color := white;
 	outline				: type_color := gray;
-	grid 				: type_color := gray;
+	grid				: type_color := gray;
 	origin				: type_color := gray;
 	placeholders		: type_color := gray;
 
@@ -127,7 +127,7 @@ package et_colors.board is
 		4		=> blue,
 		others	=> blue);
 
--- 	submodules		: type_color := mangenta; -- boundaries
+--	submodules		: type_color := mangenta; -- boundaries
 
 
 
@@ -259,25 +259,25 @@ package et_colors.board is
 	procedure set_color_silkscreen (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity);
+		opacity	: in type_opacity := default_opacity);
 
 
 	procedure set_color_assy_doc (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity);
+		opacity	: in type_opacity := default_opacity);
 
 
 	procedure set_color_stop_mask (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity);
+		opacity	: in type_opacity := default_opacity);
 
 
 	procedure set_color_stencil (
 		face		: in type_face;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity);
+		opacity	: in type_opacity := default_opacity);
 
 
 	procedure set_color_keepout (
@@ -299,7 +299,7 @@ package et_colors.board is
 	procedure set_color_conductor (
 		layer		: in type_signal_layer;
 		brightness	: in type_brightness;
-		opacity 	: in type_opacity := default_opacity);
+		opacity	: in type_opacity := default_opacity);
 
 
 	procedure set_color_terminal_name (
@@ -314,8 +314,8 @@ package et_colors.board is
 
 
 
--- 	procedure set_color_placeholders (context : in cairo_context);
--- 	procedure set_color_submodules (context : in cairo_context);
+--	procedure set_color_placeholders (context : in cairo_context);
+--	procedure set_color_submodules (context : in cairo_context);
 
 end et_colors.board;
 

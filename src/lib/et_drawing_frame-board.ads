@@ -74,7 +74,7 @@ package et_drawing_frame.board is
 		assy_doc		: type_cam_marker := (content => to_content ("ASSEMBLY"), others => <>);
 		keepout			: type_cam_marker := (content => to_content ("KEEPOUT"), others => <>);
 		plated_millings	: type_cam_marker := (content => to_content ("PLTD_MILLGS"), others => <>);
-		pcb_outline 	: type_cam_marker := (content => to_content ("OUTLINE"), others => <>);
+		pcb_outline	: type_cam_marker := (content => to_content ("OUTLINE"), others => <>);
 		route_restrict	: type_cam_marker := (content => to_content ("ROUTE_RESTRICT"), others => <>);
 		via_restrict	: type_cam_marker := (content => to_content ("VIA_RESTRICT"), others => <>);
 		signal_layer	: type_cam_marker := (content => to_content ("SGNL_LYR:"), others => <>);
@@ -112,7 +112,7 @@ package et_drawing_frame.board is
 
 	-- Generates a default frame for the given domain:
 	-- function make_default_frame (domain : in type_domain)
-	-- 	return type_frame;
+	--	return type_frame;
 
 	function make_default_frame_pcb
 		return type_frame_pcb_pre;

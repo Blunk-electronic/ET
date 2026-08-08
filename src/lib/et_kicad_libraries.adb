@@ -52,10 +52,10 @@ with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 
 with et_directions;						use et_directions;
 with et_axes;							use et_axes;
@@ -128,7 +128,7 @@ package body et_kicad_libraries is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	procedure check_prefix_characters (
-		prefix 		: in pac_device_prefix.bounded_string;
+		prefix		: in pac_device_prefix.bounded_string;
 		characters	: in character_set)
 	is
 		use pac_device_prefix;
@@ -167,8 +167,8 @@ package body et_kicad_libraries is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string (""),
-				id 			=> 0,
+				prefix		=> pac_device_prefix.to_bounded_string (""),
+				id			=> 0,
 				id_width	=> 1);
 
 		c : character;
@@ -246,8 +246,8 @@ package body et_kicad_libraries is
 		-- Example: if the given string was IC002 then digit is 3.
 		r.id_width := digit;
 
--- 		put_line(" id    " & natural'image(r.id));
--- 		put_line(" digits" & natural'image(r.id_width));
+--		put_line(" id    " & natural'image(r.id));
+--		put_line(" digits" & natural'image(r.id_width));
 
 		return r;
 	end to_component_reference;
@@ -546,7 +546,7 @@ package body et_kicad_libraries is
 		return et_kicad_general.type_library_name.to_bounded_string (
 			f (
 				read_line (
-					line 			=> text,
+					line			=> text,
 					comment_mark	=> comment_mark,
 					ifs				=> latin_1.colon
 					),
@@ -554,10 +554,10 @@ package body et_kicad_libraries is
 				);
 	end library_name;
 
--- 	function to_string (dir : in type_library_directory.bounded_string) return string is
--- 	begin
--- 		return type_library_directory.to_string (dir);
--- 	end to_string;
+--	function to_string (dir : in type_library_directory.bounded_string) return string is
+--	begin
+--		return type_library_directory.to_string (dir);
+--	end to_string;
 
 
 
@@ -568,7 +568,7 @@ package body et_kicad_libraries is
 				read_line (
 					line			=> text,
 					comment_mark	=> comment_mark,
-					ifs 			=> latin_1.colon
+					ifs			=> latin_1.colon
 					),
 				position => 2) -- the part after the colon
 				);
@@ -582,7 +582,7 @@ package body et_kicad_libraries is
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
 	-- the function whether we are dealing with schematic or library fields.
-		line 		: in type_fields_of_line;
+		line		: in type_fields_of_line;
 		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field
 		return type_placeholder_meaning is
 
@@ -702,94 +702,94 @@ package body et_kicad_libraries is
 		return a;
 	end to_alignment_vertical;
 
--- 	function to_text_style (
--- 	-- Converts a vertical kicad text style to type_text_style.
--- 	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
--- 	-- We are interested in the 2nd and 3rd character only.
--- 		style_in : in string;
--- 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
--- 		-- Explanation: The style of a text is something like "~" or "Italic".
--- 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
--- 		) return type_text_style is
+--	function to_text_style (
+--	-- Converts a vertical kicad text style to type_text_style.
+--	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
+--	-- We are interested in the 2nd and 3rd character only.
+--		style_in : in string;
+--		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
+--		-- Explanation: The style of a text is something like "~" or "Italic".
+--		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
+--		) return type_text_style is
 --
--- 		a : type_text_style;
--- 		s_field : string (1..2);
+--		a : type_text_style;
+--		s_field : string (1..2);
 --
--- 		procedure invalid_style is
--- 		begin
--- 			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
--- 			raise constraint_error;
--- 		end invalid_style;
+--		procedure invalid_style is
+--		begin
+--			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
+--			raise constraint_error;
+--		end invalid_style;
 --
--- 	begin -- to_text_style
--- 		case text is
--- 			when true =>
--- 				if style_in = text_schematic_style_normal then
--- 					a := type_text_style'first;
--- 				elsif style_in = text_schematic_style_italic then
--- 					a := ITALIC;
--- 				else
--- 					invalid_style;
--- 				end if;
+--	begin -- to_text_style
+--		case text is
+--			when true =>
+--				if style_in = text_schematic_style_normal then
+--					a := type_text_style'first;
+--				elsif style_in = text_schematic_style_italic then
+--					a := ITALIC;
+--				else
+--					invalid_style;
+--				end if;
 --
--- 			when false =>
--- 				s_field := style_in (style_in'first + 1 .. style_in'last);
+--			when false =>
+--				s_field := style_in (style_in'first + 1 .. style_in'last);
 --
--- 				if    s_field = field_style_default then 		a := type_text_style'first;
--- 				elsif s_field = field_style_bold then 			a := BOLD;
--- 				elsif s_field = field_style_italic then 		a := ITALIC;
--- 				elsif s_field = field_style_italic_bold then 	a := ITALIC_BOLD;
--- 				else
--- 					invalid_style;
--- 				end if;
--- 		end case;
+--				if    s_field = field_style_default then		a := type_text_style'first;
+--				elsif s_field = field_style_bold then			a := BOLD;
+--				elsif s_field = field_style_italic then		a := ITALIC;
+--				elsif s_field = field_style_italic_bold then	a := ITALIC_BOLD;
+--				else
+--					invalid_style;
+--				end if;
+--		end case;
 --
--- 		return a;
+--		return a;
 --
--- 		exception
--- 			when constraint_error =>
--- 				invalid_style;
+--		exception
+--			when constraint_error =>
+--				invalid_style;
 --
--- 				return a; -- CS: never reached
+--				return a; -- CS: never reached
 --
--- 	end to_text_style;
+--	end to_text_style;
 
--- 	function to_field_visible (
--- 	-- Converts the kicad field visible flag to the type_text_visible.
--- 	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
--- 		vis_in 		: in string; -- the string to be converted
--- 		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
--- 		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
--- 		-- In component libraries it is defined by characters like V or I.
--- 		)
--- 		return et_libraries.type_text_visible is
+--	function to_field_visible (
+--	-- Converts the kicad field visible flag to the type_text_visible.
+--	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
+--		vis_in		: in string; -- the string to be converted
+--		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
+--		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
+--		-- In component libraries it is defined by characters like V or I.
+--		)
+--		return et_libraries.type_text_visible is
 --
--- 		v_in_lib : type_library_field_visible;
--- 		v_in_sch : type_schematic_field_visible;
--- 		v_out : et_libraries.type_text_visible;
--- 	begin
--- 		case schematic is
+--		v_in_lib : type_library_field_visible;
+--		v_in_sch : type_schematic_field_visible;
+--		v_out : et_libraries.type_text_visible;
+--	begin
+--		case schematic is
 --
--- 			when true =>
--- 				-- As the type_schematic_field_visible has letter V as workaround, we must
--- 				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
--- 				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
--- 				case v_in_sch is
--- 					when V0000 => v_out := et_libraries.yes; -- visible
--- 					when V0001 => v_out := et_libraries.no;  -- invisible
--- 				end case;
+--			when true =>
+--				-- As the type_schematic_field_visible has letter V as workaround, we must
+--				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
+--				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
+--				case v_in_sch is
+--					when V0000 => v_out := et_libraries.yes; -- visible
+--					when V0001 => v_out := et_libraries.no;  -- invisible
+--				end case;
 --
--- 			when false =>
--- 				v_in_lib := type_library_field_visible'value(vis_in);
--- 				case v_in_lib is
--- 					when V => v_out := et_libraries.yes;
--- 					when I => v_out := et_libraries.no;
--- 				end case;
+--			when false =>
+--				v_in_lib := type_library_field_visible'value(vis_in);
+--				case v_in_lib is
+--					when V => v_out := et_libraries.yes;
+--					when I => v_out := et_libraries.no;
+--				end case;
 --
--- 		end case;
+--		end case;
 --
--- 		return v_out;
--- 	end to_field_visible;
+--		return v_out;
+--	end to_field_visible;
 
 
 	function to_appearance (line : in type_fields_of_line; schematic : in boolean)
@@ -1027,7 +1027,7 @@ package body et_kicad_libraries is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in pac_package_name.bounded_string; -- S_SO14
+		package_name	: in pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in type_log_level)
 		return pac_package_model_file.bounded_string
 	is
@@ -1035,10 +1035,10 @@ package body et_kicad_libraries is
 	-- contains the given package library with the given package.
 
 	-- V4:
-	-- 	- Searches the library directories in the order given in search_list_project_lib_dirs.
-	-- 	- The full library name is the result of a search operation:
-	-- 	- The first directory and the first library that contains the package.
-	-- 	- There can be many library directories to search in.
+	--	- Searches the library directories in the order given in search_list_project_lib_dirs.
+	--	- The full library name is the result of a search operation:
+	--	- The first directory and the first library that contains the package.
+	--	- There can be many library directories to search in.
 
 	-- V5:
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
@@ -1185,7 +1185,7 @@ package body et_kicad_libraries is
 
 	function terminal_port_map_fits (
 		library_name		: in pac_package_model_file.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		package_name		: in pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean
 	is
@@ -1377,7 +1377,7 @@ package body et_kicad_libraries is
 			tmp_draw_polyline	: type_symbol_polyline;
 			tmp_draw_rectangle	: type_symbol_rectangle;
 			tmp_draw_arc		: type_symbol_arc;
-			tmp_draw_circle 	: type_symbol_circle;
+			tmp_draw_circle	: type_symbol_circle;
 			tmp_draw_text		: et_symbol_text.type_symbol_text;
 			tmp_draw_port		: type_port_library;
 
@@ -1547,7 +1547,7 @@ package body et_kicad_libraries is
 				-- last field : fill style N/F/f no fill/foreground/background
 
 				-- we start processing the fields from here (where the total number of points is)
-				pos 		: type_field_count_positive := 2;
+				pos		: type_field_count_positive := 2;
 
 				-- the x position of the last point of the line is here (field #10 in example above)
 				B	: constant type_field_count := get_field_count (line) - 2;
@@ -1797,42 +1797,42 @@ package body et_kicad_libraries is
 				-- #12 : horizontal alignment left/center/right L/C/R
 				-- #13 : vertical alignment top/center/bottom T/C/B
 
--- 				function to_style ( style_in : in string; bold_in : in string) return type_text_style is
--- 				-- Composes from style_in and bold_in a type_text_style
--- 					a : type_text_style;
+--				function to_style ( style_in : in string; bold_in : in string) return type_text_style is
+--				-- Composes from style_in and bold_in a type_text_style
+--					a : type_text_style;
 --
--- 					procedure invalid_style is begin
--- 						log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
--- 						raise constraint_error;
--- 					end invalid_style;
+--					procedure invalid_style is begin
+--						log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
+--						raise constraint_error;
+--					end invalid_style;
 --
--- 				begin -- to_style
--- 					if bold_in = library_text_bold_off then -- "0" -- bold disabled
+--				begin -- to_style
+--					if bold_in = library_text_bold_off then -- "0" -- bold disabled
 --
--- 						if style_in = text_library_style_normal then
--- 							a := normal;
--- 						elsif style_in = text_library_style_italic then
--- 							a := italic;
--- 						else
--- 							invalid_style;
--- 						end if;
+--						if style_in = text_library_style_normal then
+--							a := normal;
+--						elsif style_in = text_library_style_italic then
+--							a := italic;
+--						else
+--							invalid_style;
+--						end if;
 --
--- 					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
+--					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
 --
--- 						if style_in = text_library_style_normal then
--- 							a := bold;
--- 						elsif style_in = text_library_style_italic then
--- 							a := italic_bold;
--- 						else
--- 							invalid_style;
--- 						end if;
+--						if style_in = text_library_style_normal then
+--							a := bold;
+--						elsif style_in = text_library_style_italic then
+--							a := italic_bold;
+--						else
+--							invalid_style;
+--						end if;
 --
--- 					else -- "bold" flag invalid
--- 						raise constraint_error; -- CS : write message on invaid "bold" flag
--- 					end if;
+--					else -- "bold" flag invalid
+--						raise constraint_error; -- CS : write message on invaid "bold" flag
+--					end if;
 --
--- 					return a;
--- 				end to_style;
+--					return a;
+--				end to_style;
 
 				function to_content (text_in : in string) return pac_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a pac_text_content.bounded_string.
@@ -2058,7 +2058,7 @@ package body et_kicad_libraries is
 
 
 			function to_field (
-				line 	: in type_fields_of_line;
+				line	: in type_fields_of_line;
 				meaning	: in type_placeholder_meaning)
 				return type_text_placeholder
 			is
@@ -2096,7 +2096,7 @@ package body et_kicad_libraries is
 							unused_value : pac_device_value.bounded_string;
 						begin
 							unused_value := to_value_with_check (
-								value 						=> content (text),
+								value						=> content (text),
 								error_on_invalid_character	=> false);
 							-- For the operators convenice no error is raised if invalid
 							-- character found. This was the design gets imported but with
@@ -2198,7 +2198,7 @@ package body et_kicad_libraries is
 							missing_field (field_reference.meaning);
 						else
 							check_prefix_characters (
-								prefix 		=> tmp_prefix,
+								prefix		=> tmp_prefix,
 								characters	=> prefix_characters);
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
@@ -2266,8 +2266,8 @@ package body et_kicad_libraries is
 				pragma unreferenced (key);
 			begin
 
--- 				-- For the logfile write the component name.
--- 				-- If the component contains more than one unit, write number of units.
+--				-- For the logfile write the component name.
+--				-- If the component contains more than one unit, write number of units.
 
 				check_text_fields (log_threshold + 2);
 
@@ -2496,7 +2496,7 @@ package body et_kicad_libraries is
 							pac_terminal_port_map.insert (
 								container	=> tmp_terminal_port_map,
 								key			=> tmp_terminal_name, -- terminal name
-								new_item 	=> (
+								new_item	=> (
 												name => tmp_draw_port.name, -- port name
 												unit => to_unit_name (tmp_unit_id))); -- unit name
 
@@ -2505,25 +2505,25 @@ package body et_kicad_libraries is
 							raise constraint_error;
 					end case;
 
--- 					exception
--- 						when constraint_error =>
--- 							case pos is
--- 								when 190 =>
--- 									-- Tell the operator which port name the problem is:
--- 									log (
--- 										text => ERROR, "file '"
--- 											& et_libraries.to_string (lib_file_name) & "' "
--- 											& get_affected_line (line)
--- 											& "port name '" & to_string (tmp_draw_port_name)
--- 											& "' already used !",
--- 										console => true);
--- 									raise;
+--					exception
+--						when constraint_error =>
+--							case pos is
+--								when 190 =>
+--									-- Tell the operator which port name the problem is:
+--									log (
+--										text => ERROR, "file '"
+--											& et_libraries.to_string (lib_file_name) & "' "
+--											& get_affected_line (line)
+--											& "port name '" & to_string (tmp_draw_port_name)
+--											& "' already used !",
+--										console => true);
+--									raise;
 --
--- 								when others =>
--- 									raise;
--- 							end case;
+--								when others =>
+--									raise;
+--							end case;
 --
--- 						when others => raise;
+--						when others => raise;
 				end insert;
 
 				procedure locate_unit (
@@ -2912,7 +2912,7 @@ package body et_kicad_libraries is
 				end do_it;
 
 			begin -- add_footprint
-	-- 			log (text => "footpint/package filter", level => log_threshold + 1);
+	--			log (text => "footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
 
 				fp := type_package_proposal.to_bounded_string (f (line, 1));
@@ -3043,7 +3043,7 @@ package body et_kicad_libraries is
 										insert (
 											container	=> tmp_variants,
 											key			=> tmp_variant_name, -- the same as the package name -- S_SO14
-											new_item 	=> (
+											new_item	=> (
 												-- create package variant
 												model_cursor => get_package_model (package_model_name),
 
@@ -3103,7 +3103,7 @@ package body et_kicad_libraries is
 					line			=> get_line,
 					comment_mark	=> "#",
 					test_whole_line	=> false,
-					number 			=> positive (ada.text_io.line (current_input)));
+					number			=> positive (ada.text_io.line (current_input)));
 
 				case get_field_count (line) is
 					when 0 => null; -- we skip empty lines
@@ -3348,7 +3348,7 @@ package body et_kicad_libraries is
 		log (text => "reading component libraries ...", level => log_threshold);
 		log_indentation_up;
 
-		-- 	The tmp_component_libraries are empty (created on reading the project file) and must be filled.
+		--	The tmp_component_libraries are empty (created on reading the project file) and must be filled.
 		case et_import.cad_format is
 
 			-- For V4:
@@ -3433,10 +3433,10 @@ package body et_kicad_libraries is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in pac_device_model_file.bounded_string; 	-- ../lbr/bel_logic.lib
-		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
-		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		component_library	: in pac_device_model_file.bounded_string;	-- ../lbr/bel_logic.lib
+		generic_name		: in type_component_generic_name.bounded_string;				-- 7400
+		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
+		package_name		: in pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return pac_package_variant_name.bounded_string -- D
 	is
@@ -3452,7 +3452,7 @@ package body et_kicad_libraries is
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
 			library_name	: in pac_device_model_file.bounded_string;
-			components 		: in out type_components_library.map)
+			components		: in out type_components_library.map)
 		is
 			pragma unreferenced (library_name);
 			use type_components_library;
@@ -3462,7 +3462,7 @@ package body et_kicad_libraries is
 			-- Queries the package variants of the generic component.
 			procedure query_variants (
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in out type_component_library)
+				component		: in out type_component_library)
 			is
 				pragma unreferenced (component_name);
 				use et_package_library;
@@ -3530,8 +3530,8 @@ package body et_kicad_libraries is
 
 					-- Test whether the new variant complies with the terminal_port_map
 					if terminal_port_map_fits (
-						library_name 		=> full_package_library_name,
-						package_name 		=> package_name,
+						library_name		=> full_package_library_name,
+						package_name		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
@@ -3595,8 +3595,8 @@ package body et_kicad_libraries is
 			-- query the package variants of the generic component
 			type_components_library.update_element (
 				container	=> components,
-				position 	=> component_cursor,
-				process 	=> query_variants'access);
+				position	=> component_cursor,
+				process	=> query_variants'access);
 
 			log_indentation_down;
 
@@ -3617,7 +3617,7 @@ package body et_kicad_libraries is
 		-- Compose the full name of the package library:
 		--full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
 		full_package_library_name := full_library_name (
-			library_name 	=> package_library, -- bel_ic
+			library_name	=> package_library, -- bel_ic
 			package_name	=> package_name,	-- S_SO14
 			log_threshold	=> log_threshold + 1);
 
@@ -3654,7 +3654,7 @@ package body et_kicad_libraries is
 	begin
 		-- Only vitual components have the power flag property.
 		-- For real components the return is always false;
--- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
+--		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
 		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
@@ -3677,7 +3677,7 @@ package body et_kicad_libraries is
 		port_cursor : type_ports.cursor;
 
 		procedure set_cursor (
-			name 	: in type_device_name;
+			name	: in type_device_name;
 			ports	: in type_ports.list) is
 		pragma unreferenced (name);
 		begin
@@ -3687,7 +3687,7 @@ package body et_kicad_libraries is
 	begin -- first_port
 		type_portlists.query_element (
 			position	=> component_cursor,
-			process 	=> set_cursor'access);
+			process	=> set_cursor'access);
 
 		return port_cursor;
 	end first_port;
@@ -3708,7 +3708,7 @@ package body et_kicad_libraries is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in pac_device_model_file.bounded_string;
+			library	: in pac_device_model_file.bounded_string;
 			components	: in type_components_library.map) is
 		pragma unreferenced (library);
 		begin
@@ -3748,7 +3748,7 @@ package body et_kicad_libraries is
 
 	-- Writes the properties of the given note
 	procedure write_note_properties (
-		note 			: in type_text;
+		note			: in type_text;
 		log_threshold	: in type_log_level := 0)
 	is
 	begin
@@ -3769,11 +3769,11 @@ package body et_kicad_libraries is
 			-- size
 			log (text => "size" & to_string (note.size));
 
--- 			-- style
--- 			log (text => "style " & to_lower (to_string (note.style)));
+--			-- style
+--			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
--- 			log (text => "line width" & to_string (note.line_width));
+--			log (text => "line width" & to_string (note.line_width));
 
 			-- rotation
 			log (text => "rotation" & to_string (note.rotation));

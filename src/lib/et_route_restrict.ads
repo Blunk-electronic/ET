@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
@@ -117,14 +117,14 @@ package et_route_restrict is
 
 	-- Converts the outer edge of a circle to a polygon:
 	function to_polygon_outside (
-		circle 		: in type_route_restrict_circle;
+		circle		: in type_route_restrict_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
 
 	-- Converts the inner edge of a circle to a polygon:
 	function to_polygon_inside (
-		circle 		: in type_route_restrict_circle;
+		circle		: in type_route_restrict_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
 
@@ -185,15 +185,15 @@ package et_route_restrict is
 
 	-- -- Logs the properties of the given line of route restrict
 	-- procedure line_route_restrict_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_route_restrict_lines.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_route_restrict_lines.cursor;
+	--	log_threshold	: in type_log_level);
  --
 	-- -- Logs the properties of the given arc of route restrict
 	-- procedure arc_route_restrict_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_route_restrict_arcs.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_route_restrict_arcs.cursor;
+	--	log_threshold	: in type_log_level);
 
 	-- CS procedure circle_route_restrict_properties
 

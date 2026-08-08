@@ -63,7 +63,7 @@ package body et_cp_board_keepout is
 
 	procedure draw_keepout_zone (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -121,7 +121,7 @@ package body et_cp_board_keepout is
 
 	procedure draw_keepout_zone_cutout (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);
@@ -144,14 +144,14 @@ package body et_cp_board_keepout is
 
 			-- CS
 			-- add_zone (
-			-- 	module_cursor	=> module,
-			-- 	zone			=> (c with null record),
-			-- 	face			=> face,
+			--	module_cursor	=> module,
+			--	zone			=> (c with null record),
+			--	face			=> face,
 
 			-- Depending on the origin of the command,
 			-- the design state is to be commited or not:
 			--	commit_design	=> to_commit_design (cmd),
-			-- 	log_threshold	=> log_threshold + 1);
+			--	log_threshold	=> log_threshold + 1);
 
 		end build_zone;
 
@@ -181,7 +181,7 @@ package body et_cp_board_keepout is
 
 	procedure delete_keepout (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);

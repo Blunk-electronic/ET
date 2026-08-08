@@ -35,8 +35,8 @@
 --
 --  Description:
 --
--- 	This package bases on the Weiler-Atherton algorithm. Find basics here:
--- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
+--	This package bases on the Weiler-Atherton algorithm. Find basics here:
+--	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>

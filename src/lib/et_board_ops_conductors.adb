@@ -399,7 +399,7 @@ package body et_board_ops_conductors is
 			-- Build the end point of the line.
 			-- It is the start point moved in direction at given length:
 			set_B (line, move (
-					point 		=> get_A (line),
+					point		=> get_A (line),
 					direction	=> direction,
 					distance	=> length));
 		end make_line;
@@ -871,7 +871,7 @@ package body et_board_ops_conductors is
 
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net 		: in type_net)
+				net		: in type_net)
 			is
 				pragma unreferenced (net_name);
 				use pac_conductor_lines;
@@ -1333,7 +1333,7 @@ package body et_board_ops_conductors is
 
 					procedure query_lines (
 						net_name	: in pac_net_name.bounded_string;
-						net 		: in type_net)
+						net		: in type_net)
 					is
 						pragma unreferenced (net_name);
 
@@ -2422,7 +2422,7 @@ package body et_board_ops_conductors is
 
 					procedure query_arcs (
 						net_name	: in pac_net_name.bounded_string;
-						net 		: in type_net)
+						net		: in type_net)
 					is
 						pragma unreferenced (net_name);
 
@@ -3921,14 +3921,14 @@ package body et_board_ops_conductors is
 
 			if has_element (zcs) then
 				result := (
-					fill_style 		=> SOLID,
+					fill_style		=> SOLID,
 					zone_solid		=> zcs,
 					segment			=> sc,
 					net				=> net_cursor);
 
 			elsif has_element (zch) then
 				result := (
-					fill_style 		=> HATCHED, -- mutates the result !
+					fill_style		=> HATCHED, -- mutates the result !
 					zone_hatched	=> zch,
 					segment			=> sc,
 					net				=> net_cursor);
@@ -4090,13 +4090,13 @@ package body et_board_ops_conductors is
 
 			if has_element (zcs) then
 				result := (
-					fill_style 		=> SOLID,
+					fill_style		=> SOLID,
 					zone_solid		=> zcs,
 					segment			=> sc);
 
 			elsif has_element (zch) then
 				result := (
-					fill_style 		=> HATCHED, -- mutates the result !
+					fill_style		=> HATCHED, -- mutates the result !
 					zone_hatched	=> zch,
 					segment			=> sc);
 
@@ -5608,7 +5608,7 @@ package body et_board_ops_conductors is
 		return type_object
 	is
 		result_category			: type_object_category := CAT_VOID;
-		result_segment_net  	: type_object_segment_net;
+		result_segment_net	: type_object_segment_net;
 		result_segment_floating : type_object_segment_floating;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;

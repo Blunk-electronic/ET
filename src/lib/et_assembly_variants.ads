@@ -92,7 +92,7 @@ package et_assembly_variants is
 	-- Variants of devices are collected in a map.
 	package pac_device_variants is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device_variant);
+		element_type	=> type_device_variant);
 
 	use pac_device_variants;
 

@@ -38,7 +38,7 @@
 
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_package_variant_name;	use et_package_variant_name;
@@ -66,8 +66,8 @@ package et_package_variant is
 	use pac_package_variant_name;
 
 	package pac_package_variants is new ordered_maps (
-		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
-		element_type 	=> type_package_variant);
+		key_type		=> pac_package_variant_name.bounded_string, -- D, N
+		element_type	=> type_package_variant);
 
 	use pac_package_variants;
 

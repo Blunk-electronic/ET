@@ -54,14 +54,14 @@ package et_cp_board_text is
 	-- board demo place text silkscreen top 0.15 1 140 100 0 "Dummy Text"
 	procedure place_text (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 
 	procedure place_text_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

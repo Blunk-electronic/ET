@@ -48,8 +48,8 @@ package body et_cp_schematic_libraries is
 
 
 	procedure add_library_path (
-   		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		module			: in pac_generic_modules.cursor;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -86,8 +86,8 @@ package body et_cp_schematic_libraries is
 
 
 	procedure remove_library_path (
-   		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		module			: in pac_generic_modules.cursor;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
