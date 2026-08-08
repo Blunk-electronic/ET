@@ -632,7 +632,7 @@ package body et_nets is
 
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is begin
 		return key (net_cursor);
 	end get_net_name;
@@ -776,7 +776,7 @@ package body et_nets is
 
 
 		procedure query_strands (
-			net_name	: in pac_net_name.bounded_string;
+			net_name	: in type_net_name;
 			net			: in type_net)
 		is
 			pragma unreferenced (net_name);
@@ -817,7 +817,7 @@ package body et_nets is
 
 
 		procedure query_strands (
-			net_name	: in pac_net_name.bounded_string;
+			net_name	: in type_net_name;
 			net			: in type_net)
 		is
 			pragma unreferenced (net_name);
@@ -868,7 +868,7 @@ package body et_nets is
 
 	function get_net_name (
 		object	: in type_object_segment)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is begin
 		return key (object.net_cursor);
 	end get_net_name;
@@ -921,7 +921,7 @@ package body et_nets is
 
 	function get_net_name (
 		strand	: in type_object_strand)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is begin
 		return key (strand.net_cursor);
 	end get_net_name;
@@ -954,7 +954,7 @@ package body et_nets is
 
 	function get_net_name (
 		strand	: in pac_object_strands.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
 		use pac_object_strands;
 		s : constant type_object_strand := element (strand);

@@ -76,7 +76,7 @@ package et_schematic_ops_netlists is
 	procedure collect_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
-		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
+		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
 		netlist_tree 	: in out pac_netlist_modules.tree;
 		netlist_cursor 	: in pac_netlist_modules.cursor;
@@ -90,7 +90,7 @@ package et_schematic_ops_netlists is
 	-- instances:
 	function make_prefix (
 		tree_cursor		: in pac_renumber_modules.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 

@@ -79,7 +79,7 @@ package body et_module_write_submodules is
 		use et_schematic_geometry.pac_geometry_2;
 
 		use pac_submodules;
-		use et_net_names.pac_net_name;
+		use et_net_names;
 
 
 

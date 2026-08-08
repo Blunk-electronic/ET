@@ -142,7 +142,7 @@ package body et_submodules is
 	is
 
 		procedure move (
-			name	: in pac_net_name.bounded_string;
+			name	: in type_net_name;
 			port	: in out type_submodule_port)
 		is
 			pragma unreferenced (name);

@@ -57,7 +57,7 @@ package et_canvas_schematic_preliminary_object is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information here.
 
-	object_net_name		: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
+	object_net_name		: type_net_name := et_net_names.no_name; -- GND, P3V3
 
 	object_device_name	: type_device_name := device_name_default; -- IC45, FD2
 

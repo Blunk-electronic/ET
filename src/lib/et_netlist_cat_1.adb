@@ -82,7 +82,7 @@ package body et_netlist_cat_1 is
 
 	procedure add_net_to_netlist (
 		netlist		: in out pac_netlist_cat_1.map;
-		name		: in pac_net_name.bounded_string;
+		name		: in type_net_name;
 		devices		: in pac_device_ports_extended.set;
 		submodules	: in pac_submodule_ports_extended.set;
 		netchangers	: in pac_netchanger_ports.set)
@@ -213,7 +213,7 @@ package body et_netlist_cat_1 is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net_ports_cat_1)
 			is
 				use ada.strings;

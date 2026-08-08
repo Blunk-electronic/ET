@@ -63,7 +63,7 @@ package et_net_ports_submodules is
 		-- CS rename to submodule ?
 
 		-- The net of the submodule is here the port name:
-		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port_name	: type_net_name; -- CLOCK_GENERATOR_OUT
 		-- CS rename to port ?
 	end record;
 

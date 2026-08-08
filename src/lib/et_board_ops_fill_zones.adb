@@ -412,12 +412,12 @@ package body et_board_ops_fill_zones is
 		log_threshold			: in type_log_level)
 	is
 		use pac_nets;
-		use pac_net_name;
+		use et_net_names;
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
-		parent_net_name : pac_net_name.bounded_string;
+		parent_net_name : type_net_name;
 
 
 		procedure set_parent_net_name is begin
@@ -1092,7 +1092,7 @@ package body et_board_ops_fill_zones is
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
-		unused_parent_net_name : pac_net_name.bounded_string;
+		unused_parent_net_name : type_net_name;
 
 		procedure set_parent_net_name is begin
 			if parent_net /= pac_nets.no_element then
@@ -1643,7 +1643,7 @@ package body et_board_ops_fill_zones is
 
 
 			procedure route_solid (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1727,7 +1727,7 @@ package body et_board_ops_fill_zones is
 
 
 			procedure route_hatched (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1824,8 +1824,8 @@ package body et_board_ops_fill_zones is
 
 			procedure query_given_net (gn : pac_net_names.cursor) is
 				use et_schematic_ops_nets;
-				use pac_net_name;
-				name : pac_net_name.bounded_string renames element (gn);
+				use et_net_names;
+				name : type_net_name renames element (gn);
 			begin
 				log (text => "net " & to_string (name), level => log_threshold + 2);
 				log_indentation_up;
@@ -2184,7 +2184,7 @@ package body et_board_ops_fill_zones is
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name;
+		net_name		: in type_net_name := et_net_names.no_name;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2196,7 +2196,7 @@ package body et_board_ops_fill_zones is
 
 		use et_nets;
 		use pac_nets;
-		use pac_net_name;
+		use et_net_names;
 
 		use et_fill_zones.boards;
 
@@ -2262,7 +2262,7 @@ package body et_board_ops_fill_zones is
 
 
 			procedure add_polygon (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2295,7 +2295,7 @@ package body et_board_ops_fill_zones is
 
 
 			procedure add_polygon (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2472,7 +2472,7 @@ package body et_board_ops_fill_zones is
 		-- Fills polygons that are connected with a net:
 		procedure connected_zones is
 			use et_nets;
-			use pac_net_name;
+			use et_net_names;
 			use pac_nets;
 			use pac_route_solid;
 			use pac_route_hatched;
@@ -2489,7 +2489,7 @@ package body et_board_ops_fill_zones is
 
 
 				procedure route_solid (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
@@ -2519,7 +2519,7 @@ package body et_board_ops_fill_zones is
 
 
 				procedure route_hatched (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);

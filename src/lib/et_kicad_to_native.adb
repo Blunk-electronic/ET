@@ -595,7 +595,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_kicad.schematic.type_net) is
 					pragma unreferenced (net_name);
 
@@ -2146,7 +2146,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_ports (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				ports		: in out et_kicad.schematic.pac_ports_with_reference.set)
 			is
 				use et_kicad.schematic.pac_ports_with_reference;
@@ -2874,7 +2874,7 @@ package body et_kicad_to_native is
 			-- copies the kicad strands to native strands of a net.
 			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.
 			-- As a strand is part of a net, there is no need for individual strand names.
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
 				use et_kicad.schematic.type_strands;
@@ -3258,7 +3258,7 @@ package body et_kicad_to_native is
 
 
 			procedure copy_layout_stuff (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
 				pragma unreferenced (net_name);

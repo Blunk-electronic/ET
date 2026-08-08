@@ -131,7 +131,7 @@ package body et_schematic_ops_netlists is
 	function port_direction (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string) -- clock_out
+		port_name		: in type_net_name) -- clock_out
 		return type_netchanger_port_name
 	is
 		use et_submodules;
@@ -226,7 +226,7 @@ package body et_schematic_ops_netlists is
 	procedure collect_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
-		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
+		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
 		netlist_tree 	: in out pac_netlist_modules.tree;
 		netlist_cursor 	: in pac_netlist_modules.cursor;
@@ -245,7 +245,7 @@ package body et_schematic_ops_netlists is
 			use et_nets.pac_nets;
 			net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			all_ports : type_net_ports;
 			device_ports_extended : pac_device_ports_extended.set;
 			submodule_ports_extended : pac_submodule_ports_extended.set;
@@ -325,8 +325,8 @@ package body et_schematic_ops_netlists is
 				net_name := et_nets.pac_nets.key (net_cursor_sch);
 
 				log (text => "net "
-						& pac_net_name.to_string (prefix)
-						& pac_net_name.to_string (net_name),
+						& pac_net_name.to_string (pac_net_name.bounded_string (prefix))
+						& pac_net_name.to_string (pac_net_name.bounded_string (net_name)),
 						level => log_threshold + 1);
 
 				log_indentation_up;
@@ -380,10 +380,10 @@ package body et_schematic_ops_netlists is
 
 	function make_prefix (
 		tree_cursor		: in pac_renumber_modules.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
-		use pac_net_name;
-		prefix : pac_net_name.bounded_string;
+		use et_net_names;
+		prefix : type_net_name;
 
 		use pac_renumber_modules;
 		cursor : pac_renumber_modules.cursor := tree_cursor;

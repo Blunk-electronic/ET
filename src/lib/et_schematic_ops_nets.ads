@@ -70,7 +70,7 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_nets is
 
 	use pac_generic_modules;
-	use pac_net_name;
+	use et_net_names;
 
 
 
@@ -597,7 +597,7 @@ package et_schematic_ops_nets is
 	-- If the net could not be found, returns no_element:
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string)
+		net_name		: in type_net_name)
 		return pac_nets.cursor;
 
 
@@ -605,7 +605,7 @@ package et_schematic_ops_nets is
 	-- the given module:
 	function net_exists (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string)
+		net_name		: in type_net_name)
 		return boolean;
 
 
@@ -618,7 +618,7 @@ package et_schematic_ops_nets is
 	-- net in any case:
 	procedure create_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_name		: in type_net_name;
 		created			: out boolean;
 		net_cursor		: out pac_nets.cursor;
 		log_threshold	: in type_log_level);
@@ -650,7 +650,7 @@ package et_schematic_ops_nets is
 	-- the lowest available name would be N$3.
 	function get_lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
-		return pac_net_name.bounded_string; -- N$3
+		return type_net_name; -- N$3
 
 
 
@@ -667,7 +667,7 @@ package et_schematic_ops_nets is
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
-		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		new_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -680,8 +680,8 @@ package et_schematic_ops_nets is
 	-- exception will be raised:
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N
+		net_name_before	: in type_net_name; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in type_net_name; -- RESET_N, MOTOR_ON_OFF_N
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -696,7 +696,7 @@ package et_schematic_ops_nets is
 		net				: in type_object_net;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
-		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		new_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -712,8 +712,8 @@ package et_schematic_ops_nets is
 	--    specifies the single sheet where the renaming is to take place:
 	procedure rename_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N
+		net_name_before	: in type_net_name; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in type_net_name; -- RESET_N, MOTOR_ON_OFF_N
 		all_sheets		: in boolean := false;
 		sheet			: in type_sheet := 1;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -740,7 +740,7 @@ package et_schematic_ops_nets is
 	-- exception will be raised:
 	procedure delete_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_name		: in type_net_name;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -769,7 +769,7 @@ package et_schematic_ops_nets is
 	-- an exception will be raised:
 	procedure show_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_name		: in type_net_name;
 		log_threshold	: in type_log_level);
 
 
@@ -779,7 +779,7 @@ package et_schematic_ops_nets is
 	-- Net names are sorted alphabetically:
 	function get_first_net (
 		module_cursor	: in pac_generic_modules.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 
@@ -808,7 +808,7 @@ package et_schematic_ops_nets is
 	-- If the given net has not been found, raises exception:
 	function get_net_index (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_name		: in type_net_name;
 		log_threshold	: in type_log_level)
 		return type_net_index;
 
@@ -875,7 +875,7 @@ package et_schematic_ops_nets is
 	-- Updates strand positions and the ratsnest:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		A				: in type_object_position; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -896,7 +896,7 @@ package et_schematic_ops_nets is
 	-- an exception will be raised:
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- local/global
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -906,7 +906,7 @@ package et_schematic_ops_nets is
 	-- Assumes that the given net exists.
 	function get_scope (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		log_threshold	: in type_log_level)
 		return type_net_scope;
 
@@ -1299,7 +1299,7 @@ package et_schematic_ops_nets is
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_name_net	: in pac_net_name.bounded_string;
+		new_name_net	: in type_net_name;
 		-- CS add argument for new names of other kinds of objects
 		log_threshold	: in type_log_level);
 

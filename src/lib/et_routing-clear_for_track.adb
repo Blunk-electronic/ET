@@ -290,7 +290,7 @@ is
 			--nf : pac_nets.cursor := module.nets.first;
 
 			--procedure query_net (
-				--name : in pac_net_name.bounded_string;
+				--name : in type_net_name;
 				--net  : in type_net)
 			--is
 				--class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);

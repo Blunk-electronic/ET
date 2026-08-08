@@ -96,7 +96,7 @@ package body et_schematic_ops_units is
 	use pac_unit_name;
 	use pac_text_schematic;
 
-	use pac_net_name;
+	use et_net_names;
 
 
 
@@ -671,7 +671,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -819,7 +819,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1430,7 +1430,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_strands;
@@ -2319,7 +2319,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_strands;

@@ -346,7 +346,7 @@ is
 		llt		: type_tag_labels.list;
 
 		strand 		: type_strand;
-		net_name	: pac_net_name.bounded_string;
+		net_name	: type_net_name;
 
 
 		function label_sits_on_segment (
@@ -465,13 +465,13 @@ is
 
 										-- The first matching simple label dictates the strand name.
 										-- If other labels with text differing from strand name found, output warning.
-										if pac_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
+										if pac_net_name.length (pac_net_name.bounded_string (anon_strand_a.name)) = 0 then -- If this is the first matching label
 
 											-- assume the label text as strand name.
 											anon_strand_a.name := ls.text;
 										else
 											-- If label text is different from previously assigned strand name:
-											if not pac_net_name."=" (anon_strand_a.name, ls.text) then
+											if not et_net_names."=" (anon_strand_a.name, ls.text) then
 												output_net_label_conflict;
 
 												-- for the log, some more information

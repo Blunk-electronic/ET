@@ -139,7 +139,7 @@ package body et_schematic_ops_netchangers is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				use pac_strands;
@@ -229,7 +229,7 @@ package body et_schematic_ops_netchangers is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -438,7 +438,7 @@ package body et_schematic_ops_netchangers is
 
 
 				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					strand_cursor : pac_strands.cursor := net.strands.first;
@@ -1092,7 +1092,7 @@ package body et_schematic_ops_netchangers is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;

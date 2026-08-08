@@ -74,10 +74,10 @@ package body et_board_ops_conductors is
 
 
 	function is_freetrack (
-		net_name : in pac_net_name.bounded_string)
+		net_name : in type_net_name)
 		return boolean
 	is
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if length (net_name) = 0 then
 			return true;
@@ -90,10 +90,10 @@ package body et_board_ops_conductors is
 
 
 	function freetrack (
-		net_name : in pac_net_name.bounded_string)
+		net_name : in type_net_name)
 		return string
 	is
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if length (net_name) = 0 then
 			return " freetrack";
@@ -157,7 +157,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -181,7 +181,7 @@ package body et_board_ops_conductors is
 
 			-- Appends the track to the net.
 			procedure add (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -243,7 +243,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
+		net_name		: in type_net_name := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -328,7 +328,7 @@ package body et_board_ops_conductors is
 
 			--procedure add (
 			---- Appends the track to the net.
-				--net_name	: in pac_net_name.bounded_string;
+				--net_name	: in type_net_name;
 				--net			: in out type_net)
 			--is
 				--use pac_conductor_lines;
@@ -357,7 +357,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line_start_at_terminal_with_length (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -459,7 +459,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line_start_at_terminal_with_notches_along_axis (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -558,7 +558,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -651,7 +651,7 @@ package body et_board_ops_conductors is
 
 	procedure add_line_start_at_terminal_with_notches_along_axis_2 (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -759,7 +759,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -870,7 +870,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net 		: in type_net)
 			is
 				pragma unreferenced (net_name);
@@ -944,7 +944,7 @@ package body et_board_ops_conductors is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 
 			procedure query_line (c : in pac_conductor_lines.cursor) is
@@ -1041,7 +1041,7 @@ package body et_board_ops_conductors is
 			procedure process_nets is
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					l : pac_conductor_lines.cursor := net.route.lines.first;
@@ -1150,7 +1150,7 @@ package body et_board_ops_conductors is
 			procedure process_nets is
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
@@ -1232,7 +1232,7 @@ package body et_board_ops_conductors is
 			procedure process_nets is
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
@@ -1332,7 +1332,7 @@ package body et_board_ops_conductors is
 				procedure query_net (net_cursor : in pac_nets.cursor) is
 
 					procedure query_lines (
-						net_name	: in pac_net_name.bounded_string;
+						net_name	: in type_net_name;
 						net 		: in type_net)
 					is
 						pragma unreferenced (net_name);
@@ -1562,7 +1562,7 @@ package body et_board_ops_conductors is
 
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in type_net)
 				is
 					pragma unreferenced (net_name);
@@ -1703,7 +1703,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure update_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				procedure move (line : in out type_conductor_line) is begin
@@ -1827,7 +1827,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -1848,7 +1848,7 @@ package body et_board_ops_conductors is
 			use et_nets;
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1982,7 +1982,7 @@ package body et_board_ops_conductors is
 
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -2018,7 +2018,7 @@ package body et_board_ops_conductors is
 
 			-- Appends the track to the net.
 			procedure add (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2106,7 +2106,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2249,7 +2249,7 @@ package body et_board_ops_conductors is
 			procedure process_nets is
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
@@ -2333,7 +2333,7 @@ package body et_board_ops_conductors is
 			procedure process_nets is
 
 				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
@@ -2421,7 +2421,7 @@ package body et_board_ops_conductors is
 				procedure query_net (net_cursor : in pac_nets.cursor) is
 
 					procedure query_arcs (
-						net_name	: in pac_net_name.bounded_string;
+						net_name	: in type_net_name;
 						net 		: in type_net)
 					is
 						pragma unreferenced (net_name);
@@ -2602,7 +2602,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure update_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				procedure move (arc : in out type_conductor_arc) is begin
@@ -2723,7 +2723,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -2744,7 +2744,7 @@ package body et_board_ops_conductors is
 			use et_nets;
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2873,7 +2873,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_track (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -2946,7 +2946,7 @@ package body et_board_ops_conductors is
 
 
 			procedure ripup (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3052,7 +3052,7 @@ package body et_board_ops_conductors is
 
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3072,7 +3072,7 @@ package body et_board_ops_conductors is
 			use et_nets;
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3158,7 +3158,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3360,7 +3360,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3577,7 +3577,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3797,7 +3797,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 
@@ -4145,7 +4145,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -4353,7 +4353,7 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -5885,7 +5885,7 @@ package body et_board_ops_conductors is
 
 			-- This procedure queries a net:
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 

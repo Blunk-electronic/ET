@@ -294,7 +294,7 @@ package body et_canvas_board_tracks is
 			render : gtk_cell_renderer_text;
 
 			use et_schematic_ops_nets;
-			use pac_net_name;
+			use et_net_names;
 
 		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);

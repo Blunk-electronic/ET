@@ -201,12 +201,12 @@ package body et_schematic_ops_netlists_2 is
 			use pac_nets;
 
 			use et_net_names;
-			use pac_net_name;
+			use et_net_names;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net);

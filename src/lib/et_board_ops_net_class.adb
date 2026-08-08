@@ -154,7 +154,7 @@ package body et_board_ops_net_class is
 			use pac_nets;
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);
@@ -181,7 +181,7 @@ package body et_board_ops_net_class is
 
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		net_class		: in pac_net_class_name.bounded_string; -- pwr
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -204,7 +204,7 @@ package body et_board_ops_net_class is
 
 
 			procedure set_class (
-				name	: in pac_net_name.bounded_string;
+				name	: in type_net_name;
 				net		: in out type_net)
 			is
 				pragma unreferenced (name);

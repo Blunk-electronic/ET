@@ -117,7 +117,7 @@ package body et_kicad.pcb is
 	function right_net_before_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id comes beforr the left net id AND
 	-- if the right net name differs from the left net name.
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if
 			right.id > left.id
@@ -133,7 +133,7 @@ package body et_kicad.pcb is
 	function right_net_equals_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id equals the left net id OR
 	-- if the right net name equals the left net name.
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if
 			right.id = left.id
@@ -592,7 +592,7 @@ package body et_kicad.pcb is
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;
 
-		terminal_net_name	: pac_net_name.bounded_string;
+		terminal_net_name	: type_net_name;
 		unused_terminal_net_id		: type_net_id_terminal;
 
 -- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
@@ -3163,7 +3163,7 @@ package body et_kicad.pcb is
 
 			-- Warns operator if a terminal is not connected to a net.
 			procedure warn_on_missing_net is
-				use pac_net_name;
+				use et_net_names;
 			begin
 				if length (terminal_net_name) = 0 then
 					log (SEVERITY_WARNING, to_string (package_reference) & latin_1.space
@@ -4216,7 +4216,7 @@ package body et_kicad.pcb is
 					-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
 					-- the terminal_net_name is empty.
 					log_indentation_up;
-					if pac_net_name.length (terminal_net_name) > 0 then
+					if pac_net_name.length (pac_net_name.bounded_string (terminal_net_name)) > 0 then
 						log (text => "connected with net " & to_string (terminal_net_name),
 							level => log_threshold + 1);
 					else
@@ -4420,7 +4420,7 @@ package body et_kicad.pcb is
 				-- CS log fill points
 
 				-- Warn about floating polygons:
-				if pac_net_name.length (polygon.net_name) = 0 then
+				if pac_net_name.length (pac_net_name.bounded_string (polygon.net_name)) = 0 then
 					log (SEVERITY_WARNING, "Polygon without connection with any net found !");
 				end if;
 
@@ -4780,9 +4780,9 @@ package body et_kicad.pcb is
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_device_name;	-- IC45
 				terminal	: in type_terminal_name) -- G7
-				return pac_net_name.bounded_string
+				return type_net_name
 			is
-				net : pac_net_name.bounded_string; -- to be returned
+				net : type_net_name; -- to be returned
 
 				use type_packages_board;
 				package_cursor : type_packages_board.cursor;
@@ -4854,7 +4854,7 @@ package body et_kicad.pcb is
 
 				-- Converts the given net name to a net id.
 				function to_net_id (
-					name : in pac_net_name.bounded_string)
+					name : in type_net_name)
 					return type_net_id
 				is
 					use type_netlist;
@@ -4865,7 +4865,7 @@ package body et_kicad.pcb is
 					portlist	: pac_ports_with_reference.set;
 					port		: schematic.type_port_with_reference;
 					terminal	: et_package_variant.type_terminal;
-					net_name_in_board : pac_net_name.bounded_string;
+					net_name_in_board : type_net_name;
 
 				begin
 					-- If the given net has a proper name (like MCU_CLK), then the net id
@@ -5118,7 +5118,7 @@ package body et_kicad.pcb is
 
 				-- adds routing information to the schematic module
 				procedure add_route (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out schematic.type_net)
 				is
 					pragma unreferenced (net_name);
@@ -5262,11 +5262,11 @@ package body et_kicad.pcb is
 					use schematic.type_nets;
 					net_cursor_schematic : schematic.type_nets.cursor;
 
-					function to_net_name (net_name_in : in pac_net_name.bounded_string)
+					function to_net_name (net_name_in : in type_net_name)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an
 					-- anonymous ET name like "N$45".
-						return pac_net_name.bounded_string is
-						net_name_out : pac_net_name.bounded_string; -- to be returned
+						return type_net_name is
+						net_name_out : type_net_name; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
@@ -5281,7 +5281,7 @@ package body et_kicad.pcb is
 							use pac_terminals;
 							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
-							use pac_net_name;
+							use et_net_names;
 						begin -- query_terminals
 							-- Loop in terminals of current package until a terminal
 							-- is found that is connected with the given net name_in.
@@ -5347,7 +5347,7 @@ package body et_kicad.pcb is
 
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
-						net_name	: in pac_net_name.bounded_string;
+						net_name	: in type_net_name;
 						net 		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);

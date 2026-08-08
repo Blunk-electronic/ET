@@ -65,7 +65,7 @@ with et_net_scope;				use et_net_scope;
 package et_nets is
 
 	use pac_geometry_2;
-	use pac_net_name;
+	use et_net_names;
 
 	use pac_net_segments;
 	use pac_strands;
@@ -291,7 +291,7 @@ package et_nets is
 
 	-- Many nets are to be collected in maps:
 	package pac_nets is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string, -- RESET_N
+		key_type		=> type_net_name, -- RESET_N
 		element_type	=> type_net);
 
 	use pac_nets;
@@ -313,7 +313,7 @@ package et_nets is
 	-- Returns the name of the given net:
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 	-- Returns the name of the given net:
@@ -402,7 +402,7 @@ package et_nets is
 
 	function get_net_name (
 		object	: in type_object_segment)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 	-- Returns the net name and segment of the given object
@@ -448,7 +448,7 @@ package et_nets is
 
 	function get_net_name (
 		strand	: in type_object_strand)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 
@@ -473,7 +473,7 @@ package et_nets is
 	-- Returns the net name of the given object strand:
 	function get_net_name (
 		strand	: in pac_object_strands.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 

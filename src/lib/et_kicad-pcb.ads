@@ -114,7 +114,7 @@ package et_kicad.pcb is
 
 	use et_board_text.pac_text_board_vectorized;
 
-	use pac_net_name;
+	use et_net_names;
 
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
@@ -383,7 +383,7 @@ package et_kicad.pcb is
 
 	type type_netlist_net is record
 		id		: type_net_id;
-		name	: pac_net_name.bounded_string;
+		name	: type_net_name;
 	end record;
 
 	-- When nets are collected in an ordered set, the next two functions serve to
@@ -461,8 +461,8 @@ package et_kicad.pcb is
 
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
-		element_type	=> pac_net_name.bounded_string,
-		"="				=> pac_net_name."=");
+		element_type	=> type_net_name,
+		"="				=> et_net_names."=");
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
@@ -541,7 +541,7 @@ package et_kicad.pcb is
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
-		net_name : pac_net_name.bounded_string;
+		net_name : type_net_name;
 	end record;
 
 	-- the list of terminals of a package:
@@ -670,7 +670,7 @@ package et_kicad.pcb is
 
 
 	type type_polygon is record
-		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
+		net_name			: type_net_name; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id := type_net_id'first; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id := type_signal_layer_id'first;
 		timestamp			: type_timestamp := timestamp_default;

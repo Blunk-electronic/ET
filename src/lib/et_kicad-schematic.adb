@@ -71,7 +71,7 @@ with et_text_content;
 
 package body et_kicad.schematic is
 
-	use et_net_names.pac_net_name;
+	use et_net_names;
 
 
 	-- Returns the base name of the given schematic file name as submodule name.
@@ -1227,7 +1227,7 @@ package body et_kicad.schematic is
 	procedure link_strands (log_threshold : in type_log_level) is
 		use type_strands;
 
-		net_name : pac_net_name.bounded_string;
+		net_name : type_net_name;
 
 		strand	: type_strands.cursor;
 
@@ -1245,7 +1245,7 @@ package body et_kicad.schematic is
 			net_cursor : type_nets.cursor;
 
 			procedure add_strand (
-				name	: in pac_net_name.bounded_string;
+				name	: in type_net_name;
 				net		: in out type_net) is
 			begin
 				log (text => "strand of net " & to_string (name), level => log_threshold + 2);
@@ -1417,7 +1417,7 @@ package body et_kicad.schematic is
 		type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
 			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
-			name		: pac_net_name.bounded_string := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
+			name		: type_net_name := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
 		end record;
 
 
@@ -1469,7 +1469,7 @@ package body et_kicad.schematic is
 					use type_net_segments;
 
 					procedure mark_processed (
-						name : in pac_net_name.bounded_string;
+						name : in type_net_name;
 						port : in out type_hierarchic_sheet_port) is
 					pragma unreferenced (name);
 					begin
@@ -1672,7 +1672,7 @@ package body et_kicad.schematic is
 
 		procedure query_strands (
 		-- Looks for any hierarchic nets connected via gui_submodules with the given net.
-			net_name : in pac_net_name.bounded_string; -- the name of the net being examined
+			net_name : in type_net_name; -- the name of the net being examined
 			net      : in type_net -- the net being examined
 			) is
 			pragma unreferenced (net_name);
@@ -1727,7 +1727,7 @@ package body et_kicad.schematic is
 		end query_strands;
 
 		procedure append_hierarchic_strands (
-			--net_name : in pac_net_name.bounded_string;
+			--net_name : in type_net_name;
 			net_cursor	: in type_nets.cursor;
 			strands	 	: in type_strands.list
 			) is
@@ -1742,7 +1742,7 @@ package body et_kicad.schematic is
 				--net_cursor : type_nets.cursor;
 
 				procedure append_strands (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net
 					) is
 					pragma unreferenced (net_name);
@@ -1874,7 +1874,7 @@ package body et_kicad.schematic is
 
 
 		procedure query_strand (
-			net_name 	: in pac_net_name.bounded_string;
+			net_name 	: in type_net_name;
 			net 		: in type_net) is
 			pragma unreferenced (net_name);
 
@@ -3647,8 +3647,8 @@ package body et_kicad.schematic is
 	-- This procdure is required if a strand is connected to a power-out port.
 	-- The power-out port enforces its name onto the strand.
 	procedure rename_strands (
-		name_before		: in pac_net_name.bounded_string;
-		name_after		: in pac_net_name.bounded_string;
+		name_before		: in type_net_name;
+		name_after		: in type_net_name;
 		log_threshold	: in type_log_level)
 	is
 
@@ -3929,7 +3929,7 @@ package body et_kicad.schematic is
 
 		function to_net_name (port_name : in type_port_name)
 		-- Converts the given port name to a net name.
-			return pac_net_name.bounded_string is
+			return type_net_name is
 		begin
 			return to_net_name (to_string (port_name));
 		end to_net_name;
@@ -6300,11 +6300,11 @@ package body et_kicad.schematic is
 
 
 
-	function simple_name (net_name : in pac_net_name.bounded_string) -- CS rename to get_simple_name
-		return pac_net_name.bounded_string
+	function simple_name (net_name : in type_net_name) -- CS rename to get_simple_name
+		return type_net_name
 	is
 		position_of_last_separator : natural := 0;
-		name : pac_net_name.bounded_string;
+		name : type_net_name;
 	begin
 		-- Detect position of last hierarchy separator.
 		position_of_last_separator := index (net_name, hierarchy_separator, backward);
@@ -6464,7 +6464,7 @@ package body et_kicad.schematic is
 
 
 			procedure query_ports (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				ports 		: in pac_ports_with_reference.set)
 			is
 				pragma unreferenced (net_name);
@@ -6717,13 +6717,13 @@ package body et_kicad.schematic is
 	function connected_net ( -- CS rename to get_connected_net
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in type_log_level)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
 		use type_modules;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
-		net_name_to_return : pac_net_name.bounded_string; -- to be returned
+		net_name_to_return : type_net_name; -- to be returned
 
 
 		procedure query_nets (
@@ -6736,7 +6736,7 @@ package body et_kicad.schematic is
 
 
 			procedure query_ports (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				ports		: in pac_ports_with_reference.set)
 			is
 				port_cursor : pac_ports_with_reference.cursor;
@@ -6872,7 +6872,7 @@ package body et_kicad.schematic is
 
 				procedure query_strands (
 				-- Tests if a strand of the given net is connected to any component port.
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in type_net) is
 					pragma unreferenced (net_name);
 					use type_strands;
@@ -6937,7 +6937,7 @@ package body et_kicad.schematic is
 
 							procedure add_port (
 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
-								net_name	: in pac_net_name.bounded_string;
+								net_name	: in type_net_name;
 								ports		: in out pac_ports_with_reference.set) is
 								pragma unreferenced (net_name);
 								inserted : boolean;
@@ -7475,9 +7475,9 @@ package body et_kicad.schematic is
 		reference		: in type_device_name;	-- IC45
 		terminal		: in type_terminal_name; -- E14
 		log_threshold	: in type_log_level)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
-		net : pac_net_name.bounded_string; -- to be returned
+		net : type_net_name; -- to be returned
 
 		-- As an intermediate storage place here the module name, the component reference and the port name are stored.
 		-- Selector port contains the port name associated with the given terminal name (acc. to. package variant).
@@ -7682,7 +7682,7 @@ package body et_kicad.schematic is
 
 	function components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in pac_net_name.bounded_string; -- motor_on_off
+		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
 	is
@@ -7794,7 +7794,7 @@ package body et_kicad.schematic is
 
 	function real_components_in_net ( -- CS rename to get_real_components_in_net
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in pac_net_name.bounded_string; -- motor_on_off
+		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
 	is

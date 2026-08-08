@@ -56,7 +56,7 @@ package body et_netlist_submodules is
 		return boolean
 	is
 		use pac_module_instance_name;
-		use pac_net_name;
+		use et_net_names;
 
 		result : boolean := false;
 	begin
