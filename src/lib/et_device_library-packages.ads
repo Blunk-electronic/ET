@@ -108,7 +108,7 @@ package et_device_library.packages is
 -- 		device_cursor	: in pac_device_models.cursor;
 -- 		port_name		: in type_port_name;
 -- 		variant			: in type_package_variant_name) -- D, N
--- 		return pac_terminal_name.bounded_string; -- 14, H4
+-- 		return type_terminal_name; -- 14, H4
 
 
 

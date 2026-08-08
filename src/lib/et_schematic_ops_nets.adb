@@ -5514,7 +5514,7 @@ package body et_schematic_ops_nets is
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in pac_terminal_name.bounded_string)
+		terminal	: in type_terminal_name)
 		return pac_nets.cursor
 	is
 		result : pac_nets.cursor;

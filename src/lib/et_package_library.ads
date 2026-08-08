@@ -231,7 +231,7 @@ package et_package_library is
 	-- within the given package model:
 	function get_terminal (
 		cursor		: in pac_package_models.cursor;
-		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
+		terminal	: in type_terminal_name)  -- H4, 14
 		return pac_terminals.cursor;
 
 

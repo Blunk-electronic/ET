@@ -108,7 +108,7 @@ package et_package_variant is
 	-- terminal is returned:
 	function get_unit_and_port (
 		variant		: in pac_package_variants.cursor;
-		terminal	: in pac_terminal_name.bounded_string)
+		terminal	: in type_terminal_name)
 		return type_get_port_result;
 
 
@@ -120,12 +120,12 @@ package et_package_variant is
 		variant	: in pac_package_variants.cursor;
 		unit	: in type_unit_name;
 		port	: in type_port_name)
-		return pac_terminal_name.bounded_string;
+		return type_terminal_name;
 
 
 
 	type type_terminal is record
-		name	: pac_terminal_name.bounded_string; -- H7
+		name	: type_terminal_name; -- H7
 		unit	: type_unit_name; -- IO-BANK1
 		port	: type_port_name; -- GPIO3
 	end record;

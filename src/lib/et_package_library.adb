@@ -219,7 +219,7 @@ package body et_package_library is
 
 	function get_terminal (
 		cursor		: in pac_package_models.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
+		terminal	: in type_terminal_name) -- H4, 14
 		return pac_terminals.cursor
 	is
 		terminal_cursor : pac_terminals.cursor;
@@ -528,7 +528,7 @@ package body et_package_library is
 -- 	procedure terminal_properties (
 -- 	-- Logs the properties of the given terminal.
 -- 		terminal		: in type_terminal;
--- 		name			: in pac_terminal_name.bounded_string;
+-- 		name			: in type_terminal_name;
 -- 		log_threshold 	: in type_log_level) is
 -- 		use et_pcb_coordinates;
 -- 		log_threshold_1 : type_log_level := log_threshold + 1;

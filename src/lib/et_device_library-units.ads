@@ -160,7 +160,7 @@ package et_device_library.units is
 
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
-		terminal	: pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal	: type_terminal_name; -- H4, 1, 16
 		properties	: type_symbol_port (direction);
 	end record;
 

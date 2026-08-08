@@ -1197,7 +1197,7 @@ package body et_devices_electrical.packages is
 		variant_lib : constant pac_package_variants.cursor :=
 			get_package_variant (device_model_lib, variant_sch);
 
-		terminal_name : constant pac_terminal_name.bounded_string :=
+		terminal_name : constant type_terminal_name :=
 			get_terminal (variant_lib, unit, port);
 
 		use pac_package_models;

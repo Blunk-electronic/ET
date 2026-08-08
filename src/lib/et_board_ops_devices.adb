@@ -3466,7 +3466,7 @@ package body et_board_ops_devices is
 	--function get_terminal_position (
 		--module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		--terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		--terminal_name	: in type_terminal_name) -- H7, 14
 		--return type_terminal_position_fine
 	--is
 		---- This is the position of the package as it is in the layout:
@@ -3717,7 +3717,7 @@ package body et_board_ops_devices is
 
 
 	procedure terminal_not_found (
-		terminal_name : in pac_terminal_name.bounded_string)
+		terminal_name : in type_terminal_name)
 	is
 	begin
 		log (SEVERITY_ERROR, "terminal "
@@ -3734,7 +3734,7 @@ package body et_board_ops_devices is
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		terminal_name	: in type_terminal_name) -- H7, 14
 		return type_terminal_position_fine
 	is
 		pragma unreferenced (module_cursor);
@@ -3899,7 +3899,7 @@ package body et_board_ops_devices is
 							get_terminal (device_cursor_candidate, port.unit_name, port.port_name);
 
 						-- Get the terminal name (like 3 or H5):
-						terminal_name : constant pac_terminal_name.bounded_string :=
+						terminal_name : constant type_terminal_name :=
 							key (terminal_cursor);
 					begin
 						-- Store the terminal name in list connected_terminals:

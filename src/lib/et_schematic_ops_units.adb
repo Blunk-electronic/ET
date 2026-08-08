@@ -1003,7 +1003,7 @@ package body et_schematic_ops_units is
 	is
 		properties : type_port_properties_access; -- to be returned
 
-		terminal_name : pac_terminal_name.bounded_string;
+		terminal_name : type_terminal_name;
 
 		use et_port_direction;
 		port_direction : type_port_direction := PASSIVE;

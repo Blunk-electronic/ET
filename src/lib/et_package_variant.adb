@@ -70,7 +70,7 @@ package body et_package_variant is
 
 	function get_unit_and_port (
 		variant		: in pac_package_variants.cursor;
-		terminal	: in pac_terminal_name.bounded_string)
+		terminal	: in type_terminal_name)
 		return type_get_port_result
 	is
 		result : type_get_port_result;
@@ -111,10 +111,10 @@ package body et_package_variant is
 		variant	: in pac_package_variants.cursor;
 		unit	: in type_unit_name;
 		port	: in type_port_name)
-		return pac_terminal_name.bounded_string
+		return type_terminal_name
 	is
-		use pac_terminal_name;
-		result : pac_terminal_name.bounded_string;
+		use et_terminal_name;
+		result : type_terminal_name;
 
 		use pac_package_variants;
 

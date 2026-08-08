@@ -163,7 +163,7 @@ package et_thermal_relief is
 
 	function get_terminal_name (
 		terminal : in pac_terminals_with_relief.cursor)
-		return pac_terminal_name.bounded_string;
+		return type_terminal_name;
 
 
 	function get_terminal_name (

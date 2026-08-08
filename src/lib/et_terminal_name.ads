@@ -59,19 +59,21 @@ package et_terminal_name is
 
 	use pac_terminal_name;
 
+	type type_terminal_name is new pac_terminal_name.bounded_string;
+
 
 	function to_string (
-		terminal : in pac_terminal_name.bounded_string)
+		terminal : in type_terminal_name)
 		return string;
 
 
 	function to_terminal_name (
 		terminal : in string)
-		return pac_terminal_name.bounded_string;
+		return type_terminal_name;
 
 
 	package pac_terminal_names is new
-		doubly_linked_lists (pac_terminal_name.bounded_string);
+		doubly_linked_lists (type_terminal_name);
 
 
 

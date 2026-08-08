@@ -7473,7 +7473,7 @@ package body et_kicad.schematic is
 	function connected_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_device_name;	-- IC45
-		terminal		: in pac_terminal_name.bounded_string; -- E14
+		terminal		: in type_terminal_name; -- E14
 		log_threshold	: in type_log_level)
 		return pac_net_name.bounded_string
 	is

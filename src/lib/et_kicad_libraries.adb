@@ -1203,7 +1203,7 @@ package body et_kicad_libraries is
 			terminal_cursor : pac_terminal_port_map.cursor;
 
 			-- For temporarily storage of a terminal name:
-			terminal_name_in_map : pac_terminal_name.bounded_string;
+			terminal_name_in_map : type_terminal_name;
 		begin
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
@@ -1347,7 +1347,7 @@ package body et_kicad_libraries is
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
 			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
 			tmp_port_name_offset		: et_schematic_geometry.type_distance_model; -- CS: rename to port_name_offset
-			tmp_terminal_name			: pac_terminal_name.bounded_string;
+			tmp_terminal_name			: type_terminal_name;
 
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
@@ -2001,7 +2001,7 @@ package body et_kicad_libraries is
 				port.name := type_port_name (pac_port_name.to_bounded_string (f (line, 2))); -- GND, GPIO2
 
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := pac_terminal_name.to_bounded_string (f (line, 3)); -- H5, 14
+				tmp_terminal_name := type_terminal_name (pac_terminal_name.to_bounded_string (f (line, 3))); -- H5, 14
 
 				-- compose position
 				set (port.position, AXIS_X, mil_to_distance (mil => f (line, 4)));

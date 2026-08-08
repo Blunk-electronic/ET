@@ -789,7 +789,7 @@ package et_schematic_ops_nets is
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
+		terminal	: in type_terminal_name) -- H7, 1, 16
 		return pac_nets.cursor;
 
 

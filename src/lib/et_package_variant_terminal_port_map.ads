@@ -57,8 +57,8 @@ package et_package_variant_terminal_port_map is
 
 
 	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> pac_terminal_name."<",
+		key_type 		=> type_terminal_name, -- H7, 14
+		"<"				=> et_terminal_name."<",
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 

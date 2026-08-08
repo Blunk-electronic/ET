@@ -103,7 +103,7 @@ package body et_board_ops_fill_zones is
 		terminal : constant et_terminals.type_terminal := element (terminal_cursor);
 
 		-- Get the terminal name (like 3 or H5):
-		terminal_name : constant pac_terminal_name.bounded_string := key (terminal_cursor);
+		terminal_name : constant type_terminal_name := key (terminal_cursor);
 
 		-- Get the terminal position (incl. rotation and face):
 		terminal_position : constant type_terminal_position_fine :=

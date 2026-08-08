@@ -704,7 +704,7 @@ package et_board_ops_devices is
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		terminal_name	: in type_terminal_name) -- H7, 14
 		return type_terminal_position_fine;
 
 

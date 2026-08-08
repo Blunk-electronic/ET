@@ -122,7 +122,7 @@ package et_board_ops_conductors is
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		direction		: in type_rotation_model;
 		length			: in type_distance_positive;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -143,7 +143,7 @@ package et_board_ops_conductors is
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		direction		: in type_rotation_model;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
@@ -163,7 +163,7 @@ package et_board_ops_conductors is
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		end_point		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -182,7 +182,7 @@ package et_board_ops_conductors is
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		commit_design	: in type_commit_design := DO_COMMIT;

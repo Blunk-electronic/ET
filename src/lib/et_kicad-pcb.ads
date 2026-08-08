@@ -546,9 +546,9 @@ package et_kicad.pcb is
 
 	-- the list of terminals of a package:
 	package pac_terminals is new indefinite_ordered_maps (
-		key_type		=> pac_terminal_name.bounded_string,
+		key_type		=> type_terminal_name,
 		element_type	=> type_terminal,
-		"<"				=> pac_terminal_name."<");
+		"<"				=> et_terminal_name."<");
 
 
 

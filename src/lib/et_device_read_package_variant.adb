@@ -190,7 +190,7 @@ package body et_device_read_package_variant is
 		inserted	: boolean;
 		position	: pac_terminal_port_map.cursor;
 
-		terminal	: pac_terminal_name.bounded_string; -- H5, 14
+		terminal	: type_terminal_name; -- H5, 14
 		unit		: type_unit_name; -- PWR, IO_BANK_2
 		port		: type_port_name; -- VCC
 
