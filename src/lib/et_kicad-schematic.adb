@@ -1005,14 +1005,14 @@ package body et_kicad.schematic is
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in type_log_level)
-		return pac_package_variant_name.bounded_string -- D
+		return type_package_variant_name -- D
 	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 
 		use et_string_processing;
 
-		use pac_package_variant_name;
-		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
+		use et_package_variant_name;
+		variant : type_package_variant_name; -- variant name to be returned
 
 		-- temporarily here the name of the package library is stored:
 		full_package_library_name : type_package_model_name; -- ../lbr/bel_ic
@@ -7155,7 +7155,7 @@ package body et_kicad.schematic is
 
 			library_name	: type_device_model_name;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: pac_package_variant_name.bounded_string;
+			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
 
@@ -7177,7 +7177,7 @@ package body et_kicad.schematic is
 					pragma unreferenced (name);
 					use et_package_library;
 					use pac_package_variants;
-					use pac_package_variant_name;
+					use et_package_variant_name;
 
 					variant_cursor : pac_package_variants.cursor;
 				begin
@@ -7319,7 +7319,7 @@ package body et_kicad.schematic is
 
 			library_name	: type_device_model_name;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: pac_package_variant_name.bounded_string;
+			package_variant	: type_package_variant_name;
 
 			--use type_libraries;
 			library_cursor	: type_device_libraries.cursor;
@@ -7343,11 +7343,11 @@ package body et_kicad.schematic is
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
 
-					use pac_package_variant_name;
+					use et_package_variant_name;
 
 
 					procedure locate_terminal (
-						variant_name 	: in pac_package_variant_name.bounded_string;
+						variant_name 	: in type_package_variant_name;
 						variant 		: in type_package_variant)
 					is
 						pragma unreferenced (variant_name);
@@ -7502,7 +7502,7 @@ package body et_kicad.schematic is
 
 			library_name	: type_device_model_name;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: pac_package_variant_name.bounded_string;
+			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
 
@@ -7528,7 +7528,7 @@ package body et_kicad.schematic is
 
 					-- Locates the given terminal in the package variant.
 					procedure locate_terminal (
-						variant_name 	: in pac_package_variant_name.bounded_string;
+						variant_name 	: in type_package_variant_name;
 						variant 		: in type_package_variant)
 					is
 						pragma unreferenced (variant_name);
@@ -7552,7 +7552,7 @@ package body et_kicad.schematic is
 					end locate_terminal;
 
 
-					use pac_package_variant_name;
+					use et_package_variant_name;
 
 
 				begin

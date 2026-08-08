@@ -49,7 +49,7 @@ package body et_package_variant is
 
 	function get_first_package_variant (
 		variants : in pac_package_variants.map)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is begin
 		return key (variants.first);
 	end get_first_package_variant;
@@ -78,7 +78,7 @@ package body et_package_variant is
 		use pac_package_variants;
 
 		procedure query_terminal_port_map (
-			name	: in pac_package_variant_name.bounded_string;
+			name	: in type_package_variant_name;
 			variant	: in type_package_variant)
 		is
 			pragma unreferenced (name);
@@ -119,7 +119,7 @@ package body et_package_variant is
 		use pac_package_variants;
 
 		procedure query_terminal_port_map (
-			name	: in pac_package_variant_name.bounded_string;
+			name	: in type_package_variant_name;
 			variant	: in type_package_variant)
 		is
 			pragma unreferenced (name);

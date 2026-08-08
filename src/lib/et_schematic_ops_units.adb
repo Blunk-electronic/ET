@@ -1016,7 +1016,7 @@ package body et_schematic_ops_units is
 		is
 			pragma unreferenced (module_name);
 			device_cursor_sch	: pac_devices_electrical.cursor;
-			variant 			: pac_package_variant_name.bounded_string; -- D, N
+			variant 			: type_package_variant_name; -- D, N
 			device_cursor_lib	: pac_device_models.cursor;
 
 
@@ -1029,7 +1029,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_ports (
-					variant_name	: in pac_package_variant_name.bounded_string;
+					variant_name	: in type_package_variant_name;
 					variant			: in type_package_variant)
 				is
 					pragma unreferenced (variant_name);
@@ -5875,7 +5875,7 @@ package body et_schematic_ops_units is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_variant		: in pac_package_variant_name.bounded_string;
+		new_variant		: in type_package_variant_name;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)

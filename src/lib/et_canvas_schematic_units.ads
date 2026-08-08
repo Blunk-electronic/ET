@@ -275,7 +275,7 @@ package et_canvas_schematic_units is
 	-- cb_new_package_variant_selected.
 	-- Procedure cb_package_variant_apply in turn reads
 	-- variant_new and assigns it to the targeted device:
-	variant_new : pac_package_variant_name.bounded_string;
+	variant_new : type_package_variant_name;
 
 
 	-- Called when the "on_activate" signal is emitted
@@ -386,7 +386,7 @@ package et_canvas_schematic_units is
 		-- The cursor to the device model:
 		device		: pac_device_models.cursor;
 
-		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
+		variant		: type_package_variant_name; -- N, D, S_0805
 		name		: type_unit_name; -- A, B, PWR_IO3
 		value		: type_device_value; -- 100k
 

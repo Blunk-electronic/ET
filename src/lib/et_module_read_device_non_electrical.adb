@@ -91,7 +91,7 @@ package body et_module_read_device_non_electrical is
 
 	device_partcode	: et_device_partcode.type_device_partcode;
 	device_purpose	: et_device_purpose.type_device_purpose;
-	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
+	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 

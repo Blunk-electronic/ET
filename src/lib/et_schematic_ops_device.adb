@@ -859,7 +859,7 @@ package body et_schematic_ops_device is
 	function get_package_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string -- D, N
+		return type_package_variant_name -- D, N
 	is
 		cursor_sch : pac_devices_electrical.cursor;
 	begin
@@ -881,7 +881,7 @@ package body et_schematic_ops_device is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		variant			: in type_package_variant_name; -- N, D
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -893,7 +893,7 @@ package body et_schematic_ops_device is
 		use pac_generic_modules;
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		use pac_package_variant_name;
+		use et_package_variant_name;
 
 
 		procedure query_module (
@@ -1098,7 +1098,7 @@ package body et_schematic_ops_device is
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in type_device_model_name;
-		variant			: in pac_package_variant_name.bounded_string;
+		variant			: in type_package_variant_name;
 		destination		: in type_object_position;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;

@@ -63,10 +63,10 @@ package et_package_variant is
 	end record;
 
 
-	use pac_package_variant_name;
+	use et_package_variant_name;
 
 	package pac_package_variants is new ordered_maps (
-		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
+		key_type 		=> type_package_variant_name, -- D, N
 		element_type 	=> type_package_variant);
 
 	use pac_package_variants;
@@ -76,7 +76,7 @@ package et_package_variant is
 	-- of the given list:
 	function get_first_package_variant (
 		variants : in pac_package_variants.map)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns the number of package variants that

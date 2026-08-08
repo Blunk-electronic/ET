@@ -1234,7 +1234,7 @@ package body et_canvas_schematic_units is
 		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
 
 		log (text => "selected variant: "
-			 & pac_package_variant_name.to_string (variant_new),
+			 & to_string (variant_new),
 			 level => log_threshold + 1);
 
 		log_indentation_down;
@@ -1336,8 +1336,8 @@ package body et_canvas_schematic_units is
 		procedure do_it is
 			unused_device	: type_device_name; -- IC1
 
-			use pac_package_variant_name;
-			variant	: pac_package_variant_name.bounded_string;
+			use et_package_variant_name;
+			variant	: type_package_variant_name;
 		begin
 			-- Get the name of the selected device:
 			unused_device := get_device_name (object.unit.device_cursor);
@@ -1743,7 +1743,7 @@ package body et_canvas_schematic_units is
 		log (text => "cb_package_variant_selected", level => log_threshold);
 		log_indentation_up;
 
-		log (text => "selected variant: " & pac_package_variant_name.to_string (unit_add.variant),
+		log (text => "selected variant: " & to_string (unit_add.variant),
 			 level => log_threshold + 1);
 		-- CS move downward after unit_add.variant assignment
 

@@ -254,7 +254,7 @@ package et_schematic_ops_device is
 	function get_package_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string; -- D, N
+		return type_package_variant_name; -- D, N
 
 
 
@@ -267,7 +267,7 @@ package et_schematic_ops_device is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		variant			: in type_package_variant_name; -- N, D
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -315,7 +315,7 @@ package et_schematic_ops_device is
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in type_device_model_name; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
+		variant			: in type_package_variant_name; -- N, D, S_0805
 		destination		: in type_object_position; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);

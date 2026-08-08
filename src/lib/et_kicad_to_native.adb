@@ -3753,7 +3753,7 @@ package body et_kicad_to_native is
 
 
 					procedure rename (
-						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
+						variant_name	: in type_package_variant_name; -- N, D, ...
 						variant			: in out type_package_variant)
 					is begin
 						-- CS

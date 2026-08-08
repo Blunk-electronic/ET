@@ -117,7 +117,7 @@ package et_devices_electrical is
 				purpose		: type_device_purpose; -- brightness_control
 
 				-- The package variant:
-				variant		: pac_package_variant_name.bounded_string; -- D, N
+				variant		: type_package_variant_name; -- D, N
 
 				-- This is layout related. In the layout, the package has a position
 				-- and placeholders for name, value and purpose.

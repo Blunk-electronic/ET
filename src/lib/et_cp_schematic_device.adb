@@ -513,7 +513,7 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
-		variant : pac_package_variant_name.bounded_string; -- N, D
+		variant : type_package_variant_name; -- N, D
 	begin
 		log (text => "set package variant", level => log_threshold);
 		log_indentation_up;

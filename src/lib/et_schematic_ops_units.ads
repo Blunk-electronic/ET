@@ -979,7 +979,7 @@ package et_schematic_ops_units is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_variant		: in pac_package_variant_name.bounded_string;
+		new_variant		: in type_package_variant_name;
 		log_threshold	: in type_log_level);
 
 

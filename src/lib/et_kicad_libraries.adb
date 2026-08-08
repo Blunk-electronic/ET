@@ -258,7 +258,7 @@ package body et_kicad_libraries is
 	function to_package_name (
 		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
+		package_variant	: in type_package_variant_name) -- N, D
 		return pac_package_name.bounded_string
 	is
 		pragma unreferenced (library_name, generic_name, package_variant);
@@ -3001,11 +3001,11 @@ package body et_kicad_libraries is
 						pragma unreferenced (comp_name);
 						use et_package_library;
 						use pac_package_variants;
-						use pac_package_variant_name;
+						use et_package_variant_name;
 
 						package_model_name : type_package_model_name;
 
-						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
+						tmp_variant_name : type_package_variant_name; -- temporarily used for building the variant name
 						tmp_variants : pac_package_variants.map; -- temporarily used for building the variant
 
 						full_package_library_name : type_package_model_name;
@@ -3438,12 +3438,12 @@ package body et_kicad_libraries is
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in type_log_level)
-		return pac_package_variant_name.bounded_string -- D
+		return type_package_variant_name -- D
 	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 
-		use pac_package_variant_name;
-		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
+		use et_package_variant_name;
+		variant : type_package_variant_name; -- variant name to be returned
 
 		-- temporarily here the name of the package library is stored:
 		full_package_library_name : type_package_model_name; -- ../lbr/bel_ic

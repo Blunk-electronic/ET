@@ -275,7 +275,7 @@ package body et_module_write_devices_electrical is
 			use et_device_value;
 			use et_device_partcode;
 
-			use et_package_variant_name.pac_package_variant_name;
+			use et_package_variant_name;
 		begin
 			log (text => get_device_name (d), level => log_threshold + 1);
 

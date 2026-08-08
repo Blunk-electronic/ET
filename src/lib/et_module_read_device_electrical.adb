@@ -116,7 +116,7 @@ package body et_module_read_device_electrical is
 
 	device_partcode	: et_device_partcode.type_device_partcode;
 	device_purpose	: et_device_purpose.type_device_purpose;
-	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
+	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
 
 	-- temporarily collection of units:
@@ -275,7 +275,7 @@ package body et_module_read_device_electrical is
 			-- Otherwise nothing happens here:
 			procedure check_characters is
 				use et_package_variant_name;
-				use pac_package_variant_name;
+				use et_package_variant_name;
 			begin
 				if device.appearance = APPEARANCE_PCB then
 					log (text => "check characters", level => log_threshold + 2);
@@ -377,7 +377,7 @@ package body et_module_read_device_electrical is
 			function get_package_name
 				return pac_package_name.bounded_string
 			is
-				use et_package_variant_name.pac_package_variant_name;
+				use et_package_variant_name;
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 
 

@@ -436,7 +436,7 @@ package et_kicad_libraries is
 	function to_package_name (
 		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
+		package_variant	: in type_package_variant_name) -- N, D
 		return pac_package_name.bounded_string;
 
 

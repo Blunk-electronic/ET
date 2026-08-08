@@ -208,7 +208,7 @@ package body et_devices_electrical.packages is
 
 	function get_package_variant (
 		device : in type_device_electrical)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is begin
 		return device.variant;
 	end get_package_variant;
@@ -236,7 +236,7 @@ package body et_devices_electrical.packages is
 
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is
 		d : type_device_electrical renames element (device);
 	begin
@@ -1189,7 +1189,7 @@ package body et_devices_electrical.packages is
 		device_model_lib : constant pac_device_models.cursor := get_device_model (device);
 
 		-- This is the name of the package variant used by the given device:
-		variant_sch : constant pac_package_variant_name.bounded_string :=
+		variant_sch : constant type_package_variant_name :=
 			get_package_variant (device); -- N, D
 
 		-- Get full information about the package variant:

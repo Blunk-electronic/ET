@@ -184,7 +184,7 @@ package et_devices_electrical.packages is
 	-- Otherwise an exception will be raised:
 	function get_package_variant (
 		device : in type_device_electrical)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns a list of available package variants:
@@ -198,7 +198,7 @@ package et_devices_electrical.packages is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns a list of available package variants:

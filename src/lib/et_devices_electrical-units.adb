@@ -1133,7 +1133,7 @@ package body et_devices_electrical.units is
 			d.model_cursor;
 
 		-- This is the package variant used by the given device:
-		variant_sch : constant pac_package_variant_name.bounded_string :=
+		variant_sch : constant type_package_variant_name :=
 			pac_devices_electrical.element (device).variant; -- N, D
 
 
@@ -1155,7 +1155,7 @@ package body et_devices_electrical.units is
 
 
 			procedure query_terminal_port_map (
-				name	: in pac_package_variant_name.bounded_string;
+				name	: in type_package_variant_name;
 				variant	: in type_package_variant)
 			is
 				pragma unreferenced (name);

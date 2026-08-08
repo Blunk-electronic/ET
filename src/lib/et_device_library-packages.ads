@@ -60,7 +60,7 @@ package et_device_library.packages is
 	-- then the result is no_element:
 	function get_package_variant (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
+		variant			: in type_package_variant_name)  -- D, N
 		return pac_package_variants.cursor;
 
 
@@ -69,7 +69,7 @@ package et_device_library.packages is
 	-- The given device must be real. Means appearance SCH_PCB.
 	function is_variant_available (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
+		variant			: in type_package_variant_name)  -- D, N
 		return boolean;
 
 
@@ -87,7 +87,7 @@ package et_device_library.packages is
 	-- an exception will be raised:
 	function get_first_package_variant (
 		device_cursor : in pac_device_models.cursor)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 
@@ -98,7 +98,7 @@ package et_device_library.packages is
 	-- The given device must be real. Means appearance SCH_PCB.
 	function get_package_model (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string) -- D, N
+		variant			: in type_package_variant_name) -- D, N
 		return type_package_model_name; -- libraries/packages/smd/SOT23.pac
 
 
@@ -107,7 +107,7 @@ package et_device_library.packages is
 -- 	-- The given device must be real. Means appearance SCH_PCB.
 -- 		device_cursor	: in pac_device_models.cursor;
 -- 		port_name		: in pac_port_name.bounded_string;
--- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
+-- 		variant			: in type_package_variant_name) -- D, N
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
 
 
@@ -119,7 +119,7 @@ package et_device_library.packages is
 	-- The given device is accessed by the given device cursor.
 	function get_default_placeholders (
 		device	: in pac_device_models.cursor;
-		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
+		variant	: in type_package_variant_name) -- N, D, S_0805
 		return type_text_placeholders;
 
 
