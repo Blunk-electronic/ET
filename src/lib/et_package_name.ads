@@ -64,13 +64,15 @@ package et_package_name is
 
 	package pac_package_name is new generic_bounded_length (package_name_length_max);
 
+	type type_package_name is new pac_package_name.bounded_string;
 
-	function to_string (packge : in pac_package_name.bounded_string) return string;
+
+	function to_string (packge : in type_package_name) return string;
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
 
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string;
+	function to_package_name (package_name : in string) return type_package_name;
 	-- Converts a string to a pac_package_name.
 
 
@@ -79,7 +81,7 @@ package et_package_name is
 
 
 	procedure check_package_name_characters (
-		packge		: in pac_package_name.bounded_string;
+		packge		: in type_package_name;
 		characters	: in character_set := package_name_characters);
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.

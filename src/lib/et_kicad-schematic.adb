@@ -596,9 +596,9 @@ package body et_kicad.schematic is
 
 
 
-	function package_name (text : in string) return pac_package_name.bounded_string is
+	function package_name (text : in string) return type_package_name is
 	begin
-		return pac_package_name.to_bounded_string (
+		return type_package_name (pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -606,7 +606,7 @@ package body et_kicad.schematic is
 					ifs 			=> latin_1.colon
 					),
 				position => 2) -- the part after the colon
-				);
+				));
 	end package_name;
 
 
@@ -973,9 +973,9 @@ package body et_kicad.schematic is
 
 	-- Tests if the given component package name meets certain conventions.
 	procedure validate_component_package_name
-		(name : in pac_package_name.bounded_string)
+		(name : in type_package_name)
 	is
-		use pac_package_name;
+		use et_package_name;
 
 		procedure no_package is
 		begin
@@ -1003,7 +1003,7 @@ package body et_kicad.schematic is
 		component_library 	: in type_device_model_name; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D
 	is
@@ -1035,7 +1035,7 @@ package body et_kicad.schematic is
 			is
 				pragma unreferenced (component_name);
 				use et_package_library;
-				use pac_package_name;
+				use et_package_name;
 				use pac_package_variants;
 				use pac_package_model_file;
 				package_model_name : type_package_model_name;
@@ -7498,7 +7498,7 @@ package body et_kicad.schematic is
 			use type_components_schematic;
 			component_cursor_schematic : type_components_schematic.cursor := module.components.first;
 
-			--package_name : pac_package_name.bounded_string;
+			--package_name : type_package_name;
 
 			library_name	: type_device_model_name;
 			generic_name	: type_component_generic_name.bounded_string;

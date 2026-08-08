@@ -3128,7 +3128,7 @@ is
 						field_package := to_field;
 						check_package_name_length (content (field_package));
 						check_package_name_characters (
-							packge		=> pac_package_name.to_bounded_string (content (field_package)),
+							packge		=> type_package_name (pac_package_name.to_bounded_string (content (field_package))),
 							characters	=> component_package_name_characters);
 
 					when component_field_datasheet =>

@@ -527,7 +527,7 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 
 		-- PACKAGES
-		unused_package_name 			: pac_package_name.bounded_string;
+		unused_package_name 			: type_package_name;
 		unused_package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_board_coordinates.type_package_position;
 
@@ -5687,7 +5687,7 @@ package body et_kicad.pcb is
 		return natural
 	is
 		library_name : type_package_model_name;
-		package_name : pac_package_name.bounded_string;
+		package_name : type_package_name;
 
 		use type_libraries;
 

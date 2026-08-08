@@ -50,17 +50,17 @@ with et_string_processing;		use et_string_processing;
 package body et_package_name is
 
 
-	function to_string (packge : in pac_package_name.bounded_string) return string is
+	function to_string (packge : in type_package_name) return string is
 	-- CS: provide a parameter that turns the preamble on/off
 	begin
-		return pac_package_name.to_string (packge);
+		return pac_package_name.to_string (pac_package_name.bounded_string (packge));
 	end to_string;
 
 
 
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
+	function to_package_name (package_name : in string) return type_package_name is
 	begin
-		return pac_package_name.to_bounded_string (package_name);
+		return type_package_name (pac_package_name.to_bounded_string (package_name));
 	end to_package_name;
 
 
@@ -78,7 +78,7 @@ package body et_package_name is
 
 
 	procedure check_package_name_characters (
-		packge		: in pac_package_name.bounded_string;
+		packge		: in type_package_name;
 		characters	: in character_set := package_name_characters)
 	is
 		use pac_package_name;

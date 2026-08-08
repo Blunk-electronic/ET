@@ -375,10 +375,10 @@ package body et_module_read_device_electrical is
 			-- Derives the package name from the model and parackage
 			-- variant. Checks if variant exits in device model.
 			function get_package_name
-				return pac_package_name.bounded_string
+				return type_package_name
 			is
 				use et_package_variant_name;
-				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
+				name : type_package_name; -- S_SO14 -- to be returned
 
 
 				procedure query_variants (

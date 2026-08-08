@@ -911,7 +911,7 @@ package et_kicad.schematic is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
-	function package_name (text : in string) return pac_package_name.bounded_string;
+	function package_name (text : in string) return type_package_name;
 	-- CS rename to get_package_name
 
 

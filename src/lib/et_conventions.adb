@@ -2086,7 +2086,7 @@ package body et_conventions is
 	-- in something like R_PAC_S_0805_VAL_100R.
 	function compose_partcode_root (
 		prefix		: in type_device_prefix;			-- R
-		packge		: in pac_package_name.bounded_string;	-- S_0805
+		packge		: in type_package_name;	-- S_0805
 		value 		: in type_device_value := to_value ("")) -- 100R
 		return type_device_partcode
 	is
@@ -2244,7 +2244,7 @@ package body et_conventions is
 	procedure validate_partcode (
 		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
-		packge			: in pac_package_name.bounded_string;	-- S_0805
+		packge			: in type_package_name;	-- S_0805
 		value 			: in type_device_value; -- 100R
 		log_threshold	: in type_log_level)
 	is

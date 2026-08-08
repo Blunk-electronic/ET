@@ -296,8 +296,8 @@ package et_kicad_packages is
 
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
-		key_type 		=> pac_package_name.bounded_string, -- S_SO14, T_0207
-		"<"				=> pac_package_name."<",
+		key_type 		=> type_package_name, -- S_SO14, T_0207
+		"<"				=> et_package_name."<",
 		element_type 	=> type_package_library);
 
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries

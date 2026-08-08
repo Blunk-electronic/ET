@@ -259,10 +259,10 @@ package body et_kicad_libraries is
 		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in type_package_variant_name) -- N, D
-		return pac_package_name.bounded_string
+		return type_package_name
 	is
 		pragma unreferenced (library_name, generic_name, package_variant);
-		package_name : pac_package_name.bounded_string; -- to be returned
+		package_name : type_package_name; -- to be returned
 	begin -- to_package_name
 		-- CS
 		return package_name;
@@ -561,9 +561,9 @@ package body et_kicad_libraries is
 
 
 
-	function package_name (text : in string) return pac_package_name.bounded_string is
+	function package_name (text : in string) return type_package_name is
 	begin
-		return pac_package_name.to_bounded_string (
+		return type_package_name (pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -571,7 +571,7 @@ package body et_kicad_libraries is
 					ifs 			=> latin_1.colon
 					),
 				position => 2) -- the part after the colon
-				);
+				));
 	end package_name;
 
 
@@ -1004,9 +1004,9 @@ package body et_kicad_libraries is
 
 	-- Tests if the given component package name meets certain conventions.
 	procedure validate_component_package_name
-		(name : in pac_package_name.bounded_string)
+		(name : in type_package_name)
 	is
-		use pac_package_name;
+		use et_package_name;
 
 		procedure no_package is begin
 			log (SEVERITY_ERROR, "no package associated !",
@@ -1027,7 +1027,7 @@ package body et_kicad_libraries is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in pac_package_name.bounded_string; -- S_SO14
+		package_name 	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
 		return type_package_model_name
 	is
@@ -1185,7 +1185,7 @@ package body et_kicad_libraries is
 
 	function terminal_port_map_fits (
 		library_name		: in type_package_model_name;		-- ../lbr/bel_ic.pretty
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in type_package_name;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean
 	is
@@ -2111,7 +2111,7 @@ package body et_kicad_libraries is
 					when PACKGE =>
 						check_package_name_length (content (text));
 						check_package_name_characters (
-							packge		=> pac_package_name.to_bounded_string (content (text)),
+							packge		=> type_package_name (pac_package_name.to_bounded_string (content (text))),
 							characters	=> component_package_name_characters);
 
 					when others => null; -- CS
@@ -2209,12 +2209,12 @@ package body et_kicad_libraries is
 							missing_field (field_package.meaning);
 						else
 							validate_component_package_name (
-								pac_package_name.to_bounded_string (f (
+								type_package_name (pac_package_name.to_bounded_string (f (
 									line => read_line ( -- CS use function package_name
 										line			=> content (field_package), -- bel_ic:S_SO14
 										comment_mark	=> et_kicad_general.comment_mark,
 										ifs				=> latin_1.colon),
-									position => 2))); -- the block after the colon
+									position => 2)))); -- the block after the colon
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
@@ -3436,7 +3436,7 @@ package body et_kicad_libraries is
 		component_library 	: in type_device_model_name; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D
 	is

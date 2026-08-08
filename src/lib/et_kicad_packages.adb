@@ -464,7 +464,7 @@ package body et_kicad_packages is
 		use pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : constant pac_package_name.bounded_string :=
+		package_name : constant type_package_name :=
 			to_package_name (ada.directories.base_name (file_name));
 
 		function path_and_file_name return string is
