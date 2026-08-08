@@ -95,7 +95,7 @@ package body et_module_read_device_non_electrical is
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 
-	package_model_name	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+	package_model_name	: et_package_model_name.type_package_model_name; -- ../libraries/misc/fiducials/crosshair.pac
 
 	-- the temporarily collection of placeholders of packages (in the layout)
 	text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom

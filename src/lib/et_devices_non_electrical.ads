@@ -142,7 +142,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 	function get_package_model_name (
@@ -446,7 +446,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 -- CS:

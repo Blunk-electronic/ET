@@ -5683,10 +5683,10 @@ package body et_kicad.pcb is
 
 
 	function get_terminal_count (
-		packge : in pac_package_model_file.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
+		packge : in type_package_model_name) -- ../lbr/bel_ic.pretty/S_SO14
 		return natural
 	is
-		library_name : pac_package_model_file.bounded_string;
+		library_name : type_package_model_name;
 		package_name : pac_package_name.bounded_string;
 
 		use type_libraries;
@@ -5696,7 +5696,7 @@ package body et_kicad.pcb is
 
 
 		procedure locate_package (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in type_packages_library.map)
 		is
 			pragma unreferenced (library_name);

@@ -2529,7 +2529,7 @@ package body et_kicad_to_native is
 			to_file_name (compose (
 				directory_libraries, directory_libraries_devices));
 
-		prefix_packages_dir : constant pac_package_model_file.bounded_string := -- libraries/packages
+		prefix_packages_dir : constant type_package_model_name := -- libraries/packages
 			to_package_model_name (compose (
 				directory_libraries, directory_libraries_packages));
 
@@ -2634,8 +2634,8 @@ package body et_kicad_to_native is
 
 
 		function rename_package_model (
-			model_in : in pac_package_model_file.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return pac_package_model_file.bounded_string
+			model_in : in type_package_model_name) -- ../../lbr/transistors.pretty/S_0805
+			return type_package_model_name
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
@@ -2644,8 +2644,8 @@ package body et_kicad_to_native is
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
 
-			model_copy : pac_package_model_file.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : pac_package_model_file.bounded_string;
+			model_copy : type_package_model_name := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : type_package_model_name;
 		begin
 			translate (model_copy, characters);
 
@@ -3885,14 +3885,14 @@ package body et_kicad_to_native is
 
 			-- Creates with the library name and package name new native package models.
 			procedure query_packages (
-				library_name	: in pac_package_model_file.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in type_package_model_name; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_packages.type_packages_library.map)
 			is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
 				package_name			: pac_package_name.bounded_string;
-				package_model			: pac_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_model			: type_package_model_name := library_name; -- projects/lbr/smd_packages.pretty
 
 				package_cursor			: et_package_library.pac_package_models.cursor;
 				inserted				: boolean;

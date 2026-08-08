@@ -1015,7 +1015,7 @@ package body et_kicad.schematic is
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 
 		-- temporarily here the name of the package library is stored:
-		full_package_library_name : pac_package_model_file.bounded_string; -- ../lbr/bel_ic
+		full_package_library_name : type_package_model_name; -- ../lbr/bel_ic
 
 
 		-- Locates the given generic component in the component libraray.
@@ -1038,7 +1038,7 @@ package body et_kicad.schematic is
 				use pac_package_name;
 				use pac_package_variants;
 				use pac_package_model_file;
-				package_model_name : pac_package_model_file.bounded_string;
+				package_model_name : type_package_model_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_package_variants.cursor := component.variants.first;

@@ -123,7 +123,7 @@ package body et_devices_electrical is
 
 	function get_package_model_name (
 		device : in type_device_electrical)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 		use et_device_library.packages;
 	begin
@@ -491,7 +491,7 @@ package body et_devices_electrical is
 
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 		use et_device_library.packages;
 		d : type_device_electrical renames element (device);
@@ -510,7 +510,7 @@ package body et_devices_electrical is
 		device : in pac_devices_electrical.cursor)
 		return pac_package_models.cursor
 	is
-		package_model : constant pac_package_model_file.bounded_string :=
+		package_model : constant type_package_model_name :=
 			get_package_model_name (device);  -- libraries/packages/smd/SOT23.pac
 	begin
 		return get_package_model (package_model);
@@ -523,7 +523,7 @@ package body et_devices_electrical is
 		device : in pac_devices_electrical.cursor)
 		return boolean
 	is
-		package_model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model : type_package_model_name; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- Get the package model name of the given device:
 		package_model := get_package_model_name (device);

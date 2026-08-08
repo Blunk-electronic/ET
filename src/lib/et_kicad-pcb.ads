@@ -749,7 +749,7 @@ package et_kicad.pcb is
 
 	-- Returns the number of terminals of the given package in the given library.
 	function get_terminal_count (
-		packge : in pac_package_model_file.bounded_string) -- ../lbr/bel_ic/S_SO14
+		packge : in type_package_model_name) -- ../lbr/bel_ic/S_SO14
 		return natural;
 
 

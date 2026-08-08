@@ -1029,7 +1029,7 @@ package body et_kicad_libraries is
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in type_log_level)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
@@ -1044,7 +1044,7 @@ package body et_kicad_libraries is
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
 	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
 
-		lib : pac_package_model_file.bounded_string; -- to be returned
+		lib : type_package_model_name; -- to be returned
 
 		use et_import;
 		use type_project_lib_dirs;
@@ -1058,14 +1058,14 @@ package body et_kicad_libraries is
 		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
 		use type_library_name;
-		full_library_name : pac_package_model_file.bounded_string;
+		full_library_name : type_package_model_name;
 		package_found : boolean := false;
 
 
 		-- Searches the library (indicated by lib_cursor) for the given package.
 		-- Sets the flag package_found if the library contains the given package.
 		procedure search_package (
-			lib_name	: in pac_package_model_file.bounded_string;
+			lib_name	: in type_package_model_name;
 			library		: in type_packages_library.map) is
 		pragma unreferenced (lib_name);
 		begin
@@ -1156,7 +1156,7 @@ package body et_kicad_libraries is
 				end loop;
 
 				-- If the library could not be located anywhere, abort here:
-				if pac_package_model_file.length (full_library_name) = 0 then
+				if pac_package_model_file.length (pac_package_model_file.bounded_string (full_library_name)) = 0 then
 					log (SEVERITY_ERROR, "No library '" & et_kicad_general.to_string (library_name)
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
@@ -1184,7 +1184,7 @@ package body et_kicad_libraries is
 
 
 	function terminal_port_map_fits (
-		library_name		: in pac_package_model_file.bounded_string;		-- ../lbr/bel_ic.pretty
+		library_name		: in type_package_model_name;		-- ../lbr/bel_ic.pretty
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean
@@ -1225,7 +1225,7 @@ package body et_kicad_libraries is
 
 		-- Locates the package by package_name in the given package library.
 		procedure locate_package (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in type_packages_library.map)
 		is
 			package_cursor : type_packages_library.cursor;
@@ -3003,12 +3003,12 @@ package body et_kicad_libraries is
 						use pac_package_variants;
 						use pac_package_variant_name;
 
-						package_model_name : pac_package_model_file.bounded_string;
+						package_model_name : type_package_model_name;
 
 						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_package_variants.map; -- temporarily used for building the variant
 
-						full_package_library_name : pac_package_model_file.bounded_string;
+						full_package_library_name : type_package_model_name;
 					begin
 						case component.appearance is
 							when APPEARANCE_PCB => -- real component
@@ -3446,7 +3446,7 @@ package body et_kicad_libraries is
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 
 		-- temporarily here the name of the package library is stored:
-		full_package_library_name : pac_package_model_file.bounded_string; -- ../lbr/bel_ic
+		full_package_library_name : type_package_model_name; -- ../lbr/bel_ic
 
 
 		-- Locates the given generic component in the component libraray.
@@ -3468,7 +3468,7 @@ package body et_kicad_libraries is
 				use et_package_library;
 				use pac_package_variants;
 
-				package_model_name : pac_package_model_file.bounded_string;
+				package_model_name : type_package_model_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_package_variants.cursor := component.variants.first;

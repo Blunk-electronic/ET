@@ -480,7 +480,7 @@ package body et_canvas_board_devices is
 		use et_package_model_name;
 
 		-- The selected package model file (*.pac) is stored here:
-		package_model_file : pac_package_model_file.bounded_string;
+		package_model_file : type_package_model_name;
 
 		-- This cursor points to the package model in the library:
 		use pac_package_models;

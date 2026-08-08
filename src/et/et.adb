@@ -111,10 +111,10 @@ procedure et is
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 
-	package_name_create		: pac_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: pac_package_model_file.bounded_string; -- the package to be imported
-	package_name_open		: pac_package_model_file.bounded_string; -- the package to be opened
-	package_name_save_as	: pac_package_model_file.bounded_string; -- the package to be saved as
+	package_name_create		: type_package_model_name; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: type_package_model_name; -- the package to be imported
+	package_name_open		: type_package_model_name; -- the package to be opened
+	package_name_save_as	: type_package_model_name; -- the package to be saved as
 	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
 	symbol_name_create		: et_symbol_name.type_symbol_model_name; -- the symbol to be created like libraries/symbols/nand.sym

@@ -288,7 +288,7 @@ package body et_cp_board_device is
 
 		procedure do_it is
 
-			model : constant pac_package_model_file.bounded_string :=
+			model : constant type_package_model_name :=
 				to_package_model_name (get_field (cmd, 5));
 
 			prefix : constant type_device_prefix :=

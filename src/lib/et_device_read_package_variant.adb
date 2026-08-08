@@ -86,7 +86,7 @@ package body et_device_read_package_variant is
 
 		kw : constant string := f (line, 1);
 
-		package_model_name : pac_package_model_file.bounded_string;
+		package_model_name : type_package_model_name;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name D

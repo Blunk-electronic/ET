@@ -119,7 +119,7 @@ package body et_package_library is
 
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is begin
 		return key (model_cursor);
 	end get_package_model_file;
@@ -130,7 +130,7 @@ package body et_package_library is
 		model_cursor : in pac_package_models.cursor)
 		return string
 	is begin
-		return pac_package_model_file.to_string (key (model_cursor));
+		return to_string (key (model_cursor));
 	end get_package_model_name;
 
 
@@ -138,11 +138,11 @@ package body et_package_library is
 
 
 	procedure create_package (
-		package_name 	: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name 	: in type_package_model_name; -- libraries/packages/S_SO14.pac
 		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "creating package" & pac_package_model_file.to_string (package_name),
+		log (text => "creating package" & to_string (package_name),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -180,7 +180,7 @@ package body et_package_library is
 
 
 
-	function get_package_model (model_name : in pac_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	function get_package_model (model_name : in type_package_model_name) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor
 	is begin
 		return pac_package_models.find (package_library, model_name);
@@ -203,7 +203,7 @@ package body et_package_library is
 
 
 	function is_bom_relevant (
-		package_model : in pac_package_model_file.bounded_string)
+		package_model : in type_package_model_name)
 		return boolean
 	is
 		cursor : pac_package_models.cursor;
@@ -225,7 +225,7 @@ package body et_package_library is
 		terminal_cursor : pac_terminals.cursor;
 
 		procedure query_terminals (
-			model_name	: in pac_package_model_file.bounded_string;
+			model_name	: in type_package_model_name;
 			model		: in type_package_model)
 		is
 			pragma unreferenced (model_name);

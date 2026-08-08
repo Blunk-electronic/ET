@@ -869,7 +869,7 @@ procedure draw_packages is
 		device	: in type_device_electrical)
 	is
 		use pac_package_models;
-		package_model_name : pac_package_model_file.bounded_string;
+		package_model_name : type_package_model_name;
 	begin
 		-- put_line ("device " & to_string (name));
 
