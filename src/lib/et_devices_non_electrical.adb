@@ -38,6 +38,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_board_text;
+with et_device_library;		-- for to_relative_name
 with ada.characters.latin_1;
 with ada.strings.unbounded;
 
@@ -94,8 +95,13 @@ package body et_devices_non_electrical is
 	function get_package_model_name (
 		device : in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_package_model_name (device));
+	is
+		use et_device_library;
+
+		full_name     : constant string := to_string (get_package_model_name (device));
+		relative_name : constant string := to_relative_name (full_name);
+	begin
+		return relative_name;
 	end get_package_model_name;
 
 
