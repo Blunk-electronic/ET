@@ -57,7 +57,7 @@ separate (et_canvas_schematic)
 
 procedure draw_submodules is
 
-	use pac_net_name;
+	use et_net_names;
 	use pac_submodules;
 
 	use et_colors;

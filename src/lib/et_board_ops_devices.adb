@@ -1192,7 +1192,7 @@ package body et_board_ops_devices is
 
 	function get_non_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- FD
+		prefix			: in type_device_prefix; -- FD
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.map
 	is
@@ -1250,9 +1250,9 @@ package body et_board_ops_devices is
 
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model	: in type_package_model_name; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
-		prefix			: in pac_device_prefix.bounded_string; -- FD
+		prefix			: in type_device_prefix; -- FD
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3466,7 +3466,7 @@ package body et_board_ops_devices is
 	--function get_terminal_position (
 		--module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		--terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		--terminal_name	: in type_terminal_name) -- H7, 14
 		--return type_terminal_position_fine
 	--is
 		---- This is the position of the package as it is in the layout:
@@ -3477,7 +3477,7 @@ package body et_board_ops_devices is
 		--terminal_rotation : type_angle;
 		--terminal_position_face : type_face := TOP; -- top/bottom
 
-		--model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		--model : type_package_model_name; -- libraries/packages/smd/SOT23.pac
 		--package_model_cursor : pac_package_models.cursor;
 
 		--use pac_terminals;
@@ -3717,7 +3717,7 @@ package body et_board_ops_devices is
 
 
 	procedure terminal_not_found (
-		terminal_name : in pac_terminal_name.bounded_string)
+		terminal_name : in type_terminal_name)
 	is
 	begin
 		log (SEVERITY_ERROR, "terminal "
@@ -3734,7 +3734,7 @@ package body et_board_ops_devices is
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		terminal_name	: in type_terminal_name) -- H7, 14
 		return type_terminal_position_fine
 	is
 		pragma unreferenced (module_cursor);
@@ -3746,7 +3746,7 @@ package body et_board_ops_devices is
 		terminal_rotation : type_angle;
 		terminal_position_face : type_face := TOP; -- top/bottom
 
-		model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		model : type_package_model_name; -- libraries/packages/smd/SOT23.pac
 		package_model_cursor : pac_package_models.cursor;
 
 		use pac_terminals;
@@ -3899,7 +3899,7 @@ package body et_board_ops_devices is
 							get_terminal (device_cursor_candidate, port.unit_name, port.port_name);
 
 						-- Get the terminal name (like 3 or H5):
-						terminal_name : constant pac_terminal_name.bounded_string :=
+						terminal_name : constant type_terminal_name :=
 							key (terminal_cursor);
 					begin
 						-- Store the terminal name in list connected_terminals:

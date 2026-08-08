@@ -117,7 +117,7 @@ package body et_kicad.pcb is
 	function right_net_before_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id comes beforr the left net id AND
 	-- if the right net name differs from the left net name.
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if
 			right.id > left.id
@@ -133,7 +133,7 @@ package body et_kicad.pcb is
 	function right_net_equals_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id equals the left net id OR
 	-- if the right net name equals the left net name.
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if
 			right.id = left.id
@@ -269,7 +269,7 @@ package body et_kicad.pcb is
 		use et_device_prefix;
 	begin
 		return ((
-			prefix		=> pac_device_prefix.to_bounded_string (""),
+			prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 			id			=> name_index_default,
 			id_width	=> 1));
 	end default_component_reference;
@@ -527,7 +527,7 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 
 		-- PACKAGES
-		unused_package_name 			: pac_package_name.bounded_string;
+		unused_package_name 			: type_package_name;
 		unused_package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_board_coordinates.type_package_position;
 
@@ -544,7 +544,7 @@ package body et_kicad.pcb is
 
 		package_text 		: type_text_package;
 		package_reference 	: type_device_name := default_component_reference;
-		package_value 		: pac_device_value.bounded_string;
+		package_value 		: type_device_value;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
@@ -573,7 +573,7 @@ package body et_kicad.pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: pac_terminal_name.bounded_string;
+		terminal_name 			: type_terminal_name;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -592,7 +592,7 @@ package body et_kicad.pcb is
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;
 
-		terminal_net_name	: pac_net_name.bounded_string;
+		terminal_net_name	: type_net_name;
 		unused_terminal_net_id		: type_net_id_terminal;
 
 -- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
@@ -3163,7 +3163,7 @@ package body et_kicad.pcb is
 
 			-- Warns operator if a terminal is not connected to a net.
 			procedure warn_on_missing_net is
-				use pac_net_name;
+				use et_net_names;
 			begin
 				if length (terminal_net_name) = 0 then
 					log (SEVERITY_WARNING, to_string (package_reference) & latin_1.space
@@ -4216,7 +4216,7 @@ package body et_kicad.pcb is
 					-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
 					-- the terminal_net_name is empty.
 					log_indentation_up;
-					if pac_net_name.length (terminal_net_name) > 0 then
+					if pac_net_name.length (pac_net_name.bounded_string (terminal_net_name)) > 0 then
 						log (text => "connected with net " & to_string (terminal_net_name),
 							level => log_threshold + 1);
 					else
@@ -4420,7 +4420,7 @@ package body et_kicad.pcb is
 				-- CS log fill points
 
 				-- Warn about floating polygons:
-				if pac_net_name.length (polygon.net_name) = 0 then
+				if pac_net_name.length (pac_net_name.bounded_string (polygon.net_name)) = 0 then
 					log (SEVERITY_WARNING, "Polygon without connection with any net found !");
 				end if;
 
@@ -4779,10 +4779,10 @@ package body et_kicad.pcb is
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_device_name;	-- IC45
-				terminal	: in pac_terminal_name.bounded_string) -- G7
-				return pac_net_name.bounded_string
+				terminal	: in type_terminal_name) -- G7
+				return type_net_name
 			is
-				net : pac_net_name.bounded_string; -- to be returned
+				net : type_net_name; -- to be returned
 
 				use type_packages_board;
 				package_cursor : type_packages_board.cursor;
@@ -4854,7 +4854,7 @@ package body et_kicad.pcb is
 
 				-- Converts the given net name to a net id.
 				function to_net_id (
-					name : in pac_net_name.bounded_string)
+					name : in type_net_name)
 					return type_net_id
 				is
 					use type_netlist;
@@ -4865,7 +4865,7 @@ package body et_kicad.pcb is
 					portlist	: pac_ports_with_reference.set;
 					port		: schematic.type_port_with_reference;
 					terminal	: et_package_variant.type_terminal;
-					net_name_in_board : pac_net_name.bounded_string;
+					net_name_in_board : type_net_name;
 
 				begin
 					-- If the given net has a proper name (like MCU_CLK), then the net id
@@ -5118,7 +5118,7 @@ package body et_kicad.pcb is
 
 				-- adds routing information to the schematic module
 				procedure add_route (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out schematic.type_net)
 				is
 					pragma unreferenced (net_name);
@@ -5262,16 +5262,16 @@ package body et_kicad.pcb is
 					use schematic.type_nets;
 					net_cursor_schematic : schematic.type_nets.cursor;
 
-					function to_net_name (net_name_in : in pac_net_name.bounded_string)
+					function to_net_name (net_name_in : in type_net_name)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an
 					-- anonymous ET name like "N$45".
-						return pac_net_name.bounded_string is
-						net_name_out : pac_net_name.bounded_string; -- to be returned
+						return type_net_name is
+						net_name_out : type_net_name; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
 						terminal_found	: boolean := false;
-						terminal_name	: pac_terminal_name.bounded_string;
+						terminal_name	: type_terminal_name;
 
 						procedure query_terminals (
 							package_name	: in type_device_name;
@@ -5281,7 +5281,7 @@ package body et_kicad.pcb is
 							use pac_terminals;
 							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
-							use pac_net_name;
+							use et_net_names;
 						begin -- query_terminals
 							-- Loop in terminals of current package until a terminal
 							-- is found that is connected with the given net name_in.
@@ -5347,7 +5347,7 @@ package body et_kicad.pcb is
 
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
-						net_name	: in pac_net_name.bounded_string;
+						net_name	: in type_net_name;
 						net 		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
@@ -5519,9 +5519,8 @@ package body et_kicad.pcb is
 
 							-- Make sure the value in schematic matches value in layout.
 							-- On mismatch -> error and abort
-							if pac_device_value."=" (
-								element (component_cursor).value, -- value in schematic
-								element (package_cursor).value) then -- value in layout
+							if element (component_cursor).value -- value in schematic
+								= element (package_cursor).value then -- value in layout
 
 								package_position := element (package_cursor).position;
 
@@ -5684,11 +5683,11 @@ package body et_kicad.pcb is
 
 
 	function get_terminal_count (
-		packge : in pac_package_model_file.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
+		packge : in type_package_model_name) -- ../lbr/bel_ic.pretty/S_SO14
 		return natural
 	is
-		library_name : pac_package_model_file.bounded_string;
-		package_name : pac_package_name.bounded_string;
+		library_name : type_package_model_name;
+		package_name : type_package_name;
 
 		use type_libraries;
 
@@ -5697,7 +5696,7 @@ package body et_kicad.pcb is
 
 
 		procedure locate_package (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in type_packages_library.map)
 		is
 			pragma unreferenced (library_name);

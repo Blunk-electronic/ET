@@ -88,7 +88,7 @@ package et_device_model_unit_external is
 
 	-- External units are collected in a map;
 	package pac_units_external is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3"
+		key_type		=> type_unit_name, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
 	use pac_units_external;
@@ -104,7 +104,7 @@ package et_device_model_unit_external is
 
 	function get_symbol_model_file ( -- CS rename to get_symbol_model_name
 		unit	: in pac_units_external.cursor)
-		return pac_symbol_model_name.bounded_string;
+		return type_symbol_model_name;
 
 
 	function get_symbol_model_name (

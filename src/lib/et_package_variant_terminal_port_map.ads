@@ -49,16 +49,16 @@ package et_package_variant_terminal_port_map is
 
 
 	type type_port_in_terminal_port_map is record
-		name	: pac_port_name.bounded_string; -- CLK, CE, VSS -- CS rename to port
-		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
+		name	: type_port_name; -- CLK, CE, VSS -- CS rename to port
+		unit	: type_unit_name; -- GPIO_BANK_3
 	end record;
 
 
 
 
 	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> pac_terminal_name."<",
+		key_type 		=> type_terminal_name, -- H7, 14
+		"<"				=> et_terminal_name."<",
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 

@@ -60,7 +60,7 @@ package et_netlist_submodules is
 		-- The port of the submodule instance
 		-- is named after a net that is exported by
 		-- the submodule:
-		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port		: type_net_name; -- CLOCK_GENERATOR_OUT
 
 		-- CS ? direction	: type_netchanger_port_name; -- master/slave
 		-- CS ? characteristics. See et_netlist_devices.type_device_port_extended

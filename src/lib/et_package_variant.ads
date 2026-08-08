@@ -63,10 +63,10 @@ package et_package_variant is
 	end record;
 
 
-	use pac_package_variant_name;
+	use et_package_variant_name;
 
 	package pac_package_variants is new ordered_maps (
-		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
+		key_type 		=> type_package_variant_name, -- D, N
 		element_type 	=> type_package_variant);
 
 	use pac_package_variants;
@@ -76,7 +76,7 @@ package et_package_variant is
 	-- of the given list:
 	function get_first_package_variant (
 		variants : in pac_package_variants.map)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns the number of package variants that
@@ -96,8 +96,8 @@ package et_package_variant is
 	is record
 		case linked is
 			when TRUE =>
-				unit	: pac_unit_name.bounded_string; -- A, B, GPIO1, ...
-				port	: pac_port_name.bounded_string; -- IN1, IN2, ...
+				unit	: type_unit_name; -- A, B, GPIO1, ...
+				port	: type_port_name; -- IN1, IN2, ...
 			when FALSE => null;
 		end case;
 	end record;
@@ -108,7 +108,7 @@ package et_package_variant is
 	-- terminal is returned:
 	function get_unit_and_port (
 		variant		: in pac_package_variants.cursor;
-		terminal	: in pac_terminal_name.bounded_string)
+		terminal	: in type_terminal_name)
 		return type_get_port_result;
 
 
@@ -118,16 +118,16 @@ package et_package_variant is
 	-- unit and port. If no terminal found, then an exception is raised:
 	function get_terminal (
 		variant	: in pac_package_variants.cursor;
-		unit	: in pac_unit_name.bounded_string;
-		port	: in pac_port_name.bounded_string)
-		return pac_terminal_name.bounded_string;
+		unit	: in type_unit_name;
+		port	: in type_port_name)
+		return type_terminal_name;
 
 
 
 	type type_terminal is record
-		name	: pac_terminal_name.bounded_string; -- H7
-		unit	: pac_unit_name.bounded_string; -- IO-BANK1
-		port	: pac_port_name.bounded_string; -- GPIO3
+		name	: type_terminal_name; -- H7
+		unit	: type_unit_name; -- IO-BANK1
+		port	: type_port_name; -- GPIO3
 	end record;
 
 

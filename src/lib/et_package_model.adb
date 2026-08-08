@@ -235,7 +235,7 @@ package body et_package_model is
 -- 	procedure terminal_properties (
 -- 	-- Logs the properties of the given terminal.
 -- 		terminal		: in type_terminal;
--- 		name			: in pac_terminal_name.bounded_string;
+-- 		name			: in type_terminal_name;
 -- 		log_threshold 	: in type_log_level) is
 -- 		use et_pcb_coordinates;
 -- 		log_threshold_1 : type_log_level := log_threshold + 1;

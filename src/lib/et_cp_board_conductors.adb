@@ -359,7 +359,7 @@ package body et_cp_board_conductors is
 			use et_board_ops_fill_zones;
 			use et_schematic_ops_nets;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 
 			-- Extract from the given command the polygon arguments (everything after "zone"):
@@ -546,7 +546,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -595,7 +595,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -763,7 +763,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			arc_tmp	: type_arc;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -878,7 +878,7 @@ package body et_cp_board_conductors is
 
 
 		procedure do_it is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			use et_schematic_ops_nets;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
@@ -970,7 +970,7 @@ package body et_cp_board_conductors is
 			use et_board_ops_conductors;
 			catch_zone : type_catch_zone;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			use et_schematic_ops_nets;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));

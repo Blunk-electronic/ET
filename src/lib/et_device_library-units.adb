@@ -55,14 +55,14 @@ package body et_device_library.units is
 
 	function provides_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return boolean
 	is
 		found : boolean := false;
 
 
 		procedure query_internal (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -74,7 +74,7 @@ package body et_device_library.units is
 
 
 		procedure query_external (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -114,7 +114,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -232,14 +232,14 @@ package body et_device_library.units is
 
 	function get_first_unit (
 		device_cursor : in pac_device_models.cursor)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is
 		fu : constant type_device_units := get_first_unit (device_cursor);
 
 		use pac_units_internal;
 		use pac_units_external;
 
-		unit_name : pac_unit_name.bounded_string; -- to be returned
+		unit_name : type_unit_name; -- to be returned
 	begin
 		-- The first unit is either internal or external.
 
@@ -268,7 +268,7 @@ package body et_device_library.units is
 
 	function get_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_device_units
 	is
 		cursors : type_device_units; -- to be returned
@@ -278,7 +278,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -378,7 +378,7 @@ package body et_device_library.units is
 
 	function locate_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
+		unit_name		: in type_unit_name) -- like "I/O-Bank 3"
 		return type_unit_cursors
 	is
 		use pac_units_external;
@@ -390,7 +390,7 @@ package body et_device_library.units is
 		cursor_internal : pac_units_internal.cursor;
 
 		procedure query_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model) is
 		pragma unreferenced (model);
 		begin
@@ -464,7 +464,7 @@ package body et_device_library.units is
 
 	function get_properties (
 		device_cursor	: in pac_device_models.cursor;
-		port_name		: in pac_port_name.bounded_string)
+		port_name		: in type_port_name)
 		return pac_symbol_ports.cursor
 	is
 
@@ -472,7 +472,7 @@ package body et_device_library.units is
 
 
 		procedure query_units (
-			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+			model	: in type_device_model_name; -- ../libraries/devices/logic_ttl/7400.dev
 			device	: in type_device_model) is
 				pragma unreferenced (model);
 
@@ -487,7 +487,7 @@ package body et_device_library.units is
 
 			-- Query ports of internal unit.
 			procedure query_ports (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit_internal) is
 			pragma unreferenced (unit_name);
 			begin
@@ -497,7 +497,7 @@ package body et_device_library.units is
 
 			-- Query ports of external unit.
 			procedure query_symbols (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit_external)
 			is
 				pragma unreferenced (unit_name);
@@ -507,7 +507,7 @@ package body et_device_library.units is
 				symbol_cursor : pac_symbol_models.cursor;
 
 				procedure query_ports (
-					file	: in pac_symbol_model_name.bounded_string; -- ../libraries/symbols/NAND.sym
+					file	: in type_symbol_model_name; -- ../libraries/symbols/NAND.sym
 					symbol	: in type_symbol_model)
 				is
 					pragma unreferenced (file);
@@ -578,14 +578,14 @@ package body et_device_library.units is
 
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return pac_symbol_ports.map
 	is
 		ports : pac_symbol_ports.map; -- to be returned
 
 
 		procedure query_internal_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);
@@ -601,7 +601,7 @@ package body et_device_library.units is
 
 
 		procedure query_external_units (
-			model	: in pac_device_model_file.bounded_string;
+			model	: in type_device_model_name;
 			device	: in type_device_model)
 		is
 			pragma unreferenced (model);

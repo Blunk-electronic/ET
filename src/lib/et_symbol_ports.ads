@@ -131,11 +131,11 @@ package et_symbol_ports is
 	-- at the package (footprint):
 
 	use et_port_names;
-	use pac_port_name;
+	use et_port_names;
 
 
 	package pac_symbol_ports is new indefinite_ordered_maps (
-		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
+		key_type		=> type_port_name, -- CLOCK, CE, VDD, GND
 		element_type	=> type_symbol_port);
 
 	use pac_symbol_ports;
@@ -144,7 +144,7 @@ package et_symbol_ports is
 
 	function get_port_name (
 		port_cursor : in pac_symbol_ports.cursor)
-		return pac_port_name.bounded_string;
+		return type_port_name;
 
 
 
@@ -168,7 +168,7 @@ package et_symbol_ports is
 		ports		: in out pac_symbol_ports.map;
 		position	: in type_vector_model;
 		deleted		: out boolean;
-		port_name	: out pac_port_name.bounded_string);
+		port_name	: out type_port_name);
 
 
 	-- Moves the given ports by given offset.

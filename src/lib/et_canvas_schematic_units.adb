@@ -685,7 +685,7 @@ package body et_canvas_schematic_units is
 	procedure cb_new_value_entered (
 		self : access gtk_entry_record'class)
 	is
-		device_value_new : pac_device_value.bounded_string;
+		device_value_new : type_device_value;
 
 
 		-- Sets the value of the selected object:
@@ -777,7 +777,7 @@ package body et_canvas_schematic_units is
 
 		procedure do_it is
 			device	: type_device_name; -- IC1
-			value	: pac_device_value.bounded_string;
+			value	: type_device_value;
 		begin
 			-- Get the name of the selected device:
 			device := get_device_name (object.unit.device_cursor);
@@ -860,7 +860,7 @@ package body et_canvas_schematic_units is
 	procedure cb_new_purpose_entered (
 		self : access gtk_entry_record'class)
 	is
-		device_purpose_new : pac_device_purpose.bounded_string;
+		device_purpose_new : type_device_purpose;
 
 
 		-- Sets the purpose of the selected object:
@@ -954,7 +954,7 @@ package body et_canvas_schematic_units is
 
 		procedure do_it is
 			device	: type_device_name; -- IC1
-			purpose	: pac_device_purpose.bounded_string;
+			purpose	: type_device_purpose;
 		begin
 			-- Get the name of the selected device:
 			device := get_device_name (object.unit.device_cursor);
@@ -1036,7 +1036,7 @@ package body et_canvas_schematic_units is
 	procedure cb_new_partcode_entered (
 		self : access gtk_entry_record'class)
 	is
-		device_partcode_new : pac_device_partcode.bounded_string;
+		device_partcode_new : type_device_partcode;
 
 
 		-- Sets the partcode of the selected object:
@@ -1131,7 +1131,7 @@ package body et_canvas_schematic_units is
 
 		procedure do_it is
 			device	: type_device_name; -- IC1
-			partcode	: pac_device_partcode.bounded_string;
+			partcode	: type_device_partcode;
 		begin
 			-- Get the name of the selected device:
 			device := get_device_name (object.unit.device_cursor);
@@ -1234,7 +1234,7 @@ package body et_canvas_schematic_units is
 		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
 
 		log (text => "selected variant: "
-			 & pac_package_variant_name.to_string (variant_new),
+			 & to_string (variant_new),
 			 level => log_threshold + 1);
 
 		log_indentation_down;
@@ -1336,8 +1336,8 @@ package body et_canvas_schematic_units is
 		procedure do_it is
 			unused_device	: type_device_name; -- IC1
 
-			use pac_package_variant_name;
-			variant	: pac_package_variant_name.bounded_string;
+			use et_package_variant_name;
+			variant	: type_package_variant_name;
 		begin
 			-- Get the name of the selected device:
 			unused_device := get_device_name (object.unit.device_cursor);
@@ -1743,7 +1743,7 @@ package body et_canvas_schematic_units is
 		log (text => "cb_package_variant_selected", level => log_threshold);
 		log_indentation_up;
 
-		log (text => "selected variant: " & pac_package_variant_name.to_string (unit_add.variant),
+		log (text => "selected variant: " & to_string (unit_add.variant),
 			 level => log_threshold + 1);
 		-- CS move downward after unit_add.variant assignment
 
@@ -1815,14 +1815,14 @@ package body et_canvas_schematic_units is
 		button : access gtk_file_chooser_button_record'class)
 	is
 		-- The delected device model file (*.dev) is stored here:
-		device_model_file : pac_device_model_file.bounded_string;
+		device_model_file : type_device_model_name;
 
 		use pac_device_models;
 		-- This cursor points to the device model in the library:
 		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_name;
-		unit_name : pac_unit_name.bounded_string;
+		unit_name : type_unit_name;
 
 		-- If package variants are available, then
 		-- they are stored here temporaily:
@@ -2315,7 +2315,7 @@ package body et_canvas_schematic_units is
 		use pac_devices_electrical;
 
 
-		device_model : pac_device_model_file.bounded_string;
+		device_model : type_device_model_name;
 		device_cursor_lib : pac_device_models.cursor;
 
 		unused_units_total : type_unit_count;

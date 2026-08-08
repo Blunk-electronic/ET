@@ -78,7 +78,7 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_submodules is
 
 	use pac_generic_modules;
-	use pac_net_name;
+	use et_net_names;
 
 
 
@@ -88,7 +88,7 @@ package et_schematic_ops_submodules is
 
 
 	procedure port_not_at_edge (
-		name : in pac_net_name.bounded_string);
+		name : in type_net_name);
 
 
 
@@ -105,7 +105,7 @@ package et_schematic_ops_submodules is
 	-- The module being searched in must be in the rig already.
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
-		port			: in pac_net_name.bounded_string;
+		port			: in type_net_name;
 		direction		: in type_netchanger_port_name) -- master/slave
 		return boolean;
 
@@ -116,7 +116,7 @@ package et_schematic_ops_submodules is
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance : in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string) -- RESET
+		port_name		: in type_net_name) -- RESET
 		return boolean;
 
 
@@ -126,7 +126,7 @@ package et_schematic_ops_submodules is
 	function get_submodule_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string; -- RESET
+		port_name		: in type_net_name; -- RESET
 		log_threshold	: in type_log_level)
 		return type_object_position;
 
@@ -143,7 +143,7 @@ package et_schematic_ops_submodules is
 	procedure insert_port (
 		module			: in pac_generic_modules.cursor;		-- the module
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port			: in pac_net_name.bounded_string; -- clock_output
+		port			: in type_net_name; -- clock_output
 		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level);
 
@@ -153,7 +153,7 @@ package et_schematic_ops_submodules is
 	procedure add_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string; -- clk_out
+		port_name		: in type_net_name; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 
 		direction		: in type_netchanger_port_name; -- master/slave.
@@ -179,7 +179,7 @@ package et_schematic_ops_submodules is
 	procedure delete_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string; -- clk_out
+		port_name		: in type_net_name; -- clk_out
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -192,7 +192,7 @@ package et_schematic_ops_submodules is
 	procedure move_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port_name		: in pac_net_name.bounded_string; -- clock_output
+		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -209,7 +209,7 @@ package et_schematic_ops_submodules is
 	procedure drag_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port_name		: in pac_net_name.bounded_string; -- clock_output
+		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;

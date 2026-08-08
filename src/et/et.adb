@@ -111,20 +111,20 @@ procedure et is
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 
-	package_name_create		: pac_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: pac_package_model_file.bounded_string; -- the package to be imported
-	package_name_open		: pac_package_model_file.bounded_string; -- the package to be opened
-	package_name_save_as	: pac_package_model_file.bounded_string; -- the package to be saved as
+	package_name_create		: type_package_model_name; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: type_package_model_name; -- the package to be imported
+	package_name_open		: type_package_model_name; -- the package to be opened
+	package_name_save_as	: type_package_model_name; -- the package to be saved as
 	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
-	symbol_name_create		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
-	symbol_name_open		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be opened
-	symbol_name_save_as		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be saved as
+	symbol_name_create		: et_symbol_name.type_symbol_model_name; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbol_name.type_symbol_model_name; -- the symbol to be opened
+	symbol_name_save_as		: et_symbol_name.type_symbol_model_name; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
-	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
-	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
+	device_name_create		: type_device_model_name; -- the device to be created like libraries/devices/TL084.dev
+	device_name_open		: type_device_model_name; -- the device to be opened
+	device_name_save_as		: type_device_model_name; -- the device to be saved as
 	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
 	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
@@ -482,7 +482,7 @@ procedure et is
 
 	procedure save_symbol_as is
 		use et_symbol_library;
-		use et_symbol_name.pac_symbol_model_name;
+		use et_symbol_name;
 	begin
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol is saved.
@@ -578,7 +578,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
 		use pac_package_model_file;
-		use et_symbol_name.pac_symbol_model_name;
+		use et_symbol_name;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
 		use et_script_processor;

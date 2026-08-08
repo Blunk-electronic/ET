@@ -71,7 +71,7 @@ package body et_module_write_tracks_route is
 
 
 	procedure query_route (
-		net_name	: in pac_net_name.bounded_string;
+		net_name	: in type_net_name;
 		net			: in type_net)
 	is
 		pragma unreferenced (net_name);

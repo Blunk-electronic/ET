@@ -118,7 +118,7 @@ procedure draw_nets is
 	-- This procedure draws the net connectors that
 	-- are attached to the A or B end of a net segment:
 	procedure draw_net_connectors (
-		net_name	: in pac_net_name.bounded_string;
+		net_name	: in type_net_name;
 		segment		: in type_net_segment)
 	is
 		use et_colors;
@@ -140,7 +140,7 @@ procedure draw_nets is
 		procedure draw_connector (label : in type_net_connector) is
 			use pac_draw_text;
 			use et_alignment;
-			use pac_net_name;
+			use et_net_names;
 
 			box : type_area;
 
@@ -330,7 +330,7 @@ procedure draw_nets is
 	-- This procedure draws the net labels that
 	-- are attached to a net segment:
 	procedure draw_labels (
-		net_name	: in pac_net_name.bounded_string;
+		net_name	: in type_net_name;
 		segment 	: in type_net_segment)
 	is
 		use et_colors;
@@ -341,7 +341,7 @@ procedure draw_nets is
 
 		-- This procedure queries a net label and draws it:
 		procedure query_label (label : in type_net_label) is
-			use pac_net_name;
+			use et_net_names;
 			use pac_draw_text;
 
 
@@ -421,7 +421,7 @@ procedure draw_nets is
 		-- "Normal" mode means, the whole net is not to be drawn highlighted.
 		-- This is the case when the verb VERB_SHOW is not active.
 		procedure query_net (
-			net_name	: in pac_net_name.bounded_string;
+			net_name	: in type_net_name;
 			net			: in type_net)
 		is
 			strand_cursor : pac_strands.cursor := net.strands.first;

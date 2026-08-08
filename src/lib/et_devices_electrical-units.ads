@@ -113,7 +113,7 @@ package et_devices_electrical.units is
 	-- the result is no_element:
 	function locate_unit (
 		device	: in type_device_electrical;
-		unit	: in pac_unit_name.bounded_string)
+		unit	: in type_unit_name)
 		return pac_units.cursor;
 
 
@@ -137,7 +137,7 @@ package et_devices_electrical.units is
 	-- any reference to a unit. This is useful when a device has only one unit.
 	function to_string (
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- C
+		unit_name		: in type_unit_name; -- C
 		query_result	: in type_unit_query)
 		return string;
 
@@ -185,7 +185,7 @@ package et_devices_electrical.units is
 	-- the device name will be returned as string.
 	function get_full_name (
 		device		: in type_device_name; -- IC34
-		unit		: in pac_unit_name.bounded_string; -- PWR
+		unit		: in type_unit_name; -- PWR
 		unit_count	: in type_unit_count) -- the total number of units
 		return string; -- IC34.PWR
 
@@ -196,7 +196,7 @@ package et_devices_electrical.units is
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
 		device	: in type_device_electrical; -- R2
-		unit	: in pac_unit_name.bounded_string) -- A, B, C
+		unit	: in type_unit_name) -- A, B, C
 		return type_object_position;
 
 
@@ -228,7 +228,7 @@ package et_devices_electrical.units is
 	-- or "not available or "not existing":
 	function get_unit_position (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_unit_query;
 
 
@@ -264,7 +264,7 @@ package et_devices_electrical.units is
 	-- to the origin of the unit as they are defined in the symbol model:
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return pac_symbol_ports.map;
 
 
@@ -342,7 +342,7 @@ package et_devices_electrical.units is
 	-- as they are defined in the symbol model.
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_electrical.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_default_text_positions;
 
 
@@ -382,7 +382,7 @@ package et_devices_electrical.units is
 	-- 	device		: in type_device_electrical;
 	-- 	level		: in type_properties_level;
 	-- 	all_units	: in boolean := true;
-	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
+	-- 	unit		: in type_unit_name := unit_name_default)
 	-- 	-- CS format ?
 	-- 	return string;
 
@@ -413,7 +413,7 @@ package et_devices_electrical.units is
 	-- will be raised:
 	function get_port (
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 14
+		terminal	: in type_terminal_name) -- H7, 1, 14
 		return type_get_port_result;
 
 
@@ -459,7 +459,7 @@ package et_devices_electrical.units is
 	procedure select_unit (
 		device		: in out type_device_electrical;
 		all_units	: in boolean;
-		unit_name	: in pac_unit_name.bounded_string);
+		unit_name	: in type_unit_name);
 
 
 

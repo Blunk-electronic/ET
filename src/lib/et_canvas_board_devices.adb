@@ -480,7 +480,7 @@ package body et_canvas_board_devices is
 		use et_package_model_name;
 
 		-- The selected package model file (*.pac) is stored here:
-		package_model_file : pac_package_model_file.bounded_string;
+		package_model_file : type_package_model_name;
 
 		-- This cursor points to the package model in the library:
 		use pac_package_models;
@@ -551,7 +551,7 @@ package body et_canvas_board_devices is
 		name : gvalue;
 
 		use et_device_prefix;
-		prefix : pac_device_prefix.bounded_string; -- FD1
+		prefix : type_device_prefix; -- FD1
 	begin
 		log (text => "cb_package_prefix_selected", level => log_threshold);
 		log_indentation_up;

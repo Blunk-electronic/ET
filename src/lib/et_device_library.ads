@@ -64,7 +64,7 @@ package et_device_library is
 	-- preformance of the device library using a hashed map:
 
 	--function hash_device_model (
-		--model	: in pac_device_model_file.bounded_string)
+		--model	: in type_device_model_name)
 		--return hash_type;
 
 	--function equivalent_models (
@@ -74,10 +74,10 @@ package et_device_library is
 	--subtype type_t is type_device_model (PCB);
 
 	--package pac_devices_lib2 is new hashed_maps (
-		--key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
+		--key_type 		=> type_device_model_name, -- ../libraries/devices/logic_ttl/7400.dev
 		--element_type	=> type_t,
 		--hash			=> hash_device_model,
-		--equivalent_keys	=> pac_device_model_file."=",
+		--equivalent_keys	=> et_device_model_names."=",
 		--"="				=> equivalent_models);
 
 	-- https://github.com/PiEqThree/Ada_Hash_Map/blob/main/main.adb
@@ -94,8 +94,8 @@ package et_device_library is
 	-- is also the key to the device library:
 
 	package pac_device_models is new indefinite_ordered_maps (
-		key_type 		=> pac_device_model_file.bounded_string,
-		"<"				=> pac_device_model_file."<",
+		key_type 		=> type_device_model_name,
+		"<"				=> et_device_model_names."<",
 		element_type	=> type_device_model);
 
 	use pac_device_models;
@@ -106,14 +106,14 @@ package et_device_library is
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_device_models.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 	-- Returns the name of the device model for
 	-- a given device cursor:
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string;
+		return type_device_model_name;
 	-- CS remove. see function get_device_model_name below
 	-- which does the same
 
@@ -130,7 +130,7 @@ package et_device_library is
 
 	-- Creates a device and stores it in device library:
 	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string;
+		device_name		: in type_device_model_name;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
 
@@ -141,14 +141,14 @@ package et_device_library is
 	-- (like ../libraries/devices/transistor/pnp.dev)
 	-- the device model in the device library:
 	function get_device_model (
-		model : in pac_device_model_file.bounded_string)
+		model : in type_device_model_name)
 		return pac_device_models.cursor;
 
 
 
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
-		return pac_device_model_file.bounded_string;
+		return type_device_model_name;
 
 
 	function get_device_model_name (
@@ -175,7 +175,7 @@ package et_device_library is
 	-- string will be returned:
 	function get_default_value (
 		device_cursor : in pac_device_models.cursor)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 

@@ -50,7 +50,7 @@ package body et_netlist_devices is
 
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
-		use pac_port_name;
+		use et_port_names;
 		result : boolean := false;
 	begin
 		if left.device < right.device then

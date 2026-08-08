@@ -56,7 +56,7 @@ package et_device_renumbering is
 
 	type type_renumber_device is record
 		name	: type_device_name; -- R56, IC4
-		unit	: pac_unit_name.bounded_string; -- 1, A, B, ...
+		unit	: type_unit_name; -- 1, A, B, ...
 		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;
 

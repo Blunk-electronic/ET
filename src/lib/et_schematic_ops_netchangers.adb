@@ -69,7 +69,7 @@ with et_commit;
 package body et_schematic_ops_netchangers is
 
 
-	use pac_net_name;
+	use et_net_names;
 	use pac_netchangers;
 
 
@@ -261,7 +261,7 @@ package body et_schematic_ops_netchangers is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);
@@ -366,7 +366,7 @@ package body et_schematic_ops_netchangers is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -515,7 +515,7 @@ package body et_schematic_ops_netchangers is
 
 
 				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
@@ -672,7 +672,7 @@ package body et_schematic_ops_netchangers is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2299,7 +2299,7 @@ package body et_schematic_ops_netchangers is
 
 		-- The names of the nets connected with the
 		-- MASTER and the SLAVE side of the netchanger:
-		name_M, name_S : pac_net_name.bounded_string;
+		name_M, name_S : type_net_name;
 
 		-- If both nets exist, then the dissolving
 		-- is granted:

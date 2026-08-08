@@ -79,7 +79,7 @@ separate (et_canvas_board)
 
 -- Draws a single terminal candidate:
 procedure draw_terminal (
-	name				: in et_terminal_name.pac_terminal_name.bounded_string;
+	name				: in et_terminal_name.type_terminal_name;
 	terminal			: in et_terminals.type_terminal;
 	brightness			: in et_colors.type_brightness;
 	package_position	: in type_package_position;

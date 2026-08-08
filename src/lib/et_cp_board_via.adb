@@ -255,7 +255,7 @@ package body et_cp_board_via is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		net_name		: pac_net_name.bounded_string;
+		net_name		: type_net_name;
 		drill			: type_drill;
 		restring_outer	: type_restring_width;
 		restring_top	: type_restring_width;

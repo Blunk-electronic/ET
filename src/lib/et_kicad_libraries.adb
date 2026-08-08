@@ -128,7 +128,7 @@ package body et_kicad_libraries is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	procedure check_prefix_characters (
-		prefix 		: in pac_device_prefix.bounded_string;
+		prefix 		: in type_device_prefix;
 		characters	: in character_set)
 	is
 		use pac_device_prefix;
@@ -167,12 +167,12 @@ package body et_kicad_libraries is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> pac_device_prefix.to_bounded_string (""),
+				prefix 		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 				id 			=> 0,
 				id_width	=> 1);
 
 		c : character;
-		p : pac_device_prefix.bounded_string;
+		p : type_device_prefix;
 
 		procedure invalid_reference is begin
 			log (SEVERITY_ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
@@ -256,13 +256,13 @@ package body et_kicad_libraries is
 
 
 	function to_package_name (
-		library_name	: in pac_device_model_file.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return pac_package_name.bounded_string
+		package_variant	: in type_package_variant_name) -- N, D
+		return type_package_name
 	is
 		pragma unreferenced (library_name, generic_name, package_variant);
-		package_name : pac_package_name.bounded_string; -- to be returned
+		package_name : type_package_name; -- to be returned
 	begin -- to_package_name
 		-- CS
 		return package_name;
@@ -304,7 +304,7 @@ package body et_kicad_libraries is
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif pac_port_name.">" (left.name, right.name) then
+		elsif et_port_names.">" (left.name, right.name) then
 			result := true;
 
 		else
@@ -320,7 +320,7 @@ package body et_kicad_libraries is
 
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
-		library			: in pac_device_model_file.bounded_string; -- ../lib/transistors.lib
+		library			: in type_device_model_name; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 	begin
@@ -392,7 +392,7 @@ package body et_kicad_libraries is
 
 
 		procedure locate (
-			name : in pac_unit_name.bounded_string;
+			name : in type_unit_name;
 			unit : in type_unit_library)
 		is
 			pragma unreferenced (name);
@@ -479,7 +479,7 @@ package body et_kicad_libraries is
 
 
 
-	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in type_device_prefix) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 	begin
@@ -561,9 +561,9 @@ package body et_kicad_libraries is
 
 
 
-	function package_name (text : in string) return pac_package_name.bounded_string is
+	function package_name (text : in string) return type_package_name is
 	begin
-		return pac_package_name.to_bounded_string (
+		return type_package_name (pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -571,7 +571,7 @@ package body et_kicad_libraries is
 					ifs 			=> latin_1.colon
 					),
 				position => 2) -- the part after the colon
-				);
+				));
 	end package_name;
 
 
@@ -1004,9 +1004,9 @@ package body et_kicad_libraries is
 
 	-- Tests if the given component package name meets certain conventions.
 	procedure validate_component_package_name
-		(name : in pac_package_name.bounded_string)
+		(name : in type_package_name)
 	is
-		use pac_package_name;
+		use et_package_name;
 
 		procedure no_package is begin
 			log (SEVERITY_ERROR, "no package associated !",
@@ -1027,9 +1027,9 @@ package body et_kicad_libraries is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in pac_package_name.bounded_string; -- S_SO14
+		package_name 	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
@@ -1044,7 +1044,7 @@ package body et_kicad_libraries is
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
 	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
 
-		lib : pac_package_model_file.bounded_string; -- to be returned
+		lib : type_package_model_name; -- to be returned
 
 		use et_import;
 		use type_project_lib_dirs;
@@ -1058,14 +1058,14 @@ package body et_kicad_libraries is
 		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
 		use type_library_name;
-		full_library_name : pac_package_model_file.bounded_string;
+		full_library_name : type_package_model_name;
 		package_found : boolean := false;
 
 
 		-- Searches the library (indicated by lib_cursor) for the given package.
 		-- Sets the flag package_found if the library contains the given package.
 		procedure search_package (
-			lib_name	: in pac_package_model_file.bounded_string;
+			lib_name	: in type_package_model_name;
 			library		: in type_packages_library.map) is
 		pragma unreferenced (lib_name);
 		begin
@@ -1156,7 +1156,7 @@ package body et_kicad_libraries is
 				end loop;
 
 				-- If the library could not be located anywhere, abort here:
-				if pac_package_model_file.length (full_library_name) = 0 then
+				if pac_package_model_file.length (pac_package_model_file.bounded_string (full_library_name)) = 0 then
 					log (SEVERITY_ERROR, "No library '" & et_kicad_general.to_string (library_name)
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
@@ -1184,8 +1184,8 @@ package body et_kicad_libraries is
 
 
 	function terminal_port_map_fits (
-		library_name		: in pac_package_model_file.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		library_name		: in type_package_model_name;		-- ../lbr/bel_ic.pretty
+		package_name 		: in type_package_name;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean
 	is
@@ -1203,7 +1203,7 @@ package body et_kicad_libraries is
 			terminal_cursor : pac_terminal_port_map.cursor;
 
 			-- For temporarily storage of a terminal name:
-			terminal_name_in_map : pac_terminal_name.bounded_string;
+			terminal_name_in_map : type_terminal_name;
 		begin
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
@@ -1225,7 +1225,7 @@ package body et_kicad_libraries is
 
 		-- Locates the package by package_name in the given package library.
 		procedure locate_package (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in type_packages_library.map)
 		is
 			package_cursor : type_packages_library.cursor;
@@ -1341,13 +1341,13 @@ package body et_kicad_libraries is
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
-			tmp_prefix				: pac_device_prefix.bounded_string; -- IC -- CS: rename to prefix
+			tmp_prefix				: type_device_prefix; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_appearance; -- CS: rename to appearance
 
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
 			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
 			tmp_port_name_offset		: et_schematic_geometry.type_distance_model; -- CS: rename to port_name_offset
-			tmp_terminal_name			: pac_terminal_name.bounded_string;
+			tmp_terminal_name			: type_terminal_name;
 
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
@@ -1503,9 +1503,9 @@ package body et_kicad_libraries is
 
 
 			-- returns the given unit id as pac_unit_name
-			function to_unit_name (id : in type_unit_id) return pac_unit_name.bounded_string is
+			function to_unit_name (id : in type_unit_id) return type_unit_name is
 			begin
-				return pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
+				return type_unit_name (pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left)));
 			end to_unit_name;
 
 
@@ -1998,10 +1998,10 @@ package body et_kicad_libraries is
 				log_indentation_up;
 
 				-- port name. to be taken from field #2 of the given line
-				port.name := pac_port_name.to_bounded_string (f (line, 2)); -- GND, GPIO2
+				port.name := type_port_name (pac_port_name.to_bounded_string (f (line, 2))); -- GND, GPIO2
 
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := pac_terminal_name.to_bounded_string (f (line, 3)); -- H5, 14
+				tmp_terminal_name := type_terminal_name (pac_terminal_name.to_bounded_string (f (line, 3))); -- H5, 14
 
 				-- compose position
 				set (port.position, AXIS_X, mil_to_distance (mil => f (line, 4)));
@@ -2088,12 +2088,12 @@ package body et_kicad_libraries is
 					when NAME =>
 						check_prefix_length (content (text));
 						check_prefix_characters (
-							prefix		=> pac_device_prefix.to_bounded_string (content (text)),
+							prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string (content (text))),
 							characters	=> component_prefix_characters);
 
 					when VALUE =>
 						declare
-							unused_value : pac_device_value.bounded_string;
+							unused_value : type_device_value;
 						begin
 							unused_value := to_value_with_check (
 								value 						=> content (text),
@@ -2111,7 +2111,7 @@ package body et_kicad_libraries is
 					when PACKGE =>
 						check_package_name_length (content (text));
 						check_package_name_characters (
-							packge		=> pac_package_name.to_bounded_string (content (text)),
+							packge		=> type_package_name (pac_package_name.to_bounded_string (content (text))),
 							characters	=> component_package_name_characters);
 
 					when others => null; -- CS
@@ -2209,12 +2209,12 @@ package body et_kicad_libraries is
 							missing_field (field_package.meaning);
 						else
 							validate_component_package_name (
-								pac_package_name.to_bounded_string (f (
+								type_package_name (pac_package_name.to_bounded_string (f (
 									line => read_line ( -- CS use function package_name
 										line			=> content (field_package), -- bel_ic:S_SO14
 										comment_mark	=> et_kicad_general.comment_mark,
 										ifs				=> latin_1.colon),
-									position => 2))); -- the block after the colon
+									position => 2)))); -- the block after the colon
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
@@ -2260,7 +2260,7 @@ package body et_kicad_libraries is
 			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
-				key			: in pac_device_model_file.bounded_string;
+				key			: in type_device_model_name;
 				components	: in out type_components_library.map)
 			is
 				pragma unreferenced (key);
@@ -2361,7 +2361,7 @@ package body et_kicad_libraries is
 				end locate_unit;
 
 				procedure locate_component (
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in type_components_library.map) is
 				pragma unreferenced (key, components);
 				begin
@@ -2418,7 +2418,7 @@ package body et_kicad_libraries is
 				end insert_unit;
 
 				procedure locate_component (
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin
@@ -2464,7 +2464,7 @@ package body et_kicad_libraries is
 				procedure insert (
 				-- Inserts the given element in the unit.
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
-					key		: in pac_unit_name.bounded_string;
+					key		: in type_unit_name;
 					unit	: in out type_unit_library) is
 					pragma unreferenced (key);
 					unused_pos		: natural := 0; -- helps to trace the program position where an exception occured
@@ -2537,7 +2537,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
@@ -2581,7 +2581,7 @@ package body et_kicad_libraries is
 
 				procedure set (
 				-- Sets the properties of the placeholders in the current unit.
-					key		: in pac_unit_name.bounded_string;
+					key		: in type_unit_name;
 					unit	: in out type_unit_library) is
 				pragma unreferenced (key);
 				begin
@@ -2625,7 +2625,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
-					key			: in pac_device_model_file.bounded_string;
+					key			: in type_device_model_name;
 					components	: in out type_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
@@ -2893,7 +2893,7 @@ package body et_kicad_libraries is
 					end insert_footprint;
 
 					procedure locate_component (
-						key			: in pac_device_model_file.bounded_string;
+						key			: in type_device_model_name;
 						components	: in out type_components_library.map) is
 					pragma unreferenced (key);
 					begin
@@ -2945,7 +2945,7 @@ package body et_kicad_libraries is
 						-- CS: Do a cross check of prefix and reference -- "U"
 						-- The prefix is already defined in the component hearder.
 						-- Why this redundance ? Ask the kicad makers...
-						if strip_quotes (f (line, 2)) = pac_device_prefix.to_string (tmp_prefix) then
+						if strip_quotes (f (line, 2)) = to_string (tmp_prefix) then
 							null; -- fine
 						else
 							log (SEVERITY_WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
@@ -2989,7 +2989,7 @@ package body et_kicad_libraries is
 			procedure build_package_variant is
 
 				procedure locate_component (
-					lib_name	: in pac_device_model_file.bounded_string;
+					lib_name	: in type_device_model_name;
 					components	: in out type_components_library.map)
 				is
 					pragma unreferenced (lib_name);
@@ -3001,14 +3001,14 @@ package body et_kicad_libraries is
 						pragma unreferenced (comp_name);
 						use et_package_library;
 						use pac_package_variants;
-						use pac_package_variant_name;
+						use et_package_variant_name;
 
-						package_model_name : pac_package_model_file.bounded_string;
+						package_model_name : type_package_model_name;
 
-						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
+						tmp_variant_name : type_package_variant_name; -- temporarily used for building the variant name
 						tmp_variants : pac_package_variants.map; -- temporarily used for building the variant
 
-						full_package_library_name : pac_package_model_file.bounded_string;
+						full_package_library_name : type_package_model_name;
 					begin
 						case component.appearance is
 							when APPEARANCE_PCB => -- real component
@@ -3157,7 +3157,7 @@ package body et_kicad_libraries is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := pac_device_prefix.to_bounded_string (f (line, 3)); -- U
+								tmp_prefix := type_device_prefix (pac_device_prefix.to_bounded_string (f (line, 3))); -- U
 
 								-- Detect invalid characters in tmp_prefix:
 								-- NOTE: we test against the kicad specific character set that allows a #
@@ -3433,25 +3433,25 @@ package body et_kicad_libraries is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in pac_device_model_file.bounded_string; 	-- ../lbr/bel_logic.lib
+		component_library 	: in type_device_model_name; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
-		return pac_package_variant_name.bounded_string -- D
+		return type_package_variant_name -- D
 	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 
-		use pac_package_variant_name;
-		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
+		use et_package_variant_name;
+		variant : type_package_variant_name; -- variant name to be returned
 
 		-- temporarily here the name of the package library is stored:
-		full_package_library_name : pac_package_model_file.bounded_string; -- ../lbr/bel_ic
+		full_package_library_name : type_package_model_name; -- ../lbr/bel_ic
 
 
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
-			library_name	: in pac_device_model_file.bounded_string;
+			library_name	: in type_device_model_name;
 			components 		: in out type_components_library.map)
 		is
 			pragma unreferenced (library_name);
@@ -3468,7 +3468,7 @@ package body et_kicad_libraries is
 				use et_package_library;
 				use pac_package_variants;
 
-				package_model_name : pac_package_model_file.bounded_string;
+				package_model_name : type_package_model_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_package_variants.cursor := component.variants.first;
@@ -3697,7 +3697,7 @@ package body et_kicad_libraries is
 
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
-		library		: in pac_device_model_file.bounded_string;
+		library		: in type_device_model_name;
 		component	: in type_component_generic_name.bounded_string)
 		return type_components_library.cursor is
 
@@ -3708,7 +3708,7 @@ package body et_kicad_libraries is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in pac_device_model_file.bounded_string;
+			library 	: in type_device_model_name;
 			components	: in type_components_library.map) is
 		pragma unreferenced (library);
 		begin

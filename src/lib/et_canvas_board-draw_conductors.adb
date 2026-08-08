@@ -147,7 +147,7 @@ procedure draw_conductors is
 
 	-- For diplaying net names and classes we need this stuff:
 	-- is_signal : boolean := false;
-	net_name : pac_net_name.bounded_string;
+	net_name : type_net_name;
 
 
 	-- The conductor layers are drawn in the order bottom-to-top so that
@@ -778,7 +778,7 @@ procedure draw_conductors is
 			use et_colors.board;
 			use et_alignment;
 
-			use pac_net_name;
+			use et_net_names;
 
 			position : constant type_vector_model := get_center (circle);
 
@@ -1127,7 +1127,7 @@ procedure draw_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1224,7 +1224,7 @@ procedure draw_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1276,7 +1276,7 @@ procedure draw_conductors is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);

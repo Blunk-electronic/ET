@@ -464,7 +464,7 @@ package body et_kicad_packages is
 		use pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : constant pac_package_name.bounded_string :=
+		package_name : constant type_package_name :=
 			to_package_name (ada.directories.base_name (file_name));
 
 		function path_and_file_name return string is
@@ -605,7 +605,7 @@ package body et_kicad_packages is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: pac_terminal_name.bounded_string;
+		terminal_name 			: type_terminal_name;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -2685,7 +2685,7 @@ package body et_kicad_packages is
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 		procedure read_packages (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in out type_packages_library.map)
 		is
 			package_names : pac_directory_entries.list;

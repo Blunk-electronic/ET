@@ -67,11 +67,11 @@ package et_net_ports_devices is
 		-- CS cursor to the electrical device instead ?
 		-- could improve performance.
 
-		unit_name	: pac_unit_name.bounded_string; -- A
+		unit_name	: type_unit_name; -- A
 		-- CS cursor to the unit instead ?
 		-- could improve performance.
 
-		port_name	: pac_port_name.bounded_string; -- IN1
+		port_name	: type_port_name; -- IN1
 		-- CS cursor to the port instead ?
 		-- could improve performance.
 	end record;
@@ -87,8 +87,8 @@ package et_net_ports_devices is
 	-- Builds a device port:
 	function to_device_port (
 		device	: in type_device_name;
-		unit	: in pac_unit_name.bounded_string;
-		port	: in pac_port_name.bounded_string)
+		unit	: in type_unit_name;
+		port	: in type_port_name)
 		return type_device_port;
 
 

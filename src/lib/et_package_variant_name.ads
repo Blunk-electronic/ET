@@ -63,29 +63,31 @@ package et_package_variant_name is
 
 	use pac_package_variant_name;
 
+	type type_package_variant_name is new pac_package_variant_name.bounded_string;
 
 
-	no_variant : constant pac_package_variant_name.bounded_string :=
-		pac_package_variant_name.to_bounded_string ("");
+
+	no_variant : constant type_package_variant_name :=
+		type_package_variant_name (pac_package_variant_name.to_bounded_string (""));
 
 
 
 
 	-- Returns true if the given variant name is empty:
 	function is_empty (
-		variant_name : in pac_package_variant_name.bounded_string)
+		variant_name : in type_package_variant_name)
 		return boolean;
 
 
 
 	-- function to_string (
-	-- 	variant : in pac_package_variant_name.bounded_string)
+	-- 	variant : in type_package_variant_name)
 	-- 	return string;
 
 
 	function to_variant_name (
 		variant_name : in string)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- tests if the given variant name is not longer than allowed
@@ -97,7 +99,7 @@ package et_package_variant_name is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 	procedure check_variant_name_characters (
-		variant		: in pac_package_variant_name.bounded_string;
+		variant		: in type_package_variant_name;
 		characters	: in character_set := variant_name_characters);
 
 

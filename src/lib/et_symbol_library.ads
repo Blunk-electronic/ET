@@ -66,8 +66,8 @@ package et_symbol_library is
 	-- is also the key to the symbol library:
 
 	package pac_symbol_models is new indefinite_ordered_maps (
-		key_type		=> pac_symbol_model_name.bounded_string,
-		"<"				=> pac_symbol_model_name."<",
+		key_type		=> type_symbol_model_name,
+		"<"				=> et_symbol_name."<",
 		element_type	=> type_symbol_model);
 
 	use pac_symbol_models;
@@ -84,7 +84,7 @@ package et_symbol_library is
 
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
-		return pac_symbol_model_name.bounded_string;
+		return type_symbol_model_name;
 
 
 	function get_symbol_model_name (
@@ -95,7 +95,7 @@ package et_symbol_library is
 
 	-- Creates a symbol and stores it in symbol library:
 	procedure create_symbol (
-		symbol_name		: in pac_symbol_model_name.bounded_string;
+		symbol_name		: in type_symbol_model_name;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
 
@@ -108,7 +108,7 @@ package et_symbol_library is
 	-- If the symbol can not be located then cursor is
 	-- set to no_element:
 	procedure get_symbol_model ( -- CS rename to set_symbol_model
-		model_file	: in pac_symbol_model_name.bounded_string; -- CS rename to model_name
+		model_file	: in type_symbol_model_name; -- CS rename to model_name
 		cursor		: in out pac_symbol_models.cursor);
 
 
@@ -118,7 +118,7 @@ package et_symbol_library is
 	-- If the symbol can not be located then cursor is
 	-- set to no_element:
 	function get_symbol_model (
-		model_name : in pac_symbol_model_name.bounded_string)
+		model_name : in type_symbol_model_name)
 		return pac_symbol_models.cursor;
 
 

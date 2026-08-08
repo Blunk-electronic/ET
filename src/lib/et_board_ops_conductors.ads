@@ -71,7 +71,7 @@ package et_board_ops_conductors is
 
 	use pac_generic_modules;
 	use pac_text_board_vectorized;
-	use pac_net_name;
+	use et_net_names;
 	use pac_grid;
 
 
@@ -81,7 +81,7 @@ package et_board_ops_conductors is
 	-- Assumes that the given net exists. Otherwise an exception will be raised:
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -94,7 +94,7 @@ package et_board_ops_conductors is
 	-- It does not check if the given net exists.
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
+		net_name		: in type_net_name := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -118,11 +118,11 @@ package et_board_ops_conductors is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 	procedure add_line_start_at_terminal_with_length (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		direction		: in type_rotation_model;
 		length			: in type_distance_positive;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -139,11 +139,11 @@ package et_board_ops_conductors is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 	procedure add_line_start_at_terminal_with_notches_along_axis (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		direction		: in type_rotation_model;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
@@ -159,11 +159,11 @@ package et_board_ops_conductors is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		end_point		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -178,11 +178,11 @@ package et_board_ops_conductors is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 	procedure add_line_start_at_terminal_with_notches_along_axis_2 (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in pac_terminal_name.bounded_string;
+		terminal		: in type_terminal_name;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -364,7 +364,7 @@ package et_board_ops_conductors is
 	-- an exception will be raised:
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -390,7 +390,7 @@ package et_board_ops_conductors is
 	-- exists. Otherwise an exception will be raised:
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -506,7 +506,7 @@ package et_board_ops_conductors is
 	-- will be raised:
 	procedure delete_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -536,7 +536,7 @@ package et_board_ops_conductors is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_track (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -550,7 +550,7 @@ package et_board_ops_conductors is
 	-- an exception will be raised:
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

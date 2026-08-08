@@ -148,7 +148,7 @@ package body et_cp_schematic_nets is
 
 
 		procedure do_it is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			scope : type_net_scope;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
@@ -211,7 +211,7 @@ package body et_cp_schematic_nets is
 
 
 		procedure do_it is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
 
@@ -499,7 +499,7 @@ package body et_cp_schematic_nets is
 		procedure do_it is
 			use et_board_ops_net_class;
 			use et_net_class_name;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			net_class : pac_net_class_name.bounded_string;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
@@ -590,7 +590,7 @@ package body et_cp_schematic_nets is
 
 		procedure explicit_name_given is
 			name_s : constant string := get_field (cmd, 5); -- RESET_N
-			name_b : pac_net_name.bounded_string;
+			name_b : type_net_name;
 		begin
 			-- Validate the given net name:
 			check_net_name_length (name_s);
@@ -608,7 +608,7 @@ package body et_cp_schematic_nets is
 
 		procedure segment_given is
 			name_s : constant string := get_field (cmd, 5); -- RESET_N
-			name_b : pac_net_name.bounded_string;
+			name_b : type_net_name;
 
 			A : type_object_position; -- start point of segment
 			B : type_vector_model; -- end point of segment
@@ -720,7 +720,7 @@ package body et_cp_schematic_nets is
 
 		-- This procedure deletes the net on all sheets:
 		procedure delete_all is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 		begin
 			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
 
@@ -747,7 +747,7 @@ package body et_cp_schematic_nets is
 
 		-- This procedure deletes the net on a single sheet:
 		procedure delete_sheet is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			sheet : type_sheet;
 		begin
 			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
@@ -810,7 +810,7 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		net_name_before, net_name_after : pac_net_name.bounded_string;
+		net_name_before, net_name_after : type_net_name;
 		sheet : type_sheet;
 		catch_zone : type_catch_zone;
 

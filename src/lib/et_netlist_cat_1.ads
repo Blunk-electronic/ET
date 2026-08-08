@@ -84,11 +84,11 @@ package et_netlist_cat_1 is
 
 
 
-	use pac_net_name;
+	use et_net_names;
 
 	-- The key to the netlist is the net name:
 	package pac_netlist_cat_1 is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string,
+		key_type		=> type_net_name,
 		element_type	=> type_net_ports_cat_1);
 
 
@@ -105,7 +105,7 @@ package et_netlist_cat_1 is
 	-- Adds a net to the given netlist:
 	procedure add_net_to_netlist (
 		netlist		: in out pac_netlist_cat_1.map;
-		name		: in pac_net_name.bounded_string;
+		name		: in type_net_name;
 		devices		: in pac_device_ports_extended.set;
 		submodules	: in pac_submodule_ports_extended.set;
 		netchangers	: in pac_netchanger_ports.set);

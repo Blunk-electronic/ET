@@ -498,7 +498,7 @@ package body et_kicad_to_native is
 
 
 				procedure change_path (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out et_kicad.schematic.type_unit_schematic)
 				is begin
 					log (text => "unit " & to_string (unit_name), level => log_threshold + 4);
@@ -595,7 +595,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_kicad.schematic.type_net) is
 					pragma unreferenced (net_name);
 
@@ -2146,7 +2146,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_ports (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				ports		: in out et_kicad.schematic.pac_ports_with_reference.set)
 			is
 				use et_kicad.schematic.pac_ports_with_reference;
@@ -2525,11 +2525,11 @@ package body et_kicad_to_native is
 -- 						et_project.type_et_project_path.to_bounded_string (
 -- 							compose (et_general.work_directory, et_project.directory_import));
 
-		prefix_devices_dir : constant pac_device_model_file.bounded_string := -- libraries/devices
+		prefix_devices_dir : constant type_device_model_name := -- libraries/devices
 			to_file_name (compose (
 				directory_libraries, directory_libraries_devices));
 
-		prefix_packages_dir : constant pac_package_model_file.bounded_string := -- libraries/packages
+		prefix_packages_dir : constant type_package_model_name := -- libraries/packages
 			to_package_model_name (compose (
 				directory_libraries, directory_libraries_packages));
 
@@ -2596,14 +2596,14 @@ package body et_kicad_to_native is
 		-- generic component name and device model extension
 		-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 		function concatenate_lib_name_and_generic_name (
-			library	: in pac_device_model_file.bounded_string; -- ../../lbr/bel_logic.lib
+			library	: in type_device_model_name; -- ../../lbr/bel_logic.lib
 			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
-			return pac_device_model_file.bounded_string
+			return type_device_model_name
 		is
 
 			use pac_device_model_file;
-			dir : pac_device_model_file.bounded_string; -- ../../lbr
-			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
+			dir : type_device_model_name; -- ../../lbr
+			name : type_device_model_name; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
@@ -2611,7 +2611,7 @@ package body et_kicad_to_native is
 		begin -- concatenate_lib_name_and_generic_name
 			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
 
-			pac_device_model_file.translate (dir, characters); -- __-__-lbr
+			translate (dir, characters); -- __-__-lbr
 			--log (text => "dir " & et_libraries.to_string (dir));
 
 			name := to_file_name (base_name (to_string (name => library))); -- bel_logic
@@ -2634,8 +2634,8 @@ package body et_kicad_to_native is
 
 
 		function rename_package_model (
-			model_in : in pac_package_model_file.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return pac_package_model_file.bounded_string
+			model_in : in type_package_model_name) -- ../../lbr/transistors.pretty/S_0805
+			return type_package_model_name
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
@@ -2644,8 +2644,8 @@ package body et_kicad_to_native is
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
 
-			model_copy : pac_package_model_file.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : pac_package_model_file.bounded_string;
+			model_copy : type_package_model_name := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : type_package_model_name;
 		begin
 			translate (model_copy, characters);
 
@@ -2675,7 +2675,7 @@ package body et_kicad_to_native is
 			component_cursor_native	: pac_devices_electrical.cursor;
 			component_inserted		: boolean;
 
-			model_name : pac_device_model_file.bounded_string;
+			model_name : type_device_model_name;
 
 
 			-- Copies the kicad units to the native component.
@@ -2874,7 +2874,7 @@ package body et_kicad_to_native is
 			-- copies the kicad strands to native strands of a net.
 			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.
 			-- As a strand is part of a net, there is no need for individual strand names.
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
 				use et_kicad.schematic.type_strands;
@@ -3258,7 +3258,7 @@ package body et_kicad_to_native is
 
 
 			procedure copy_layout_stuff (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
 				pragma unreferenced (net_name);
@@ -3339,7 +3339,7 @@ package body et_kicad_to_native is
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
 
 			use pac_device_model_file;
-			component_library_name : pac_device_model_file.bounded_string; -- lbr/logic.lib
+			component_library_name : type_device_model_name; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:
 			use et_kicad_packages.type_libraries;
@@ -3349,7 +3349,7 @@ package body et_kicad_to_native is
 
 
 			procedure query_components (
-				library_name	: in pac_device_model_file.bounded_string; -- lbr/logic.lib
+				library_name	: in type_device_model_name; -- lbr/logic.lib
 				library			: in et_kicad_libraries.type_components_library.map)
 			is
 				pragma unreferenced (library_name);
@@ -3360,7 +3360,7 @@ package body et_kicad_to_native is
 
 				use et_kicad_libraries.type_component_generic_name;
 				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
-				device_model : pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+				device_model : type_device_model_name; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : pac_device_models.cursor;
 				inserted : boolean;
@@ -3369,7 +3369,7 @@ package body et_kicad_to_native is
 
 				-- Transfers the kicad units to native units in the current native ET device.
 				procedure copy_units (
-					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in type_device_model_name; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model)
 				is
 					pragma unreferenced (device_name);
@@ -3391,7 +3391,7 @@ package body et_kicad_to_native is
 
 
 					procedure copy_ports (
-						unit_name	: in pac_unit_name.bounded_string;
+						unit_name	: in type_unit_name;
 						unit		: in out type_unit_internal)
 					is
 						pragma unreferenced (unit_name);
@@ -3740,7 +3740,7 @@ package body et_kicad_to_native is
 				-- The package associated with a variant must be changed so that it becomes
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
 				procedure rename_package_model_in_variants (
-					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in type_device_model_name; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model)
 				is
 					pragma unreferenced (device_name);
@@ -3753,7 +3753,7 @@ package body et_kicad_to_native is
 
 
 					procedure rename (
-						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
+						variant_name	: in type_package_variant_name; -- N, D, ...
 						variant			: in out type_package_variant)
 					is begin
 						-- CS
@@ -3789,8 +3789,8 @@ package body et_kicad_to_native is
 
 				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
 				function remove_leading_hash (
-					prefix : in pac_device_prefix.bounded_string) return
-					pac_device_prefix.bounded_string
+					prefix : in type_device_prefix) return
+					type_device_prefix
 				is
 					use pac_device_prefix;
 				begin
@@ -3885,14 +3885,14 @@ package body et_kicad_to_native is
 
 			-- Creates with the library name and package name new native package models.
 			procedure query_packages (
-				library_name	: in pac_package_model_file.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in type_package_model_name; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_packages.type_packages_library.map)
 			is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
-				package_name			: pac_package_name.bounded_string;
-				package_model			: pac_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_name			: type_package_name;
+				package_model			: type_package_model_name := library_name; -- projects/lbr/smd_packages.pretty
 
 				package_cursor			: et_package_library.pac_package_models.cursor;
 				inserted				: boolean;

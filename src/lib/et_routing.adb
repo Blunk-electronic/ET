@@ -56,7 +56,7 @@ package body et_routing is
 		return type_get_terminal_clearance_result
 	is
 		use et_board_ops;
-		use pac_net_name;
+		use et_net_names;
 
 		-- Get a cursor to the net connected with the terminal.
 		-- If there is no net connected then we return a not-connected-status:

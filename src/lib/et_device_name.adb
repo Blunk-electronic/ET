@@ -89,12 +89,12 @@ package body et_device_name is
 		text_in_justified : constant string (1 .. text_in'length) := to_upper (text_in);
 
 		r : type_device_name := (
-				prefix		=> pac_device_prefix.to_bounded_string (""),
+				prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
 				id 			=> 0,
 				id_width	=> 1);
 
 		c : character;
-		p : pac_device_prefix.bounded_string;
+		p : type_device_prefix;
 
 		procedure invalid_device_name is
 		begin
@@ -262,11 +262,11 @@ package body et_device_name is
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return pac_device_prefix.to_string (name.prefix)
+				return to_string (name.prefix)
 					& trim (natural'image (name.id), left);
 
 			when others => -- leading zeros required
-				return pac_device_prefix.to_string (name.prefix)
+				return to_string (name.prefix)
 					& lz * '0' & trim (natural'image (name.id), left);
 		end case;
 	end to_string;
@@ -281,7 +281,7 @@ package body et_device_name is
 
 	function get_prefix (
 		name : in type_device_name)
-		return pac_device_prefix.bounded_string
+		return type_device_prefix
 	is begin
 		return name.prefix;
 	end get_prefix;
@@ -290,7 +290,7 @@ package body et_device_name is
 
 	procedure set_prefix (
 		name	: in out type_device_name;
-		prefix	: in pac_device_prefix.bounded_string)
+		prefix	: in type_device_prefix)
 	is begin
 		name.prefix := prefix;
 	end set_prefix;
@@ -333,7 +333,7 @@ package body et_device_name is
 
 
 	function to_device_name (
-		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
+		prefix	: in type_device_prefix; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name
@@ -434,7 +434,7 @@ package body et_device_name is
 
 	function get_first_available_name (
 		device_names	: in pac_device_names.set;
-		prefix			: in pac_device_prefix.bounded_string;
+		prefix			: in type_device_prefix;
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is

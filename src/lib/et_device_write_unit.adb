@@ -79,7 +79,7 @@ package body et_device_write_unit is
 
 
 		procedure query_internal_unit (
-			name	: in pac_unit_name.bounded_string;
+			name	: in type_unit_name;
 			unit	: in type_unit_internal)
 		is
 			use et_symbol_write;
@@ -127,7 +127,7 @@ package body et_device_write_unit is
 
 
 		procedure query_external_unit (
-			name	: in pac_unit_name.bounded_string;
+			name	: in type_unit_name;
 			unit	: in type_unit_external)
 		is
 			use et_symbol_library;

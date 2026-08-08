@@ -70,7 +70,7 @@ with et_string_processing;		use et_string_processing;
 
 package body et_netlists_export is
 
-	use pac_net_name;
+	use et_net_names;
 
 
 

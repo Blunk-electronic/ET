@@ -450,9 +450,9 @@ package body et_schematic_ops_assembly_variant is
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
-		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
+		value			: in type_device_value; -- 220R
+		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_220R
+		purpose			: in type_device_purpose := type_device_purpose (pac_device_purpose.to_bounded_string ("")); -- set temperature
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module

@@ -202,7 +202,7 @@ package et_units is
 
 
 	procedure unit_not_found (
-		name : in pac_unit_name.bounded_string);
+		name : in type_unit_name);
 
 
 
@@ -301,7 +301,7 @@ package et_units is
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	package pac_units is new indefinite_ordered_maps (
-		key_type		=> pac_unit_name.bounded_string,
+		key_type		=> type_unit_name,
 		element_type 	=> type_unit);
 
 	use pac_units;
@@ -344,7 +344,7 @@ package et_units is
 
 	function get_unit_name (
 		unit : in pac_units.cursor)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 
@@ -376,7 +376,7 @@ package et_units is
 
 
 	package pac_unit_positions is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
+		key_type		=> type_unit_name, -- A, B, IO_BANK_1
 		element_type	=> type_object_position); -- sheet, x, y
 
 
@@ -398,7 +398,7 @@ package et_units is
 
 
 
-	use pac_port_name;
+	use et_port_names;
 
 	-- When units are dragged about the sheet then connected
 	-- net segments must be dragged along.
@@ -407,7 +407,7 @@ package et_units is
 	-- The list tells which port is to be moved from an
 	-- old to a new position:
 	package pac_dragged_ports is new ordered_maps (
-		key_type		=> pac_port_name.bounded_string,
+		key_type		=> type_port_name,
 		element_type	=> type_drag);
 
 	use pac_dragged_ports;
@@ -415,7 +415,7 @@ package et_units is
 
 	function get_port_name (
 		port : in pac_dragged_ports.cursor)
-		return pac_port_name.bounded_string;
+		return type_port_name;
 
 
 	-- Creates from two portlists a list of ports to be dragged:
