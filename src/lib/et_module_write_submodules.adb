@@ -121,7 +121,7 @@ package body et_module_write_submodules is
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
-			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
+			write (keyword => keyword_file, parameters => to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position,
 				parameters => to_string (element (submodule_cursor).position, FORMAT_2));

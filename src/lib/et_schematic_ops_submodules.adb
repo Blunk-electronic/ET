@@ -267,7 +267,7 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 
-		submodule_file : pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		submodule_file : type_submodule_path; -- $ET_TEMPLATES/motor_driver.mod
 		module_name : pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;
 
@@ -1956,7 +1956,7 @@ package body et_schematic_ops_submodules is
 
 	procedure add_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in type_module_instance_name; -- OSC1
 		position		: in type_object_position; -- sheet, lower left corner x/y
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
@@ -3293,7 +3293,7 @@ package body et_schematic_ops_submodules is
 			use et_submodules;
 			use et_submodules.pac_submodules;
 			submod_instance_cursor : et_submodules.pac_submodules.cursor;
-			submod_path : pac_submodule_path.bounded_string;
+			submod_path : type_submodule_path;
 			submod_name	: pac_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;
 
@@ -3413,7 +3413,7 @@ package body et_schematic_ops_submodules is
 
 	procedure set_submodule_file (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
