@@ -53,15 +53,17 @@ package et_net_class_description is
 
 	use pac_net_class_description;
 
+	type type_net_class_description is new pac_net_class_description.bounded_string;
+
 
 	function to_string (
-		class_description : in pac_net_class_description.bounded_string)
+		class_description : in type_net_class_description)
 		return string;
 
 
 	function to_net_class_description (
 		class_description : in string)
-		return pac_net_class_description.bounded_string;
+		return type_net_class_description;
 
 
 

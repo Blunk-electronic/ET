@@ -51,7 +51,7 @@ package et_net_class is
 
 
 	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
+		description				: type_net_class_description;
 
 		-- The net class parameters assume default values
 		-- that cause minimal manufacturing costs even if
