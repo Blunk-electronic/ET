@@ -66,7 +66,7 @@ is
 
 
 
-	point : type_vector_model renames get_cursor_position;
+	point : constant type_vector_model := get_cursor_position;
 
 
 
