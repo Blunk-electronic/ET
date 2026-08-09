@@ -38,7 +38,7 @@
 --   to do:
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_pcb_sides;				use et_pcb_sides;
@@ -194,7 +194,7 @@ package et_package_library is
 
 	-- Creates a package and stores it in the package library:
 	procedure create_package (
-		package_name 	: in type_package_model_name;
+		package_name	: in type_package_model_name;
 		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level);
 
@@ -341,17 +341,17 @@ package et_package_library is
 	--procedure line_pcb_contour_properties (
 	---- Logs the properties of the given line of pcb contour
 		--cursor			: in pac_pcb_contour_lines.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 	--procedure arc_pcb_contour_properties (
 	---- Logs the properties of the given arc of pcb contour
 		--cursor			: in pac_pcb_contour_arcs.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 	--procedure circle_pcb_contour_properties (
 	---- Logs the properties of the given circle of pcb contour
 		--cursor			: in pac_pcb_contour_circles.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 
 

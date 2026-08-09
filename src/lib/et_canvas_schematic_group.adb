@@ -41,6 +41,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_generic_modules;			use et_generic_modules;
 with et_logging;					use et_logging;
@@ -145,7 +146,7 @@ package body et_canvas_schematic_group is
 			offset := point - object_point_of_attack;
 
 			-- Do the final copying with the group:
-			copy_group (
+			copy_group_simple (
 				module_cursor	=> active_module,
 				sheet			=> 0, -- we stay on the current sheet
 				offset			=> offset,
@@ -193,6 +194,34 @@ package body et_canvas_schematic_group is
 
 
 
+	
+
+
+
+	procedure copy_group_to_clipboard (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is
+
+	begin
+		-- Set the tool being used:
+		object_tool := tool;
+		
+		
+		copy_group_to_clipboard (
+			module_cursor	=> active_module,
+			auto_center		=> false,
+			reference_point	=> point,
+			log_threshold	=> log_threshold);
+									
+	end copy_group_to_clipboard;
+		
+
+
+
+
+
+	
 
 
 
@@ -203,21 +232,18 @@ package body et_canvas_schematic_group is
 
 		procedure finalize is
 			use et_cmd_origin_to_commit;
-			offset : type_vector_model;
 		begin
 			-- For the subprograms that draw objects
 			-- of a group being pasted:
 			set_group_not_being_pasted;
 
-			-- Compute the final offset by which the
-			-- group is to be pasted:
-			offset := point - object_point_of_attack;
 
 			-- Do the final pasting with the group:
 			paste_group (
 				module_cursor	=> active_module,
-				sheet			=> 0, -- we stay on the current sheet
-				offset			=> offset,
+				sheet			=> active_sheet, -- we stay on the current sheet
+				place			=> point,
+				
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
 
@@ -239,13 +265,9 @@ package body et_canvas_schematic_group is
 			-- Set the tool being used:
 			object_tool := tool;
 
-			-- Set the point where the group is
-			-- grabbed (or attacked):
-			object_point_of_attack := point;
-
 			-- For the subprograms that draw objects
 			-- of a group being pasted:
-			set_group_not_being_pasted;
+			set_group_being_pasted;
 
 			set_edit_process_running;
 

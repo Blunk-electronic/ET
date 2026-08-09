@@ -39,7 +39,7 @@
 --		- separate in two packages things related to board and device package.
 
 
-with ada.containers; 				use ada.containers;
+with ada.containers;				use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_net_class;					use et_net_class;

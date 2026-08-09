@@ -87,7 +87,7 @@ package et_fill_zones.boards is
 
 	-- All fill zones in conductor layers have these common properties:
 	type type_properties is record
-		layer 			: type_signal_layer := type_signal_layer'first;
+		layer			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_priority := type_priority'first;
 	end record;
 
@@ -108,7 +108,7 @@ package et_fill_zones.boards is
 	--procedure fill_zone (
 		--zone		: in out type_zone;
 		--linewidth	: in type_track_width;
-		--layer 		: in et_pcb_stack.type_signal_layer;
+		--layer		: in et_pcb_stack.type_signal_layer;
 		--clearance	: in type_track_clearance;
 		--parent_net	: in pac_nets.cursor := pac_nets.no_element;
 		--debug		: in boolean := false)
@@ -251,7 +251,7 @@ package et_fill_zones.boards is
 -- These zones apply to all fill zones.
 
 	type type_cutout is new type_contour with record
-		layer 	: type_signal_layer := type_signal_layer'first;
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	-- CS rename to type_fill_zone_cutout ?
 

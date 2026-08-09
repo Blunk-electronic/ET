@@ -53,7 +53,7 @@ package et_conductors_floating_board is
 	-- NON ELECTRIC conductor objects of a pcb may also
 	-- include text placeholders:
 	type type_conductors_floating is record
-		lines 			: pac_conductor_lines.list;
+		lines			: pac_conductor_lines.list;
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
 

@@ -47,7 +47,7 @@ with et_device_model_unit_external;		use et_device_model_unit_external;
 separate (et_schematic_ops_units)
 
 procedure fetch_unit (
-	module_cursor 	: in pac_generic_modules.cursor;
+	module_cursor	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in type_unit_name; -- A, B, IO_BANK_2
 	destination		: in type_object_position; -- sheet/x/y/rotation
@@ -118,7 +118,7 @@ is
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
 								position	=> destination,
-								others 		=> <>));
+								others		=> <>));
 
 					when APPEARANCE_PCB =>
 
@@ -143,7 +143,7 @@ is
 								appearance		=> APPEARANCE_PCB,
 								position		=> destination,
 								placeholders	=> placeholders,
-								others 			=> <>));
+								others			=> <>));
 				end case;
 			end do_it;
 
@@ -198,7 +198,7 @@ is
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
 								position	=> destination,
-								others 		=> <>));
+								others		=> <>));
 
 
 					when APPEARANCE_PCB =>
@@ -229,7 +229,7 @@ is
 								appearance		=> APPEARANCE_PCB,
 								position		=> destination,
 								placeholders	=> placeholders,
-								others 			=> <>));
+								others			=> <>));
 				end case;
 			end do_it;
 

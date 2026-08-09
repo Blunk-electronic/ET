@@ -175,8 +175,8 @@ package body et_canvas_schematic_nets is
 		-- the given segment by the given segment:
 		procedure extend_net (net_name : in type_net_name) is begin
 			-- log (text => "attaching start point of new segment to net "
-			-- 	& enclose_in_quotes (to_string (net_name)),
-			-- 	level => log_threshold + 1);
+			--	& enclose_in_quotes (to_string (net_name)),
+			--	level => log_threshold + 1);
 
 			log_indentation_up;
 
@@ -199,16 +199,16 @@ package body et_canvas_schematic_nets is
 			-- NOT match the name of the net being extended,
 			-- then output a message:
 
--- 			if not is_empty (net_name_given) then -- explicit name given
--- 				if net_name_given /= net_name then -- names do NOT match
+--			if not is_empty (net_name_given) then -- explicit name given
+--				if net_name_given /= net_name then -- names do NOT match
 --
--- 					set_status ("WARNING ! Given net name "
--- 						& enclose_in_quotes (to_string (net_name_given))
--- 						& " ignored while extending net "
--- 						& enclose_in_quotes (to_string (net_name)) & " !");
+--					set_status ("WARNING ! Given net name "
+--						& enclose_in_quotes (to_string (net_name_given))
+--						& " ignored while extending net "
+--						& enclose_in_quotes (to_string (net_name)) & " !");
 --
--- 				end if;
--- 			end if;
+--				end if;
+--			end if;
 		end extend_net;
 
 
@@ -292,7 +292,7 @@ package body et_canvas_schematic_nets is
 		-- The verification that the net names match is done by
 		-- et_schematic_ops_nets.insert_segment.
 		-- if not is_empty (net_name_end) and not is_empty (net_name_start) then
-		-- 	extend_net (net_name_start);
+		--	extend_net (net_name_start);
 		-- end if;
 
 		log_indentation_down;
@@ -389,7 +389,7 @@ package body et_canvas_schematic_nets is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_rename_new_name_entered;
 
@@ -1395,20 +1395,20 @@ package body et_canvas_schematic_nets is
 
 
 
--- 	procedure show_properties_of_selected_net is
--- 		ss	: constant type_selected_segment := element (selected_segment);
--- 		use et_net_class;
--- 		use et_netlists;
--- 	begin
--- 		reset_request_clarification;
+--	procedure show_properties_of_selected_net is
+--		ss	: constant type_selected_segment := element (selected_segment);
+--		use et_net_class;
+--		use et_netlists;
+--	begin
+--		reset_request_clarification;
 --
--- 		set_status ("Properties:"
--- 			& " name " & to_string (key (ss.net))
--- 			& ", class " & to_string (element (ss.net).class)
--- 			& ", scope " & to_string (element (ss.net).scope)
--- 			);
+--		set_status ("Properties:"
+--			& " name " & to_string (key (ss.net))
+--			& ", class " & to_string (element (ss.net).class)
+--			& ", scope " & to_string (element (ss.net).scope)
+--			);
 --
--- 	end show_properties_of_selected_net;
+--	end show_properties_of_selected_net;
 
 
 

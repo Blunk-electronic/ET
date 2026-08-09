@@ -92,9 +92,9 @@ package body et_symbol_read_text is
 			expect_field_count (line, 2);
 			symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
--- 		elsif kw = keyword_style then -- style italic
--- 			expect_field_count (line, 2);
--- 			symbol_text_base.style := to_text_style (f (line, 2));
+--		elsif kw = keyword_style then -- style italic
+--			expect_field_count (line, 2);
+--			symbol_text_base.style := to_text_style (f (line, 2));
 
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);

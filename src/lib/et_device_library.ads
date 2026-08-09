@@ -45,7 +45,7 @@
 --
 --
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_logging;				use et_logging;
@@ -94,7 +94,7 @@ package et_device_library is
 	-- is also the key to the device library:
 
 	package pac_device_models is new indefinite_ordered_maps (
-		key_type 		=> type_device_model_name,
+		key_type		=> type_device_model_name,
 		"<"				=> et_device_model_names."<",
 		element_type	=> type_device_model);
 

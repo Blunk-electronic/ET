@@ -251,18 +251,18 @@ package body et_netlists is
 
 		result : boolean := false; -- CS is this a good safety measure ?
 
--- 		result_on_netchangers : boolean;
--- 		result_on_submodules : boolean;
+--		result_on_netchangers : boolean;
+--		result_on_submodules : boolean;
 
--- 		procedure contention_by_netchangers is begin
--- 			log (importance => ERROR, text => "net name contention caused by multiple netchanger slave ports !");
--- 			raise constraint_error;
--- 		end;
+--		procedure contention_by_netchangers is begin
+--			log (importance => ERROR, text => "net name contention caused by multiple netchanger slave ports !");
+--			raise constraint_error;
+--		end;
 --
--- 		procedure contention_by_submodules is begin
--- 			log (importance => ERROR, text => "net name contention caused by multiple submodule slave ports !");
--- 			raise constraint_error;
--- 		end;
+--		procedure contention_by_submodules is begin
+--			log (importance => ERROR, text => "net name contention caused by multiple submodule slave ports !");
+--			raise constraint_error;
+--		end;
 
 		procedure contention_by_both is begin
 			log (SEVERITY_ERROR, "net name contention caused by multiple netchanger or submodule slave ports !");
@@ -274,27 +274,27 @@ package body et_netlists is
 	begin
 		ports := get_port_count (net_cursor);
 
--- 		-- Test the number of netchanger slave ports:
+--		-- Test the number of netchanger slave ports:
 --
--- 		-- Zero slave ports means: it is a primary net.
--- 		-- One slave port means: it is not a primary net.
--- 		-- More slave ports means: contention -> error.
--- 		case ports.netchangers.slaves is
--- 			when 0 => result_on_netchangers := true;
--- 			when 1 => result_on_netchangers := false;
--- 			when others => contention_by_netchangers;
--- 		end case;
+--		-- Zero slave ports means: it is a primary net.
+--		-- One slave port means: it is not a primary net.
+--		-- More slave ports means: contention -> error.
+--		case ports.netchangers.slaves is
+--			when 0 => result_on_netchangers := true;
+--			when 1 => result_on_netchangers := false;
+--			when others => contention_by_netchangers;
+--		end case;
 --
--- 		-- Test the number of submodule slave ports:
+--		-- Test the number of submodule slave ports:
 --
--- 		-- Zero slave ports means: it is a primary net.
--- 		-- One slave port means: it is not a primary net.
--- 		-- More slave ports means: contention -> error.
--- 		case ports.submodules.slaves is
--- 			when 0 => result_on_submodules := true;
--- 			when 1 => result_on_submodules := false;
--- 			when others => contention_by_submodules;
-		-- 		end case;
+--		-- Zero slave ports means: it is a primary net.
+--		-- One slave port means: it is not a primary net.
+--		-- More slave ports means: contention -> error.
+--		case ports.submodules.slaves is
+--			when 0 => result_on_submodules := true;
+--			when 1 => result_on_submodules := false;
+--			when others => contention_by_submodules;
+		--		end case;
 
 		case element (net_cursor).scope is
 			when LOCAL =>
@@ -425,9 +425,9 @@ package body et_netlists is
 
 
 		begin -- query_submodules
--- 			log (text => "submodule " &
--- 					enclose_in_quotes (to_string (pac_netlist_modules.element (submodule_cursor).generic_name)),
--- 				level => log_threshold);
+--			log (text => "submodule " &
+--					enclose_in_quotes (to_string (pac_netlist_modules.element (submodule_cursor).generic_name)),
+--				level => log_threshold);
 
 			-- search in submodule for a net named after the given net (via net_cursor):
 			query_element (submodule_cursor, query_nets'access);

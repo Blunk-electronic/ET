@@ -36,8 +36,8 @@
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
@@ -82,7 +82,7 @@ package et_kicad_packages is
 
 	-- These constants are required for directory entry searches:
 	package_library_pattern	: constant string := "*" & package_library_directory_extension;
-	package_pattern 		: constant string := "*." & package_file_extension;
+	package_pattern		: constant string := "*." & package_file_extension;
 
 	-- For the package import we need a special set of layers.
 	type type_layer_abbrevation is (
@@ -140,14 +140,14 @@ package et_kicad_packages is
 	end record;
 
 	type type_arc is new pac_geometry_2.type_arc with record
-		width 	: type_text_line_width;
-		angle 	: et_board_geometry.pac_geometry_brd.type_angle;
+		width	: type_text_line_width;
+		angle	: et_board_geometry.pac_geometry_brd.type_angle;
 		layer	: type_layer_abbrevation;
 	end record;
 
 	type type_circle is new pac_geometry_2.type_circle with record -- center and radius incl.
-		width 	: type_text_line_width;
-		point 	: type_vector_model;
+		width	: type_text_line_width;
+		point	: type_vector_model;
 		layer	: type_layer_abbrevation;
 	end record;
 
@@ -294,13 +294,13 @@ package et_kicad_packages is
 	-- Reads package libraries.
 	-- Create the libraries in container package_libraries.
 	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
-		key_type 		=> type_package_name, -- S_SO14, T_0207
+		key_type		=> type_package_name, -- S_SO14, T_0207
 		"<"				=> et_package_name."<",
-		element_type 	=> type_package_library);
+		element_type	=> type_package_library);
 
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
 		key_type		=> type_package_model_name, -- projects/lbr/smd_packages.pretty

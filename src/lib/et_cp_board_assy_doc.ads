@@ -54,7 +54,7 @@ package et_cp_board_assy_doc is
 	-- board demo draw assy top zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_assy_doc (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -64,7 +64,7 @@ package et_cp_board_assy_doc is
 	-- board led_driver delete assy top 40 50 1
 	procedure delete_assy_doc (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

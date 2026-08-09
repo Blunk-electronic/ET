@@ -244,7 +244,7 @@ package et_devices_electrical.units is
 
 	-- Writes the positions of the device units in the log file.
 	procedure log_unit_positions (
-		positions 		: in pac_unit_positions.map;
+		positions		: in pac_unit_positions.map;
 		log_threshold	: in type_log_level);
 
 
@@ -295,8 +295,8 @@ package et_devices_electrical.units is
 
 -- CS
 	-- procedure add_first_available_unit (
-	-- 	device			: in pac_devices_electrical.cursor; -- IC2
-	-- 	log_threshold	: in type_log_level);
+	--	device			: in pac_devices_electrical.cursor; -- IC2
+	--	log_threshold	: in type_log_level);
 
 
 

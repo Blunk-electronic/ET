@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_geometry_1.et_polygons;
@@ -203,8 +203,8 @@ package et_text_vectorized is
 
 	-- VECTORIZED TEXT
 
--- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
--- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
+--		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
+--		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
 		subtype type_character_height is type_float range -0.4 .. 1.0;
 		subtype type_character_width  is type_float range  0.0 .. 0.7;
@@ -638,7 +638,7 @@ package et_text_vectorized is
 				6	=> (x1, y3, x3, y3),
 				7	=> (x3, y3, x4, y2),
 				8	=> (x4, y2, x4, y1),
-				9 	=> (x4, y1, x3, y0),
+				9	=> (x4, y1, x3, y0),
 				10	=> (x3, y0, x1, y0),
 				11	=> (x1, y0, x0, y1)),
 

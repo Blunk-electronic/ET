@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_string_processing;		use et_string_processing;
@@ -137,7 +137,7 @@ package et_terminals is
 				face					: type_face;
 
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
-				stop_mask_shape_smt 	: type_stopmask_smt;
+				stop_mask_shape_smt	: type_stopmask_smt;
 
 				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
 				stencil_shape			: type_stencil_shape;
@@ -192,7 +192,7 @@ package et_terminals is
 
 		-- This applies for both SMT and THT terminals.
 		-- A THT terminal has separate pad shapes for top and bottom.
-		face 		: type_face;
+		face		: type_face;
 	end record;
 
 
@@ -220,7 +220,7 @@ package et_terminals is
 	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in type_terminal_name;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 	package pac_terminals is new indefinite_ordered_maps (

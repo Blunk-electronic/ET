@@ -121,7 +121,7 @@ is
 					inserted	=> inserted,
 					position	=> device_cursor_sch,
 					new_item	=> (
-						appearance 		=> APPEARANCE_PCB,
+						appearance		=> APPEARANCE_PCB,
 						model_cursor	=> device_cursor_lib,
 						units			=> pac_units.empty_map,
 						value			=> original.value,
@@ -139,7 +139,7 @@ is
 					inserted	=> inserted,
 					position	=> device_cursor_sch,
 					new_item	=> (
-						appearance 		=> APPEARANCE_VIRTUAL,
+						appearance		=> APPEARANCE_VIRTUAL,
 						model_cursor	=> device_cursor_lib,
 						units			=> pac_units.empty_map));
 
@@ -183,7 +183,7 @@ is
 				unit := (
 					appearance	=> APPEARANCE_VIRTUAL,
 					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-					others 		=> <>);
+					others		=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -211,7 +211,7 @@ is
 					appearance		=> APPEARANCE_PCB,
 					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 					placeholders	=> placeholders,
-					others 			=> <>);
+					others			=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -262,7 +262,7 @@ is
 				unit := (
 					appearance	=> APPEARANCE_VIRTUAL,
 					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-					others 		=> <>);
+					others		=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -295,7 +295,7 @@ is
 					appearance		=> APPEARANCE_PCB,
 					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
 					placeholders	=> placeholders,
-					others 			=> <>);
+					others			=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (

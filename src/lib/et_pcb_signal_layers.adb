@@ -38,10 +38,10 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 with et_logging;				use et_logging;
 with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 
 
@@ -118,9 +118,9 @@ package body et_pcb_signal_layers is
 
 		iterate (layers, query_layer'access);
 
--- 		for l in type_signal_layer'first .. type_signal_layer'last loop
--- 			null;
--- 		end loop;
+--		for l in type_signal_layer'first .. type_signal_layer'last loop
+--			null;
+--		end loop;
 
 		-- the return string always ends with a closing bracket:
 		layer_string := layer_string & layer_term_end;
@@ -275,13 +275,13 @@ package body et_pcb_signal_layers is
 	is
 
 		use pac_signal_layers;
-		layers 		: pac_signal_layers.set; -- to be returned
-		cursor 		: pac_signal_layers.cursor;
+		layers		: pac_signal_layers.set; -- to be returned
+		cursor		: pac_signal_layers.cursor;
 		inserted	: boolean;
-		layer 		: type_signal_layer;
+		layer		: type_signal_layer;
 
 		-- we start reading the layer numbers with field 2
-		place 		: type_field_count_positive := 2;
+		place		: type_field_count_positive := 2;
 
 
 		function f (

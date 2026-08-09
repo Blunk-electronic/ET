@@ -39,7 +39,7 @@
 --
 --
 
-with ada.containers;           			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
@@ -215,7 +215,7 @@ package et_schematic_ops_units is
 	-- CS: Reject unit if a port overlaps a port of another
 	-- existing unit.
 	procedure fetch_unit (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
@@ -238,7 +238,7 @@ package et_schematic_ops_units is
 	--    If target_device was specified, then device_created
 	--    assumes the same value as target_device.
 	procedure copy_unit (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
@@ -253,7 +253,7 @@ package et_schematic_ops_units is
 
 	-- Returns true if no unit sits on top of another.
 	function unit_positions_valid (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean;
 
@@ -428,7 +428,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location 		: in type_object_position; -- only sheet number matters
+		location		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean;

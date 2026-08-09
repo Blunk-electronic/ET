@@ -45,7 +45,7 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.ordered_sets;
 
 with et_module_instance;		use et_module_instance;

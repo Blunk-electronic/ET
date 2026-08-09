@@ -45,7 +45,7 @@
 -- These devices have a representation in the board domain only.
 
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
@@ -451,8 +451,8 @@ package et_devices_non_electrical is
 
 -- CS:
 	-- function get_package_model_name (
-	-- 	device_cursor : in pac_devices_non_electrical.cursor)
-	-- 	return string;
+	--	device_cursor : in pac_devices_non_electrical.cursor)
+	--	return string;
 
 
 

@@ -43,7 +43,7 @@
 -- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
+with ada.strings;						use ada.strings;
 
 with et_display;						use et_display;
 with et_display.schematic;				use et_display.schematic;
@@ -57,7 +57,7 @@ package body et_cp_schematic_display is
 
 
 	procedure display (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 

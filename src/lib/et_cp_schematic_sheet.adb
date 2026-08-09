@@ -62,7 +62,7 @@ package body et_cp_schematic_sheet is
 
 
 	procedure show_sheet (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -107,7 +107,7 @@ package body et_cp_schematic_sheet is
 
 	procedure delete_sheet (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -156,7 +156,7 @@ package body et_cp_schematic_sheet is
 
 	procedure set_sheet_category (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:

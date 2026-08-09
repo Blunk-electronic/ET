@@ -88,13 +88,13 @@ package body et_unit_name is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;

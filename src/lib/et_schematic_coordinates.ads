@@ -50,7 +50,7 @@ package et_schematic_coordinates is
 	use pac_geometry_2;
 
 
--- 	pragma assertion_policy (check);
+--	pragma assertion_policy (check);
 
 
 	-- When handling hierachic structures we use a separator.
@@ -90,14 +90,14 @@ package et_schematic_coordinates is
 
 
 	function to_position (
-		point 		: in type_vector_model;
+		point		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position;
 
 
 	function to_position_relative (
-		point 		: in type_vector_model;
+		point		: in type_vector_model;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position_relative;
@@ -147,7 +147,7 @@ package et_schematic_coordinates is
 
 
 	procedure set_rotation (
-		position 	: in out type_object_position;
+		position	: in out type_object_position;
 		rotation	: in type_rotation_model);
 
 

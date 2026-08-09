@@ -51,7 +51,7 @@ package et_cp_board_display is
 	-- Example: "board demo display outline on/off"
 	-- If on/off is left off, then the outline will be enabled:
 	procedure display_outline (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -61,7 +61,7 @@ package et_cp_board_display is
 	-- Example: "board demo display ratsnest on/off"
 	-- If on/off is left off, then the ratsnest will be enabled:
 	procedure display_ratsnest (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -69,7 +69,7 @@ package et_cp_board_display is
 	-- a non-conductor layer (silkscreen, stopmask, assembly doc, ...).
 	-- Example command: board demo display silkscreen top [on/off]
 	procedure display_non_conductor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -77,7 +77,7 @@ package et_cp_board_display is
 	-- a conductor layer.
 	-- Example command: board demo display conductors 2 [on/off]
 	procedure display_conductor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -85,7 +85,7 @@ package et_cp_board_display is
 	-- Parses a command that enables or disables vias.
 	-- Example command: board demo display vias [on/off]
 	procedure display_vias (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -94,7 +94,7 @@ package et_cp_board_display is
 	-- a route or via restrict layer.
 	-- Example command: board demo display restrict route/via 2 [on/off]
 	procedure display_restrict (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

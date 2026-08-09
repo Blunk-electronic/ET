@@ -1090,7 +1090,7 @@ package body et_canvas_board_devices is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else
@@ -1166,7 +1166,7 @@ package body et_canvas_board_devices is
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
 		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
+		--	set_status_properties (exception_message (event));
 
 	end cb_rename_new_name_entered;
 
@@ -1320,7 +1320,7 @@ package body et_canvas_board_devices is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else
@@ -1391,7 +1391,7 @@ package body et_canvas_board_devices is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else
@@ -1489,7 +1489,7 @@ package body et_canvas_board_devices is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-			 	finalize;
+				finalize;
 			end if;
 
 		else

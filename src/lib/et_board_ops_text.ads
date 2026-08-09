@@ -55,7 +55,7 @@ package et_board_ops_text is
 	-- to its actutal content:
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)
+		meaning		: in type_placeholder_meaning_non_conductor)
 		return pac_text_content.bounded_string;
 
 

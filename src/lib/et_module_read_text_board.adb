@@ -391,7 +391,7 @@ package body et_module_read_text_board is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "insert placeholder",
+			& " insert placeholder",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -457,7 +457,7 @@ package body et_module_read_text_board is
 	procedure build_non_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
-		face 			: in et_pcb_sides.type_face;
+		face			: in et_pcb_sides.type_face;
 		log_threshold	: in type_log_level)
 	is
 	-- The board_text has been a general thing until now.
@@ -587,7 +587,7 @@ package body et_module_read_text_board is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "build conductor text",
+			& " build conductor text",
 			level => log_threshold);
 
 		log_indentation_up;

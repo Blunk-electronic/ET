@@ -44,6 +44,7 @@
 with et_device_placeholders;
 
 
+
 separate (et_canvas_schematic)
 
 procedure button_pressed (
@@ -65,6 +66,7 @@ is
 	procedure left_button is
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
+		use et_module_clipboard;
 
 
 		procedure add_device is
@@ -121,8 +123,16 @@ is
 						-- When copying a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						et_canvas_schematic_group.copy_group (
-							MOUSE, get_cursor_position);
+						
+						if copy_to_clipboard then
+							et_canvas_schematic_group.copy_group_to_clipboard (
+								MOUSE, get_cursor_position);
+						else
+							et_canvas_schematic_group.copy_group (
+								MOUSE, get_cursor_position);
+						end if;
+
+						
 
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (MOUSE, snap_point);
@@ -586,7 +596,7 @@ begin -- button_pressed
 
 	-- CS
 	-- exception when event: others =>
-	-- 	set_status (exception_message (event));
+	--	set_status (exception_message (event));
 	--  reset_selections;
 	--  redraw;
 

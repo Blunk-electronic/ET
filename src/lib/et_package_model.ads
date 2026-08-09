@@ -144,11 +144,11 @@ package et_package_model is
 	type type_package_base (appearance : type_bom_relevant) is abstract tagged record
 		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
-		keepout 		: type_keepout_both_sides;
+		keepout		: type_keepout_both_sides;
 		stopmask		: type_stopmask_both_sides; -- not terminal related
 		stencil			: type_stencil_both_sides; -- not terminal related
-		route_restrict 	: type_route_restrict;
-		via_restrict 	: type_via_restrict;
+		route_restrict	: type_route_restrict;
+		via_restrict	: type_via_restrict;
 		holes			: pac_holes.list; -- PCB contour
 		-- CS plated holes ?
 
@@ -225,17 +225,17 @@ package et_package_model is
 	--procedure line_pcb_contour_properties (
 	---- Logs the properties of the given line of pcb contour
 		--cursor			: in pac_pcb_contour_lines.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 	--procedure arc_pcb_contour_properties (
 	---- Logs the properties of the given arc of pcb contour
 		--cursor			: in pac_pcb_contour_arcs.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 	--procedure circle_pcb_contour_properties (
 	---- Logs the properties of the given circle of pcb contour
 		--cursor			: in pac_pcb_contour_circles.cursor;
-		--log_threshold 	: in type_log_level);
+		--log_threshold	: in type_log_level);
 
 
 

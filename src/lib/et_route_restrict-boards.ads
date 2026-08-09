@@ -51,7 +51,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_line is new
 		et_route_restrict.type_route_restrict_line with
 	record
-		layers 	: pac_signal_layers.set;
+		layers	: pac_signal_layers.set;
 	end record;
 
 
@@ -75,7 +75,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_arc is new
 		et_route_restrict.type_route_restrict_arc with
 	record
-		layers 	: pac_signal_layers.set;
+		layers	: pac_signal_layers.set;
 	end record;
 
 
@@ -94,7 +94,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_circle is new
 		et_route_restrict.type_route_restrict_circle with
 	record
-		layers 	: pac_signal_layers.set;
+		layers	: pac_signal_layers.set;
 	end record;
 
 
@@ -113,7 +113,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_contour is new -- CS rename to type_route_restrict_zone
 		et_route_restrict.type_route_restrict_zone with
 	record
-		layers 	: pac_signal_layers.set;
+		layers	: pac_signal_layers.set;
 	end record;
 
 	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
@@ -122,7 +122,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_cutout is new -- CS rename to type_route_restrict_zone_cutout
 		et_route_restrict.type_route_restrict_cutout with
 	record
-		layers 	: pac_signal_layers.set;
+		layers	: pac_signal_layers.set;
 	end record;
 
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
@@ -135,7 +135,7 @@ package et_route_restrict.boards is
 	-- layers specify which conductor layers are affected.
 
 	type type_route_restrict is record
-		lines 		: pac_route_restrict_lines.list;
+		lines		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
 		circles		: pac_route_restrict_circles.list;
 		contours	: pac_route_restrict_contours.list; -- CS rename contours to zone
@@ -152,15 +152,15 @@ package et_route_restrict.boards is
 
 	-- Logs the properties of the given line of route restrict
 	-- procedure line_route_restrict_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_route_restrict_lines.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_route_restrict_lines.cursor;
+	--	log_threshold	: in type_log_level);
  --
 	-- -- Logs the properties of the given arc of route restrict
 	-- procedure arc_route_restrict_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_route_restrict_arcs.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_route_restrict_arcs.cursor;
+	--	log_threshold	: in type_log_level);
 
 	-- CS procedure circle_route_restrict_properties
 

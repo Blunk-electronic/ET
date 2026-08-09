@@ -62,7 +62,7 @@ package body et_cp_schematic_canvas is
 
 
 	procedure zoom_all (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -109,7 +109,7 @@ package body et_cp_schematic_canvas is
 
 
 	procedure set_zoom (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "set zoom", level => log_threshold);
@@ -128,7 +128,7 @@ package body et_cp_schematic_canvas is
 
 	procedure set_grid (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_schematic_ops_grid;
@@ -144,7 +144,7 @@ package body et_cp_schematic_canvas is
 
 		-- Assign the grid in the database:
 		set_grid (
-			module_name 	=> pac_generic_modules.key (module),
+			module_name	=> pac_generic_modules.key (module),
 			grid			=> pac_canvas.grid,
 			log_threshold	=> log_threshold + 1);
 
@@ -157,7 +157,7 @@ package body et_cp_schematic_canvas is
 
 
 	procedure set_scale (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "set scale", level => log_threshold);
@@ -179,7 +179,7 @@ package body et_cp_schematic_canvas is
 
 
 	procedure move_cursor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (cmd);
@@ -198,7 +198,7 @@ package body et_cp_schematic_canvas is
 
 
 	procedure set_cursor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "set cursor", level => log_threshold);
@@ -215,7 +215,7 @@ package body et_cp_schematic_canvas is
 
 	procedure set_color (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (module);

@@ -58,7 +58,7 @@ package body et_cp_board_material_bom is
 
 	procedure export_bom (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -72,7 +72,7 @@ package body et_cp_board_material_bom is
 			when 4 =>
 				make_boms -- a BOM for each variant
 					(
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>

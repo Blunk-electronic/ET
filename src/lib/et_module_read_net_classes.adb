@@ -66,7 +66,7 @@ package body et_module_read_net_classes is
 	use pac_generic_modules;
 
 
-	net_class 		: et_net_class.type_net_class;
+	net_class		: et_net_class.type_net_class;
 	net_class_name	: et_net_class_name.type_net_class_name;
 
 
@@ -85,7 +85,7 @@ package body et_module_read_net_classes is
 
 
 	procedure read_net_class (
-		line 			: in type_fields_of_line;
+		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
 		use et_drills;

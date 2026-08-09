@@ -50,10 +50,10 @@ with et_import;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 
 with et_board_holes;			use et_board_holes;
 with et_pcb_sides;
@@ -193,7 +193,7 @@ package body et_kicad_packages is
 		yp : constant type_position_axis := size_y / 2.0;
 		yn : constant type_position_axis := -(yp);
 
- 		-- supportive corner points:
+		-- supportive corner points:
 		p11, p12 : type_vector_model;
 		p21, p22 : type_vector_model;
 
@@ -373,7 +373,7 @@ package body et_kicad_packages is
 		yp : constant type_position_axis := size_y / 2.0;
 		yn : constant type_position_axis := -(yp);
 
- 		-- supportive corner points:
+		-- supportive corner points:
 		p11, p12 : type_vector_model;
 		p21, p22 : type_vector_model;
 
@@ -539,7 +539,7 @@ package body et_kicad_packages is
 		-- The argument counter is reset on entering a section.
 		-- It is incremented once an argument is complete.
 		type type_section is record
-			name 		: type_keyword := INIT;
+			name		: type_keyword := INIT;
 			parent		: type_keyword := INIT;
 			arg_counter	: type_argument_counter := type_argument_counter'first;
 		end record;
@@ -587,7 +587,7 @@ package body et_kicad_packages is
 
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		description	: pac_package_description.bounded_string; -- temp. storage of package description
-		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
+		tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology : type_assembly_technology := THT;
@@ -605,12 +605,12 @@ package body et_kicad_packages is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: type_terminal_name;
+		terminal_name			: type_terminal_name;
 		terminal_technology		: type_assembly_technology;
-		terminal_pad_shape_tht 	: type_pad_shape_tht;
-		terminal_pad_shape_smt 	: type_pad_shape_smt;
+		terminal_pad_shape_tht	: type_pad_shape_tht;
+		terminal_pad_shape_smt	: type_pad_shape_smt;
 
-		terminal_face 				: et_pcb_sides.type_face;
+		terminal_face				: et_pcb_sides.type_face;
 		terminal_drill_size			: type_drill_size;
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
@@ -623,7 +623,7 @@ package body et_kicad_packages is
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
 
--- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
+--		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
 		terminal_copper_width_inner_layers : constant type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
@@ -1984,11 +1984,11 @@ package body et_kicad_packages is
 						when CIRCULAR => -- a circular hole
 
 							terminals.insert (
-								key 		=> terminal_name,
+								key		=> terminal_name,
 								position	=> terminal_cursor,
 								inserted	=> terminal_inserted,
-								new_item 	=> (
-									technology 			=> THT,
+								new_item	=> (
+									technology			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
 
@@ -2006,7 +2006,7 @@ package body et_kicad_packages is
 									-- of top and bottom side of the pad.
 									stop_mask_shape_tht	=> (others => <>),
 
-									width_inner_layers 	=> terminal_copper_width_inner_layers,
+									width_inner_layers	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size
 								));
 
@@ -2027,11 +2027,11 @@ package body et_kicad_packages is
 								load_segments (millings, (circular => false, segments => lines));
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 			=> THT,
+									new_item	=> (
+										technology			=> THT,
 										tht_hole			=> MILLED,
 										position			=> terminal_position,
 
@@ -2073,11 +2073,11 @@ package body et_kicad_packages is
 											terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 			=> THT,
+									new_item	=> (
+										technology			=> THT,
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
 
@@ -2103,8 +2103,8 @@ package body et_kicad_packages is
 								-- Calculate the pad shape.
 								shape := to_pad_shape_rectangle (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
@@ -2113,8 +2113,8 @@ package body et_kicad_packages is
 								-- Calculate the pad shape.
 								shape := to_pad_shape_oval (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
@@ -2137,11 +2137,11 @@ package body et_kicad_packages is
 											terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -2151,7 +2151,7 @@ package body et_kicad_packages is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -2166,16 +2166,16 @@ package body et_kicad_packages is
 								-- Calculate the rectangular pad shape.
 								shape := to_pad_shape_rectangle (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
-											offset 		=> terminal_pad_drill_offset);
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
+											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -2185,7 +2185,7 @@ package body et_kicad_packages is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -2201,16 +2201,16 @@ package body et_kicad_packages is
 								-- Calculate the oval pad shape.
 								shape := to_pad_shape_oval (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -2220,7 +2220,7 @@ package body et_kicad_packages is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -2384,7 +2384,7 @@ package body et_kicad_packages is
 		procedure check_placeholders is
 			use et_pcb_sides;
 			use pac_text_placeholders;
-			cursor 		: pac_text_placeholders.cursor;
+			cursor		: pac_text_placeholders.cursor;
 			placeholder : type_text_placeholder;
 			reference_found, value_found : boolean := false;
 		begin
@@ -2597,12 +2597,12 @@ package body et_kicad_packages is
 					stencil				=> stencil,
 
 					-- kicad does not know route restrict
-					route_restrict 		=> (others => <>),
+					route_restrict		=> (others => <>),
 
 					-- kicad does not know via restrict
-					via_restrict 		=> (others => <>),
+					via_restrict		=> (others => <>),
 
-					assembly_documentation 	=> assy_doc,
+					assembly_documentation	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
@@ -2625,12 +2625,12 @@ package body et_kicad_packages is
 					stencil				=> stencil,
 
 					-- kicad does not know route restrict
-					route_restrict 		=> (others => <>),
+					route_restrict		=> (others => <>),
 
 					-- kicad does not know via restrict
-					via_restrict 		=> (others => <>),
+					via_restrict		=> (others => <>),
 
-					assembly_documentation 	=> assy_doc,
+					assembly_documentation	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
@@ -2643,14 +2643,14 @@ package body et_kicad_packages is
 
 
 	procedure read_libraries (
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	-- Reads package libraries.
 	-- V4:
-	-- 	- Creates the libraries in container package_libraries.
-	-- 	- Bases on search_list_project_lib_dirs (created on reading the project file).
+	--	- Creates the libraries in container package_libraries.
+	--	- Bases on search_list_project_lib_dirs (created on reading the project file).
 	-- V5:
 	--	- The list package_libraries has been created on reading the project file with empty libraries inside.
-	-- 	- Now the libraries must be filled.
+	--	- Now the libraries must be filled.
 	is
 		use ada.directories;
 		use et_directory_and_file_ops;
@@ -2732,10 +2732,10 @@ package body et_kicad_packages is
 
 					-- Store a single line in variable "line"
 					line := read_line (
-						line 			=> get_line,
+						line			=> get_line,
 						comment_mark	=> comment_mark,
-						number 			=> positive (ada.text_io.line (current_input)),
-						ifs 			=> space); -- fields are separated by space
+						number			=> positive (ada.text_io.line (current_input)),
+						ifs			=> space); -- fields are separated by space
 
 					-- insert line in container "lines"
 					if get_field_count (line) > 0 then -- we skip empty or commented lines
@@ -2751,7 +2751,7 @@ package body et_kicad_packages is
 					container	=> packages,
 					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
-										file_name 		=> element (package_name_cursor), -- S_0201.kicad_mod
+										file_name		=> element (package_name_cursor), -- S_0201.kicad_mod
 										lines			=> lines,
 										log_threshold	=> log_threshold + 6));
 

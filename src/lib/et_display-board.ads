@@ -50,8 +50,8 @@ package et_display.board is
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last)
 		of type_layer_status;
 
--- 	type type_vias is array (type_signal_layer'first .. type_signal_layer'last)
--- 		of type_layer_status;
+--	type type_vias is array (type_signal_layer'first .. type_signal_layer'last)
+--		of type_layer_status;
 
 	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last)
 		of type_layer_status;
@@ -238,7 +238,7 @@ package et_display.board is
 	-- Returns true if the route restrict layer
 	-- on TOP/BOTTOM is enabled:
 	function route_restrict_enabled (
-		face 			: in type_face;
+		face			: in type_face;
 		deepest_layer	: in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean;
 
@@ -271,7 +271,7 @@ package et_display.board is
 	-- Returns true if the via restrict layer
 	-- on TOP/BOTTOM is enabled:
 	function via_restrict_enabled (
-		face 			: in type_face;
+		face			: in type_face;
 		deepest_layer	: in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean;
 

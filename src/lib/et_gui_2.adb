@@ -40,7 +40,7 @@
 -- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
-with gtk.window; 				use gtk.window;
+with gtk.window;				use gtk.window;
 with gtk.main;
 with et_runmode;					use et_runmode;
 
@@ -153,7 +153,7 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_schematic.set_up_canvas;
 
-		-- Set up verb and noun combo
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
 		set_up_noun_combo;
 
@@ -250,7 +250,7 @@ package body et_gui_2 is
 		-- Set up special things of the canvas:
 		et_canvas_board.set_up_canvas;
 
-		-- Set up verb and noun combo
+		-- Set up verb and noun combo:
 		set_up_verb_combo;
 		set_up_noun_combo;
 
@@ -311,7 +311,7 @@ package body et_gui_2 is
 		gtk.main.init;
 
 		-- Set up the schematic window.
- 		init_schematic (project, module, sheet, log_threshold + 1);
+		init_schematic (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
 

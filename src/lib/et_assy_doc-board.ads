@@ -56,7 +56,7 @@ package et_assy_doc.board is
 	-- Because assembly documentation is about two
 	-- sides of the board this composite is required:
 	type type_assy_doc_both_sides is record
-		top 	: type_assy_doc_board;
+		top	: type_assy_doc_board;
 		bottom	: type_assy_doc_board;
 	end record;
 

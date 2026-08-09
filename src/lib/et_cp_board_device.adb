@@ -78,7 +78,7 @@ package body et_cp_board_device is
 
 	procedure show_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -279,7 +279,7 @@ package body et_cp_board_device is
 
 	procedure add_non_electrical_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -389,7 +389,7 @@ package body et_cp_board_device is
 
 	procedure delete_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -449,7 +449,7 @@ package body et_cp_board_device is
 
 	procedure copy_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -469,7 +469,7 @@ package body et_cp_board_device is
 			if non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.copy_non_electrical_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					destination		=> destination,
 
@@ -514,7 +514,7 @@ package body et_cp_board_device is
 
 	procedure move_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -534,7 +534,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.move_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					coordinates		=> coordinates,
 					point			=> set (
@@ -581,7 +581,7 @@ package body et_cp_board_device is
 
 	procedure rotate_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -601,7 +601,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.rotate_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					coordinates		=> RELATIVE,
 
@@ -635,7 +635,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.rotate_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					coordinates		=> coordinates,
 					rotation		=> rotation,
@@ -686,7 +686,7 @@ package body et_cp_board_device is
 
 	procedure rename_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -746,7 +746,7 @@ package body et_cp_board_device is
 
 	procedure flip_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -765,7 +765,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.flip_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					toggle			=> true,
 
@@ -796,7 +796,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.flip_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					face			=> face,
 
@@ -843,7 +843,7 @@ package body et_cp_board_device is
 
 	procedure move_device_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -892,7 +892,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				move_placeholder (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					meaning			=> meaning,
 					layer			=> layer,
@@ -941,7 +941,7 @@ package body et_cp_board_device is
 
 	procedure rotate_device_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -990,7 +990,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				rotate_placeholder (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					meaning			=> meaning,
 					layer			=> layer,
@@ -1039,7 +1039,7 @@ package body et_cp_board_device is
 
 	procedure restore_device_placeholders (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -1056,7 +1056,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				reset_placeholder_positions (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 
 					-- Depending on the origin of the command,

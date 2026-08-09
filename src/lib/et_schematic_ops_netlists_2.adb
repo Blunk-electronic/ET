@@ -68,7 +68,7 @@ package body et_schematic_ops_netlists_2 is
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
+		ports			: in pac_device_ports.set)
 		return pac_device_ports_extended.set
 	is
 		ports_extended : pac_device_ports_extended.set; -- to be returned
@@ -130,7 +130,7 @@ package body et_schematic_ops_netlists_2 is
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_net_submodule_ports.set)
+		ports			: in pac_net_submodule_ports.set)
 		return pac_submodule_ports_extended.set
 	is
 		pragma unreferenced (module_cursor);
@@ -145,7 +145,7 @@ package body et_schematic_ops_netlists_2 is
 			port : type_net_submodule_port renames element (port_cursor);
 			-- direction : type_netchanger_port_name; -- master/slave
 		begin
- 			-- get the direction of the current submodule port
+			-- get the direction of the current submodule port
 			-- direction := port_direction (
 				-- module_cursor, port.module_name, port.port_name);
 
@@ -176,7 +176,7 @@ package body et_schematic_ops_netlists_2 is
 
 
 	procedure make_netlist_cat_1 (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in type_assembly_variant_name;
 		log_threshold	: in type_log_level)
 	is

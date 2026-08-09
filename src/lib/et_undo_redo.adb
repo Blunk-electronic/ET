@@ -702,7 +702,7 @@ package body et_undo_redo is
 
 
 				if done then
- 					-- Add domain to message:
+					-- Add domain to message:
 					message := message & to_bounded_string (" (in " & to_string (domain) & ")");
 
 					-- Add preamble of undo-message:

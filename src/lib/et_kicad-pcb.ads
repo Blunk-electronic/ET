@@ -40,8 +40,8 @@
 --  1. rename package instantiations starting with type_* to pac_*
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 
 with et_logging;				use et_logging;
 with et_kicad_coordinates;		use et_kicad_coordinates;
@@ -129,29 +129,29 @@ package et_kicad.pcb is
 
 
 	layer_top_solder_paste_id	: constant type_layer_id	:= 35;
-	layer_bot_solder_paste_id	: constant type_layer_id 	:= 34;
+	layer_bot_solder_paste_id	: constant type_layer_id	:= 34;
 
-	layer_top_stop_mask_id		: constant type_layer_id 	:= 39;
-	layer_bot_stop_mask_id		: constant type_layer_id 	:= 38;
+	layer_top_stop_mask_id		: constant type_layer_id	:= 39;
+	layer_bot_stop_mask_id		: constant type_layer_id	:= 38;
 
-	layer_top_silk_screen_id	: constant type_layer_id 	:= 37;
-	layer_bot_silk_screen_id	: constant type_layer_id 	:= 36;
+	layer_top_silk_screen_id	: constant type_layer_id	:= 37;
+	layer_bot_silk_screen_id	: constant type_layer_id	:= 36;
 
-	layer_top_assy_doc_id		: constant type_layer_id 	:= 49;
-	layer_bot_assy_doc_id		: constant type_layer_id 	:= 48;
+	layer_top_assy_doc_id		: constant type_layer_id	:= 49;
+	layer_bot_assy_doc_id		: constant type_layer_id	:= 48;
 
-	layer_top_keepout_id		: constant type_layer_id 	:= 47;
-	layer_bot_keepout_id		: constant type_layer_id 	:= 46;
+	layer_top_keepout_id		: constant type_layer_id	:= 47;
+	layer_bot_keepout_id		: constant type_layer_id	:= 46;
 
 	layer_edge_cuts				: constant string := "Edge.Cuts";
-	layer_edge_cuts_id			: constant type_layer_id 	:= 44;
+	layer_edge_cuts_id			: constant type_layer_id	:= 44;
 
 	-- CS other layers like adhes, eco, margin, ...
 
 	keyword_fp_text_mirrored	: constant string := "mirror";
 
-	text_width_min 				: constant string := "minimum_width";
-	text_signal_layer 			: constant string := "signal_layer";
+	text_width_min				: constant string := "minimum_width";
+	text_signal_layer			: constant string := "signal_layer";
 
 
 
@@ -287,7 +287,7 @@ package et_kicad.pcb is
 		mirror					: type_plot_mirror;
 		drill_shape				: type_plot_drill_shape;
 		scale_selection			: type_plot_scale_selection;
-		output_directory 		: type_plot_output_directory.bounded_string;
+		output_directory		: type_plot_output_directory.bounded_string;
 	end record;
 
 
@@ -399,7 +399,7 @@ package et_kicad.pcb is
 
 	-- Nets are collected in an ordered set, that uses the aforementioned two functions:
 	package type_netlist is new ordered_sets (
-		element_type 	=> type_netlist_net,
+		element_type	=> type_netlist_net,
 		"<"				=> right_net_before_left,
 		"="				=> right_net_equals_left);
 
@@ -481,14 +481,14 @@ package et_kicad.pcb is
 
 
 
--- 	-- For packages, temporarily this type is required to handle texts in
--- 	-- silk screen, assembly doc, ...
--- 	-- When inserting the text in the final package, it is decomposed again.
--- 	type type_text_package is new et_packages.type_text with record
--- 		content	: et_text.pac_text_content.bounded_string;
--- 		layer	: type_layer_abbrevation;
--- 		meaning	: type_fp_text_meaning;
--- 	end record;
+--	-- For packages, temporarily this type is required to handle texts in
+--	-- silk screen, assembly doc, ...
+--	-- When inserting the text in the final package, it is decomposed again.
+--	type type_text_package is new et_packages.type_text with record
+--		content	: et_text.pac_text_content.bounded_string;
+--		layer	: type_layer_abbrevation;
+--		meaning	: type_fp_text_meaning;
+--	end record;
 
 
 
@@ -565,8 +565,8 @@ package et_kicad.pcb is
 
 	-- Lots of packages (in a board) can be collected in a map:
 	package type_packages_board is new indefinite_ordered_maps (
-		key_type 		=> type_device_name, -- IC46
-		element_type 	=> type_package_board,
+		key_type		=> type_device_name, -- IC46
+		element_type	=> type_package_board,
 		"<"				=> et_device_name."<");
 
 
@@ -697,7 +697,7 @@ package et_kicad.pcb is
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
 		cursor			: in pac_floating_solid.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 	-- This is the type for the Kicad board design:
@@ -710,7 +710,7 @@ package et_kicad.pcb is
 		general		: type_general_board_info;
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)
-		paper_size 	: et_drawing_frame.type_paper_size;
+		paper_size	: et_drawing_frame.type_paper_size;
 		layers		: type_layers.map;
 		netlist		: type_netlist.set;
 		net_classes	: type_net_classes.map;
@@ -738,7 +738,7 @@ package et_kicad.pcb is
 
 
 	procedure read_board (
-		file_name 		: in string;
+		file_name		: in string;
 		log_threshold	: in type_log_level);
 
 
@@ -753,9 +753,9 @@ package et_kicad.pcb is
 		return natural;
 
 
--- 	procedure to_native (log_threshold : in type_log_level);
--- 	-- Converts the packages (from package_libraries) to native packages.
--- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
+--	procedure to_native (log_threshold : in type_log_level);
+--	-- Converts the packages (from package_libraries) to native packages.
+--	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
 
 	-- This is general board stuff:
 	type type_board_with_paper_size is new et_module_board.type_board with record
@@ -768,8 +768,8 @@ package et_kicad.pcb is
 
 		-- V4 uses search lists:
 		-- The search list of project library directories and names:
-		search_list_library_dirs	: type_project_lib_dirs.list; 	-- search list for library directories (active, passive, ...)
-		search_list_library_comps	: type_library_names.list; 		-- search list for component libraries (bel_logic, bel_primitives, ...)
+		search_list_library_dirs	: type_project_lib_dirs.list;	-- search list for library directories (active, passive, ...)
+		search_list_library_comps	: type_library_names.list;		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 
 		-- V5 uses sym-lib-tables and fp-lib-tables to locate libraries:
@@ -779,7 +779,7 @@ package et_kicad.pcb is
 		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
 		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 
-		strands	    		: et_kicad.schematic.type_strands.list;				-- the strands of the module (incl. net names and segments)
+		strands			: et_kicad.schematic.type_strands.list;				-- the strands of the module (incl. net names and segments)
 		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
 		components			: et_kicad.schematic.type_components_schematic.map;	-- the components of the module
@@ -793,9 +793,9 @@ package et_kicad.pcb is
 		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
 		-- Layout also has a template.
 		-- So the name of the templates for schematic and layout should suffice.
-		frames      		: et_kicad.schematic.type_frames.list;					-- schematic frames (of both schematic and layout)
+		frames		: et_kicad.schematic.type_frames.list;					-- schematic frames (of both schematic and layout)
 
-		notes       		: et_kicad.schematic.type_texts.list;					-- notes
+		notes		: et_kicad.schematic.type_texts.list;					-- notes
 
 		sheet_headers		: et_kicad.schematic.type_sheet_headers.map;			-- the list of sheet headers
 		-- CS: images
@@ -803,7 +803,7 @@ package et_kicad.pcb is
 		-- The nets of the module: net names, class,
 		-- schematic related stuff: strands, segments, labels, junctions
 		-- board related stuff: lines, arcs, vias, polygons
-		nets 	    	: et_kicad.schematic.type_nets.map;
+		nets		: et_kicad.schematic.type_nets.map;
 
 		-- General non-component related board stuff:
 		-- paper size, silk screen, documentation, ...
@@ -816,9 +816,9 @@ package et_kicad.pcb is
 	-- Therefore the collection contains only one module.
 	package type_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
-		key_type 		=> type_submodule_name.bounded_string,
-		"<" 			=> type_submodule_name."<",
-		element_type 	=> type_module);
+		key_type		=> type_submodule_name.bounded_string,
+		"<"			=> type_submodule_name."<",
+		element_type	=> type_module);
 
 	modules : type_modules.map;
 	module_cursor : type_modules.cursor;

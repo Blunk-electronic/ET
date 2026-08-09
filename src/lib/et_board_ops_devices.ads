@@ -48,7 +48,7 @@ with et_generic_modules;				use et_generic_modules;
 with et_package_model_name;				use et_package_model_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_device_prefix; 					use et_device_prefix;
+with et_device_prefix;					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;

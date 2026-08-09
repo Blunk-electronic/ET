@@ -283,7 +283,7 @@ package body et_drawing_frame_rw is
 
 	begin -- write_schematic
 		create (
-			file 	=> file_handle,
+			file	=> file_handle,
 			mode	=> out_file,
 			name	=> to_string (file_name));
 
@@ -603,7 +603,7 @@ package body et_drawing_frame_rw is
 
 	begin -- write_board
 		create (
-			file 	=> file_handle,
+			file	=> file_handle,
 			mode	=> out_file,
 			name	=> to_string (file_name));
 
@@ -702,7 +702,7 @@ package body et_drawing_frame_rw is
 
 		case domain is
 			when DOMAIN_SCHEMATIC	=> do_schematic;
-			when DOMAIN_PCB 		=> do_board;
+			when DOMAIN_PCB		=> do_board;
 		end case;
 
 		log_indentation_down;
@@ -767,7 +767,7 @@ package body et_drawing_frame_rw is
 
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
-			max 	=> max_section_depth);
+			max	=> max_section_depth);
 
 
 
@@ -822,8 +822,8 @@ package body et_drawing_frame_rw is
 
 
 		-- TEMPORARILY VARIABLES AND CONTAINERS
-		tb_position 	: type_position;
-		tb_line 		: type_line;
+		tb_position	: type_position;
+		tb_line		: type_line;
 		tb_lines		: pac_lines.list;
 		tb_text			: type_static_text;
 		tb_texts		: pac_static_texts.list;
@@ -831,7 +831,7 @@ package body et_drawing_frame_rw is
 		tb_placeholders_common	: type_placeholders_common;
 		tb_placeholders_basic	: type_placeholders_basic;
 		tb_sheet_number			: type_placeholder;
-		tb_sheet_description 	: type_placeholder;
+		tb_sheet_description	: type_placeholder;
 		tb_sheet_category		: type_placeholder;
 
 
@@ -921,7 +921,7 @@ package body et_drawing_frame_rw is
 			frame.title_block_schematic.placeholders_common := tb_placeholders_common;
 			frame.title_block_schematic.placeholders_additional := (
 				tb_placeholders_basic with
-					sheet_number 		=> tb_sheet_number,
+					sheet_number		=> tb_sheet_number,
 					sheet_description	=> tb_sheet_description,
 					sheet_category		=> tb_sheet_category);
 
@@ -1317,10 +1317,10 @@ package body et_drawing_frame_rw is
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then
@@ -1379,7 +1379,7 @@ package body et_drawing_frame_rw is
 
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
-			max 	=> max_section_depth);
+			max	=> max_section_depth);
 
 
 
@@ -1437,8 +1437,8 @@ package body et_drawing_frame_rw is
 
 
 		-- TEMPORARILY VARIABLES AND CONTAINERS
-		tb_position 	: type_position;
-		tb_line 		: type_line;
+		tb_position	: type_position;
+		tb_line		: type_line;
 		tb_lines		: pac_lines.list;
 		tb_text			: type_static_text;
 		tb_texts		: pac_static_texts.list;
@@ -2122,10 +2122,10 @@ package body et_drawing_frame_rw is
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then

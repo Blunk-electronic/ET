@@ -380,7 +380,7 @@ package body et_board_ops_vias is
 
 				procedure query_vias (
 					net_name	: in type_net_name;
-					net 		: in type_net)
+					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
 
@@ -471,7 +471,7 @@ package body et_board_ops_vias is
 
 				procedure query_vias (
 					net_name	: in type_net_name;
-					net 		: in type_net)
+					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
 

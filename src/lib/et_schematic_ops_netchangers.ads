@@ -40,7 +40,7 @@
 --
 --
 
-with ada.containers;           			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
@@ -211,7 +211,7 @@ package et_schematic_ops_netchangers is
 	procedure movable_test (
 		module_cursor		: in pac_generic_modules.cursor;
 		index				: in type_netchanger_id;
-		location 			: in type_object_position; -- only sheet number matters
+		location			: in type_object_position; -- only sheet number matters
 		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
 		log_threshold		: in type_log_level);
 

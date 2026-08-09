@@ -58,7 +58,7 @@ package et_module_read_net_classes is
 
 	-- Reads a line that describes a net class property:
 	procedure read_net_class (
-		line 			: in type_fields_of_line;
+		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
 

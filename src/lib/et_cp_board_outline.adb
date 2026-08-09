@@ -58,7 +58,7 @@ package body et_cp_board_outline is
 
 	procedure draw_board_outline (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -109,7 +109,7 @@ package body et_cp_board_outline is
 
 	procedure draw_board_hole (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -151,7 +151,7 @@ package body et_cp_board_outline is
 
 	procedure delete_outline_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -171,7 +171,7 @@ package body et_cp_board_outline is
 					radius	=> to_zone_radius (get_field (cmd, 7)));
 
 				delete_outer_segment (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					catch_zone		=> catch_zone,
 
 					-- Depending on the origin of the command,
@@ -199,7 +199,7 @@ package body et_cp_board_outline is
 
 	procedure delete_hole_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -219,7 +219,7 @@ package body et_cp_board_outline is
 					radius	=> to_zone_radius (get_field (cmd, 7)));
 
 				delete_hole_segment (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					catch_zone		=> catch_zone,
 
 					-- Depending on the origin of the command,

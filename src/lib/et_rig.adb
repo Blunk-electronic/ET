@@ -39,7 +39,7 @@
 
 with et_generic_modules;			use et_generic_modules;
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 with ada.directories;
 
 with et_string_processing;		use et_string_processing;
@@ -130,13 +130,13 @@ package body et_rig is
 
 	procedure save_rig (
 		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 		is separate;
 
 
 
 	procedure read_rigs (
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 		is separate;
 
 

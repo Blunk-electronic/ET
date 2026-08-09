@@ -54,7 +54,7 @@ package et_device_read_unit is
 
 	-- This is the pointer that points to the possible
 	-- internal symbol being read in the following:
-	symbol_model 	: type_symbol_model_access;
+	symbol_model	: type_symbol_model_access;
 
 
 	units_internal	: pac_units_internal.map;

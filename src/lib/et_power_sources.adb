@@ -40,7 +40,7 @@
 with ada.characters;			use ada.characters;
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 
 package body et_power_sources is

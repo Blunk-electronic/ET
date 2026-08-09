@@ -675,7 +675,7 @@ package body et_board_ops_keepout is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
@@ -800,8 +800,8 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_segment  	: type_object_segment;
+		result_category	: type_object_category := CAT_VOID;
+		result_segment	: type_object_segment;
 
 		use pac_contours;
 		use pac_segments;

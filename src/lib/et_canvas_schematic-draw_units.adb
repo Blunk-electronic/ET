@@ -73,10 +73,11 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_schematic_ops_units;
+with et_schematic_ops_groups;
 
 with et_display.schematic;				use et_display.schematic;
 
-with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
+with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 
 separate (et_canvas_schematic)
@@ -109,7 +110,7 @@ procedure draw_units is
 		-- also as an aggreate type. So it should be left as is is:
 		unit_place			: in type_vector_model; -- x/y
 		unit_rotation		: in type_rotation := zero_rotation; -- angle
-		unit_mirror_status 	: in type_mirror := MIRROR_NO;
+		unit_mirror_status	: in type_mirror := MIRROR_NO;
 		placeholders	: in type_text_placeholders;
 		preview			: in boolean := false)
 	is
@@ -334,11 +335,11 @@ procedure draw_units is
 					-- CS draw port direction, weakness, power level ?
 					-- probably better in draw_terminal_name or draw_port_name ?
 
-		-- 				use properties := schematic_ops.port_properties (
-		-- 					module_cursor	=> active_module,
-		-- 					device_name		=> device_name,
-		-- 					unit_name		=> unit_name,
-		-- 					port_name		=> key (c));
+		--				use properties := schematic_ops.port_properties (
+		--					module_cursor	=> active_module,
+		--					device_name		=> device_name,
+		--					unit_name		=> unit_name,
+		--					port_name		=> key (c));
 
 				end if;
 			end draw_line_and_circle;
@@ -1028,7 +1029,7 @@ procedure draw_units is
 						-- (If the unit is virtual, then default
 						-- placeholders are returned and later ignored when the
 						-- unit is drawn):
-						placeholders 	=> get_placeholders (unit));
+						placeholders	=> get_placeholders (unit));
 				end draw_unit;
 
 

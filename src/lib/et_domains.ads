@@ -46,9 +46,9 @@ package et_domains is
 --		DOM_RIG,
 		DOM_SCHEMATIC,
 		DOM_BOARD
--- 		DOM_DEVICE,
--- 		DOM_SYMBOL,
--- 		DOM_PACKAGE
+--		DOM_DEVICE,
+--		DOM_SYMBOL,
+--		DOM_PACKAGE
 		);
 
 	function to_string (

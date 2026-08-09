@@ -1003,10 +1003,10 @@ package et_board_ops_conductors is
 	-- CS a parameter like "all" to delete all objects in the vicinity of point.
 	-- procedure delete_object (
 	--  module_cursor	: in pac_generic_modules.cursor;
-	-- 	layer			: in type_signal_layer;
-	-- 	point			: in type_vector_model; -- x/y
-	-- 	accuracy		: in type_accuracy;
-	-- 	log_threshold	: in type_log_level);
+	--	layer			: in type_signal_layer;
+	--	point			: in type_vector_model; -- x/y
+	--	accuracy		: in type_accuracy;
+	--	log_threshold	: in type_log_level);
 
 
 

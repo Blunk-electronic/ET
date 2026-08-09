@@ -53,7 +53,7 @@ package et_cp_board_material_bom is
 	-- The files are named after the module name and the variant name:
 	procedure export_bom (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

@@ -43,7 +43,7 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 -- with ada.exceptions;
 
 with et_string_processing;				use et_string_processing;
@@ -79,7 +79,7 @@ package body et_package_read is
 
 
 	procedure read_package (
-		file_name 		: in type_package_model_name; -- libraries/packages/S_SO14.pac
+		file_name		: in type_package_model_name; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level)
 	is
@@ -92,7 +92,7 @@ package body et_package_read is
 
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
-			max 	=> max_section_depth);
+			max	=> max_section_depth);
 
 
 		-- In the following the variable "packge" is used frequently.
@@ -985,10 +985,10 @@ package body et_package_read is
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then

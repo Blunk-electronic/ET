@@ -37,8 +37,8 @@
 --
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings.bounded;		use ada.strings.bounded;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
@@ -204,10 +204,10 @@ package et_kicad_libraries is
 		preamble	: in boolean := true) return string;
 
 
-	type type_port_library is new type_port_base with record 	-- CS: set defaults
+	type type_port_library is new type_port_base with record	-- CS: set defaults
 		name		: type_port_name; -- like CLOCK or CE
-		direction 	: type_port_direction;
-		style 		: type_port_style := NONE;
+		direction	: type_port_direction;
+		style		: type_port_style := NONE;
 
 		-- the clearance between symbol outline and port name
 		-- CS: define a reasonable range
@@ -270,7 +270,7 @@ package et_kicad_libraries is
 		start_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		end_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		radius			: et_schematic_geometry.pac_geometry_sch.type_float_positive;
- 		fill			: type_fill;
+		fill			: type_fill;
 	end record;
 
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
@@ -286,8 +286,8 @@ package et_kicad_libraries is
 
 	-- Shapes are wrapped in a composite:
 	type type_symbol_shapes is record
-		lines		: type_symbol_lines.list 		:= type_symbol_lines.empty_list;
-		arcs 		: type_symbol_arcs.list			:= type_symbol_arcs.empty_list;
+		lines		: type_symbol_lines.list		:= type_symbol_lines.empty_list;
+		arcs		: type_symbol_arcs.list			:= type_symbol_arcs.empty_list;
 		circles		: type_symbol_circles.list		:= type_symbol_circles.empty_list;
 		rectangles	: type_symbol_rectangles.list	:= type_symbol_rectangles.empty_list;
 		polylines	: type_symbol_polylines.list	:= type_symbol_polylines.empty_list;
@@ -378,7 +378,7 @@ package et_kicad_libraries is
 
 
 	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
- 	component_generic_name_length_max : constant natural := 100;
+	component_generic_name_length_max : constant natural := 100;
 	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
 	use type_component_generic_name;
 	-- Only those characters are allowed for the generic component name.
@@ -488,7 +488,7 @@ package et_kicad_libraries is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: type_port_name; -- the port name like GPIO1, GPIO2
-		coordinates 	: et_kicad_coordinates.type_position;
+		coordinates	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: type_appearance_schematic;
@@ -533,14 +533,14 @@ package et_kicad_libraries is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> type_device_model_name,
+		element_type	=> type_device_model_name,
 		"="				=> et_device_model_names."=");
 
 	package type_device_libraries is new ordered_maps (
-		key_type 		=> type_device_model_name, -- ../../lbr/passive/capacitors.lib
+		key_type		=> type_device_model_name, -- ../../lbr/passive/capacitors.lib
 		"<"				=> et_device_model_names."<",
-		element_type 	=> type_components_library.map,
-		"=" 			=> type_components_library."=");
+		element_type	=> type_components_library.map,
+		"="				=> type_components_library."=");
 	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 
@@ -572,18 +572,18 @@ package et_kicad_libraries is
 	-- search list for component library names
 	search_list_component_libraries : type_library_names.list; -- bel_logic, bel_primitives, ...
 
--- 	-- Libraries are stored in directories:
--- 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
--- 	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+--	-- Libraries are stored in directories:
+--	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+--	package type_library_directory is new generic_bounded_length (library_directory_length_max);
 --
--- 	function to_string (dir : in type_library_directory.bounded_string) return string;
+--	function to_string (dir : in type_library_directory.bounded_string) return string;
 
--- 	-- Search list for library directories.
--- 	-- This list applies for both component and package search operations.
--- 	package type_project_lib_dirs is new doubly_linked_lists (
--- 		element_type	=> type_library_directory.bounded_string,
--- 		"=" 			=> type_library_directory."=");
--- 	search_list_project_lib_dirs : type_project_lib_dirs.list;
+--	-- Search list for library directories.
+--	-- This list applies for both component and package search operations.
+--	package type_project_lib_dirs is new doubly_linked_lists (
+--		element_type	=> type_library_directory.bounded_string,
+--		"="			=> type_library_directory."=");
+--	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
 	-- SYMBOL-LIBRARY-TABLES AND FOOTPRINT-LIBRARY-TABLES--------------------------
 	-- Relevant for V5:
@@ -706,7 +706,7 @@ package et_kicad_libraries is
 	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible
 
 
-	field_style_default 	: constant string := "NN";
+	field_style_default	: constant string := "NN";
 	field_style_bold		: constant string := "NB";
 	field_style_italic		: constant string := "IN";
 	field_style_italic_bold	: constant string := "IB";
@@ -769,16 +769,16 @@ package et_kicad_libraries is
 
 
 
-	schematic_version_valid 	: boolean := false;
+	schematic_version_valid	: boolean := false;
 	sheet_header_entered		: boolean := false;
 	description_entered			: boolean := false;
 	description_processed		: boolean := false;
 	sheet_description_entered	: boolean := false;
 
-	component_entered 			: boolean := false;
+	component_entered			: boolean := false;
 	net_segment_entered			: boolean := false;
 	simple_label_entered		: boolean := false;
-	tag_label_entered 			: boolean := false;
+	tag_label_entered			: boolean := false;
 	note_entered				: boolean := false;
 
 
@@ -829,7 +829,7 @@ package et_kicad_libraries is
 	-- contains the given package library with the given package.
 	function full_library_name ( -- CS rename to get_full_library_name
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in type_package_name; -- S_SO14
+		package_name	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
 		return type_package_model_name;
 
@@ -840,7 +840,7 @@ package et_kicad_libraries is
 	-- Returns true if the terminal_port_map fits on the given package.
 	function terminal_port_map_fits (
 		library_name		: in type_package_model_name;		-- ../lbr/bel_ic.pretty
-		package_name 		: in type_package_name;	-- S_SO14
+		package_name		: in type_package_name;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean;
 

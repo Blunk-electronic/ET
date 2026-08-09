@@ -185,7 +185,7 @@ procedure draw_netchangers is
 
 
 begin
--- 	put_line ("draw netchangers (board)");
+--	put_line ("draw netchangers (board)");
 
 
 	pac_generic_modules.query_element (

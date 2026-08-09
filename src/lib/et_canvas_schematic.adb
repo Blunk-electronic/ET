@@ -85,6 +85,7 @@ with et_undo_redo;
 with et_schematic_ops_grid;
 
 with et_schematic_ops_groups;
+with et_module_clipboard;
 
 with et_system_info;
 with et_project_name;
@@ -96,6 +97,17 @@ with et_script_processor;
 
 
 package body et_canvas_schematic is
+
+	-- These flags suppress cb_verb_changed / cb_noun_changed while
+	-- update_mode_display (or set_up_noun_combo) is programmatically
+	-- syncing the combo boxes to the already-current verb/noun state.
+	-- Without this, set_active_id below can synchronously re-fire the
+	-- "changed" signal and re-enter the real handlers with state that
+	-- has already been updated by the caller (e.g. a keyboard shortcut),
+	-- corrupting the per-verb noun memory:
+	verb_combo_updating : boolean := false;
+	noun_combo_updating : boolean := false;
+	noun_handler_connected : boolean := false;
 
 
 	procedure set_title_bar (
@@ -122,14 +134,19 @@ package body et_canvas_schematic is
 		unused_found : boolean;
 	begin
 		-- show the drawing mode
+		verb_combo_updating := true;
 		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_verb,
 				active_id => v);
+		verb_combo_updating := false;
+
+		noun_combo_updating := true;
 		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_noun,
 				active_id => n);
+		noun_combo_updating := false;
 	end update_mode_display;
 
 
@@ -271,10 +288,10 @@ package body et_canvas_schematic is
 		-- This procedure contains all the actions required
 		-- to set the focus on the canvas:
 		-- procedure focus_canvas is begin
-		-- 	backup_scrollbar_settings;
-		-- 	canvas.grab_focus;
-		-- 	restore_scrollbar_settings;
-		-- 	status_clear;
+		--	backup_scrollbar_settings;
+		--	canvas.grab_focus;
+		--	restore_scrollbar_settings;
+		--	status_clear;
 		-- end focus_canvas;
 
 
@@ -487,8 +504,18 @@ package body et_canvas_schematic is
 	is
 		use et_modes.schematic;
 	begin
+		if verb_combo_updating then
+			return;
+		end if;
+
 		put_line ("cb_verb_changed");
-		verb := to_verb (self.get_active_id);
+
+		-- Remember the noun of the verb being left so it can be
+		-- restored the next time this verb is selected:
+		noun_last (verb) := noun;
+
+		set_verb (to_verb (self.get_active_id));
+		set_up_noun_combo;
 	end cb_verb_changed;
 
 	procedure set_up_verb_combo is
@@ -507,30 +534,57 @@ package body et_canvas_schematic is
 	end set_up_verb_combo;
 
 
-
 	procedure cb_noun_changed (
 		self : access gtk.combo_box.gtk_combo_box_record'class)
 	is
 		use et_modes.schematic;
 	begin
+		if noun_combo_updating then
+			return;
+		end if;
+
 		put_line ("cb_noun_changed");
-		noun := to_noun (self.get_active_id);
+		set_noun (to_noun (self.get_active_id));
 	end cb_noun_changed;
 
 	procedure set_up_noun_combo is
 		use et_modes.schematic;
 		use pac_canvas;
+
+		unused_found : boolean;
 	begin
+		noun_combo_updating := true;
+
+		mode_display.cbox_mode_noun.remove_all;
+
 		for noun in type_noun loop
-			mode_display.cbox_mode_noun.append (
-				id		=> to_string (noun),
-				text	=> to_string (noun));
+			if show_nouns_for_verb (verb) (noun) then
+				mode_display.cbox_mode_noun.append (
+					id		=> to_string (noun),
+					text	=> to_string (noun));
+			end if;
 		end loop;
 
-		on_changed (
-			mode_display.cbox_mode_noun,
-			call  => cb_noun_changed'access,
-			after => true);
+		unused_found :=
+			mode_display.cbox_mode_noun.set_active_id (
+				active_id	=> to_string (noun_last (verb)));
+		pragma assert (unused_found);
+
+		-- Keep the internal noun state in sync with what was just
+		-- restored on the combo box (cb_noun_changed is suppressed
+		-- below while noun_combo_updating is true):
+		set_noun (noun_last (verb));
+
+		noun_combo_updating := false;
+
+		if not noun_handler_connected then
+			on_changed (
+				mode_display.cbox_mode_noun,
+				call  => cb_noun_changed'access,
+				after => true);
+
+			noun_handler_connected := true;
+		end if;
 	end set_up_noun_combo;
 
 
@@ -597,15 +651,15 @@ package body et_canvas_schematic is
 			-- remains active so that further operations
 			-- like dragging are possible. This assumption
 			-- must be verified:
--- 			-- Reset the status of objects in schematic
--- 			-- and board editor.
--- 			-- This has also the effect of clearing existing
--- 			-- groups:
--- 			et_schematic_ops_groups.reset_objects (
--- 				active_module, log_threshold + 1);
+--			-- Reset the status of objects in schematic
+--			-- and board editor.
+--			-- This has also the effect of clearing existing
+--			-- groups:
+--			et_schematic_ops_groups.reset_objects (
+--				active_module, log_threshold + 1);
 --
--- 			et_board_ops_groups.reset_objects (
--- 				active_module, log_threshold + 1);
+--			et_board_ops_groups.reset_objects (
+--				active_module, log_threshold + 1);
 
 
 			-- Mark preview data as invalid:
@@ -639,7 +693,9 @@ package body et_canvas_schematic is
 
 
 		-- Do a level 2 reset. This is a full reset:
-		procedure level_2 is begin
+		procedure level_2 is 
+			use et_module_clipboard;
+		begin
 			level_1;
 
 			log (text => "level 2", level => log_threshold + 1);
@@ -647,6 +703,9 @@ package body et_canvas_schematic is
 			reset_verb_and_noun;
 			update_mode_display;
 
+			reset_copy_to_clipboard;
+			clear_clipboard;
+			
 			reset_group_area_mouse; -- abort a define-group operation
 
 			reset_unit_add; -- after adding a device
@@ -921,7 +980,7 @@ package body et_canvas_schematic is
 -- MOUSE BUTTON RELEASED
 
 	-- CS procedure button_released (
-	-- 	event	: in type_mouse_event)
+	--	event	: in type_mouse_event)
 	-- is separate;
 
 
@@ -1272,11 +1331,11 @@ package body et_canvas_schematic is
 	-- CS console.prepend_text (line_as_typed_by_operator);
 
 		fields := read_line (
-			line 			=> line_as_typed_by_operator,
+			line			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> et_script_processor.comment_mark,
+			comment_mark	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
-			ifs 			=> space); -- fields are separated by space
+			ifs			=> space); -- fields are separated by space
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
@@ -1363,11 +1422,11 @@ package body et_canvas_schematic is
 		console.prepend_text (get_text (self));
 
 		fields := read_line (
-			line 			=> line_as_typed_by_operator,
+			line			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> et_script_processor.comment_mark,
+			comment_mark	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
-			ifs 			=> space); -- fields are separated by space
+			ifs			=> space); -- fields are separated by space
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 

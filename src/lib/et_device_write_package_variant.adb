@@ -42,7 +42,7 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 					use ada.strings;
+with ada.strings;					use ada.strings;
 
 with et_package_library;
 with et_package_variant_name;		use et_package_variant_name;
@@ -98,7 +98,7 @@ package body et_device_write_package_variant is
 					space & to_string (key (terminal_cursor)) & space -- terminal name like G14 or 16
 					-- CS use a function that returns the terminal name as string
 					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
-					& space & keyword_port & space & to_string (element (terminal_cursor).name) 	-- port name like CE, WE, GND
+					& space & keyword_port & space & to_string (element (terminal_cursor).name)	-- port name like CE, WE, GND
 					);
 			end write_terminal;
 

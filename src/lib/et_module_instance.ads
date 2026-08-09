@@ -37,9 +37,9 @@
 --
 
 
-with ada.strings.bounded;       	use ada.strings.bounded;
+with ada.strings.bounded;	use ada.strings.bounded;
 
-with ada.containers;            	use ada.containers;
+with ada.containers;	use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_module_names;				use et_module_names;

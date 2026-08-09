@@ -53,7 +53,7 @@ package et_cp_board_submodule is
 	-- example: board demo move submodule FLT1 absolute 10 85
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

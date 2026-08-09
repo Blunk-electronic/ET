@@ -97,7 +97,7 @@ package et_module_read_text_board is
 	procedure build_non_conductor_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_cat		: in type_layer_category;
-		face 			: in et_pcb_sides.type_face;  -- TOP, BOTTOM
+		face			: in et_pcb_sides.type_face;  -- TOP, BOTTOM
 		log_threshold	: in type_log_level);
 
 

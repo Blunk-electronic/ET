@@ -143,12 +143,12 @@ package et_object_status is
 
 
 	procedure modify_status (
-		status 		: in out type_object_status;
+		status		: in out type_object_status;
 		operation	: in type_status_operation);
 
 
 	procedure reset_status (
-		status 		: in out type_object_status);
+		status		: in out type_object_status);
 
 
 

@@ -414,7 +414,7 @@ package body et_devices_electrical.units is
 
 
 	procedure log_unit_positions (
-		positions 		: in pac_unit_positions.map;
+		positions		: in pac_unit_positions.map;
 		log_threshold	: in type_log_level)
 	is
 
@@ -661,23 +661,23 @@ package body et_devices_electrical.units is
 
 
 
--- 	procedure add_first_available_unit (
--- 		device			: in pac_devices_electrical.cursor; -- IC2
--- 		log_threshold	: in type_log_level)
--- 	is
--- 		--- The pointer to the device model:
--- 		device_cursor_lib : pac_device_models.cursor;
+--	procedure add_first_available_unit (
+--		device			: in pac_devices_electrical.cursor; -- IC2
+--		log_threshold	: in type_log_level)
+--	is
+--		--- The pointer to the device model:
+--		device_cursor_lib : pac_device_models.cursor;
 --
 --
--- 	begin
--- 		log (text => "Add first available unit to device "
--- 			 & to_string (get_device_name (device),
--- 			  level => log_threshold);
+--	begin
+--		log (text => "Add first available unit to device "
+--			 & to_string (get_device_name (device),
+--			  level => log_threshold);
 --
--- 		-- Locate the device model:
--- 		device_cursor_lib := get_device_model (device_cursor_sch);
+--		-- Locate the device model:
+--		device_cursor_lib := get_device_model (device_cursor_sch);
 --
--- 	end add_first_available_unit;
+--	end add_first_available_unit;
 
 
 
@@ -789,7 +789,7 @@ package body et_devices_electrical.units is
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
-						result.placeholders.name 	:= symbol.placeholders.name;
+						result.placeholders.name	:= symbol.placeholders.name;
 						result.placeholders.value	:= symbol.placeholders.value;
 						result.placeholders.purpose	:= symbol.placeholders.purpose;
 					when others => null;
@@ -1025,7 +1025,7 @@ package body et_devices_electrical.units is
 	-- 	return string
 	-- is
 	-- begin
-	-- 	return "";
+	--	return "";
 	-- end;
 
 

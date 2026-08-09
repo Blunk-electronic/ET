@@ -162,87 +162,87 @@ package body et_thermal_relief is
 
 
 
--- 		procedure make_spoke is
--- 			-- For better understanding of this procedure:
--- 			-- Imagine a line that starts at the center of the terminal.
--- 			-- The line runs into the current direction and
--- 			-- 1. intersects the edge of the terminal
--- 			-- 2. travels through a non-conducting space (we call it "gap")
--- 			-- 3. intersects the outer edge of the surrounding conducting area
--- 			--    (This area is the island into which the terminal is embedded.)
--- 			-- 4. intersects the centerline of the border of the conducting area.
+--		procedure make_spoke is
+--			-- For better understanding of this procedure:
+--			-- Imagine a line that starts at the center of the terminal.
+--			-- The line runs into the current direction and
+--			-- 1. intersects the edge of the terminal
+--			-- 2. travels through a non-conducting space (we call it "gap")
+--			-- 3. intersects the outer edge of the surrounding conducting area
+--			--    (This area is the island into which the terminal is embedded.)
+--			-- 4. intersects the centerline of the border of the conducting area.
 --
--- 			-- Get the distance from the center of the terminal to the
--- 			-- conducting area in the current direction:
--- 			D2CA : constant type_distance_to_conducting_area :=
--- 				get_distance_to_conducting_area (
--- 					zone			=> zone,
--- 					linewidth		=> zone_linewidth,
--- 					start_point		=> center,
--- 					direction		=> direction,
--- 					location_known	=> true,
--- 					location		=> NON_CONDUCTING_AREA,
--- 					log_threshold	=> log_threshold + 3);
+--			-- Get the distance from the center of the terminal to the
+--			-- conducting area in the current direction:
+--			D2CA : constant type_distance_to_conducting_area :=
+--				get_distance_to_conducting_area (
+--					zone			=> zone,
+--					linewidth		=> zone_linewidth,
+--					start_point		=> center,
+--					direction		=> direction,
+--					location_known	=> true,
+--					location		=> NON_CONDUCTING_AREA,
+--					log_threshold	=> log_threshold + 3);
 --
--- 			-- The distance from the center to the edge
--- 			-- of the terminal:
--- 			center_to_terminal_edge : type_float_positive;
+--			-- The distance from the center to the edge
+--			-- of the terminal:
+--			center_to_terminal_edge : type_float_positive;
 --
--- 			-- The distance from the center to the edge
--- 			-- of the surrounding conducting area:
--- 			center_to_conducting_area : type_float_positive;
+--			-- The distance from the center to the edge
+--			-- of the surrounding conducting area:
+--			center_to_conducting_area : type_float_positive;
 --
--- 			-- The gap between terminal edge and conducting area:
--- 			gap : type_distance_positive;
+--			-- The gap between terminal edge and conducting area:
+--			gap : type_distance_positive;
 --
--- 		begin
--- 			-- NOTE: There is no need to test whether the center
--- 			-- of the terminal is in the non-conducting area of the zone.
+--		begin
+--			-- NOTE: There is no need to test whether the center
+--			-- of the terminal is in the non-conducting area of the zone.
 --
--- 			-- If no centerline exists in the current direction,
--- 			-- then no spoke will be computed:
--- 			if D2CA.centerline_exists then
--- 				log (text => "D2CA: "
--- 					& "to edge: " & to_string (D2CA.distance_to_edge)
--- 					& " to centerline: " & to_string (D2CA.distance_to_centerline),
--- 					level => log_threshold + 2);
+--			-- If no centerline exists in the current direction,
+--			-- then no spoke will be computed:
+--			if D2CA.centerline_exists then
+--				log (text => "D2CA: "
+--					& "to edge: " & to_string (D2CA.distance_to_edge)
+--					& " to centerline: " & to_string (D2CA.distance_to_centerline),
+--					level => log_threshold + 2);
 --
--- 				-- Compute the distance from the center of the terminal
--- 				-- to the edge of the terminal:
--- 				center_to_terminal_edge :=
--- 					get_distance_to_border (outline, center, direction);
+--				-- Compute the distance from the center of the terminal
+--				-- to the edge of the terminal:
+--				center_to_terminal_edge :=
+--					get_distance_to_border (outline, center, direction);
 --
--- 				-- Get the distance from the center of the terminal
--- 				-- to the edge of the conducting area:
--- 				center_to_conducting_area := D2CA.distance_to_edge;
+--				-- Get the distance from the center of the terminal
+--				-- to the edge of the conducting area:
+--				center_to_conducting_area := D2CA.distance_to_edge;
 --
--- 				-- Compute the actual gap between terminal edge and
--- 				-- conducting area:
--- 				gap := type_distance_positive (center_to_conducting_area - center_to_terminal_edge);
+--				-- Compute the actual gap between terminal edge and
+--				-- conducting area:
+--				gap := type_distance_positive (center_to_conducting_area - center_to_terminal_edge);
 --
--- 				-- CS: Due to the fill tolerance of zones, the gap might be
--- 				-- slightly too wide. For this reason the global fill_tolerance is subtracted.
--- 				-- The smaller the fill tolerance, the smaller is the error that develops here:
--- 				-- CS NOT SURE WHETHER THIS A WISE IDEA !!
--- 				gap := gap - fill_tolerance;
+--				-- CS: Due to the fill tolerance of zones, the gap might be
+--				-- slightly too wide. For this reason the global fill_tolerance is subtracted.
+--				-- The smaller the fill tolerance, the smaller is the error that develops here:
+--				-- CS NOT SURE WHETHER THIS A WISE IDEA !!
+--				gap := gap - fill_tolerance;
 --
--- 				log (text => "detected gap between terminal edge and conducting area: "
--- 					 & to_string (gap), level => log_threshold + 2);
+--				log (text => "detected gap between terminal edge and conducting area: "
+--					 & to_string (gap), level => log_threshold + 2);
 --
--- 				-- If the gap is smaller or equal the given relief properties
--- 				-- then add a spoke that runs into the given direction:
--- 				if gap <= relief_properties.gap_max then
--- 					log (text => "add spoke", level => log_threshold + 2);
+--				-- If the gap is smaller or equal the given relief properties
+--				-- then add a spoke that runs into the given direction:
+--				if gap <= relief_properties.gap_max then
+--					log (text => "add spoke", level => log_threshold + 2);
 --
--- 					-- The spoke starts at the center of the terminal and
--- 					-- ends on the centerline of the border of the conducting area:
--- 					relief.spokes.append ((
--- 						A		=> center,
--- 						B		=> move_by (center, direction, D2CA.distance_to_centerline),
--- 						status	=> <>)); -- default status
--- 				end if;
--- 			end if;
--- 		end make_spoke;
+--					-- The spoke starts at the center of the terminal and
+--					-- ends on the centerline of the border of the conducting area:
+--					relief.spokes.append ((
+--						A		=> center,
+--						B		=> move_by (center, direction, D2CA.distance_to_centerline),
+--						status	=> <>)); -- default status
+--				end if;
+--			end if;
+--		end make_spoke;
 
 
 
@@ -352,12 +352,12 @@ package body et_thermal_relief is
 
 
 		-- if debug then
-		-- 	new_line;
-		-- 	put_line ("terminal " & to_string (key (terminal.terminal))
-		-- 		& " pos. " & to_string (terminal.position.place)
-		-- 		& " direction " & to_string (terminal.position.rotation)
-		-- 		& " gap max. " & to_string (relief_properties.gap_max)
-		-- 		& " linewidth " & to_string (relief.width));
+		--	new_line;
+		--	put_line ("terminal " & to_string (key (terminal.terminal))
+		--		& " pos. " & to_string (terminal.position.place)
+		--		& " direction " & to_string (terminal.position.rotation)
+		--		& " gap max. " & to_string (relief_properties.gap_max)
+		--		& " linewidth " & to_string (relief.width));
 		-- end if;
 
 		-- Since we have to generate 4 spokes, separated by 90 degrees

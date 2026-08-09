@@ -79,7 +79,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure dragging_not_possible (
-		port 		: in string;
+		port		: in string;
 		position	: in type_object_position) is
 	begin
 		log (ERROR, "port " & enclose_in_quotes (port) &
@@ -786,7 +786,7 @@ package body et_schematic_ops_netchangers is
 
 			-- insert the new netchanger in the module
 			insert (
-				container 	=> module.netchangers,
+				container	=> module.netchangers,
 				key			=> index,
 				new_item	=> netchanger,
 				position	=> cursor,
@@ -848,7 +848,7 @@ package body et_schematic_ops_netchangers is
 		-- are movable.
 		-- The criteria for movement are: no device, no submodule ports there.
 		-- The ports allowed here are the ports-to-be-dragged itself.
-			location 			: in type_object_position; -- only sheet number matters
+			location			: in type_object_position; -- only sheet number matters
 			netchanger_ports	: in type_netchanger_ports) -- x/y of master and slave port
 		is
 
@@ -1262,7 +1262,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Delete netchanger ports in nets:
 				delete_ports (
-	 				module			=> module_cursor,
+					module			=> module_cursor,
 					index			=> index,
 
 					-- Get sheet number from location:
@@ -1401,7 +1401,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Delete netchanger ports in nets:
 				delete_ports (
-	 				module			=> module_cursor,
+					module			=> module_cursor,
 					index			=> index,
 
 					-- Get sheet number from location:
@@ -1520,7 +1520,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Delete netchanger ports in nets:
 				delete_ports (
-	 				module			=> module_cursor,
+					module			=> module_cursor,
 					index			=> index,
 
 					-- Get sheet number from location:

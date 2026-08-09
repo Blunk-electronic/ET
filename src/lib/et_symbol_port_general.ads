@@ -96,7 +96,7 @@ package et_symbol_port_general is
 
 
 	function get_place (
-		port 		: in type_port_general)
+		port		: in type_port_general)
 		return type_vector_model;
 
 

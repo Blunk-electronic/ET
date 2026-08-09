@@ -38,7 +38,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings; 				use ada.strings;
+with ada.strings;				use ada.strings;
 
 with et_logging;				use et_logging;
 
@@ -72,7 +72,7 @@ package body et_package_variant_name is
 	-- 	variant : in type_package_variant_name)
 	-- 	return string
 	-- is begin
-	-- 	return pac_package_variant_name.to_string (variant);
+	--	return pac_package_variant_name.to_string (variant);
 	-- end;
 
 

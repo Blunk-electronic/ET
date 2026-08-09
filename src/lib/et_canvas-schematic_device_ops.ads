@@ -58,7 +58,7 @@ package et_canvas.schematic_device_ops is
 	-- to fill a combo box for device prefixes with content:
 	procedure make_store_for_prefixes (
 		prefixes	: in pac_device_prefixes.map;
-		store 		: in out gtk_list_store);
+		store		: in out gtk_list_store);
 
 
 
@@ -228,7 +228,7 @@ package et_canvas.schematic_device_ops is
 	-- to fill a combo box for the variants with content:
 	procedure make_store_for_variants (
 		variants	: in pac_package_variants.map;
-		store 		: in out gtk_list_store);
+		store		: in out gtk_list_store);
 
 
 

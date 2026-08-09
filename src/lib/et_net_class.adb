@@ -46,10 +46,10 @@ package body et_net_class is
 
 
 	-- function get_net_class (
-	-- 	class_cursor	: in pac_net_classes.cursor)
-	-- 	return type_net_class
+	--	class_cursor	: in pac_net_classes.cursor)
+	--	return type_net_class
 	-- is begin
-	-- 	return element (class_cursor);
+	--	return element (class_cursor);
 	-- end;
 
 

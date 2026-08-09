@@ -291,7 +291,7 @@ package body et_board_ops_stopmask is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_stop_lines.list renames module.board.stopmask.top.lines;
+			top	: pac_stop_lines.list renames module.board.stopmask.top.lines;
 			bottom	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 
 
@@ -369,7 +369,7 @@ package body et_board_ops_stopmask is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_stop_lines.list renames module.board.stopmask.top.lines;
+			top_items		: pac_stop_lines.list renames module.board.stopmask.top.lines;
 			bottom_items	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
 
 
@@ -850,7 +850,7 @@ package body et_board_ops_stopmask is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			top	: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			bottom	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 
 
@@ -928,7 +928,7 @@ package body et_board_ops_stopmask is
 			pragma unreferenced (module_name);
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			top_items		: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
 			bottom_items	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
 
 
@@ -1872,7 +1872,7 @@ package body et_board_ops_stopmask is
 			process		=> query_module'access);
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
-		-- 	 level => log_threshold + 1);
+		--	 level => log_threshold + 1);
 
 
 		if commit_design = DO_COMMIT then
@@ -2492,7 +2492,7 @@ package body et_board_ops_stopmask is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_stop_texts.list renames module.board.stopmask.top.texts;
+			top_items		: pac_stop_texts.list renames module.board.stopmask.top.texts;
 			bottom_items	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
 
 
@@ -2570,7 +2570,7 @@ package body et_board_ops_stopmask is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			top 	: pac_stop_texts.list renames module.board.stopmask.top.texts;
+			top	: pac_stop_texts.list renames module.board.stopmask.top.texts;
 			bottom	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
 
 
@@ -2994,7 +2994,7 @@ package body et_board_ops_stopmask is
 
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_placeholders_non_conductor.list renames module.board.stopmask.top.placeholders;
+			top_items		: pac_placeholders_non_conductor.list renames module.board.stopmask.top.placeholders;
 			bottom_items	: pac_placeholders_non_conductor.list renames module.board.stopmask.bottom.placeholders;
 
 
@@ -3148,8 +3148,8 @@ package body et_board_ops_stopmask is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_segment  	: type_object_segment;
+		result_category	: type_object_category := CAT_VOID;
+		result_segment	: type_object_segment;
 		result_line			: type_object_line;
 		result_arc			: type_object_arc;
 		result_text			: type_object_text;
@@ -3906,12 +3906,12 @@ package body et_board_ops_stopmask is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.stopmask.top.lines.first;
-				arc_cursor    	:= module.board.stopmask.top.arcs.first;
+				line_cursor	:= module.board.stopmask.top.lines.first;
+				arc_cursor	:= module.board.stopmask.top.arcs.first;
 				circle_cursor	:= module.board.stopmask.top.circles.first;
 			else
-				line_cursor   	:= module.board.stopmask.bottom.lines.first;
-				arc_cursor    	:= module.board.stopmask.bottom.arcs.first;
+				line_cursor	:= module.board.stopmask.bottom.lines.first;
+				arc_cursor	:= module.board.stopmask.bottom.arcs.first;
 				circle_cursor	:= module.board.stopmask.bottom.circles.first;
 			end if;
 

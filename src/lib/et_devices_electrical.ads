@@ -45,7 +45,7 @@
 -- and in the board.
 -- These devices have a representation in schematic and mostly in the board.
 
-with ada.containers;           			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
@@ -195,7 +195,7 @@ package et_devices_electrical is
 	-- CS: This must be a hashed map:
 	package pac_devices_electrical is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device_electrical);
+		element_type	=> type_device_electrical);
 
 	use pac_devices_electrical;
 

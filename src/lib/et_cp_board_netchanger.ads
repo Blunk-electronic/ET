@@ -60,7 +60,7 @@ package et_cp_board_netchanger is
 	-- of the view:
 	procedure show_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -71,14 +71,14 @@ package et_cp_board_netchanger is
 	-- happens and a warning is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- CS: currently no need:
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -89,7 +89,7 @@ package et_cp_board_netchanger is
 	-- happens and a warning is output:
 	procedure set_netchanger_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

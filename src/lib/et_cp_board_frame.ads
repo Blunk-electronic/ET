@@ -54,7 +54,7 @@ package et_cp_board_frame is
 	-- example 2: board demo move frame relative -10 -10
 	procedure move_drawing_frame (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

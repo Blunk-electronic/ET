@@ -109,11 +109,11 @@ package body et_assembly_variants is
 
 		end if;
 
--- 		exception
--- 			when event: others =>
--- 				log_indentation_reset;
--- 				log (text => "B " & ada.exceptions.exception_information (event), console => true);
--- 				raise;
+--		exception
+--			when event: others =>
+--				log_indentation_reset;
+--				log (text => "B " & ada.exceptions.exception_information (event), console => true);
+--				raise;
 
 	end is_mounted;
 

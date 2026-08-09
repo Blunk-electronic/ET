@@ -617,7 +617,7 @@ package body et_board_ops_netchangers is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
+		result_category	: type_object_category := CAT_VOID;
 		result_netchanger	: type_object_netchanger;
 
 		use pac_netchangers;

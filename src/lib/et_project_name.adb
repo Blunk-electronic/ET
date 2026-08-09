@@ -40,7 +40,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.directories;
 with gnat.directory_operations;
 
@@ -80,7 +80,7 @@ package body et_project_name is
 
 	procedure validate_project_name (
 		project_name	: in type_project_name;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		use ada.directories;

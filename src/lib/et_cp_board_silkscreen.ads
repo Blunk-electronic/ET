@@ -54,7 +54,7 @@ package et_cp_board_silkscreen is
 	-- board demo draw silkscreen top zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_silkscreen (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -63,7 +63,7 @@ package et_cp_board_silkscreen is
 	-- board led_driver delete silkscreen top 40 50 1
 	procedure delete_silkscreen (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

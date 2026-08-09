@@ -192,7 +192,7 @@ package body et_units is
 	begin
 		-- The unit must be on the given sheet and
 		-- in the given catch zone:
-		if 	get_sheet (unit_position) = sheet
+		if	get_sheet (unit_position) = sheet
 		and	in_catch_zone (zone, get_place (unit_position)) then
 			result := true;
 		else

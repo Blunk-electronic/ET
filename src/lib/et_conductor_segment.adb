@@ -60,7 +60,7 @@ package body et_conductor_segment is
 
 
 	function to_polygon (
-		line 		: in type_conductor_line;
+		line		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
 		return type_polygon
 	is begin
@@ -274,7 +274,7 @@ package body et_conductor_segment is
 	procedure line_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		line : type_conductor_line;
 	begin
@@ -305,7 +305,7 @@ package body et_conductor_segment is
 
 
 	function to_polygon (
-		arc 		: in type_conductor_arc;
+		arc		: in type_conductor_arc;
 		tolerance	: in type_distance_positive)
 		return type_polygon
 	is begin
@@ -485,7 +485,7 @@ package body et_conductor_segment is
 	procedure arc_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		arc : type_conductor_arc;
 	begin
@@ -514,7 +514,7 @@ package body et_conductor_segment is
 
 
 	function to_polygon_outside (
-		circle 		: in type_conductor_circle;
+		circle		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon
 	is
@@ -522,7 +522,7 @@ package body et_conductor_segment is
 		result : type_polygon;
 
 		-- outer_radius : constant type_float_positive :=
-		-- 	circle.radius + 0.5 * type_float_positive (circle.width);
+		--	circle.radius + 0.5 * type_float_positive (circle.width);
 
 		outer_radius : constant type_distance_positive :=
 			get_radius (circle) + 0.5 * circle.width;
@@ -540,7 +540,7 @@ package body et_conductor_segment is
 
 
 	function to_polygon_inside (
-		circle 		: in type_conductor_circle;
+		circle		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)
 		return type_polygon
 	is
@@ -548,7 +548,7 @@ package body et_conductor_segment is
 		result : type_polygon;
 
 		-- inner_radius : constant type_float_positive :=
-		-- 	circle.radius - 0.5 * type_float_positive (circle.width);
+		--	circle.radius - 0.5 * type_float_positive (circle.width);
 
 		inner_radius : constant type_distance_positive :=
 			get_radius (circle) - 0.5 * circle.width;
@@ -692,7 +692,7 @@ package body et_conductor_segment is
 	procedure circle_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is begin
 		log (text => "conductor circle face" & to_string (face) & space
 			& to_string (type_circle (element (cursor)))

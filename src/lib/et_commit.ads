@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.strings.bounded;       	use ada.strings.bounded;
+with ada.strings.bounded;	use ada.strings.bounded;
 
 with ada.calendar;
 with et_domains;					use et_domains;

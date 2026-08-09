@@ -291,7 +291,7 @@ package body et_netchangers.schematic is
 
 
 	procedure set_position (
-		netchanger 	: in out type_netchanger;
+		netchanger	: in out type_netchanger;
 		position	: in type_netchanger_position_schematic)
 	is begin
 		netchanger.position_sch := position;
@@ -499,7 +499,7 @@ package body et_netchangers.schematic is
 	begin
 		-- The netchanger must be on the given sheet and
 		-- in the given catch zone:
-		if 	get_sheet (netchanger_position) = sheet
+		if	get_sheet (netchanger_position) = sheet
 		and	in_catch_zone (zone, get_place (netchanger_position)) then
 			result := true;
 		else

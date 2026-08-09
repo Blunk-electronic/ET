@@ -60,7 +60,7 @@ package et_cp_board_conductors is
 	-- CS: Do a plausibility check of zone parameters against each other.
 	procedure set_fill_zone_properties (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -75,7 +75,7 @@ package et_cp_board_conductors is
 	-- width 0.25, center 50/50, from 50/0 to 50/100, counterclockwise
 	procedure route_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -87,7 +87,7 @@ package et_cp_board_conductors is
 	-- in package et_cp_schematic_unit for inspiration.
 	procedure show_net (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -96,7 +96,7 @@ package et_cp_board_conductors is
 	-- delete a segment of a net in a conductor layer:
 	procedure delete_net_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -104,7 +104,7 @@ package et_cp_board_conductors is
 
 	procedure route_freetrack (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -112,7 +112,7 @@ package et_cp_board_conductors is
 	-- delete an freetrack segment in a conductor layer:
 	procedure delete_freetrack_segment (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -120,7 +120,7 @@ package et_cp_board_conductors is
 
 	procedure fill_zones (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -128,7 +128,7 @@ package et_cp_board_conductors is
 
 	procedure clear_zones (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -137,7 +137,7 @@ package et_cp_board_conductors is
 	-- Example: board demo update ratsnest
 	procedure update_ratsnest (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

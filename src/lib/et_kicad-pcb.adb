@@ -57,7 +57,7 @@ with et_conductor_text.boards;
 with et_conductor_segment;
 with ada.directories;
 with ada.strings;					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
+with ada.strings.fixed;			use ada.strings.fixed;
 
 with ada.exceptions;
 
@@ -146,14 +146,14 @@ package body et_kicad.pcb is
 		end if;
 	end right_net_equals_left;
 
--- 	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
--- 		if tech = "smd" then return SMT;
--- 		elsif tech = "thru_hole" then return THT;
--- 		else
--- 			log (SEVERITY_ERROR, "invalid assembly technology", console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end to_assembly_technology;
+--	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
+--		if tech = "smd" then return SMT;
+--		elsif tech = "thru_hole" then return THT;
+--		else
+--			log (SEVERITY_ERROR, "invalid assembly technology", console => true);
+--			raise constraint_error;
+--		end if;
+--	end to_assembly_technology;
 
 
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id is
@@ -452,7 +452,7 @@ package body et_kicad.pcb is
 		-- The argument counter is reset on entering a section.
 		-- It is incremented once an argument is complete.
 		type type_section is record
-			name 		: type_keyword := INIT;
+			name		: type_keyword := INIT;
 			parent		: type_keyword := INIT;
 			arg_counter	: type_argument_counter := type_argument_counter'first;
 		end record;
@@ -500,25 +500,25 @@ package body et_kicad.pcb is
 
 		-- Used when reading the board layers (SEC_LAYERS)
 		-- like (0 F.Cu signal) or (31 B.Cu signal) we have those variables.
-		layer_id 	: type_layer_id;
+		layer_id	: type_layer_id;
 		layer		: type_layer;
 
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
-		netlist_net 		: type_netlist_net;
+		netlist_net		: type_netlist_net;
 
 		-- NET CLASSES
 		net_class_via_diameter			: type_distance_positive;
 		net_class_micro_via_diameter	: type_distance_positive;
 		net_class_via_restring			: type_distance_positive;
 
-		net_class_name 	: type_net_class_name;	-- PWR, HIGH_CURRENT, ...
-		net_class 		: type_net_class_kicad;
+		net_class_name	: type_net_class_name;	-- PWR, HIGH_CURRENT, ...
+		net_class		: type_net_class_kicad;
 
 		-- SEGMENTS, VIAS, POLYGONS
 		segment			: type_segment;
 		via				: type_via;
-		polygon 		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
+		polygon		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
 		polygon_point	: type_vector_model;
 
 		-- Since SEC_POLYGON and SEC_FILLED_POLYGON have the same subsections (SEC_PTS/SEC_XY)
@@ -527,7 +527,7 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 
 		-- PACKAGES
-		unused_package_name 			: type_package_name;
+		unused_package_name			: type_package_name;
 		unused_package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_board_coordinates.type_package_position;
 
@@ -537,23 +537,23 @@ package body et_kicad.pcb is
 		-- This could be achieved similar to the approach used procedure add_alternative_reference in et_kicad.
 
 		-- The majority of terminals dictates the package technology. The default is THT.
-		package_technology 	: type_assembly_technology := THT;
+		package_technology	: type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		package_appearance 	: type_bom_relevant := BOM_RELEVANT_YES;
+		package_appearance	: type_bom_relevant := BOM_RELEVANT_YES;
 
-		package_text 		: type_text_package;
-		package_reference 	: type_device_name := default_component_reference;
-		package_value 		: type_device_value;
+		package_text		: type_text_package;
+		package_reference	: type_device_name := default_component_reference;
+		package_value		: type_device_value;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
 		package_description	: et_package_description.pac_package_description.bounded_string; -- temp. storage of package description
-		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
+		package_tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
-		package_line 		: et_kicad_packages.type_line;
+		package_line		: et_kicad_packages.type_line;
 		package_arc			: et_kicad_packages.type_arc;
-		package_circle 		: et_kicad_packages.type_circle;
+		package_circle		: et_kicad_packages.type_circle;
 
 		package_stop_mask	: et_stopmask.packages.type_stopmask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
@@ -567,18 +567,18 @@ package body et_kicad.pcb is
 		package_copper			: type_conductor_objects_both_sides;
 
 		-- countours of a package as provided by the 3d model:
--- 		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
+--		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
 
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: type_terminal_name;
+		terminal_name			: type_terminal_name;
 		terminal_technology		: type_assembly_technology;
-		terminal_pad_shape_tht 	: type_pad_shape_tht;
-		terminal_pad_shape_smt 	: type_pad_shape_smt;
+		terminal_pad_shape_tht	: type_pad_shape_tht;
+		terminal_pad_shape_smt	: type_pad_shape_smt;
 
-		terminal_face 			: type_face;
+		terminal_face			: type_face;
 		terminal_drill_size		: type_drill_size;
 		terminal_hole_shape		: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;
@@ -595,7 +595,7 @@ package body et_kicad.pcb is
 		terminal_net_name	: type_net_name;
 		unused_terminal_net_id		: type_net_id_terminal;
 
--- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
+--		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
 		terminal_copper_width_inner_layers : constant type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
@@ -623,7 +623,7 @@ package body et_kicad.pcb is
 
 
 		-- OBJECTS DRAWN DIRECTLY IN THE BOARD (NON-PACKAGE STUFF)
-		board_line 		: et_kicad_packages.type_line;
+		board_line		: et_kicad_packages.type_line;
 		board_arc		: et_kicad_packages.type_arc;
 		board_circle	: et_kicad_packages.type_circle;
 		board_text		: type_text_board;
@@ -3091,29 +3091,29 @@ package body et_kicad.pcb is
 					end case;
 
 
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => null; -- CS read name of 3d model
--- 								when others => too_many_arguments;
--- 							end case;
--- 						when others => invalid_section;
--- 					end case;
+--					case section.parent is
+--						when SEC_MODULE =>
+--							case section.arg_counter is
+--								when 0 => null;
+--								when 1 => null; -- CS read name of 3d model
+--								when others => too_many_arguments;
+--							end case;
+--						when others => invalid_section;
+--					end case;
 --
--- 				when SEC_ROTATE | SEC_SCALE =>
--- 					case section.parent is
--- 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
--- 						when others => invalid_section;
--- 					end case;
+--				when SEC_ROTATE | SEC_SCALE =>
+--					case section.parent is
+--						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
+--						when others => invalid_section;
+--					end case;
 --
--- 				when SEC_XYZ =>
--- 					case section.parent is
--- 						when SEC_AT => null; -- CS
--- 						when SEC_SCALE => null; -- CS
--- 						when SEC_ROTATE => null; -- CS
--- 						when others => invalid_section;
--- 					end case;
+--				when SEC_XYZ =>
+--					case section.parent is
+--						when SEC_AT => null; -- CS
+--						when SEC_SCALE => null; -- CS
+--						when SEC_ROTATE => null; -- CS
+--						when others => invalid_section;
+--					end case;
 
 				when others => null; -- Not all sections require arguments.
 			end case;
@@ -3372,7 +3372,7 @@ package body et_kicad.pcb is
 
 				board.net_classes.insert (
 					key			=> net_class_name,
-					new_item 	=> net_class,
+					new_item	=> net_class,
 					position	=> net_class_cursor,
 					inserted	=> net_class_inserted
 					);
@@ -3666,7 +3666,7 @@ package body et_kicad.pcb is
 							board.copper.texts.append ((
 								type_text_fab (board_text) with
 									content	=> board_text.content,
-									layer 	=> type_signal_layer ((board_text.layer) + 1),
+									layer	=> type_signal_layer ((board_text.layer) + 1),
 									others	=> <> -- CS vector text, conductor segments
 								));
 							-- CS text_conductor_properties (board.copper.texts.last, log_threshold + 1);
@@ -3935,11 +3935,11 @@ package body et_kicad.pcb is
 						when CIRCULAR => -- a circular hole
 
 							terminals.insert (
-								key 		=> terminal_name,
+								key		=> terminal_name,
 								position	=> terminal_cursor,
 								inserted	=> terminal_inserted,
-								new_item 	=> (
-									technology 			=> THT,
+								new_item	=> (
+									technology			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
 
@@ -3957,7 +3957,7 @@ package body et_kicad.pcb is
 									-- of top and bottom side of the pad.
 									stop_mask_shape_tht	=> (others => <>),
 
-									width_inner_layers 	=> terminal_copper_width_inner_layers,
+									width_inner_layers	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size,
 
 									-- the pad is connected with a certain net
@@ -3981,11 +3981,11 @@ package body et_kicad.pcb is
 								load_segments (millings, (circular => false, segments => lines));
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 			=> THT,
+									new_item	=> (
+										technology			=> THT,
 										tht_hole			=> MILLED,
 										position			=> terminal_position,
 
@@ -4031,11 +4031,11 @@ package body et_kicad.pcb is
 											terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 			=> THT,
+									new_item	=> (
+										technology			=> THT,
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
 
@@ -4064,8 +4064,8 @@ package body et_kicad.pcb is
 								-- Calculate the pad shape.
 								shape := to_pad_shape_rectangle (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
@@ -4074,8 +4074,8 @@ package body et_kicad.pcb is
 								-- Calculate the pad shape.
 								shape := to_pad_shape_oval (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
@@ -4098,11 +4098,11 @@ package body et_kicad.pcb is
 											terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -4112,7 +4112,7 @@ package body et_kicad.pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -4130,16 +4130,16 @@ package body et_kicad.pcb is
 								-- Calculate the rectangular pad shape.
 								shape := to_pad_shape_rectangle (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -4149,7 +4149,7 @@ package body et_kicad.pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -4167,16 +4167,16 @@ package body et_kicad.pcb is
 								-- Calculate the oval pad shape.
 								shape := to_pad_shape_oval (
 											center		=> terminal_position,
-											size_x 		=> pad_size_x,
-											size_y 		=> pad_size_y,
+											size_x		=> pad_size_x,
+											size_y		=> pad_size_y,
 											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
-									key 		=> terminal_name,
+									key		=> terminal_name,
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
-									new_item 	=> (
-										technology 		=> SMT,
+									new_item	=> (
+										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape_smt	=> shape,
@@ -4186,7 +4186,7 @@ package body et_kicad.pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 					=> terminal_face,
+										face					=> terminal_face,
 										stop_mask_status_smt	=> terminal_stop_mask_status,
 										solder_paste_status		=> terminal_solder_paste,
 
@@ -4710,7 +4710,7 @@ package body et_kicad.pcb is
 
 	procedure floating_copper_polygon_properties (
 		cursor			: in pac_floating_solid.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use et_fill_zones;
 		use pac_floating_solid;
@@ -4727,13 +4727,13 @@ package body et_kicad.pcb is
 
 		-- corner points
 		-- CS show shapes instead
--- 		log (text => text_fill_zone_corner_points, level => log_threshold);
--- 		points := element (cursor).corners;
--- 		point_cursor := points.first;
--- 		while point_cursor /= type_polygon_points.no_element loop
--- 			log (text => to_string (element (point_cursor)), level => log_threshold);
--- 			next (point_cursor);
--- 		end loop;
+--		log (text => text_fill_zone_corner_points, level => log_threshold);
+--		points := element (cursor).corners;
+--		point_cursor := points.first;
+--		while point_cursor /= type_polygon_points.no_element loop
+--			log (text => to_string (element (point_cursor)), level => log_threshold);
+--			next (point_cursor);
+--		end loop;
 
 		log_indentation_down;
 	end floating_copper_polygon_properties;
@@ -4743,7 +4743,7 @@ package body et_kicad.pcb is
 	-- Reads the board file. Copies general board stuff to the schematic module.
 	-- Global module_cursor is expected to point to the schematic module.
 	procedure read_board (
-		file_name 		: in string;
+		file_name		: in string;
 		log_threshold	: in type_log_level)
 	is
 		board_handle : ada.text_io.file_type;
@@ -4833,7 +4833,7 @@ package body et_kicad.pcb is
 				module   : in out type_module)
 			is
 				-- The nets of the module are copied here (in their present state):
-				nets 		: constant et_kicad.schematic.type_nets.map := module.nets;
+				nets		: constant et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 
 				net_id		: type_net_id; -- the net id used by kicad
@@ -5004,7 +5004,7 @@ package body et_kicad.pcb is
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 									--layers => (
 										--l_start	=> type_signal_layer (element (via_cursor).layer_start + 1),
-										--l_end 	=> type_signal_layer (element (via_cursor).layer_end + 1)
+										--l_end	=> type_signal_layer (element (via_cursor).layer_end + 1)
 									--),
 
 									-- Since kicad does not distinguish between restring in outer or inner layers
@@ -5098,7 +5098,7 @@ package body et_kicad.pcb is
 								when NONE => null; -- floating polygon is ignored here. will be handled below
 							end case;
 
--- 							et_pcb.route_polygon_properties (route.zones.solid.last, log_threshold + 3);
+--							et_pcb.route_polygon_properties (route.zones.solid.last, log_threshold + 3);
 
 						else
 							null;
@@ -5348,7 +5348,7 @@ package body et_kicad.pcb is
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
 						net_name	: in type_net_name;
-						net 		: in out schematic.type_net) is
+						net		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
 						log (text => " net name " & to_string (net_name), level => log_threshold + 3);
@@ -5362,7 +5362,7 @@ package body et_kicad.pcb is
 
 						-- copy net class name and its basic properties
 						module.net_classes.insert (
-							key 		=> key (net_class_cursor_board), -- class name
+							key		=> key (net_class_cursor_board), -- class name
 							new_item	=> type_net_class (element (net_class_cursor_board))); -- properties
 
 						-- From the board, get the net names of the current class:
@@ -5457,9 +5457,9 @@ package body et_kicad.pcb is
 
 				module.board.silkscreen		:= board.silk_screen;
 				module.board.assy_doc		:= board.assy_doc;
-				module.board.stencil 		:= board.stencil;
-				module.board.stopmask 		:= board.stop_mask;
-				module.board.keepout 		:= board.keepout;
+				module.board.stencil		:= board.stencil;
+				module.board.stopmask		:= board.stop_mask;
+				module.board.keepout		:= board.keepout;
 				module.board.board_contour	:= board.contour;
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
@@ -5475,7 +5475,7 @@ package body et_kicad.pcb is
 					-- of a component package. See details in procedure to_net_id.
 					if real_components_in_net (
 						module			=> mod_name,
-						net 			=> key (net_cursor),
+						net			=> key (net_cursor),
 						log_threshold	=> log_threshold + 4).length > 1 then
 
 							-- log (text => "pre net " & to_string (key (net_cursor)), level => log_threshold + 2);
@@ -5535,7 +5535,7 @@ package body et_kicad.pcb is
 
 								-- update component in schematic module
 								type_components_schematic.update_element (
-									container 	=> module.components,
+									container	=> module.components,
 									position	=> find (module.components, package_reference),
 									process		=> update_component_in_schematic'access);
 
@@ -5614,11 +5614,11 @@ package body et_kicad.pcb is
 
 				-- Store a single line in variable "line"
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					comment_mark	=> comment_mark,
 					test_whole_line	=> false, -- comment marks at begin of line matter
-					number 			=> positive (ada.text_io.line (current_input)),
-					ifs 			=> latin_1.space); -- fields are separated by space
+					number			=> positive (ada.text_io.line (current_input)),
+					ifs			=> latin_1.space); -- fields are separated by space
 
 				-- insert line in container "lines"
 				if get_field_count (line) > 0 then -- we skip empty or commented lines
@@ -5671,9 +5671,9 @@ package body et_kicad.pcb is
 			-- read the layout file
 			read_board (
 				file_name => compose (
-						name 		=> et_kicad_coordinates.to_string (key (module_cursor)),
+						name		=> et_kicad_coordinates.to_string (key (module_cursor)),
 						extension	=> file_extension_board),
-				log_threshold 	=> log_threshold + 1);
+				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 			next (module_cursor);

@@ -250,12 +250,12 @@ package et_cmd_sts is
 	-- 	-- the name of the script file like "rename_power_nets.scr":
 	-- 	script_name	: type_script_name;
  --
-	-- 	-- The text fields of the command to be executed like
-	-- 	-- "schematic blood_sample_analyzer set value C1 100n"
-	-- 	fields		: type_fields_of_line;
+	--	-- The text fields of the command to be executed like
+	--	-- "schematic blood_sample_analyzer set value C1 100n"
+	--	fields		: type_fields_of_line;
  --
-	-- 	-- the flag that indicates whether the command failed
-	-- 	failed		: boolean := false;
+	--	-- the flag that indicates whether the command failed
+	--	failed		: boolean := false;
 	-- end record;
 
 

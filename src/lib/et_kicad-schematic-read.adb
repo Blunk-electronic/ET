@@ -77,7 +77,7 @@ is
 	sheet_count_total : type_sheet;
 
 	wild_simple_labels	: type_simple_labels.list;
-	wild_tag_labels 	: type_tag_labels.list;
+	wild_tag_labels	: type_tag_labels.list;
 	wild_segments		: type_wild_segments.list;
 	wild_junctions		: type_junctions.list;
 
@@ -128,8 +128,8 @@ is
 				position	=> segment_cursor,
 				process		=> set_picked'access);
 
--- 					write_coordinates_of_segment (segment =>
--- 						type_net_segment (type_wild_segments.element (segment_cursor)));
+--					write_coordinates_of_segment (segment =>
+--						type_net_segment (type_wild_segments.element (segment_cursor)));
 
 			log (text => to_string (
 					segment	=> type_wild_segments.element (segment_cursor),
@@ -171,9 +171,9 @@ is
 		case side is
 			when B =>
 
--- 						log (text => "--> origin of search   (END): "
--- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
--- 							 level => 1);
+--						log (text => "--> origin of search   (END): "
+--							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
+--							 level => 1);
 
 				type_wild_segments.update_element (
 						container => wild_segments,
@@ -182,9 +182,9 @@ is
 
 			when A =>
 
--- 						log (text => "--> origin of search (START): "
--- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
--- 							 level => 1);
+--						log (text => "--> origin of search (START): "
+--							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
+--							 level => 1);
 
 				type_wild_segments.update_element (
 						container => wild_segments,
@@ -337,15 +337,15 @@ is
 
 	-- Strands without label are named by using the notation "N$".
 
-		ls  	: type_net_label_simple;
-		lt  	: type_net_label_tag;
+		ls	: type_net_label_simple;
+		lt	: type_net_label_tag;
 		anon_strand_a, anon_strand_b : type_anonymous_strand;
 		--segment	: type_net_segment_base;
 		segment	: type_net_segment;
 		lls		: type_simple_labels.list;
 		llt		: type_tag_labels.list;
 
-		strand 		: type_strand;
+		strand		: type_strand;
 		net_name	: type_net_name;
 
 
@@ -1109,7 +1109,7 @@ is
 
 		--	LIBS:nucleo_core-rescue
 		--	LIBS:power
-		-- 	LIBS:bel_connectors_and_jumpers
+		--	LIBS:bel_connectors_and_jumpers
 		--	LIBS:bel_primitives
 		--	LIBS:bel_stm32
 		--	LIBS:nucleo_core-cache
@@ -1178,7 +1178,7 @@ is
 	-- CS: Read lines and position of text placeholders from
 	-- *.kicad_wks file (either the default file or the one specified
 	-- in the project file by a line like "PageLayoutDescrFile=/home/user/tmp/sheet.kicad_wks".
-		lines 			: in pac_lines_of_file.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
 
 		use et_drawing_frame;
@@ -1218,8 +1218,8 @@ is
 		frame.paper := to_paper_size (f (element (line_cursor), 2));
 
 		-- The sheet size seems to be ignored by kicad. Only the paper_size matters.
--- 				frame.size_x		:= mil_to_distance (f (element (line_cursor), 3));
--- 				frame.size_y 		:= mil_to_distance (f (element (line_cursor), 4));
+--				frame.size_x		:= mil_to_distance (f (element (line_cursor), 3));
+--				frame.size_y		:= mil_to_distance (f (element (line_cursor), 4));
 
 		--frame.coordinates.path := path_to_submodule;
 		set_path (frame.coordinates, path_to_sheet);
@@ -1361,7 +1361,7 @@ is
 
 	procedure make_gui_sheet (
 	-- Builds the hierachic sheet.
-		lines 			: in pac_lines_of_file.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level)
 	is
 		sheet		: type_hierarchic_sheet; -- the hierarchical sheet being built
@@ -1443,7 +1443,7 @@ is
 		log_indentation_up;
 
 		line_cursor := pac_lines_of_file.first (lines);
--- 				log (text => to_string (line), level => log_threshold + 1);
+--				log (text => to_string (line), level => log_threshold + 1);
 
 		-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 		if f (element (line_cursor), 1) = schematic_keyword_sheet_pos_and_size then
@@ -1460,7 +1460,7 @@ is
 		end if;
 
 		next (line_cursor);
--- 				log (text => to_string (line), level => log_threshold + 1);
+--				log (text => to_string (line), level => log_threshold + 1);
 
 		-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
 		if f (element (line_cursor), 1) = schematic_keyword_sheet_timestamp then
@@ -1531,7 +1531,7 @@ is
 					container => sheet.ports,
 					key => to_net_name (f (element (line_cursor),  2)), -- port name
 					new_item => (
-						direction 	=> to_direction (f (element (line_cursor),  3)),
+						direction	=> to_direction (f (element (line_cursor),  3)),
 						orientation	=> to_orientation (f (element (line_cursor),  4)),
 						coordinates	=> et_kicad.schematic.to_point (f (element (line_cursor),  5), f (element (line_cursor),  6)),
 						text_size	=> text_size,
@@ -1711,7 +1711,7 @@ is
 		result : boolean := false;
 	begin
 		if get_field_count (line) = 8 then
-			if 	f (line, 1) = schematic_keyword_text and
+			if	f (line, 1) = schematic_keyword_text and
 				f (line, 2) = schematic_keyword_label_simple then
 					result := true;
 			end if;
@@ -1723,7 +1723,7 @@ is
 
 
 	procedure make_simple_label (
-		lines 			: in pac_lines_of_file.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level)
 	is
 	-- Builds a simple net label and appends it to the collection of wild simple labels.
@@ -1799,7 +1799,7 @@ is
 
 	-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
 	procedure make_tag_label (
-		lines 			: in pac_lines_of_file.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level)
 	is
 		-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
@@ -1932,13 +1932,13 @@ is
 
 		--note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
--- 				-- If the line width is too small, assume default and issue warning:
--- 				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
--- 					log (SEVERITY_WARNING, "Line width too small. Defaulting to minimal width !");
--- 					note.line_width := pac_text.type_text_line_width'first;
--- 				else
--- 					note.line_width := mil_to_distance (f (element (line_cursor), 8));
--- 				end if;
+--				-- If the line width is too small, assume default and issue warning:
+--				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
+--					log (SEVERITY_WARNING, "Line width too small. Defaulting to minimal width !");
+--					note.line_width := pac_text.type_text_line_width'first;
+--				else
+--					note.line_width := mil_to_distance (f (element (line_cursor), 8));
+--				end if;
 
 		next (line_cursor);
 
@@ -1993,7 +1993,7 @@ is
 
 
 	procedure make_component (
-		lines 			: in pac_lines_of_file.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
 	-- Builds a unit or a component and inserts it in the component list of
 	-- current module. The information required to make a component is provided
@@ -2013,14 +2013,14 @@ is
 	-- F 1 "74LS00" H 4100 3900 50  0000 C CNN
 	-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 	-- F 3 "" H 4100 4000 50  0001 C CNN
-	-- 	4    4100 4000		-- same as x/y pos
+	--	4    4100 4000		-- same as x/y pos
 
 	--  1    0    0  -1  -- orientation 0,   mirror normal
 	--  0   -1   -1   0  -- orientation 90,  mirror normal
 	-- -1    0    0   1  -- orientation 180, mirror normal
-	-- 	0    1    1   0  -- orientation -90, mirror normal
+	--	0    1    1   0  -- orientation -90, mirror normal
 
-	-- 	1    0    0   1  -- orientation 0,   mirror --
+	--	1    0    0   1  -- orientation 0,   mirror --
 	--  0   -1    1   0  -- orientation 90,  mirror --
 	-- -1    0    0  -1  -- orientation 180, mirror --
 	--  0    1   -1   0  -- orientation -90, mirror --
@@ -2087,7 +2087,7 @@ is
 				status		=> status,
 
 				-- read text field meaning
-				meaning 	=> to_text_meaning (line => element (line_cursor), schematic => true),
+				meaning	=> to_text_meaning (line => element (line_cursor), schematic => true),
 
 				-- read content like "N701" or "NetChanger" from field position 3
 				content		=> to_content (f (element (line_cursor), 3)),
@@ -2186,7 +2186,7 @@ is
 		begin -- check_text_fields
 			log_indentation_up;
 
--- 					-- write precheck preamble
+--					-- write precheck preamble
 			log (text => "prechecking fields ...", level => log_threshold);
 			log_indentation_up;
 
@@ -2290,8 +2290,8 @@ is
 		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function generic_name_to_library (
-			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-			reference 		: in type_device_name; -- the reference in the schematic like "R4"
+			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+			reference		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
 			return type_device_model_name -- the full library name like "../libraries/resistors.lib"
 		is
@@ -2307,8 +2307,8 @@ is
 			-- Queries the components in the current library. Exits prematurely once the
 			-- given generic component was found.
 			procedure query_components (
-				lib_name 	: in type_device_model_name;
-				components 	: in type_components_library.map)
+				lib_name	: in type_device_model_name;
+				components	: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
 				use type_components_library;
@@ -2380,9 +2380,9 @@ is
 		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function full_name_of_component_library (
-			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-			reference 		: in type_device_name; -- the reference in the schematic like "R4"
-			log_threshold 	: in type_log_level)
+			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+			reference		: in type_device_name; -- the reference in the schematic like "R4"
+			log_threshold	: in type_log_level)
 			return type_device_model_name
 		is
 			use type_lib_table;
@@ -2540,7 +2540,7 @@ is
 							generic_name	=> generic_name_in_lbr,
 							alt_references	=> alternative_references,
 
-							value 			=> to_value_with_check (
+							value			=> to_value_with_check (
 												value => content (field_value),
 												error_on_invalid_character => false),
 								-- For the operators convenice no error is raised if invalid
@@ -2548,7 +2548,7 @@ is
 								-- (lots of) warnings.
 
 							-- At this stage we do not know if and how many units there are. So the unit list is empty.
-							units 			=> type_units_schematic.empty_map),
+							units			=> type_units_schematic.empty_map),
 						log_threshold => log_threshold + 2);
 
 
@@ -2563,7 +2563,7 @@ is
 							generic_name	=> generic_name_in_lbr,
 							alt_references	=> alternative_references,
 
-							value 			=> to_value_with_check (
+							value			=> to_value_with_check (
 												value => content (field_value),
 												error_on_invalid_character => false),
 								-- For the operators convenice no error is raised if invalid
@@ -2632,7 +2632,7 @@ is
 					add_unit (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...
-						unit 		=> (
+						unit		=> (
 							appearance		=> APPEARANCE_VIRTUAL,
 							position		=> unit_position,
 							rotation		=> orientation,
@@ -2669,7 +2669,7 @@ is
 						(
 						reference	=> reference,
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...
-						unit 		=>
+						unit		=>
 							(
 							appearance		=> APPEARANCE_PCB,
 							position		=> unit_position,
@@ -2722,10 +2722,10 @@ is
 			end if;
 
 			if get_x (unit_position) /= mil_to_distance (f (line, 2)) then
--- 					log (text => "position invalid. expected '" & to_string (position.x)
--- 						& "' found '"
--- 						& field (line,2)
--- 						& "'");
+--					log (text => "position invalid. expected '" & to_string (position.x)
+--						& "' found '"
+--						& field (line,2)
+--						& "'");
 				raise constraint_error; -- CS: write useful message
 			end if;
 
@@ -2748,14 +2748,14 @@ is
 			--  1    0    0  -1  -- orientation 0,   mirror normal
 			--  0   -1   -1   0  -- orientation 90,  mirror normal
 			-- -1    0    0   1  -- orientation 180, mirror normal
-			-- 	0    1    1   0  -- orientation -90, mirror normal
+			--	0    1    1   0  -- orientation -90, mirror normal
 
-			-- 	1    0    0   1  -- orientation 0,   mirror --
+			--	1    0    0   1  -- orientation 0,   mirror --
 			--  0   -1    1   0  -- orientation 90,  mirror --
 			-- -1    0    0  -1  -- orientation 180, mirror --
 			--  0    1   -1   0  -- orientation -90, mirror --
 
-			-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
+			-- -1    0    0  -1  -- orientation 0,   mirror |	-- not used
 			--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
 			--  1    0    0   1  -- orientation 180, mirror |	-- not used
 			--  1    0    0   1  -- orientation -90, mirror |	-- not used
@@ -2923,16 +2923,16 @@ is
 					new_item	=> path_segment);
 			end loop;
 
--- 					log (text => "new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", level => log_threshold + 1);  -- #PWR03
+--					log (text => "new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", level => log_threshold + 1);  -- #PWR03
 
 			-- extract the reference from field 3: example: Ref="#PWR03
 			-- NOTE: the trailing double quote is already gone.
 			ref := to_component_reference (
-					text_in 		=> f (line, 3) (6 .. (f (line, 3)'last)),  -- #PWR03
+					text_in		=> f (line, 3) (6 .. (f (line, 3)'last)),  -- #PWR03
 					leading_hash	=> true);
 
--- 					log (text => "test", level => log_threshold + 1);
--- 					log (text => "new reference " & et_libraries.to_string (ref), level => log_threshold + 1);  -- #PWR03
+--					log (text => "test", level => log_threshold + 1);
+--					log (text => "new reference " & et_libraries.to_string (ref), level => log_threshold + 1);  -- #PWR03
 
 			-- extract the part name (CS unit name ?) from field 4: example Part="1
 			-- NOTE: the trailing double quote is already gone.
@@ -3088,7 +3088,7 @@ is
 				add_alternative_reference (element (line_cursor));
 
 			-- read unit fields 0..2 from lines like:
-			-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
+			--			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 			--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 			--			"F 2 "bel_netchanger:0.2MM" H 2600 2100 60  0001 C CNN"
 
@@ -3114,7 +3114,7 @@ is
 							unused_value : type_device_value;
 						begin
 							unused_value := to_value_with_check (
-									value 						=> content (field_value),
+									value						=> content (field_value),
 									error_on_invalid_character	=> false);
 							null;
 							-- For the operators convenice no error is raised if invalid
@@ -3269,11 +3269,11 @@ begin -- read
 
 			-- Store line in variable "line"
 			line := read_line (
-				line 			=> get_line,
-				number 			=> positive (ada.text_io.line (current_input)),
-				comment_mark 	=> "", -- there are no comment marks in the schematic file
-				delimiter_wrap 	=> true, -- there are fields wrapped in delimiters
-				ifs 			=> latin_1.space); -- fields are separated by space
+				line			=> get_line,
+				number			=> positive (ada.text_io.line (current_input)),
+				comment_mark	=> "", -- there are no comment marks in the schematic file
+				delimiter_wrap	=> true, -- there are fields wrapped in delimiters
+				ifs			=> latin_1.space); -- fields are separated by space
 			-- CS: If read_line exits with an exception, the exception handler of read_schematic
 			-- outputs the line BEFORE the faulty line. Thus misleading the operator.
 
@@ -3484,14 +3484,14 @@ begin -- read
 						-- F 1 "74LS00" H 4100 3900 50  0000 C CNN
 						-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 						-- F 3 "" H 4100 4000 50  0001 C CNN
-						-- 	4    4100 4000		-- CS: same as x/y pos ?
+						--	4    4100 4000		-- CS: same as x/y pos ?
 
 						--  1    0    0  -1  -- orientation 0,   mirror normal
 						--  0   -1   -1   0  -- orientation 90,  mirror normal
 						-- -1    0    0   1  -- orientation 180, mirror normal
-						-- 	0    1    1   0  -- orientation -90, mirror normal
+						--	0    1    1   0  -- orientation -90, mirror normal
 
-						-- 	1    0    0   1  -- orientation 0,   mirror --
+						--	1    0    0   1  -- orientation 0,   mirror --
 						--  0   -1    1   0  -- orientation 90,  mirror --
 						-- -1    0    0  -1  -- orientation 180, mirror --
 						--  0    1   -1   0  -- orientation -90, mirror --

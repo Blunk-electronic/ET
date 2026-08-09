@@ -397,9 +397,9 @@ package body et_module_read_nets is
 		-- CS:
 		-- Make a junction:
 		-- make_net_junction (
-		-- 	arguments	=> AB_end,
-		-- 	error		=> error,
-		-- 	connector	=> connector);
+		--	arguments	=> AB_end,
+		--	error		=> error,
+		--	connector	=> connector);
 
 		if not error then
 			-- log (text => "direction " & get_direction (connector), level => log_threshold + 2);
@@ -535,7 +535,7 @@ package body et_module_read_nets is
 -- LABELS:
 
 	net_labels	: pac_net_labels.list;
-	net_label 	: type_net_label;
+	net_label	: type_net_label;
 
 
 
@@ -668,10 +668,10 @@ package body et_module_read_nets is
 				-- Insert port in port collection of device ports. First make sure it is
 				-- not already in the net segment.
 				-- if pac_device_ports.contains (net_device_ports, net_device_port) then
-				-- 	log (SEVERITY_ERROR, "device " & to_string (net_device_port.device_name) &
-				-- 		" port " & to_string (net_device_port.port_name) &
-				-- 		" already in net segment !", console => true);
-				-- 	raise constraint_error;
+				--	log (SEVERITY_ERROR, "device " & to_string (net_device_port.device_name) &
+				--		" port " & to_string (net_device_port.port_name) &
+				--		" already in net segment !", console => true);
+				--	raise constraint_error;
 				-- end if;
 
 				case AB_end is
@@ -698,10 +698,10 @@ package body et_module_read_nets is
 				-- Insert submodule port in collection of submodule ports. First make sure it is
 				-- not already in the net segment.
 				-- if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
-				-- 	log (SEVERITY_ERROR, "submodule " & to_string (net_submodule_port.module_name) &
-				-- 		" port " & to_string (net_submodule_port.port_name) &
-				-- 		" already in net segment !", console => true);
-				-- 	raise constraint_error;
+				--	log (SEVERITY_ERROR, "submodule " & to_string (net_submodule_port.module_name) &
+				--		" port " & to_string (net_submodule_port.port_name) &
+				--		" already in net segment !", console => true);
+				--	raise constraint_error;
 				-- end if;
 
 				case AB_end is
@@ -729,10 +729,10 @@ package body et_module_read_nets is
 				-- Insert netchanger port in collection of netchanger ports. First make sure it is
 				-- not already in the net segment.
 				-- if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
-				-- 	log (SEVERITY_ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
-				-- 		et_submodules.to_string (net_netchanger_port.port) & " port" &
-				-- 		" already in net segment !", console => true);
-				-- 	raise constraint_error;
+				--	log (SEVERITY_ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
+				--		et_submodules.to_string (net_netchanger_port.port) & " port" &
+				--		" already in net segment !", console => true);
+				--	raise constraint_error;
 				-- end if;
 
 				-- et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);

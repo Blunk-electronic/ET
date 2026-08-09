@@ -196,7 +196,7 @@ package body et_board_ops_devices is
 				if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
 
 					-- log (text => "probing device " & to_string (key (device_cursor)),
-					-- 	 level => log_threshold + 1);
+					--	 level => log_threshold + 1);
 					-- log_indentation_up;
 
 					if in_catch_zone (
@@ -966,7 +966,7 @@ package body et_board_ops_devices is
 			while device_cursor /= pac_devices_non_electrical.no_element loop
 
 				-- log (text => "probing device " & to_string (key (device_cursor)),
-				-- 	 level => log_threshold + 1);
+				--	 level => log_threshold + 1);
 				-- log_indentation_up;
 
 				if in_catch_zone (
@@ -1033,7 +1033,7 @@ package body et_board_ops_devices is
 			while device_cursor /= pac_devices_non_electrical.no_element loop
 
 				-- log (text => "probing device " & to_string (key (device_cursor)),
-				-- 	 level => log_threshold + 1);
+				--	 level => log_threshold + 1);
 				-- log_indentation_up;
 
 				module.devices_non_electric.update_element (device_cursor, query_device'access);
@@ -1208,7 +1208,7 @@ package body et_board_ops_devices is
 			procedure query_device (c : in pac_devices_non_electrical.cursor) is
 				use pac_device_prefix;
 				device	: type_device_non_electrical renames element (c);
-				name 	: constant type_device_name := key (c); -- FD3
+				name	: constant type_device_name := key (c); -- FD3
 			begin
 				-- Select only those devices which have the given prefix
 				-- and add them to the result:
@@ -2555,8 +2555,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 		: type_object_category := CAT_VOID;
-		result_electrical 	 	: type_object_electrical;
+		result_category		: type_object_category := CAT_VOID;
+		result_electrical		: type_object_electrical;
 		result_non_electrical	: type_object_non_electrical;
 		result_placeholder		: type_object_placeholder;
 
@@ -3702,8 +3702,8 @@ package body et_board_ops_devices is
 		return result;
 
 		-- exception
-		-- 	when event: others =>
-		-- 		log (text => ada.exceptions.exception_information (event), console => true);
+		--	when event: others =>
+		--		log (text => ada.exceptions.exception_information (event), console => true);
 				--log (text => ada.exceptions.exception_information (event));
 
 	end get_terminal_positions;

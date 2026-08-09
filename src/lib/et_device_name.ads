@@ -174,7 +174,7 @@ package et_device_name is
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
 	function to_device_name (
-		prefix	: in type_device_prefix; 	-- R, C, L
+		prefix	: in type_device_prefix;	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name;

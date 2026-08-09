@@ -80,7 +80,7 @@ package body et_cp_schematic_device is
 
 	procedure add_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -94,7 +94,7 @@ package body et_cp_schematic_device is
 			when 9 =>
 				-- If a virtual device is added, then no variant is required.
 				add_electrical_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
 					destination		=> to_position
 						(
@@ -117,7 +117,7 @@ package body et_cp_schematic_device is
 			when 10 =>
 				-- A real device requires specification of a package variant.
 				add_electrical_device (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
 					destination		=> to_position
 						(
@@ -155,7 +155,7 @@ package body et_cp_schematic_device is
 
 	procedure rename_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -174,7 +174,7 @@ package body et_cp_schematic_device is
 				if electrical_device_exists (module, name) then
 
 					rename_electrical_device (
-						module_cursor 		=> module,
+						module_cursor		=> module,
 						device_name_before	=> name,
 						device_name_after	=> to_device_name (get_field (cmd, 6)), -- IC23
 
@@ -207,7 +207,7 @@ package body et_cp_schematic_device is
 
 	procedure delete_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -227,7 +227,7 @@ package body et_cp_schematic_device is
 				if electrical_device_exists (module, device_name) then
 
 					delete_electrical_device (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> device_name,
 
 						-- Depending on the origin of the command,
@@ -261,7 +261,7 @@ package body et_cp_schematic_device is
 
 	procedure copy_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -282,7 +282,7 @@ package body et_cp_schematic_device is
 				if electrical_device_exists (module, name) then
 
 					copy_device (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> name,
 
 						-- CS: In the future here could be
@@ -328,7 +328,7 @@ package body et_cp_schematic_device is
 
 	procedure set_device_value (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -354,7 +354,7 @@ package body et_cp_schematic_device is
 
 					-- set the value
 					set_value (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> name,
 						value			=> value, -- 470R
 
@@ -390,7 +390,7 @@ package body et_cp_schematic_device is
 
 	procedure set_device_purpose (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -413,7 +413,7 @@ package body et_cp_schematic_device is
 
 					-- set the purpose
 					set_purpose (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> name,
 						purpose			=> purpose, -- brightness_control
 
@@ -448,7 +448,7 @@ package body et_cp_schematic_device is
 
 	procedure set_device_partcode (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -471,7 +471,7 @@ package body et_cp_schematic_device is
 
 					-- set the purpose
 					set_partcode (
-						module_cursor 	=> module,
+						module_cursor	=> module,
 						device_name		=> name,
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 
@@ -506,7 +506,7 @@ package body et_cp_schematic_device is
 
 	procedure set_device_package_variant (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -567,7 +567,7 @@ package body et_cp_schematic_device is
 
 	procedure renumber_devices (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -582,7 +582,7 @@ package body et_cp_schematic_device is
 		case cmd_field_count is
 			when 5 =>
 				renumber_devices (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					step_width		=> to_index (get_field (cmd, 5)), -- 100
 
 					-- Depending on the origin of the command,

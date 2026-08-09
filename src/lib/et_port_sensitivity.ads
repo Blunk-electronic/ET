@@ -41,7 +41,7 @@ package et_port_sensitivity is
 
 	-- Sensitity of inputs:
 	type type_sensitivity_edge is (
-		NONE, 		-- passive and analog
+		NONE,		-- passive and analog
 		RISING,		-- digital
 		FALLING,	-- digital
 		ANY			-- digtial

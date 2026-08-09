@@ -50,7 +50,7 @@ package et_module_read is
 	-- The file name may contain environment variables.
 	-- The file must exist, must be visible from the current working directory.
 	procedure read_module (
-		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
+		file_name		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level);
 		-- CS error : out boolean;
 		-- CS module_curosr : out pac_generic_modules.cursor;

@@ -37,7 +37,7 @@
 --
 
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with cairo;
 
@@ -103,7 +103,7 @@ package et_net_labels is
 
 
 	procedure modify_status (
-		label 		: in out type_net_label_base;
+		label		: in out type_net_label_base;
 		operation	: in type_status_operation);
 
 

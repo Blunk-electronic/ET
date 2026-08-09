@@ -39,7 +39,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 
 
 package body et_net_names is
@@ -220,13 +220,13 @@ package body et_net_names is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;
@@ -259,13 +259,13 @@ package body et_net_names is
 		case severity is
 			when SEVERITY_ERROR =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> true);
 
 			when others =>
 				log (
-					importance 	=> severity,
+					importance	=> severity,
 					text		=> get_message_text (name),
 					console		=> false);
 		end case;

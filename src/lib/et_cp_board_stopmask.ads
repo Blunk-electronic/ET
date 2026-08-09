@@ -54,7 +54,7 @@ package et_cp_board_stopmask is
 	-- board demo draw stopmask top zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_stopmask (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -63,7 +63,7 @@ package et_cp_board_stopmask is
 	-- delete an object in stopmask:
 	procedure delete_stopmask (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

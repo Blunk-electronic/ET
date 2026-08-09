@@ -40,7 +40,7 @@
 
 
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.bounded;		use ada.strings.bounded;
 
 
 package et_device_purpose is
@@ -98,7 +98,7 @@ package et_device_purpose is
 
 	function to_purpose (
 	-- Tests the given purpose for length and invalid characters.
-		purpose 					: in string;
+		purpose					: in string;
 		error_on_invalid_character	: in boolean := true)
 		return type_device_purpose;
 

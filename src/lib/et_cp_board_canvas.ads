@@ -51,14 +51,14 @@ package et_cp_board_canvas is
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
 	procedure zoom_all (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- Sets the zoom factor.
 	-- Example: "board demo set zoom 40"
 	procedure set_zoom (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -68,26 +68,26 @@ package et_cp_board_canvas is
 	-- Example: "board demo set grid spacing 20 20"
 	procedure set_grid (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	procedure set_scale (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- Moves the cursor by a certain distance.
 	-- Example: "board demo move cursor 5 -10"
 	procedure move_cursor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- Parses a command that sets the cursor and zoom factor.
 	-- Example: "board demo set cursor 90 110 50"
 	procedure set_cursor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -95,7 +95,7 @@ package et_cp_board_canvas is
 	-- Example: "board demo set color background black"
 	procedure set_color (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

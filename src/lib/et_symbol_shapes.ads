@@ -43,7 +43,7 @@
 --
 
 
-with ada.containers; 					use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -165,7 +165,7 @@ package et_symbol_shapes is
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
 		lines		: pac_symbol_lines.list		:= pac_symbol_lines.empty_list;
-		arcs 		: pac_symbol_arcs.list		:= pac_symbol_arcs.empty_list;
+		arcs		: pac_symbol_arcs.list		:= pac_symbol_arcs.empty_list;
 		circles		: pac_symbol_circles.list	:= pac_symbol_circles.empty_list;
 	end record;
 

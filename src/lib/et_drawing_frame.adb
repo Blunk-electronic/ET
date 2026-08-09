@@ -38,7 +38,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
@@ -164,7 +164,7 @@ package body et_drawing_frame is
 
 
 	function to_string (
-		p 		: in type_position;
+		p		: in type_position;
 		format	: in type_output_format := FORMAT_1)
 		return string
 	is begin
@@ -211,7 +211,7 @@ package body et_drawing_frame is
 
 
 	procedure set_position (
-		frame 		: in out type_frame_general;
+		frame		: in out type_frame_general;
 		position	: in type_position)
 	is begin
 		frame.position := position;
@@ -221,7 +221,7 @@ package body et_drawing_frame is
 
 
 	function get_position (
-		frame 		: in type_frame_general)
+		frame		: in type_frame_general)
 		return type_position
 	is begin
 		return frame.position;

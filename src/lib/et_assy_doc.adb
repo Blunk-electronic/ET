@@ -39,7 +39,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with ada.strings;	 			use ada.strings;
+with ada.strings;				use ada.strings;
 
 
 package body et_assy_doc is
@@ -610,7 +610,7 @@ package body et_assy_doc is
 	procedure line_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_lines.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_doc_lines;
 		line : type_doc_line;
@@ -626,7 +626,7 @@ package body et_assy_doc is
 	procedure arc_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_arcs.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_doc_arcs;
 		arc : type_doc_arc;
@@ -643,7 +643,7 @@ package body et_assy_doc is
 	procedure circle_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_circles.cursor;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_doc_circles;
 	begin
@@ -656,19 +656,19 @@ package body et_assy_doc is
 
 
 	-- procedure text_assy_doc_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_doc_texts.cursor;
-	-- 	log_threshold 	: in type_log_level)
+	--	face			: in type_face;
+	--	cursor			: in pac_doc_texts.cursor;
+	--	log_threshold	: in type_log_level)
 	-- is
-	-- 	use et_text.pac_text_content;
-	-- 	text : type_doc_text renames element (cursor);
+	--	use et_text.pac_text_content;
+	--	text : type_doc_text renames element (cursor);
 	-- begin
-	-- 	log (text => "assembly doc text face" & to_string (face) & space
-	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
+	--	log (text => "assembly doc text face" & to_string (face) & space
+	--		 & "content '" & to_string (text.content) & "'", level => log_threshold);
  --
-	-- 	log_indentation_up;
-	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-	-- 	log_indentation_down;
+	--	log_indentation_up;
+	--	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+	--	log_indentation_down;
 	-- end text_assy_doc_properties;
 
 

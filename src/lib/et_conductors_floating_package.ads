@@ -60,7 +60,7 @@ package et_conductors_floating_package is
 	-- All objects of this category are floating. Means they
 	-- have no connection to a pad or a track (net):
 	type type_conductor_objects is record -- CS rename to type_conductors ?
-		lines 		: pac_conductor_lines.list;
+		lines		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
 		-- CS zones ?

@@ -50,7 +50,7 @@ separate (et_command_processor)
 procedure execute_project_command (
 	cmd				: in out type_single_cmd;
 	verb			: in type_verb_project;
-	noun 			: in type_noun_project;
+	noun			: in type_noun_project;
 	log_threshold	: in type_log_level)
 is
 

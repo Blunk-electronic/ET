@@ -38,7 +38,7 @@
 --   to do:
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
@@ -330,7 +330,7 @@ package et_silkscreen is
 
 	-- This is the base type for silkscreen objects in general:
 	type type_silkscreen is tagged record
-		lines 	: pac_silk_lines.list;
+		lines	: pac_silk_lines.list;
 		arcs	: pac_silk_arcs.list;
 		circles	: pac_silk_circles.list;
 		zones	: pac_silk_zones.list;
@@ -343,25 +343,25 @@ package et_silkscreen is
 	procedure line_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given arc:
 	procedure arc_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given circle:
 	procedure circle_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given text:
 	-- procedure text_silk_screen_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_silk_texts.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_silk_texts.cursor;
+	--	log_threshold	: in type_log_level);
 
 end et_silkscreen;
 

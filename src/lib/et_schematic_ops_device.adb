@@ -82,7 +82,7 @@ package body et_schematic_ops_device is
 
 
 	function get_device_names (
-		module_cursor 	: in pac_generic_modules.cursor)
+		module_cursor	: in pac_generic_modules.cursor)
 		return pac_device_names.set
 	is
 		result : pac_device_names.set;
@@ -112,7 +112,7 @@ package body et_schematic_ops_device is
 
 
 	function sort_by_coordinates_2 (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return pac_renumber_devices.map
 	is
@@ -998,7 +998,7 @@ package body et_schematic_ops_device is
 			procedure query_device (c : in pac_devices_electrical.cursor) is
 				use pac_device_prefix;
 				device	: type_device_electrical renames element (c);
-				name 	: constant type_device_name := key (c); -- IC45
+				name	: constant type_device_name := key (c); -- IC45
 			begin
 				-- Select only those devices which have the given prefix
 				-- and add them to the result:
@@ -1248,7 +1248,7 @@ package body et_schematic_ops_device is
 						-- build the new device name
 						name_after := to_device_name (
 								prefix	=> get_prefix (name_before), -- R, C, IC
-								index 	=> device_index); -- 407
+								index	=> device_index); -- 407
 
 						-- Do the renaming if the new name differs from the old name.
 						-- If the renaming fails, set result false. Result remains false
@@ -1258,15 +1258,15 @@ package body et_schematic_ops_device is
 							null;
 							-- CS
 							-- if rename_device (
-							-- 	module_cursor		=> module_cursor,
-							-- 	device_name_before	=> name_before, -- R1
-							-- 	device_name_after	=> name_after, -- R407
-							-- 	log_threshold		=> log_threshold + 2) then
+							--	module_cursor		=> module_cursor,
+							--	device_name_before	=> name_before, -- R1
+							--	device_name_after	=> name_after, -- R407
+							--	log_threshold		=> log_threshold + 2) then
        --
-							-- 	-- Mark all units of the device as done:
-							-- 	mark_units_done;
+							--	-- Mark all units of the device as done:
+							--	mark_units_done;
 							-- else
-							-- 	result := false;
+							--	result := false;
 							-- end if;
 
 						end if;

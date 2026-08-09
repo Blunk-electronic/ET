@@ -123,7 +123,7 @@ package body et_cp_board is
 		procedure set_verb_and_noun is begin
 			-- Set the verb.
 			-- Read it from field 3:
-			verb := to_verb (get_field (cmd, 3));
+			set_verb (to_verb (get_field (cmd, 3)));
 
 
 			-- There are some very short commands which do not require a noun.
@@ -132,7 +132,7 @@ package body et_cp_board is
 				when VERB_EXIT | VERB_QUIT => null; -- no noun
 
 				-- Set the noun. Read it from field 4:
-				when others => noun := to_noun (get_field (cmd, 4));
+				when others => set_noun (to_noun (get_field (cmd, 4)));
 			end case;
 		end set_verb_and_noun;
 
@@ -589,7 +589,7 @@ package body et_cp_board is
 		-- set the focus to the canvas:
 		-- CS: remove ?
 		-- if runmode /= MODE_HEADLESS then
-		-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
+		--	canvas.grab_focus; -- NOTE ! calls "cb_draw"
 		-- end if;
 
 		log_indentation_down;
@@ -600,8 +600,8 @@ package body et_cp_board is
 				-- null;
 			-- CS
 				-- evaluate_exception (
-				-- 	name	=> exception_name (event),
-				-- 	message	=> exception_message (event));
+				--	name	=> exception_name (event),
+				--	message	=> exception_message (event));
 
 				-- raise;
 	end execute_board_command;

@@ -43,7 +43,7 @@
 -- with ada.text_io;			use ada.text_io;
 with et_string_processing;		use et_string_processing;
 with ada.characters.handling;			use ada.characters.handling;
-with ada.strings; 						use ada.strings;
+with ada.strings;						use ada.strings;
 
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_signal_layers;
@@ -61,7 +61,7 @@ package body et_cp_board_display is
 
 
 	procedure display_outline (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 
@@ -113,7 +113,7 @@ package body et_cp_board_display is
 
 
 	procedure display_ratsnest (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 
@@ -166,7 +166,7 @@ package body et_cp_board_display is
 
 
 	procedure display_non_conductor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -201,7 +201,7 @@ package body et_cp_board_display is
 			case fc is
 				when TOP =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> layers.silkscreen.top		:= ls;
+						when NOUN_SILKSCREEN	=> layers.silkscreen.top		:= ls;
 						when NOUN_ASSY			=> layers.assy_doc.top			:= ls;
 						when NOUN_KEEPOUT		=> layers.keepout.top			:= ls;
 						when NOUN_STENCIL		=> layers.stencil.top			:= ls;
@@ -214,7 +214,7 @@ package body et_cp_board_display is
 
 				when BOTTOM =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> layers.silkscreen.bottom		:= ls;
+						when NOUN_SILKSCREEN	=> layers.silkscreen.bottom		:= ls;
 						when NOUN_ASSY			=> layers.assy_doc.bottom		:= ls;
 						when NOUN_KEEPOUT		=> layers.keepout.bottom		:= ls;
 						when NOUN_STENCIL		=> layers.stencil.bottom		:= ls;
@@ -253,7 +253,7 @@ package body et_cp_board_display is
 
 
 	procedure display_conductor (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_pcb_signal_layers;
@@ -311,7 +311,7 @@ package body et_cp_board_display is
 
 
 	procedure display_vias (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -373,7 +373,7 @@ package body et_cp_board_display is
 
 
 	procedure display_restrict (
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_pcb_signal_layers;

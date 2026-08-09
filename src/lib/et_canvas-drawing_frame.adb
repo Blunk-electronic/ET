@@ -214,7 +214,7 @@ package body et_canvas.drawing_frame is
 			end draw_index;
 
 
-			x, y  	: pac_geometry.type_distance_positive;
+			x, y	: pac_geometry.type_distance_positive;
 			xo, yo	: pac_geometry.type_distance;
 
 

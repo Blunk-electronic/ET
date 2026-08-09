@@ -72,7 +72,7 @@ package body et_cp_board_via is
 
 	procedure set_via_properties (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -242,7 +242,7 @@ package body et_cp_board_via is
 
 	procedure place_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -486,7 +486,7 @@ package body et_cp_board_via is
 
 	procedure move_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		null;
@@ -499,7 +499,7 @@ package body et_cp_board_via is
 
 	procedure delete_via (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		null;

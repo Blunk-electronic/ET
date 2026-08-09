@@ -56,7 +56,7 @@ package et_cp_board_restrict is
 	-- board demo draw route_restrict 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_route_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -67,7 +67,7 @@ package et_cp_board_restrict is
 	-- board demo draw via_restrict 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_via_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -78,7 +78,7 @@ package et_cp_board_restrict is
 	-- board led_driver delete route_restrict 40 50 1
 	procedure delete_route_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -89,7 +89,7 @@ package et_cp_board_restrict is
 	-- board led_driver delete via_restrict 40 50 1
 	procedure delete_via_restrict (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

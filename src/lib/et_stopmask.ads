@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
@@ -308,7 +308,7 @@ package et_stopmask is
 	-- This is the type for stopmask objects in general.
 	-- This has nothing to do with the stop mask of pads.
 	type type_stopmask is tagged record
-		lines 	: pac_stop_lines.list;
+		lines	: pac_stop_lines.list;
 		arcs	: pac_stop_arcs.list;
 		circles	: pac_stop_circles.list;
 		zones	: pac_stop_zones.list;
@@ -321,25 +321,25 @@ package et_stopmask is
 	procedure arc_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given circle of stop mask
 	procedure circle_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given line of stop mask
 	procedure line_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Logs the properties of the given stop mask text
 	-- procedure text_stop_mask_properties (
-	-- 	face			: in type_face;
-	-- 	cursor			: in pac_stop_texts.cursor;
-	-- 	log_threshold 	: in type_log_level);
+	--	face			: in type_face;
+	--	cursor			: in pac_stop_texts.cursor;
+	--	log_threshold	: in type_log_level);
 
 
 end et_stopmask;

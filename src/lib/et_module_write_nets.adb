@@ -226,7 +226,7 @@ package body et_module_write_nets is
 						procedure iterate_ports is begin
 							while has_element (port_cursor) loop
 								write (
-									keyword 	=> to_string (AB_end),
+									keyword	=> to_string (AB_end),
 									parameters	=> to_string (port_cursor));
 
 								next (port_cursor);

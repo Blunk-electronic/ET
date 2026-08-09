@@ -362,7 +362,7 @@ package body et_display.board is
 
 
 	function route_restrict_enabled (
-		face 			: in type_face;
+		face			: in type_face;
 		deepest_layer	: in type_signal_layer)
 		return boolean
 	is begin
@@ -442,7 +442,7 @@ package body et_display.board is
 
 
 	function via_restrict_enabled (
-		face 			: in type_face;
+		face			: in type_face;
 		deepest_layer	: in type_signal_layer)
 		return boolean
 	is begin

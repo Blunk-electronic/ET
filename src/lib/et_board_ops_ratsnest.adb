@@ -492,7 +492,7 @@ package body et_board_ops_ratsnest is
 
 				procedure query_airwires (
 					net_name	: in type_net_name;
-					net 		: in type_net)
+					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
 
@@ -581,7 +581,7 @@ package body et_board_ops_ratsnest is
 
 				procedure query_airwires (
 					net_name	: in type_net_name;
-					net 		: in type_net)
+					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
 

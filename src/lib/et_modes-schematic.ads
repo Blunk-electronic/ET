@@ -91,7 +91,8 @@ package et_modes.schematic is
 
 	verb_default : constant type_verb := VERB_NONE;
 
-	verb : type_verb := verb_default;
+	function verb return type_verb;
+	procedure set_verb (verb : type_verb);
 
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
@@ -156,10 +157,10 @@ package et_modes.schematic is
 		NOUN_TEXT_SIZE,
 
 		NOUN_UNIT,
--- 		UNIT_NAME,
--- 		UNIT_PARTCODE,
--- 		UNIT_PURPOSE,
-		-- 		UNIT_VALUE
+--		UNIT_NAME,
+--		UNIT_PARTCODE,
+--		UNIT_PURPOSE,
+		--		UNIT_VALUE
 
 		NOUN_VARIANT,
 		NOUN_VALUE,
@@ -170,7 +171,8 @@ package et_modes.schematic is
 
 	noun_default : constant type_noun := NOUN_NONE;
 
-	noun : type_noun := noun_default;
+	function noun return type_noun;
+	procedure set_noun (noun : type_noun);
 
 	function to_string (noun : in type_noun) return string;
 	function to_noun (noun : in string) return type_noun;
@@ -182,6 +184,98 @@ package et_modes.schematic is
 
 	expect_entry : type_expect_entry := expect_entry_default;
 
+
+	type type_noun_array_of_boolean is array (type_noun) of boolean;
+
+	-- These tables are derived from the noun handling of each verb
+	-- in procedure parse of et_cp_schematic.adb:
+	show_nouns_for_verb : constant array (type_verb) of type_noun_array_of_boolean := (
+		VERB_NONE		=> (NOUN_NONE => true,								others => false),
+		VERB_ADD		=> (NOUN_LIBRARY | NOUN_DEVICE | NOUN_NETCHANGER | NOUN_PORT | NOUN_SUBMODULE => true,
+							others => false),
+		VERB_BUILD		=> (NOUN_SUBMODULES_TREE => true,					others => false),
+		VERB_CHECK		=> (NOUN_INTEGRITY => true,						others => false),
+		VERB_CLEAR		=> (NOUN_GROUP => true,							others => false),
+		VERB_COPY		=> (NOUN_DEVICE | NOUN_GROUP | NOUN_SUBMODULE | NOUN_NETCHANGER => true,
+							others => false),
+		VERB_CREATE		=> (NOUN_VARIANT | NOUN_MODULE => true,			others => false),
+		VERB_DELETE		=> (NOUN_DEVICE | NOUN_GROUP | NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_MODULE
+							| NOUN_NET | NOUN_NETCHANGER | NOUN_PORT | NOUN_SEGMENT | NOUN_STRAND
+							| NOUN_SUBMODULE | NOUN_TEXT | NOUN_UNIT | NOUN_VARIANT | NOUN_SHEET => true,
+							others => false),
+		VERB_DESCRIBE	=> (NOUN_VARIANT => true,							others => false),
+		VERB_DEFINE		=> (NOUN_GROUP => true,							others => false),
+		VERB_DISPLAY	=> (NOUN_PORTS | NOUN_NETS | NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES | NOUN_TEXTS => true,
+							others => false),
+		VERB_DISSOLVE	=> (NOUN_NETCHANGER => true,						others => false),
+		VERB_DRAG		=> (NOUN_GROUP | NOUN_UNIT | NOUN_NETCHANGER | NOUN_PORT | NOUN_SEGMENT | NOUN_SUBMODULE => true,
+							others => false),
+		VERB_DRAW		=> (NOUN_NET => true,								others => false),
+		VERB_EXECUTE	=> (NOUN_SCRIPT => true,							others => false),
+		VERB_EXIT		=> (NOUN_NONE => true,								others => false),
+		VERB_FETCH		=> (NOUN_UNIT => true,								others => false),
+		VERB_MAKE		=> (NOUN_NETLIST => true,							others => false),
+		VERB_MIRROR		=> (NOUN_UNIT => true,								others => false),
+		VERB_MOVE		=> (NOUN_CURSOR | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_PORT
+							| NOUN_NETCHANGER | NOUN_NET_LABEL | NOUN_TEXT | NOUN_SUBMODULE | NOUN_UNIT => true,
+							others => false),
+		VERB_MOUNT		=> (NOUN_DEVICE | NOUN_SUBMODULE => true,			others => false),
+		VERB_PASTE		=> (NOUN_GROUP => true,							others => false),
+		VERB_PLACE		=> (NOUN_NET_CONNECTOR | NOUN_NET_LABEL => true,	others => false),
+		VERB_QUIT		=> (NOUN_NONE => true,								others => false),
+		VERB_REMOVE		=> (NOUN_LIBRARY | NOUN_DEVICE | NOUN_SUBMODULE => true,	others => false),
+		VERB_RENAME		=> (NOUN_DEVICE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_NET => true,
+							others => false),
+		VERB_RENUMBER	=> (NOUN_DEVICES => true,							others => false),
+		VERB_ROTATE		=> (NOUN_TEXT | NOUN_UNIT | NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE
+							| NOUN_NETCHANGER => true,						others => false),
+		VERB_SAVE		=> (NOUN_MODULE => true,							others => false),
+		VERB_SET		=> (NOUN_CLASS | NOUN_COLOR | NOUN_GRID | NOUN_CURSOR | NOUN_NETCHANGER | NOUN_ZOOM
+							| NOUN_SCALE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_SCOPE | NOUN_SHEET
+							| NOUN_SUBMODULE_FILE | NOUN_VALUE | NOUN_VARIANT | NOUN_TEXT_SIZE => true,
+							others => false),
+		VERB_SHOW		=> (NOUN_DEVICE | NOUN_NETCHANGER | NOUN_MODULE | NOUN_NET | NOUN_SHEET => true,
+							others => false),
+		VERB_UNMOUNT	=> (NOUN_DEVICE => true,							others => false),
+		VERB_WRITE		=> (NOUN_TEXT => true,								others => false),
+		VERB_ZOOM		=> (NOUN_ZOOM => true,								others => false));
+
+	-- Initialized to the first noun listed for the verb above:
+	noun_last : array (type_verb) of type_noun := (
+		VERB_NONE		=> NOUN_NONE,
+		VERB_ADD		=> NOUN_LIBRARY,
+		VERB_BUILD		=> NOUN_SUBMODULES_TREE,
+		VERB_CHECK		=> NOUN_INTEGRITY,
+		VERB_CLEAR		=> NOUN_GROUP,
+		VERB_COPY		=> NOUN_DEVICE,
+		VERB_CREATE		=> NOUN_VARIANT,
+		VERB_DELETE		=> NOUN_DEVICE,
+		VERB_DESCRIBE	=> NOUN_VARIANT,
+		VERB_DEFINE		=> NOUN_GROUP,
+		VERB_DISPLAY	=> NOUN_PORTS,
+		VERB_DISSOLVE	=> NOUN_NETCHANGER,
+		VERB_DRAG		=> NOUN_GROUP,
+		VERB_DRAW		=> NOUN_NET,
+		VERB_EXECUTE	=> NOUN_SCRIPT,
+		VERB_EXIT		=> NOUN_NONE,
+		VERB_FETCH		=> NOUN_UNIT,
+		VERB_MAKE		=> NOUN_NETLIST,
+		VERB_MIRROR		=> NOUN_UNIT,
+		VERB_MOVE		=> NOUN_CURSOR,
+		VERB_MOUNT		=> NOUN_DEVICE,
+		VERB_PASTE		=> NOUN_GROUP,
+		VERB_PLACE		=> NOUN_NET_CONNECTOR,
+		VERB_QUIT		=> NOUN_NONE,
+		VERB_REMOVE		=> NOUN_LIBRARY,
+		VERB_RENAME		=> NOUN_DEVICE,
+		VERB_RENUMBER	=> NOUN_DEVICES,
+		VERB_ROTATE		=> NOUN_TEXT,
+		VERB_SAVE		=> NOUN_MODULE,
+		VERB_SET		=> NOUN_CLASS,
+		VERB_SHOW		=> NOUN_DEVICE,
+		VERB_UNMOUNT	=> NOUN_DEVICE,
+		VERB_WRITE		=> NOUN_TEXT,
+		VERB_ZOOM		=> NOUN_ZOOM);
 
 end et_modes.schematic;
 

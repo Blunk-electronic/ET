@@ -37,7 +37,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.strings; 					use ada.strings;
+with ada.strings;					use ada.strings;
 
 with ada.exceptions;				use ada.exceptions;
 with ada.directories;
@@ -107,11 +107,11 @@ package body et_script_processor is
 			while not end_of_file loop
 
 				fields := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
+					comment_mark	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (fields) > 0 then
@@ -168,9 +168,9 @@ package body et_script_processor is
 		else -- script file not found
 
 			-- raise semantic_error_1 with
-			-- 	"script file "
-			-- 	& enclose_in_quotes (to_string (script_name))
-			-- 	& " not found !";
+			--	"script file "
+			--	& enclose_in_quotes (to_string (script_name))
+			--	& " not found !";
 
 			log (SEVERITY_ERROR, "script file "
 				 & enclose_in_quotes (to_string (script_name))

@@ -170,10 +170,10 @@ package body et_board_ops_material_pnp is
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
 										position	=> apply_position_in_board (element (cursor_schematic).position)),
-		-- 								value		=> element (cursor_schematic).value,
-		-- 								partcode	=> element (cursor_schematic).partcode,
-		-- 								purpose		=> element (cursor_schematic).purpose,
-		-- 								packge		=> package_model (cursor_schematic)),
+		--								value		=> element (cursor_schematic).value,
+		--								partcode	=> element (cursor_schematic).partcode,
+		--								purpose		=> element (cursor_schematic).purpose,
+		--								packge		=> package_model (cursor_schematic)),
 									position	=> cursor_pnp,
 									inserted	=> inserted);
 
@@ -217,10 +217,10 @@ package body et_board_ops_material_pnp is
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
 											position	=> apply_position_in_board (element (cursor_schematic).position)),
-	-- 										value		=> element (cursor_schematic).value,
-	-- 										partcode	=> element (cursor_schematic).partcode,
-	-- 										purpose		=> element (cursor_schematic).purpose,
-	-- 										packge		=> package_model (cursor_schematic)),
+	--										value		=> element (cursor_schematic).value,
+	--										partcode	=> element (cursor_schematic).partcode,
+	--										purpose		=> element (cursor_schematic).purpose,
+	--										packge		=> package_model (cursor_schematic)),
 										position	=> cursor_pnp,
 										inserted	=> inserted);
 
@@ -245,10 +245,10 @@ package body et_board_ops_material_pnp is
 												key			=> device_name, -- IC4, R3
 												new_item	=> (
 													position	=> apply_position_in_board (element (cursor_schematic).position)),
-	-- 												value		=> element (alt_dev_cursor).value,
-	-- 												partcode	=> element (alt_dev_cursor).partcode,
-	-- 												purpose		=> element (alt_dev_cursor).purpose,
-	-- 												packge		=> package_model (cursor_schematic)),
+	--												value		=> element (alt_dev_cursor).value,
+	--												partcode	=> element (alt_dev_cursor).partcode,
+	--												purpose		=> element (alt_dev_cursor).purpose,
+	--												packge		=> package_model (cursor_schematic)),
 												position	=> cursor_pnp,
 												inserted	=> inserted);
 
@@ -318,19 +318,19 @@ package body et_board_ops_material_pnp is
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> pac_renumber_modules.cursor,
-				max 	=> et_submodules.nesting_depth_max);
+				max	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> type_assembly_variant_name,
-				max 	=> et_submodules.nesting_depth_max);
+				max	=> et_submodules.nesting_depth_max);
 
 			variant : type_assembly_variant_name; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_generic_stacks.stack_lifo (
 				item	=> type_position,
-				max 	=> et_submodules.nesting_depth_max);
+				max	=> et_submodules.nesting_depth_max);
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
 			position_in_board : type_position := origin_zero_rotation;
@@ -340,8 +340,8 @@ package body et_board_ops_material_pnp is
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is
 				use pac_renumber_modules;
-				module_name 	: pac_module_name.bounded_string; -- motor_driver
-				parent_name 	: pac_module_name.bounded_string; -- water_pump
+				module_name	: pac_module_name.bounded_string; -- motor_driver
+				parent_name	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: type_module_instance_name; -- MOT_DRV_3
 				offset			: type_name_index;
 
@@ -521,7 +521,7 @@ package body et_board_ops_material_pnp is
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
 		et_schematic_ops_submodules.build_submodules_tree (
-			module_cursor 	=> module_cursor,
+			module_cursor	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make p&p of default variant

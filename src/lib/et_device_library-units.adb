@@ -645,10 +645,10 @@ package body et_device_library.units is
 		return ports;
 
 		-- exception
-		-- 	when event: others =>
-		-- 		log_indentation_reset;
-		-- 		log (text => ada.exceptions.exception_information (event), console => true);
-		-- 		raise;
+		--	when event: others =>
+		--		log_indentation_reset;
+		--		log (text => ada.exceptions.exception_information (event), console => true);
+		--		raise;
 
 	end get_ports_from_symbol_model;
 

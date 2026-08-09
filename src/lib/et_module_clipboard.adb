@@ -53,6 +53,29 @@ package body et_module_clipboard is
 
 
 
+	procedure toggle_copy_to_clipboard is begin
+		if copy_to_clipboard then
+			copy_to_clipboard := false;
+		else
+			copy_to_clipboard := true;
+		end if;
+	end toggle_copy_to_clipboard;
+
+
+
+	procedure reset_copy_to_clipboard is begin
+		copy_to_clipboard := false;
+	end reset_copy_to_clipboard;
+
+
+
+	function copy_to_clipboard_enabled 
+		return boolean
+	is begin
+		return copy_to_clipboard;
+	end copy_to_clipboard_enabled;
+
+	
 end et_module_clipboard;
 
 -- Soli Deo Gloria

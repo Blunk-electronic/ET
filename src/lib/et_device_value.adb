@@ -100,8 +100,8 @@ package body et_device_value is
 	begin
 		invalid_character_position := index (
 			source	=> value,
-			set 	=> characters,
-			test 	=> outside);
+			set	=> characters,
+			test	=> outside);
 
 		if invalid_character_position > 0 then
 			log (SEVERITY_WARNING, "value " &

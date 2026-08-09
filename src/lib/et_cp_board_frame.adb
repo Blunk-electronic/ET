@@ -57,7 +57,7 @@ package body et_cp_board_frame is
 
 	procedure move_drawing_frame (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -78,7 +78,7 @@ package body et_cp_board_frame is
 				p.y := et_drawing_frame.to_distance (get_field (cmd, 7));
 
 				move_drawing_frame (
-					module_cursor 	=> module,
+					module_cursor	=> module,
 					coordinates		=> c,
 					point			=> p,
 

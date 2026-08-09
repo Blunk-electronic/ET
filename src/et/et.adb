@@ -105,7 +105,7 @@ procedure et is
 
 	project_name_create		: type_project_name; -- the project to be created
 	project_name_import		: type_project_name; -- the project to be imported
-	project_name_open 		: type_project_name; -- the project to be opened
+	project_name_open		: type_project_name; -- the project to be opened
 	project_name_save_as	: type_project_name; -- the "save as" name of the project
 
 	module_file_name		: type_module_file_name;	-- the name of the module file like "motor_driver.mod"
@@ -408,7 +408,7 @@ procedure et is
 		if get_length (project_name_import) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
--- 			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
+--			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
 			validate_project (project_name_import, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
@@ -467,7 +467,7 @@ procedure et is
 
 		if length (package_name_save_as) > 0 then
 			et_package_write.write_package (
-				file_name 		=> package_name_save_as,
+				file_name		=> package_name_save_as,
 				packge			=> pac_package_models.last_element (
 									et_package_library.package_library),
 				log_threshold	=> 0);
@@ -486,7 +486,7 @@ procedure et is
 		-- Otherwise the latest and only symbol is saved.
 		if length (symbol_name_save_as) > 0 then
 			et_symbol_write.save_symbol_2 (
-				file_name 		=> symbol_name_save_as,
+				file_name		=> symbol_name_save_as,
 				symbol			=> pac_symbol_models.last_element (symbol_library),
 				log_threshold	=> 0);
 		end if;
@@ -504,7 +504,7 @@ procedure et is
 		-- Otherwise the latest and only device in et_devices.devices is saved.
 		if length (device_name_save_as) > 0 then
 			et_device_write.write_device (
-				file_name 		=> device_name_save_as,
+				file_name		=> device_name_save_as,
 				device			=> pac_device_models.last_element (device_library),
 				log_threshold	=> 0);
 		end if;
@@ -562,7 +562,7 @@ procedure et is
 		single_module (
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
-			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
+			sheet			=> module_sheet,		-- 1, 3, 10, ... as given via cmd line
 			script			=> script_name_tmp,
 			log_threshold	=> 0);
 
@@ -604,7 +604,7 @@ procedure et is
 				et_project.create_project_directory (
 					module_name		=> to_module_name (to_string (project_name_create)),
 					project_name	=> project_name_create,
--- 					project_path	=> et_project.to_project_path (""),
+--					project_path	=> et_project.to_project_path (""),
 					log_threshold	=> 0);
 
 			-- If operator wants to import a project it will be done here.
@@ -742,7 +742,7 @@ procedure et is
 					-- optionally the framc can be saved under a different name
 					-- CS
 					-- if length (frame_name_save_as) > 0 then
-					-- 	save_frame (frame, frame_name_save_as, log_threshold => 0);
+					--	save_frame (frame, frame_name_save_as, log_threshold => 0);
 					-- end if;
 				end;
 

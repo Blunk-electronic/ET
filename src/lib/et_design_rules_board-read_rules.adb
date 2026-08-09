@@ -46,7 +46,7 @@ separate (et_design_rules_board)
 
 procedure read_rules (
 	file_name		: in type_design_rules_file_name;
-	log_threshold 	: in type_log_level)
+	log_threshold	: in type_log_level)
 is
 	previous_input : ada.text_io.file_type renames current_input;
 
@@ -72,11 +72,11 @@ is
 
 	package pac_sections_stack is new gen_pac_sections_stack (
 		item	=> type_file_section,
-		max 	=> max_section_depth);
+		max	=> max_section_depth);
 
 
 
-	clearances 	: type_clearances;
+	clearances	: type_clearances;
 	sizes		: type_sizes;
 	restring	: type_restring;
 	stop_mask	: type_stop_mask;
@@ -345,10 +345,10 @@ begin -- read_rules
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then

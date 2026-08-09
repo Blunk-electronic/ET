@@ -1729,7 +1729,7 @@ package body et_schematic_ops_nets is
 							when START_POINT =>
 								ports := get_ports (
 									module_cursor	=> module_cursor,
-									place 			=> A_end,
+									place			=> A_end,
 									log_threshold	=> log_threshold + 1);
 
 								append_ports (segment, ports, A);
@@ -1738,7 +1738,7 @@ package body et_schematic_ops_nets is
 							when END_POINT =>
 								ports := get_ports (
 									module_cursor	=> module_cursor,
-									place 			=> B_end,
+									place			=> B_end,
 									log_threshold	=> log_threshold + 1);
 
 								append_ports (segment, ports, B);
@@ -1747,14 +1747,14 @@ package body et_schematic_ops_nets is
 							when CENTER =>
 								ports := get_ports (
 									module_cursor	=> module_cursor,
-									place 			=> A_end,
+									place			=> A_end,
 									log_threshold	=> log_threshold + 1);
 
 								append_ports (segment, ports, A);
 
 								ports := get_ports (
 									module_cursor	=> module_cursor,
-									place 			=> B_end,
+									place			=> B_end,
 									log_threshold	=> log_threshold + 1);
 
 								append_ports (segment, ports, B);
@@ -2148,7 +2148,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -2248,7 +2248,7 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
- 		segment_found : boolean := false;
+		segment_found : boolean := false;
 
 		-- Here we store the selected net segment:
 		object_segment : type_object_segment;
@@ -2264,7 +2264,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in type_net)
+				net		: in type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -2383,7 +2383,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -2516,7 +2516,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -2614,7 +2614,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -2711,7 +2711,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -2814,7 +2814,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_net (
 				net_name	: in type_net_name;
-				net 		: in out type_net)
+				net		: in out type_net)
 			is
 				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -5719,7 +5719,7 @@ package body et_schematic_ops_nets is
 						log (text => to_string (segment_cursor), level => log_threshold + 2);
 
 						if on_line (
-							point 	=> place.place,
+							point	=> place.place,
 							line	=> element (segment_cursor)) then
 
 							log (text => "match", level => log_threshold + 2);
@@ -6396,7 +6396,7 @@ package body et_schematic_ops_nets is
 			sheet_new : type_sheet;
 		begin
 			copy_net_segment (
-				segment_in 	=> segment,
+				segment_in	=> segment,
 				segment_out => segment_new,
 				offset		=> destination);
 
@@ -6536,10 +6536,10 @@ package body et_schematic_ops_nets is
 		unused_net_cursor := locate_net (module_cursor, net_name);
 
 		-- CS
-		-- 	update_element (
-		-- 		container	=> generic_modules,
-		-- 		position	=> module_cursor,
-		-- 		process		=> query_nets'access);
+		--	update_element (
+		--		container	=> generic_modules,
+		--		position	=> module_cursor,
+		--		process		=> query_nets'access);
 
 		return result;
 	end get_scope;
@@ -7574,7 +7574,7 @@ package body et_schematic_ops_nets is
 								when ORIENT_SLOPING =>
 									log (
 										importance	=> SEVERITY_ERROR,
-										text 		=> "Net segment is a slope."
+										text		=> "Net segment is a slope."
 											& " No net label allowed here !",
 										level		=> log_threshold + 1);
 
@@ -8536,7 +8536,7 @@ package body et_schematic_ops_nets is
 		return type_object
 	is
 		result_category : type_object_category := CAT_VOID;
-		result_segment 	: type_object_segment;
+		result_segment	: type_object_segment;
 		result_strand	: type_object_strand;
 		result_net		: type_object_net;
 		result_label	: type_object_net_label;

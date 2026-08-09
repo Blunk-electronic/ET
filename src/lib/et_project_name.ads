@@ -78,7 +78,7 @@ package et_project_name is
 	-- Raises constraint error otherwise.
 	procedure validate_project_name (
 		project_name	: in type_project_name; -- blood_sample_analyzer
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

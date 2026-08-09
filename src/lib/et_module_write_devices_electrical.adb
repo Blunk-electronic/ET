@@ -100,7 +100,7 @@ package body et_module_write_devices_electrical is
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
--- 		write (keyword => keyword_style, parameters => to_string (t.style));
+--		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & space & to_string (t.alignment.vertical)
@@ -189,7 +189,7 @@ package body et_module_write_devices_electrical is
 		-- the package of the device candidate:
 		procedure query_placeholders (
 			device_name : in type_device_name;
-			device 		: in type_device_electrical)
+			device		: in type_device_electrical)
 		is
 			pragma unreferenced (device_name);
 			use et_pcb_sides;

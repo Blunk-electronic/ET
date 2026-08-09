@@ -62,7 +62,7 @@ package et_schematic_ops_netlists is
 	-- and the terminal name.
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
+		ports			: in pac_device_ports.set)
 		return pac_device_ports_extended.set;
 
 
@@ -78,8 +78,8 @@ package et_schematic_ops_netlists is
 		variant			: in type_assembly_variant_name;
 		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
-		netlist_tree 	: in out pac_netlist_modules.tree;
-		netlist_cursor 	: in pac_netlist_modules.cursor;
+		netlist_tree	: in out pac_netlist_modules.tree;
+		netlist_cursor	: in pac_netlist_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -109,10 +109,10 @@ package et_schematic_ops_netlists is
 		-- This is the netlist_tree to be extended with
 		-- submodules "Sub-Childs" of the candidate submodule
 		-- "Sub-Parent":
-		netlist_tree 	: in out pac_netlist_modules.tree;
+		netlist_tree	: in out pac_netlist_modules.tree;
 
 		-- This cursor points to the submodule to be examined:
-		netlist_cursor 	: in out pac_netlist_modules.cursor;
+		netlist_cursor	: in out pac_netlist_modules.cursor;
 
 		variant			: in out type_assembly_variant_name;
 		log_threshold	: in type_log_level);
@@ -123,7 +123,7 @@ package et_schematic_ops_netlists is
 	-- If parameter "write_files" is true, then exports the netlists in files.
 	-- The netlist files are named after the module name and the variant name.
 	procedure make_netlists (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		write_files		: in boolean := false;
 		log_threshold	: in type_log_level);
 

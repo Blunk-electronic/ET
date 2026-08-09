@@ -101,7 +101,7 @@ package body et_schematic_ops_units is
 
 
 	procedure dragging_not_possible (
-		port 		: in string;
+		port		: in string;
 		position	: in type_object_position) is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
@@ -939,7 +939,7 @@ package body et_schematic_ops_units is
 
 
 	procedure fetch_unit (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
@@ -953,7 +953,7 @@ package body et_schematic_ops_units is
 
 
 	procedure copy_unit (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
@@ -969,7 +969,7 @@ package body et_schematic_ops_units is
 
 
 	function unit_positions_valid (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean
 	is
@@ -1016,7 +1016,7 @@ package body et_schematic_ops_units is
 		is
 			pragma unreferenced (module_name);
 			device_cursor_sch	: pac_devices_electrical.cursor;
-			variant 			: type_package_variant_name; -- D, N
+			variant			: type_package_variant_name; -- D, N
 			device_cursor_lib	: pac_device_models.cursor;
 
 
@@ -1067,7 +1067,7 @@ package body et_schematic_ops_units is
 			-- locate the device in schematic (default assembly variant):
 			device_cursor_sch := find (module.devices, device_name);
 
--- 			if device_cursor_sch /= pac_devices_electrical.no_element then
+--			if device_cursor_sch /= pac_devices_electrical.no_element then
 
 				variant := element (device_cursor_sch).variant;
 
@@ -1086,7 +1086,7 @@ package body et_schematic_ops_units is
 				-- Create the port where pointer "properties" is pointing at.
 				-- It is created with the direction obtained from port_properties_cursor:
 				properties := new type_port_properties (
-					direction 	=> element (port_properties_cursor).direction);
+					direction	=> element (port_properties_cursor).direction);
 
 				-- Assign the terminal name:
 				properties.terminal := terminal_name;
@@ -1094,11 +1094,11 @@ package body et_schematic_ops_units is
 				-- Assign electrical properties provided by port_properties_cursor:
 				properties.properties := element (port_properties_cursor);
 
--- 			else
--- 				log (importance => ERROR, text => "Found terminal of device " & enclose_in_quotes (to_string (device_name)) &
--- 					 " , but this device does not exist !");
--- 				raise constraint_error;
--- 			end if;
+--			else
+--				log (importance => ERROR, text => "Found terminal of device " & enclose_in_quotes (to_string (device_name)) &
+--					 " , but this device does not exist !");
+--				raise constraint_error;
+--			end if;
 
 		end query_devices;
 
@@ -2025,7 +2025,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location 		: in type_object_position; -- only sheet number matters
+		location		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 	is
@@ -2197,7 +2197,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location 		: in type_object_position; -- only sheet number matters
+		location		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
@@ -2448,7 +2448,7 @@ package body et_schematic_ops_units is
 
 
 	procedure drag_unit (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
 		coordinates		: in type_coordinates;
@@ -3337,7 +3337,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_electrical)
+				device		: in type_device_electrical)
 			is
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is
@@ -3433,7 +3433,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -3515,7 +3515,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_electrical)
+				device		: in type_device_electrical)
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -3617,7 +3617,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -3702,7 +3702,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -3781,7 +3781,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -3860,7 +3860,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -3962,7 +3962,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in out type_device_electrical)
+				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -4142,7 +4142,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_electrical)
+				device		: in type_device_electrical)
 			is
 				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -4761,7 +4761,7 @@ package body et_schematic_ops_units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_electrical)
+				device		: in type_device_electrical)
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -4901,8 +4901,8 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category 	: type_object_category := CAT_VOID;
-		result_unit 		: type_object_unit;
+		result_category	: type_object_category := CAT_VOID;
+		result_unit		: type_object_unit;
 		result_placeholder	: type_object_placeholder;
 
 	begin
@@ -5325,7 +5325,7 @@ package body et_schematic_ops_units is
 			when CAT_PLACEHOLDER =>
 
 				move_placeholder (
-					module_cursor 	=> module_cursor,
+					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.placeholder),
 					unit_name		=> get_unit_name (object.placeholder),
 					coordinates		=> absolute,
@@ -5376,7 +5376,7 @@ package body et_schematic_ops_units is
 
 			when CAT_PLACEHOLDER =>
 				rotate_placeholder (
-					module_cursor 	=> module_cursor,
+					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.placeholder),
 					unit_name		=> get_unit_name (object.placeholder),
 					toggle			=> true,

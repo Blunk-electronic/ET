@@ -53,7 +53,7 @@ with et_geometry_2_file_rw;
 
 package et_schematic_geometry is
 
--- 	pragma assertion_policy (check);
+--	pragma assertion_policy (check);
 
 
 
@@ -129,7 +129,7 @@ package et_schematic_geometry is
 
 	-- For operations that write liness and circles in a file:
 	package pac_file_rw is new et_geometry_2_file_rw (
-		pac_geometry 	=> pac_geometry_2,
+		pac_geometry	=> pac_geometry_2,
 		pac_contours	=> pac_contours);
 	-- CS use it when saving the module in a file
 	-- CS use it when saving symbols in a file
@@ -142,12 +142,12 @@ package et_schematic_geometry is
 
 
 
--- 	rotation_delta : constant := 90;
--- 	rotation_min : constant := -270;
--- 	rotation_max : constant :=  270;
--- 	pragma assertion_policy (check);
--- 	subtype type_rotation is integer range rotation_min .. rotation_max
--- 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
+--	rotation_delta : constant := 90;
+--	rotation_min : constant := -270;
+--	rotation_max : constant :=  270;
+--	pragma assertion_policy (check);
+--	subtype type_rotation is integer range rotation_min .. rotation_max
+--		with dynamic_predicate => type_rotation mod rotation_delta = 0;
 
 
 	rotation_relative_min : constant type_rotation_model := -90.0;

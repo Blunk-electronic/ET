@@ -254,7 +254,7 @@ package et_canvas is
 	-- Optionally, if argument "translate" is true, then current
 	-- tranlate-offset will be taken into account.
 	function virtual_to_canvas (
-		V	 		: in type_vector_model;
+		V			: in type_vector_model;
 		zf			: in type_zoom_factor;
 		translate	: in boolean)
 		return type_logical_pixels_vector;
@@ -276,7 +276,7 @@ package et_canvas is
 	-- base-offset, the current translate-offset and
 	-- then the position of the current bounding-box:
 	function real_to_canvas (
-		M 	: in type_vector_model;
+		M	: in type_vector_model;
 		zf	: in type_zoom_factor)
 		return type_logical_pixels_vector;
 
@@ -712,7 +712,7 @@ package et_canvas is
 	box_v0		: gtk_vbox;
 
 	-- inside box_v0:
-	box_h0 		: gtk_hbox;
+	box_h0		: gtk_hbox;
 
 	-- inside box_h0:
 	box_v1		: gtk_vbox;		-- for coord. display, verb/noun
@@ -721,10 +721,10 @@ package et_canvas is
 
 
 	-- inside box_v0:
-	box_v3 		: gtk_hbox;		-- for console
+	box_v3		: gtk_hbox;		-- for console
 
 	-- inside box_v0:
-	box_v4 		: gtk_hbox;		-- for properties of objects
+	box_v4		: gtk_hbox;		-- for properties of objects
 
 	-- The spacing between the boxes inside the properties box:
 	box_properties_spacing : constant guint := 5;
@@ -1336,8 +1336,8 @@ package et_canvas is
 	-- its size. It is not used currently because the canvas
 	-- has a fixed size in this demo program (see below):
 	-- procedure cb_canvas_size_allocate (
-	-- 	canvas		: access gtk_widget_record'class;
-	-- 	allocation	: gtk_allocation);
+	--	canvas		: access gtk_widget_record'class;
+	--	allocation	: gtk_allocation);
 
 
 	-- This procedure creates the canvas, assigns to
@@ -1790,7 +1790,7 @@ private
 
 		-- This flag indicates that the operator has started
 		-- editing an object (moving, deleting, routing, ...):
-		running 				: boolean := false;
+		running				: boolean := false;
 
 		-- When the operator is requred to clarify which object
 		-- is meant, then this flag indicates whether clarification is
@@ -1883,12 +1883,12 @@ private
 
 	-- -- This function is called each time the operator hits a key:
 	-- function cb_main_window_key_pressed (
-	-- 	window	: access gtk_widget_record'class;
-	-- 	event	: gdk_event_key)
-	-- 	return boolean;
+	--	window	: access gtk_widget_record'class;
+	--	event	: gdk_event_key)
+	--	return boolean;
  --
 	-- access_cb_main_window_key_pressed : constant
-	-- 	cb_gtk_widget_gdk_event_key_boolean := cb_main_window_key_pressed'access;
+	--	cb_gtk_widget_gdk_event_key_boolean := cb_main_window_key_pressed'access;
 
 
 

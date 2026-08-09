@@ -37,7 +37,7 @@
 --
 
 with ada.directories;
-with ada.containers; 			use ada.containers;
+with ada.containers;			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
 
@@ -70,7 +70,7 @@ package et_directory_and_file_ops is
 	function directory_entries (
 		target_directory	: in string;						-- ../lbr
 		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
-		pattern				: in string) 						-- *.txt
+		pattern				: in string)						-- *.txt
 		return pac_directory_entries.list;
 
 

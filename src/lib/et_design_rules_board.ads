@@ -55,7 +55,7 @@ with et_drills;						use et_drills;
 package et_design_rules_board is
 
 
- 	file_name_length_max : constant natural := 100;
+	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
 	use pac_file_name;
 
@@ -202,7 +202,7 @@ package et_design_rules_board is
 	-- and inserts the data set in list "design_rules" (see above):
 	procedure read_rules (
 		file_name		: in type_design_rules_file_name;
-		log_threshold 	: in type_log_level);
+		log_threshold	: in type_log_level);
 
 
 

@@ -46,7 +46,7 @@ package et_keepout.board is
 
 
 	type type_keepout_both_sides is record
-		top 	: type_keepout;
+		top	: type_keepout;
 		bottom	: type_keepout;
 	end record;
 

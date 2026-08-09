@@ -56,7 +56,7 @@ package et_canvas_board_preliminary_object is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information here.
 
-	object_layer_category 	: type_layer_category := LAYER_CAT_ASSY;
+	object_layer_category	: type_layer_category := LAYER_CAT_ASSY;
 
 	object_signal_layer		: type_signal_layer := signal_layer_default;
 

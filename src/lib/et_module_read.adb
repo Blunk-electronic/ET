@@ -103,7 +103,7 @@ package body et_module_read is
 
 
 	procedure read_module (
-		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
+		file_name		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level)
 	is
 
@@ -131,7 +131,7 @@ package body et_module_read is
 
 		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
-			max 	=> max_section_depth);
+			max	=> max_section_depth);
 
 
 
@@ -1121,10 +1121,10 @@ package body et_module_read is
 				end case;
 
 	-- CS:
-	-- 				exception when event:
-	-- 					others =>
-	-- 						log (text => ada.exceptions.exception_message (event), console => true);
-	-- 						raise;
+	--				exception when event:
+	--					others =>
+	--						log (text => ada.exceptions.exception_message (event), console => true);
+	--						raise;
 
 			end execute_section;
 
@@ -1910,10 +1910,10 @@ package body et_module_read is
 			-- Read the file line by line:
 			while not end_of_file loop
 				line := et_string_processing.read_line (
-					line 			=> get_line,
+					line			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
+					ifs			=> space); -- fields are separated by space
 
 				-- We are interested only in lines that
 				-- contain something. emtpy lines are skipped:

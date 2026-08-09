@@ -82,14 +82,14 @@ package et_schematic_ops_device is
 	-- Returns the names of all electrical
 	-- devices in the module in a list like IC1, R23, D23):
 	function get_device_names (
-		module_cursor 	: in pac_generic_modules.cursor)
+		module_cursor	: in pac_generic_modules.cursor)
 		return pac_device_names.set;
 
 
 
 	-- CS description !
 	function sort_by_coordinates_2 (
-		module_cursor 	: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return pac_renumber_devices.map;
 

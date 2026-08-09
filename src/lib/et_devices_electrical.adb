@@ -557,7 +557,7 @@ package body et_devices_electrical is
 		use et_device_placeholders;
 	begin
 		case placeholder.meaning is
-			when NAME 		=> result := to_content (to_string (key (device_cursor)));
+			when NAME		=> result := to_content (to_string (key (device_cursor)));
 			when VALUE		=> result := to_content (to_string (device.value));
 			when PURPOSE	=> result := to_content (to_string (device.purpose));
 		end case;

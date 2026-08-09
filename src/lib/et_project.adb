@@ -148,8 +148,8 @@ package body et_project is
 			-- compose the full file name
 			prj_conf_file := type_project_config_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
-				name 					=> to_string (project_name),
-				extension 				=> file_extension)));
+				name					=> to_string (project_name),
+				extension				=> file_extension)));
 
 			-- create the file
 			create (
@@ -163,8 +163,8 @@ package body et_project is
 
 			-- section rules
 			section_mark (section_rules, HEADER);
--- 			write (keyword => keyword_generic_name, parameters => to_string (project_name));
--- 			write (keyword => keyword_instance_name, parameters => to_string (project_name));
+--			write (keyword => keyword_generic_name, parameters => to_string (project_name));
+--			write (keyword => keyword_instance_name, parameters => to_string (project_name));
 			section_mark (section_rules, FOOTER);
 
 			-- CS other sections
@@ -231,8 +231,8 @@ package body et_project is
 			-- compose the full file name
 			rig_conf_file := type_rig_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
-				name 					=> to_string (project_name),
-				extension 				=> file_extension)));
+				name					=> to_string (project_name),
+				extension				=> file_extension)));
 
 			-- create the file
 			create (
@@ -368,7 +368,7 @@ package body et_project is
 
 	procedure validate_project (
 		project_name	: in type_project_name;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
 		use ada.directories;
@@ -390,7 +390,7 @@ package body et_project is
 
 	procedure open_project (
 		project_name	: in type_project_name;		-- blood_sample_analyzer
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
 
@@ -443,7 +443,7 @@ package body et_project is
 		use et_directory_and_file_ops;
 		expanded_name : constant string := expand (file_name);
 	begin
-		if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
+		if	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
 			index (expanded_name, ".." & dir_separator) = 1 then -- relative path -> outside the project
 			return false;
 		else
@@ -457,7 +457,7 @@ package body et_project is
 
 	procedure save_project (
 		destination		: in type_project_name; -- blood_sample_analyzer_experimental
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use et_rig;
 		use pac_rigs;
@@ -489,14 +489,14 @@ package body et_project is
 
 				write_module (
 					module_cursor	=> module_cursor,
-					log_threshold 	=> log_threshold + 2);
+					log_threshold	=> log_threshold + 2);
 
 				-- FOR TESTING ONLY
 				-- save libraries (et_libraries.devices and et_pcb.packages)
-	-- 			save_libraries (
-	-- 				project_name	=> name, -- blood_sample_analyzer
-	-- 				project_path	=> path, -- /home/user/ecad
-	-- 				log_threshold 	=> log_threshold + 1);
+	--			save_libraries (
+	--				project_name	=> name, -- blood_sample_analyzer
+	--				project_path	=> path, -- /home/user/ecad
+	--				log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;
 			end if;
@@ -518,7 +518,7 @@ package body et_project is
 
 			save_rig (
 				rig_cursor		=> rig_cursor,
-				log_threshold 	=> log_threshold + 1);
+				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 			log_indentation_down;
@@ -546,7 +546,7 @@ package body et_project is
 		-- create project directory in current working directory:
 		create_project_directory_bare (
 			project_name	=> name, -- blood_sample_analyzer_experimental
-			log_threshold 	=> log_threshold + 2);
+			log_threshold	=> log_threshold + 2);
 
 		-- change into project directory:
 		set_directory (to_string (name));
@@ -560,7 +560,7 @@ package body et_project is
 		-- save project configuration
 		configuration.save_configuration (
 			project_name	=> name, -- blood_sample_analyzer_experimental
-			log_threshold 	=> log_threshold + 1);
+			log_threshold	=> log_threshold + 1);
 
 		copy_design_rules;
 

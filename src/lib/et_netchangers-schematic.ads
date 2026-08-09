@@ -178,7 +178,7 @@ package et_netchangers.schematic is
 
 
 	procedure set_position (
-		netchanger 	: in out type_netchanger;
+		netchanger	: in out type_netchanger;
 		position	: in type_netchanger_position_schematic);
 
 

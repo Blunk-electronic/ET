@@ -230,7 +230,7 @@ is
 
 begin -- draw_stop
 
-	-- 	put_line ("draw solder stop mask ...");
+	--	put_line ("draw solder stop mask ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

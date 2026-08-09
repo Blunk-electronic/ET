@@ -44,10 +44,10 @@ with et_kicad_packages;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 with ada.environment_variables;
 
 with et_generic_stacks;
@@ -91,8 +91,8 @@ package body et_kicad.schematic is
 		--use type_submodule_name;
 	begin
 		-- CS: limit path length !
--- 		log (text => "append path_to_submodule "
--- 			& base_name (type_submodule_name.to_string (submodule)), level => 1);
+--		log (text => "append path_to_submodule "
+--			& base_name (type_submodule_name.to_string (submodule)), level => 1);
 
 		type_path_to_submodule.append (path_to_sheet, sheet);
 			--to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
@@ -130,8 +130,8 @@ package body et_kicad.schematic is
 
 
 	function position_of_unit (
-		name 	: in type_unit_name; -- the unit being inquired
-		units 	: in type_units_schematic.map) -- the list of units
+		name	: in type_unit_name; -- the unit being inquired
+		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position
 	is
 		unit_cursor : type_units_schematic.cursor;
@@ -143,8 +143,8 @@ package body et_kicad.schematic is
 
 
 	function mirror_style_of_unit (
-		name 	: in type_unit_name; -- the unit being inquired
-		units 	: in type_units_schematic.map) -- the list of units
+		name	: in type_unit_name; -- the unit being inquired
+		units	: in type_units_schematic.map) -- the list of units
 		return type_mirror
 	is
 		unit_cursor : type_units_schematic.cursor;
@@ -223,15 +223,15 @@ package body et_kicad.schematic is
 				when APPEARANCE_PCB =>
 					null;
 
--- 					-- package/footprint
--- 					write_placeholder_properties (
--- 						placeholder		=> type_units_schematic.element (unit).packge,
--- 						log_threshold	=> log_threshold + 1);
+--					-- package/footprint
+--					write_placeholder_properties (
+--						placeholder		=> type_units_schematic.element (unit).packge,
+--						log_threshold	=> log_threshold + 1);
 --
--- 					-- datasheet
--- 					write_placeholder_properties (
--- 						placeholder		=> type_units_schematic.element (unit).datasheet,
--- 						log_threshold	=> log_threshold + 1);
+--					-- datasheet
+--					write_placeholder_properties (
+--						placeholder		=> type_units_schematic.element (unit).datasheet,
+--						log_threshold	=> log_threshold + 1);
 
 				when others => null;
 			end case;
@@ -267,7 +267,7 @@ package body et_kicad.schematic is
 
 
 	procedure check_prefix_characters (
-		prefix 		: in type_device_prefix;
+		prefix		: in type_device_prefix;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
@@ -307,8 +307,8 @@ package body et_kicad.schematic is
 		text_in_justified : constant string (1 .. text_in'length) := text_in;
 
 		r : type_device_name := (
-				prefix 		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
-				id 			=> 0,
+				prefix		=> type_device_prefix (pac_device_prefix.to_bounded_string ("")),
+				id			=> 0,
 				id_width	=> 1);
 
 		c : character;
@@ -390,8 +390,8 @@ package body et_kicad.schematic is
 		-- Example: if the given string was IC002 then digit is 3.
 		r.id_width := digit;
 
--- 		put_line(" id    " & natural'image(r.id));
--- 		put_line(" digits" & natural'image(r.id_width));
+--		put_line(" id    " & natural'image(r.id));
+--		put_line(" digits" & natural'image(r.id_width));
 
 		return r;
 	end to_component_reference;
@@ -409,8 +409,8 @@ package body et_kicad.schematic is
 
 	-- Writes the properties of the component indicated by the given cursor.
 	procedure write_component_properties (
-		component 		: in type_components_schematic.cursor;
-		log_threshold 	: in type_log_level)
+		component		: in type_components_schematic.cursor;
+		log_threshold	: in type_log_level)
 	is
 	begin
 		-- reference (serves as key in list of components)
@@ -437,9 +437,9 @@ package body et_kicad.schematic is
 		case type_components_schematic.element (component).appearance is
 			when APPEARANCE_PCB =>
 
--- 				-- package
--- 				log (text => "package "
--- 					& to_string (type_components.element (component).packge), level => log_threshold);
+--				-- package
+--				log (text => "package "
+--					& to_string (type_components.element (component).packge), level => log_threshold);
 
 				-- datasheet
 				log (text => "datasheet "
@@ -580,7 +580,7 @@ package body et_kicad.schematic is
 		return et_kicad_general.type_library_name.to_bounded_string (
 			f (
 				read_line (
-					line 			=> text,
+					line			=> text,
 					comment_mark	=> comment_mark,
 					ifs				=> latin_1.colon
 					),
@@ -603,7 +603,7 @@ package body et_kicad.schematic is
 				read_line (
 					line			=> text,
 					comment_mark	=> comment_mark,
-					ifs 			=> latin_1.colon
+					ifs			=> latin_1.colon
 					),
 				position => 2) -- the part after the colon
 				));
@@ -616,7 +616,7 @@ package body et_kicad.schematic is
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
 	-- the function whether we are dealing with schematic or library fields.
-		line 		: in type_fields_of_line;
+		line		: in type_fields_of_line;
 		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field
 		return type_placeholder_meaning is
 
@@ -735,94 +735,94 @@ package body et_kicad.schematic is
 		return a;
 	end to_alignment_vertical;
 
--- 	function to_text_style (
--- 	-- Converts a vertical kicad text style to type_text_style.
--- 	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
--- 	-- We are interested in the 2nd and 3rd character only.
--- 		style_in : in string;
--- 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
--- 		-- Explanation: The style of a text is something like "~" or "Italic".
--- 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
--- 		) return type_text_style is
+--	function to_text_style (
+--	-- Converts a vertical kicad text style to type_text_style.
+--	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
+--	-- We are interested in the 2nd and 3rd character only.
+--		style_in : in string;
+--		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
+--		-- Explanation: The style of a text is something like "~" or "Italic".
+--		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
+--		) return type_text_style is
 --
--- 		a : type_text_style;
--- 		s_field : string (1..2);
+--		a : type_text_style;
+--		s_field : string (1..2);
 --
--- 		procedure invalid_style is
--- 		begin
--- 			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
--- 			raise constraint_error;
--- 		end invalid_style;
+--		procedure invalid_style is
+--		begin
+--			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
+--			raise constraint_error;
+--		end invalid_style;
 --
--- 	begin -- to_text_style
--- 		case text is
--- 			when true =>
--- 				if style_in = text_schematic_style_normal then
--- 					a := type_text_style'first;
--- 				elsif style_in = text_schematic_style_italic then
--- 					a := ITALIC;
--- 				else
--- 					invalid_style;
--- 				end if;
+--	begin -- to_text_style
+--		case text is
+--			when true =>
+--				if style_in = text_schematic_style_normal then
+--					a := type_text_style'first;
+--				elsif style_in = text_schematic_style_italic then
+--					a := ITALIC;
+--				else
+--					invalid_style;
+--				end if;
 --
--- 			when false =>
--- 				s_field := style_in (style_in'first + 1 .. style_in'last);
+--			when false =>
+--				s_field := style_in (style_in'first + 1 .. style_in'last);
 --
--- 				if    s_field = field_style_default then 		a := type_text_style'first;
--- 				elsif s_field = field_style_bold then 			a := BOLD;
--- 				elsif s_field = field_style_italic then 		a := ITALIC;
--- 				elsif s_field = field_style_italic_bold then 	a := ITALIC_BOLD;
--- 				else
--- 					invalid_style;
--- 				end if;
--- 		end case;
+--				if    s_field = field_style_default then		a := type_text_style'first;
+--				elsif s_field = field_style_bold then			a := BOLD;
+--				elsif s_field = field_style_italic then		a := ITALIC;
+--				elsif s_field = field_style_italic_bold then	a := ITALIC_BOLD;
+--				else
+--					invalid_style;
+--				end if;
+--		end case;
 --
--- 		return a;
+--		return a;
 --
--- 		exception
--- 			when constraint_error =>
--- 				invalid_style;
+--		exception
+--			when constraint_error =>
+--				invalid_style;
 --
--- 				return a; -- CS: never reached
+--				return a; -- CS: never reached
 --
--- 	end to_text_style;
+--	end to_text_style;
 
--- 	function to_field_visible (
--- 	-- Converts the kicad field visible flag to the type_text_visible.
--- 	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
--- 		vis_in 		: in string; -- the string to be converted
--- 		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
--- 		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
--- 		-- In component libraries it is defined by characters like V or I.
--- 		)
--- 		return et_libraries.type_text_visible is
+--	function to_field_visible (
+--	-- Converts the kicad field visible flag to the type_text_visible.
+--	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
+--		vis_in		: in string; -- the string to be converted
+--		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
+--		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
+--		-- In component libraries it is defined by characters like V or I.
+--		)
+--		return et_libraries.type_text_visible is
 --
--- 		v_in_lib : type_library_field_visible;
--- 		v_in_sch : type_schematic_field_visible;
--- 		v_out : et_libraries.type_text_visible;
--- 	begin
--- 		case schematic is
+--		v_in_lib : type_library_field_visible;
+--		v_in_sch : type_schematic_field_visible;
+--		v_out : et_libraries.type_text_visible;
+--	begin
+--		case schematic is
 --
--- 			when true =>
--- 				-- As the type_schematic_field_visible has letter V as workaround, we must
--- 				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
--- 				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
--- 				case v_in_sch is
--- 					when V0000 => v_out := et_libraries.yes; -- visible
--- 					when V0001 => v_out := et_libraries.no;  -- invisible
--- 				end case;
+--			when true =>
+--				-- As the type_schematic_field_visible has letter V as workaround, we must
+--				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
+--				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
+--				case v_in_sch is
+--					when V0000 => v_out := et_libraries.yes; -- visible
+--					when V0001 => v_out := et_libraries.no;  -- invisible
+--				end case;
 --
--- 			when false =>
--- 				v_in_lib := type_library_field_visible'value(vis_in);
--- 				case v_in_lib is
--- 					when V => v_out := et_libraries.yes;
--- 					when I => v_out := et_libraries.no;
--- 				end case;
+--			when false =>
+--				v_in_lib := type_library_field_visible'value(vis_in);
+--				case v_in_lib is
+--					when V => v_out := et_libraries.yes;
+--					when I => v_out := et_libraries.no;
+--				end case;
 --
--- 		end case;
+--		end case;
 --
--- 		return v_out;
--- 	end to_field_visible;
+--		return v_out;
+--	end to_field_visible;
 
 
 
@@ -1000,10 +1000,10 @@ package body et_kicad.schematic is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in type_device_model_name; 	-- ../lbr/bel_logic.lib
-		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
-		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in type_package_name;	-- S_SO14
+		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
+		generic_name		: in type_component_generic_name.bounded_string;				-- 7400
+		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
+		package_name		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D
 	is
@@ -1021,7 +1021,7 @@ package body et_kicad.schematic is
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
 			library_name	: in type_device_model_name;
-			components 		: in out type_components_library.map)
+			components		: in out type_components_library.map)
 		is
 			pragma unreferenced (library_name);
 			use type_components_library;
@@ -1031,7 +1031,7 @@ package body et_kicad.schematic is
 			-- Queries the package variants of the generic component.
 			procedure query_variants (
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in out type_component_library)
+				component		: in out type_component_library)
 			is
 				pragma unreferenced (component_name);
 				use et_package_library;
@@ -1098,8 +1098,8 @@ package body et_kicad.schematic is
 
 					-- Test whether the new variant complies with the terminal_port_map
 					if terminal_port_map_fits (
-						library_name 		=> full_package_library_name,
-						package_name 		=> package_name,
+						library_name		=> full_package_library_name,
+						package_name		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
@@ -1161,8 +1161,8 @@ package body et_kicad.schematic is
 			-- query the package variants of the generic component
 			type_components_library.update_element (
 				container	=> components,
-				position 	=> component_cursor,
-				process 	=> query_variants'access);
+				position	=> component_cursor,
+				process	=> query_variants'access);
 
 			log_indentation_down;
 
@@ -1183,7 +1183,7 @@ package body et_kicad.schematic is
 		-- Compose the full name of the package library:
 		--full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
 		full_package_library_name := full_library_name (
-			library_name 	=> package_library, -- bel_ic
+			library_name	=> package_library, -- bel_ic
 			package_name	=> package_name,	-- S_SO14
 			log_threshold	=> log_threshold + 1);
 
@@ -1267,7 +1267,7 @@ package body et_kicad.schematic is
 
 		begin -- add_net
 			module.nets.insert (
-				key 		=> net_name,
+				key		=> net_name,
 				position	=> net_cursor,
 				inserted	=> net_created);
 
@@ -1302,20 +1302,20 @@ package body et_kicad.schematic is
 					-- For local strands the full hierarchic name of the net must be formed
 					-- in order to get something like "driver.GND" :
 
--- 					net_name := pac_net_name.to_bounded_string (
--- 						et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates), top_module => false)
--- 							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
--- 							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+--					net_name := pac_net_name.to_bounded_string (
+--						et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates), top_module => false)
+--							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
+--							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
 
--- 					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_schematic_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
--- 						net_name := pac_net_name.to_bounded_string (hierarchy_separator
--- 							& et_schematic.to_string (element (strand).name));
--- 					else
--- 						net_name := pac_net_name.to_bounded_string (
--- 							et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates))
--- 							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
--- 							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
--- 					end if;
+--					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_schematic_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
+--						net_name := pac_net_name.to_bounded_string (hierarchy_separator
+--							& et_schematic.to_string (element (strand).name));
+--					else
+--						net_name := pac_net_name.to_bounded_string (
+--							et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates))
+--							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
+--							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+--					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
 					if type_path_to_submodule.is_empty (path (element (strand).position)) then
@@ -1384,8 +1384,8 @@ package body et_kicad.schematic is
 		procedure set_cursor (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
- 		pragma unreferenced (mod_name);
- 		begin
+		pragma unreferenced (mod_name);
+		begin
 			cursor := module.nets.first;
 		end set_cursor;
 
@@ -1423,7 +1423,7 @@ package body et_kicad.schematic is
 
 		-- Returns true if given port sits on given segment.
 		function on_segment (
-			port 	: in type_hierarchic_sheet_port;
+			port	: in type_hierarchic_sheet_port;
 			segment : in type_net_segment_base)
 			return boolean
 		is
@@ -1451,7 +1451,7 @@ package body et_kicad.schematic is
 
 			procedure query_gui_submodules (
 				mod_name	: in type_submodule_name.bounded_string;
-				module 		: in out type_module) is
+				module		: in out type_module) is
 				pragma unreferenced (mod_name);
 				submodule_cursor : type_hierarchic_sheets.cursor := module.hierarchic_sheets.first; -- CS: rename to gui_submodule_cursor
 				use type_hierarchic_sheets;
@@ -1536,7 +1536,7 @@ package body et_kicad.schematic is
 					update_element (
 						container	=> module.hierarchic_sheets,
 						position	=> submodule_cursor,
-						process 	=> query_ports'access);
+						process	=> query_ports'access);
 
 					-- Once a hierarchic net has been found, the job is done.
 					if net.available then exit; end if;
@@ -1649,8 +1649,8 @@ package body et_kicad.schematic is
 								-- Test if hierarchic h_strand itself is connected to any gui_submodules.
 								-- So we query the segments of h_strand for any hierarchic strands connected.
 								query_element (
-									position 	=> h_strand,
-									process 	=> query_segments'access);
+									position	=> h_strand,
+									process	=> query_segments'access);
 
 							end if;
 						end if;
@@ -1729,7 +1729,7 @@ package body et_kicad.schematic is
 		procedure append_hierarchic_strands (
 			--net_name : in type_net_name;
 			net_cursor	: in type_nets.cursor;
-			strands	 	: in type_strands.list
+			strands		: in type_strands.list
 			) is
 			pragma unreferenced (strands);
 			use type_modules;
@@ -1874,8 +1874,8 @@ package body et_kicad.schematic is
 
 
 		procedure query_strand (
-			net_name 	: in type_net_name;
-			net 		: in type_net) is
+			net_name	: in type_net_name;
+			net		: in type_net) is
 			pragma unreferenced (net_name);
 
 			strand : type_strands.cursor := net.strands.first;
@@ -1906,7 +1906,7 @@ package body et_kicad.schematic is
 
 		procedure query_net (
 			mod_name	: in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module		: in type_module) is
 			pragma unreferenced (mod_name);
 			net : type_nets.cursor := module.nets.first;
 			use type_nets;
@@ -2056,7 +2056,7 @@ package body et_kicad.schematic is
 			-- V5: Creates empty footprint libraries in et_kicad_pcb.package_libraries.
 
 				-- "section entered flags"
-				section_eeschema_entered 			: boolean := false;
+				section_eeschema_entered			: boolean := false;
 				section_eeschema_libraries_entered	: boolean := false;
 
 				procedure clear_section_entered_flags is
@@ -2079,9 +2079,9 @@ package body et_kicad.schematic is
 				-- kicad project file is read.
 				-- search_list_project_lib_dirs assists search operations.
 					use type_library_directory;
-					directory_count 	: natural;
-					lib_dir_separator 	: constant string := ";";
-					lib_dir_name 		: type_library_directory.bounded_string;
+					directory_count	: natural;
+					lib_dir_separator	: constant string := ";";
+					lib_dir_name		: type_library_directory.bounded_string;
 
 				begin -- locate_library_directories
 					log (text => "locating library directories ...", level => log_threshold);
@@ -2099,9 +2099,9 @@ package body et_kicad.schematic is
 
 							-- get the directory name where "place" points to:
 							lib_dir_name := to_bounded_string (get_field_from_line (
-													text_in 	=> directories,
-													position 	=> place,
-													ifs 		=> lib_dir_separator (1)));
+													text_in	=> directories,
+													position	=> place,
+													ifs		=> lib_dir_separator (1)));
 
 							log (text => "directory " & to_string (lib_dir_name), level => log_threshold + 1);
 
@@ -2289,7 +2289,7 @@ package body et_kicad.schematic is
 									-- The component library could have been referenced already. If so,
 									-- there is no need to append it again to search_list_component_libraries.
 									if not type_library_names.contains (
-										container 	=> search_list_component_libraries,
+										container	=> search_list_component_libraries,
 										item		=> type_library_name.to_bounded_string (f (line, 2))) then
 
 											type_library_names.append (
@@ -2312,9 +2312,9 @@ package body et_kicad.schematic is
 						when others => null;
 					end case;
 
-	-- 				if section_eeschema_entered or section_eeschema_libraries_entered then
-	-- 					put_line(" " & to_string(line));
-	-- 				end if;
+	--				if section_eeschema_entered or section_eeschema_libraries_entered then
+	--					put_line(" " & to_string(line));
+	--				end if;
 
 				end loop;
 
@@ -2369,7 +2369,7 @@ package body et_kicad.schematic is
 							-- create empty component library
 							type_device_libraries.insert (
 								container	=> tmp_component_libraries,
-								key 		=> uri,
+								key		=> uri,
 								new_item	=> type_components_library.empty_map
 								);
 
@@ -2413,7 +2413,7 @@ package body et_kicad.schematic is
 							-- create empty package/footprint library
 							type_libraries.insert (
 								container	=> package_libraries,
-								key 		=> to_package_model_name (to_string (uri)),
+								key		=> to_package_model_name (to_string (uri)),
 								new_item	=> type_packages_library.empty_map
 								);
 
@@ -2481,7 +2481,7 @@ package body et_kicad.schematic is
 					-- The argument counter is reset on entering a section.
 					-- It is incremented once an argument is complete.
 					type type_section is record
-						name 		: type_keyword := INIT;
+						name		: type_keyword := INIT;
 						parent		: type_keyword := INIT;
 						arg_counter	: type_argument_counter := type_argument_counter'first;
 					end record;
@@ -2833,11 +2833,11 @@ package body et_kicad.schematic is
 
 						-- Store a single line in variable "line"
 						line := read_line (
-								line 			=> get_line,
+								line			=> get_line,
 								test_whole_line	=> false, -- comment marks at begin of line matter
-								number 			=> positive (ada.text_io.line (current_input)),
+								number			=> positive (ada.text_io.line (current_input)),
 								comment_mark	=> comment_mark,
-								ifs 			=> latin_1.space); -- fields are separated by space
+								ifs			=> latin_1.space); -- fields are separated by space
 
 						-- insert line in container "lines"
 						if get_field_count (line) > 0 then -- we skip empty or commented lines
@@ -3157,13 +3157,13 @@ package body et_kicad.schematic is
 
 
 
--- 		function read_schematic (
--- 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets),
+--		function read_schematic (
+--		-- Reads the given schematic file. If it contains submodules (hierarchic sheets),
 --         -- they will be returned in hierarchic_sheet_file_names. Otherwise the returned list is empty.
--- 			--current_schematic	: in type_schematic_file_name.bounded_string;
--- 			current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
--- 			log_threshold		: in type_log_level)
--- 			return type_hierarchic_sheet_file_names_extended is separate;
+--			--current_schematic	: in type_schematic_file_name.bounded_string;
+--			current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
+--			log_threshold		: in type_log_level)
+--			return type_hierarchic_sheet_file_names_extended is separate;
 
 		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
@@ -3222,7 +3222,7 @@ package body et_kicad.schematic is
 				-- Clears tmp_component_libraries (which is a temparily storage).
 				-- Creates empty component/symbol libraries in tmp_component_libraries.
 				-- For V4:	This action creates new directory and component library search lists
-				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
+				--			in search_list_component_libraries and search_list_project_lib_dirs.
 				-- For V5:	Reads sym-lib-tables and stores them in sym_lib_tables.
 				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
@@ -3240,7 +3240,7 @@ package body et_kicad.schematic is
 				type_modules.insert (
 					container	=> modules,
 					key			=> module_name,
-					new_item 	=> (
+					new_item	=> (
 
 						-- These search lists are used in V4:
 						search_list_library_comps	=> search_list_component_libraries, -- see function read_project_file
@@ -3288,8 +3288,8 @@ package body et_kicad.schematic is
 				-- read component libraries
 				read_components_libraries (log_threshold); -- fills tmp_component_libraries
 
--- 				-- copy temparily library containers in module
--- 				save_libraries;
+--				-- copy temparily library containers in module
+--				save_libraries;
 
 				current_schematic.sheet.file := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
@@ -3431,17 +3431,17 @@ package body et_kicad.schematic is
 		set_directory (current_working_directory);
 
 	exception
--- 			-- CS: log exception message
+--			-- CS: log exception message
 		when event :
 			others =>
 				log (text => ada.exceptions.exception_message (event), console => true);
 				set_directory (current_working_directory);
 
--- 					log (SEVERITY_ERROR, "in schematic file '"
--- 						& to_string (current_schematic) & "' "
--- 						console => true);
--- 						et_import.close_report;
--- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+--					log (SEVERITY_ERROR, "in schematic file '"
+--						& to_string (current_schematic) & "' "
+--						console => true);
+--						et_import.close_report;
+--						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 				raise;
 
 	end import_design;
@@ -3464,7 +3464,7 @@ package body et_kicad.schematic is
 	begin
 		-- calculate the shortes distance of point from line.
 		d := get_distance (
-			point 		=> get_point (junction.coordinates),
+			point		=> get_point (junction.coordinates),
 			line		=> line,
 			line_range	=> BETWEEN_END_POINTS);
 
@@ -3484,7 +3484,7 @@ package body et_kicad.schematic is
 	begin
 		-- Only vitual components have the power flag property.
 		-- For real components the return is always false;
--- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
+--		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
 		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
@@ -3501,73 +3501,73 @@ package body et_kicad.schematic is
 
 
 
--- 	function purpose ( -- CS move to et_schematic or et_project
--- 	-- Returns the purpose of the given component in the given module.
--- 	-- If no purpose specified for the component, an empty string is returned.
--- 		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in type_device_name; -- X701
--- 		log_threshold	: in type_log_level)
--- 		return et_libraries.type_component_purpose.bounded_string is
+--	function purpose ( -- CS move to et_schematic or et_project
+--	-- Returns the purpose of the given component in the given module.
+--	-- If no purpose specified for the component, an empty string is returned.
+--		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		reference		: in type_device_name; -- X701
+--		log_threshold	: in type_log_level)
+--		return et_libraries.type_component_purpose.bounded_string is
 --
--- 		use et_string_processing;
--- 		use et_libraries.type_component_purpose;
--- 		use type_modules;
+--		use et_string_processing;
+--		use et_libraries.type_component_purpose;
+--		use type_modules;
 --
--- 		module_cursor : type_modules.cursor;
--- 		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
+--		module_cursor : type_modules.cursor;
+--		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
 --
--- 		procedure query_components (
--- 		-- Searches the components of the module for the given reference.
--- 			module_name : in et_schematic_coordinates.type_submodule_name.bounded_string;
--- 			module		: in type_module) is
--- 			use type_components_schematic;
--- 			component_cursor : type_components_schematic.cursor := module.components.first;
--- 		begin
--- 			log (text => "querying components ...", level => log_threshold + 1);
--- 			log_indentation_up;
+--		procedure query_components (
+--		-- Searches the components of the module for the given reference.
+--			module_name : in et_schematic_coordinates.type_submodule_name.bounded_string;
+--			module		: in type_module) is
+--			use type_components_schematic;
+--			component_cursor : type_components_schematic.cursor := module.components.first;
+--		begin
+--			log (text => "querying components ...", level => log_threshold + 1);
+--			log_indentation_up;
 --
--- 			while component_cursor /= type_components_schematic.no_element loop
--- 				if et_libraries."=" (key (component_cursor), reference) then
+--			while component_cursor /= type_components_schematic.no_element loop
+--				if et_libraries."=" (key (component_cursor), reference) then
 --
--- 					-- component with given reference found.
--- 					purpose := element (component_cursor).purpose;
--- 					exit; -- no need for further searching
+--					-- component with given reference found.
+--					purpose := element (component_cursor).purpose;
+--					exit; -- no need for further searching
 --
--- 				end if;
--- 				next (component_cursor);
--- 			end loop;
+--				end if;
+--				next (component_cursor);
+--			end loop;
 --
--- 			log_indentation_down;
--- 		end query_components;
+--			log_indentation_down;
+--		end query_components;
 --
--- 	begin -- purpose
--- 		log (text => "module " & et_schematic_coordinates.to_string (module_name)
--- 			 & " looking up purpose of "
--- 			 & et_libraries.to_string (reference) & " ...", level => log_threshold);
--- 		log_indentation_up;
+--	begin -- purpose
+--		log (text => "module " & et_schematic_coordinates.to_string (module_name)
+--			 & " looking up purpose of "
+--			 & et_libraries.to_string (reference) & " ...", level => log_threshold);
+--		log_indentation_up;
 --
--- 		-- set module cursor
--- 		module_cursor := find (et_kicad.modules, module_name);
+--		-- set module cursor
+--		module_cursor := find (et_kicad.modules, module_name);
 --
--- 		-- if module exists, query its component list
--- 		if module_cursor /= type_modules.no_element then
--- 			query_element (
--- 				position	=> module_cursor,
--- 				process		=> query_components'access);
--- 		else
--- 			module_not_found (module_name); -- module does not exist -> error
--- 		end if;
+--		-- if module exists, query its component list
+--		if module_cursor /= type_modules.no_element then
+--			query_element (
+--				position	=> module_cursor,
+--				process		=> query_components'access);
+--		else
+--			module_not_found (module_name); -- module does not exist -> error
+--		end if;
 --
--- 		-- Show purpose.
--- 		if length (purpose) = 0 then
--- 			log (text => "no purpose specified", level => log_threshold + 1);
--- 		else
--- 			log (text => "purpose " & et_libraries.to_string (purpose), level => log_threshold + 1);
--- 		end if;
+--		-- Show purpose.
+--		if length (purpose) = 0 then
+--			log (text => "no purpose specified", level => log_threshold + 1);
+--		else
+--			log (text => "purpose " & et_libraries.to_string (purpose), level => log_threshold + 1);
+--		end if;
 --
--- 		log_indentation_down;
--- 		return purpose;
--- 	end purpose;
+--		log_indentation_down;
+--		return purpose;
+--	end purpose;
 
 	procedure add_strand (
 	-- Adds a strand into the the module (indicated by module_cursor).
@@ -3603,8 +3603,8 @@ package body et_kicad.schematic is
 		procedure set_cursor (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
- 		pragma unreferenced (mod_name);
- 		begin
+		pragma unreferenced (mod_name);
+		begin
 			cursor := module.strands.first;
 		end set_cursor;
 
@@ -3624,7 +3624,7 @@ package body et_kicad.schematic is
 		port_cursor : type_ports.cursor;
 
 		procedure set_cursor (
-			name 	: in type_device_name;
+			name	: in type_device_name;
 			ports	: in type_ports.list) is
 		pragma unreferenced (name);
 		begin
@@ -3634,7 +3634,7 @@ package body et_kicad.schematic is
 	begin -- first_port
 		type_portlists.query_element (
 			position	=> component_cursor,
-			process 	=> set_cursor'access);
+			process	=> set_cursor'access);
 
 		return port_cursor;
 	end first_port;
@@ -3676,12 +3676,12 @@ package body et_kicad.schematic is
 
 					count := count + 1;
 					log_indentation_up;
--- 					log (text =>
--- 						text => to_string (strand.name)
--- 							& " to "
--- 							& to_string (name_after) & " ...",
--- 							level => 2
--- 						);
+--					log (text =>
+--						text => to_string (strand.name)
+--							& " to "
+--							& to_string (name_after) & " ...",
+--							level => 2
+--						);
 					log (text => to_string (position => strand.position, scope => et_kicad_coordinates.MODULE),
 						level => log_threshold + 1);
 
@@ -3755,7 +3755,7 @@ package body et_kicad.schematic is
 			procedure query_junctions (
 			-- Query junctions. Exits prematurely once a junction is found.
 				module_name	: in type_submodule_name.bounded_string;
-				module 		: in type_module) is
+				module		: in type_module) is
 				pragma unreferenced (module_name);
 				use type_junctions;
 				junction_cursor : type_junctions.cursor := module.junctions.first;
@@ -3774,7 +3774,7 @@ package body et_kicad.schematic is
 		begin -- junction_here
 			type_modules.query_element (
 				position	=> module_cursor,
-				process 	=> query_junctions'access);
+				process	=> query_junctions'access);
 
 			return junction_found;
 		end junction_here;
@@ -3786,7 +3786,7 @@ package body et_kicad.schematic is
 			procedure query_strands (
 			-- Query net segments. Exits prematurely once a segment is found.
 				module_name	: in type_submodule_name.bounded_string;
-				module 		: in type_module) is
+				module		: in type_module) is
 				pragma unreferenced (module_name);
 				use type_strands;
 				strand_cursor : type_strands.cursor := module.strands.first;
@@ -3829,7 +3829,7 @@ package body et_kicad.schematic is
 
 					type_strands.query_element (
 						position	=> strand_cursor,
-						process 	=> query_segments'access);
+						process	=> query_segments'access);
 
 					next (strand_cursor);
 				end loop;
@@ -3874,7 +3874,7 @@ package body et_kicad.schematic is
 
 				-- calculate the shortes distance of point from line.
 				distance_port_segment := get_distance (
-					point 		=> get_point (port.coordinates),
+					point		=> get_point (port.coordinates),
 					line		=> line,
 					line_range	=> WITH_END_POINTS);
 
@@ -4144,7 +4144,7 @@ package body et_kicad.schematic is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in type_device_model_name;
+			library	: in type_device_model_name;
 			components	: in type_components_library.map) is
 		pragma unreferenced (library);
 		begin
@@ -4292,7 +4292,7 @@ package body et_kicad.schematic is
 
 						procedure query_no_connect_flags (
 							module_name	: in type_submodule_name.bounded_string;
-							module 		: in et_kicad.pcb.type_module) is
+							module		: in et_kicad.pcb.type_module) is
 							pragma unreferenced (module_name);
 							use type_no_connection_flags;
 							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
@@ -4302,14 +4302,14 @@ package body et_kicad.schematic is
 							-- and exit prematurely with "open" set to true.
 							while flag_cursor /= type_no_connection_flags.no_element loop
 
--- 								log (text => "probing port at         " & to_string (port_coordinates, et_schematic_coordinates.module));
--- 								log (text => "probing no-connect-flag " & to_string (element (flag_cursor), et_schematic_coordinates.module));
+--								log (text => "probing port at         " & to_string (port_coordinates, et_schematic_coordinates.module));
+--								log (text => "probing no-connect-flag " & to_string (element (flag_cursor), et_schematic_coordinates.module));
 
 								-- CS: to improve performance, test if flag has not been processed yet
 								-- But first implement a test that raises error if more than one port
 								-- sits on the same position.
 
- 								if element (flag_cursor).coordinates = port_coordinates then
+								if element (flag_cursor).coordinates = port_coordinates then
 									--log (text => " intentionally left open", level => log_threshold + 3);
 									log (text => " has no-connect-flag -> intentionally left open", level => log_threshold + 1);
 									port_open := true;
@@ -4573,9 +4573,9 @@ package body et_kicad.schematic is
 		-- Verifies appearance of schematic component against library component.
 		procedure check_appearance_sch_vs_lib is
 		begin
--- 			if et_schematic.component_appearance (component_cursor_sch) =
--- 			   et_libraries.component_appearance (component_cursor_lib) then
--- 			   null; -- fine
+--			if et_schematic.component_appearance (component_cursor_sch) =
+--			   et_libraries.component_appearance (component_cursor_lib) then
+--			   null; -- fine
 			if element (component_cursor_sch).appearance =
 			   element (component_cursor_lib).appearance then
 			   null; -- fine
@@ -4597,7 +4597,7 @@ package body et_kicad.schematic is
 
 			procedure save (
 				module_name	: in type_submodule_name.bounded_string;
-				module 		: in out type_module) is
+				module		: in out type_module) is
 			pragma unreferenced (module_name);
 			begin
 				module.portlists := portlists;
@@ -4608,7 +4608,7 @@ package body et_kicad.schematic is
 			update_element (
 				container	=> modules,
 				position	=> module_cursor,
-				process 	=> save'access);
+				process	=> save'access);
 		end save_portlists;
 
 	begin -- build_portlists
@@ -4694,7 +4694,7 @@ package body et_kicad.schematic is
 		end loop;
 
 		log_indentation_down;
--- 		log (text => text => "portlists complete", level => log_threshold);
+--		log (text => text => "portlists complete", level => log_threshold);
 		log_indentation_down;
 
 		-- Save portlists in the module (indicated by module_cursor).
@@ -4716,7 +4716,7 @@ package body et_kicad.schematic is
 
 		procedure query_portlists (
 			module_name	: in type_submodule_name.bounded_string;
-			module 		: in type_module)
+			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
 			use type_portlists;
@@ -4725,7 +4725,7 @@ package body et_kicad.schematic is
 
 			procedure query_ports (
 				component	: in type_device_name;
-				ports 		: in type_ports.list)
+				ports		: in type_ports.list)
 			is
 				pragma unreferenced (component);
 				port_cursor : type_ports.cursor := ports.first;
@@ -4734,87 +4734,87 @@ package body et_kicad.schematic is
 
 -- NOTE: DO NOT REMOVE THE FOLLWING. MIGHT BE REQUIRED SOME DAY.
 
--- 				function no_connection_flag_here return boolean is
--- 				-- returns true once a no_connection_flag has been found at the port coordinates
--- 					no_connection_flag_found : boolean := false;
+--				function no_connection_flag_here return boolean is
+--				-- returns true once a no_connection_flag has been found at the port coordinates
+--					no_connection_flag_found : boolean := false;
 --
--- 					procedure query_no_connect_flags (
--- 						module_name : in type_submodule_name.bounded_string;
--- 						module : in type_module) is
--- 						use type_no_connection_flags;
--- 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
--- 					begin -- query_no_connect_flags
--- 						log (text => "quering no_connection_flags ...", log_threshold + 1);
--- 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+--					procedure query_no_connect_flags (
+--						module_name : in type_submodule_name.bounded_string;
+--						module : in type_module) is
+--						use type_no_connection_flags;
+--						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+--					begin -- query_no_connect_flags
+--						log (text => "quering no_connection_flags ...", log_threshold + 1);
+--						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 --
--- 							-- Compare coordinates of port and no_connection_flag.
--- 							-- On match exit prematurely.
--- 							if element (port_cursor).coordinates = element (no_connection_flag_cursor).coordinates then
--- 								log (text => "match", log_threshold + 1);
--- 								no_connection_flag_found := true;
--- 								exit;
--- 							end if;
+--							-- Compare coordinates of port and no_connection_flag.
+--							-- On match exit prematurely.
+--							if element (port_cursor).coordinates = element (no_connection_flag_cursor).coordinates then
+--								log (text => "match", log_threshold + 1);
+--								no_connection_flag_found := true;
+--								exit;
+--							end if;
 --
--- 							next (no_connection_flag_cursor);
--- 						end loop;
--- 					end query_no_connect_flags;
+--							next (no_connection_flag_cursor);
+--						end loop;
+--					end query_no_connect_flags;
 --
--- 				begin -- query_no_connect_flags
--- 					query_element (
--- 						position => module_cursor,
--- 						process => query_no_connect_flags'access);
+--				begin -- query_no_connect_flags
+--					query_element (
+--						position => module_cursor,
+--						process => query_no_connect_flags'access);
 --
--- 					return no_connection_flag_found;
--- 				end no_connection_flag_here;
+--					return no_connection_flag_found;
+--				end no_connection_flag_here;
 
--- 				function segment_here return boolean is
--- 				-- Returns true if a net segment is placed at the coordinates of the port.
--- 					segment_found : boolean := false; -- to be returned
+--				function segment_here return boolean is
+--				-- Returns true if a net segment is placed at the coordinates of the port.
+--					segment_found : boolean := false; -- to be returned
 --
--- 					procedure query_strands (
--- 					-- Query net segments. Exits prematurely once a segment is found.
--- 						module_name : in type_submodule_name.bounded_string;
--- 						module : in type_module) is
--- 						use type_strands;
--- 						strand_cursor : type_strands.cursor := module.strands.first;
+--					procedure query_strands (
+--					-- Query net segments. Exits prematurely once a segment is found.
+--						module_name : in type_submodule_name.bounded_string;
+--						module : in type_module) is
+--						use type_strands;
+--						strand_cursor : type_strands.cursor := module.strands.first;
 --
--- 						procedure query_segments (
--- 							strand : in type_strand) is
--- 							use type_net_segments;
--- 							segment_cursor : type_net_segments.cursor := strand.segments.first;
--- 						begin
--- 							while segment_cursor /= type_net_segments.no_element loop
+--						procedure query_segments (
+--							strand : in type_strand) is
+--							use type_net_segments;
+--							segment_cursor : type_net_segments.cursor := strand.segments.first;
+--						begin
+--							while segment_cursor /= type_net_segments.no_element loop
 --
--- 								-- Compare the coordinates of the port with the coordinates of the segment:
--- 								if	element (port_cursor).coordinates = element (segment_cursor).coordinates_start or
--- 									element (port_cursor).coordinates = element (segment_cursor).coordinates_end then
+--								-- Compare the coordinates of the port with the coordinates of the segment:
+--								if	element (port_cursor).coordinates = element (segment_cursor).coordinates_start or
+--									element (port_cursor).coordinates = element (segment_cursor).coordinates_end then
 --
--- 									segment_found := true;
--- 									exit;
--- 								end if;
+--									segment_found := true;
+--									exit;
+--								end if;
 --
--- 								next (segment_cursor);
--- 							end loop;
--- 						end query_segments;
+--								next (segment_cursor);
+--							end loop;
+--						end query_segments;
 --
--- 					begin -- query_strands
--- 						while (not segment_found) and strand_cursor /= type_strands.no_element loop
+--					begin -- query_strands
+--						while (not segment_found) and strand_cursor /= type_strands.no_element loop
 --
--- 							type_strands.query_element (
--- 								position => strand_cursor,
--- 								process => query_segments'access);
+--							type_strands.query_element (
+--								position => strand_cursor,
+--								process => query_segments'access);
 --
--- 							next (strand_cursor);
--- 						end loop;
--- 					end query_strands;
+--							next (strand_cursor);
+--						end loop;
+--					end query_strands;
 --
--- 				begin -- segment_here
--- 					type_modules.query_element (
--- 						position => module_cursor,
--- 						process => query_strands'access);
+--				begin -- segment_here
+--					type_modules.query_element (
+--						position => module_cursor,
+--						process => query_strands'access);
 --
--- 					return segment_found;
--- 				end segment_here;
+--					return segment_found;
+--				end segment_here;
 -- DO NOT REMOVE ! END OF BLOCK.
 
 
@@ -4832,7 +4832,7 @@ package body et_kicad.schematic is
 						if port_cursor_secondary /= port_cursor then -- skip original port
 							if element (port_cursor_secondary).name = element (port_cursor).name then
 
-								if 	element (port_cursor_secondary).intended_open = false and
+								if	element (port_cursor_secondary).intended_open = false and
 									element (port_cursor_secondary).connected = YES then
 									return true;
 								end if;
@@ -4919,7 +4919,7 @@ package body et_kicad.schematic is
 			-- is not placed at a port
 			query_element (
 				position	=> module_cursor,
-				process 	=> query_portlists'access);
+				process	=> query_portlists'access);
 
 			log_indentation_down;
 			next (module_cursor);
@@ -4963,7 +4963,7 @@ package body et_kicad.schematic is
 
 				procedure query_units_lib (
 					component_name	: in type_component_generic_name.bounded_string;
-					component 		: in type_component_library)
+					component		: in type_component_library)
 				is
 					pragma unreferenced (component_name);
 					use type_units_library;
@@ -4974,7 +4974,7 @@ package body et_kicad.schematic is
 
 					procedure query_units_sch (
 						component_name	: in type_device_name;
-						component 		: in type_component_schematic)
+						component		: in type_component_schematic)
 					is
 						pragma unreferenced (component_name);
 						use type_units_schematic;
@@ -5007,42 +5007,42 @@ package body et_kicad.schematic is
 						-- CS: show not-connected inputs
 
 						if not unit_deployed then
--- 							case element (unit).add_level is
+--							case element (unit).add_level is
 --
--- 								-- request units usually harbor power supply
--- 								when et_libraries.request =>
+--								-- request units usually harbor power supply
+--								when et_libraries.request =>
 --
--- 									-- For CAD formats other thatn kicad_v4 we raise alarm here.
--- 									-- If a unit with add level "request"
--- 									-- is not deployed, we have a serious design error.
--- 									-- NOTE: kicad_v4 schematics do not contain "request" units as they are
--- 									-- "common to all units" of a component. So in order to avoid a
--- 									-- false alarm, seemingly missing "request" are ignored here.
--- 									-- Procdure check_open_ports detects such design errors.
+--									-- For CAD formats other thatn kicad_v4 we raise alarm here.
+--									-- If a unit with add level "request"
+--									-- is not deployed, we have a serious design error.
+--									-- NOTE: kicad_v4 schematics do not contain "request" units as they are
+--									-- "common to all units" of a component. So in order to avoid a
+--									-- false alarm, seemingly missing "request" are ignored here.
+--									-- Procdure check_open_ports detects such design errors.
 --
--- 									if et_import.cad_format /= kicad_v4 then
--- 										log (SEVERITY_ERROR, unit_not_deployed
--- 											& et_schematic.show_danger (et_schematic.no_power_supply));
--- 										raise constraint_error;
--- 									end if;
+--									if et_import.cad_format /= kicad_v4 then
+--										log (SEVERITY_ERROR, unit_not_deployed
+--											& et_schematic.show_danger (et_schematic.no_power_supply));
+--										raise constraint_error;
+--									end if;
 --
--- 								-- raise alarm if "must" unit is missing. there are numerous reasons
--- 								-- for such a unit to be there. So no further advise possible.
--- 								when et_libraries.must =>
--- 									log (SEVERITY_ERROR, unit_not_deployed);
--- 									raise constraint_error;
+--								-- raise alarm if "must" unit is missing. there are numerous reasons
+--								-- for such a unit to be there. So no further advise possible.
+--								when et_libraries.must =>
+--									log (SEVERITY_ERROR, unit_not_deployed);
+--									raise constraint_error;
 --
--- 								-- "can" units may be left non-deployed
--- 								when et_libraries.can =>
--- 									null;
+--								-- "can" units may be left non-deployed
+--								when et_libraries.can =>
+--									null;
 --
--- 								when et_libraries.next | et_libraries.always =>
+--								when et_libraries.next | et_libraries.always =>
 									log (SEVERITY_WARNING, unit_not_deployed
 										& show_danger (FLOATING_INPUT));
 --
--- 								-- CS: special threatment for "always" ?
+--								-- CS: special threatment for "always" ?
 --
--- 							end case;
+--							end case;
 						end if;
 
 					end query_units_sch;
@@ -5119,12 +5119,12 @@ package body et_kicad.schematic is
 				-- Set library cursor so that it points to the library of the generic model.
 				library_cursor := type_device_libraries.find (
 					container	=> tmp_component_libraries, -- the collection of project libraries with generic models
-					key 		=> element (component_sch).library_name); -- lib name provided by schematic component
+					key		=> element (component_sch).library_name); -- lib name provided by schematic component
 
 				-- Query the library components.
 				type_device_libraries.query_element (
-					position 	=> library_cursor,
-					process 	=> query_library_components'access);
+					position	=> library_cursor,
+					process	=> query_library_components'access);
 
 				next (component_sch);
 			end loop;
@@ -5407,7 +5407,7 @@ package body et_kicad.schematic is
 	procedure add_component (
 		reference		: in type_device_name;
 		component		: in type_component_schematic;
-		log_threshold 	: in type_log_level)
+		log_threshold	: in type_log_level)
 	is
 
 		procedure add (
@@ -5426,12 +5426,12 @@ package body et_kicad.schematic is
 				inserted	=> inserted
 				);
 
--- 			if inserted then -- first occurence of component
+--			if inserted then -- first occurence of component
 				write_component_properties (component => cursor, log_threshold => log_threshold + 1);
--- 			else -- not inserted
--- 				null; -- CS: see comment above
+--			else -- not inserted
+--				null; -- CS: see comment above
 				--raise constraint_error;
--- 			end if;
+--			end if;
 		end add;
 	begin
 		modules.update_element (
@@ -5445,7 +5445,7 @@ package body et_kicad.schematic is
 	procedure add_unit (
 		reference		: in type_device_name;
 		unit_name		: in type_unit_name;
-		unit 			: in type_unit_schematic;
+		unit			: in type_unit_schematic;
 		log_threshold	: in type_log_level)
 	is
 
@@ -5573,7 +5573,7 @@ package body et_kicad.schematic is
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
 									dist := get_distance (
-										point 		=> get_point (element (segment_cursor_prim).coordinates_start),
+										point		=> get_point (element (segment_cursor_prim).coordinates_start),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 
@@ -5587,7 +5587,7 @@ package body et_kicad.schematic is
 									-- exit prematurely and return the coordinates of the expected junction.
 
 									dist := get_distance (
-										point 		=> get_point (element (segment_cursor_prim).coordinates_end),
+										point		=> get_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 
@@ -5640,7 +5640,7 @@ package body et_kicad.schematic is
 					procedure query_junctions (
 					-- Query junctions. Exits prematurely once a junction is found.
 						module_name : in type_submodule_name.bounded_string;
-						module 		: in type_module) is
+						module		: in type_module) is
 						pragma unreferenced (module_name);
 						use type_junctions;
 						junction_cursor : type_junctions.cursor := module.junctions.first;
@@ -5659,7 +5659,7 @@ package body et_kicad.schematic is
 				begin -- junction_here
 					type_modules.query_element (
 						position	=> module_cursor,
-						process 	=> query_junctions'access);
+						process	=> query_junctions'access);
 
 					return junction_found;
 				end junction_here;
@@ -5729,7 +5729,7 @@ package body et_kicad.schematic is
 			-- query strands of current module
 			query_element (
 				position	=> module_cursor,
-				process 	=> query_strands_prim'access);
+				process	=> query_strands_prim'access);
 
 			log_indentation_down;
 			next (module_cursor);
@@ -5748,7 +5748,7 @@ package body et_kicad.schematic is
 		procedure query_junctions (
 		-- Query junctions.
 			module_name	: in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module		: in type_module) is
 			pragma unreferenced (module_name);
 			use type_junctions;
 			junction_cursor : type_junctions.cursor := module.junctions.first;
@@ -5761,7 +5761,7 @@ package body et_kicad.schematic is
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
-					module 		: in type_module) is
+					module		: in type_module) is
 					pragma unreferenced (module_name);
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
@@ -5880,7 +5880,7 @@ package body et_kicad.schematic is
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
-					module 		: in type_module) is
+					module		: in type_module) is
 					pragma unreferenced (module_name);
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
@@ -5944,7 +5944,7 @@ package body et_kicad.schematic is
 				procedure query_portlists (
 				-- Query portlists. Exits prematurely once any port was found.
 					module_name : in type_submodule_name.bounded_string;
-					module 		: in type_module) is
+					module		: in type_module) is
 					pragma unreferenced (module_name);
 					use type_portlists;
 					portlist_cursor : type_portlists.cursor := module.portlists.first;
@@ -5952,7 +5952,7 @@ package body et_kicad.schematic is
 					procedure query_ports (
 					-- Query ports. Exit prematurely once a port was found.
 						component	: in type_device_name;
-						ports 		: in type_ports.list) is
+						ports		: in type_ports.list) is
 						pragma unreferenced (component);
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
@@ -6045,7 +6045,7 @@ package body et_kicad.schematic is
 		procedure query_strands (
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module		: in type_module) is
 			pragma unreferenced (module_name);
 			use type_strands;
 			strand_cursor : type_strands.cursor := module.strands.first;
@@ -6061,7 +6061,7 @@ package body et_kicad.schematic is
 					procedure query_no_connect_flags (
 					-- Query junctions. Exits prematurely once a junction is found.
 						module_name : in type_submodule_name.bounded_string;
-						module 		: in type_module) is
+						module		: in type_module) is
 						pragma unreferenced (module_name);
 						use type_no_connection_flags;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
@@ -6110,7 +6110,7 @@ package body et_kicad.schematic is
 					-- query no_connection_flags of the module
 					type_modules.query_element (
 						position	=> module_cursor,
-						process 	=> query_no_connect_flags'access);
+						process	=> query_no_connect_flags'access);
 
 					log_indentation_down;
 				end find_no_connection_flag;
@@ -6192,7 +6192,7 @@ package body et_kicad.schematic is
 		-- Query junctions. Exits prematurely once a junction is found.
 		procedure query_no_connect_flags (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module)
+			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
 			use type_no_connection_flags;
@@ -6202,7 +6202,7 @@ package body et_kicad.schematic is
 			-- Query junctions. Exits prematurely once a junction is found.
 			procedure query_portlists (
 				module_name : in type_submodule_name.bounded_string;
-				module 		: in type_module)
+				module		: in type_module)
 			is
 				pragma unreferenced (module_name);
 				use type_portlists;
@@ -6213,8 +6213,8 @@ package body et_kicad.schematic is
 
 
 				procedure query_ports (
-					component 	: in type_device_name;
-					ports 		: in type_ports.list)
+					component	: in type_device_name;
+					ports		: in type_ports.list)
 				is
 					pragma unreferenced (component);
 					port_cursor : type_ports.cursor := ports.first;
@@ -6262,8 +6262,8 @@ package body et_kicad.schematic is
 			while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 
 				query_element (
-					position 	=> module_cursor,
-					process 	=> query_portlists'access);
+					position	=> module_cursor,
+					process	=> query_portlists'access);
 
 				next (no_connection_flag_cursor);
 			end loop;
@@ -6288,7 +6288,7 @@ package body et_kicad.schematic is
 			-- is not placed at a port
 			query_element (
 				position	=> module_cursor,
-				process 	=> query_no_connect_flags'access);
+				process	=> query_no_connect_flags'access);
 
 			log_indentation_down;
 			next (module_cursor);
@@ -6428,7 +6428,7 @@ package body et_kicad.schematic is
 	-- Returns the start and end coordinates of the given net segment.
 	function to_string (
 		segment	: in type_net_segment_base'class;
-		scope 	: in et_kicad_coordinates.type_scope := et_kicad_coordinates.SHEET)
+		scope	: in et_kicad_coordinates.type_scope := et_kicad_coordinates.SHEET)
 		return string is
 		use et_kicad_coordinates;
 	begin
@@ -6456,7 +6456,7 @@ package body et_kicad.schematic is
 
 		procedure query_nets (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module)
+			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
 			use type_netlist;
@@ -6465,7 +6465,7 @@ package body et_kicad.schematic is
 
 			procedure query_ports (
 				net_name	: in type_net_name;
-				ports 		: in pac_ports_with_reference.set)
+				ports		: in pac_ports_with_reference.set)
 			is
 				pragma unreferenced (net_name);
 				use et_erc;
@@ -6473,8 +6473,8 @@ package body et_kicad.schematic is
 				port_cursor : pac_ports_with_reference.cursor := ports.first;
 
 				-- for counting ports by direction
-				input_count 	: natural := 0;
-				output_count 	: natural := 0;
+				input_count	: natural := 0;
+				output_count	: natural := 0;
 				power_out_count	: natural := 0;
 				bidir_count		: natural := 0;
 				weak1_count		: natural := 0;
@@ -6561,7 +6561,7 @@ package body et_kicad.schematic is
 
 							when INTEGRATED_CIRCUIT	=> increment (ic_count);
 
-							when others 			=> increment (others_count);
+							when others			=> increment (others_count);
 						end case;
 					end if;
 
@@ -6657,11 +6657,11 @@ package body et_kicad.schematic is
 				-- Test contenting power sources.
 				-- CS: depends on port names
 				-- CS: mind power flags
--- 				if power_out_count > 1 then
--- 					log (SEVERITY_ERROR, show_net & " has more than one power source !" & show_danger (contention));
--- 					-- CS: show affected ports and their coordinates
--- 					raise constraint_error;
--- 				end if;
+--				if power_out_count > 1 then
+--					log (SEVERITY_ERROR, show_net & " has more than one power source !" & show_danger (contention));
+--					-- CS: show affected ports and their coordinates
+--					raise constraint_error;
+--				end if;
 
 			end query_ports;
 
@@ -6703,7 +6703,7 @@ package body et_kicad.schematic is
 			-- query nets in netlist
 			query_element (
 				position	=> module_cursor,
-				process 	=> query_nets'access);
+				process	=> query_nets'access);
 
 			next (module_cursor);
 		end loop;
@@ -6788,7 +6788,7 @@ package body et_kicad.schematic is
 
 					type_netlist.query_element (
 						position	=> net_cursor,
-						process 	=> query_ports'access);
+						process	=> query_ports'access);
 
 					log_indentation_down;
 					type_netlist.next (net_cursor);
@@ -6866,7 +6866,7 @@ package body et_kicad.schematic is
 					pragma unreferenced (module_name);
 
 				use type_nets;
-				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
+				net_cursor		: type_nets.cursor := module.nets.first; -- points to the net being read
 				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
 				net_created		: boolean := false; -- goes true once the net has been created in the netlist
 
@@ -6899,7 +6899,7 @@ package body et_kicad.schematic is
 								procedure locate_component (
 								-- Locates the component within the portlist of the submodule
 									module_name	: in type_submodule_name.bounded_string;
-									module 		: in out type_module) is
+									module		: in out type_module) is
 	pragma unreferenced (module_name);
 
 									procedure locate_port (
@@ -6924,7 +6924,7 @@ package body et_kicad.schematic is
 									type_portlists.update_element (
 										container	=> module.portlists,
 										position	=> component_cursor,
-										process 	=> locate_port'access);
+										process	=> locate_port'access);
 								end locate_component;
 
 							begin -- mark_port_as_connected
@@ -7070,10 +7070,10 @@ package body et_kicad.schematic is
 					-- create net in netlist
 					type_netlist.insert (
 						container	=> netlist,
-						key 		=> key (net_cursor),
-						new_item 	=> pac_ports_with_reference.empty_set,
-						position 	=> net_in_netlist,
-						inserted 	=> net_created);
+						key		=> key (net_cursor),
+						new_item	=> pac_ports_with_reference.empty_set,
+						position	=> net_in_netlist,
+						inserted	=> net_created);
 
 					-- CS: evaluate flag net_created ?
 
@@ -7090,8 +7090,8 @@ package body et_kicad.schematic is
 
 		begin -- make_netlist (NOTE: singluar !)
 			query_element (
-				position 	=> module_cursor,
-				process 	=> query_nets'access);
+				position	=> module_cursor,
+				process	=> query_nets'access);
 
 			return netlist;
 		end make_netlist;
@@ -7161,8 +7161,8 @@ package body et_kicad.schematic is
 
 
 			procedure locate_component_in_library (
-				library_name 	: in type_device_model_name;
-				components 		: in type_components_library.map)
+				library_name	: in type_device_model_name;
+				components		: in type_components_library.map)
 			is
 				use type_components_library;
 
@@ -7171,8 +7171,8 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library)
+					name		: in type_component_generic_name.bounded_string;
+					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
 					use et_package_library;
@@ -7193,18 +7193,18 @@ package body et_kicad.schematic is
 					-- This is achieved by looking up the library (full name provided in package_variant)
 					-- and the package name.
 					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
--- 					if cad_format = kicad_v4 then
--- 						terminals := et_kicad_pcb.terminal_count (
--- 									library_name	=> et_libraries.to_full_library_name (
--- 														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
--- 														& et_kicad_pcb.package_library_directory_extension), -- .pretty
--- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
--- 					else
+--					if cad_format = kicad_v4 then
+--						terminals := et_kicad_pcb.terminal_count (
+--									library_name	=> et_libraries.to_full_library_name (
+--														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
+--														& et_kicad_pcb.package_library_directory_extension), -- .pretty
+--									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+--					else
 						terminals := get_terminal_count (
--- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
--- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+--									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
+--									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 									get_package_model_file (element (variant_cursor).model_cursor));
--- 					end if;
+--					end if;
 
 					log_indentation_down;
 
@@ -7289,9 +7289,9 @@ package body et_kicad.schematic is
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
-		port 			: in type_port_with_reference;
+		port			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module
-		log_threshold 	: in type_log_level) -- see et_libraries spec
+		log_threshold	: in type_log_level) -- see et_libraries spec
 		return et_package_variant.type_terminal
 	is
 
@@ -7326,8 +7326,8 @@ package body et_kicad.schematic is
 
 
 			procedure locate_component_in_library (
-				library_name 	: in type_device_model_name;
-				components 		: in type_components_library.map)
+				library_name	: in type_device_model_name;
+				components		: in type_components_library.map)
 			is
 				use type_components_library;
 
@@ -7336,8 +7336,8 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library)
+					name		: in type_component_generic_name.bounded_string;
+					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
 					use pac_package_variants;
@@ -7347,8 +7347,8 @@ package body et_kicad.schematic is
 
 
 					procedure locate_terminal (
-						variant_name 	: in type_package_variant_name;
-						variant 		: in type_package_variant)
+						variant_name	: in type_package_variant_name;
+						variant		: in type_package_variant)
 					is
 						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
@@ -7509,8 +7509,8 @@ package body et_kicad.schematic is
 
 			-- Locates the given component by its generic name in the library.
 			procedure locate_component_in_library (
-				library_name 	: in type_device_model_name;
-				components 		: in type_components_library.map)
+				library_name	: in type_device_model_name;
+				components		: in type_components_library.map)
 			is
 				use type_components_library;
 				component_cursor : type_components_library.cursor;
@@ -7518,8 +7518,8 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library)
+					name		: in type_component_generic_name.bounded_string;
+					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
 					use pac_package_variants;
@@ -7528,8 +7528,8 @@ package body et_kicad.schematic is
 
 					-- Locates the given terminal in the package variant.
 					procedure locate_terminal (
-						variant_name 	: in type_package_variant_name;
-						variant 		: in type_package_variant)
+						variant_name	: in type_package_variant_name;
+						variant		: in type_package_variant)
 					is
 						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
@@ -7567,8 +7567,8 @@ package body et_kicad.schematic is
 
 						-- locate the given terminal in the package variant
 						query_element (
-							position 	=> variant_cursor,
-							process 	=> locate_terminal'access);
+							position	=> variant_cursor,
+							process	=> locate_terminal'access);
 
 					else
 						log (SEVERITY_ERROR, "package variant " & to_string (key (variant_cursor)) &
@@ -7602,8 +7602,8 @@ package body et_kicad.schematic is
 				if component_cursor /= type_components_library.no_element then
 					-- Query the variants of the component in the library.
 					type_components_library.query_element (
-						position 	=> component_cursor,
-						process 	=> query_variants'access);
+						position	=> component_cursor,
+						process	=> query_variants'access);
 
 				else -- generic model not found -> abort
 					log (SEVERITY_ERROR, "generic model for " & to_string (reference) & " not found !", console => true);
@@ -7660,8 +7660,8 @@ package body et_kicad.schematic is
 		if module_cursor /= type_modules.no_element then
 
 			query_element (
-				position 	=> module_cursor,
-				process 	=> query_components'access);
+				position	=> module_cursor,
+				process	=> query_components'access);
 
 		else -- module not found
 			log (SEVERITY_ERROR, "module " & to_string (module) & " not found !", console => true);
@@ -7681,7 +7681,7 @@ package body et_kicad.schematic is
 
 
 	function components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
@@ -7697,13 +7697,13 @@ package body et_kicad.schematic is
 		-- The ports connected with the net are copied to variable "ports".
 		procedure locate_net (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module)
+			module		: in type_module)
 		is
-			net_cursor 	: type_netlist.cursor;
+			net_cursor	: type_netlist.cursor;
 			port_cursor : pac_ports_with_reference.cursor;
-			port 		: type_port_with_reference;
-			terminal 	: et_package_variant.type_terminal;
-			port_count 	: count_type;
+			port		: type_port_with_reference;
+			terminal	: et_package_variant.type_terminal;
+			port_count	: count_type;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
@@ -7793,7 +7793,7 @@ package body et_kicad.schematic is
 
 
 	function real_components_in_net ( -- CS rename to get_real_components_in_net
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
@@ -7809,13 +7809,13 @@ package body et_kicad.schematic is
 		-- The ports connected with the net are copied to variable "ports".
 		procedure locate_net (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module)
+			module		: in type_module)
 		is
 			net_cursor	: type_netlist.cursor;
 			port_cursor : pac_ports_with_reference.cursor;
-			ports_all 	: pac_ports_with_reference.set; -- all ports of the net
-			port 		: type_port_with_reference;
-			terminal 	: et_package_variant.type_terminal;
+			ports_all	: pac_ports_with_reference.set; -- all ports of the net
+			port		: type_port_with_reference;
+			terminal	: et_package_variant.type_terminal;
 
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
@@ -7889,426 +7889,426 @@ package body et_kicad.schematic is
 
 
 
--- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
--- 	-- Outputs a warning message on multiple usage of a purpose of a component category.
--- 		category		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
--- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold 	: in type_log_level) is
+--	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
+--	-- Outputs a warning message on multiple usage of a purpose of a component category.
+--		category		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+--		purpose		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+--		log_threshold	: in type_log_level) is
 --
--- 		use et_string_processing;
--- 		use et_libraries;
--- 		use et_kicad.type_modules;
--- 		use et_conventions;
+--		use et_string_processing;
+--		use et_libraries;
+--		use et_kicad.type_modules;
+--		use et_conventions;
 --
--- 		procedure locate_component (
--- 		-- Searches the component list of the module for a connector with the given purpose.
--- 			module_name : in type_submodule_name.bounded_string;
--- 			module		: in et_kicad.type_module) is
--- 			use et_kicad.type_components_schematic;
--- 			use type_component_purpose;
--- 			component : et_kicad.type_components_schematic.cursor := module.components.first;
--- 		begin
--- 			--log (text => "purpose already used by component");
--- 			log_indentation_up;
+--		procedure locate_component (
+--		-- Searches the component list of the module for a connector with the given purpose.
+--			module_name : in type_submodule_name.bounded_string;
+--			module		: in et_kicad.type_module) is
+--			use et_kicad.type_components_schematic;
+--			use type_component_purpose;
+--			component : et_kicad.type_components_schematic.cursor := module.components.first;
+--		begin
+--			--log (text => "purpose already used by component");
+--			log_indentation_up;
 --
--- 			while component /= et_kicad.type_components_schematic.no_element loop
--- 				if element (component).appearance = sch_pcb then -- it must be a real component
--- 					if et_conventions.category (key (component)) = category then -- category must match
--- 						if element (component).purpose = purpose then -- purpose must match
--- 							log (text => "purpose already used by component " &
--- 								 et_libraries.to_string (key (component)));
--- 						end if;
--- 					end if;
--- 				end if;
--- 				next (component);
--- 			end loop;
+--			while component /= et_kicad.type_components_schematic.no_element loop
+--				if element (component).appearance = sch_pcb then -- it must be a real component
+--					if et_conventions.category (key (component)) = category then -- category must match
+--						if element (component).purpose = purpose then -- purpose must match
+--							log (text => "purpose already used by component " &
+--								 et_libraries.to_string (key (component)));
+--						end if;
+--					end if;
+--				end if;
+--				next (component);
+--			end loop;
 --
--- 			log_indentation_down;
--- 		end locate_component;
+--			log_indentation_down;
+--		end locate_component;
 --
--- 	begin -- multiple_purpose_warning
--- -- 		log (SEVERITY_ERROR, "There must be ONLY ONE"
--- -- 			 & to_string (category)
--- -- 			 & " with purpose "
--- -- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
--- -- 			 console => true);
+--	begin -- multiple_purpose_warning
+-- --		log (SEVERITY_ERROR, "There must be ONLY ONE"
+-- --			 & to_string (category)
+-- --			 & " with purpose "
+-- --			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
+-- --			 console => true);
 --
--- 		log (message_warning & "There must be ONLY ONE"
--- 			 & to_string (category)
--- 			 & " with purpose "
--- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
+--		log (message_warning & "There must be ONLY ONE"
+--			 & to_string (category)
+--			 & " with purpose "
+--			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
 --
--- 		query_element (
--- 			position	=> et_kicad.module_cursor,
--- 			process		=> locate_component'access);
+--		query_element (
+--			position	=> et_kicad.module_cursor,
+--			process		=> locate_component'access);
 --
--- 		--raise constraint_error;
--- 	end multiple_purpose_warning;
+--		--raise constraint_error;
+--	end multiple_purpose_warning;
 
 
--- 	function multiple_purpose ( -- CS move to et_schematic or et_project
--- 	-- Returns the number of occurences of components with the given purpose and category.
--- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
--- 		category 		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
--- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold 	: in type_log_level)
--- 		return natural is
+--	function multiple_purpose ( -- CS move to et_schematic or et_project
+--	-- Returns the number of occurences of components with the given purpose and category.
+--	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+--		category		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+--		purpose		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+--		log_threshold	: in type_log_level)
+--		return natural is
 --
--- 		occurences : natural := 0; -- to be returned
+--		occurences : natural := 0; -- to be returned
 --
--- 		use et_kicad.type_modules;
--- 		use et_libraries;
--- 		use et_conventions;
+--		use et_kicad.type_modules;
+--		use et_libraries;
+--		use et_conventions;
 --
--- 		procedure locate_component (
--- 		-- Searches the component list of the module for a connector with the given purpose.
--- 		-- Exits on the first matching connector. There should not be any others.
--- 			module_name : in type_submodule_name.bounded_string;
--- 			module 		: in et_kicad.type_module) is
--- 			use et_kicad.type_components_schematic;
--- 			use type_component_purpose;
--- 			component : et_kicad.type_components_schematic.cursor := module.components.first;
--- 		begin -- locate_component
--- 			log_indentation_up;
--- 			log ("detecting multiple usage of purpose "
--- 				 & enclose_in_quotes (et_libraries.to_string (purpose))
--- 				 & " in component category " & to_string (category)
--- 				 & " ...", level => log_threshold);
--- 			log_indentation_up;
+--		procedure locate_component (
+--		-- Searches the component list of the module for a connector with the given purpose.
+--		-- Exits on the first matching connector. There should not be any others.
+--			module_name : in type_submodule_name.bounded_string;
+--			module		: in et_kicad.type_module) is
+--			use et_kicad.type_components_schematic;
+--			use type_component_purpose;
+--			component : et_kicad.type_components_schematic.cursor := module.components.first;
+--		begin -- locate_component
+--			log_indentation_up;
+--			log ("detecting multiple usage of purpose "
+--				 & enclose_in_quotes (et_libraries.to_string (purpose))
+--				 & " in component category " & to_string (category)
+--				 & " ...", level => log_threshold);
+--			log_indentation_up;
 --
--- 			while component /= et_kicad.type_components_schematic.no_element loop
--- 				if element (component).appearance = sch_pcb then -- it must be a real component
--- 					if et_conventions.category (key (component)) = category then -- category must match
--- 						if element (component).purpose = purpose then -- purpose must match
--- 							log (et_libraries.to_string (key (component)), level => log_threshold + 1);
--- 							occurences := occurences + 1;
--- 						end if;
--- 					end if;
--- 				end if;
--- 				next (component);
--- 			end loop;
+--			while component /= et_kicad.type_components_schematic.no_element loop
+--				if element (component).appearance = sch_pcb then -- it must be a real component
+--					if et_conventions.category (key (component)) = category then -- category must match
+--						if element (component).purpose = purpose then -- purpose must match
+--							log (et_libraries.to_string (key (component)), level => log_threshold + 1);
+--							occurences := occurences + 1;
+--						end if;
+--					end if;
+--				end if;
+--				next (component);
+--			end loop;
 --
--- 			log_indentation_down;
--- 			log_indentation_down;
--- 		end locate_component;
+--			log_indentation_down;
+--			log_indentation_down;
+--		end locate_component;
 --
--- 	begin -- multiple_purpose
+--	begin -- multiple_purpose
 --
--- 		query_element (
--- 			position	=> et_kicad.module_cursor,
--- 			process		=> locate_component'access);
+--		query_element (
+--			position	=> et_kicad.module_cursor,
+--			process		=> locate_component'access);
 --
--- 		-- Show the result of the search:
--- 		if occurences = 0 then
--- 			log_indentation_up;
--- 			log ("none found. very good.", level => log_threshold + 1);
--- 			log_indentation_down;
--- 		else
--- 			log (message_warning & "for component category"
--- 				& to_string (category)
--- 				& " the purpose "
--- 				& enclose_in_quotes (et_libraries.to_string (purpose))
--- 				& " is used multiple times !");
--- 			-- CS: show the affected components by reference and coordinates
--- 		end if;
+--		-- Show the result of the search:
+--		if occurences = 0 then
+--			log_indentation_up;
+--			log ("none found. very good.", level => log_threshold + 1);
+--			log_indentation_down;
+--		else
+--			log (message_warning & "for component category"
+--				& to_string (category)
+--				& " the purpose "
+--				& enclose_in_quotes (et_libraries.to_string (purpose))
+--				& " is used multiple times !");
+--			-- CS: show the affected components by reference and coordinates
+--		end if;
 --
--- 		return occurences;
--- 	end multiple_purpose;
+--		return occurences;
+--	end multiple_purpose;
 
 
 -- STATISTICS
 
--- 	procedure make_statistics (log_threshold : in type_log_level) is
+--	procedure make_statistics (log_threshold : in type_log_level) is
 --
--- 		arrow : constant string := " -> ";
+--		arrow : constant string := " -> ";
 --
--- 		use et_string_processing;
+--		use et_string_processing;
 --
--- 		procedure count_components (
--- 			name	: in type_submodule_name.bounded_string;
--- 			module	: in type_module) is
+--		procedure count_components (
+--			name	: in type_submodule_name.bounded_string;
+--			module	: in type_module) is
 --
--- 			use type_components_schematic;
--- 			component : type_components_schematic.cursor := module.components.first;
+--			use type_components_schematic;
+--			component : type_components_schematic.cursor := module.components.first;
 --
--- 			use et_conventions;
+--			use et_conventions;
 --
--- 			procedure log_component (mounted : in boolean := true) is
--- 			-- This is for logging mounted or not mounted components.
--- 			begin
--- 				if mounted then
--- 					log (text => et_libraries.to_string (key (component))
--- 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
--- 						level => log_threshold + 1);
--- 				else
--- 					log (text => et_libraries.to_string (key (component))
--- 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true)
--- 						& arrow & not_mounted,
--- 						level => log_threshold + 1);
--- 				end if;
--- 			end log_component;
+--			procedure log_component (mounted : in boolean := true) is
+--			-- This is for logging mounted or not mounted components.
+--			begin
+--				if mounted then
+--					log (text => et_libraries.to_string (key (component))
+--						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
+--						level => log_threshold + 1);
+--				else
+--					log (text => et_libraries.to_string (key (component))
+--						& arrow & et_libraries.to_string (element (component).appearance, verbose => true)
+--						& arrow & not_mounted,
+--						level => log_threshold + 1);
+--				end if;
+--			end log_component;
 --
--- 		begin -- count_components
--- 			-- total number of components
--- 			et_schematic.statistics_set (cat => et_schematic.COMPONENTS_TOTAL, increment => false, number => module.components.length);
+--		begin -- count_components
+--			-- total number of components
+--			et_schematic.statistics_set (cat => et_schematic.COMPONENTS_TOTAL, increment => false, number => module.components.length);
 --
--- 			-- count virtual and real components. real components are separated by
--- 			-- the fact if they are mounted or not.
--- 			while component /= type_components_schematic.no_element loop
+--			-- count virtual and real components. real components are separated by
+--			-- the fact if they are mounted or not.
+--			while component /= type_components_schematic.no_element loop
 --
--- 				case type_components_schematic.element (component).appearance is
--- 					when et_libraries.sch => -- virtual
--- 						log_component;
--- 						et_schematic.statistics_set (et_schematic.COMPONENTS_VIRTUAL);
+--				case type_components_schematic.element (component).appearance is
+--					when et_libraries.sch => -- virtual
+--						log_component;
+--						et_schematic.statistics_set (et_schematic.COMPONENTS_VIRTUAL);
 --
--- 					when et_libraries.sch_pcb => -- real
--- 						et_schematic.statistics_set (et_schematic.COMPONENTS_REAL);
+--					when et_libraries.sch_pcb => -- real
+--						et_schematic.statistics_set (et_schematic.COMPONENTS_REAL);
 --
--- 						-- count components by category
--- 						case category (key (component)) is
--- 							when CAPACITOR | CAPACITOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.CAPACITORS);
--- 							when CONNECTOR 							=> et_schematic.statistics_set (et_schematic.CONNECTORS);
--- 							when DIODE | DIODE_PHOTO 				=> et_schematic.statistics_set (et_schematic.DIODES);
--- 							when INDUCTOR | INDUCTOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.INDUCTORS);
--- 							when INTEGRATED_CIRCUIT 				=> et_schematic.statistics_set (et_schematic.INTEGRATED_CIRCUITS);
--- 							when JUMPER 							=> et_schematic.statistics_set (et_schematic.JUMPERS);
--- 							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY
--- 																	=> et_schematic.statistics_set (et_schematic.LEDS);
--- -- 							when NETCHANGER 						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
--- 							when RELAY 								=> et_schematic.statistics_set (et_schematic.RELAYS);
--- 							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER
--- 																	=> et_schematic.statistics_set (et_schematic.RESISTORS);
--- 							when TESTPOINT 							=> et_schematic.statistics_set (et_schematic.TESTPOINTS);
--- 							when TRANSISTOR | TRANSISTOR_PHOTO 		=> et_schematic.statistics_set (et_schematic.TRANSISTORS);
+--						-- count components by category
+--						case category (key (component)) is
+--							when CAPACITOR | CAPACITOR_ADJUSTABLE	=> et_schematic.statistics_set (et_schematic.CAPACITORS);
+--							when CONNECTOR							=> et_schematic.statistics_set (et_schematic.CONNECTORS);
+--							when DIODE | DIODE_PHOTO				=> et_schematic.statistics_set (et_schematic.DIODES);
+--							when INDUCTOR | INDUCTOR_ADJUSTABLE	=> et_schematic.statistics_set (et_schematic.INDUCTORS);
+--							when INTEGRATED_CIRCUIT				=> et_schematic.statistics_set (et_schematic.INTEGRATED_CIRCUITS);
+--							when JUMPER							=> et_schematic.statistics_set (et_schematic.JUMPERS);
+--							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY
+--																	=> et_schematic.statistics_set (et_schematic.LEDS);
+-- --							when NETCHANGER						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
+--							when RELAY								=> et_schematic.statistics_set (et_schematic.RELAYS);
+--							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER
+--																	=> et_schematic.statistics_set (et_schematic.RESISTORS);
+--							when TESTPOINT							=> et_schematic.statistics_set (et_schematic.TESTPOINTS);
+--							when TRANSISTOR | TRANSISTOR_PHOTO		=> et_schematic.statistics_set (et_schematic.TRANSISTORS);
 --
--- 							when others => null;
--- 						end case;
+--							when others => null;
+--						end case;
 --
--- 						-- count mounted components
--- 						log_component;
--- 						et_schematic.statistics_set (et_schematic.COMPONENTS_MOUNTED);
--- 				end case;
+--						-- count mounted components
+--						log_component;
+--						et_schematic.statistics_set (et_schematic.COMPONENTS_MOUNTED);
+--				end case;
 --
--- 				next (component);
--- 			end loop;
+--				next (component);
+--			end loop;
 --
--- 		end count_components;
+--		end count_components;
 --
--- 		procedure count_ports (
--- 			name	: in type_submodule_name.bounded_string;
--- 			module	: in type_module) is
+--		procedure count_ports (
+--			name	: in type_submodule_name.bounded_string;
+--			module	: in type_module) is
 --
--- 			use type_portlists;
--- 			portlist : type_portlists.cursor := module.portlists.first;
+--			use type_portlists;
+--			portlist : type_portlists.cursor := module.portlists.first;
 --
--- 			procedure count (
--- 				component	: in type_device_name;
--- 				ports		: in type_ports.list) is
--- 				port : type_ports.cursor := ports.first;
--- 				use type_ports;
--- 			begin
--- 				-- loop through the ports of the given component
--- 				-- and count those which are connected.
--- 				while port /= type_ports.no_element loop
--- 					--if et_schematic."=" (element (port).connected, et_schematic.YES) then
--- 					if element (port).connected = YES then
--- 						et_schematic.statistics_set (et_schematic.PORTS_TOTAL);
--- 						-- CS: log port
--- 					end if;
--- 					next (port);
--- 				end loop;
--- 			end count;
+--			procedure count (
+--				component	: in type_device_name;
+--				ports		: in type_ports.list) is
+--				port : type_ports.cursor := ports.first;
+--				use type_ports;
+--			begin
+--				-- loop through the ports of the given component
+--				-- and count those which are connected.
+--				while port /= type_ports.no_element loop
+--					--if et_schematic."=" (element (port).connected, et_schematic.YES) then
+--					if element (port).connected = YES then
+--						et_schematic.statistics_set (et_schematic.PORTS_TOTAL);
+--						-- CS: log port
+--					end if;
+--					next (port);
+--				end loop;
+--			end count;
 --
--- 		begin -- count_ports
--- 			while portlist /= type_portlists.no_element loop
--- 				query_element (
--- 					position	=> portlist,
--- 					process		=> count'access);
+--		begin -- count_ports
+--			while portlist /= type_portlists.no_element loop
+--				query_element (
+--					position	=> portlist,
+--					process		=> count'access);
 --
--- 				next (portlist);
--- 			end loop;
--- 		end count_ports;
+--				next (portlist);
+--			end loop;
+--		end count_ports;
 --
--- 	begin -- make_statistics
+--	begin -- make_statistics
 --
--- 		-- count components
--- 		type_modules.query_element (
--- 			position	=> module_cursor,
--- 			process		=> count_components'access
--- 			);
+--		-- count components
+--		type_modules.query_element (
+--			position	=> module_cursor,
+--			process		=> count_components'access
+--			);
 --
--- 		-- count ports
--- 		type_modules.query_element (
--- 			position	=> module_cursor,
--- 			process		=> count_ports'access
--- 			);
+--		-- count ports
+--		type_modules.query_element (
+--			position	=> module_cursor,
+--			process		=> count_ports'access
+--			);
 --
--- 		-- count nets
--- 		et_schematic.statistics_set (cat => et_schematic.NETS_TOTAL, number => net_count, increment => false);
+--		-- count nets
+--		et_schematic.statistics_set (cat => et_schematic.NETS_TOTAL, number => net_count, increment => false);
 --
--- 		-- count junctions
--- 		et_schematic.statistics_set (cat => et_schematic.JUNCTIONS, number => junction_count, increment => false);
+--		-- count junctions
+--		et_schematic.statistics_set (cat => et_schematic.JUNCTIONS, number => junction_count, increment => false);
 --
--- 		--return statistics;
--- 	end make_statistics;
+--		--return statistics;
+--	end make_statistics;
 
 
--- 	procedure write_statistics (log_threshold : in type_log_level) is
--- 	-- Generates the statistics on components and nets of the modules.
--- 	-- Distinguishes between CAD and CAM related things.
--- 		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
--- 		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
+--	procedure write_statistics (log_threshold : in type_log_level) is
+--	-- Generates the statistics on components and nets of the modules.
+--	-- Distinguishes between CAD and CAM related things.
+--		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
+--		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
 --
--- 		statistics_handle_cad	: ada.text_io.file_type;
--- 		statistics_handle_cam	: ada.text_io.file_type;
+--		statistics_handle_cad	: ada.text_io.file_type;
+--		statistics_handle_cam	: ada.text_io.file_type;
 --
--- 		--statistics : type_statistics;
+--		--statistics : type_statistics;
 --
--- 		use ada.directories;
--- 		use et_general;
--- 		use type_modules;
--- 		use et_string_processing;
--- 		use et_export;
+--		use ada.directories;
+--		use et_general;
+--		use type_modules;
+--		use et_string_processing;
+--		use et_export;
 --
--- 	begin -- write_statistics
--- 		--first_module;
--- 		module_cursor := first (modules);
+--	begin -- write_statistics
+--		--first_module;
+--		module_cursor := first (modules);
 --
--- 		log (text => "writing statistics ...", level => log_threshold);
--- 		log_indentation_up;
+--		log (text => "writing statistics ...", level => log_threshold);
+--		log_indentation_up;
 --
--- 		while module_cursor /= type_modules.no_element loop
--- 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
--- 			log_indentation_up;
+--		while module_cursor /= type_modules.no_element loop
+--			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
+--			log_indentation_up;
 --
--- 			-- CAD
--- 			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
--- 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
--- 			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string
--- 				(
--- 				compose (
--- 					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
--- 					name 					=> to_string (key (module_cursor)),
--- 					extension 				=> et_schematic.extension_statistics)
--- 				);
+--			-- CAD
+--			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
+--			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
+--			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string
+--				(
+--				compose (
+--					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
+--					name					=> to_string (key (module_cursor)),
+--					extension				=> et_schematic.extension_statistics)
+--				);
 --
--- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
--- 			log (text => "creating CAD statistics file " &
--- 				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), level => log_threshold + 1);
+--			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+--			log (text => "creating CAD statistics file " &
+--				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), level => log_threshold + 1);
 --
--- 			create (
--- 				file => statistics_handle_cad,
--- 				mode => out_file,
--- 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad));
+--			create (
+--				file => statistics_handle_cad,
+--				mode => out_file,
+--				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad));
 --
--- 			log_indentation_up;
--- 			put_line (statistics_handle_cad, comment_mark & " " & et_general.system_name & " CAD statistics");
--- 			put_line (statistics_handle_cad, comment_mark & " " & date);
--- 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
+--			log_indentation_up;
+--			put_line (statistics_handle_cad, comment_mark & " " & et_general.system_name & " CAD statistics");
+--			put_line (statistics_handle_cad, comment_mark & " " & date);
+--			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+--			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
 --
--- 			make_statistics (log_threshold + 1);
+--			make_statistics (log_threshold + 1);
 --
--- 			-- components
--- 			put_line (statistics_handle_cad, "components");
--- 			put_line (statistics_handle_cad, " total      " & et_schematic.statistics_query (et_schematic.COMPONENTS_TOTAL));
--- 			put_line (statistics_handle_cad, " real       " & et_schematic.statistics_query (et_schematic.COMPONENTS_REAL));
--- 			put_line (statistics_handle_cad, " mounted    " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
--- 			put_line (statistics_handle_cad, " virtual    " & et_schematic.statistics_query (et_schematic.COMPONENTS_VIRTUAL));
+--			-- components
+--			put_line (statistics_handle_cad, "components");
+--			put_line (statistics_handle_cad, " total      " & et_schematic.statistics_query (et_schematic.COMPONENTS_TOTAL));
+--			put_line (statistics_handle_cad, " real       " & et_schematic.statistics_query (et_schematic.COMPONENTS_REAL));
+--			put_line (statistics_handle_cad, " mounted    " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
+--			put_line (statistics_handle_cad, " virtual    " & et_schematic.statistics_query (et_schematic.COMPONENTS_VIRTUAL));
 --
--- 			-- As for the total number of ports, we take all ports into account (inc. virtual ports
--- 			-- of virtual components like GND symbols).
--- 			new_line (statistics_handle_cad);
--- 			put_line (statistics_handle_cad, "ports       " & et_schematic.statistics_query (et_schematic.PORTS_TOTAL));
--- 			-- nets
--- 			put_line (statistics_handle_cad, "nets        " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
--- 			put_line (statistics_handle_cad, "junctions   " & et_schematic.statistics_query (et_schematic.JUNCTIONS));
--- 			new_line (statistics_handle_cad);
+--			-- As for the total number of ports, we take all ports into account (inc. virtual ports
+--			-- of virtual components like GND symbols).
+--			new_line (statistics_handle_cad);
+--			put_line (statistics_handle_cad, "ports       " & et_schematic.statistics_query (et_schematic.PORTS_TOTAL));
+--			-- nets
+--			put_line (statistics_handle_cad, "nets        " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
+--			put_line (statistics_handle_cad, "junctions   " & et_schematic.statistics_query (et_schematic.JUNCTIONS));
+--			new_line (statistics_handle_cad);
 --
--- 			-- components by category
--- 			put_line (statistics_handle_cad, "capacitors  " & et_schematic.statistics_query (et_schematic.CAPACITORS));
--- 			put_line (statistics_handle_cad, "connectors  " & et_schematic.statistics_query (et_schematic.CONNECTORS));
--- 			put_line (statistics_handle_cad, "diodes      " & et_schematic.statistics_query (et_schematic.DIODES));
--- 			put_line (statistics_handle_cad, "inductors   " & et_schematic.statistics_query (et_schematic.INDUCTORS));
--- 			put_line (statistics_handle_cad, "ICs         " & et_schematic.statistics_query (et_schematic.INTEGRATED_CIRCUITS));
--- 			put_line (statistics_handle_cad, "jumpers     " & et_schematic.statistics_query (et_schematic.JUMPERS));
--- 			put_line (statistics_handle_cad, "LEDs        " & et_schematic.statistics_query (et_schematic.LEDS));
--- -- 			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
--- 			put_line (statistics_handle_cad, "relays      " & et_schematic.statistics_query (et_schematic.RELAYS));
--- 			put_line (statistics_handle_cad, "resistors   " & et_schematic.statistics_query (et_schematic.RESISTORS));
--- 			put_line (statistics_handle_cad, "testpoints  " & et_schematic.statistics_query (et_schematic.TESTPOINTS));
--- 			put_line (statistics_handle_cad, "transistors " & et_schematic.statistics_query (et_schematic.TRANSISTORS));
---
---
--- 			-- finish statistics
--- 			new_line (statistics_handle_cad);
--- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
--- 			put_line (statistics_handle_cad, comment_mark & " end of list");
--- 			log_indentation_down;
--- 			close (statistics_handle_cad);
+--			-- components by category
+--			put_line (statistics_handle_cad, "capacitors  " & et_schematic.statistics_query (et_schematic.CAPACITORS));
+--			put_line (statistics_handle_cad, "connectors  " & et_schematic.statistics_query (et_schematic.CONNECTORS));
+--			put_line (statistics_handle_cad, "diodes      " & et_schematic.statistics_query (et_schematic.DIODES));
+--			put_line (statistics_handle_cad, "inductors   " & et_schematic.statistics_query (et_schematic.INDUCTORS));
+--			put_line (statistics_handle_cad, "ICs         " & et_schematic.statistics_query (et_schematic.INTEGRATED_CIRCUITS));
+--			put_line (statistics_handle_cad, "jumpers     " & et_schematic.statistics_query (et_schematic.JUMPERS));
+--			put_line (statistics_handle_cad, "LEDs        " & et_schematic.statistics_query (et_schematic.LEDS));
+-- --			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
+--			put_line (statistics_handle_cad, "relays      " & et_schematic.statistics_query (et_schematic.RELAYS));
+--			put_line (statistics_handle_cad, "resistors   " & et_schematic.statistics_query (et_schematic.RESISTORS));
+--			put_line (statistics_handle_cad, "testpoints  " & et_schematic.statistics_query (et_schematic.TESTPOINTS));
+--			put_line (statistics_handle_cad, "transistors " & et_schematic.statistics_query (et_schematic.TRANSISTORS));
 --
 --
+--			-- finish statistics
+--			new_line (statistics_handle_cad);
+--			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
+--			put_line (statistics_handle_cad, comment_mark & " end of list");
+--			log_indentation_down;
+--			close (statistics_handle_cad);
 --
--- 			-- CAM
--- 			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
--- 			statistics_file_name_cam := et_schematic.type_statistic_file_name.to_bounded_string
--- 				(
--- 				compose (
--- 					containing_directory => compose
--- 						(
--- 						containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
--- 						name					=> et_export.directory_cam
--- 						),
--- 					name				=> to_string (key (module_cursor)),
--- 					extension			=> et_schematic.extension_statistics)
--- 				);
 --
--- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
--- 			log (text => "CAM statistics file " &
--- 				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), level => log_threshold + 2);
 --
--- 			create (
--- 				file => statistics_handle_cam,
--- 				mode => out_file,
--- 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam));
+--			-- CAM
+--			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+--			statistics_file_name_cam := et_schematic.type_statistic_file_name.to_bounded_string
+--				(
+--				compose (
+--					containing_directory => compose
+--						(
+--						containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
+--						name					=> et_export.directory_cam
+--						),
+--					name				=> to_string (key (module_cursor)),
+--					extension			=> et_schematic.extension_statistics)
+--				);
 --
--- 			log_indentation_up;
--- 			put_line (statistics_handle_cam, comment_mark & " " & et_general.system_name & " CAM statistics");
--- 			put_line (statistics_handle_cam, comment_mark & " " & date);
--- 			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
+--			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+--			log (text => "CAM statistics file " &
+--				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), level => log_threshold + 2);
 --
--- 			-- components
--- 			put_line (statistics_handle_cam, "components");
--- 			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
+--			create (
+--				file => statistics_handle_cam,
+--				mode => out_file,
+--				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam));
 --
--- 			-- As for the total number of real component ports, we take all ports into account for which a physical
--- 			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
--- 			-- CS: THT/SMD
--- 			-- CS: THT/SMD/pins/pads
--- 			-- CS: ressitors, leds, transitors, ...
--- 			new_line (statistics_handle_cam);
+--			log_indentation_up;
+--			put_line (statistics_handle_cam, comment_mark & " " & et_general.system_name & " CAM statistics");
+--			put_line (statistics_handle_cam, comment_mark & " " & date);
+--			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+--			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
 --
--- 			-- nets
--- 			put_line (statistics_handle_cam, "nets");
--- 			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
--- 			-- CS: ports of mounted components ? Could be useful for test generation like FPT, ICT, BST, ...
+--			-- components
+--			put_line (statistics_handle_cam, "components");
+--			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
 --
--- 			-- finish statistics
--- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
--- 			put_line (statistics_handle_cam, comment_mark & " end of list");
--- 			log_indentation_down;
--- 			close (statistics_handle_cam);
+--			-- As for the total number of real component ports, we take all ports into account for which a physical
+--			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
+--			-- CS: THT/SMD
+--			-- CS: THT/SMD/pins/pads
+--			-- CS: ressitors, leds, transitors, ...
+--			new_line (statistics_handle_cam);
 --
--- 			log_indentation_down;
--- 			next (module_cursor);
--- 		end loop;
+--			-- nets
+--			put_line (statistics_handle_cam, "nets");
+--			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
+--			-- CS: ports of mounted components ? Could be useful for test generation like FPT, ICT, BST, ...
 --
--- 		log_indentation_down;
--- 	end write_statistics;
+--			-- finish statistics
+--			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
+--			put_line (statistics_handle_cam, comment_mark & " end of list");
+--			log_indentation_down;
+--			close (statistics_handle_cam);
+--
+--			log_indentation_down;
+--			next (module_cursor);
+--		end loop;
+--
+--		log_indentation_down;
+--	end write_statistics;
 
 	procedure write_note_properties (
-		note 			: in type_text;
+		note			: in type_text;
 		log_threshold	: in type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_text_content;
@@ -8331,11 +8331,11 @@ package body et_kicad.schematic is
 			-- size
 			log (text => "size" & to_string (note.size));
 
--- 			-- style
--- 			log (text => "style " & to_lower (to_string (note.style)));
+--			-- style
+--			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
--- 			log (text => "line width" & to_string (note.line_width));
+--			log (text => "line width" & to_string (note.line_width));
 
 			-- rotation
 			log (text => "rotation" & to_string (note.rotation));

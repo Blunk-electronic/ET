@@ -331,7 +331,7 @@ procedure draw_nets is
 	-- are attached to a net segment:
 	procedure draw_labels (
 		net_name	: in type_net_name;
-		segment 	: in type_net_segment)
+		segment	: in type_net_segment)
 	is
 		use et_colors;
 		use et_colors.schematic;
@@ -642,8 +642,8 @@ procedure draw_nets is
 
 
 begin
--- 	put_line ("draw nets ...");
--- 	put_line (to_string (in_area));
+--	put_line ("draw nets ...");
+--	put_line (to_string (in_area));
 
 	-- draw the nets
 	pac_generic_modules.query_element (

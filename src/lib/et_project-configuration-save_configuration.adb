@@ -46,8 +46,8 @@ with et_file_write;					use et_file_write;
 separate (et_project.configuration)
 
 procedure save_configuration (
-	project_name 	: in type_project_name; -- blood_sample_analyzer
-	log_threshold 	: in type_log_level)
+	project_name	: in type_project_name; -- blood_sample_analyzer
+	log_threshold	: in type_log_level)
 is
 	-- backup the previous output destination
 	previous_output : ada.text_io.file_type renames current_output;
@@ -78,8 +78,8 @@ begin -- save_configuration
 	-- Compose the full file name:
 	-- The file base name is the same as the project name.
 	file_name := type_project_config_file_name (pac_file_name.to_bounded_string (compose (
-		name 		=> to_string (project_name),
-		extension 	=> file_extension))); -- prj
+		name		=> to_string (project_name),
+		extension	=> file_extension))); -- prj
 
 	-- create the file
 	create (

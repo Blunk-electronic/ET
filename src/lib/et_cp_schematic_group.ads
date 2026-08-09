@@ -51,7 +51,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo define group 2  5 5  100 40
 	procedure define_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -59,7 +59,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo clear group
 	procedure clear_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -67,7 +67,7 @@ package et_cp_schematic_group is
 	-- example: schematic demo delete group
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -77,25 +77,41 @@ package et_cp_schematic_group is
 	-- example: schematic demo move group 100 20
 	procedure drag_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
 	-- This procedure parses a command that copies a group
-	-- of objects by a given offset to a given place.
-	-- example: schematic demo copy group 1 10 -20
+	-- of objects.
+	-- Depending on the number of arguments it decides
+	-- whether a simple copy or multiple copies are to be made.
+	--
+	-- 1. Simple copy:
+	--    By a given offset the current group is copied and 
+	--    placed right away.
+	--    example: schematic demo copy group 1 10 -20
+	--
+	-- 2. Multiple copy:
+	--    The group is copied into the clipboard with
+	--    a reference point. 
+	-- 	  A) The reference point is the
+	--    center of the group if nothing else is specified.
+	--    example: schematic demo copy group
+	--
+	--	  B) The reference point can be explicitly specified.
+	--    example: schematic demo copy group 54 30
 	procedure copy_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure parses a command that pastes a group
-	-- of objects by a given offset to a given place.
-	-- example: schematic demo copy group 1 10 -20
+	-- This procedure parses a command that pastes 
+	-- the content of the clipboard at a given place.
+	-- example: schematic demo paste group 2 10 -20
 	procedure paste_group (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

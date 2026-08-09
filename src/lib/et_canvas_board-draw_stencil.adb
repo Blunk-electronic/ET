@@ -160,7 +160,7 @@ is
 
 
 begin
--- 	put_line ("draw stencil / solder paste mask ...");
+--	put_line ("draw stencil / solder paste mask ...");
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

@@ -56,7 +56,7 @@ package et_cp_board_signal_layer is
 	-- board demo add layer 0.035 0.2
 	procedure add_signal_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -66,7 +66,7 @@ package et_cp_board_signal_layer is
 	-- board demo delete layer 2
 	procedure delete_signal_layer (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

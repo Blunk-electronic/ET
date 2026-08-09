@@ -39,7 +39,7 @@
 -- - clean up, rework, simplify code
 
 
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.containers;            use ada.containers;
@@ -49,10 +49,10 @@ with ada.containers.indefinite_vectors;
 package et_string_processing is
 
 
-	row_separator_length 	: constant positive := 100;
+	row_separator_length	: constant positive := 100;
 	row_separator_single	: constant string := row_separator_length * "-";
 	row_separator_double	: constant string := row_separator_length * "=";
--- 	item_not_specified		: constant string := "missing";
+--	item_not_specified		: constant string := "missing";
 
 
 -- WARNING AND ERROR MESSAGES:
@@ -89,14 +89,14 @@ package et_string_processing is
 	-- text_with_wildcards is something like R41* , text_exact is something like R415
 	function wildcard_match (
 		text_with_wildcards	: in string;
-		text_exact 			: in string)
+		text_exact			: in string)
 		return boolean;
 
 
 
 	-- Removes a comment from a line:
 	function remove_comment_from_line (
-		text_in 		: in string;			-- the input string
+		text_in		: in string;			-- the input string
 		comment_mark	: in string;			-- the comment mark (like "--" or "#"
 		test_whole_line	: in boolean := true)	-- when false, cares for the comment mark at line begin only
 		return string;							-- further comment marks are ignored
@@ -175,11 +175,11 @@ package et_string_processing is
 	-- Extracts a field separated by ifs at position. If trailer is true, the
 	-- trailing content until trailer_to is also returned.
 	function get_field_from_line (
-		text_in 	: in string;
-		position 	: in type_field_count_positive;
-		ifs 		: in character := latin_1.space;
-		trailer 	: in boolean := false;
-		trailer_to 	: in character := latin_1.semicolon)
+		text_in	: in string;
+		position	: in type_field_count_positive;
+		ifs		: in character := latin_1.space;
+		trailer	: in boolean := false;
+		trailer_to	: in character := latin_1.semicolon)
 		return string;
 
 
@@ -313,7 +313,7 @@ package et_string_processing is
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in type_field_count;		-- the min. number of fields to expect
-		warn			: in boolean := true); 		-- warn if too many fields
+		warn			: in boolean := true);		-- warn if too many fields
 		-- CS output error flag ?
 
 

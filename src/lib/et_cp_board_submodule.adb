@@ -62,7 +62,7 @@ package body et_cp_board_submodule is
 
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -76,7 +76,7 @@ package body et_cp_board_submodule is
 		case cmd_field_count is
 			when 8 =>
 				move_submodule (
-					module_name 	=> key (module),
+					module_name	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)), -- OSC1
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
 					point			=> set (

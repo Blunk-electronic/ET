@@ -53,7 +53,7 @@ package et_cp_schematic_assembly_variant is
 	-- example: schematic demo create variant low_cost
 	procedure create_assembly_variant (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -62,7 +62,7 @@ package et_cp_schematic_assembly_variant is
 	-- example: schematic demo delete variant low_cost
 	procedure delete_assembly_variant (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -72,7 +72,7 @@ package et_cp_schematic_assembly_variant is
 	-- example: schematic demo describe variant low_cost "This is for poor customers."
 	procedure describe_assembly_variant (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -81,7 +81,7 @@ package et_cp_schematic_assembly_variant is
 	-- of a device in a given assembly variant:
 	procedure mount_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -90,7 +90,7 @@ package et_cp_schematic_assembly_variant is
 	-- example: schematic demo unmount device low_cost R2
 	procedure unmount_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -100,7 +100,7 @@ package et_cp_schematic_assembly_variant is
 	-- example: schematic demo remove device low_cost R2
 	procedure remove_device (
 		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

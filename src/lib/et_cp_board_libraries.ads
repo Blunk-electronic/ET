@@ -54,8 +54,8 @@ package et_cp_board_libraries is
 	-- Example:
 	-- "board demo add library $HOME/ET_devices"
 	procedure add_library_path (
-   		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		module			: in pac_generic_modules.cursor;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -65,8 +65,8 @@ package et_cp_board_libraries is
 	-- Example:
 	-- "board demo remove library $HOME/ET_devices"
 	procedure remove_library_path (
-   		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+		module			: in pac_generic_modules.cursor;
+		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

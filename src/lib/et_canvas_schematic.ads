@@ -346,8 +346,8 @@ package et_canvas_schematic is
 
 
 
--- 	label_console_text : constant string :=
--- 		(8 * " ") & "switch module: F11 / F12";
+--	label_console_text : constant string :=
+--		(8 * " ") & "switch module: F11 / F12";
 
 
 

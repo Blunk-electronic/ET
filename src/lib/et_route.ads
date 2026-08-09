@@ -62,7 +62,7 @@ package et_route is
 	type type_net_route is record
 		airwires	: et_ratsnest.type_airwires;
 
-		lines 		: pac_conductor_lines.list;
+		lines		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
@@ -78,12 +78,12 @@ package et_route is
 
 
 	procedure add_line (
-		route 	: in out type_net_route;
+		route	: in out type_net_route;
 		line	: in type_conductor_line);
 
 
 	procedure add_arc (
-		route 	: in out type_net_route;
+		route	: in out type_net_route;
 		arc		: in type_conductor_arc);
 
 
@@ -92,8 +92,8 @@ package et_route is
 	-- Iterates the track segments and vias of the
 	-- given route and converts them to polygons:
 	function get_polygons (
-		route 			: in type_net_route;
-		layer_category 	: in type_signal_layer_category;
+		route			: in type_net_route;
+		layer_category	: in type_signal_layer_category;
 		layer			: in type_signal_layer;
 		bottom_layer	: in type_signal_layer)
 		return pac_polygon_list.list;
