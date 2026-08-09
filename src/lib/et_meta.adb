@@ -111,7 +111,7 @@ package body et_meta is
 
 	procedure add_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string)
+		lib  : in type_library_path_schematic)
 	is begin
 		meta.preferred_libs.append (lib);
 	end add_device_library;
@@ -119,7 +119,7 @@ package body et_meta is
 
 	procedure remove_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string)
+		lib  : in type_library_path_schematic)
 	is begin
 		null;
 		-- CS

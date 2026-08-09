@@ -73,7 +73,7 @@ package body et_schematic_ops_meta is
 
 	procedure add_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_schematic.bounded_string;
+		path			: in type_library_path_schematic;
 		log_threshold	: in type_log_level)
 	is
 
@@ -112,7 +112,7 @@ package body et_schematic_ops_meta is
 
 	procedure remove_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_schematic.bounded_string;
+		path			: in type_library_path_schematic;
 		log_threshold	: in type_log_level)
 	is
 

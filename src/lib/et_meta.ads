@@ -156,12 +156,12 @@ package et_meta is
 
 	procedure add_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string);
+		lib  : in type_library_path_schematic);
 
 
 	procedure remove_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string);
+		lib  : in type_library_path_schematic);
 
 
 	function get_device_libraries (

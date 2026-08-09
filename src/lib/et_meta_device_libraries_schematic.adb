@@ -49,7 +49,7 @@ package body et_meta_device_libraries_schematic is
 
 
 	function library_path_exists (
-		lib : in pac_library_path_schematic.bounded_string)
+		lib : in type_library_path_schematic)
 		return boolean
 	is
 		use ada.directories;
@@ -67,26 +67,26 @@ package body et_meta_device_libraries_schematic is
 
 	function to_library_path (
 		lib : in string)
-		return pac_library_path_schematic.bounded_string
+		return type_library_path_schematic
 	is begin
-		return to_bounded_string (lib);
+		return type_library_path_schematic (pac_library_path_schematic.to_bounded_string (lib));
 	end to_library_path;
 
 
 
 
 	function to_string (
-		lib : in pac_library_path_schematic.bounded_string)
+		lib : in type_library_path_schematic)
 		return string
 	is begin
-		return pac_library_path_schematic.to_string (lib);
+		return pac_library_path_schematic.to_string (pac_library_path_schematic.bounded_string (lib));
 	end to_string;
 
 
 
 	function get_first (
 		paths : in pac_library_paths_schematic.list)
-		return pac_library_path_schematic.bounded_string
+		return type_library_path_schematic
 	is begin
 		return paths.first_element;
 	end get_first;
