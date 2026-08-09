@@ -433,18 +433,18 @@ package body et_kicad_packages is
 
 
 
-	function to_string (directory_name : in pac_directory_name.bounded_string)
+	function to_string (directory_name : in type_directory_name)
 		return string
 	is begin
-		return pac_directory_name.to_string (directory_name);
+		return pac_directory_name.to_string (pac_directory_name.bounded_string (directory_name));
 	end to_string;
 
 
 
 	function to_directory (directory_name : in string)
-		return pac_directory_name.bounded_string
+		return type_directory_name
 	is begin
-		return pac_directory_name.to_bounded_string (directory_name);
+		return type_directory_name (pac_directory_name.to_bounded_string (directory_name));
 	end to_directory;
 	pragma unreferenced (to_directory);
 
@@ -2663,8 +2663,8 @@ package body et_kicad_packages is
 		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
 
 		-- backup the directory of origin
-		use pac_directory_name;
-		origin_directory : constant pac_directory_name.bounded_string := to_bounded_string (current_directory);
+		origin_directory : constant type_directory_name :=
+			type_directory_name (pac_directory_name.to_bounded_string (current_directory));
 
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.

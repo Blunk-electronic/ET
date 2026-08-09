@@ -274,10 +274,12 @@ package et_kicad_packages is
 	directory_name_length_max : constant positive := 200;
 	package pac_directory_name is new generic_bounded_length (directory_name_length_max);
 
-	function to_string (directory_name : in pac_directory_name.bounded_string) return string;
+	type type_directory_name is new pac_directory_name.bounded_string;
+
+	function to_string (directory_name : in type_directory_name) return string;
 	-- Converts a directory name to a string.
 
--- 	function to_directory (directory_name : in string) return pac_directory_name.bounded_string;
+-- 	function to_directory (directory_name : in string) return type_directory_name;
 -- 	-- Converts a string to a pac_directory_name.
 
 
