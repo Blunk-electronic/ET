@@ -23,31 +23,25 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction site" where things are not
---   finished yet or intended for the future.
-
---   Please send your questions and comments to:
---
---   info@blunk-electronic.de
---   or visit <http://www.blunk-electronic.de> for more contact data
---
---   history of changes:
---
---   ToDo:
-
 with ada.strings.bounded;
 
 package et_bounded_string_helpers is
 
-	generic
-		with package bounded_strings is new ada.strings.bounded.generic_bounded_length (<>);
-
-	function from_string (item : in string) return bounded_strings.bounded_string;
 
 	generic
-		with package bounded_strings is new ada.strings.bounded.generic_bounded_length (<>);
+		with package bounded is new ada.strings.bounded.generic_bounded_length (<>);
+		type to_type is new bounded.bounded_string;
 
-	function to_string (item : in bounded_strings.bounded_string) return string;
+	function from_string (item : in string) return to_type;
+
+
+
+	generic
+		with package bounded is new ada.strings.bounded.generic_bounded_length (<>);
+		type from_type is new bounded.bounded_string;
+
+	function to_string (item : in from_type) return string;
+
 
 end et_bounded_string_helpers;
 
