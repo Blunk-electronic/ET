@@ -41,6 +41,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 with ada.calendar;				use ada.calendar;
 
+with et_bounded_string_helpers;
 with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
 with et_meta_device_libraries_board;		use et_meta_device_libraries_board;
 
@@ -54,8 +55,8 @@ package et_meta is
 	company_length_max : constant positive := 100;
 	package pac_company is new generic_bounded_length (company_length_max);
 
-	function to_company (company : in string) return pac_company.bounded_string;
-	function to_string (company : in pac_company.bounded_string) return string;
+	function to_company is new et_bounded_string_helpers.from_string (pac_company);
+	function to_string  is new et_bounded_string_helpers.to_string (pac_company);
 
 	company_default : constant pac_company.bounded_string := pac_company.to_bounded_string (not_assigned);
 

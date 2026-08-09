@@ -42,14 +42,6 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_meta is
 
-	function to_company (company : in string) return pac_company.bounded_string is begin
-		return pac_company.to_bounded_string (company);
-	end to_company;
-
-	function to_string (company : in pac_company.bounded_string) return string is begin
-		return pac_company.to_string (company);
-	end to_string;
-
 
 	function to_customer (customer : in string) return pac_customer.bounded_string is begin
 		return pac_customer.to_bounded_string (customer);
