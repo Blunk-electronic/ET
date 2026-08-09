@@ -125,7 +125,7 @@ is
 
 
 				procedure create_instance (
-					rig_name	: in pac_file_name.bounded_string;
+					rig_name	: in et_rig_name.type_rig_file_name;
 					rig			: in out type_rig)
 				is
 					pragma unreferenced (rig_name);
@@ -154,7 +154,7 @@ is
 
 
 				procedure create_connection (
-					rig_name	: in pac_file_name.bounded_string;
+					rig_name	: in et_rig_name.type_rig_file_name;
 					rig			: in out type_rig) is
 					pragma unreferenced (rig_name);
 					connection_inserted : boolean;
@@ -457,7 +457,7 @@ is
 		-- create an empty rig - named after the given configuration file but without extension
 		pac_rigs.insert (
 			container	=> rigs,
-			key			=> pac_file_name.to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
+			key			=> et_rig_name.type_rig_file_name (pac_file_name.to_bounded_string (base_name (file_name))), -- demo, low_cost, fully_equipped
 			inserted	=> rig_inserted, -- should always be true
 			position	=> rig_cursor);
 

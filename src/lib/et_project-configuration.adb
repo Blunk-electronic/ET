@@ -60,7 +60,7 @@ package body et_project.configuration is
 
 
 	function conventions_specified return boolean is begin
-		if et_conventions.pac_file_name.length (project.rules.conventions) > 0 then
+		if et_conventions.length (project.rules.conventions) > 0 then
 			return true;
 		else
 			return false;

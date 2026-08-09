@@ -89,17 +89,14 @@ package et_rig is
 	type type_rig is record
 		module_instances	: pac_module_instances.map;
 		connections			: pac_module_connections.set;
-		conventions			: et_conventions.pac_file_name.bounded_string; -- ../conventions.txt
+		conventions			: et_conventions.type_conventions_file_name; -- ../conventions.txt
 		-- CS description, docs, links, images ... ?
 	end record;
 
 
-	use et_rig_name.pac_file_name;
-
-
 	-- Lots of rigs are stored in a map:
 	package pac_rigs is new ordered_maps (
-		key_type		=> et_rig_name.pac_file_name.bounded_string, -- CS dedicated type_rig_name ?
+		key_type		=> et_rig_name.type_rig_file_name,
 		element_type	=> type_rig);
 
 

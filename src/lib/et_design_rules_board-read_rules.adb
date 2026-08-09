@@ -45,7 +45,7 @@ with et_file_sections;					use et_file_sections;
 separate (et_design_rules_board)
 
 procedure read_rules (
-	file_name		: in pac_file_name.bounded_string;
+	file_name		: in type_design_rules_file_name;
 	log_threshold 	: in type_log_level)
 is
 	previous_input : ada.text_io.file_type renames current_input;

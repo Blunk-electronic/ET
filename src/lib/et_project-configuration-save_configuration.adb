@@ -55,7 +55,7 @@ is
 	use ada.directories;
 
 	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.prj:
-	file_name : pac_file_name.bounded_string;
+	file_name : type_project_config_file_name;
 	file_handle : ada.text_io.file_type;
 
 	procedure write_rules is
@@ -77,15 +77,15 @@ begin -- save_configuration
 
 	-- Compose the full file name:
 	-- The file base name is the same as the project name.
-	file_name := pac_file_name.to_bounded_string (compose (
+	file_name := type_project_config_file_name (pac_file_name.to_bounded_string (compose (
 		name 		=> to_string (project_name),
-		extension 	=> file_extension)); -- prj
+		extension 	=> file_extension))); -- prj
 
 	-- create the file
 	create (
 		file => file_handle,
 		mode => out_file,
-		name => to_string (file_name));
+		name => pac_file_name.to_string (pac_file_name.bounded_string (file_name)));
 
 	set_output (file_handle);
 	write_configuration_header;

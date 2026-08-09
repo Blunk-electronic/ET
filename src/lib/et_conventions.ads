@@ -428,19 +428,21 @@ package et_conventions is
  	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max);
 
-	function to_file_name (file : in string) return pac_file_name.bounded_string;
-	function to_string (file : in pac_file_name.bounded_string) return string;
+	type type_conventions_file_name is new pac_file_name.bounded_string;
+
+	function to_file_name (file : in string) return type_conventions_file_name;
+	function to_string (file : in type_conventions_file_name) return string;
 
 
 	-- Creates a default conventions file:
 	procedure make_default_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level);
 
 
 	-- Reads the given conventions file:
 	procedure read_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level);
 	-- CS separate body !
 

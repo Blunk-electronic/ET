@@ -48,13 +48,15 @@ package et_project.configuration is
 	package pac_file_name is new generic_bounded_length (file_length_max);
 	use pac_file_name;
 
+	type type_project_config_file_name is new pac_file_name.bounded_string;
+
 	file_extension : constant string := "prj";
 
 
 
 
 	type type_rules is record
-		conventions	: et_conventions.pac_file_name.bounded_string; -- conventions.txt
+		conventions	: et_conventions.type_conventions_file_name; -- conventions.txt
 	end record;
 
 	type type_configuration is record

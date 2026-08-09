@@ -2366,22 +2366,22 @@ package body et_conventions is
 
 
 
-	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
-		return pac_file_name.to_bounded_string (file);
+	function to_file_name (file : in string) return type_conventions_file_name is begin
+		return type_conventions_file_name (pac_file_name.to_bounded_string (file));
 	end to_file_name;
 
 
 
 
-	function to_string (file : in pac_file_name.bounded_string) return string is begin
-		return pac_file_name.to_string (file);
+	function to_string (file : in type_conventions_file_name) return string is begin
+		return pac_file_name.to_string (pac_file_name.bounded_string (file));
 	end to_string;
 
 
 
 
 	procedure make_default_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level)
 	is
 		use et_system_info;
@@ -2585,7 +2585,7 @@ package body et_conventions is
 
 
 	procedure read_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level) is
 	-- Reads the given conventions file.
 

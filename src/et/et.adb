@@ -100,8 +100,8 @@ with et_gui_2;
 
 procedure et is
 
-	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
--- 	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
+	conv_file_name_create	: et_conventions.type_conventions_file_name;
+-- 	conv_file_name_use		: et_conventions.type_conventions_file_name;
 
 	project_name_create		: type_project_name; -- the project to be created
 	project_name_import		: type_project_name; -- the project to be imported
@@ -573,7 +573,7 @@ procedure et is
 
 
 	procedure process_commandline_arguments is
-		use et_conventions.pac_file_name;
+		use et_conventions;
 		use pac_package_model_file;
 		use et_symbol_name;
 		use pac_device_model_file;

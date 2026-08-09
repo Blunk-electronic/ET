@@ -141,21 +141,21 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 
 			use et_project.configuration;
-			prj_conf_file : pac_file_name.bounded_string; -- led_matrix.prj
+			prj_conf_file : type_project_config_file_name; -- led_matrix.prj
 		begin
 			log (text => "creating project configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name
-			prj_conf_file := pac_file_name.to_bounded_string (compose (
+			prj_conf_file := type_project_config_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
 				name 					=> to_string (project_name),
-				extension 				=> file_extension));
+				extension 				=> file_extension)));
 
 			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file,
-				name => pac_file_name.to_string (prj_conf_file));
+				name => pac_file_name.to_string (pac_file_name.bounded_string (prj_conf_file)));
 
 			set_output (file_handle);
 
@@ -222,23 +222,23 @@ package body et_project is
 			use pac_generic_modules;
 			use et_rig;
 			use et_rig_name;
-			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
+			rig_conf_file : type_rig_file_name; -- led_matrix.conf
 
 			example_instance_name : constant string := "MOD1";
 		begin
 			log (text => "creating default rig configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name
-			rig_conf_file := pac_file_name.to_bounded_string (compose (
+			rig_conf_file := type_rig_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
 				name 					=> to_string (project_name),
-				extension 				=> file_extension));
+				extension 				=> file_extension)));
 
 			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file,
-				name => pac_file_name.to_string (rig_conf_file));
+				name => pac_file_name.to_string (pac_file_name.bounded_string (rig_conf_file)));
 
 			set_output (file_handle);
 
@@ -510,8 +510,7 @@ package body et_project is
 			rig_cursor : in pac_rigs.cursor)
 		is
 			use et_rig_name;
-			use pac_file_name;
-			rig_name : constant pac_file_name.bounded_string := key (rig_cursor);
+			rig_name : constant type_rig_file_name := key (rig_cursor);
 		begin
 			log_indentation_up;
 			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);
