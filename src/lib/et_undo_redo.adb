@@ -444,12 +444,10 @@ package body et_undo_redo is
 
 
 	procedure undo (
-		message	: in out pac_undo_message.bounded_string;
+		message	: in out type_undo_message;
 		lth		: in type_log_level)
 	is
 		use et_board_ops_ratsnest;
-
-		use pac_undo_message;
 
 		domain : type_domain;
 
@@ -745,11 +743,10 @@ package body et_undo_redo is
 
 
 	procedure redo (
-		message	: in out pac_redo_message.bounded_string;
+		message	: in out type_redo_message;
 		lth		: in type_log_level)
 	is
 		use et_board_ops_ratsnest;
-		use pac_redo_message;
 
 		domain : type_domain;
 

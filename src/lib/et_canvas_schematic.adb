@@ -539,8 +539,7 @@ package body et_canvas_schematic is
 
 	procedure undo is
 		use et_undo_redo;
-		use pac_undo_message;
-		message : pac_undo_message.bounded_string;
+		message : type_undo_message;
 	begin
 		-- put_line ("schematic undo");
 		undo (message, log_threshold + 1);
@@ -556,8 +555,7 @@ package body et_canvas_schematic is
 
 	procedure redo is
 		use et_undo_redo;
-		use pac_redo_message;
-		message : pac_redo_message.bounded_string;
+		message : type_redo_message;
 	begin
 		-- put_line ("schematic redo");
 		redo (message, log_threshold + 1);

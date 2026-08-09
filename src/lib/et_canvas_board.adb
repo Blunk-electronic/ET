@@ -909,8 +909,7 @@ package body et_canvas_board is
 
 	procedure undo is
 		use et_undo_redo;
-		use pac_undo_message;
-		message : pac_undo_message.bounded_string;
+		message : type_undo_message;
 	begin
 		-- put_line ("board undo");
 		undo (message, log_threshold + 1);
@@ -925,8 +924,7 @@ package body et_canvas_board is
 
 	procedure redo is
 		use et_undo_redo;
-		use pac_redo_message;
-		message : pac_redo_message.bounded_string;
+		message : type_redo_message;
 	begin
 		-- put_line ("board redo");
 		redo (message, log_threshold + 1);
