@@ -135,24 +135,24 @@ package et_netlists is
 	end record;
 
 
-	type type_net_name is record
+	type type_full_net_name is record
 		base_name	: et_net_names.type_net_name; -- output
 		prefix		: et_net_names.type_net_name; -- CLK_GENERATOR/FLT1/
 	end record;
 
 
-	function "<" (left, right : in type_net_name) return boolean;
+	function "<" (left, right : in type_full_net_name) return boolean;
 
 
 	procedure log_net_name (
-		name			: in type_net_name;
+		name			: in type_full_net_name;
 		primary			: in boolean;
 		log_threshold	: in type_log_level);
 
 
 
 	package pac_netlist_nets is new ordered_maps (
-		key_type		=> type_net_name,
+		key_type		=> type_full_net_name,
 		element_type	=> type_netlist_ports);
 
 
@@ -313,7 +313,7 @@ package et_netlists is
 	-- The final netlist is a tree that reflects
 	-- primary nets with their subordinated secondary nets:
 	type type_netlist_net is new type_netlist_ports with record
-		name	: type_net_name; -- base_name and prefix
+		name	: type_full_net_name; -- base_name and prefix
 	end record;
 
 

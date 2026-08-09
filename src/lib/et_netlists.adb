@@ -120,7 +120,7 @@ package body et_netlists is
 
 
 	procedure log_net_name (
-		name			: in type_net_name;
+		name			: in type_full_net_name;
 		primary			: in boolean;
 		log_threshold	: in type_log_level)
 	is begin
@@ -146,7 +146,7 @@ package body et_netlists is
 
 
 
-	function "<" (left, right : in type_net_name) return boolean is
+	function "<" (left, right : in type_full_net_name) return boolean is
 		result : boolean := false;
 		use et_net_names;
 	begin
@@ -183,7 +183,7 @@ package body et_netlists is
 
 
 		procedure query_ports (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports)
 		is
 			pragma unreferenced (net_name);
@@ -334,7 +334,7 @@ package body et_netlists is
 		result : boolean := false;
 
 		procedure query_submod_ports (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports)
 		is
 			pragma unreferenced (net_name);
@@ -485,7 +485,7 @@ package body et_netlists is
 			-- opposide the given port. If netchanger found then netchanger_cursor
 			-- points to an element (means it points no longer to no_element).
 			procedure query_netchangers (
-				net_name	: in type_net_name;
+				net_name	: in type_full_net_name;
 				net			: in type_netlist_ports)
 			is
 				pragma unreferenced (net_name);
@@ -581,7 +581,7 @@ package body et_netlists is
 			-- Search for the net specified by "port.port". The search ends
 			-- once the net has been found. The search is conducted by comparing
 			-- with the base names of the nets in the module. The prefix does not matter.
-			-- See specs of type_net_name. The base name is something like "output".
+			-- See specs of type_full_net_name. The base name is something like "output".
 			-- The prefix is something like "CLK_GENERATOR/FLT1/".
 			-- But as said above the prefix does not matter here.
 				use et_net_names;
@@ -665,7 +665,7 @@ package body et_netlists is
 
 
 		procedure query_submodules (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports) is
 			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;
