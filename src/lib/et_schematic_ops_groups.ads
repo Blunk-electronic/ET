@@ -69,13 +69,13 @@ package et_schematic_ops_groups is
 
 
 	group_reference_point : type_object_position;
-	
-	
-		
+
+
+
 	-- This procedure:
 	-- 1. sets the "selected"-flag of all
 	--    objects which are inside the given zone on the
-	--    given sheet. 
+	--    given sheet.
 	-- 2. It sets the sheet of group_reference_point
 	--    as specified in argument sheet. This is only relevant
 	--    if the clipboard is used for copying.
@@ -132,15 +132,15 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	
 
-	
-	
+
+
+
 	-- This procedure copies the current group of objects
-	-- into the clipboard. 
+	-- into the clipboard.
 	-- 1. If auto_center is true, then
 	--    the center of the group is used as reference point.
-	-- 2. If auto_center is false, then the explicitly given 
+	-- 2. If auto_center is false, then the explicitly given
 	--    reference_point is used.
 	-- 3. The x/y component of the global group_reference_point
 	--    is set according to the specified reference_point
@@ -152,12 +152,12 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	
+
 	-- This procedure pastes the content of the clipboard
 	-- at the given sheet and place.
 	-- The global group_reference_point (set by procedures
 	-- define_group_rectangular and copy_group_to_clipboard)
-	-- is used to compute the offset by which the group is 
+	-- is used to compute the offset by which the group is
 	-- to be pasted:
 	procedure paste_group (
 		module_cursor	: in pac_generic_modules.cursor;

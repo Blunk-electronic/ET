@@ -108,7 +108,7 @@ package et_canvas_schematic_group is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
+
 
 -- PASTE:
 

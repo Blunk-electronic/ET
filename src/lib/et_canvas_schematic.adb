@@ -695,7 +695,7 @@ package body et_canvas_schematic is
 
 
 		-- Do a level 2 reset. This is a full reset:
-		procedure level_2 is 
+		procedure level_2 is
 			use et_module_clipboard;
 		begin
 			level_1;
@@ -707,7 +707,7 @@ package body et_canvas_schematic is
 
 			reset_copy_to_clipboard;
 			clear_clipboard;
-			
+
 			reset_group_area_mouse; -- abort a define-group operation
 
 			reset_unit_add; -- after adding a device

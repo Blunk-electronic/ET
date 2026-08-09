@@ -194,7 +194,7 @@ package body et_canvas_schematic_group is
 
 
 
-	
+
 
 
 
@@ -206,22 +206,22 @@ package body et_canvas_schematic_group is
 	begin
 		-- Set the tool being used:
 		object_tool := tool;
-		
-		
+
+
 		copy_group_to_clipboard (
 			module_cursor	=> active_module,
 			auto_center		=> false,
 			reference_point	=> point,
 			log_threshold	=> log_threshold);
-									
+
 	end copy_group_to_clipboard;
-		
 
 
 
 
 
-	
+
+
 
 
 
@@ -243,7 +243,7 @@ package body et_canvas_schematic_group is
 				module_cursor	=> active_module,
 				sheet			=> active_sheet, -- we stay on the current sheet
 				place			=> point,
-				
+
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
 

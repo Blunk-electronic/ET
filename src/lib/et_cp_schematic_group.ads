@@ -87,13 +87,13 @@ package et_cp_schematic_group is
 	-- whether a simple copy or multiple copies are to be made.
 	--
 	-- 1. Simple copy:
-	--    By a given offset the current group is copied and 
+	--    By a given offset the current group is copied and
 	--    placed right away.
 	--    example: schematic demo copy group 1 10 -20
 	--
 	-- 2. Multiple copy:
 	--    The group is copied into the clipboard with
-	--    a reference point. 
+	--    a reference point.
 	-- 	  A) The reference point is the
 	--    center of the group if nothing else is specified.
 	--    example: schematic demo copy group
@@ -106,7 +106,7 @@ package et_cp_schematic_group is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure parses a command that pastes 
+	-- This procedure parses a command that pastes
 	-- the content of the clipboard at a given place.
 	-- example: schematic demo paste group 2 10 -20
 	procedure paste_group (

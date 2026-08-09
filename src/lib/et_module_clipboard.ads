@@ -51,18 +51,18 @@ package et_module_clipboard is
 
 
 	copy_to_clipboard : boolean := false;
-	
+
 	procedure toggle_copy_to_clipboard;
 
-	
+
 	procedure reset_copy_to_clipboard;
 
-	function copy_to_clipboard_enabled 
+	function copy_to_clipboard_enabled
 		return boolean;
 
-	
-	
-	
+
+
+
 end et_module_clipboard;
 
 -- Soli Deo Gloria
