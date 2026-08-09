@@ -69,31 +69,33 @@ package et_meta_device_libraries_board is
 
 	use pac_library_path_board;
 
+	type type_library_path_board is new pac_library_path_board.bounded_string;
+
 
 	-- Returns true if the given path exists:
 	function library_path_exists (
-		lib : in pac_library_path_board.bounded_string)
+		lib : in type_library_path_board)
 		return boolean;
 
 
 	function to_library_path (
 		lib : in string)
-		return pac_library_path_board.bounded_string;
+		return type_library_path_board;
 
 
 	function to_string (
-		lib : in pac_library_path_board.bounded_string)
+		lib : in type_library_path_board)
 		return string;
 
 
 
 	package pac_library_paths_board is new
-		doubly_linked_lists (pac_library_path_board.bounded_string);
+		doubly_linked_lists (type_library_path_board);
 
 
 	function get_first (
 		paths : in pac_library_paths_board.list)
-		return pac_library_path_board.bounded_string;
+		return type_library_path_board;
 
 
 

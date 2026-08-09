@@ -430,7 +430,7 @@ package body et_canvas_board_devices is
 
 	function get_top_most_important_library return string is
 		all_lib_dirs : pac_library_paths_board.list;
-		top_lib_dir : pac_library_path_board.bounded_string;
+		top_lib_dir : type_library_path_board;
 
 		use et_directory_and_file_ops;
 	begin

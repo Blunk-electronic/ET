@@ -183,12 +183,12 @@ package et_meta is
 
 	procedure add_device_library (
 		meta : in out type_meta_board;
-		lib  : in pac_library_path_board.bounded_string);
+		lib  : in type_library_path_board);
 
 
 	procedure remove_device_library (
 		meta : in out type_meta_board;
-		lib  : in pac_library_path_board.bounded_string);
+		lib  : in type_library_path_board);
 
 
 	function get_device_libraries (

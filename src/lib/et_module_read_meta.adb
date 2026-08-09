@@ -287,7 +287,7 @@ package body et_module_read_meta is
  		line : in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
-		lib : pac_library_path_board.bounded_string;
+		lib : type_library_path_board;
 	begin
 		if kw = keyword_path then
 			expect_field_count (line, 2);

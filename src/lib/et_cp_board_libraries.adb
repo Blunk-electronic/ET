@@ -55,7 +55,7 @@ package body et_cp_board_libraries is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		path : pac_library_path_board.bounded_string;
+		path : type_library_path_board;
 	begin
 		log (text => "add component library path (board)", level => log_threshold);
 		log_indentation_up;
@@ -90,7 +90,7 @@ package body et_cp_board_libraries is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		path : pac_library_path_board.bounded_string;
+		path : type_library_path_board;
 	begin
 		log (text => "remove component library path (board)", level => log_threshold);
 		log_indentation_up;
