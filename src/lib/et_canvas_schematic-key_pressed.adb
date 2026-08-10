@@ -817,7 +817,7 @@ is
 
 
 
-	procedure copy is 
+	procedure copy is
 		use et_module_clipboard;
 	begin
 		case key is
@@ -865,7 +865,7 @@ is
 								KEYBOARD, get_cursor_position);
 						end if;
 
-						
+
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (KEYBOARD, point);
 
@@ -889,11 +889,11 @@ is
 						else
 							status_clear;
 						end if;
-						
+
 					when others => null;
 				end case;
-				
-				
+
+
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
