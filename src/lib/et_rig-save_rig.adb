@@ -60,7 +60,7 @@ is
 
 	-- For the final full file name like
 	-- /home/user/et_projects/blood_sample_analyzer.conf
-	file_name : et_rig_name.pac_file_name.bounded_string;
+	file_name : et_rig_name.type_rig_file_name;
 
 	-- backup the previous output
 	previous_output : ada.text_io.file_type renames current_output;
@@ -100,15 +100,15 @@ begin -- save_rig_configuration
 	log_indentation_up;
 
 	-- compose the full file name
-	file_name := pac_file_name.to_bounded_string (compose (
-		name		=> pac_file_name.to_string (key (rig_cursor)), -- fully_equipped
-		extension	=> file_extension)); -- conf
+	file_name := et_rig_name.type_rig_file_name (pac_file_name.to_bounded_string (compose (
+		name		=> pac_file_name.to_string (pac_file_name.bounded_string (key (rig_cursor))), -- fully_equipped
+		extension	=> file_extension))); -- conf
 
 	-- create the file
 	create (
 		file => file_handle,
 		mode => out_file,
-		name => pac_file_name.to_string (file_name));
+		name => pac_file_name.to_string (pac_file_name.bounded_string (file_name)));
 
 	set_output (file_handle);
 	write_rig_configuration_header;

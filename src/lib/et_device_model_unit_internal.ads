@@ -88,7 +88,7 @@ package et_device_model_unit_internal is
 
 	-- Internal units are collected in a map:
 	package pac_units_internal is new indefinite_ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		key_type		=> type_unit_name, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
 	use pac_units_internal;

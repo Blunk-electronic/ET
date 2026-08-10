@@ -593,8 +593,7 @@ package body et_canvas_schematic is
 
 	procedure undo is
 		use et_undo_redo;
-		use pac_undo_message;
-		message : pac_undo_message.bounded_string;
+		message : type_undo_message;
 	begin
 		-- put_line ("schematic undo");
 		undo (message, log_threshold + 1);
@@ -610,8 +609,7 @@ package body et_canvas_schematic is
 
 	procedure redo is
 		use et_undo_redo;
-		use pac_redo_message;
-		message : pac_redo_message.bounded_string;
+		message : type_redo_message;
 	begin
 		-- put_line ("schematic redo");
 		redo (message, log_threshold + 1);
@@ -695,7 +693,7 @@ package body et_canvas_schematic is
 
 
 		-- Do a level 2 reset. This is a full reset:
-		procedure level_2 is 
+		procedure level_2 is
 			use et_module_clipboard;
 		begin
 			level_1;
@@ -707,7 +705,7 @@ package body et_canvas_schematic is
 
 			reset_copy_to_clipboard;
 			clear_clipboard;
-			
+
 			reset_group_area_mouse; -- abort a define-group operation
 
 			reset_unit_add; -- after adding a device
@@ -1252,7 +1250,7 @@ package body et_canvas_schematic is
 
 
 	procedure set_module (
-		module	: in pac_module_name.bounded_string)  -- motor_driver
+		module	: in type_module_name)  -- motor_driver
 	is
 		use et_module_read;
 		cursor : constant pac_generic_modules.cursor := find (generic_modules, module);
@@ -1291,7 +1289,7 @@ package body et_canvas_schematic is
 
 
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string)
+		script : in type_script_name)
 	is
 		use ada.directories;
 		use et_project_name;

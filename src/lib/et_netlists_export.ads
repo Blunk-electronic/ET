@@ -60,8 +60,8 @@ package et_netlists_export is
 	-- - Exports the netlist of the given module to the export/CAM directory.
 	function make_netlist (
 		modules			: in pac_netlist_modules.tree;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		module_name		: in type_module_name; -- motor_driver
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_module_netlist.tree;

@@ -83,7 +83,7 @@ package body et_thermal_relief is
 
 	function get_terminal_name (
 		terminal : in pac_terminals_with_relief.cursor)
-		return pac_terminal_name.bounded_string
+		return type_terminal_name
 	is
 		t : type_terminal_with_relief renames element (terminal);
 	begin

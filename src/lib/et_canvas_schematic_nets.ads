@@ -63,10 +63,10 @@ package et_canvas_schematic_nets is
 	use pac_generic_modules;
 
 
-	use pac_net_name;
+	use et_net_names;
 
 
-	use pac_net_name;
+	use et_net_names;
 
 
 
@@ -112,7 +112,7 @@ package et_canvas_schematic_nets is
 	--    insertion of the segment in the targeted net.
 	procedure add_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
+		net_name_given	: in type_net_name; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level);

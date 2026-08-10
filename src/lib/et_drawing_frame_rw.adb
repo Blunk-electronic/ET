@@ -91,7 +91,7 @@ package body et_drawing_frame_rw is
 
 	procedure write_schematic (
 		frame			: in type_frame_schematic;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
@@ -354,7 +354,7 @@ package body et_drawing_frame_rw is
 
 	procedure write_board (
 		frame			: in type_frame_pcb_pre;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
@@ -675,7 +675,7 @@ package body et_drawing_frame_rw is
 
 
 	procedure create_frame (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		domain			: in type_domain;
 		log_threshold	: in type_log_level)
 	is
@@ -715,7 +715,7 @@ package body et_drawing_frame_rw is
 
 	procedure save_frame_schematic (
 		frame			: in type_frame_schematic;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "save schematic frame as " & to_string (file_name), level => log_threshold);
@@ -732,7 +732,7 @@ package body et_drawing_frame_rw is
 
 	procedure save_frame_board (
 		frame			: in type_frame_pcb_pre;
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "save board frame as " & to_string (file_name), level => log_threshold);
@@ -749,7 +749,7 @@ package body et_drawing_frame_rw is
 
 
 	function read_frame_schematic (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 		return type_frame_schematic
 	is
@@ -1273,7 +1273,7 @@ package body et_drawing_frame_rw is
 
 
 		function is_dummy_frame return boolean is
-			use pac_template_name;
+			use et_drawing_frame;
 		begin
 			if file_name = template_schematic_default then
 				return true;
@@ -1361,7 +1361,7 @@ package body et_drawing_frame_rw is
 
 
 	function read_frame_board (
-		file_name		: in pac_template_name.bounded_string;
+		file_name		: in type_template_name;
 		log_threshold	: in type_log_level)
 		return type_frame_pcb_pre
 	is
@@ -1576,8 +1576,7 @@ package body et_drawing_frame_rw is
 
 		-- The content of a cam marker may not be specified via the frame template.
 		-- In this case the default content must be assigned to the tb_cam_marker.
-		procedure set_content (content : in pac_text_content.bounded_string) is
-			use pac_text_content;
+		procedure set_content (content : in type_text_content) is
 		begin
 			if length (tb_cam_marker.content) = 0 then
 				tb_cam_marker.content := content;
@@ -2078,7 +2077,7 @@ package body et_drawing_frame_rw is
 
 
 		function is_dummy_frame return boolean is
-			use pac_template_name;
+			use et_drawing_frame;
 		begin
 			if file_name = template_pcb_default then
 				return true;

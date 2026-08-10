@@ -183,14 +183,14 @@ package body et_drawing_frame is
 
 
 
-	function to_string (name : in pac_template_name.bounded_string) return string is begin
-		return pac_template_name.to_string (name);
+	function to_string (name : in type_template_name) return string is begin
+		return pac_template_name.to_string (pac_template_name.bounded_string (name));
 	end to_string;
 
 
 
-	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
-		return pac_template_name.to_bounded_string (name);
+	function to_template_name (name : in string) return type_template_name is begin
+		return type_template_name (pac_template_name.to_bounded_string (name));
 	end to_template_name;
 
 

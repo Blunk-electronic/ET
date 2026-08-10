@@ -336,7 +336,7 @@ package body et_cp_schematic_device is
 
 		name : type_device_name;
 
-		value : pac_device_value.bounded_string; -- 470R
+		value : type_device_value; -- 470R
 	begin
 		log (text => "set value", level => log_threshold);
 		log_indentation_up;
@@ -397,7 +397,7 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
-		purpose : pac_device_purpose.bounded_string; -- brightness_control
+		purpose : type_device_purpose; -- brightness_control
 	begin
 		log (text => "set purpose", level => log_threshold);
 		log_indentation_up;
@@ -454,7 +454,7 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode : type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		name : type_device_name;
 	begin
 		log (text => "set partcode", level => log_threshold);
@@ -513,7 +513,7 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		name : type_device_name;
-		variant : pac_package_variant_name.bounded_string; -- N, D
+		variant : type_package_variant_name; -- N, D
 	begin
 		log (text => "set package variant", level => log_threshold);
 		log_indentation_up;

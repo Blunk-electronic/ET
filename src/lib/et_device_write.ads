@@ -46,8 +46,8 @@ package et_device_write is
 
 
 	procedure write_device (
-		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		device			: in type_device_model; -- the actual device model
+		file_name		: in type_device_model_name;	-- libraries/devices/7400.dev
+		device			: in type_device_model;			-- the actual device model
 		log_threshold	: in type_log_level);
 	-- CS rename to save_device_model
 

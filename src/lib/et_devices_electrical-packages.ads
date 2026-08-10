@@ -88,12 +88,12 @@ package et_devices_electrical.packages is
 
 	procedure set_value (
 		device	: in out type_device_electrical;
-		value	: in pac_device_value.bounded_string);
+		value	: in type_device_value);
 
 
 	function get_value (
 		device	: in type_device_electrical)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function get_value (
@@ -105,7 +105,7 @@ package et_devices_electrical.packages is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_value (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function has_value (
@@ -119,12 +119,12 @@ package et_devices_electrical.packages is
 
 	procedure set_partcode (
 		device		: in out type_device_electrical;
-		partcode	: in pac_device_partcode.bounded_string);
+		partcode	: in type_device_partcode);
 
 
 	function get_partcode (
 		device	: in type_device_electrical)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function get_partcode (
@@ -136,7 +136,7 @@ package et_devices_electrical.packages is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_partcode (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function has_partcode (
@@ -150,12 +150,12 @@ package et_devices_electrical.packages is
 
 	procedure set_purpose (
 		device	: in out type_device_electrical;
-		purpose	: in pac_device_purpose.bounded_string);
+		purpose	: in type_device_purpose);
 
 
 	function get_purpose (
 		device	: in type_device_electrical)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function get_purpose (
@@ -167,7 +167,7 @@ package et_devices_electrical.packages is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_purpose (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function has_purpose (
@@ -184,7 +184,7 @@ package et_devices_electrical.packages is
 	-- Otherwise an exception will be raised:
 	function get_package_variant (
 		device : in type_device_electrical)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns a list of available package variants:
@@ -198,7 +198,7 @@ package et_devices_electrical.packages is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns a list of available package variants:
@@ -578,8 +578,8 @@ package et_devices_electrical.packages is
 	-- The given device must be real. Otherwise a constraint error will be raised:
 	function get_terminal (
 		device	: in pac_devices_electrical.cursor;
-		unit	: in pac_unit_name.bounded_string;
-		port	: in pac_port_name.bounded_string)
+		unit	: in type_unit_name;
+		port	: in type_port_name)
 		return et_terminals.pac_terminals.cursor;
 
 

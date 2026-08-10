@@ -453,7 +453,7 @@ package body et_canvas_board_vias is
 		procedure make_combo_net is
 			use et_canvas_board_tracks;
 			use et_schematic_ops_nets;
-			use pac_net_name;
+			use et_net_names;
 
 			store : gtk_list_store;
 			render	: gtk_cell_renderer_text;

@@ -281,7 +281,7 @@ package body et_text_vectorized is
 
 
 		function vectorize_text (
-			content			: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
+			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
 			rotation		: in type_rotation;
 			position		: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
@@ -301,7 +301,7 @@ package body et_text_vectorized is
 			-- This is the text content we will be displaying. It will be read
 			-- character by character. Each character will be mapped
 			-- to a vectorized character (which is a list of lines):
-			text : constant string := pac_text_content.to_string (content);
+			text : constant string := to_string (content);
 
 			package sorting is new pac_character_lines.generic_sorting;
 

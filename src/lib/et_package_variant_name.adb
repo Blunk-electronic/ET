@@ -47,10 +47,10 @@ package body et_package_variant_name is
 
 
 	function is_empty (
-		variant_name : in pac_package_variant_name.bounded_string)
+		variant_name : in type_package_variant_name)
 		return boolean
 	is begin
-		if length (variant_name) = 0 then
+		if length (pac_package_variant_name.bounded_string (variant_name)) = 0 then
 			return true;
 		else
 			return false;
@@ -62,15 +62,15 @@ package body et_package_variant_name is
 
 	function to_variant_name (
 		variant_name : in string)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is begin
-		return pac_package_variant_name.to_bounded_string (variant_name);
+		return type_package_variant_name (pac_package_variant_name.to_bounded_string (variant_name));
 	end to_variant_name;
 
 
 	-- function to_string (
-	--	variant : in pac_package_variant_name.bounded_string)
-	--	return string
+	-- 	variant : in type_package_variant_name)
+	-- 	return string
 	-- is begin
 	--	return pac_package_variant_name.to_string (variant);
 	-- end;
@@ -91,7 +91,7 @@ package body et_package_variant_name is
 
 
 	procedure check_variant_name_characters (
-		variant		: in pac_package_variant_name.bounded_string;
+		variant		: in type_package_variant_name;
 		characters	: in character_set := variant_name_characters)
 	is
 		invalid_character_position : natural := 0;

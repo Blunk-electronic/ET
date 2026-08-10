@@ -97,7 +97,7 @@ package et_canvas_board_devices is
 		-- The cursor to the package model:
 		packge		: pac_package_models.cursor;
 
-		value		: pac_device_value.bounded_string; -- 100k
+		value		: type_device_value; -- 100k
 
 		-- The prospective device name (like FD4) once the
 		-- add operation is complete.

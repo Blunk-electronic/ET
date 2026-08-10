@@ -160,7 +160,7 @@ package body et_board_ops_ratsnest is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -168,7 +168,7 @@ package body et_board_ops_ratsnest is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				-- The computation of airwires bases on floating
@@ -308,13 +308,13 @@ package body et_board_ops_ratsnest is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_airwires;
@@ -383,13 +383,13 @@ package body et_board_ops_ratsnest is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_airwires;
@@ -449,7 +449,7 @@ package body et_board_ops_ratsnest is
 
 	function get_net_name (
 		object : in pac_objects.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
 		use pac_objects;
 		use pac_nets;
@@ -481,7 +481,7 @@ package body et_board_ops_ratsnest is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -491,7 +491,7 @@ package body et_board_ops_ratsnest is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 
 				procedure query_airwires (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
@@ -570,7 +570,7 @@ package body et_board_ops_ratsnest is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -580,7 +580,7 @@ package body et_board_ops_ratsnest is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 
 				procedure query_airwires (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
@@ -652,14 +652,14 @@ package body et_board_ops_ratsnest is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
   pragma unreferenced (module_name);
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);

@@ -53,19 +53,19 @@ package body et_net_class_description is
 
 
 	function to_string (
-		class_description : in pac_net_class_description.bounded_string)
+		class_description : in type_net_class_description)
 		return string
 	is begin
-		return pac_net_class_description.to_string (class_description);
+		return pac_net_class_description.to_string (pac_net_class_description.bounded_string (class_description));
 	end to_string;
 
 
 
 	function to_net_class_description (
 		class_description : in string)
-		return pac_net_class_description.bounded_string
+		return type_net_class_description
 	is begin
-		return to_bounded_string (class_description);
+		return type_net_class_description (pac_net_class_description.to_bounded_string (class_description));
 	end to_net_class_description;
 
 

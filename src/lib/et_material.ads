@@ -64,10 +64,10 @@ package et_material is
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
 	type type_bom_device is record
-		value		: pac_device_value.bounded_string;	-- 7400
-		packge		: pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		partcode	: pac_device_partcode.bounded_string; -- IC_PAC_S_SO16_VAL7400
-		purpose		: pac_device_purpose.bounded_string;	-- brightness_control
+		value		: type_device_value;	-- 7400
+		packge		: type_package_model_name; -- libraries/packages/smd/SOT23.pac
+		partcode	: type_device_partcode; -- IC_PAC_S_SO16_VAL7400
+		purpose		: type_device_purpose;	-- brightness_control
 	end record;
 
 
@@ -91,8 +91,8 @@ package et_material is
 	-- - Exports the BOM of the given module to the export/CAM directory.
 	procedure write_bom (
 		bom				: in pac_bom_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		module_name		: in type_module_name; -- motor_driver
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 

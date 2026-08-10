@@ -46,15 +46,17 @@ package et_port_names is
 
 	package pac_port_name is new generic_bounded_length (port_name_length_max);
 
+	type type_port_name is new pac_port_name.bounded_string;
+
 
 	function to_string (
-		port : in pac_port_name.bounded_string)
+		port : in type_port_name)
 		return string;
 
 
 	function to_port_name (
 		name : in string)
-		return pac_port_name.bounded_string;
+		return type_port_name;
 
 
 

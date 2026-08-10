@@ -59,18 +59,20 @@ package et_symbol_name is
 	package pac_symbol_model_name is new
 		generic_bounded_length (symbol_file_name_length_max);
 
+	type type_symbol_model_name is new pac_symbol_model_name.bounded_string;
+
 
 	symbol_library_file_extension : constant string := "sym";
 
 
 	function to_string (
-		name : in pac_symbol_model_name.bounded_string)
+		name : in type_symbol_model_name)
 		return string;
 
 
 	function to_file_name (
 		name : in string)
-		return pac_symbol_model_name.bounded_string;
+		return type_symbol_model_name;
 
 
 

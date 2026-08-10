@@ -74,7 +74,7 @@ package et_board_ops_assy_doc is
 
 	-- Adds a line:
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -190,7 +190,7 @@ package et_board_ops_assy_doc is
 
 	-- Adds an arc to the assembly documentation.
 	procedure add_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -270,7 +270,7 @@ package et_board_ops_assy_doc is
 
 	-- Adds a circle to the assembly documentation.
 	procedure add_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_doc_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -679,7 +679,7 @@ package et_board_ops_assy_doc is
 	-- CS currently deletes the object found. Leaves other objects untouched.
 	-- CS a parameter like "all" to delete all objects in the vicinity of point.
 	procedure delete_object (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;

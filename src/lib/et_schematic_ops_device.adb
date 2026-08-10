@@ -89,7 +89,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -120,7 +120,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -133,7 +133,7 @@ package body et_schematic_ops_device is
 				procedure sort (
 					unit_cursor : in pac_units.cursor)
 				is
-					unit_name : constant pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_name : constant type_unit_name := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : constant type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : pac_renumber_devices.cursor;
@@ -217,7 +217,7 @@ package body et_schematic_ops_device is
 		device_found : boolean := false; -- to be returned
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -248,7 +248,7 @@ package body et_schematic_ops_device is
 		result : pac_devices_electrical.cursor;
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -279,7 +279,7 @@ package body et_schematic_ops_device is
 		result : pac_devices_electrical.cursor;
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -331,7 +331,7 @@ package body et_schematic_ops_device is
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string
+		return type_device_model_name
 	is
 		cursor : pac_devices_electrical.cursor;
 	begin
@@ -358,14 +358,14 @@ package body et_schematic_ops_device is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		all_units		: in boolean;
-		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		unit_name		: in type_unit_name := unit_name_default;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -440,7 +440,7 @@ package body et_schematic_ops_device is
 		device_name		: in type_device_name;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
-		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		unit_name		: in type_unit_name := unit_name_default;
 		linebreaks		: in boolean := false;
 		log_threshold	: in type_log_level)
 		return string
@@ -456,7 +456,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
@@ -554,7 +554,7 @@ package body et_schematic_ops_device is
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		value				: in pac_device_value.bounded_string; -- 470R
+		value				: in type_device_value; -- 470R
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
@@ -567,7 +567,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -658,7 +658,7 @@ package body et_schematic_ops_device is
 	procedure set_purpose (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
+		purpose				: in type_device_purpose; -- brightness_control
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
@@ -670,7 +670,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -748,7 +748,7 @@ package body et_schematic_ops_device is
 	procedure set_partcode (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
-		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
@@ -760,7 +760,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -859,7 +859,7 @@ package body et_schematic_ops_device is
 	function get_package_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string -- D, N
+		return type_package_variant_name -- D, N
 	is
 		cursor_sch : pac_devices_electrical.cursor;
 	begin
@@ -881,7 +881,7 @@ package body et_schematic_ops_device is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		variant			: in type_package_variant_name; -- N, D
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -893,11 +893,11 @@ package body et_schematic_ops_device is
 		use pac_generic_modules;
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		use pac_package_variant_name;
+		use et_package_variant_name;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -982,7 +982,7 @@ package body et_schematic_ops_device is
 
 	function get_electrical_devices_by_prefix (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- C
+		prefix			: in type_device_prefix; -- C
 		log_threshold	: in type_log_level)
 		return pac_devices_electrical.map
 	is
@@ -990,7 +990,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1038,7 +1038,7 @@ package body et_schematic_ops_device is
 
 	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string;
+		prefix			: in type_device_prefix;
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is
@@ -1097,8 +1097,8 @@ package body et_schematic_ops_device is
 
 	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_model	: in pac_device_model_file.bounded_string;
-		variant			: in pac_package_variant_name.bounded_string;
+		device_model	: in type_device_model_name;
+		variant			: in type_package_variant_name;
 		destination		: in type_object_position;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
@@ -1110,7 +1110,7 @@ package body et_schematic_ops_device is
 	procedure copy_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- IC45
-		unit_name_explicit	: in pac_unit_name.bounded_string; -- D
+		unit_name_explicit	: in type_unit_name; -- D
 		destination			: in type_object_position; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
 		device_created		: out type_device_name;
@@ -1128,7 +1128,7 @@ package body et_schematic_ops_device is
 
 	-- Renumbers devices according to the sheet number.
 	procedure renumber_devices (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)

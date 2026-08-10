@@ -143,7 +143,7 @@ procedure draw_route_restrict is
 
 
 	procedure query_items (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);

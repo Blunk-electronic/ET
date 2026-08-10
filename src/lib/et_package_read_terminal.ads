@@ -83,7 +83,7 @@ package et_package_read_terminal is
 	tht_drill_size			: type_drill_size_tht := type_drill_size_tht'first;
 	tht_millings			: type_contour;
 
-	terminal_name			: pac_terminal_name.bounded_string;
+	terminal_name			: type_terminal_name;
 	terminal_technology		: type_assembly_technology := assembly_technology_default;
 	tht_pad_shape			: type_pad_outline_tht;
 	smt_pad_shape			: type_contour;

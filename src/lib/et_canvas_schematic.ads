@@ -335,7 +335,7 @@ package et_canvas_schematic is
 	-- to be executed.
 	-- Resets verb and noun in all domains:
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string);
+		script : in type_script_name);
 
 
 	-- Executes a command as typed on the console by the operator
@@ -398,7 +398,7 @@ package et_canvas_schematic is
 	-- Loads the module into the collection of generic modules.
 	-- Sets the variable current_active_module accordingly:
 	procedure set_module (
-		module	: in pac_module_name.bounded_string); -- motor_driver
+		module	: in type_module_name); -- motor_driver
 
 
 end et_canvas_schematic;

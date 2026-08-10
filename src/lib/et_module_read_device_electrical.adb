@@ -108,15 +108,15 @@ package body et_module_read_device_electrical is
 	device				: access et_devices_electrical.type_device_electrical;
 
 	device_name			: et_device_name.type_device_name; -- C12
-	device_model_name	: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
 
-	device_value		: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_value		: et_device_value.type_device_value; -- 470R
 	device_appearance	: et_units.type_appearance_schematic;
 
 
-	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
-	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
+	device_partcode	: et_device_partcode.type_device_partcode;
+	device_purpose	: et_device_purpose.type_device_purpose;
+	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
 
 	-- temporarily collection of units:
@@ -213,7 +213,7 @@ package body et_module_read_device_electrical is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -275,7 +275,7 @@ package body et_module_read_device_electrical is
 			-- Otherwise nothing happens here:
 			procedure check_characters is
 				use et_package_variant_name;
-				use pac_package_variant_name;
+				use et_package_variant_name;
 			begin
 				if device.appearance = APPEARANCE_PCB then
 					log (text => "check characters", level => log_threshold + 2);
@@ -375,14 +375,14 @@ package body et_module_read_device_electrical is
 			-- Derives the package name from the model and parackage
 			-- variant. Checks if variant exits in device model.
 			function get_package_name
-				return pac_package_name.bounded_string
+				return type_package_name
 			is
-				use et_package_variant_name.pac_package_variant_name;
-				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
+				use et_package_variant_name;
+				name : type_package_name; -- S_SO14 -- to be returned
 
 
 				procedure query_variants (
-					model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+					model	: in type_device_model_name; -- libraries/devices/7400.dev
 					dev_lib	: in type_device_model) -- a device in the library
 				is
 					use et_package_library;
@@ -460,9 +460,9 @@ package body et_module_read_device_electrical is
 				-- clean up temporarily variables for next device
 				-- CS ? device_name		:= (others => <>);
 				device_model_name	:= to_file_name ("");
-				device_value		:= pac_device_value.to_bounded_string ("");
-				device_purpose		:= pac_device_purpose.to_bounded_string ("");
-				device_partcode	:= pac_device_partcode.to_bounded_string ("");
+				device_value		:= type_device_value (pac_device_value.to_bounded_string (""));
+				device_purpose		:= type_device_purpose (pac_device_purpose.to_bounded_string (""));
+				device_partcode	:= type_device_partcode (pac_device_partcode.to_bounded_string (""));
 				device_variant		:= to_variant_name ("");
 				-- CS use constant for emtpy variant
 			end clean_up;
@@ -562,7 +562,7 @@ package body et_module_read_device_electrical is
 
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
-	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
+	device_unit_name		: et_unit_name.type_unit_name; -- GPIO_BANK_1
 	device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
 
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);

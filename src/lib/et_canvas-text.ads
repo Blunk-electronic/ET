@@ -83,7 +83,7 @@ package et_canvas.text is
 	-- given text content, size and font
 	-- according to the current zoom-factor:
 	function get_text_extents (
-		content		: in pac_text_content.bounded_string;
+		content		: in type_text_content;
 		size		: in pac_text.type_text_size;
 		font		: in type_font)
 		return cairo.cairo_text_extents;
@@ -118,7 +118,7 @@ package et_canvas.text is
 
 	-- Draws a text on the canvas:
 	procedure draw_text (
-		content		: in pac_text_content.bounded_string;
+		content		: in type_text_content;
 		size		: in pac_text.type_text_size;
 		font		: in type_font;
 		anchor		: in type_vector_model; -- the anchor point in the model

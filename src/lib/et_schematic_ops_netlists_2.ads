@@ -76,7 +76,7 @@ package et_schematic_ops_netlists_2 is
 	-- generic module a netlist of category 1:
 	procedure make_netlist_cat_1 (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		log_threshold	: in type_log_level);
 
 

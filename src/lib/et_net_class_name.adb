@@ -43,10 +43,10 @@ package body et_net_class_name is
 
 
 	function to_string (
-		net_class_name : in pac_net_class_name.bounded_string)
+		net_class_name : in type_net_class_name)
 		return string
 	is begin
-		return pac_net_class_name.to_string (net_class_name);
+		return pac_net_class_name.to_string (pac_net_class_name.bounded_string (net_class_name));
 	end to_string;
 
 
@@ -54,9 +54,9 @@ package body et_net_class_name is
 
 	function to_net_class_name (
 		net_class_name : in string)
-		return pac_net_class_name.bounded_string
+		return type_net_class_name
 	is begin
-		return to_bounded_string (net_class_name);
+		return type_net_class_name (pac_net_class_name.to_bounded_string (net_class_name));
 	end to_net_class_name;
 
 

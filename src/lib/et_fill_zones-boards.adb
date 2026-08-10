@@ -63,7 +63,7 @@ package body et_fill_zones.boards is
 	function to_string (
 		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
-		net_name		: in pac_net_name.bounded_string := no_name)
+		net_name		: in type_net_name := no_name)
 		return string
 	is
 		use pac_geometry_2;
@@ -100,7 +100,7 @@ package body et_fill_zones.boards is
 		elsif fill_zone'tag = type_route_solid'tag
 		or    fill_zone'tag = type_route_hatched'tag
 		then
-			append ("net " & pac_net_name.to_string (net_name));
+			append ("net " & pac_net_name.to_string (pac_net_name.bounded_string (net_name)));
 
 			-- CS connected_with_net (type_route_solid (fill_zone));
 		end if;

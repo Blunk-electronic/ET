@@ -88,7 +88,7 @@ package body et_units_of_measurement is
 
 
 	procedure check_abbreviation_of_unit_characters (
-		abbreviation	: in pac_unit_abbreviation.bounded_string;
+		abbreviation	: in type_unit_abbreviation;
 		characters	: in character_set)
 	is
 		invalid_character_position : natural := 0;
@@ -99,7 +99,7 @@ package body et_units_of_measurement is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "abbrevaton of unit of measurement "
+			log (SEVERITY_ERROR, "abbreviation of unit of measurement "
 				& to_string (abbreviation)
 				& " has invalid character at position"
 				& natural'image (invalid_character_position),

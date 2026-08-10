@@ -114,7 +114,7 @@ package et_kicad.pcb is
 
 	use et_board_text.pac_text_board_vectorized;
 
-	use pac_net_name;
+	use et_net_names;
 
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
@@ -383,7 +383,7 @@ package et_kicad.pcb is
 
 	type type_netlist_net is record
 		id		: type_net_id;
-		name	: pac_net_name.bounded_string;
+		name	: type_net_name;
 	end record;
 
 	-- When nets are collected in an ordered set, the next two functions serve to
@@ -461,8 +461,8 @@ package et_kicad.pcb is
 
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
-		element_type	=> pac_net_name.bounded_string,
-		"="				=> pac_net_name."=");
+		element_type	=> type_net_name,
+		"="				=> et_net_names."=");
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
@@ -472,9 +472,9 @@ package et_kicad.pcb is
 
 	-- Since there are lots of net classes, they are stored in a map:
 	package type_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
+		key_type		=> type_net_class_name,
 		element_type	=> type_net_class_kicad,
-		"<"				=> pac_net_class_name."<"
+		"<"				=> et_net_class_name."<"
 		);
 
 
@@ -485,7 +485,7 @@ package et_kicad.pcb is
 --	-- silk screen, assembly doc, ...
 --	-- When inserting the text in the final package, it is decomposed again.
 --	type type_text_package is new et_packages.type_text with record
---		content	: et_text.pac_text_content.bounded_string;
+--		content	: et_text.type_text_content;
 --		layer	: type_layer_abbreviation;
 --		meaning	: type_fp_text_meaning;
 --	end record;
@@ -496,7 +496,7 @@ package et_kicad.pcb is
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.
 	type type_text_board is new pac_text_board_vectorized.type_text_fab with record
-		content	: pac_text_content.bounded_string;
+		content	: type_text_content;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;
 
@@ -541,14 +541,14 @@ package et_kicad.pcb is
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
-		net_name : pac_net_name.bounded_string;
+		net_name : type_net_name;
 	end record;
 
 	-- the list of terminals of a package:
 	package pac_terminals is new indefinite_ordered_maps (
-		key_type		=> pac_terminal_name.bounded_string,
+		key_type		=> type_terminal_name,
 		element_type	=> type_terminal,
-		"<"				=> pac_terminal_name."<");
+		"<"				=> et_terminal_name."<");
 
 
 
@@ -559,7 +559,7 @@ package et_kicad.pcb is
 		assembly_documentation	: et_assy_doc.packages.type_assy_doc_both_sides;
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
-		value					: pac_device_value.bounded_string;
+		value					: type_device_value;
 		position				: et_board_coordinates.type_package_position; -- incl. angle, face
 	end record;
 
@@ -670,7 +670,7 @@ package et_kicad.pcb is
 
 
 	type type_polygon is record
-		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
+		net_name			: type_net_name; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id := type_net_id'first; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id := type_signal_layer_id'first;
 		timestamp			: type_timestamp := timestamp_default;
@@ -749,7 +749,7 @@ package et_kicad.pcb is
 
 	-- Returns the number of terminals of the given package in the given library.
 	function get_terminal_count (
-		packge : in pac_package_model_file.bounded_string) -- ../lbr/bel_ic/S_SO14
+		packge : in type_package_model_name) -- ../lbr/bel_ic/S_SO14
 		return natural;
 
 

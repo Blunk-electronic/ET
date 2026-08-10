@@ -64,7 +64,7 @@ package body et_symbol_read_port is
 
 
 	port					: type_port_base;
-	port_name				: et_port_names.pac_port_name.bounded_string;
+	port_name				: et_port_names.type_port_name;
 	port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
 	port_sensitivity_edge	: et_port_sensitivity.type_sensitivity_edge := et_port_sensitivity.sensitivity_edge_default;
 	port_sensitivity_level	: et_port_sensitivity.type_sensitivity_level := et_port_sensitivity.sensitivity_level_default;

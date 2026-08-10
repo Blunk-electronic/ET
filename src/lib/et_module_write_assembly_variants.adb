@@ -79,7 +79,7 @@ package body et_module_write_assembly_variants is
 
 
 		procedure query_devices (
-			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant_name	: in type_assembly_variant_name;
 			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
@@ -134,7 +134,7 @@ package body et_module_write_assembly_variants is
 
 
 		procedure query_submodules (
-			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant_name	: in type_assembly_variant_name;
 			variant			: in type_assembly_variant)
 		is
 			pragma unreferenced (variant_name);
@@ -183,7 +183,7 @@ package body et_module_write_assembly_variants is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

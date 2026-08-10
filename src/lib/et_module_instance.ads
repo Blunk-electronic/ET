@@ -54,15 +54,17 @@ package et_module_instance is
 	module_instance_name_length_max : constant positive := 20;
 	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
 
-	function to_string (name : in pac_module_instance_name.bounded_string) return string;
-	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
+	type type_module_instance_name is new pac_module_instance_name.bounded_string;
+
+	function to_string (name : in type_module_instance_name) return string;
+	function to_instance_name (name : in string) return type_module_instance_name;
 
 
 
 
 	type type_module_instance is record
-		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
+		generic_name		: type_module_name; -- motor_driver (without extension *.mod)
+		assembly_variant	: type_assembly_variant_name; -- low_cost
 		-- CS other properties ?
 	end record;
 
@@ -70,8 +72,8 @@ package et_module_instance is
 
 	-- Lots of module instances are stored in a map:
 	package pac_module_instances is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
-		"<"				=> pac_module_instance_name."<",
+		key_type		=> type_module_instance_name, -- LMX_1
+		"<"				=> et_module_instance."<",
 		element_type	=> type_module_instance);
 
 

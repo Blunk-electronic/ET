@@ -49,12 +49,12 @@
 with et_string_processing;		use et_string_processing;
 package body et_netlists is
 
-	use pac_net_name;
+	use et_net_names;
 
 
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
-		use pac_port_name;
+		use et_port_names;
 		result : boolean := false;
 	begin
 		if left.device < right.device then
@@ -80,8 +80,8 @@ package body et_netlists is
 
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
-		use pac_module_instance_name;
-		use pac_net_name;
+		use et_module_instance;
+		use et_net_names;
 		result : boolean := false;
 	begin
 		if left.module < right.module then
@@ -106,8 +106,8 @@ package body et_netlists is
 
 
 
-	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
-		return pac_net_name.bounded_string is
+	function to_prefix (instance : in type_module_instance_name) -- OSC1
+		return et_net_names.type_net_name is
 	begin
 		return to_net_name (to_string (instance) & level_separator);
 	end to_prefix;
@@ -120,7 +120,7 @@ package body et_netlists is
 
 
 	procedure log_net_name (
-		name			: in type_net_name;
+		name			: in type_full_net_name;
 		primary			: in boolean;
 		log_threshold	: in type_log_level)
 	is begin
@@ -146,9 +146,9 @@ package body et_netlists is
 
 
 
-	function "<" (left, right : in type_net_name) return boolean is
+	function "<" (left, right : in type_full_net_name) return boolean is
 		result : boolean := false;
-		use pac_net_name;
+		use et_net_names;
 	begin
 		if left.prefix < right.prefix then
 			result := true;
@@ -183,7 +183,7 @@ package body et_netlists is
 
 
 		procedure query_ports (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports)
 		is
 			pragma unreferenced (net_name);
@@ -327,21 +327,21 @@ package body et_netlists is
 	-- given port of a submodule instance.
 	function contains (
 		net_cursor		: in pac_netlist_nets.cursor;
-		submodule		: in pac_module_instance_name.bounded_string; -- OSC1
-		port			: in pac_net_name.bounded_string) -- clock_out
+		submodule		: in type_module_instance_name; -- OSC1
+		port			: in et_net_names.type_net_name) -- clock_out
 		return boolean
 	is
 		result : boolean := false;
 
 		procedure query_submod_ports (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports)
 		is
 			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
-			use pac_net_name;
-			use pac_module_instance_name;
+			use et_net_names;
+			use et_module_instance;
 		begin
 			while port_cursor /= pac_submodule_ports_extended.no_element loop
 
@@ -392,7 +392,7 @@ package body et_netlists is
 			-- with the base names of the nets in the module. The cursor to the net and
 			-- the name of the generic module is then
 			-- appended to the list net_cursors (to be returned).
-				use pac_net_name;
+				use et_net_names;
 				cursor : pac_netlist_nets.cursor := module.nets.first;
 			begin
 				-- iterate the nets of the module
@@ -485,7 +485,7 @@ package body et_netlists is
 			-- opposide the given port. If netchanger found then netchanger_cursor
 			-- points to an element (means it points no longer to no_element).
 			procedure query_netchangers (
-				net_name	: in type_net_name;
+				net_name	: in type_full_net_name;
 				net			: in type_netlist_ports)
 			is
 				pragma unreferenced (net_name);
@@ -574,17 +574,17 @@ package body et_netlists is
 
 
 		procedure query_submodules (submodule_cursor : in pac_netlist_modules.cursor) is
-			use pac_module_instance_name;
+			use et_module_instance;
 
 
 			procedure query_nets (module : in type_netlist_module) is
 			-- Search for the net specified by "port.port". The search ends
 			-- once the net has been found. The search is conducted by comparing
 			-- with the base names of the nets in the module. The prefix does not matter.
-			-- See specs of type_net_name. The base name is something like "output".
+			-- See specs of type_full_net_name. The base name is something like "output".
 			-- The prefix is something like "CLK_GENERATOR/FLT1/".
 			-- But as said above the prefix does not matter here.
-				use pac_net_name;
+				use et_net_names;
 			begin
 				-- iterate the nets of the module
 				net_cursor := module.nets.first;
@@ -665,7 +665,7 @@ package body et_netlists is
 
 
 		procedure query_submodules (
-			net_name	: in type_net_name;
+			net_name	: in type_full_net_name;
 			net			: in type_netlist_ports) is
 			pragma unreferenced (net_name);
 			use pac_submodule_ports_extended;

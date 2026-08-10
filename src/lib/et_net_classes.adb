@@ -53,7 +53,7 @@ package body et_net_classes is
 
 	function get_net_class_name (
 		class_cursor	: in pac_net_classes.cursor)
-		return pac_net_class_name.bounded_string
+		return type_net_class_name
 	is begin
 		return key (class_cursor);
 	end get_net_class_name;
@@ -64,7 +64,7 @@ package body et_net_classes is
 		class_cursor	: in pac_net_classes.cursor)
 		return string
 	is begin
-		return pac_net_class_name.to_string (key (class_cursor));
+		return to_string (key (class_cursor));
 	end get_net_class_name;
 
 

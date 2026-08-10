@@ -56,9 +56,9 @@ package et_netlist_devices is
 		direction : type_port_direction)
 	is record
 		device			: type_device_name; -- IC4
-		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		port			: type_port_name; -- CLOCK, CE, VDD, GND
 		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
-		terminal		: pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal		: type_terminal_name; -- H4, 1, 16
 	end record;
 
 

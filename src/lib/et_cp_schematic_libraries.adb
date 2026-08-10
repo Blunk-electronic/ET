@@ -55,7 +55,7 @@ package body et_cp_schematic_libraries is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		path : pac_library_path_schematic.bounded_string;
+		path : type_library_path_schematic;
 
 	begin
 		log (text => "add component library path (schematic)", level => log_threshold);
@@ -93,7 +93,7 @@ package body et_cp_schematic_libraries is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		path : pac_library_path_schematic.bounded_string;
+		path : type_library_path_schematic;
 
 	begin
 		log (text => "remove component library path (schematic)", level => log_threshold);

@@ -82,7 +82,7 @@ package body et_devices_non_electrical is
 
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 		use pac_package_models;
 	begin
@@ -241,7 +241,7 @@ package body et_devices_non_electrical is
 
 	procedure set_value (
 		device	: in out type_device_non_electrical;
-		value	: in pac_device_value.bounded_string)
+		value	: in type_device_value)
 	is begin
 		device.value := value;
 	end set_value;
@@ -249,7 +249,7 @@ package body et_devices_non_electrical is
 
 	function get_value (
 		device	: in type_device_non_electrical)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return device.value;
 	end get_value;
@@ -280,7 +280,7 @@ package body et_devices_non_electrical is
 
 	procedure set_partcode (
 		device		: in out type_device_non_electrical;
-		partcode	: in pac_device_partcode.bounded_string)
+		partcode	: in type_device_partcode)
 	is begin
 		device.partcode := partcode;
 	end set_partcode;
@@ -288,7 +288,7 @@ package body et_devices_non_electrical is
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return device.partcode;
 	end get_partcode;
@@ -320,7 +320,7 @@ package body et_devices_non_electrical is
 
 	procedure set_purpose (
 		device	: in out type_device_non_electrical;
-		purpose	: in pac_device_purpose.bounded_string)
+		purpose	: in type_device_purpose)
 	is begin
 		device.purpose := purpose;
 	end set_purpose;
@@ -328,7 +328,7 @@ package body et_devices_non_electrical is
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return device.purpose;
 	end get_purpose;
@@ -545,7 +545,7 @@ package body et_devices_non_electrical is
 
 	function get_prefix (
 		cursor	: in pac_devices_non_electrical.cursor)
-		return pac_device_prefix.bounded_string
+		return type_device_prefix
 	is
 		name : constant type_device_name := key (cursor);
 	begin
@@ -596,7 +596,7 @@ package body et_devices_non_electrical is
 
 	function get_package_model_name (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_package_model_file.bounded_string
+		return type_package_model_name
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
@@ -623,7 +623,7 @@ package body et_devices_non_electrical is
 		device_cursor : in pac_devices_non_electrical.cursor)
 		return boolean
 	is
-		package_model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model : type_package_model_name; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- Get the package model name of the given device:
 		package_model := get_package_model_name (device_cursor);
@@ -792,7 +792,7 @@ package body et_devices_non_electrical is
 
 	function get_value (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
@@ -818,7 +818,7 @@ package body et_devices_non_electrical is
 
 	function get_partcode (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
@@ -843,7 +843,7 @@ package body et_devices_non_electrical is
 
 	function get_purpose (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
@@ -1421,11 +1421,11 @@ package body et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor;
 		placeholder		: in type_text_placeholder)
-		return pac_text_content.bounded_string
+		return type_text_content
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 
-		result : pac_text_content.bounded_string;
+		result : type_text_content;
 	begin
 		case placeholder.meaning is
 			when NAME		=> result := to_content (to_string (key (device_cursor)));

@@ -115,7 +115,7 @@ package et_schematic_text is
 		position	: type_vector_model;
 		rotation	: type_rotation_documentation := HORIZONTAL;
 		sheet		: type_sheet := type_sheet'first;
-		content		: pac_text_content.bounded_string;
+		content		: type_text_content;
 		--font		: et_text.type_font;
 	end record;
 

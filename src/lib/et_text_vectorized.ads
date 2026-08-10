@@ -1622,7 +1622,7 @@ package et_text_vectorized is
 
 
 		type type_text_fab_with_content is new type_text_fab with record
-			content	: pac_text_content.bounded_string;
+			content	: type_text_content;
 		end record;
 
 
@@ -1666,7 +1666,7 @@ package et_text_vectorized is
 		-- This function is required for texts in fill zones. Therefore it is
 		-- turned off by default.
 		function vectorize_text (
-			content			: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
+			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
 			rotation		: in pac_geometry.type_rotation;
 			position		: in pac_geometry.type_vector_model;

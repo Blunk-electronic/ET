@@ -50,17 +50,17 @@ package body et_board_ops_text is
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
 		meaning		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string
+		return type_text_content
 	is
 		m : type_generic_module renames element (module_cursor);
 
 		use et_meta;
 		meta : constant type_meta_board := m.meta.board;
 
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
+		use et_assembly_variant_name;
+		variant : constant type_assembly_variant_name := m.assembly_variants.active;
 
-		result : pac_text_content.bounded_string;
+		result : type_text_content;
 	begin
 		case meaning is
 			when COMPANY			=> result := to_content (to_string (meta.company));

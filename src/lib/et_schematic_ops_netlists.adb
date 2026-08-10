@@ -130,8 +130,8 @@ package body et_schematic_ops_netlists is
 	-- The submodule must exist in the module.
 	function port_direction (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string) -- clock_out
+		submod_instance	: in type_module_instance_name; -- OSC1
+		port_name		: in type_net_name) -- clock_out
 		return type_netchanger_port_name
 	is
 		use et_submodules;
@@ -139,14 +139,14 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			submod_cursor : pac_submodules.cursor;
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submod		: in et_submodules.type_submodule)
 			is
 				use et_submodules.pac_submodule_ports;
@@ -225,8 +225,8 @@ package body et_schematic_ops_netlists is
 
 	procedure collect_nets (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
-		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
+		variant			: in type_assembly_variant_name;
+		prefix			: in type_net_name; -- DRV3/OSC1/
 		offset			: in type_name_index;
 		netlist_tree	: in out pac_netlist_modules.tree;
 		netlist_cursor	: in pac_netlist_modules.cursor;
@@ -239,13 +239,13 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			use et_nets.pac_nets;
 			net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			all_ports : type_net_ports;
 			device_ports_extended : pac_device_ports_extended.set;
 			submodule_ports_extended : pac_submodule_ports_extended.set;
@@ -325,8 +325,8 @@ package body et_schematic_ops_netlists is
 				net_name := et_nets.pac_nets.key (net_cursor_sch);
 
 				log (text => "net "
-						& pac_net_name.to_string (prefix)
-						& pac_net_name.to_string (net_name),
+						& pac_net_name.to_string (pac_net_name.bounded_string (prefix))
+						& pac_net_name.to_string (pac_net_name.bounded_string (net_name)),
 						level => log_threshold + 1);
 
 				log_indentation_up;
@@ -380,10 +380,10 @@ package body et_schematic_ops_netlists is
 
 	function make_prefix (
 		tree_cursor		: in pac_renumber_modules.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
-		use pac_net_name;
-		prefix : pac_net_name.bounded_string;
+		use et_net_names;
+		prefix : type_net_name;
 
 		use pac_renumber_modules;
 		cursor : pac_renumber_modules.cursor := tree_cursor;
@@ -430,7 +430,7 @@ package body et_schematic_ops_netlists is
 	-- Another stack keeps record of the assembly variant
 	-- at the submodule level.
 	package stack_variant is new et_generic_stacks.stack_lifo (
-		item	=> pac_assembly_variant_name.bounded_string,
+		item	=> type_assembly_variant_name,
 		max	=> et_submodules.nesting_depth_max);
 
 
@@ -438,10 +438,10 @@ package body et_schematic_ops_netlists is
 
 	procedure query_submodules (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant_name	: in pac_assembly_variant_name.bounded_string;
+		variant_name	: in type_assembly_variant_name;
 		netlist_tree	: in out pac_netlist_modules.tree;
 		netlist_cursor	: in out pac_netlist_modules.cursor;
-		variant			: in out pac_assembly_variant_name.bounded_string;
+		variant			: in out type_assembly_variant_name;
 		log_threshold	: in type_log_level)
 	is
 
@@ -449,14 +449,14 @@ package body et_schematic_ops_netlists is
 		-- This procedure queries the given top-module
 		-- and iterates through its submodules:
 		procedure query_topmodule (
-			top_module_name	: in pac_module_name.bounded_string;
+			top_module_name	: in type_module_name;
 			top_module		: in type_generic_module)
 		is
-			submodule_name	: pac_module_name.bounded_string;
+			submodule_name	: type_module_name;
 
-			parent_name : pac_module_name.bounded_string; -- water_pump
+			parent_name : type_module_name; -- water_pump
 
-			submodule_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+			submodule_instance	: type_module_instance_name; -- MOT_DRV_3
 
 			offset : type_name_index;
 
@@ -646,11 +646,11 @@ package body et_schematic_ops_netlists is
 
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
-		use pac_assembly_variant_name;
+		use et_assembly_variant_name;
 
 
 		procedure make_for_variant (
-			variant_name : in pac_assembly_variant_name.bounded_string)
+			variant_name : in type_assembly_variant_name)
 		is
 			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
 			-- own netlist) is required. In the course of this procedure the netlist_tree is built
@@ -661,7 +661,7 @@ package body et_schematic_ops_netlists is
 			netlist_cursor : pac_netlist_modules.cursor := pac_netlist_modules.root (netlist_tree);
 
 
-			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant : type_assembly_variant_name; -- low_cost
 
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : pac_module_netlist.tree;
@@ -669,12 +669,12 @@ package body et_schematic_ops_netlists is
 
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
 			procedure update_netlist (
-				module_name		: in pac_module_name.bounded_string;
+				module_name		: in type_module_name;
 				module			: in out type_generic_module)
 			is
 
 				procedure assign_netlist (
-					variant		: in pac_assembly_variant_name.bounded_string;
+					variant		: in type_assembly_variant_name;
 					netlist		: in out pac_module_netlist.tree)
 				is begin
 					-- overwrite the current netlist by the new netlist:
@@ -787,7 +787,7 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

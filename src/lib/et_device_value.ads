@@ -59,23 +59,24 @@ package et_device_value is
 
 	package pac_device_value is new generic_bounded_length (value_length_max);
 	use pac_device_value;
+	type type_device_value is new pac_device_value.bounded_string;
 
 
 	-- If no value is defined, then this default should be used:
-	empty_value : constant pac_device_value.bounded_string := to_bounded_string ("");
+	empty_value : constant type_device_value := type_device_value (pac_device_value.to_bounded_string (""));
 
 
-	function to_string (value : in pac_device_value.bounded_string) return string;
-	function to_value (value : in string) return pac_device_value.bounded_string;
+	function to_string (value : in type_device_value) return string;
+	function to_value (value : in string) return type_device_value;
 
 	function value_length_valid (value : in string) return boolean;
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.
 
-	function truncate (value : in string) return pac_device_value.bounded_string;
+	function truncate (value : in string) return type_device_value;
 
 	function value_characters_valid (
-		value		: in pac_device_value.bounded_string;
+		value		: in type_device_value;
 		characters	: in character_set := value_characters)
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
@@ -91,13 +92,13 @@ package et_device_value is
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 
 	-- Returns true if value is an empty string.
 	function is_empty (
-		value : in pac_device_value.bounded_string)
+		value : in type_device_value)
 		return boolean;
 
 

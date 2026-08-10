@@ -49,8 +49,10 @@ package et_module_names is
 	module_file_name_length_max : constant positive := 100;
 	package pac_module_file_name is new generic_bounded_length (module_file_name_length_max);
 
-	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
-	function to_string (name : in pac_module_file_name.bounded_string) return string;
+	type type_module_file_name is new pac_module_file_name.bounded_string;
+
+	function to_module_file_name (name : in string) return type_module_file_name;
+	function to_string (name : in type_module_file_name) return string;
 
 
 
@@ -72,8 +74,10 @@ package et_module_names is
 	module_name_length_max : constant := 100;
 	package pac_module_name is new generic_bounded_length (module_name_length_max);
 
-	function to_string (name : in pac_module_name.bounded_string) return string;
-	function to_module_name (name : in string) return pac_module_name.bounded_string;
+	type type_module_name is new pac_module_name.bounded_string;
+
+	function to_string (name : in type_module_name) return string;
+	function to_module_name (name : in string) return type_module_name;
 
 
 

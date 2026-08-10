@@ -219,13 +219,13 @@ package et_terminals is
 	-- Logs the properties of the given terminal.
 	procedure terminal_properties (
 		terminal		: in type_terminal;
-		name			: in pac_terminal_name.bounded_string;
+		name			: in type_terminal_name;
 		log_threshold	: in type_log_level);
 
 
 	package pac_terminals is new indefinite_ordered_maps (
-		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> pac_terminal_name."<",
+		key_type		=> type_terminal_name, -- H7, 14
+		"<"				=> et_terminal_name."<",
 		element_type	=> type_terminal);
 
 	use pac_terminals;
@@ -234,7 +234,7 @@ package et_terminals is
 
 	function get_terminal_name (
 		terminal_cursor	: in pac_terminals.cursor)
-		return pac_terminal_name.bounded_string;
+		return type_terminal_name;
 
 
 	function get_terminal_name (

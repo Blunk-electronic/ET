@@ -125,13 +125,13 @@ package et_devices_non_electrical is
 		-- to the device !
 
 		-- A value will rarely be assigned. But in case it is required:
-		value : pac_device_value.bounded_string;
+		value : type_device_value;
 
 		-- The partcode:
-		partcode : pac_device_partcode.bounded_string;
+		partcode : type_device_partcode;
 
 		-- A purpose will rarely be assigned. But in case it is required:
-		purpose : pac_device_purpose.bounded_string;
+		purpose : type_device_purpose;
 
 		status : type_object_status;
 	end record;
@@ -142,7 +142,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 	function get_package_model_name (
@@ -233,12 +233,12 @@ package et_devices_non_electrical is
 
 	procedure set_value (
 		device	: in out type_device_non_electrical;
-		value	: in pac_device_value.bounded_string);
+		value	: in type_device_value);
 
 
 	function get_value (
 		device	: in type_device_non_electrical)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function get_value (
@@ -256,12 +256,12 @@ package et_devices_non_electrical is
 
 	procedure set_partcode (
 		device		: in out type_device_non_electrical;
-		partcode	: in pac_device_partcode.bounded_string);
+		partcode	: in type_device_partcode);
 
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function get_partcode (
@@ -279,12 +279,12 @@ package et_devices_non_electrical is
 
 	procedure set_purpose (
 		device	: in out type_device_non_electrical;
-		purpose	: in pac_device_purpose.bounded_string);
+		purpose	: in type_device_purpose);
 
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function get_purpose (
@@ -415,7 +415,7 @@ package et_devices_non_electrical is
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_devices_non_electrical.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 
@@ -446,7 +446,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 -- CS:
@@ -563,7 +563,7 @@ package et_devices_non_electrical is
 
 	function get_value (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 	function get_value (
@@ -578,7 +578,7 @@ package et_devices_non_electrical is
 
 	function get_partcode (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_partcode.bounded_string;
+		return type_device_partcode;
 
 
 	function get_partcode (
@@ -594,7 +594,7 @@ package et_devices_non_electrical is
 
 	function get_purpose (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_device_purpose.bounded_string;
+		return type_device_purpose;
 
 
 	function get_purpose (
@@ -797,7 +797,7 @@ package et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor; -- non-electrical device
 		placeholder		: in type_text_placeholder)
-		return pac_text_content.bounded_string;
+		return type_text_content;
 
 
 

@@ -57,11 +57,11 @@ package et_canvas_schematic_preliminary_object is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information here.
 
-	object_net_name		: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
+	object_net_name		: type_net_name := et_net_names.no_name; -- GND, P3V3
 
 	object_device_name	: type_device_name := device_name_default; -- IC45, FD2
 
-	object_unit_name	: pac_unit_name.bounded_string; -- A, B, C
+	object_unit_name	: type_unit_name; -- A, B, C
 
 	-- If an object is being moved from one sheet to another.
 	-- This flag notifies the GUI that the object is to be

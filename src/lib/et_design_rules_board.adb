@@ -50,8 +50,8 @@ with et_exceptions;					use et_exceptions;
 package body et_design_rules_board is
 
 
-	function is_empty (rules : in pac_file_name.bounded_string) return boolean is begin
-		if pac_file_name.length (rules) = 0 then
+	function is_empty (rules : in type_design_rules_file_name) return boolean is begin
+		if pac_file_name.length (pac_file_name.bounded_string (rules)) = 0 then
 			return true;
 		else
 			return false;
@@ -60,14 +60,14 @@ package body et_design_rules_board is
 
 
 
-	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
-		return pac_file_name.to_bounded_string (file);
+	function to_file_name (file : in string) return type_design_rules_file_name is begin
+		return type_design_rules_file_name (pac_file_name.to_bounded_string (file));
 	end to_file_name;
 
 
 
-	function to_string (file : in pac_file_name.bounded_string) return string is begin
-		return pac_file_name.to_string (file);
+	function to_string (file : in type_design_rules_file_name) return string is begin
+		return pac_file_name.to_string (pac_file_name.bounded_string (file));
 	end to_string;
 
 
@@ -141,13 +141,13 @@ package body et_design_rules_board is
 
 
 	procedure read_rules (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_design_rules_file_name;
 		log_threshold	: in type_log_level)
 	is separate;
 
 
 
-	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
+	function get_rules (rules : in type_design_rules_file_name) -- JLP_ML4_standard.dru
 		return type_design_rules_board
 	is
 		use pac_design_rules_board;

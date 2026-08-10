@@ -56,7 +56,7 @@ package et_device_renumbering is
 
 	type type_renumber_device is record
 		name	: type_device_name; -- R56, IC4
-		unit	: pac_unit_name.bounded_string; -- 1, A, B, ...
+		unit	: type_unit_name; -- 1, A, B, ...
 		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;
 
@@ -74,7 +74,7 @@ package et_device_renumbering is
 
 	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
 	function to_index_range (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		index_range	: in type_index_range) return string;
 
 
@@ -90,8 +90,8 @@ package et_device_renumbering is
 
 	type type_renumber_module is record
 	-- CS rename to type_submodule_instance ?
-		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
-		instance			: pac_module_instance_name.bounded_string; -- AMP_2, DRV1
+		name				: type_module_name; -- amplifier, $ET_TEMPLATES/motor_driver
+		instance			: type_module_instance_name; -- AMP_2, DRV1
 		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088
 		-- CS rename to device_offset
 		-- CS netchanger_offset

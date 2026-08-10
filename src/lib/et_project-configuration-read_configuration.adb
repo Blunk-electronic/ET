@@ -41,7 +41,7 @@
 separate (et_project.configuration)
 
 procedure read_configuration (
-	project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+	project_name	: in type_project_name; -- blood_sample_analyzer
 	log_threshold	: in type_log_level)
 is
 	use et_string_processing;
@@ -72,7 +72,7 @@ is
 
 
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-	conventions_file_name : et_conventions.pac_file_name.bounded_string;
+	conventions_file_name : et_conventions.type_conventions_file_name;
 
 
 
@@ -95,7 +95,7 @@ is
 
 
 	procedure set_rules is
-		use et_conventions.pac_file_name;
+		use et_conventions;
 	begin
 		if length (conventions_file_name) > 0 then
 

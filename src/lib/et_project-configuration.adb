@@ -60,7 +60,7 @@ package body et_project.configuration is
 
 
 	function conventions_specified return boolean is begin
-		if et_conventions.pac_file_name.length (project.rules.conventions) > 0 then
+		if et_conventions.length (project.rules.conventions) > 0 then
 			return true;
 		else
 			return false;
@@ -70,7 +70,7 @@ package body et_project.configuration is
 
 
 	procedure read_configuration (
-		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		project_name	: in type_project_name; -- blood_sample_analyzer
 		log_threshold	: in type_log_level)
 		is separate;
 
@@ -103,7 +103,7 @@ package body et_project.configuration is
 
 
 	procedure save_configuration (
-		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		project_name	: in type_project_name; -- blood_sample_analyzer
 		log_threshold	: in type_log_level)
 		is separate;
 

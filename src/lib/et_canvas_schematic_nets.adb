@@ -153,7 +153,7 @@ package body et_canvas_schematic_nets is
 
 	procedure add_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
+		net_name_given	: in type_net_name; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
@@ -168,12 +168,12 @@ package body et_canvas_schematic_nets is
 
 		-- If no net name was specified by the caller (net_name_given), then
 		-- an anonymous net with an auto-generated name will be created:
-		net_name_auto_generated	: pac_net_name.bounded_string; -- like N$1
+		net_name_auto_generated	: type_net_name; -- like N$1
 
 
 		-- This procedure extends a net that exists at the A or B end of
 		-- the given segment by the given segment:
-		procedure extend_net (net_name : in pac_net_name.bounded_string) is begin
+		procedure extend_net (net_name : in type_net_name) is begin
 			-- log (text => "attaching start point of new segment to net "
 			--	& enclose_in_quotes (to_string (net_name)),
 			--	level => log_threshold + 1);
@@ -333,7 +333,7 @@ package body et_canvas_schematic_nets is
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class)
 	is
-		net_name_new : pac_net_name.bounded_string;
+		net_name_new : type_net_name;
 
 
 		-- Renames the selected object:
@@ -420,7 +420,7 @@ package body et_canvas_schematic_nets is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		net_name : pac_net_name.bounded_string; -- RESET_N
+		net_name : type_net_name; -- RESET_N
 
 	begin
 		build_rename_window;

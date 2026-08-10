@@ -116,7 +116,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure submodule_not_found (
-		name : in pac_module_instance_name.bounded_string)
+		name : in type_module_instance_name)
 	is begin
 		log (SEVERITY_ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
 			 " not found !", console => true);
@@ -129,7 +129,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure port_not_at_edge (
-		name : in pac_net_name.bounded_string)
+		name : in type_net_name)
 	is
 		use et_string_processing;
 	begin
@@ -159,7 +159,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_net (
-			net_name	: in pac_net_name.bounded_string;
+			net_name	: in type_net_name;
 			net			: in type_net)
 		is
 			pragma unreferenced (net_name);
@@ -258,7 +258,7 @@ package body et_schematic_ops_submodules is
 
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
-		port			: in pac_net_name.bounded_string; -- clock_output
+		port			: in type_net_name; -- clock_output
 		direction		: in type_netchanger_port_name) -- master/slave
 		return boolean
 	is
@@ -267,12 +267,12 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 
-		submodule_file : pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		module_name : pac_module_name.bounded_string;
+		submodule_file : type_submodule_path; -- $ET_TEMPLATES/motor_driver.mod
+		module_name : type_module_name;
 		module_cursor : pac_generic_modules.cursor;
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -340,18 +340,18 @@ package body et_schematic_ops_submodules is
 
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance	: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string) -- RESET
+		submod_instance	: in type_module_instance_name; -- MOT_DRV_3
+		port_name		: in type_net_name) -- RESET
 		return boolean
 	is
 
-		use pac_module_instance_name;
+		use et_module_instance;
 		use et_submodules;
 
 		result : boolean := false; -- to be returned, goes true once the target has been found
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -360,10 +360,10 @@ package body et_schematic_ops_submodules is
 			procedure query_ports (
 			-- Searches the portlist of the submodule for a port having the port_name.
 			-- Exits prematurely on match.
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in et_submodules.type_submodule) is
 				pragma unreferenced (submod_name);
-				use pac_net_name;
+				use et_net_names;
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 			begin
@@ -410,9 +410,9 @@ package body et_schematic_ops_submodules is
 
 
 	function get_submodule_port_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string; -- RESET
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
+		submod_name		: in type_module_instance_name; -- MOT_DRV_3
+		port_name		: in type_net_name; -- RESET
 		log_threshold	: in type_log_level)
 		return type_object_position
 	is
@@ -422,7 +422,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -433,7 +433,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -512,7 +512,7 @@ package body et_schematic_ops_submodules is
 
 
 
-	procedure port_not_provided (port_name : in pac_net_name.bounded_string) is begin
+	procedure port_not_provided (port_name : in type_net_name) is begin
 		log (SEVERITY_ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
@@ -525,14 +525,14 @@ package body et_schematic_ops_submodules is
 
 	procedure insert_port (
 		module			: in pac_generic_modules.cursor;		-- the module
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port			: in pac_net_name.bounded_string; -- clock_output
+		instance		: in type_module_instance_name; -- OSC
+		port			: in type_net_name; -- clock_output
 		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level)
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -546,7 +546,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -663,9 +663,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure add_port (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string; -- clk_out
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC1
+		port_name		: in type_net_name; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 
 		direction		: in type_netchanger_port_name; -- master/slave.
@@ -691,7 +691,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -700,7 +700,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -855,7 +855,7 @@ package body et_schematic_ops_submodules is
 	is
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -869,7 +869,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -978,7 +978,7 @@ package body et_schematic_ops_submodules is
 
 
 
-	procedure submodule_port_not_found (name : in pac_net_name.bounded_string) is begin
+	procedure submodule_port_not_found (name : in type_net_name) is begin
 		log (SEVERITY_ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
@@ -991,9 +991,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure delete_port (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		port_name		: in pac_net_name.bounded_string; -- clk_out
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC1
+		port_name		: in type_net_name; -- clk_out
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1009,14 +1009,14 @@ package body et_schematic_ops_submodules is
 		submodule_position : type_object_position;
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -1112,9 +1112,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure move_port (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port_name		: in pac_net_name.bounded_string; -- clock_output
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC
+		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -1136,7 +1136,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1144,7 +1144,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -1153,7 +1153,7 @@ package body et_schematic_ops_submodules is
 
 
 				procedure move (
-					port_name	: in pac_net_name.bounded_string;
+					port_name	: in type_net_name;
 					port		: in out et_submodules.type_submodule_port)
 				is
 					submod_pos_tmp : type_vector_model := submodule_position.place;
@@ -1321,8 +1321,8 @@ package body et_schematic_ops_submodules is
 	-- for movement are: no device, no netchanger ports there.
 	-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
 		module_cursor	: in pac_generic_modules.cursor;
-		instance		: in pac_module_instance_name.bounded_string;
-		port_name		: in pac_net_name.bounded_string;
+		instance		: in type_module_instance_name;
+		port_name		: in type_net_name;
 		point			: in type_object_position;
 		log_threshold	: in type_log_level)
 	is
@@ -1407,7 +1407,7 @@ package body et_schematic_ops_submodules is
 	is
 		pragma unreferenced (port);
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1416,7 +1416,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -1574,9 +1574,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure drag_port (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC
-		port_name		: in pac_net_name.bounded_string; -- clock_output
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC
+		port_name		: in type_net_name; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -1598,7 +1598,7 @@ package body et_schematic_ops_submodules is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1606,7 +1606,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -1614,7 +1614,7 @@ package body et_schematic_ops_submodules is
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
 				procedure move (
-					port_name	: in pac_net_name.bounded_string;
+					port_name	: in type_net_name;
 					port		: in out et_submodules.type_submodule_port)
 				is
 					submod_pos_tmp : type_vector_model := submodule_position.place;
@@ -1799,7 +1799,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1818,7 +1818,7 @@ package body et_schematic_ops_submodules is
 
 
 				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
@@ -1955,9 +1955,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure add_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
+		instance		: in type_module_instance_name; -- OSC1
 		position		: in type_object_position; -- sheet, lower left corner x/y
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -1974,7 +1974,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure add (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2008,11 +2008,8 @@ package body et_schematic_ops_submodules is
 			end if;
 		end add;
 
-		use pac_module_name;
-
-
 	begin -- add_submodule
-		log (text => "module " & enclose_in_quotes (pac_module_name.to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" adding submodule " & to_string (file) &
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
@@ -2065,14 +2062,14 @@ package body et_schematic_ops_submodules is
 
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor; -- the module
-		instance		: in pac_module_instance_name.bounded_string; -- the submodule instance
+		instance		: in type_module_instance_name; -- the submodule instance
 		position		: in type_object_position;		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level)
 	is
 
 		-- Removes all references to the submodule instance from the net segments.
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2081,7 +2078,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -2182,8 +2179,8 @@ package body et_schematic_ops_submodules is
 
 
 	procedure delete_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2198,7 +2195,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2255,8 +2252,8 @@ package body et_schematic_ops_submodules is
 
 
 	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
@@ -2276,7 +2273,7 @@ package body et_schematic_ops_submodules is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2286,7 +2283,7 @@ package body et_schematic_ops_submodules is
 			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 
 			procedure move (
-				instance	: in pac_module_instance_name.bounded_string;
+				instance	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule) is
 			pragma unreferenced (instance);
 			begin
@@ -2440,8 +2437,8 @@ package body et_schematic_ops_submodules is
 
 
 	procedure drag_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -2457,7 +2454,7 @@ package body et_schematic_ops_submodules is
 
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
-			name	: pac_net_name.bounded_string;
+			name	: type_net_name;
 			before	: type_object_position;
 			after	: type_object_position;
 		end record;
@@ -2468,7 +2465,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2480,14 +2477,14 @@ package body et_schematic_ops_submodules is
 			port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
 
 			procedure query_ports (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 
 				procedure build_drag_point (
-					port_name	: in pac_net_name.bounded_string;
+					port_name	: in type_net_name;
 					port		: in et_submodules.type_submodule_port)
 				is
 					drag : type_drag;
@@ -2559,7 +2556,7 @@ package body et_schematic_ops_submodules is
 
 			-- Moves the box on the sheet according to given target position.
 			procedure move_box (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -2689,9 +2686,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure copy_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		instance_origin	: in type_module_instance_name; -- OSC1
+		instance_new	: in type_module_instance_name; -- CLOCK_GENERATOR
 		destination		: in type_object_position; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -2705,7 +2702,7 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2842,9 +2839,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure rename_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_old	: in pac_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		instance_old	: in type_module_instance_name; -- OSC1
+		instance_new	: in type_module_instance_name; -- CLOCK_GENERATOR
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2858,7 +2855,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2988,10 +2985,10 @@ package body et_schematic_ops_submodules is
 
 
 	procedure mount_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in type_assembly_variant_name; -- low_cost
+		instance		: in type_module_instance_name; -- OSC1
+		variant_submod	: in type_assembly_variant_name; -- fixed_frequency
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3005,7 +3002,7 @@ package body et_schematic_ops_submodules is
 
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3014,7 +3011,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure mount (
-				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in type_assembly_variant_name; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
@@ -3121,9 +3118,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure remove_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in type_assembly_variant_name; -- low_cost
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3137,7 +3134,7 @@ package body et_schematic_ops_submodules is
 
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module) is
 			pragma unreferenced (module_name);
 			use et_assembly_variants.pac_assembly_variants;
@@ -3145,7 +3142,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure remove (
-				name		: in pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in type_assembly_variant_name; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
 				pragma unreferenced (name);
 				use et_assembly_variants.pac_submodule_variants;
@@ -3240,14 +3237,14 @@ package body et_schematic_ops_submodules is
 
 	function submodule_instance_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in pac_module_instance_name.bounded_string) -- OSC1
+		instance	: in type_module_instance_name) -- OSC1
 		return boolean
 	is
 
 		instance_found : boolean := false; -- to be returned
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3278,30 +3275,30 @@ package body et_schematic_ops_submodules is
 
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in pac_module_instance_name.bounded_string; -- OSC1
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
+		instance	: in type_module_instance_name; -- OSC1
+		variant		: in type_assembly_variant_name) -- low_cost
 		return boolean
 	is
 		variant_found : boolean := false; -- to be returned
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			use et_submodules;
 			use et_submodules.pac_submodules;
 			submod_instance_cursor : et_submodules.pac_submodules.cursor;
-			submod_path : pac_submodule_path.bounded_string;
-			submod_name	: pac_module_name.bounded_string;
+			submod_path : type_submodule_path;
+			submod_name	: type_module_name;
 			submod_cursor : pac_generic_modules.cursor;
 
 
 			-- Locates the given assembly variant in the submodule.
 			-- Sets flag variant_found.
 			procedure query_variants (
-				submodule_name	: in pac_module_name.bounded_string;
+				submodule_name	: in type_module_name;
 				submodule		: in type_generic_module)
 			is
 				pragma unreferenced (submodule_name);
@@ -3354,15 +3351,15 @@ package body et_schematic_ops_submodules is
 
 	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		submod	: in pac_module_instance_name.bounded_string) -- OSC1
+		variant	: in type_assembly_variant_name; -- low_cost
+		submod	: in type_module_instance_name) -- OSC1
 		return pac_submodule_variants.cursor
 	is
 		cursor : pac_submodule_variants.cursor; -- to be returned;
 
 
 		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3372,7 +3369,7 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_submodules (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant_name	: in type_assembly_variant_name;
 				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
@@ -3412,9 +3409,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure set_submodule_file (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
+		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
+		instance		: in type_module_instance_name; -- OSC1
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3429,14 +3426,14 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			submod_cursor : pac_submodules.cursor;
 
 			procedure set_file (
-				submod_name	: in pac_module_instance_name.bounded_string;
+				submod_name	: in type_module_instance_name;
 				submodule	: in out et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
@@ -3572,7 +3569,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure check_integrity (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being checked
@@ -3586,7 +3583,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3601,7 +3598,7 @@ package body et_schematic_ops_submodules is
 
 			procedure collect_device_port (
 				port	: in type_device_port;
-				net		: in pac_net_name.bounded_string) is
+				net		: in type_net_name) is
 			begin
 			-- Collect device ports. exception will be raised of port occurs more than once.
 				insert (device_port_collector, port);
@@ -3628,7 +3625,7 @@ package body et_schematic_ops_submodules is
 
 			procedure collect_submodule_port (
 				port	: in type_net_submodule_port;
-				net		: in pac_net_name.bounded_string)
+				net		: in type_net_name)
 			is begin
 			-- Collect submodule ports. exception will be raised of port occurs more than once.
 				insert (submodule_port_collector, port);
@@ -3655,7 +3652,7 @@ package body et_schematic_ops_submodules is
 
 			procedure collect_netchanger_port (
 				port	: in type_port_netchanger;
-				net		: in pac_net_name.bounded_string)
+				net		: in type_net_name)
 			is begin
 			-- Collect netchanger ports. exception will be raised of port occurs more than once.
 				insert (netchanger_ports_collector, port);
@@ -3673,10 +3670,10 @@ package body et_schematic_ops_submodules is
 
 
 			procedure query_net (net_cursor : in pac_nets.cursor) is
-				use pac_net_name;
+				use et_net_names;
 
 				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net			: in type_net)
 				is
 
@@ -3726,7 +3723,7 @@ package body et_schematic_ops_submodules is
 										port_cursor : in pac_net_submodule_ports.cursor)
 									is begin
 										log (text => "submodule " & to_string (element (port_cursor).module_name) &
-											 " port " & pac_net_name.to_string (element (port_cursor).port_name), level => log_threshold + 4);
+											 " port " & pac_net_name.to_string (pac_net_name.bounded_string (element (port_cursor).port_name)), level => log_threshold + 4);
 
 										if not submodule_port_exists (
 											module_cursor	=> module_cursor,
@@ -3736,7 +3733,7 @@ package body et_schematic_ops_submodules is
 											error;
 
 											log (SEVERITY_ERROR, "submodule " & to_string (element (port_cursor).module_name) &
-												 " port " & pac_net_name.to_string (element (port_cursor).port_name) &
+												 " port " & pac_net_name.to_string (pac_net_name.bounded_string (element (port_cursor).port_name)) &
 												 " does not exist !");
 										end if;
 
@@ -3829,7 +3826,7 @@ package body et_schematic_ops_submodules is
 
 
 			begin
-				log (text => "net " & pac_net_name.to_string (key (net_cursor)), level => log_threshold + 1);
+				log (text => "net " & pac_net_name.to_string (pac_net_name.bounded_string (key (net_cursor))), level => log_threshold + 1);
 
 				query_element (
 					position	=> net_cursor,
@@ -3889,14 +3886,14 @@ package body et_schematic_ops_submodules is
 
 
 	procedure dump_tree (
-		module_name		: in pac_module_name.bounded_string;
+		module_name		: in type_module_name;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor;
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3946,7 +3943,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3962,11 +3959,11 @@ package body et_schematic_ops_submodules is
 
 
 			procedure iterate_submodules is
-				submod_instance	: pac_module_instance_name.bounded_string; -- OSC1
+				submod_instance	: type_module_instance_name; -- OSC1
 
 				use et_submodules;
 				submod_cursor	: et_submodules.pac_submodules.cursor := module.submods.first;
-				submod_name		: pac_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
+				submod_name		: type_module_name; -- $ET_TEMPLATES/motor_driver
 			begin
 				log (text => "iterate submodules", level => log_threshold + 1);
 				log_indentation_up;
@@ -4072,17 +4069,17 @@ package body et_schematic_ops_submodules is
 
 
 	procedure make_boms (
-		module_name		: in pac_module_name.bounded_string;
+		module_name		: in type_module_name;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
-		use pac_assembly_variant_name;
+		use et_assembly_variant_name;
 
 
-		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in type_assembly_variant_name) is
 
 			use et_material;
 			bill_of_material : pac_bom_devices.map;
@@ -4092,12 +4089,12 @@ package body et_schematic_ops_submodules is
 			-- If offset is zero, we are dealing with the top module.
 			procedure collect (
 				module_cursor	: in pac_generic_modules.cursor;
-				variant			: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant_name;
 				offset			: in type_name_index)
 			is
 
 				procedure query_devices (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					device_name : type_device_name;
@@ -4112,9 +4109,9 @@ package body et_schematic_ops_submodules is
 					end test_inserted;
 
 
-					procedure test_partcode (partcode : in pac_device_partcode.bounded_string) is
+					procedure test_partcode (partcode : in type_device_partcode) is
 					begin
-						if pac_device_partcode.length (partcode) = 0 then
+						if is_empty (partcode) then
 							log (SEVERITY_WARNING, text => "device " & to_string (device_name) &
 								" has no partcode !");
 						end if;
@@ -4305,19 +4302,19 @@ package body et_schematic_ops_submodules is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_generic_stacks.stack_lifo (
-				item	=> pac_assembly_variant_name.bounded_string,
+				item	=> type_assembly_variant_name,
 				max	=> et_submodules.nesting_depth_max);
 
-			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant : type_assembly_variant_name; -- low_cost
 
 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is
 				use pac_renumber_modules;
-				module_name	: pac_module_name.bounded_string; -- motor_driver
-				parent_name	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_name	: type_module_name; -- motor_driver
+				parent_name	: type_module_name; -- water_pump
+				module_instance	: type_module_instance_name; -- MOT_DRV_3
 				offset			: type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;
@@ -4455,7 +4452,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
@@ -4503,7 +4500,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			use pac_devices_electrical;
@@ -4567,7 +4564,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure autoset_device_name_offsets (
-		module_name		: in pac_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor := generic_modules.first;
@@ -4575,8 +4572,8 @@ package body et_schematic_ops_submodules is
 
 
 		package pac_index_ranges is new ordered_maps (
-			key_type		=> pac_module_name.bounded_string, -- motor_driver (generic module name)
-			"<"				=> pac_module_name."<",
+			key_type		=> type_module_name, -- motor_driver (generic module name)
+			"<"				=> et_module_names."<",
 			element_type	=> type_index_range); -- 3..190
 
 		-- The device name indexes of all (sub)modules are stored here:
@@ -4586,7 +4583,7 @@ package body et_schematic_ops_submodules is
 
 		-- Returns the index range of the given generic module.
 		-- NOTE: This is about the indexes used by the generic module.
-		function query_range (module : in pac_module_name.bounded_string)
+		function query_range (module : in type_module_name)
 			return type_index_range is
 			cursor : pac_index_ranges.cursor;
 		begin
@@ -4622,10 +4619,10 @@ package body et_schematic_ops_submodules is
 		-- has been reached:
 		procedure set_offset is
 			use pac_renumber_modules;
-			module_name			: pac_module_name.bounded_string; -- motor_driver
-			unused_parent_name	: pac_module_name.bounded_string; -- water_pump
+			module_name			: type_module_name; -- motor_driver
+			unused_parent_name	: type_module_name; -- water_pump
 			module_range		: type_index_range;
-			module_instance		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+			module_instance		: type_module_instance_name; -- MOT_DRV_3
 
 
 			-- Assign the device name offset to the current submodule
@@ -4710,7 +4707,7 @@ package body et_schematic_ops_submodules is
 
 
 		procedure replace_tree (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4725,7 +4722,7 @@ package body et_schematic_ops_submodules is
 			-- Map from submodule_cursor to module in et_project.modules:
 
 			-- submod_cursor points to a submodule in the submod_tree:
-			module_name	: constant pac_module_name.bounded_string := element (submod_cursor).name; -- motor_driver
+			module_name	: constant type_module_name := element (submod_cursor).name; -- motor_driver
 			-- module_name now contains the generic module name like motor_driver
 
 			module_cursor : constant pac_generic_modules.cursor := locate_module (module_name);

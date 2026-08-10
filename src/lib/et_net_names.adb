@@ -46,10 +46,10 @@ package body et_net_names is
 
 
 	function net_name_to_string (
-		net_name	: in pac_net_name.bounded_string)
+		net_name	: in type_net_name)
 		return string
 	is begin
-		return pac_net_name.to_string (net_name);
+		return pac_net_name.to_string (pac_net_name.bounded_string (net_name));
 	end net_name_to_string;
 
 
@@ -68,7 +68,7 @@ package body et_net_names is
 
 
 	procedure check_net_name_characters (
-		net			: in pac_net_name.bounded_string;
+		net			: in type_net_name;
 		characters	: in character_set := net_name_characters)
 	is
 		invalid_character_position : natural := 0;
@@ -92,9 +92,9 @@ package body et_net_names is
 		end if;
 
 		-- If there is an inversion mark, it must be at the very end of the net name.
-		inversion_mark_position := pac_net_name.index (net, net_inversion_mark);
+		inversion_mark_position := pac_net_name.index (pac_net_name.bounded_string (net), net_inversion_mark);
 		if inversion_mark_position > 0 then
-			if inversion_mark_position /= pac_net_name.length (net) then
+			if inversion_mark_position /= pac_net_name.length (pac_net_name.bounded_string (net)) then
 				log (SEVERITY_ERROR, "net " & to_string (net)
 					& " inversion mark must be at the end of the net name !",
 					console => true);
@@ -107,10 +107,10 @@ package body et_net_names is
 
 
 
-	function is_empty (net : in pac_net_name.bounded_string)
+	function is_empty (net : in type_net_name)
 		return boolean
 	is begin
-		if length (net) = 0 then
+		if length (pac_net_name.bounded_string (net)) = 0 then
 			return true;
 		else
 			return false;
@@ -120,8 +120,8 @@ package body et_net_names is
 
 
 
-	function to_net_name (net_name : in string) return pac_net_name.bounded_string is begin
-		return pac_net_name.to_bounded_string (to_upper (net_name));
+	function to_net_name (net_name : in string) return type_net_name is begin
+		return type_net_name (pac_net_name.to_bounded_string (to_upper (net_name)));
 	end to_net_name;
 
 
@@ -129,7 +129,7 @@ package body et_net_names is
 
 
 	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
-		return pac_net_name.bounded_string -- N$56
+		return type_net_name -- N$56
 	is
 		name : constant string := anonymous_net_name_prefix -- N$
 			& trim (type_anonymous_net_index'image (index), left); -- 56
@@ -141,7 +141,7 @@ package body et_net_names is
 
 
 
-	function anonymous (net_name : in pac_net_name.bounded_string) -- N$456
+	function anonymous (net_name : in type_net_name) -- N$456
 		return boolean
 	is
 		result : boolean := true;
@@ -180,7 +180,7 @@ package body et_net_names is
 
 
 	procedure clear_net_name (
-		net_name : in out pac_net_name.bounded_string)
+		net_name : in out type_net_name)
 	is begin
 		net_name := no_name;
 	end clear_net_name;
@@ -194,7 +194,7 @@ package body et_net_names is
 	is
 		use pac_net_names;
 	begin
-		return pac_net_name.to_string (element (net));
+		return pac_net_name.to_string (pac_net_name.bounded_string (element (net)));
 	end to_string;
 
 
@@ -205,11 +205,11 @@ package body et_net_names is
 
 	procedure message_net_not_found (
 		severity	: in type_message_severity;
-		name		: in pac_net_name.bounded_string)
+		name		: in type_net_name)
 	is
 
 		function get_message_text (
-			name : in pac_net_name.bounded_string)
+			name : in type_net_name)
 			return string
 		is begin
 			return "Net " & to_string (name) & " not found !";
@@ -244,11 +244,11 @@ package body et_net_names is
 
 	procedure message_net_already_exists (
 		severity	: in type_message_severity;
-		name		: in pac_net_name.bounded_string)
+		name		: in type_net_name)
 	is
 
 		function get_message_text (
-			name : in pac_net_name.bounded_string)
+			name : in type_net_name)
 			return string
 		is begin
 			return "Net " & to_string (name) & " already exists !";

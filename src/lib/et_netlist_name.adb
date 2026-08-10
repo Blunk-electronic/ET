@@ -45,13 +45,13 @@ with ada.strings;
 
 package body et_netlist_name is
 
-	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
-		return pac_netlist_file_name.to_string (name);
+	function to_string (name : in type_netlist_file_name) return string is begin
+		return pac_netlist_file_name.to_string (pac_netlist_file_name.bounded_string (name));
 	end to_string;
 
 
-	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
-		return pac_netlist_file_name.to_bounded_string (name);
+	function to_file_name (name : in string) return type_netlist_file_name is begin
+		return type_netlist_file_name (pac_netlist_file_name.to_bounded_string (name));
 	end to_file_name;
 
 

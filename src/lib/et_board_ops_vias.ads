@@ -77,7 +77,7 @@ package et_board_ops_vias is
 	-- means to identify a via is the associated net:
 	type type_proposed_via (category : type_via_category := THROUGH) is record
 		via	: type_via (category);
-		net	: pac_net_name.bounded_string := no_name; -- GND, CLK
+		net	: type_net_name := no_name; -- GND, CLK
 	end record;
 
 
@@ -126,7 +126,7 @@ package et_board_ops_vias is
 
 	function get_net_name (
 		object : in pac_objects.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 
@@ -179,7 +179,7 @@ package et_board_ops_vias is
 	-- Places a via in the given net:
 	procedure place_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		via				: in type_via;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -190,7 +190,7 @@ package et_board_ops_vias is
 	function get_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_via)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 	-- Moves an object:

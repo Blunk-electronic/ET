@@ -68,9 +68,9 @@ package body et_module_read_assembly_variant is
 
 
 
-	active_assembly_variant : pac_assembly_variant_name.bounded_string; -- "low_cost"
+	active_assembly_variant : type_assembly_variant_name; -- "low_cost"
 
-	assembly_variant_name			: pac_assembly_variant_name.bounded_string; -- low_cost
+	assembly_variant_name			: type_assembly_variant_name; -- low_cost
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
 	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
@@ -88,7 +88,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure set_variant (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -128,8 +128,8 @@ package body et_module_read_assembly_variant is
 		device			: type_device_variant_access;
 		device_cursor	: pac_device_variants.cursor;
 
-		submod_name		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		submod_var		: pac_assembly_variant_name.bounded_string; -- low_cost
+		submod_name		: type_module_instance_name; -- MOT_DRV_3
+		submod_var		: type_assembly_variant_name; -- low_cost
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
 
@@ -302,7 +302,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -367,7 +367,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -376,18 +376,18 @@ package body et_module_read_assembly_variant is
 			variant_cursor : pac_assembly_variants.cursor :=
 				module.assembly_variants.variants.first;
 
-			variant_name : pac_assembly_variant_name.bounded_string; -- low_cost
+			variant_name : type_assembly_variant_name; -- low_cost
 
 
 			procedure query_submodules (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant_name	: in type_assembly_variant_name;
 				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
 				use pac_submodule_variants;
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
-				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
-				submod_variant	: pac_assembly_variant_name.bounded_string; -- fixed_frequency
+				submod_name		: type_module_instance_name; -- CLK_GENERATOR
+				submod_variant	: type_assembly_variant_name; -- fixed_frequency
 				use et_schematic_ops_submodules;
 			begin
 				if submod_cursor = pac_submodule_variants.no_element then

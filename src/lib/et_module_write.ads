@@ -55,7 +55,7 @@ package et_module_write is
 	-- with that name.
 	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
+		save_as_name	: in type_module_name := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level);
 
 

@@ -51,7 +51,7 @@ package et_module_ops is
 	-- name is "untitled". If the module name is something other
 	-- than "untitled" then the module file will also be created.
 	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 
 
@@ -59,7 +59,7 @@ package et_module_ops is
 	-- Deletes a generic module (from container generic_modules) and
 	-- the module file (*.mod) itself.
 	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 
 
@@ -73,7 +73,7 @@ package et_module_ops is
 	-- If the module is outside the project directory then it will not be touched.
 	-- If the module does not exist, a warning will be issued.
 	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 
 

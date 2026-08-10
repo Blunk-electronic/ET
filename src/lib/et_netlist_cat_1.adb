@@ -82,7 +82,7 @@ package body et_netlist_cat_1 is
 
 	procedure add_net_to_netlist (
 		netlist		: in out pac_netlist_cat_1.map;
-		name		: in pac_net_name.bounded_string;
+		name		: in type_net_name;
 		devices		: in pac_device_ports_extended.set;
 		submodules	: in pac_submodule_ports_extended.set;
 		netchangers	: in pac_netchanger_ports.set)
@@ -101,14 +101,14 @@ package body et_netlist_cat_1 is
 
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level)
 	is
 		use et_netlist_name;
 
 		-- The netlist file:
-		file_name	: pac_netlist_file_name.bounded_string;
+		file_name	: type_netlist_file_name;
 		file_handle	: ada.text_io.file_type;
 
 
@@ -117,10 +117,10 @@ package body et_netlist_cat_1 is
 		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 			use et_export;
 
-			module_name : constant pac_module_name.bounded_string :=
+			module_name : constant type_module_name :=
 				get_module_name (module_cursor);
 
 		begin
@@ -213,7 +213,7 @@ package body et_netlist_cat_1 is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net_ports_cat_1)
 			is
 				use ada.strings;

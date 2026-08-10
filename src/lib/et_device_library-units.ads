@@ -66,7 +66,7 @@ package et_device_library.units is
 	-- does provide the given unit.
 	function provides_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return boolean;
 
 
@@ -90,7 +90,7 @@ package et_device_library.units is
 	-- It can be an internal or an external unit.
 	function get_first_unit (
 		device_cursor : in pac_device_models.cursor)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 
@@ -98,13 +98,13 @@ package et_device_library.units is
 	-- Returns the cursor of the desired internal or external unit.
 	function get_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return type_device_units;
 
 
 	-- If unit names are to be stored in lists:
 	package pac_unit_names is new
-		doubly_linked_lists (pac_unit_name.bounded_string);
+		doubly_linked_lists (type_unit_name);
 	-- CS move to et_unit_name
 
 
@@ -146,7 +146,7 @@ package et_device_library.units is
 	-- either the internal or external unit.
 	function locate_unit (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
+		unit_name		: in type_unit_name) -- like "I/O-Bank 3"
 		return type_unit_cursors;
 
 
@@ -160,7 +160,7 @@ package et_device_library.units is
 
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
-		terminal	: pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal	: type_terminal_name; -- H4, 1, 16
 		properties	: type_symbol_port (direction);
 	end record;
 
@@ -168,7 +168,7 @@ package et_device_library.units is
 	-- Returns the properties of the given port of the given device.
 	function get_properties (
 		device_cursor	: in pac_device_models.cursor;
-		port_name		: in pac_port_name.bounded_string)
+		port_name		: in type_port_name)
 		return pac_symbol_ports.cursor;
 
 	type type_port_properties_access is access type_port_properties;
@@ -181,7 +181,7 @@ package et_device_library.units is
 	-- to the origin of the unit as they are defined in the symbol model.
 	function get_ports_from_symbol_model (
 		device_cursor	: in pac_device_models.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return pac_symbol_ports.map;
 
 

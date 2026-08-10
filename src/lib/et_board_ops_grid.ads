@@ -58,7 +58,7 @@ package et_board_ops_grid is
 	-- Sets the grid of the module.
 	-- Sets the grid in the database and on the canvas:
 	procedure set_grid (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level);
 

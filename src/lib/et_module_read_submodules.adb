@@ -67,9 +67,9 @@ package body et_module_read_submodules is
 	use pac_generic_modules;
 
 
-	submodule_port_name	: pac_net_name.bounded_string; -- RESET
+	submodule_port_name	: type_net_name; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
-	submodule_name		: et_module_instance.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_name		: et_module_instance.type_module_instance_name; -- MOT_DRV_3
 	submodule_port		: et_submodules.type_submodule_port;
 	submodule			: et_submodules.type_submodule;
 
@@ -198,7 +198,7 @@ package body et_module_read_submodules is
 		cursor : et_submodules.pac_submodule_ports.cursor;
 		inserted : boolean;
 
-		use pac_net_name;
+		use et_net_names;
 	begin
 		-- Test whether the port sits at the edge of the submodule box:
 		if et_submodules.at_edge (submodule_port.position, submodule.size) then
@@ -255,7 +255,7 @@ package body et_module_read_submodules is
 	is
 
 		procedure insert_submodule (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

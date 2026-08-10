@@ -55,19 +55,21 @@ package et_package_model_name is
 		generic_bounded_length (package_model_file_name_length_max);
 	-- CS rename to pac_package_model_name
 
+	type type_package_model_name is new pac_package_model_file.bounded_string;
+
 
 	package_model_file_extension : constant string := "pac";
 
 
 
 	function to_string (
-		name : in pac_package_model_file.bounded_string)
+		name : in type_package_model_name)
 		return string;
 
 
 	function to_package_model_name (
 		name : in string)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 

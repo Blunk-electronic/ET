@@ -151,7 +151,7 @@ package et_module is
 
 		rules			: type_design_rules; -- design rules, erc rules ...
 
-		description		: pac_text_content.bounded_string; -- a short description of the module
+		description		: type_text_content; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_drawing_frame.schematic.type_frames_schematic;
@@ -227,13 +227,13 @@ package et_module is
 	-- Returns true if the given assembly variant exists:
 	function variant_exists (
 		module	: in type_generic_module;
-		variant	: in pac_assembly_variant_name.bounded_string)
+		variant	: in type_assembly_variant_name)
 		return boolean;
 
 
 	function get_active_variant (
 		module	: in type_generic_module)
-		return pac_assembly_variant_name.bounded_string;
+		return type_assembly_variant_name;
 
 
 	-- Returns the number of available assembly variants.

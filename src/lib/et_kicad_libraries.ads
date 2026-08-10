@@ -135,7 +135,7 @@ package et_kicad_libraries is
 	type type_text_basic is new pac_text.type_text with record
 		-- CS: currently the style of text is ignored
 		-- style : ???
-		content		: pac_text_content.bounded_string;
+		content		: type_text_content;
 		rotation	: et_schematic_geometry.type_rotation_model := 0.0;
 	end record;
 
@@ -205,7 +205,7 @@ package et_kicad_libraries is
 
 
 	type type_port_library is new type_port_base with record	-- CS: set defaults
-		name		: pac_port_name.bounded_string; -- like CLOCK or CE
+		name		: type_port_name; -- like CLOCK or CE
 		direction	: type_port_direction;
 		style		: type_port_style := NONE;
 
@@ -325,8 +325,8 @@ package et_kicad_libraries is
 
 
 	package type_units_library is new indefinite_ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		"<"				=> pac_unit_name."<",
+		key_type		=> type_unit_name, -- like "I/O-Bank 3" "A" or "B"
+		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_library);
 
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
@@ -351,8 +351,8 @@ package et_kicad_libraries is
 
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : type_appearance) is record
-		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
-		value			: pac_device_value.bounded_string; -- 74LS00
+		prefix			: type_device_prefix; -- R, C, IC, ...
+		value			: type_device_value; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
 
 		case appearance is
@@ -423,7 +423,7 @@ package et_kicad_libraries is
 
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
-		library			: in pac_device_model_file.bounded_string; -- ../lib/xilinx/spartan.lib
+		library			: in type_device_model_name; -- ../lib/xilinx/spartan.lib
 		generic_name	: in type_component_generic_name.bounded_string);
 
 
@@ -434,10 +434,10 @@ package et_kicad_libraries is
 
 	-- Returns the package name of the given component.
 	function to_package_name (
-		library_name	: in pac_device_model_file.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return pac_package_name.bounded_string;
+		package_variant	: in type_package_variant_name) -- N, D
+		return type_package_name;
 
 
 	-- Alternative references used in instances of sheets:
@@ -449,7 +449,7 @@ package et_kicad_libraries is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
-		part		: pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
+		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 
@@ -487,7 +487,7 @@ package et_kicad_libraries is
 
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: type_port_name; -- the port name like GPIO1, GPIO2
 		coordinates	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
@@ -533,14 +533,14 @@ package et_kicad_libraries is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type	=> pac_device_model_file.bounded_string,
-		"="				=> pac_device_model_file."=");
+		element_type	=> type_device_model_name,
+		"="				=> et_device_model_names."=");
 
 	package type_device_libraries is new ordered_maps (
-		key_type		=> pac_device_model_file.bounded_string, -- ../../lbr/passive/capacitors.lib
-		"<"				=> pac_device_model_file."<",
+		key_type		=> type_device_model_name, -- ../../lbr/passive/capacitors.lib
+		"<"				=> et_device_model_names."<",
 		element_type	=> type_components_library.map,
-		"="			=> type_components_library."=");
+		"="				=> type_components_library."=");
 	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 
@@ -595,7 +595,7 @@ package et_kicad_libraries is
 	type type_lib_table_entry is record
 		lib_name	: type_library_name.bounded_string;
 		lib_type	: type_lib_type;
-		lib_uri		: pac_device_model_file.bounded_string;
+		lib_uri		: type_device_model_name;
 		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
 		-- Currently lib_uri is used for both component and package libraries.
 
@@ -788,7 +788,7 @@ package et_kicad_libraries is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
-	function package_name (text : in string) return pac_package_name.bounded_string;
+	function package_name (text : in string) return type_package_name;
 	-- CS rename to get_package_name
 
 
@@ -799,7 +799,7 @@ package et_kicad_libraries is
 
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in pac_device_model_file.bounded_string; -- incl. path and file name
+		library		: in type_device_model_name; -- incl. path and file name
 		component	: in type_component_generic_name.bounded_string)
 		return type_components_library.cursor;
 
@@ -829,9 +829,9 @@ package et_kicad_libraries is
 	-- contains the given package library with the given package.
 	function full_library_name ( -- CS rename to get_full_library_name
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name	: in pac_package_name.bounded_string; -- S_SO14
+		package_name	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 
@@ -839,8 +839,8 @@ package et_kicad_libraries is
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 	function terminal_port_map_fits (
-		library_name		: in pac_package_model_file.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name		: in pac_package_name.bounded_string;	-- S_SO14
+		library_name		: in type_package_model_name;		-- ../lbr/bel_ic.pretty
+		package_name		: in type_package_name;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean;
 

@@ -52,7 +52,7 @@ package body et_symbol_text is
 		log_indentation_up;
 
 		-- content
-		if pac_text_content.length (text.content) > 0 then
+		if length (text.content) > 0 then
 			log (text => "content '" & to_string (text.content) & "'",
 				level => log_threshold);
 		else
@@ -90,7 +90,7 @@ package body et_symbol_text is
 
 	function content (text : in type_symbol_text) return string is
 	-- Returns the content of the given text as string.
-		c : pac_text_content.bounded_string;
+		c : type_text_content;
 	begin
 		c := text.content;
 		return to_string (c);
