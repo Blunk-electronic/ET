@@ -682,6 +682,39 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
+		offset : type_object_position_relative;
+
+		
+
+		procedure compute_offset is
+			destination : type_object_position;
+		begin
+			destination := to_position (place, sheet);
+
+			offset := get_offset (group_reference_point, destination);
+
+			log (text => "group offset " & to_string (offset),
+				 level => log_threshold + 1);
+		end compute_offset;
+
+		
+		
+		procedure paste_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+  
+			paste_units_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+  
+			log_indentation_down;
+		end paste_units;
+
+			
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste group at sheet " & to_string (sheet)
@@ -698,9 +731,16 @@ package body et_schematic_ops_groups is
 		end if;
 
 
-		-- CS
+		compute_offset;
+
+		
 		-- Transfer objects from clipboard to the
 		-- given module:
+		paste_units;
+
+		-- CS
+		-- nets, texts
+		
 
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:

@@ -4204,6 +4204,29 @@ package body et_schematic_ops_units is
 
 
 
+	procedure paste_units_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_object_position_relative;									 
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " paste units from clipboard. Group offset: " & to_string (offset),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- CS
+
+		log_indentation_down;
+	end paste_units_from_clipboard;
+
+
+	
+
+
+	
 
 
 
