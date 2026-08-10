@@ -148,7 +148,7 @@ is
 
 
 	procedure query_items (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
@@ -193,7 +193,7 @@ is
 			placeholder : type_placeholder_non_conductor renames element (c);
 
 			use pac_text_vectorized;
-			content : pac_text_content.bounded_string;
+			content : type_text_content;
 			text : type_text_fab_with_content;
 
 

@@ -87,7 +87,9 @@ package et_project is
 
 	package pac_root_directory is new generic_bounded_length (projects_root_dir_length);
 
-	projects_root_dir : pac_root_directory.bounded_string;
+	type type_root_directory is new pac_root_directory.bounded_string;
+
+	projects_root_dir : type_root_directory;
 
 
 
@@ -99,9 +101,11 @@ package et_project is
 
 	package pac_project_path is new generic_bounded_length (project_path_max);
 
-	function to_string (path : in pac_project_path.bounded_string) return string;
+	type type_project_path is new pac_project_path.bounded_string;
 
-	function to_project_path (path : in string) return pac_project_path.bounded_string;
+	function to_string (path : in type_project_path) return string;
+
+	function to_project_path (path : in string) return type_project_path;
 
 
 
@@ -110,7 +114,7 @@ package et_project is
 -- ACTIVE PROJECT:
 
 	-- Here we store the name of the currently open project:
-	active_project : pac_project_name.bounded_string;
+	active_project : type_project_name;
 
 
 
@@ -122,8 +126,8 @@ package et_project is
 	-- Creates a default rig configuration file.
 	-- Already existing projects in given project_path are overwritten.
 	procedure create_project_directory (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
+		project_name	: in type_project_name;		-- blood_sample_analyzer
+		module_name		: in type_module_name := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level);
 
 
@@ -131,7 +135,7 @@ package et_project is
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	procedure create_project_directory_bare (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level);
 
 
@@ -140,7 +144,7 @@ package et_project is
 	-- in the current directory.
 	-- Assigns to the global variable "current_project" the given project_name.
 	procedure open_project (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level);
 
 
@@ -160,7 +164,7 @@ package et_project is
 	-- This way comments will be preserved.
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
+		destination		: in type_project_name; -- blood_sample_analyzer_experimental
 		log_threshold	: in type_log_level);
 
 

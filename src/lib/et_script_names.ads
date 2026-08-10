@@ -46,20 +46,22 @@ package et_script_names is
 	package pac_script_name is new generic_bounded_length (script_name_length_max);
 	use pac_script_name;
 
+	type type_script_name is new pac_script_name.bounded_string;
+
 
 	function get_length (
-		name : in pac_script_name.bounded_string)
+		name : in type_script_name)
 		return natural;
 
 
 	function to_string (
-		name : in pac_script_name.bounded_string)
+		name : in type_script_name)
 		return string;
 
 
 	function to_script_name (
 		name : in string)
-		return pac_script_name.bounded_string;
+		return type_script_name;
 
 
 end et_script_names;

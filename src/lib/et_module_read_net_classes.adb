@@ -67,7 +67,7 @@ package body et_module_read_net_classes is
 
 
 	net_class		: et_net_class.type_net_class;
-	net_class_name	: et_net_class_name.pac_net_class_name.bounded_string;
+	net_class_name	: et_net_class_name.type_net_class_name;
 
 
 
@@ -162,7 +162,7 @@ package body et_module_read_net_classes is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

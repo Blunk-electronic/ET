@@ -98,7 +98,7 @@ package et_fill_zones.boards is
 
 		-- Net name is relevant if fill_zone is part of a route.
 		-- The type of the given fill_zone is the cirteria:
-		net_name		: in pac_net_name.bounded_string := no_name)
+		net_name		: in type_net_name := no_name)
 		return string;
 
 

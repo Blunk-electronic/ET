@@ -103,26 +103,25 @@ package body et_submodules is
 
 
 
-	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
-		return pac_submodule_path.to_bounded_string (path);
+	function to_submodule_path (path : in string) return type_submodule_path is begin
+		return type_submodule_path (pac_submodule_path.to_bounded_string (path));
 	end to_submodule_path;
 
 
 
 
-	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
-		return pac_submodule_path.to_string (path);
+	function to_string (path : in type_submodule_path) return string is begin
+		return pac_submodule_path.to_string (pac_submodule_path.bounded_string (path));
 	end to_string;
 
 
 
 
 
-	function to_module_name (path : in pac_submodule_path.bounded_string)
-		return pac_module_name.bounded_string
+	function to_module_name (path : in type_submodule_path)
+		return type_module_name
 	is
-		use pac_module_name;
-		name : pac_module_name.bounded_string;
+		name : type_module_name;
 	begin
 		name := to_module_name (remove_extension (to_string (path)));
 		return name;
@@ -142,7 +141,7 @@ package body et_submodules is
 	is
 
 		procedure move (
-			name	: in pac_net_name.bounded_string;
+			name	: in type_net_name;
 			port	: in out type_submodule_port)
 		is
 			pragma unreferenced (name);

@@ -118,7 +118,7 @@ package body et_module is
 
 	function variant_exists (
 		module	: in type_generic_module;
-		variant	: in pac_assembly_variant_name.bounded_string)
+		variant	: in type_assembly_variant_name)
 		return boolean
 	is begin
 		return variant_exists (module.assembly_variants, variant);
@@ -128,7 +128,7 @@ package body et_module is
 
 	function get_active_variant (
 		module	: in type_generic_module)
-		return pac_assembly_variant_name.bounded_string
+		return type_assembly_variant_name
 	is begin
 		return module.assembly_variants.active;
 	end get_active_variant;

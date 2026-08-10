@@ -54,24 +54,24 @@ with et_pcb_sides;				use et_pcb_sides;
 
 package body et_pick_and_place is
 
-	function to_string (name : in pac_pnp_file_name.bounded_string) return string is begin
-		return pac_pnp_file_name.to_string (name);
+	function to_string (name : in type_pnp_file_name) return string is begin
+		return pac_pnp_file_name.to_string (pac_pnp_file_name.bounded_string (name));
 	end to_string;
 
-	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string is begin
-		return pac_pnp_file_name.to_bounded_string (name);
+	function to_file_name (name : in string) return type_pnp_file_name is begin
+		return type_pnp_file_name (pac_pnp_file_name.to_bounded_string (name));
 	end to_file_name;
 
 
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		module_name		: in type_module_name; -- motor_driver
+		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level)
 	is
 
-		file_name : pac_pnp_file_name.bounded_string;
+		file_name : type_pnp_file_name;
 
 		pnp_handle : ada.text_io.file_type;
 		device_cursor : pac_devices.cursor := pnp.first;
@@ -80,7 +80,7 @@ package body et_pick_and_place is
 		procedure set_file_name is
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_assembly_variant_name;
+			use et_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

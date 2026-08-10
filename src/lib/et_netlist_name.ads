@@ -50,11 +50,13 @@ package et_netlist_name is
 
 	package pac_netlist_file_name is new generic_bounded_length (file_name_length_max);
 
+	type type_netlist_file_name is new pac_netlist_file_name.bounded_string;
+
 	extension_netlist : constant string := "net";
 
-	function to_string (name : in pac_netlist_file_name.bounded_string) return string;
+	function to_string (name : in type_netlist_file_name) return string;
 
-	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string;
+	function to_file_name (name : in string) return type_netlist_file_name;
 
 
 end et_netlist_name;

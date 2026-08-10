@@ -68,8 +68,8 @@ package body et_device_read_package_variant is
 
 -- PACKAGE VARIANT:
 
-	use pac_package_variant_name;
-	variant_name : pac_package_variant_name.bounded_string; -- N, D
+	use et_package_variant_name;
+	variant_name : type_package_variant_name; -- N, D
 
 
 
@@ -86,7 +86,7 @@ package body et_device_read_package_variant is
 
 		kw : constant string := f (line, 1);
 
-		package_model_name : pac_package_model_file.bounded_string;
+		package_model_name : type_package_model_name;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name D
@@ -190,9 +190,9 @@ package body et_device_read_package_variant is
 		inserted	: boolean;
 		position	: pac_terminal_port_map.cursor;
 
-		terminal	: pac_terminal_name.bounded_string; -- H5, 14
-		unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
-		port		: pac_port_name.bounded_string; -- VCC
+		terminal	: type_terminal_name; -- H5, 14
+		unit		: type_unit_name; -- PWR, IO_BANK_2
+		port		: type_port_name; -- VCC
 
 		place : type_field_count_positive := 1; -- the field being read from given line
 

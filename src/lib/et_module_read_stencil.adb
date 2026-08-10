@@ -204,7 +204,7 @@ package body et_module_read_stencil is
 		pragma unreferenced (log_threshold);
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -238,7 +238,7 @@ package body et_module_read_stencil is
 		pragma unreferenced (log_threshold);
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -273,7 +273,7 @@ package body et_module_read_stencil is
 		pragma unreferenced (log_threshold);
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

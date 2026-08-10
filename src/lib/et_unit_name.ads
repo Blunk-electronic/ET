@@ -49,22 +49,24 @@ package et_unit_name is
 	-- CS unit_name_characters, length check, character check
 	package pac_unit_name is new generic_bounded_length (unit_name_length_max);
 
+	type type_unit_name is new pac_unit_name.bounded_string;
+
 	use pac_unit_name;
 
 
 	function get_length (
-		unit : in pac_unit_name.bounded_string)
+		unit : in type_unit_name)
 		return natural;
 
 
-	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
+	unit_name_default : constant type_unit_name := type_unit_name (pac_unit_name.to_bounded_string (""));
 
-	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string;
+	-- function to_string (unit_name : in type_unit_name) return string;
 
 
 	function to_unit_name (
 		unit_name : in string)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 
@@ -74,7 +76,7 @@ package et_unit_name is
 	-- is ERROR:
 	procedure message_unit_not_found (
 		severity	: in type_message_severity;
-		name		: in pac_unit_name.bounded_string);
+		name		: in type_unit_name);
 
 
 end et_unit_name;

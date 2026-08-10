@@ -156,9 +156,9 @@ package et_conventions is
 
 	-- Device prefixes and their category are liked via this map:
 	package pac_device_prefixes is new ordered_maps (
-		key_type		=> pac_device_prefix.bounded_string, -- IC
+		key_type		=> type_device_prefix, -- IC
 		element_type	=> type_device_category, -- INTEGRATED_CIRCUIT
-		"<"			=> pac_device_prefix."<");
+		"<"				=> et_device_prefix."<");
 
 	-- After reading the conventions, we store the
 	-- allowed device prefixes for the design here:
@@ -174,7 +174,7 @@ package et_conventions is
 
 	-- Returns the category of the given device prefix. If no category could be
 	-- found, returns category UNKNOWN.
-	function category (prefix : in pac_device_prefix.bounded_string) return
+	function category (prefix : in type_device_prefix) return
 		type_device_category;
 
 
@@ -186,20 +186,20 @@ package et_conventions is
 
 
 
---	function ports_in_net (
---		module			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
---		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
---		category		: in type_device_category;				-- netchanger, connector
---		log_threshold	: in type_log_level)
---		return et_kicad.type_ports_with_reference.set;
---	-- Returns a set of component ports that are connected with the given net.
---	-- Returns only components of given category.
+-- 	function ports_in_net (
+-- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		net				: in et_schematic.type_net_name;			-- motor_on_off
+-- 		category		: in type_device_category;				-- netchanger, connector
+-- 		log_threshold	: in type_log_level)
+-- 		return et_kicad.type_ports_with_reference.set;
+-- 	-- Returns a set of component ports that are connected with the given net.
+-- 	-- Returns only components of given category.
 
---	-- Handling routing information requires this type:
---	type type_net is record
---		module	: et_schematic_coordinates.type_submodule_name.bounded_string;
---		net		: et_schematic.pac_net_name.bounded_string;
---	end record;
+-- 	-- Handling routing information requires this type:
+-- 	type type_net is record
+-- 		module	: et_schematic_coordinates.type_submodule_name.bounded_string;
+-- 		net		: et_schematic.type_net_name;
+-- 	end record;
 --
 --	function to_string (
 --		net			: in type_net;
@@ -259,7 +259,7 @@ package et_conventions is
 	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
 	-- actual abbrevation like R or V.
 	function to_abbrevation (unit : in type_unit_of_measurement)
-		return pac_unit_abbrevation.bounded_string;
+		return type_unit_abbrevation;
 
 
 
@@ -280,7 +280,7 @@ package et_conventions is
 	-- Returns NO if prefixs does not require interaction or if no prefixes
 	-- specified at all (in conventions file section COMPONENT_PREFIXES).
 	function requires_operator_interaction (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return type_component_requires_operator_interaction;
 
 
@@ -415,10 +415,10 @@ package et_conventions is
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 	procedure validate_partcode (
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name; -- R45
-		packge			: in pac_package_name.bounded_string;	-- S_0805
-		value			: in pac_device_value.bounded_string; -- 100R
+		packge			: in type_package_name;	-- S_0805
+		value			: in type_device_value; -- 100R
 		log_threshold	: in type_log_level);
 
 
@@ -428,19 +428,21 @@ package et_conventions is
 	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max);
 
-	function to_file_name (file : in string) return pac_file_name.bounded_string;
-	function to_string (file : in pac_file_name.bounded_string) return string;
+	type type_conventions_file_name is new pac_file_name.bounded_string;
+
+	function to_file_name (file : in string) return type_conventions_file_name;
+	function to_string (file : in type_conventions_file_name) return string;
 
 
 	-- Creates a default conventions file:
 	procedure make_default_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level);
 
 
 	-- Reads the given conventions file:
 	procedure read_conventions (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_conventions_file_name;
 		log_threshold	: in type_log_level);
 	-- CS separate body !
 
@@ -450,15 +452,15 @@ package et_conventions is
 	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
 	function value_valid (
-		value	: in pac_device_value.bounded_string;
-		prefix	: in pac_device_prefix.bounded_string)
+		value	: in type_device_value;
+		prefix	: in type_device_prefix)
 		return boolean;
 
 
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false.
 	-- Returns true if no prefixes specified or if prefix is valid.
-	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean;
+	function prefix_valid (prefix : in type_device_prefix) return boolean;
 
 
 	-- Tests if the given device name has a valid prefix as specified in the conventions file.

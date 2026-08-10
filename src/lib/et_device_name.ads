@@ -47,8 +47,8 @@ with et_logging;				use et_logging;
 package et_device_name is
 
 
-	prefix_default : constant pac_device_prefix.bounded_string :=
-		pac_device_prefix.to_bounded_string ("?");
+	prefix_default : constant type_device_prefix :=
+		type_device_prefix (pac_device_prefix.to_bounded_string ("?"));
 
 
 	subtype type_name_index is natural range natural'first .. 99_999;
@@ -81,7 +81,7 @@ package et_device_name is
 
 
 	type type_device_name is record -- CS: should be private
-		prefix		: pac_device_prefix.bounded_string := prefix_default; -- like "IC"
+		prefix		: type_device_prefix := prefix_default; -- like "IC"
 		id			: type_name_index := name_index_default; -- like "303"
 		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id.
 		-- Example: id_width is 3 in case of an id like of 937
@@ -140,13 +140,13 @@ package et_device_name is
 	-- Returns the prefix of the given device name.
 	function get_prefix (
 		name : in type_device_name)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 	-- Sets the prefix of the given device name:
 	procedure set_prefix (
 		name	: in out type_device_name;
-		prefix	: in pac_device_prefix.bounded_string);
+		prefix	: in type_device_prefix);
 
 
 
@@ -174,7 +174,7 @@ package et_device_name is
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
 	function to_device_name (
-		prefix	: in pac_device_prefix.bounded_string;	-- R, C, L
+		prefix	: in type_device_prefix;	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name;
@@ -221,7 +221,7 @@ package et_device_name is
 	-- If the list is empty, then the returned index is always 1:
 	function get_first_available_name (
 		device_names	: in pac_device_names.set;
-		prefix			: in pac_device_prefix.bounded_string; -- C
+		prefix			: in type_device_prefix; -- C
 		log_threshold	: in type_log_level)
 		return type_device_name;
 

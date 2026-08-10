@@ -87,7 +87,7 @@ package et_device_model is
 
 
 	type type_device_model (appearance : type_appearance) is record
-		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
+		prefix			: type_device_prefix; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
 
@@ -103,7 +103,7 @@ package et_device_model is
 			-- If a device appears in both schematic and layout it comes
 			-- with at least one package/footprint variant. We store variants in a map.
 			when APPEARANCE_PCB =>
-				value		: pac_device_value.bounded_string; -- 74LS00
+				value		: type_device_value; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: pac_package_variants.map;
 
@@ -151,14 +151,14 @@ package et_device_model is
 	-- If no internal unit exists, then an exception is raised:
 	function get_name_internal (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 	-- Returns the name of the external unit.
 	-- If no external unit exists, then an exception is raised:
 	function get_name_external (
 		units : in type_device_units)
-		return pac_unit_name.bounded_string;
+		return type_unit_name;
 
 
 
@@ -171,7 +171,7 @@ package et_device_model is
 	-- units then the result is no_element:
 	procedure locate_internal (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_internal.cursor);
 
 
@@ -182,7 +182,7 @@ package et_device_model is
 	-- units then the result is no_element:
 	procedure locate_external (
 		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
+		unit	: in type_unit_name;
 		cursor	: in out pac_units_external.cursor);
 
 
@@ -202,7 +202,7 @@ package et_device_model is
 	-- an exception will be raised:
 	function get_first_package_variant (
 		device_model : in type_device_model)
-		return pac_package_variant_name.bounded_string;
+		return type_package_variant_name;
 
 
 	-- Returns the default value as it is
@@ -212,7 +212,7 @@ package et_device_model is
 	-- string will be returned:
 	function get_default_value (
 		device_model : in type_device_model)
-		return pac_device_value.bounded_string;
+		return type_device_value;
 
 
 

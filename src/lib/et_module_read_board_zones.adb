@@ -329,7 +329,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -374,7 +374,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -419,7 +419,7 @@ package body et_module_read_board_zones is
 	is
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -496,7 +496,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -677,7 +677,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -725,7 +725,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -773,7 +773,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -854,7 +854,7 @@ package body et_module_read_board_zones is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

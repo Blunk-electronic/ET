@@ -430,7 +430,7 @@ package body et_canvas_board_devices is
 
 	function get_top_most_important_library return string is
 		all_lib_dirs : pac_library_paths_board.list;
-		top_lib_dir : pac_library_path_board.bounded_string;
+		top_lib_dir : type_library_path_board;
 
 		use et_directory_and_file_ops;
 	begin
@@ -480,7 +480,7 @@ package body et_canvas_board_devices is
 		use et_package_model_name;
 
 		-- The selected package model file (*.pac) is stored here:
-		package_model_file : pac_package_model_file.bounded_string;
+		package_model_file : type_package_model_name;
 
 		-- This cursor points to the package model in the library:
 		use pac_package_models;
@@ -551,7 +551,7 @@ package body et_canvas_board_devices is
 		name : gvalue;
 
 		use et_device_prefix;
-		prefix : pac_device_prefix.bounded_string; -- FD1
+		prefix : type_device_prefix; -- FD1
 	begin
 		log (text => "cb_package_prefix_selected", level => log_threshold);
 		log_indentation_up;

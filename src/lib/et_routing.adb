@@ -56,7 +56,7 @@ package body et_routing is
 		return type_get_terminal_clearance_result
 	is
 		use et_board_ops;
-		use pac_net_name;
+		use et_net_names;
 
 		-- Get a cursor to the net connected with the terminal.
 		-- If there is no net connected then we return a not-connected-status:
@@ -104,7 +104,7 @@ package body et_routing is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			use et_pcb_contour;
@@ -172,7 +172,7 @@ package body et_routing is
 		--result : boolean := true;
 
 		--procedure query_module (
-			--module_name	: in pac_module_name.bounded_string;
+			--module_name	: in type_module_name;
 			--module		: in type_generic_module)
 		--is
 			--procedure query_outline is begin

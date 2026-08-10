@@ -94,9 +94,9 @@ is
 
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		generic_name : pac_module_name.bounded_string; -- motor_driver
-		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
-		assembly_variant : pac_assembly_variant_name.bounded_string; -- low_cost
+		generic_name : type_module_name; -- motor_driver
+		instance_name : type_module_instance_name; -- DRV_1
+		assembly_variant : type_assembly_variant_name; -- low_cost
 
 
 		procedure clear_module_instance is begin
@@ -104,12 +104,12 @@ is
 			instance_name := to_instance_name ("");
 		end clear_module_instance;
 
-		purpose_A, purpose_B : pac_device_purpose.bounded_string; -- power_in, power_out
-		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
+		purpose_A, purpose_B : type_device_purpose; -- power_in, power_out
+		instance_A, instance_B : type_module_instance_name; -- DRV_1, PWR
 
 
 		procedure clear_connector is begin
-			purpose_A := pac_device_purpose.to_bounded_string ("");
+			purpose_A := type_device_purpose (pac_device_purpose.to_bounded_string (""));
 			purpose_A := purpose_B;
 			instance_A := to_instance_name ("");
 			instance_B := instance_A;
@@ -125,7 +125,7 @@ is
 
 
 				procedure create_instance (
-					rig_name	: in pac_file_name.bounded_string;
+					rig_name	: in et_rig_name.type_rig_file_name;
 					rig			: in out type_rig)
 				is
 					pragma unreferenced (rig_name);
@@ -154,14 +154,14 @@ is
 
 
 				procedure create_connection (
-					rig_name	: in pac_file_name.bounded_string;
+					rig_name	: in et_rig_name.type_rig_file_name;
 					rig			: in out type_rig) is
 					pragma unreferenced (rig_name);
 					connection_inserted : boolean;
 					connection_cursor : pac_module_connections.cursor;
 
 					use pac_device_purpose;
-					use pac_module_instance_name;
+					use et_module_instance;
 				begin
 					-- If NONE of the four elements that make a module connection is specified,
 					-- then do nothing. Otherwise ALL of them must be specified.
@@ -353,7 +353,7 @@ is
 										expect_field_count (line, 2);
 
 										-- The generic name does not use the *.mod extension.
-										generic_name := pac_module_name.to_bounded_string (f (line, 2));
+										generic_name := to_module_name (f (line, 2));
 
 										-- test whether a module with this generic name exists
 										if not generic_module_exists (generic_name) then
@@ -457,7 +457,7 @@ is
 		-- create an empty rig - named after the given configuration file but without extension
 		pac_rigs.insert (
 			container	=> rigs,
-			key			=> pac_file_name.to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
+			key			=> et_rig_name.type_rig_file_name (pac_file_name.to_bounded_string (base_name (file_name))), -- demo, low_cost, fully_equipped
 			inserted	=> rig_inserted, -- should always be true
 			position	=> rig_cursor);
 

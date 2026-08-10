@@ -265,7 +265,7 @@ package et_kicad_packages is
 	-- When inserting the text in the final package, it is decomposed again.
 	--type type_text_package is new et_packages.type_text with record
 	type type_text_package is new type_text_fab with record
-		content	: pac_text_content.bounded_string;
+		content	: type_text_content;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
@@ -274,11 +274,13 @@ package et_kicad_packages is
 	directory_name_length_max : constant positive := 200;
 	package pac_directory_name is new generic_bounded_length (directory_name_length_max);
 
-	function to_string (directory_name : in pac_directory_name.bounded_string) return string;
+	type type_directory_name is new pac_directory_name.bounded_string;
+
+	function to_string (directory_name : in type_directory_name) return string;
 	-- Converts a directory name to a string.
 
---	function to_directory (directory_name : in string) return pac_directory_name.bounded_string;
---	-- Converts a string to a pac_directory_name.
+-- 	function to_directory (directory_name : in string) return type_directory_name;
+-- 	-- Converts a string to a pac_directory_name.
 
 
 	function to_package_model (
@@ -296,15 +298,15 @@ package et_kicad_packages is
 
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
-		key_type		=> pac_package_name.bounded_string, -- S_SO14, T_0207
-		"<"				=> pac_package_name."<",
+		key_type		=> type_package_name, -- S_SO14, T_0207
+		"<"				=> et_package_name."<",
 		element_type	=> type_package_library);
 
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
-		key_type		=> pac_package_model_file.bounded_string, -- projects/lbr/smd_packages.pretty
+		key_type		=> type_package_model_name, -- projects/lbr/smd_packages.pretty
 		element_type	=> type_packages_library.map,
 		"="				=> type_packages_library."=",
-		"<"				=> pac_package_model_file."<");
+		"<"				=> et_package_model_name."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 

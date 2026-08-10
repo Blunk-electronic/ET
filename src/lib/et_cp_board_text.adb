@@ -90,7 +90,7 @@ package body et_cp_board_text is
 		text			: type_text_fab_with_content;
 		pos_xy			: type_vector_model;
 		rotation		: type_rotation_model;
-		content			: pac_text_content.bounded_string;
+		content			: type_text_content;
 		layer_category	: type_layer_category;
 
 		face			: type_face;

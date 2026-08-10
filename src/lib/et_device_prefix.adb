@@ -47,19 +47,19 @@ package body et_device_prefix is
 
 
 	function to_string (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 		return string
 	is begin
-		return pac_device_prefix.to_string (prefix); -- leading space not allowd !
+		return pac_device_prefix.to_string (pac_device_prefix.bounded_string (prefix)); -- leading space not allowd !
 	end to_string;
 
 
 
 	function to_prefix (
 		prefix : in string)
-		return pac_device_prefix.bounded_string
+		return type_device_prefix
 	is begin
-		return pac_device_prefix.to_bounded_string (prefix);
+		return type_device_prefix (pac_device_prefix.to_bounded_string (prefix));
 	end to_prefix;
 
 
@@ -80,7 +80,7 @@ package body et_device_prefix is
 
 
 	procedure check_prefix_characters (
-		prefix : in pac_device_prefix.bounded_string)
+		prefix : in type_device_prefix)
 	is
 		invalid_character_position : natural := 0;
 	begin

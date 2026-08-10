@@ -674,7 +674,7 @@ package body et_canvas_board is
 	-- Due to the complexity of the code, this procedure
 	-- is separate. It is called by procedure draw_packages:
 	procedure draw_terminal (
-		name				: in et_terminal_name.pac_terminal_name.bounded_string;
+		name				: in et_terminal_name.type_terminal_name;
 		terminal			: in et_terminals.type_terminal;
 		brightness			: in et_colors.type_brightness;
 		package_position	: in type_package_position;
@@ -962,8 +962,7 @@ package body et_canvas_board is
 
 	procedure undo is
 		use et_undo_redo;
-		use pac_undo_message;
-		message : pac_undo_message.bounded_string;
+		message : type_undo_message;
 	begin
 		-- put_line ("board undo");
 		undo (message, log_threshold + 1);
@@ -978,8 +977,7 @@ package body et_canvas_board is
 
 	procedure redo is
 		use et_undo_redo;
-		use pac_redo_message;
-		message : pac_redo_message.bounded_string;
+		message : type_redo_message;
 	begin
 		-- put_line ("board redo");
 		redo (message, log_threshold + 1);
@@ -1398,7 +1396,7 @@ package body et_canvas_board is
 
 
 	procedure execute_script_console (
-		script : in pac_script_name.bounded_string)
+		script : in type_script_name)
 	is
 		use ada.directories;
 		use et_project_name;

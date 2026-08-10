@@ -365,11 +365,11 @@ package body et_string_processing is
 		package pac_extended_string is new
 			generic_bounded_length (length_max);
 
-		use pac_extended_string;
+		type type_extended_string is new pac_extended_string.bounded_string;
 
 		-- The field content to be returned.
 		-- (NOTE: gets converted to string on return):
-		field			: pac_extended_string.bounded_string;
+		field			: type_extended_string;
 
 		-- The number of characters in given string
 		character_count	: constant natural := text_in'length;

@@ -109,11 +109,13 @@ package et_units_of_measurement is
 
 	use pac_unit_abbrevation;
 
+	type type_unit_abbrevation is new pac_unit_abbrevation.bounded_string;
+
 
 	-- Units of measurement and their abbrevation are stored in a map:
 	package pac_units_of_measurement is new ordered_maps (
 		key_type		=> type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
-		element_type	=> pac_unit_abbrevation.bounded_string); -- R, m, k, ...
+		element_type	=> type_unit_abbrevation); -- R, m, k, ...
 
 
 
@@ -121,7 +123,7 @@ package et_units_of_measurement is
 	-- Tests if the given abbrevation contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	procedure check_abbrevation_of_unit_characters (
-		abbrevation	: in pac_unit_abbrevation.bounded_string;
+		abbrevation	: in type_unit_abbrevation;
 		characters	: in character_set);
 
 

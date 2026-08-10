@@ -49,18 +49,20 @@ package et_text_content is
 	text_length_max : constant natural := 200;
 	package pac_text_content is new generic_bounded_length (text_length_max);
 
-	function to_string (text_content : in pac_text_content.bounded_string) return string;
-	function to_content (content : in string) return pac_text_content.bounded_string;
+	type type_text_content is new pac_text_content.bounded_string;
 
-	empty_text_content : constant pac_text_content.bounded_string :=
-		pac_text_content.to_bounded_string ("");
+	function to_string (text_content : in type_text_content) return string;
+	function to_content (content : in string) return type_text_content;
 
-	function is_empty (content : in pac_text_content.bounded_string) return boolean;
+	empty_text_content : constant type_text_content :=
+		type_text_content (pac_text_content.to_bounded_string (""));
+
+	function is_empty (content : in type_text_content) return boolean;
 
 
 	-- Clears the given content:
 	procedure clear_content (
-		content : in out pac_text_content.bounded_string);
+		content : in out type_text_content);
 
 
 	valid_characters : character_set := to_set
@@ -70,7 +72,7 @@ package et_text_content is
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	function characters_valid (
-		content		: in pac_text_content.bounded_string;
+		content		: in type_text_content;
 		characters	: in character_set := valid_characters)
 		-- CS log_threshold : in type_log_level)
 		return boolean;
@@ -79,7 +81,7 @@ package et_text_content is
 
 	-- Replaces invalid characters in content by character given in replace_by:
 	procedure replace_invalid_characters (
-		content		: in out pac_text_content.bounded_string;
+		content		: in out type_text_content;
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters);
 

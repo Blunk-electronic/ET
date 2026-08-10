@@ -1956,7 +1956,7 @@ package body et_module_read is
 
 			procedure get_submodules (
 			-- Copies the submodules in submods.
-				module_name	: pac_module_name.bounded_string;
+				module_name	: type_module_name;
 				module		: type_generic_module) is
 			pragma unreferenced (module_name);
 			begin

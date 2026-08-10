@@ -63,7 +63,7 @@ separate (et_schematic_ops_device)
 procedure copy_device (
 	module_cursor		: in pac_generic_modules.cursor;
 	device_name			: in type_device_name; -- IC45
-	unit_name_explicit	: in pac_unit_name.bounded_string; -- D
+	unit_name_explicit	: in type_unit_name; -- D
 	destination			: in type_object_position; -- sheet/x/y
 	commit_design		: in type_commit_design := DO_COMMIT;
 	device_created		: out type_device_name;
@@ -87,7 +87,7 @@ is
 
 
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in out type_generic_module)
 	is
 		pragma unreferenced (module_name);
@@ -332,7 +332,7 @@ is
 
 		-- This is the place where we temporarily keep the name
 		-- of the unit to be added:
-		unit_name : pac_unit_name.bounded_string;
+		unit_name : type_unit_name;
 
 
 		-- This procedure adds a unit to the new device.

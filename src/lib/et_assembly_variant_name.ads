@@ -54,33 +54,35 @@ package et_assembly_variant_name is
 
 	use pac_assembly_variant_name;
 
+	type type_assembly_variant_name is new pac_assembly_variant_name.bounded_string;
 
-	-- default : constant pac_assembly_variant_name.bounded_string :=
+
+	-- default : constant type_assembly_variant_name :=
 		-- pac_assembly_variant_name.to_bounded_string ("");
 	-- CS rename to default_assembly_variant
 	-- CS remove ?
 
-	default_assembly_variant : constant pac_assembly_variant_name.bounded_string :=
-		to_bounded_string ("default");
+	default_assembly_variant : constant type_assembly_variant_name :=
+		type_assembly_variant_name (pac_assembly_variant_name.to_bounded_string ("default"));
 
 
 
 	-- Returns true if the given variant name is
 	-- the default variant:
 	function is_default (
-		variant : in pac_assembly_variant_name.bounded_string)
+		variant : in type_assembly_variant_name)
 		return boolean;
 
 
 	function to_variant (
-		variant : in pac_assembly_variant_name.bounded_string)
+		variant : in type_assembly_variant_name)
 		return string;
 	-- CS rename to to_string
 
 
 	function to_variant (
 		variant : in string)
-		return pac_assembly_variant_name.bounded_string;
+		return type_assembly_variant_name;
 
 
 

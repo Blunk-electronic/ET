@@ -73,12 +73,12 @@ package body et_schematic_ops_meta is
 
 	procedure add_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_schematic.bounded_string;
+		path			: in type_library_path_schematic;
 		log_threshold	: in type_log_level)
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -112,12 +112,12 @@ package body et_schematic_ops_meta is
 
 	procedure remove_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_schematic.bounded_string;
+		path			: in type_library_path_schematic;
 		log_threshold	: in type_log_level)
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

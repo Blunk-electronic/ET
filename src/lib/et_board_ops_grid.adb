@@ -46,7 +46,7 @@ package body et_board_ops_grid is
 
 
 	procedure set_grid (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level)
 	is
@@ -54,7 +54,7 @@ package body et_board_ops_grid is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -88,7 +88,7 @@ package body et_board_ops_grid is
 	is
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -125,7 +125,7 @@ package body et_board_ops_grid is
 
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

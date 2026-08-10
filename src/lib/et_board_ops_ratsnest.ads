@@ -57,7 +57,7 @@ with et_logging;					use et_logging;
 package et_board_ops_ratsnest is
 
 	use pac_generic_modules;
-	use pac_net_name;
+	use et_net_names;
 
 
 	-- Returns the start and end positions (x/y) of all track
@@ -113,7 +113,7 @@ package et_board_ops_ratsnest is
 
 	function get_net_name (
 		object : in pac_objects.cursor)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 	-- Returns the number of items stored in the given list:

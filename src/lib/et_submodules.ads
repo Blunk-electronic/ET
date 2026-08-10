@@ -112,15 +112,17 @@ package et_submodules is
 	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
 	package pac_submodule_path is new generic_bounded_length (submodule_path_length_max);
 
-
-	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string;
-
-
-	function to_string (path : in pac_submodule_path.bounded_string) return string;
+	type type_submodule_path is new pac_submodule_path.bounded_string;
 
 
-	function to_module_name (path : in pac_submodule_path.bounded_string)
-		return pac_module_name.bounded_string;
+	function to_submodule_path (path : in string) return type_submodule_path;
+
+
+	function to_string (path : in type_submodule_path) return string;
+
+
+	function to_module_name (path : in type_submodule_path)
+		return type_module_name;
 	-- Removes the file extension from given path and returns the module name.
 
 
@@ -186,11 +188,11 @@ package et_submodules is
 
 
 
-	use pac_net_name;
+	use et_net_names;
 	package pac_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
 		-- The net inside the submodule is here the port name:
-		key_type		=> pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
+		key_type		=> type_net_name); -- CLOCK_GENERATOR_OUT
 
 
 	-- Moves the given submodule ports by the given offset.
@@ -203,7 +205,7 @@ package et_submodules is
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
-		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		file				: type_submodule_path; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : type_object_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_board_geometry.pac_geometry_2.type_position := et_board_geometry.pac_geometry_2.origin_zero_rotation;
@@ -250,10 +252,10 @@ package et_submodules is
 
 
 
-	use pac_module_instance_name;
+	use et_module_instance;
 
 	package pac_submodules is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
+		key_type		=> type_module_instance_name, -- MOT_DRV_3
 		element_type	=> type_submodule);
 
 

@@ -63,7 +63,7 @@ package et_board_ops_material_pnp is
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 	--     See comment in procedure query_submodules.
 	procedure make_pick_and_place (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
 

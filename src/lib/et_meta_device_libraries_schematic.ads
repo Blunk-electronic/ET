@@ -68,30 +68,32 @@ package et_meta_device_libraries_schematic is
 
 	use pac_library_path_schematic;
 
+	type type_library_path_schematic is new pac_library_path_schematic.bounded_string;
+
 
 	-- Returns true if the given path exists:
 	function library_path_exists (
-		lib : in pac_library_path_schematic.bounded_string)
+		lib : in type_library_path_schematic)
 		return boolean;
 
 
 	function to_library_path (
 		lib : in string)
-		return pac_library_path_schematic.bounded_string;
+		return type_library_path_schematic;
 
 
 	function to_string (
-		lib : in pac_library_path_schematic.bounded_string)
+		lib : in type_library_path_schematic)
 		return string;
 
 
 	package pac_library_paths_schematic is new
-		doubly_linked_lists (pac_library_path_schematic.bounded_string);
+		doubly_linked_lists (type_library_path_schematic);
 
 
 	function get_first (
 		paths : in pac_library_paths_schematic.list)
-		return pac_library_path_schematic.bounded_string;
+		return type_library_path_schematic;
 
 
 	function is_empty (

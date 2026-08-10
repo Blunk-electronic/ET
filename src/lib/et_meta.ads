@@ -54,56 +54,68 @@ package et_meta is
 	company_length_max : constant positive := 100;
 	package pac_company is new generic_bounded_length (company_length_max);
 
-	function to_company (company : in string) return pac_company.bounded_string;
-	function to_string (company : in pac_company.bounded_string) return string;
+	type type_company is new pac_company.bounded_string;
 
-	company_default : constant pac_company.bounded_string := pac_company.to_bounded_string (not_assigned);
+	function to_company (company : in string) return type_company;
+	function to_string (company : in type_company) return string;
+
+	company_default : constant type_company := type_company (pac_company.to_bounded_string (not_assigned));
 
 
 	customer_length_max : constant positive := 100;
 	package pac_customer is new generic_bounded_length (customer_length_max);
 
-	function to_customer (customer : in string) return pac_customer.bounded_string;
-	function to_string (customer : in pac_customer.bounded_string) return string;
+	type type_customer is new pac_customer.bounded_string;
 
-	customer_default : constant pac_customer.bounded_string := pac_customer.to_bounded_string (not_assigned);
+	function to_customer (customer : in string) return type_customer;
+	function to_string (customer : in type_customer) return string;
+
+	customer_default : constant type_customer := type_customer (pac_customer.to_bounded_string (not_assigned));
 
 
 	partcode_length_max : constant positive := 100;
 	package pac_partcode is new generic_bounded_length (partcode_length_max);
 
-	function to_partcode (partcode : in string) return pac_partcode.bounded_string;
-	function to_string (partcode : in pac_partcode.bounded_string) return string;
+	type type_partcode is new pac_partcode.bounded_string;
 
-	partcode_default : constant pac_partcode.bounded_string := pac_partcode.to_bounded_string (not_assigned);
+	function to_partcode (partcode : in string) return type_partcode;
+	function to_string (partcode : in type_partcode) return string;
+
+	partcode_default : constant type_partcode := type_partcode (pac_partcode.to_bounded_string (not_assigned));
 
 
 	drawing_number_length_max : constant positive := 100;
 	package pac_drawing_number is new generic_bounded_length (drawing_number_length_max);
 
-	function to_drawing_number (drawing_number : in string) return pac_drawing_number.bounded_string;
-	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string;
+	type type_drawing_number is new pac_drawing_number.bounded_string;
 
-	drawing_number_default : constant pac_drawing_number.bounded_string := pac_drawing_number.to_bounded_string (not_assigned);
+	function to_drawing_number (drawing_number : in string) return type_drawing_number;
+	function to_string (drawing_number : in type_drawing_number) return string;
+
+	drawing_number_default : constant type_drawing_number := type_drawing_number (pac_drawing_number.to_bounded_string (not_assigned));
 
 
 	revision_length_max : constant positive := 5;
 	package pac_revision is new generic_bounded_length (revision_length_max);
 
-	function to_revision (revision : in string) return pac_revision.bounded_string;
-	function to_string (revision : in pac_revision.bounded_string) return string;
+	type type_revision is new pac_revision.bounded_string;
 
-	revision_default : constant pac_revision.bounded_string := pac_revision.to_bounded_string (not_assigned);
+	function to_revision (revision : in string) return type_revision;
+	function to_string (revision : in type_revision) return string;
+
+	revision_default : constant type_revision := type_revision (pac_revision.to_bounded_string (not_assigned));
 
 
 
 	person_length_max : constant positive := 20;
 	package pac_person is new generic_bounded_length (person_length_max);
 
-	function to_person (person : in string) return pac_person.bounded_string;
-	function to_string (person : in pac_person.bounded_string) return string;
+	type type_person is new pac_person.bounded_string;
 
-	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
+	function to_person (person : in string) return type_person;
+	function to_string (person : in type_person) return string;
+
+	person_default : constant type_person := type_person (pac_person.to_bounded_string (not_assigned));
 
 
 
@@ -112,14 +124,14 @@ package et_meta is
 
 
 	type type_meta_basic is tagged record
-		company			: pac_company.bounded_string := company_default;
-		customer		: pac_customer.bounded_string := customer_default;
-		partcode		: pac_partcode.bounded_string := partcode_default;
-		drawing_number	: pac_drawing_number.bounded_string := drawing_number_default;
-		revision		: pac_revision.bounded_string := revision_default;
-		drawn_by		: pac_person.bounded_string := person_default;
-		checked_by		: pac_person.bounded_string := person_default;
-		approved_by		: pac_person.bounded_string := person_default;
+		company			: type_company := company_default;
+		customer		: type_customer := customer_default;
+		partcode		: type_partcode := partcode_default;
+		drawing_number	: type_drawing_number := drawing_number_default;
+		revision		: type_revision := revision_default;
+		drawn_by		: type_person := person_default;
+		checked_by		: type_person := person_default;
+		approved_by		: type_person := person_default;
 		drawn_date		: time := clock;
 		checked_date	: time := date_first; -- default 1901-01-01
 		approved_date	: time := date_first; -- default 1901-01-01
@@ -144,12 +156,12 @@ package et_meta is
 
 	procedure add_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string);
+		lib  : in type_library_path_schematic);
 
 
 	procedure remove_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_library_path_schematic.bounded_string);
+		lib  : in type_library_path_schematic);
 
 
 	function get_device_libraries (
@@ -171,12 +183,12 @@ package et_meta is
 
 	procedure add_device_library (
 		meta : in out type_meta_board;
-		lib  : in pac_library_path_board.bounded_string);
+		lib  : in type_library_path_board);
 
 
 	procedure remove_device_library (
 		meta : in out type_meta_board;
-		lib  : in pac_library_path_board.bounded_string);
+		lib  : in type_library_path_board);
 
 
 	function get_device_libraries (

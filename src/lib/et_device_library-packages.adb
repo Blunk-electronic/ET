@@ -50,13 +50,13 @@ package body et_device_library.packages is
 
 	function get_package_variant (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string)
+		variant			: in type_package_variant_name)
 		return pac_package_variants.cursor
 	is
 		result : pac_package_variants.cursor;
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -85,13 +85,13 @@ package body et_device_library.packages is
 
 	function is_variant_available (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
+		variant			: in type_package_variant_name)  -- D, N
 		return boolean is
 
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model) is
 		pragma unreferenced (device_name);
 		begin
@@ -132,7 +132,7 @@ package body et_device_library.packages is
 
 	function get_first_package_variant (
 		device_cursor : in pac_device_models.cursor)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is
 		device_model : type_device_model renames element (device_cursor);
 	begin
@@ -148,13 +148,13 @@ package body et_device_library.packages is
 
 	function get_package_model (
 		device_cursor	: in pac_device_models.cursor;
-		variant			: in pac_package_variant_name.bounded_string)
-		return pac_package_model_file.bounded_string
+		variant			: in type_package_variant_name)
+		return type_package_model_name
 	is
-		package_model : pac_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
+		package_model : type_package_model_name; -- to be returned (packages/smd/SOT23.pac)
 
 		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
+			device_name	: in type_device_model_name;
 			device		: in type_device_model)
 		is
 			pragma unreferenced (device_name);
@@ -183,10 +183,10 @@ package body et_device_library.packages is
 
 	function get_default_placeholders (
 		device	: in pac_device_models.cursor;
-		variant	: in pac_package_variant_name.bounded_string)
+		variant	: in type_package_variant_name)
 		return type_text_placeholders
 	is
-		package_model : pac_package_model_file.bounded_string;
+		package_model : type_package_model_name;
 		-- like ../lbr/smd/SO15.pac
 
 		use et_package_library;

@@ -73,9 +73,9 @@ package et_netlists is
 	-- For netlists the connected devices are modelled by this type:
 	type type_device_port_extended (direction : type_port_direction) is record
 		device			: type_device_name; -- IC4
-		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		port			: type_port_name; -- CLOCK, CE, VDD, GND
 		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
-		terminal		: pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal		: type_terminal_name; -- H4, 1, 16
 	end record;
 
 
@@ -99,8 +99,8 @@ package et_netlists is
 	-- energy flow. It determines whether a signal coming out of a submodule
 	-- enforces its name on the net in the parent module or vice versa:
 	type type_submodule_port_extended is record
-		module		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		module		: type_module_instance_name; -- MOT_DRV_3
+		port		: type_net_name; -- CLOCK_GENERATOR_OUT
 		direction	: type_netchanger_port_name; -- master/slave
 	end record;
 
@@ -114,8 +114,8 @@ package et_netlists is
 	level_separator : constant character := '/';
 
 	-- Converts an instance name to a net prefix with a trailing level separator.
-	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
-		return pac_net_name.bounded_string;
+	function to_prefix (instance : in type_module_instance_name) -- OSC1
+		return type_net_name;
 
 
 
@@ -135,24 +135,24 @@ package et_netlists is
 	end record;
 
 
-	type type_net_name is record
-		base_name	: pac_net_name.bounded_string; -- output
-		prefix		: pac_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
+	type type_full_net_name is record
+		base_name	: et_net_names.type_net_name; -- output
+		prefix		: et_net_names.type_net_name; -- CLK_GENERATOR/FLT1/
 	end record;
 
 
-	function "<" (left, right : in type_net_name) return boolean;
+	function "<" (left, right : in type_full_net_name) return boolean;
 
 
 	procedure log_net_name (
-		name			: in type_net_name;
+		name			: in type_full_net_name;
 		primary			: in boolean;
 		log_threshold	: in type_log_level);
 
 
 
 	package pac_netlist_nets is new ordered_maps (
-		key_type		=> type_net_name,
+		key_type		=> type_full_net_name,
 		element_type	=> type_netlist_ports);
 
 
@@ -169,8 +169,8 @@ package et_netlists is
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
 	type type_netlist_module is record
-		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
-		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
+		generic_name	: type_module_name; -- amplifier, $ET_TEMPLATES/motor_driver
+		instance_name	: type_module_instance_name; -- OSC1
 		nets			: pac_netlist_nets.map;
 	end record;
 
@@ -245,7 +245,7 @@ package et_netlists is
 	-- When searching global nets in submodules we need a type for a global net of a submodule
 	-- and a list thereof:
 	type type_global_net is record
-		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+		--submodule	: type_module_name; -- amplifier, $ET_TEMPLATES/motor_driver
 		submodule	: pac_netlist_modules.cursor;
 		net			: pac_netlist_nets.cursor;
 	end record;
@@ -313,7 +313,7 @@ package et_netlists is
 	-- The final netlist is a tree that reflects
 	-- primary nets with their subordinated secondary nets:
 	type type_netlist_net is new type_netlist_ports with record
-		name	: type_net_name; -- base_name and prefix
+		name	: type_full_net_name; -- base_name and prefix
 	end record;
 
 
@@ -333,7 +333,7 @@ package et_netlists is
 
 
 
-	use pac_assembly_variant_name;
+	use et_assembly_variant_name;
 
 
 	-- As there are assembly variants, for each of them
@@ -343,7 +343,7 @@ package et_netlists is
 	-- The element is a tree of netlists. It provides info on primary
 	-- and secondary net dependencies:
 	package pac_module_netlists is new ordered_maps (
-		key_type		=> pac_assembly_variant_name.bounded_string,
+		key_type		=> type_assembly_variant_name,
 		element_type	=> pac_module_netlist.tree);
 
 

@@ -73,13 +73,15 @@ package et_net_names is
 	package pac_net_name is new generic_bounded_length (net_name_length_max);
 	use pac_net_name;
 
+	type type_net_name is new pac_net_name.bounded_string;
 
-	no_name : constant pac_net_name.bounded_string := to_bounded_string ("");
+
+	no_name : constant type_net_name := type_net_name (pac_net_name.to_bounded_string (""));
 
 
 
 	function net_name_to_string (
-		net_name	: in pac_net_name.bounded_string)
+		net_name	: in type_net_name)
 		return string;
 
 
@@ -92,39 +94,39 @@ package et_net_names is
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
 	procedure check_net_name_characters (
-		net			: in pac_net_name.bounded_string;
+		net			: in type_net_name;
 		characters	: in character_set := net_name_characters);
 
 
 
 	-- Returns true if given net name is empty:
-	function is_empty (net : in pac_net_name.bounded_string)
+	function is_empty (net : in type_net_name)
 		return boolean;
 
 
-	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
+	function to_net_name (net_name : in string) return type_net_name;
 
 
 
 
 	-- Returns a name for an anonymous net like N$56
 	function to_anonymous_net_name (index : in type_anonymous_net_index)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 
 	-- Returns true if the given net name is anonymous.
 	-- CS rename to is_anonymous
-	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
+	function anonymous (net_name : in type_net_name) return boolean;
 
 
 	-- Changes the given net name to an empty string:
 	procedure clear_net_name (
-		net_name : in out pac_net_name.bounded_string);
+		net_name : in out type_net_name);
 
 
 	-- Net names can also be collected in simple lists:
-	package pac_net_names is new doubly_linked_lists (pac_net_name.bounded_string);
+	package pac_net_names is new doubly_linked_lists (type_net_name);
 
 	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
@@ -143,7 +145,7 @@ package et_net_names is
 	-- is ERROR:
 	procedure message_net_not_found (
 		severity	: in type_message_severity;
-		name		: in pac_net_name.bounded_string);
+		name		: in type_net_name);
 
 	-- Logs a message like "WARNING. Net GND already exists."
 	-- The severity decides whether to output the message on
@@ -151,7 +153,7 @@ package et_net_names is
 	-- is ERROR:
 	procedure message_net_already_exists (
 		severity	: in type_message_severity;
-		name		: in pac_net_name.bounded_string);
+		name		: in type_net_name);
 
 
 end et_net_names;

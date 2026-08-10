@@ -184,7 +184,7 @@ package et_kicad.schematic is
 	-- Adds a unit into the given commponent.
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		unit			: in type_unit_schematic;
 		log_threshold	: in type_log_level);
 
@@ -192,15 +192,15 @@ package et_kicad.schematic is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	package type_units_schematic is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string,
-		"<"				=> pac_unit_name."<",
+		key_type		=> type_unit_name,
+		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_schematic);
 
 
 
 	-- Returns true if the unit with the given name exists in the given list of units.
 	function unit_exists (
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
@@ -210,7 +210,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function position_of_unit ( -- CS rename to get_unit_position
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position;
 
@@ -220,7 +220,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function mirror_style_of_unit ( -- CS rename to get_unit_mirror_style
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return type_mirror;
 
@@ -230,7 +230,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function orientation_of_unit ( -- CS rename to get_unit_orientation
-		name	: in pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model;
 
@@ -252,7 +252,7 @@ package et_kicad.schematic is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
-		part		: pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
+		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
@@ -261,16 +261,16 @@ package et_kicad.schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : type_appearance_schematic) is record
-		library_name	: pac_device_model_file.bounded_string; -- lib name like ../libraries/transistors.lib
+		library_name	: type_device_model_name; -- lib name like ../libraries/transistors.lib
 		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
-		value			: pac_device_value.bounded_string; -- 470R
+		value			: type_device_value; -- 470R
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
 				datasheet			: type_component_datasheet.bounded_string;
-				variant				: pac_package_variant_name.bounded_string; -- D, N
+				variant				: type_package_variant_name; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
@@ -358,7 +358,7 @@ package et_kicad.schematic is
 
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: type_port_name; -- the port name like GPIO1, GPIO2
 		coordinates	: et_kicad_coordinates.type_position;
 		direction		: et_kicad_libraries.type_port_direction; -- example: "passive"
 		style			: type_port_style;
@@ -412,7 +412,7 @@ package et_kicad.schematic is
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: type_device_name;		-- N409
-		name		: pac_port_name.bounded_string;	-- 2
+		name		: type_port_name;	-- 2
 	end record;
 
 
@@ -425,14 +425,14 @@ package et_kicad.schematic is
 	-- It does also contain ports of virtual components (power symbols) except
 	-- so called "power flags".
 	package type_netlist is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string, -- net name like "MCU_CLOCK"
-		"<"				=> pac_net_name."<",
+		key_type		=> type_net_name, -- net name like "MCU_CLOCK"
+		"<"				=> et_net_names."<",
 		"="				=> pac_ports_with_reference."=",
 		element_type	=> pac_ports_with_reference.set); -- the list of ports connected with the net
 
 
-	function simple_name (net_name : in pac_net_name.bounded_string)
-		return pac_net_name.bounded_string;
+	function simple_name (net_name : in type_net_name)
+		return type_net_name;
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
@@ -454,7 +454,7 @@ package et_kicad.schematic is
 	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: type_vector_model;
 		rotation	: et_schematic_geometry.type_rotation_model;
-		text		: pac_net_name.bounded_string;
+		text		: type_net_name;
 		size		: et_schematic_text.pac_text_schematic.type_text_size;
 		width		: et_schematic_text.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
@@ -532,7 +532,7 @@ package et_kicad.schematic is
 	-- have a name and their own scope.
 	type type_strand is record
 		position	: et_kicad_coordinates.type_position; -- x/y/sheet -- CS only sheet matters
-		name		: pac_net_name.bounded_string; -- example "CPU_CLOCK"
+		name		: type_net_name; -- example "CPU_CLOCK"
 		scope		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
 	end record;
@@ -552,8 +552,8 @@ package et_kicad.schematic is
 
 	-- Nets are collected in a map:
 	package type_nets is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string, -- example "CPU_CLOCK"
-		"<"				=> pac_net_name."<",
+		key_type		=> type_net_name, -- example "CPU_CLOCK"
+		"<"				=> et_net_names."<",
 		element_type	=> type_net);
 
 
@@ -565,7 +565,7 @@ package et_kicad.schematic is
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	procedure import_design (
 		--first_instance	: in boolean := false;
-		project			: in pac_project_name.bounded_string;
+		project			: in type_project_name;
 		log_threshold	: in type_log_level);
 
 
@@ -826,7 +826,7 @@ package et_kicad.schematic is
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
 		segments	: type_net_segments.list; -- the net segments
-		name		: pac_net_name.bounded_string;	-- the strand name (derived from net labels)
+		name		: type_net_name;	-- the strand name (derived from net labels)
 		scope		: type_strand_scope := type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
 	end record;
@@ -848,8 +848,8 @@ package et_kicad.schematic is
 	end record;
 
 	package type_hierarchic_sheet_ports is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string,
-		"<"				=> pac_net_name."<",
+		key_type		=> type_net_name,
+		"<"				=> et_net_names."<",
 		element_type	=> type_hierarchic_sheet_port);
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
@@ -911,7 +911,7 @@ package et_kicad.schematic is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
-	function package_name (text : in string) return pac_package_name.bounded_string;
+	function package_name (text : in string) return type_package_name;
 	-- CS rename to get_package_name
 
 
@@ -949,14 +949,14 @@ package et_kicad.schematic is
 
 	function components_in_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in pac_net_name.bounded_string; -- motor_on_off
+		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 
 	function real_components_in_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in pac_net_name.bounded_string; -- motor_on_off
+		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
 	-- Returns a list of real component ports that are connected with the given net.
@@ -964,7 +964,7 @@ package et_kicad.schematic is
 
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in pac_device_model_file.bounded_string; -- incl. path and file name
+		library		: in type_device_model_name; -- incl. path and file name
 		component	: in type_component_generic_name.bounded_string)
 		return type_components_library.cursor;
 
@@ -1034,7 +1034,7 @@ package et_kicad.schematic is
 	function connected_net (
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in type_log_level)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 	-- Returns the name of the net connected with the given port.
 	-- Searches the netlist of the given module for the given port.
 	-- The net which is connected with the port is the net whose name
@@ -1062,9 +1062,9 @@ package et_kicad.schematic is
 	function connected_net ( -- CS rename to get_connected_net
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in type_device_name;	-- IC45
-		terminal		: in pac_terminal_name.bounded_string; -- E14
+		terminal		: in type_terminal_name; -- E14
 		log_threshold	: in type_log_level)
-		return pac_net_name.bounded_string;
+		return type_net_name;
 
 
 --	procedure write_statistics (log_threshold : in type_log_level);  -- CS this is general and should be in et_schematic

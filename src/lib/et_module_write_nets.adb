@@ -80,7 +80,7 @@ package body et_module_write_nets is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_net_name;
+	use et_net_names;
 
 
 	procedure write_nets (
@@ -89,7 +89,7 @@ package body et_module_write_nets is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -97,7 +97,7 @@ package body et_module_write_nets is
 
 
 			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net_name);

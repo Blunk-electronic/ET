@@ -346,7 +346,7 @@ is
 		llt		: type_tag_labels.list;
 
 		strand		: type_strand;
-		net_name	: pac_net_name.bounded_string;
+		net_name	: type_net_name;
 
 
 		function label_sits_on_segment (
@@ -465,13 +465,13 @@ is
 
 										-- The first matching simple label dictates the strand name.
 										-- If other labels with text differing from strand name found, output warning.
-										if pac_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
+										if pac_net_name.length (pac_net_name.bounded_string (anon_strand_a.name)) = 0 then -- If this is the first matching label
 
 											-- assume the label text as strand name.
 											anon_strand_a.name := ls.text;
 										else
 											-- If label text is different from previously assigned strand name:
-											if not pac_net_name."=" (anon_strand_a.name, ls.text) then
+											if not et_net_names."=" (anon_strand_a.name, ls.text) then
 												output_net_label_conflict;
 
 												-- for the log, some more information
@@ -2039,7 +2039,7 @@ is
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
 
 		alternative_references		: type_alternative_references.list;
-		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
+		unit_name					: type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
 		orientation					: et_schematic_geometry.type_rotation_model;
 		mirror						: type_mirror;
@@ -2293,7 +2293,7 @@ is
 			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
-			return pac_device_model_file.bounded_string -- the full library name like "../libraries/resistors.lib"
+			return type_device_model_name -- the full library name like "../libraries/resistors.lib"
 		is
 			use type_device_libraries;
 			-- use pac_device_model_file;
@@ -2301,13 +2301,13 @@ is
 			component_found : boolean := false; -- goes true once the given component was found in any library
 
 			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
-			library : pac_device_model_file.bounded_string; -- the full library name to be returned
+			library : type_device_model_name; -- the full library name to be returned
 
 
 			-- Queries the components in the current library. Exits prematurely once the
 			-- given generic component was found.
 			procedure query_components (
-				lib_name	: in pac_device_model_file.bounded_string;
+				lib_name	: in type_device_model_name;
 				components	: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
@@ -2383,7 +2383,7 @@ is
 			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
-			return pac_device_model_file.bounded_string
+			return type_device_model_name
 		is
 			use type_lib_table;
 			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
@@ -2392,13 +2392,13 @@ is
 
 			use type_library_name;
 
-			full_name : pac_device_model_file.bounded_string;
+			full_name : type_device_model_name;
 			component_found : boolean := false;
 
 
 			-- Seaches a component library for the given generic component.
 			procedure search_component (
-				lib_name	: in pac_device_model_file.bounded_string;
+				lib_name	: in type_device_model_name;
 				lib			: in type_components_library.map)
 			is
 				pragma unreferenced (lib_name);
@@ -2486,7 +2486,7 @@ is
 		-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 		-- Tests if a footprint has been associated with the component.
 
-			full_component_library_name : pac_device_model_file.bounded_string;
+			full_component_library_name : type_device_model_name;
 
 			use et_import;
 
@@ -2891,7 +2891,7 @@ is
 
 			path	: type_fields_of_line; -- 59F17F77 5A991798
 			ref		: type_device_name; -- #PWR03
-			unit	: pac_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
+			unit	: type_unit_name; -- 1 -- CS is this really about unit names ?
 
 			path_segment : type_timestamp;
 			alt_ref_path : type_alternative_reference_path.list;
@@ -3063,8 +3063,8 @@ is
 
 				-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 				-- be a string as well. Therefore we handle the unit id as string.
-				unit_name := pac_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
-					f (element (line_cursor), 2)); -- the unit id
+				unit_name := type_unit_name (pac_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
+					f (element (line_cursor), 2))); -- the unit id
 
 				-- Read DeMorgan flag:
 				alternative_representation := to_alternative_representation (
@@ -3111,7 +3111,7 @@ is
 						field_value := to_field;
 
 						declare
-							unused_value : pac_device_value.bounded_string;
+							unused_value : type_device_value;
 						begin
 							unused_value := to_value_with_check (
 									value						=> content (field_value),
@@ -3128,7 +3128,7 @@ is
 						field_package := to_field;
 						check_package_name_length (content (field_package));
 						check_package_name_characters (
-							packge		=> pac_package_name.to_bounded_string (content (field_package)),
+							packge		=> type_package_name (pac_package_name.to_bounded_string (content (field_package))),
 							characters	=> component_package_name_characters);
 
 					when component_field_datasheet =>

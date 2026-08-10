@@ -66,7 +66,7 @@ package et_import is
 
 	-- Checks if the given project of the given format exists in the current working directory.
 	procedure validate_project (
-		name		: in pac_project_name.bounded_string;
+		name		: in type_project_name;
 		cad_format	: in type_cad_format := UNKNOWN);
 
 end et_import;

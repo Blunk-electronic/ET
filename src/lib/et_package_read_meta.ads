@@ -60,7 +60,7 @@ package et_package_read_meta is
 
 	-- The description and technology will be assigned
 	-- once the complete model has been read:
-	pac_description	: pac_package_description.bounded_string;
+	pac_description	: type_package_description;
 	pac_technology	: type_assembly_technology := assembly_technology_default;
 
 

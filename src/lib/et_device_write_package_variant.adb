@@ -69,7 +69,7 @@ package body et_device_write_package_variant is
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
-		use pac_package_variant_name;
+		use et_package_variant_name;
 
 		use pac_package_variants;
 		variant_cursor : pac_package_variants.cursor := variants.first;
@@ -77,7 +77,7 @@ package body et_device_write_package_variant is
 
 
 		procedure write_variant (
-			packge	: in pac_package_variant_name.bounded_string;
+			packge	: in type_package_variant_name;
 			variant	: in type_package_variant)
 		is
 			pragma unreferenced (packge);
@@ -91,7 +91,7 @@ package body et_device_write_package_variant is
 			procedure write_terminal (
 				terminal_cursor : in pac_terminal_port_map.cursor)
 			is
-				use et_unit_name.pac_unit_name;
+				use et_unit_name;
 				use et_terminal_name;
 			begin
 				write (keyword => keyword_terminal, parameters =>

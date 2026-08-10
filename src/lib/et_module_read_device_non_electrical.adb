@@ -87,15 +87,15 @@ package body et_module_read_device_non_electrical is
 
 	device_name		: et_device_name.type_device_name; -- C12
 
-	device_value	: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_value	: et_device_value.type_device_value; -- 470R
 
-	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
-	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
+	device_partcode	: et_device_partcode.type_device_partcode;
+	device_purpose	: et_device_purpose.type_device_purpose;
+	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 
-	package_model_name	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+	package_model_name	: et_package_model_name.type_package_model_name; -- ../libraries/misc/fiducials/crosshair.pac
 
 	-- the temporarily collection of placeholders of packages (in the layout)
 	text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
@@ -149,7 +149,7 @@ package body et_module_read_device_non_electrical is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

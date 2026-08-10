@@ -66,7 +66,7 @@ package et_board_ops_signal_layers is
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.
 	procedure add_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -88,7 +88,7 @@ package et_board_ops_signal_layers is
 	-- Deletes a signal layer in the board.
 	-- Renumbers the signal layers.
 	procedure delete_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		layer			: in type_signal_layer;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
