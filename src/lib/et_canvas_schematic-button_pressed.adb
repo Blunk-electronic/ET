@@ -123,7 +123,7 @@ is
 						-- When copying a group, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						
+
 						if copy_to_clipboard then
 							et_canvas_schematic_group.copy_group_to_clipboard (
 								MOUSE, get_cursor_position);
@@ -132,7 +132,7 @@ is
 								MOUSE, get_cursor_position);
 						end if;
 
-						
+
 
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (MOUSE, snap_point);

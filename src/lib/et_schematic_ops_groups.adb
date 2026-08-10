@@ -169,7 +169,7 @@ package body et_schematic_ops_groups is
 		-- Set the sheet of the reference point.
 		-- This is only relevant if the clipboard is used:
 		set_sheet (group_reference_point, sheet);
-		
+
 		-- CS: this should be depended on
 		-- the currently displayed layers:
 		group_units;
@@ -607,9 +607,9 @@ package body et_schematic_ops_groups is
 
 
 
-	
 
-	
+
+
 
 	procedure copy_group_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -623,16 +623,16 @@ package body et_schematic_ops_groups is
 		-- begin
 		-- 	log (text => "copy selected objects to clipboard",
 		-- 		 level => log_threshold + 1);
-  -- 
+  --
 		-- 	log_indentation_up;
-  -- 
+  --
 		-- 	copy_selected_units_to_clipboard (
 		-- 		module_cursor, log_threshold + 2);
-  -- 
+  --
 		-- 	log_indentation_down;
 		-- end copy_to_clipboard;
 
-		
+
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
@@ -646,7 +646,7 @@ package body et_schematic_ops_groups is
 				& " reference point: " & to_string (reference_point),
 				level => log_threshold);
 		end if;
-			
+
 		log_indentation_up;
 
 		-- CS set x/y of group_reference_point
@@ -660,9 +660,9 @@ package body et_schematic_ops_groups is
 
 
 
-	
 
-	
+
+
 
 
 

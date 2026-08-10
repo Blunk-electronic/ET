@@ -292,29 +292,29 @@ package body et_cp_schematic_group is
 		end do_simple_copy;
 
 
-		
+
 		-- This procedure copies the current group into
 		-- the clipboard with the center of the group
 		-- as reference point:
 		procedure copy_to_clipboard_center is begin
-		
+
 			copy_group_to_clipboard (
 				module_cursor	=> module,
 				log_threshold	=> log_threshold + 2);
-										
+
 		end copy_to_clipboard_center;
 
 
-		
+
 		-- This procedure copies the current group into
 		-- the clipboard with a user specified reference point:
-		procedure copy_to_clipboard_ref_point is 
+		procedure copy_to_clipboard_ref_point is
 			reference_point	: type_vector_model;
 		begin
 			reference_point := to_vector_model (
 				x => get_field (cmd, 5),
 				y => get_field (cmd, 6));
-		
+
 			copy_group_to_clipboard (
 				module_cursor	=> module,
 				auto_center		=> false,
@@ -323,7 +323,7 @@ package body et_cp_schematic_group is
 
 		end copy_to_clipboard_ref_point;
 
-		
+
 	begin
 		log (text => "copy group", level => log_threshold);
 		log_indentation_up;
@@ -335,7 +335,7 @@ package body et_cp_schematic_group is
 
 			when 6 =>
 				copy_to_clipboard_ref_point;
-				
+
 			when 7 =>
 				do_simple_copy;
 
