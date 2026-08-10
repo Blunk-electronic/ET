@@ -51,7 +51,13 @@ with et_logging;					use et_logging;
 package et_module_clipboard.devices_electrical is
 
 
-
+	-- This procedure copies a given device and its unit
+	-- to the clipboard.
+	-- 1. If the device does not exist in the clipboard yet,
+	--    then a new device is created there.
+	-- 2. If the device does exist, then it will not be created
+	--    anew.
+	-- 3. The given unit is copied into the device.
 	procedure copy_unit_to_clipboard (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
