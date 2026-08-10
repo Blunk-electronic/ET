@@ -193,7 +193,7 @@ is
 			placeholder : type_placeholder_non_conductor renames element (c);
 
 			use pac_text_vectorized;
-			content : pac_text_content.bounded_string;
+			content : type_text_content;
 			text : type_text_fab_with_content;
 
 

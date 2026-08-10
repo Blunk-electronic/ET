@@ -135,7 +135,7 @@ package et_kicad_libraries is
 	type type_text_basic is new pac_text.type_text with record
 		-- CS: currently the style of text is ignored
 		-- style : ???
-		content		: pac_text_content.bounded_string;
+		content		: type_text_content;
 		rotation	: et_schematic_geometry.type_rotation_model := 0.0;
 	end record;
 

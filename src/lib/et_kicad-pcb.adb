@@ -548,7 +548,7 @@ package body et_kicad.pcb is
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
-		package_description	: et_package_description.pac_package_description.bounded_string; -- temp. storage of package description
+		package_description	: et_package_description.type_package_description; -- temp. storage of package description
 		package_tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		package_line		: et_kicad_packages.type_line;
@@ -1004,7 +1004,6 @@ package body et_kicad.pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use pac_text_content;
 			use et_board_coordinates;
 			use pac_geometry_brd;
 

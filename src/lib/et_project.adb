@@ -68,14 +68,14 @@ package body et_project is
 
 
 
-	function to_string (path : in pac_project_path.bounded_string) return string is begin
-		return pac_project_path.to_string (path);
+	function to_string (path : in type_project_path) return string is begin
+		return pac_project_path.to_string (pac_project_path.bounded_string (path));
 	end to_string;
 
 
 
-	function to_project_path (path : in string) return pac_project_path.bounded_string is begin
-		return pac_project_path.to_bounded_string (path);
+	function to_project_path (path : in string) return type_project_path is begin
+		return type_project_path (pac_project_path.to_bounded_string (path));
 	end to_project_path;
 
 
@@ -469,7 +469,7 @@ package body et_project is
 		current_working_directory : constant string := current_directory;
 
 		-- break down destination into path and project name:
-		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
+		path : type_project_path := to_project_path (containing_directory (to_string (destination)));
 		name : constant type_project_name := to_project_name (simple_name (to_string (destination)));
 
 

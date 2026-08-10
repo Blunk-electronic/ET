@@ -47,12 +47,14 @@ package et_package_description is
 	package_description_length_max : constant positive := 200;
 	package pac_package_description is new generic_bounded_length (package_description_length_max);
 
+	type type_package_description is new pac_package_description.bounded_string;
+
 	function to_string (
-		description : in pac_package_description.bounded_string;
+		description : in type_package_description;
 		verbose		: in boolean := false) return string;
 
 	function to_package_description (description : in string)
-		return pac_package_description.bounded_string;
+		return type_package_description;
 
 
 

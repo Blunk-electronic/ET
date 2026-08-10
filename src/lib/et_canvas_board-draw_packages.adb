@@ -161,9 +161,9 @@ procedure draw_packages is
 		-- the related content:
 		function placeholder_to_content (
 			placeholder : in type_text_placeholder)
-			return pac_text_content.bounded_string
+			return type_text_content
 		is
-			result : pac_text_content.bounded_string;
+			result : type_text_content;
 
 			use et_device_name;
 			use et_device_value;
@@ -187,7 +187,7 @@ procedure draw_packages is
 			ph : type_text_placeholder renames element (c);
 
 			-- Build the content of the placeholder:
-			content : constant pac_text_content.bounded_string := placeholder_to_content (ph);
+			content : constant type_text_content := placeholder_to_content (ph);
 
 
 			-- This procedure converts the placeholder to a complete

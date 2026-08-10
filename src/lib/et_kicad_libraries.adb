@@ -88,7 +88,7 @@ package body et_kicad_libraries is
 
 	function content (text : in type_text_placeholder) return string is
 	-- Returns the content of the given text placeholder as string.
-		c : pac_text_content.bounded_string;
+		c : type_text_content;
 	begin
 		c := text.content;
 		return to_string (c);
@@ -1834,13 +1834,13 @@ package body et_kicad_libraries is
 --					return a;
 --				end to_style;
 
-				function to_content (text_in : in string) return pac_text_content.bounded_string is
-				-- Replaces tildss in given string by space and returns a pac_text_content.bounded_string.
+				function to_content (text_in : in string) return type_text_content is
+				-- Replaces tildss in given string by space and returns a type_text_content.
 					t : string (1 .. text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, tilde_to_space'access);
-					return pac_text_content.to_bounded_string (t);
+					return et_text_content.to_content (t);
 				end to_content;
 
 
@@ -2080,7 +2080,7 @@ package body et_kicad_libraries is
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
 				check_text_content_length (strip_quotes (f (line, 2)));
-				text.content := pac_text_content.to_bounded_string (strip_quotes (f (line, 2)));
+				text.content := et_text_content.to_content (strip_quotes (f (line, 2)));
 
 				-- check content vs. meaning.
 				case meaning is
@@ -3758,7 +3758,7 @@ package body et_kicad_libraries is
 		log_indentation_up;
 
 		-- content
-		if pac_text_content.length (note.content) > 0 then
+		if length (note.content) > 0 then
 			log (text => "content '" & to_string (note.content) & "'", level => log_threshold);
 		else
 			log (text => message_warning & "no content !", level => log_threshold);

@@ -151,7 +151,7 @@ package et_module is
 
 		rules			: type_design_rules; -- design rules, erc rules ...
 
-		description		: pac_text_content.bounded_string; -- a short description of the module
+		description		: type_text_content; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_drawing_frame.schematic.type_frames_schematic;

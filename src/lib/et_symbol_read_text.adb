@@ -62,7 +62,7 @@ package body et_symbol_read_text is
 
 	symbol_text_base			: type_text_basic;
 	symbol_text_position		: type_vector_model;
-	symbol_text_content			: pac_text_content.bounded_string;
+	symbol_text_content			: type_text_content;
 	symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 
 

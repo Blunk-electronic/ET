@@ -44,22 +44,22 @@ package body et_package_description is
 
 
 	function to_string (
-		description : in pac_package_description.bounded_string;
+		description : in type_package_description;
 		verbose		: in boolean := false) return string is
 	begin
 		if verbose then
-			return "description '" & pac_package_description.to_string (description) & "'";
+			return "description '" & pac_package_description.to_string (pac_package_description.bounded_string (description)) & "'";
 		else
-			return pac_package_description.to_string (description);
+			return pac_package_description.to_string (pac_package_description.bounded_string (description));
 		end if;
 	end to_string;
 
 
 
 	function to_package_description (description : in string)
-		return pac_package_description.bounded_string
+		return type_package_description
 	is begin
-		return pac_package_description.to_bounded_string (description);
+		return type_package_description (pac_package_description.to_bounded_string (description));
 	end to_package_description;
 
 

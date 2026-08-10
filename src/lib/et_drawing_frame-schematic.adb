@@ -234,7 +234,7 @@ package body et_drawing_frame.schematic is
 		return string
 	is
 		use pac_schematic_descriptions;
-		content : pac_text_content.bounded_string;
+		content : type_text_content;
 	begin
 		content := element (sheet_cursor).content;
 		return to_string (content);

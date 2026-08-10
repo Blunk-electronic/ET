@@ -797,7 +797,7 @@ package et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor; -- non-electrical device
 		placeholder		: in type_text_placeholder)
-		return pac_text_content.bounded_string;
+		return type_text_content;
 
 
 

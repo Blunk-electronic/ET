@@ -69,7 +69,7 @@ package body et_module_read_frames is
 		schematic_sheet_category_default; -- product/develpment/routing
 
 	sheet_description_number	: type_sheet := type_sheet'first; -- 1, 2. 3, ...
-	sheet_description_text		: pac_text_content.bounded_string;		-- "voltage regulator"
+	sheet_description_text		: type_text_content;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: type_template_name;	-- $ET_FRAMES/drawing_frame_version_1.frs

@@ -272,7 +272,7 @@ package et_drawing_frame is
 	-- Static texts are strings like "drawn" or "sheet".
 	-- They are usually placed left of a placeholder:
 	type type_static_text is new type_placeholder with record
-		content : pac_text_content.bounded_string;
+		content : type_text_content;
 	end record;
 
 	package pac_static_texts is new doubly_linked_lists (type_static_text);

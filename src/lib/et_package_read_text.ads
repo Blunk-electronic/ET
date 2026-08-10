@@ -61,7 +61,7 @@ package et_package_read_text is
 	--pac_text				: et_packages.type_text_with_content;
 	--pac_text				: pac_text_fab.type_text_fab;
 	pac_text				: type_text_fab_with_content; -- CS rename
-	--content					: et_text.pac_text_content.bounded_string;
+	--content					: et_text.type_text_content;
 	pac_text_placeholder	: type_text_placeholder; -- CS rename
 
 

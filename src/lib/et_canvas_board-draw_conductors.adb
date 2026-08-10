@@ -605,7 +605,7 @@ procedure draw_conductors is
 		use pac_draw_text;
 		use et_colors.board;
 
-		content : pac_text_content.bounded_string;
+		content : type_text_content;
 		text : type_text_fab_with_content;
 
 

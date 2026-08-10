@@ -131,7 +131,7 @@ package et_drawing_frame.schematic is
 
 
 	type type_schematic_description is record
-		content		: pac_text_content.bounded_string := to_content ("no description");
+		content		: type_text_content := to_content ("no description");
 		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 

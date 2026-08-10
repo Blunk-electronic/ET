@@ -144,7 +144,7 @@ procedure draw_nets is
 
 			box : type_area;
 
-			content : constant pac_text_content.bounded_string :=
+			content : constant type_text_content :=
 				to_content (to_string (net_name));
 			-- CS: append to content the position of the net
 			-- on the next sheet (strand position) using the quadrant bars.

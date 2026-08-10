@@ -101,9 +101,11 @@ package et_project is
 
 	package pac_project_path is new generic_bounded_length (project_path_max);
 
-	function to_string (path : in pac_project_path.bounded_string) return string;
+	type type_project_path is new pac_project_path.bounded_string;
 
-	function to_project_path (path : in string) return pac_project_path.bounded_string;
+	function to_string (path : in type_project_path) return string;
+
+	function to_project_path (path : in string) return type_project_path;
 
 
 

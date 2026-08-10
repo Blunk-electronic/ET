@@ -413,7 +413,7 @@ package et_devices_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
 		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
-		return pac_text_content.bounded_string;
+		return type_text_content;
 
 
 

@@ -1421,11 +1421,11 @@ package body et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor;
 		placeholder		: in type_text_placeholder)
-		return pac_text_content.bounded_string
+		return type_text_content
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 
-		result : pac_text_content.bounded_string;
+		result : type_text_content;
 	begin
 		case placeholder.meaning is
 			when NAME		=> result := to_content (to_string (key (device_cursor)));

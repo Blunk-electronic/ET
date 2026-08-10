@@ -586,7 +586,7 @@ package body et_kicad_packages is
 
 
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
-		description	: pac_package_description.bounded_string; -- temp. storage of package description
+		description	: type_package_description; -- temp. storage of package description
 		tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		-- The majority of terminals dictates the package technology. The default is THT.
@@ -915,7 +915,6 @@ package body et_kicad_packages is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use pac_text_content;
 			use et_pcb_sides;
 			use pac_geometry_brd;
 

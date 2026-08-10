@@ -157,7 +157,7 @@ is
 	is
 		use pac_text_vectorized;
 		use pac_draw_text;
-		content : pac_text_content.bounded_string;
+		content : type_text_content;
 		t : type_text_fab_with_content;
 	begin
 		-- Build the final content to be drawn:

@@ -265,7 +265,7 @@ package et_kicad_packages is
 	-- When inserting the text in the final package, it is decomposed again.
 	--type type_text_package is new et_packages.type_text with record
 	type type_text_package is new type_text_fab with record
-		content	: pac_text_content.bounded_string;
+		content	: type_text_content;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
