@@ -45,7 +45,7 @@ package et_package_variant_name is
 
 
 	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a device comes with.
+	-- specific abbreviation for the package a device comes with.
 	-- Example: An opamp made by TI can be the type TL084N or TL084D.
 	-- N indicates a NDIP14 package, whereas D stands for the SO14 package.
 	-- If a device has package variants, a suffix after the value indicates

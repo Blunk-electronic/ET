@@ -41,7 +41,7 @@
 -- DESCRIPTION:
 --
 -- This package is about the type, basic properties and subprograms related
--- to so called "non-electrical" devices as they are modelled in the board.
+-- to so called "non-electrical" devices as they are modeled in the board.
 -- These devices have a representation in the board domain only.
 
 
@@ -108,7 +108,7 @@ package et_devices_non_electrical is
 	-- terminals. But the terminals are not connected with any net.
 	-- They have names like H1 (hole) or FD (fiducial).
 	-- Despite not having a counterpart in the schematic, these devices
-	-- are modelled via package models:
+	-- are modeled via package models:
 
 	type type_device_non_electrical is record   -- CS should be private
 		position : type_package_position; -- incl. rotation and face
@@ -811,7 +811,7 @@ package et_devices_non_electrical is
 	-- CS: In the future there could be an option to keep the
 	-- properties of the default placeholders or to use the properties
 	-- as specified in the board.
-	-- This behaviour would be similar to the "smash"-function implemented
+	-- This behavior would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electrical.cursor;
@@ -829,7 +829,7 @@ package et_devices_non_electrical is
 	-- CS: In the future there could be an option to keep the
 	-- properties of the default placeholders or to use the properties
 	-- as specified in the board.
-	-- This behaviour would be similar to the "smash"-function implemented
+	-- This behavior would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_assy_doc_objects (
 		device_cursor	: in pac_devices_non_electrical.cursor;

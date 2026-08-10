@@ -70,7 +70,7 @@ package et_netlists is
 
 -- DEVICES:
 
-	-- For netlists the connected devices are modelled by this type:
+	-- For netlists the connected devices are modeled by this type:
 	type type_device_port_extended (direction : type_port_direction) is record
 		device			: type_device_name; -- IC4
 		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
@@ -94,7 +94,7 @@ package et_netlists is
 -- SUBMODULES:
 
 	-- For inheriting net names from one module to another the ports
-	-- of submodules are modelled by this type.
+	-- of submodules are modeled by this type.
 	-- NOTE: The selector "direction" has nothing to do with direction of
 	-- energy flow. It determines whether a signal coming out of a submodule
 	-- enforces its name on the net in the parent module or vice versa:
@@ -222,13 +222,13 @@ package et_netlists is
 
 
 	-- A primary net enforces its name on all subordinated secondary nets.
-	-- Primary nets are those which fulfil ALL follwing criteria:
+	-- Primary nets are those which fulfill ALL follwing criteria:
 	--  1. scope of net is LOCAL.
 	--  2. have no netchanger slave ports. Reason: Nets with slave ports always inherit the
 	--     name of the net on the master port.
 	--  3. have no submodule ports with direction "slave". Reason: The net inside the submdule
 	--     enforces its name on the net in the parent module.
-	-- If a net does not fulfil any of those criteria it is a secondary net.
+	-- If a net does not fulfill any of those criteria it is a secondary net.
 
 	-- The number of master ports in a net (of submodules or netchangers) is not limited as
 	-- such a net may extend into numerous secondary nets.

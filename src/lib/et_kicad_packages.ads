@@ -85,7 +85,7 @@ package et_kicad_packages is
 	package_pattern		: constant string := "*." & package_file_extension;
 
 	-- For the package import we need a special set of layers.
-	type type_layer_abbrevation is (
+	type type_layer_abbreviation is (
 		EDGE_CUTS,	-- the board outline or contour
 		TOP_COPPER, BOT_COPPER,
 		TOP_SILK, BOT_SILK,
@@ -136,19 +136,19 @@ package et_kicad_packages is
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
 	type type_line is new pac_geometry_2.type_line with record
 		width	: type_text_line_width;
-		layer	: type_layer_abbrevation;
+		layer	: type_layer_abbreviation;
 	end record;
 
 	type type_arc is new pac_geometry_2.type_arc with record
 		width	: type_text_line_width;
 		angle	: et_board_geometry.pac_geometry_brd.type_angle;
-		layer	: type_layer_abbrevation;
+		layer	: type_layer_abbreviation;
 	end record;
 
 	type type_circle is new pac_geometry_2.type_circle with record -- center and radius incl.
 		width	: type_text_line_width;
 		point	: type_vector_model;
-		layer	: type_layer_abbrevation;
+		layer	: type_layer_abbreviation;
 	end record;
 
 
@@ -266,7 +266,7 @@ package et_kicad_packages is
 	--type type_text_package is new et_packages.type_text with record
 	type type_text_package is new type_text_fab with record
 		content	: pac_text_content.bounded_string;
-		layer	: type_layer_abbrevation;
+		layer	: type_layer_abbreviation;
 		meaning	: type_fp_text_meaning;
 	end record;
 

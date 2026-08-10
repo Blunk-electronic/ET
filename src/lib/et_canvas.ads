@@ -1321,7 +1321,7 @@ package et_canvas is
 
 	-- This procedure creates the scrolled window,
 	-- assigns to it the initial size (widht and height)
-	-- and sets the behaviour of them.
+	-- and sets the behavior of them.
 	-- It also connects the signals emitted by the scrollbars
 	-- with the callback subprograms.
 	procedure set_up_swin_and_scrollbars;
@@ -1801,7 +1801,7 @@ private
 		-- then this flag should be used:
 		finalizing_granted		: boolean := false;
 
-		-- An editing process can be cancelled partly or
+		-- An editing process can be canceled partly or
 		-- completely. For this reason we have a counter that
 		-- tells how often the operator has pressed the ESC-key:
 		escape_counter			: type_escape_count := 0;

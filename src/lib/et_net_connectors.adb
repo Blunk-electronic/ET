@@ -79,7 +79,7 @@ package body et_net_connectors is
 		-- P points to the place in arguments at which we
 		-- fetch a field from.
 		-- If something goes wrong, then the error-flag is
-		-- set and the iteration cancelled:
+		-- set and the iteration canceled:
 		for p in 1 .. get_field_count (arguments) loop
 
 			case p is

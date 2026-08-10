@@ -486,7 +486,7 @@ package et_kicad.pcb is
 --	-- When inserting the text in the final package, it is decomposed again.
 --	type type_text_package is new et_packages.type_text with record
 --		content	: et_text.pac_text_content.bounded_string;
---		layer	: type_layer_abbrevation;
+--		layer	: type_layer_abbreviation;
 --		meaning	: type_fp_text_meaning;
 --	end record;
 
@@ -789,7 +789,7 @@ package et_kicad.pcb is
 		netlist				: et_kicad.schematic.type_netlist.map;					-- net names and connected component ports (incl. position of port)
 		hierarchic_sheets	: et_kicad.schematic.type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
 
-		-- CS Drawing frames: not completely modelled. Still under construction.
+		-- CS Drawing frames: not completely modeled. Still under construction.
 		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
 		-- Layout also has a template.
 		-- So the name of the templates for schematic and layout should suffice.

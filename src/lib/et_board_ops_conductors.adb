@@ -1553,7 +1553,7 @@ package body et_board_ops_conductors is
 				-- This flag indicates that a proposed line has been found
 				-- while probing the lines of a net. If a proposed line
 				-- has been found, then it is cleared so that the search
-				-- procedure is cancelled:
+				-- procedure is canceled:
 				proceed : boolean := true;
 
 				-- A temporarily cursor that points to the net being
@@ -1622,7 +1622,7 @@ package body et_board_ops_conductors is
 
 			begin
 				-- Query the nets one by one until the last net.
-				-- Start at the GIVEN net. The iteration is cancelled once
+				-- Start at the GIVEN net. The iteration is canceled once
 				-- the proceed-flag is cleared by procedure query_net:
 				while nc /= pac_nets.no_element and proceed loop
 					query_element (nc, query_net'access);

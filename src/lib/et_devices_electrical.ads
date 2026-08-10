@@ -41,7 +41,7 @@
 -- DESCRIPTION:
 --
 -- This package is about the type, basic properties and subprograms related
--- to so called "electrical" devices as they are modelled in the schematic
+-- to so called "electrical" devices as they are modeled in the schematic
 -- and in the board.
 -- These devices have a representation in schematic and mostly in the board.
 

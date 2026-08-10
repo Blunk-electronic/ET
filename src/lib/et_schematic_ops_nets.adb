@@ -3500,7 +3500,7 @@ package body et_schematic_ops_nets is
 
 				-- As soon as a segment has been found that is in the
 				-- catch zone, then the parent strand is set as proposed,
-				-- and the probing of segments is cancelled.
+				-- and the probing of segments is canceled.
 				-- This flag is cleared when a segment has been found:
 				proceed : boolean := true;
 
@@ -3599,7 +3599,7 @@ package body et_schematic_ops_nets is
 
 				-- As soon as a segment has been found that is in the
 				-- catch zone, then the parent strand is set as proposed,
-				-- and the probing of segments is cancelled.
+				-- and the probing of segments is canceled.
 				-- This flag is cleared when a segment has been found:
 				proceed : boolean := true;
 
@@ -5706,7 +5706,7 @@ package body et_schematic_ops_nets is
 
 				-- Cnce a segment has been found at the given
 				-- place, then this flag is cleared so that
-				-- probing of segments of a strand is cancelled:
+				-- probing of segments of a strand is canceled:
 				proceed : boolean := true;
 
 				strand_cursor : pac_strands.cursor := net.strands.first;
@@ -7324,7 +7324,7 @@ package body et_schematic_ops_nets is
 
 
 		-- This flag goes true once the targeted net label
-		-- has been found. All iterations are cancelled as soon as it goes true.
+		-- has been found. All iterations are canceled as soon as it goes true.
 		label_found : boolean := false;
 
 

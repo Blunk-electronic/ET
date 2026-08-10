@@ -76,16 +76,16 @@ package body et_conventions is
 --		return "warnings only " & type_net_comparator_warn_only'image (net_comparator_warn);
 --	end to_string;
 --
---	function to_submodule (abbrevation : in et_schematic_coordinates_2.type_submodule_abbrevation.bounded_string)
+--	function to_submodule (abbreviation : in et_schematic_coordinates_2.type_submodule_abbreviation.bounded_string)
 --		return type_import_module is
---	-- Looks up the container import_modules for the given abbrevation and returns the submodule.
---	-- Raises alarm if no submodule could be found -> abbrevation invalid.
---		use et_schematic_coordinates_2.type_submodule_abbrevation;
+--	-- Looks up the container import_modules for the given abbreviation and returns the submodule.
+--	-- Raises alarm if no submodule could be found -> abbreviation invalid.
+--		use et_schematic_coordinates_2.type_submodule_abbreviation;
 --		use type_import_modules;
 --		module_cursor : type_import_modules.cursor := import_modules.first;
 --	begin
 --		while module_cursor /= type_import_modules.no_element loop
---			if element (module_cursor).abbrevation = abbrevation then
+--			if element (module_cursor).abbreviation = abbreviation then
 --				return element (module_cursor);
 --			end if;
 --
@@ -94,13 +94,13 @@ package body et_conventions is
 --
 --		-- search without success:
 --		log_indentation_reset;
---		log (message_error & "module abbrevation " & to_string (abbrevation) & " invalid !", console => true);
+--		log (message_error & "module abbreviation " & to_string (abbreviation) & " invalid !", console => true);
 --		raise constraint_error;
 --	end to_submodule;
 
---	function to_abbrevation (module_name : in et_schematic_coordinates_2.type_submodule_name.bounded_string)
---		return et_schematic_coordinates_2.type_submodule_abbrevation.bounded_string is
---	-- Looks up the container import_modules for the given module name and returns the abbrevation.
+--	function to_abbreviation (module_name : in et_schematic_coordinates_2.type_submodule_name.bounded_string)
+--		return et_schematic_coordinates_2.type_submodule_abbreviation.bounded_string is
+--	-- Looks up the container import_modules for the given module name and returns the abbreviation.
 --	-- Raises alarm if no submodule could be found -> modue name invalid.
 --		use et_schematic_coordinates_2.type_submodule_name;
 --		use type_import_modules;
@@ -108,7 +108,7 @@ package body et_conventions is
 --	begin
 --		while module_cursor /= type_import_modules.no_element loop
 --			if element (module_cursor).name = module_name then
---				return element (module_cursor).abbrevation;
+--				return element (module_cursor).abbreviation;
 --			end if;
 --
 --			next (module_cursor);
@@ -118,7 +118,7 @@ package body et_conventions is
 --		log_indentation_reset;
 --		log (message_error & "module " & to_string (module_name) & " invalid !", console => true);
 --		raise constraint_error;
---	end to_abbrevation;
+--	end to_abbreviation;
 
 
 --	procedure validate_module_interconnection (connection : in type_module_interconnection) is
@@ -140,14 +140,14 @@ package body et_conventions is
 --		end instance_invalid;
 --
 --	begin --validate_module_interconnection
---		-- load module A/B from the given abbrevation.
---		-- Test if given abbrevation is in range of total number of instances for the module.
---		module_A := to_submodule (connection.peer_A.abbrevation); -- reason from NCC to "nucleo_core NCC kicad_v4 1"
+--		-- load module A/B from the given abbreviation.
+--		-- Test if given abbreviation is in range of total number of instances for the module.
+--		module_A := to_submodule (connection.peer_A.abbreviation); -- reason from NCC to "nucleo_core NCC kicad_v4 1"
 --		if connection.peer_A.instance > module_A.instances then -- instance index check
 --			instance_invalid (module_A.name, connection.peer_A.instance, module_A.instances);
 --		end if;
 --
---		module_B := to_submodule (connection.peer_B.abbrevation); -- reason from MOT to "motor_driver MOT kicad_v4 2"
+--		module_B := to_submodule (connection.peer_B.abbreviation); -- reason from MOT to "motor_driver MOT kicad_v4 2"
 --		if connection.peer_B.instance > module_B.instances then -- instance index check
 --			instance_invalid (module_B.name, connection.peer_B.instance, module_B.instances);
 --		end if;
@@ -687,8 +687,8 @@ package body et_conventions is
 --
 --			-- PEER A
 --
---			-- A: map from abbrevation to import module (like led_matrix LMX kicad_v4 2) :
---			module_A := to_submodule (element (interconnection_cursor).peer_A.abbrevation); -- LMX to led_matrix
+--			-- A: map from abbreviation to import module (like led_matrix LMX kicad_v4 2) :
+--			module_A := to_submodule (element (interconnection_cursor).peer_A.abbreviation); -- LMX to led_matrix
 --			log ("generic module A " & to_string (module_A.name), log_threshold + 2); -- led_matrix
 --
 --			instance_A := element (interconnection_cursor).peer_A.instance; -- 2
@@ -709,8 +709,8 @@ package body et_conventions is
 --
 --			-- PEER B
 --
---			-- B: map from abbrevation to to import module (like pwr_supply PWR kicad_v4 1) :
---			module_B := to_submodule (element (interconnection_cursor).peer_B.abbrevation);
+--			-- B: map from abbreviation to to import module (like pwr_supply PWR kicad_v4 1) :
+--			module_B := to_submodule (element (interconnection_cursor).peer_B.abbreviation);
 --			log ("generic module B " & to_string (module_B.name), log_threshold + 2);
 --
 --			instance_B := element (interconnection_cursor).peer_B.instance;
@@ -960,7 +960,7 @@ package body et_conventions is
 --
 --				-- probe interconnection at peer A. Test if the connector reference at peer A
 --				-- matches the the given reference. On match return true.
---				if to_submodule (connection.peer_A.abbrevation).name = module then
+--				if to_submodule (connection.peer_A.abbreviation).name = module then
 --					if connection.peer_A.instance = instance then
 --
 --						-- The connector reference (like X701) can be reasoned from
@@ -978,7 +978,7 @@ package body et_conventions is
 --
 --				-- probe interconnection at peer B. Test if the connector reference at peer B
 --				-- matches the the given reference. On match return true.
---				if to_submodule (connection.peer_B.abbrevation).name = module then
+--				if to_submodule (connection.peer_B.abbreviation).name = module then
 --					if connection.peer_B.instance = instance then
 --
 --						-- The connector reference (like X701) can be reasoned from
@@ -1100,9 +1100,9 @@ package body et_conventions is
 --		-- BUILD GIVEN CONNECTOR
 --		log ("given module " & et_schematic_coordinates.to_string (module_name), log_threshold + 1);
 --
---		-- fetch abbrevation of module
---		connector.abbrevation := to_abbrevation (module_name);
---		log ("given module abbrevation " & et_schematic_coordinates.to_string (connector.abbrevation), log_threshold + 1);
+--		-- fetch abbreviation of module
+--		connector.abbreviation := to_abbreviation (module_name);
+--		log ("given module abbreviation " & et_schematic_coordinates.to_string (connector.abbreviation), log_threshold + 1);
 --
 --		-- fetch module instance
 --		connector.instance := element (module_cursor).instance;
@@ -1144,7 +1144,7 @@ package body et_conventions is
 --		if not connector_found then
 --			log_indentation_reset;
 --			log (message_error & " in module " & et_schematic_coordinates.to_string (module_name)
---				 & " abbrevation " & et_schematic_coordinates.to_string (connector.abbrevation)
+--				 & " abbreviation " & et_schematic_coordinates.to_string (connector.abbreviation)
 --				 & " instance " & et_schematic_coordinates.to_string (connector.instance)
 --				 & " no connector with purpose " & to_string (purpose)
 --				 & " found !");
@@ -1152,12 +1152,12 @@ package body et_conventions is
 --		end if;
 --
 --		-- BUILD OPPOSIDE CONNECTOR
---		log ("opposide module abbrevation "	& et_schematic_coordinates.to_string (connector.abbrevation), log_threshold + 1);
+--		log ("opposide module abbreviation "	& et_schematic_coordinates.to_string (connector.abbreviation), log_threshold + 1);
 --		log ("opposide module instance "	& et_schematic_coordinates.to_string (connector.instance), log_threshold + 1);
 --		log ("opposide connector purpose "	& to_string (connector.purpose), log_threshold + 1);
 --
 --		-- fetch generic module name of opposide peer
---		generic_module_name_opposide := to_submodule (connector.abbrevation).name;
+--		generic_module_name_opposide := to_submodule (connector.abbreviation).name;
 --		log ("opposide generic module " & et_schematic_coordinates.to_string (generic_module_name_opposide), log_threshold + 1);
 --
 --		-- fetch connector reference on opposide
@@ -1171,7 +1171,7 @@ package body et_conventions is
 --		-- section [IMPORT_MODULES]) the generic module name to be returned. Thus no indexing like pwr_supply_2
 --		-- but just pwr_supply.
 --		-- If more than one instance declared the module instance is appended.
---		if to_submodule (connector.abbrevation).instances = et_schematic_coordinates.type_submodule_instance'first then
+--		if to_submodule (connector.abbreviation).instances = et_schematic_coordinates.type_submodule_instance'first then
 --			opposide_port.module := generic_module_name_opposide; -- single instance
 --		else
 --			-- The module name is composed of the generic module name and the instance.
@@ -1801,13 +1801,13 @@ package body et_conventions is
 
 
 
-	function to_abbrevation (unit : in type_unit_of_measurement)
-		return pac_unit_abbrevation.bounded_string
+	function to_abbreviation (unit : in type_unit_of_measurement)
+		return pac_unit_abbreviation.bounded_string
 	is
 		use pac_units_of_measurement;
 	begin
 		return element (pac_units_of_measurement.find (units_of_measurement, unit));
-	end to_abbrevation;
+	end to_abbreviation;
 
 
 
@@ -2468,7 +2468,7 @@ package body et_conventions is
 		-- UNITS OF MEASUREMENT
 		put_line (section_component_units); -- section header
 		new_line;
-		put_line (comment & "abbrevation unit_of_measurement");
+		put_line (comment & "abbreviation unit_of_measurement");
 		new_line;
 		put_line ("m " & to_string (MILLIOHM));
 		put_line ("R " & to_string (OHM));
@@ -2649,7 +2649,7 @@ package body et_conventions is
 			prefix		: pac_device_prefix.bounded_string;
 			cat		: type_device_category;
 
-			abbrevation	: pac_unit_abbrevation.bounded_string;
+			abbreviation	: pac_unit_abbreviation.bounded_string;
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
@@ -2712,16 +2712,16 @@ package body et_conventions is
 					while line_cursor /= type_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
-						-- Build the unit abbrevation from field #1:
-						-- Test if abbrevation contains only allowed characters.
-						-- We test against the character set specified for abbrevations of units of measurement.
-						abbrevation := pac_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1));
-						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
+						-- Build the unit abbreviation from field #1:
+						-- Test if abbreviation contains only allowed characters.
+						-- We test against the character set specified for abbreviations of units of measurement.
+						abbreviation := pac_unit_abbreviation.to_bounded_string (get_field (element (line_cursor), 1));
+						check_abbreviation_of_unit_characters (abbreviation, unit_abbreviation_characters);
 
 						-- Build the unit of measurement from field #2:
 						unit := to_unit_of_measurement (get_field (element (line_cursor), 2));
 
-						-- insert the abbrevation to unit of measurement assignment in container units_of_measurement
+						-- insert the abbreviation to unit of measurement assignment in container units_of_measurement
 						pac_units_of_measurement.insert (
 							container	=> units_of_measurement,
 							position	=> unit_cursor,
@@ -2732,8 +2732,8 @@ package body et_conventions is
 							-- the key in this map is the unit of measurement like MICROFARAD or NANOHENRY
 							key => unit,
 
-							-- the item is the abbrevation of unit of measurement
-							new_item => abbrevation
+							-- the item is the abbreviation of unit of measurement
+							new_item => abbreviation
 							);
 
 						test_multiple_occurences;
@@ -3006,24 +3006,24 @@ package body et_conventions is
 			place		: positive := 1; -- the pointer to the character being examined
 			char		: character; -- the character being examined
 
-			-- goes true once a valid abbrevation of a unit of measurement is found
+			-- goes true once a valid abbreviation of a unit of measurement is found
 			unit_ok	: boolean := false;
 
-			use pac_unit_abbrevation;
+			use pac_unit_abbreviation;
 
 
-			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
+			-- Sets unit_ok flag true if the given abbreviation starts at position "place".
 			-- If so, sets "place" to the position of the last character of the unit.
 			-- If at "place" unit not found, set result to false.
 			function valid (unit : in type_unit_of_measurement)
 				return boolean
 			is
 				use pac_device_value;
-				abbrevation : constant pac_unit_abbrevation.bounded_string := to_abbrevation (unit);
+				abbreviation : constant pac_unit_abbreviation.bounded_string := to_abbreviation (unit);
 			begin
-				if index (value, to_string (abbrevation), place) = place then
-					-- abbrevation valid. advance place to end of abbrevation.
-					place := place + length (abbrevation) - 1;
+				if index (value, to_string (abbreviation), place) = place then
+					-- abbreviation valid. advance place to end of abbreviation.
+					place := place + length (abbreviation) - 1;
 					unit_ok := true;
 					return true;
 				else
@@ -3049,13 +3049,13 @@ package body et_conventions is
 
 				-- Initially we assume that there has no unit of measurement been found.
 				-- So we advance until the first non-digit character is found.
-				-- Once a valid abbrevation (like R,k or V) was found, we expect ONLY digits
+				-- Once a valid abbreviation (like R,k or V) was found, we expect ONLY digits
 				-- after the last character of the unit of measurement.
 				-- Example: in 220k56 all characters after k must be digits.
 				if not unit_ok then
 
 					if not is_digit (char) then -- integer part like 220 complete
-						-- Now the abbrevation for the unit of measurement shall begin
+						-- Now the abbreviation for the unit of measurement shall begin
 						-- at the position where "place" is pointing at.
 
 						case component_category is

@@ -84,7 +84,7 @@ package et_rig is
 	-- Conventions apply for the whole rig.
 
 
-	-- A single rig is modelled by this type and stored in a
+	-- A single rig is modeled by this type and stored in a
 	-- similar structured rig configuration file:
 	type type_rig is record
 		module_instances	: pac_module_instances.map;

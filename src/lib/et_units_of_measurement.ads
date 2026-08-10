@@ -95,33 +95,33 @@ package et_units_of_measurement is
 		return string;
 
 
-	-- The abbrevations of units of measurement are limited to two characters.
+	-- The abbreviations of units of measurement are limited to two characters.
 	-- So the user could define units like uF or mH. More than two characters are not common.
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
 	-- something like 3.3Ohms since the Ohm character is a special character ?
 	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
-	unit_abbrevation_characters : character_set := to_set (ranges => (('A', 'Z'), ('a', 'z')));
-	unit_abbrevation_length_max : constant positive := 2;
+	unit_abbreviation_characters : character_set := to_set (ranges => (('A', 'Z'), ('a', 'z')));
+	unit_abbreviation_length_max : constant positive := 2;
 
 
 
-	package pac_unit_abbrevation is new generic_bounded_length (unit_abbrevation_length_max);
+	package pac_unit_abbreviation is new generic_bounded_length (unit_abbreviation_length_max);
 
-	use pac_unit_abbrevation;
+	use pac_unit_abbreviation;
 
 
-	-- Units of measurement and their abbrevation are stored in a map:
+	-- Units of measurement and their abbreviation are stored in a map:
 	package pac_units_of_measurement is new ordered_maps (
 		key_type		=> type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
-		element_type	=> pac_unit_abbrevation.bounded_string); -- R, m, k, ...
+		element_type	=> pac_unit_abbreviation.bounded_string); -- R, m, k, ...
 
 
 
 
-	-- Tests if the given abbrevation contains only valid characters as specified
+	-- Tests if the given abbreviation contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
-	procedure check_abbrevation_of_unit_characters (
-		abbrevation	: in pac_unit_abbrevation.bounded_string;
+	procedure check_abbreviation_of_unit_characters (
+		abbreviation	: in pac_unit_abbreviation.bounded_string;
 		characters	: in character_set);
 
 

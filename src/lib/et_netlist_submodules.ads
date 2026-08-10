@@ -52,7 +52,7 @@ package et_netlist_submodules is
 
 
 	-- In a netlist, a submodule that is connected with
-	-- a certain net is modelled by this type:
+	-- a certain net is modeled by this type:
 	type type_submodule_port_extended is record
 		-- The name of the submodule instance:
 		submodule	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
