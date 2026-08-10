@@ -57,7 +57,7 @@ package body et_module_ops is
 
 
 	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor;
@@ -96,7 +96,7 @@ package body et_module_ops is
 
 
 	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
@@ -154,7 +154,7 @@ package body et_module_ops is
 
 
 	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in type_module_name; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : constant pac_generic_modules.cursor := locate_module (module_name);

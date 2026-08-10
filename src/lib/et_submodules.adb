@@ -119,10 +119,9 @@ package body et_submodules is
 
 
 	function to_module_name (path : in type_submodule_path)
-		return pac_module_name.bounded_string
+		return type_module_name
 	is
-		use pac_module_name;
-		name : pac_module_name.bounded_string;
+		name : type_module_name;
 	begin
 		name := to_module_name (remove_extension (to_string (path)));
 		return name;

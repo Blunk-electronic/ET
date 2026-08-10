@@ -76,7 +76,7 @@ package body et_board_ops_material_pnp is
 
 
 	procedure make_pick_and_place (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -113,7 +113,7 @@ package body et_board_ops_material_pnp is
 
 
 				procedure query_devices (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					device_name : type_device_name;
@@ -340,8 +340,8 @@ package body et_board_ops_material_pnp is
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is
 				use pac_renumber_modules;
-				module_name	: pac_module_name.bounded_string; -- motor_driver
-				parent_name	: pac_module_name.bounded_string; -- water_pump
+				module_name	: type_module_name; -- motor_driver
+				parent_name	: type_module_name; -- water_pump
 				module_instance	: type_module_instance_name; -- MOT_DRV_3
 				offset			: type_name_index;
 

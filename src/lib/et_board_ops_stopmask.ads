@@ -71,7 +71,7 @@ package et_board_ops_stopmask is
 
 	-- Draws a line:
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -154,7 +154,7 @@ package et_board_ops_stopmask is
 
 	-- Draws an arc:
 	procedure add_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -235,7 +235,7 @@ package et_board_ops_stopmask is
 
 	-- Draws an circle:
 	procedure add_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stop_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -636,7 +636,7 @@ package et_board_ops_stopmask is
 	-- CS currently deletes the item found first. Leaves other items untouched.
 	-- CS a parameter like "all" to delete all items in the vicinity of point.
 	procedure delete_object (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);

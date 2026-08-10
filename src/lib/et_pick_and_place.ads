@@ -84,7 +84,7 @@ package et_pick_and_place is
 	-- - The P&P file will be named after the module name and the assembly variant.
 	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in pac_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
+		module_name		: in type_module_name; -- motor_driver
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);

@@ -139,7 +139,7 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			submod_cursor : pac_submodules.cursor;
@@ -239,7 +239,7 @@ package body et_schematic_ops_netlists is
 
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			use et_nets.pac_nets;
@@ -449,12 +449,12 @@ package body et_schematic_ops_netlists is
 		-- This procedure queries the given top-module
 		-- and iterates through its submodules:
 		procedure query_topmodule (
-			top_module_name	: in pac_module_name.bounded_string;
+			top_module_name	: in type_module_name;
 			top_module		: in type_generic_module)
 		is
-			submodule_name	: pac_module_name.bounded_string;
+			submodule_name	: type_module_name;
 
-			parent_name : pac_module_name.bounded_string; -- water_pump
+			parent_name : type_module_name; -- water_pump
 
 			submodule_instance	: type_module_instance_name; -- MOT_DRV_3
 
@@ -669,7 +669,7 @@ package body et_schematic_ops_netlists is
 
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
 			procedure update_netlist (
-				module_name		: in pac_module_name.bounded_string;
+				module_name		: in type_module_name;
 				module			: in out type_generic_module)
 			is
 

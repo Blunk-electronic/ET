@@ -99,21 +99,21 @@ package et_schematic_ops_assembly_variant is
 
 	-- Creates a new assembly variant.
 	procedure create_assembly_variant (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level);
 
 
 	-- Deletes an assembly variant.
 	procedure delete_assembly_variant (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level);
 
 
 	-- Describes an assembly variant. Overwrites the previous description.
 	procedure describe_assembly_variant (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
@@ -157,7 +157,7 @@ package et_schematic_ops_assembly_variant is
 	-- Sets the value, partcode and (optionally the purpose) of a device in
 	-- An already existing device will be overwritten without warning.
 	procedure mount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in type_device_value; -- 220R
@@ -171,7 +171,7 @@ package et_schematic_ops_assembly_variant is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 	procedure unmount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
@@ -179,7 +179,7 @@ package et_schematic_ops_assembly_variant is
 
 	-- Removes the given device from the given assembly variant.
 	procedure remove_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);

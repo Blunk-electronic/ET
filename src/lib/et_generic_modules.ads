@@ -68,8 +68,8 @@ package et_generic_modules is
 	-- Submodule names are things like "templates/clock_generator" or
 	-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
 	package pac_generic_modules is new ada.containers.ordered_maps (
-		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
-		"<"				=> pac_module_name."<",
+		key_type		=> type_module_name, -- motor_driver (without extension *.mod)
+		"<"				=> et_module_names."<",
 		element_type	=> type_generic_module);
 
 
@@ -78,7 +78,7 @@ package et_generic_modules is
 
 	function get_module_name (
 		module_cursor	: in pac_generic_modules.cursor)
-		return pac_module_name.bounded_string;
+		return type_module_name;
 
 
 
@@ -113,18 +113,18 @@ package et_generic_modules is
 
 	-- Returns true if the module with the given name exists in container modules.
 	function generic_module_exists (
-		module : in pac_module_name.bounded_string)
+		module : in type_module_name)
 		return boolean;
 
 
 	procedure validate_module_name (
-		module : in pac_module_name.bounded_string);
+		module : in type_module_name);
 
 
 
 
 	-- Locates the given module in the global container "modules".
-	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	function locate_module (name : in type_module_name) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 	-- CS rename to get_module_cursor
 

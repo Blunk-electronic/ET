@@ -99,7 +99,7 @@ package body et_cp_board_via is
 
 
 		procedure deactivate_drill (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -109,7 +109,7 @@ package body et_cp_board_via is
 
 
 		procedure activate_drill (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -120,7 +120,7 @@ package body et_cp_board_via is
 
 
 		procedure deactivate_inner_restring (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -130,7 +130,7 @@ package body et_cp_board_via is
 
 
 		procedure activate_inner_restring (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -141,7 +141,7 @@ package body et_cp_board_via is
 
 
 		procedure deactivate_outer_restring (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -151,7 +151,7 @@ package body et_cp_board_via is
 
 
 		procedure activate_outer_restring (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

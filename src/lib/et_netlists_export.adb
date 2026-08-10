@@ -79,7 +79,7 @@ package body et_netlists_export is
 
 	procedure write_netlist (
 		netlist			: in pac_module_netlist.tree;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
+		module_name		: in type_module_name; -- motor_driver
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		log_threshold	: in type_log_level)
 	is
@@ -271,7 +271,7 @@ package body et_netlists_export is
 
 	function make_netlist (
 		modules			: in pac_netlist_modules.tree;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
+		module_name		: in type_module_name; -- motor_driver
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)

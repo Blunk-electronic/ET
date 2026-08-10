@@ -1250,7 +1250,7 @@ package body et_canvas_schematic is
 
 
 	procedure set_module (
-		module	: in pac_module_name.bounded_string)  -- motor_driver
+		module	: in type_module_name)  -- motor_driver
 	is
 		use et_module_read;
 		cursor : constant pac_generic_modules.cursor := find (generic_modules, module);

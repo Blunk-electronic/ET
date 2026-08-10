@@ -154,7 +154,7 @@ is
 
 
 	--procedure query_module (
-		--module_name	: in pac_module_name.bounded_string;
+		--module_name	: in type_module_name;
 		--module		: in et_schematic.type_module)
 	--is
 		---- FILL ZONE

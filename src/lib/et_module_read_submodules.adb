@@ -255,7 +255,7 @@ package body et_module_read_submodules is
 	is
 
 		procedure insert_submodule (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

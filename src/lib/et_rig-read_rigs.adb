@@ -94,7 +94,7 @@ is
 
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		generic_name : pac_module_name.bounded_string; -- motor_driver
+		generic_name : type_module_name; -- motor_driver
 		instance_name : type_module_instance_name; -- DRV_1
 		assembly_variant : type_assembly_variant_name; -- low_cost
 
@@ -353,7 +353,7 @@ is
 										expect_field_count (line, 2);
 
 										-- The generic name does not use the *.mod extension.
-										generic_name := pac_module_name.to_bounded_string (f (line, 2));
+										generic_name := to_module_name (f (line, 2));
 
 										-- test whether a module with this generic name exists
 										if not generic_module_exists (generic_name) then

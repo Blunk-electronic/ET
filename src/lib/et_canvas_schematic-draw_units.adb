@@ -961,7 +961,7 @@ procedure draw_units is
 
 
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);

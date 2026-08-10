@@ -120,7 +120,7 @@ package body et_netlist_cat_1 is
 			use et_assembly_variant_name;
 			use et_export;
 
-			module_name : constant pac_module_name.bounded_string :=
+			module_name : constant type_module_name :=
 				get_module_name (module_cursor);
 
 		begin

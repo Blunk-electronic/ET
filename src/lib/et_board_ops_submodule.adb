@@ -57,7 +57,7 @@ package body et_board_ops_submodule is
 
 
 	function get_position (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name) -- OSC1
 		return type_position
 	is
@@ -67,7 +67,7 @@ package body et_board_ops_submodule is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -99,7 +99,7 @@ package body et_board_ops_submodule is
 
 
 	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
@@ -114,7 +114,7 @@ package body et_board_ops_submodule is
 
 
 		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

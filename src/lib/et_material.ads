@@ -91,7 +91,7 @@ package et_material is
 	-- - Exports the BOM of the given module to the export/CAM directory.
 	procedure write_bom (
 		bom				: in pac_bom_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver
+		module_name		: in type_module_name; -- motor_driver
 		variant_name	: in type_assembly_variant_name; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);

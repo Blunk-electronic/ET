@@ -518,10 +518,9 @@ procedure et is
 	procedure launch_schematic_and_board_editor is
 		use et_gui_2;
 		use pac_generic_modules;
-		use pac_module_name;
 		use et_module_ops;
 
-		generic_module_name : pac_module_name.bounded_string;
+		generic_module_name : type_module_name;
 		module_cursor : pac_generic_modules.cursor;
 		script_name_tmp : type_script_name;
 	begin

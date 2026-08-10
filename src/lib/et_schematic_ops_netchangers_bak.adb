@@ -131,7 +131,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			use pac_nets;
@@ -222,7 +222,7 @@ package body et_schematic_ops_netchangers is
 		port_before, port_after : type_vector_model;
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module) is
 
 			use pac_nets;
@@ -420,7 +420,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 
@@ -582,7 +582,7 @@ package body et_schematic_ops_netchangers is
 
 		-- Searches for the lowest available index.
 		procedure search_gap (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			cursor : pac_netchangers.cursor := module.netchangers.first;
@@ -638,7 +638,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_netchangers (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module) is
 			use pac_netchangers;
 		begin -- query_netchangers
@@ -664,7 +664,7 @@ package body et_schematic_ops_netchangers is
 
 
 	function get_netchanger_port_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
@@ -677,7 +677,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_netchangers (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			nc_cursor : pac_netchangers.cursor;
@@ -753,7 +753,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure add_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		place			: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level)
 	is
@@ -761,7 +761,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			use et_submodules;
@@ -833,7 +833,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure drag_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
@@ -936,7 +936,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_netchangers (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;
@@ -1068,7 +1068,7 @@ package body et_schematic_ops_netchangers is
 	is
 
 		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			use pac_nets;
@@ -1208,7 +1208,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure move_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
@@ -1220,7 +1220,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_netchangers (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;
@@ -1348,7 +1348,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure rotate_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
@@ -1359,7 +1359,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;
@@ -1483,7 +1483,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure delete_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level)
 	is
@@ -1492,7 +1492,7 @@ package body et_schematic_ops_netchangers is
 
 
 		procedure query_netchangers (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;

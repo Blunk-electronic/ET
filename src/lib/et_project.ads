@@ -125,7 +125,7 @@ package et_project is
 	-- Already existing projects in given project_path are overwritten.
 	procedure create_project_directory (
 		project_name	: in type_project_name;		-- blood_sample_analyzer
-		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
+		module_name		: in type_module_name := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level);
 
 

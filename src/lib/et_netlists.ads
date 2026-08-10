@@ -169,7 +169,7 @@ package et_netlists is
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
 	type type_netlist_module is record
-		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+		generic_name	: type_module_name; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance_name	: type_module_instance_name; -- OSC1
 		nets			: pac_netlist_nets.map;
 	end record;
@@ -245,7 +245,7 @@ package et_netlists is
 	-- When searching global nets in submodules we need a type for a global net of a submodule
 	-- and a list thereof:
 	type type_global_net is record
-		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+		--submodule	: type_module_name; -- amplifier, $ET_TEMPLATES/motor_driver
 		submodule	: pac_netlist_modules.cursor;
 		net			: pac_netlist_nets.cursor;
 	end record;

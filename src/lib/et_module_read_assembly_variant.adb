@@ -88,7 +88,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure set_variant (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -302,7 +302,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -367,7 +367,7 @@ package body et_module_read_assembly_variant is
 
 
 		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

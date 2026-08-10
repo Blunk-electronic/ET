@@ -53,7 +53,7 @@ package body et_board_ops_via_restrict is
 
 
 --	procedure delete_via_restrict (
---		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+--		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 --		point			: in type_vector_model; -- x/y
 --		accuracy		: in type_accuracy;
 --		log_threshold	: in type_log_level)
@@ -61,7 +61,7 @@ package body et_board_ops_via_restrict is
 --		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 --
 --		procedure delete (
---			module_name	: in pac_module_name.bounded_string;
+--			module_name	: in type_module_name;
 --			module		: in out type_generic_module)
 --		is
 --			use pac_via_restrict_lines;
@@ -159,7 +159,7 @@ package body et_board_ops_via_restrict is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

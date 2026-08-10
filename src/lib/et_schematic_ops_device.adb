@@ -89,7 +89,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -120,7 +120,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -217,7 +217,7 @@ package body et_schematic_ops_device is
 		device_found : boolean := false; -- to be returned
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -248,7 +248,7 @@ package body et_schematic_ops_device is
 		result : pac_devices_electrical.cursor;
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -279,7 +279,7 @@ package body et_schematic_ops_device is
 		result : pac_devices_electrical.cursor;
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -365,7 +365,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -456,7 +456,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
@@ -567,7 +567,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -670,7 +670,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -760,7 +760,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -897,7 +897,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -990,7 +990,7 @@ package body et_schematic_ops_device is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1128,7 +1128,7 @@ package body et_schematic_ops_device is
 
 	-- Renumbers devices according to the sheet number.
 	procedure renumber_devices (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)

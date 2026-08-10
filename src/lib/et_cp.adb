@@ -114,7 +114,7 @@ package body et_cp is
 
 
 		domain	: type_domain; -- DOM_SCHEMATIC
-		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module	: type_module_name; -- motor_driver (without extension *.mod)
 
 		verb_project	: type_verb_project;
 		noun_project	: type_noun_project;

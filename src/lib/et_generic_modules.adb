@@ -53,7 +53,7 @@ package body et_generic_modules is
 
 	function get_module_name (
 		module_cursor	: in pac_generic_modules.cursor)
-		return pac_module_name.bounded_string
+		return type_module_name
 	is begin
 		return key (module_cursor);
 	end get_module_name;
@@ -106,7 +106,7 @@ package body et_generic_modules is
 		quote			: in boolean := true)
 		return string
 	is
-		name : pac_module_name.bounded_string;
+		name : type_module_name;
 	begin
 		name := key (module_cursor);
 
@@ -129,15 +129,14 @@ package body et_generic_modules is
 
 
 	function get_active_module return string is
-		use pac_module_name;
 	begin
-		return pac_module_name.to_string (key (active_module)); -- motor_driver (without extension)
+		return to_string (key (active_module)); -- motor_driver (without extension)
 	end get_active_module;
 
 
 
 	function generic_module_exists (
-		module : in pac_module_name.bounded_string)
+		module : in type_module_name)
 		return boolean
 	is begin
 		return pac_generic_modules.contains (generic_modules, module);
@@ -146,7 +145,7 @@ package body et_generic_modules is
 
 
 	procedure validate_module_name (
-		module : in pac_module_name.bounded_string)
+		module : in type_module_name)
 	is begin
 		if not generic_module_exists (module) then
 			log (SEVERITY_ERROR, "module " & to_string (module) &
@@ -157,7 +156,7 @@ package body et_generic_modules is
 
 
 
-	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	function locate_module (name : in type_module_name) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor
 	is
 		cursor : constant pac_generic_modules.cursor := find (generic_modules, name);
@@ -194,7 +193,7 @@ package body et_generic_modules is
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

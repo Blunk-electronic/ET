@@ -189,7 +189,7 @@ is
 
 
 	procedure query_obstacles (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in et_schematic.type_module)
 	is
 		use pac_distances_sorting;

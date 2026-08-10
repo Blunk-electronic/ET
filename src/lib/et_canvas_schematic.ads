@@ -398,7 +398,7 @@ package et_canvas_schematic is
 	-- Loads the module into the collection of generic modules.
 	-- Sets the variable current_active_module accordingly:
 	procedure set_module (
-		module	: in pac_module_name.bounded_string); -- motor_driver
+		module	: in type_module_name); -- motor_driver
 
 
 end et_canvas_schematic;
