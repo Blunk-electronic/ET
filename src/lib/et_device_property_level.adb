@@ -49,9 +49,7 @@ package body et_device_property_level is
 	function to_string (
 		level	: in type_properties_level)
 		return string
-	is begin
-		return type_properties_level'image (level);
-	end to_string;
+	is (type_properties_level'image (level));
 
 
 

@@ -45,24 +45,24 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_port_visibility is
 
 
-	function to_string (visible : in type_port_name_visible) return string is begin
-		return to_lower (type_port_name_visible'image (visible));
-	end to_string;
+	function to_string (visible : in type_port_name_visible)
+		return string
+	is (to_lower (type_port_name_visible'image (visible)));
 
-	function to_port_name_visible (visible : in string) return type_port_name_visible is begin
-		return type_port_name_visible'value (visible);
-	end to_port_name_visible;
-
-
+	function to_port_name_visible (visible : in string)
+		return type_port_name_visible
+	is (type_port_name_visible'value (visible));
 
 
-	function to_string (visible : in type_terminal_name_visible) return string is begin
-		return to_lower (type_terminal_name_visible'image (visible));
-	end to_string;
 
-	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible is begin
-		return type_terminal_name_visible'value (visible);
-	end to_terminal_name_visible;
+
+	function to_string (visible : in type_terminal_name_visible)
+		return string
+	is (to_lower (type_terminal_name_visible'image (visible)));
+
+	function to_terminal_name_visible (visible : in string)
+		return type_terminal_name_visible
+	is (type_terminal_name_visible'value (visible));
 
 
 

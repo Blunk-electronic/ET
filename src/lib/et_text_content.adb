@@ -48,15 +48,15 @@ package body et_text_content is
 
 
 
-	function to_string (text_content : in type_text_content) return string is begin
-		return pac_text_content.to_string (pac_text_content.bounded_string (text_content));
-	end to_string;
+	function to_string (text_content : in type_text_content)
+		return string
+	is (pac_text_content.to_string (pac_text_content.bounded_string (text_content)));
 
 
 
-	function to_content (content : in string) return type_text_content is begin
-		return type_text_content (pac_text_content.to_bounded_string (content));
-	end to_content;
+	function to_content (content : in string)
+		return type_text_content
+	is (type_text_content (pac_text_content.to_bounded_string (content)));
 
 
 

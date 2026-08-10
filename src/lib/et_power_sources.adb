@@ -60,10 +60,9 @@ package body et_power_sources is
 
 	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
 	-- The prefix LEVEL_ is prepended.
-	function to_power_level (level : in string) return type_power_level is
-	begin
-		return type_power_level'value ("LEVEL_" & level);
-	end to_power_level;
+	function to_power_level (level : in string)
+		return type_power_level
+	is (type_power_level'value ("LEVEL_" & level));
 
 
 

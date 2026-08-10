@@ -48,9 +48,7 @@ package body et_net_names is
 	function net_name_to_string (
 		net_name	: in type_net_name)
 		return string
-	is begin
-		return pac_net_name.to_string (pac_net_name.bounded_string (net_name));
-	end net_name_to_string;
+	is (pac_net_name.to_string (pac_net_name.bounded_string (net_name)));
 
 
 
@@ -120,9 +118,9 @@ package body et_net_names is
 
 
 
-	function to_net_name (net_name : in string) return type_net_name is begin
-		return type_net_name (pac_net_name.to_bounded_string (to_upper (net_name)));
-	end to_net_name;
+	function to_net_name (net_name : in string)
+		return type_net_name
+	is (type_net_name (pac_net_name.to_bounded_string (to_upper (net_name))));
 
 
 
@@ -211,9 +209,7 @@ package body et_net_names is
 		function get_message_text (
 			name : in type_net_name)
 			return string
-		is begin
-			return "Net " & to_string (name) & " not found !";
-		end get_message_text;
+		is ("Net " & to_string (name) & " not found !");
 
 
 	begin
@@ -250,9 +246,7 @@ package body et_net_names is
 		function get_message_text (
 			name : in type_net_name)
 			return string
-		is begin
-			return "Net " & to_string (name) & " already exists !";
-		end get_message_text;
+		is ("Net " & to_string (name) & " already exists !");
 
 
 	begin

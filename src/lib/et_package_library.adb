@@ -120,18 +120,14 @@ package body et_package_library is
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
 		return type_package_model_name
-	is begin
-		return key (model_cursor);
-	end get_package_model_file;
+	is (key (model_cursor));
 
 
 
 	function get_package_model_name (
 		model_cursor : in pac_package_models.cursor)
 		return string
-	is begin
-		return to_string (key (model_cursor));
-	end get_package_model_name;
+	is (to_string (key (model_cursor)));
 
 
 

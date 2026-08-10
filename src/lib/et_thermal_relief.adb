@@ -44,25 +44,25 @@
 with ada.characters.handling;	use ada.characters.handling;
 package body et_thermal_relief is
 
-	function to_string (connection : in type_pad_connection) return string is begin
-		return to_lower (type_pad_connection'image (connection));
-	end to_string;
+	function to_string (connection : in type_pad_connection)
+		return string
+	is (to_lower (type_pad_connection'image (connection)));
 
 
-	function to_pad_connection (connection : in string) return type_pad_connection is begin
-		return type_pad_connection'value (connection);
-	end to_pad_connection;
+	function to_pad_connection (connection : in string)
+		return type_pad_connection
+	is (type_pad_connection'value (connection));
 
 
 
-	function to_string (technology : in type_pad_technology) return string is begin
-		return to_lower (type_pad_technology'image (technology));
-	end to_string;
+	function to_string (technology : in type_pad_technology)
+		return string
+	is (to_lower (type_pad_technology'image (technology)));
 
 
-	function to_pad_technology (technology : in string) return type_pad_technology is begin
-		return type_pad_technology'value (technology);
-	end to_pad_technology;
+	function to_pad_technology (technology : in string)
+		return type_pad_technology
+	is (type_pad_technology'value (technology));
 
 
 

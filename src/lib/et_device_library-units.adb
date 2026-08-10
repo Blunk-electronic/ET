@@ -366,9 +366,7 @@ package body et_device_library.units is
 	function get_unit_count (
 		device_cursor	: in pac_device_models.cursor)
 		return type_unit_count
-	is begin
-		return get_unit_count (element (device_cursor));
-	end get_unit_count;
+	is (get_unit_count (element (device_cursor)));
 
 
 

@@ -42,14 +42,14 @@
 package body et_canvas_tool is
 
 
-	function to_string (tool : in type_tool) return string is begin
-		return type_tool'image (tool);
-	end to_string;
+	function to_string (tool : in type_tool)
+		return string
+	is (type_tool'image (tool));
 
 
-	function to_tool (tool : in string) return type_tool is begin
-		return type_tool'value (tool);
-	end to_tool;
+	function to_tool (tool : in string)
+		return type_tool
+	is (type_tool'value (tool));
 
 
 

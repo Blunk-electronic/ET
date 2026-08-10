@@ -45,9 +45,7 @@ package body et_unit_name is
 	function get_length (
 		unit : in type_unit_name)
 		return natural
-	is begin
-		return natural (length (pac_unit_name.bounded_string (unit)));
-	end get_length;
+	is (natural (length (pac_unit_name.bounded_string (unit))));
 
 
 
@@ -79,9 +77,7 @@ package body et_unit_name is
 		function get_message_text (
 			name : in type_unit_name)
 			return string
-		is begin
-			return "Unit " & to_string (name) & " not found !";
-		end get_message_text;
+		is ("Unit " & to_string (name) & " not found !");
 
 
 	begin

@@ -49,14 +49,14 @@ package body et_net_scope is
 
 
 
-	function to_string (net_scope : in type_net_scope) return string is begin
-		return " " & to_lower (type_net_scope'image (net_scope));
-	end to_string;
+	function to_string (net_scope : in type_net_scope)
+		return string
+	is (" " & to_lower (type_net_scope'image (net_scope)));
 
 
-	function to_net_scope (scope : in string) return type_net_scope is begin
-		return type_net_scope'value (scope);
-	end to_net_scope;
+	function to_net_scope (scope : in string)
+		return type_net_scope
+	is (type_net_scope'value (scope));
 
 
 

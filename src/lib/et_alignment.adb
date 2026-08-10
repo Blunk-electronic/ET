@@ -57,9 +57,7 @@ package body et_alignment is
 	function to_alignment_horizontal (
 		alignment : in string)
 		return type_text_alignment_horizontal
-	is begin
-		return type_text_alignment_horizontal'value (alignment_prefix & alignment);
-	end to_alignment_horizontal;
+	is (type_text_alignment_horizontal'value (alignment_prefix & alignment));
 
 
 	function to_string (
@@ -75,9 +73,7 @@ package body et_alignment is
 	function to_alignment_vertical (
 		alignment : in string)
 		return type_text_alignment_vertical
-	is begin
-		return type_text_alignment_vertical'value (alignment_prefix & alignment);
-	end to_alignment_vertical;
+	is (type_text_alignment_vertical'value (alignment_prefix & alignment));
 
 
 	function to_alignment (
@@ -121,13 +117,12 @@ package body et_alignment is
 	end to_alignment;
 
 
-	function to_string (alignment : in type_text_alignment) return string is
-	begin
-		return "alignment (hor./vert.) "
+	function to_string (alignment : in type_text_alignment)
+		return string
+	is ("alignment (hor./vert.) "
 			& to_string (alignment.horizontal)
 			& " / "
-			& to_string (alignment.vertical);
-	end to_string;
+			& to_string (alignment.vertical));
 
 
 

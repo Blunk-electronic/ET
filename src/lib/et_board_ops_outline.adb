@@ -722,9 +722,7 @@ package body et_board_ops_outline is
 	function get_outer_contour (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_outer_contour
-	is begin
-		return element (module_cursor).board.board_contour.outline;
-	end get_outer_contour;
+	is (element (module_cursor).board.board_contour.outline);
 
 
 
@@ -1655,9 +1653,7 @@ package body et_board_ops_outline is
 	function get_holes (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_holes.list
-	is begin
-		return element (module_cursor).board.board_contour.holes;
-	end get_holes;
+	is (element (module_cursor).board.board_contour.holes);
 
 
 
@@ -1724,9 +1720,7 @@ package body et_board_ops_outline is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

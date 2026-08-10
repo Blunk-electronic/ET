@@ -91,9 +91,7 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_electrical)
 		return string
-	is begin
-		return to_string (key (object.cursor));
-	end get_device_name;
+	is (to_string (key (object.cursor)));
 
 
 
@@ -101,9 +99,7 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_electrical)
 		return type_device_name
-	is begin
-		return key (object.cursor);
-	end get_device_name;
+	is (key (object.cursor));
 
 
 
@@ -869,18 +865,14 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_non_electrical)
 		return string
-	is begin
-		return to_string (key (object.cursor));
-	end get_device_name;
+	is (to_string (key (object.cursor)));
 
 
 
 	function get_device_name (
 		object	: in type_object_non_electrical)
 		return type_device_name
-	is begin
-		return key (object.cursor);
-	end get_device_name;
+	is (key (object.cursor));
 
 
 
@@ -2036,9 +2028,7 @@ package body et_board_ops_devices is
 	function get_device_name (
 		placeholder	: in type_object_placeholder)
 		return string
-	is begin
-		return to_string (get_device_name (placeholder));
-	end get_device_name;
+	is (to_string (get_device_name (placeholder)));
 
 
 
@@ -2058,9 +2048,7 @@ package body et_board_ops_devices is
 	function get_layer (
 		placeholder	: in type_object_placeholder)
 		return string
-	is begin
-		return to_string (placeholder.layer);
-	end get_layer;
+	is (to_string (placeholder.layer));
 
 
 
@@ -2068,9 +2056,7 @@ package body et_board_ops_devices is
 	function get_meaning (
 		placeholder	: in type_object_placeholder)
 		return type_placeholder_meaning
-	is begin
-		return get_meaning (placeholder.placeholder);
-	end get_meaning;
+	is (get_meaning (placeholder.placeholder));
 
 
 
@@ -2541,9 +2527,7 @@ package body et_board_ops_devices is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

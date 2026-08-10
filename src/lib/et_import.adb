@@ -65,10 +65,9 @@ package body et_import is
 
 
 
-	function to_cad_format (format : in string) return type_cad_format is
-	begin
-		return type_cad_format'value (format);
-	end to_cad_format;
+	function to_cad_format (format : in string)
+		return type_cad_format
+	is (type_cad_format'value (format));
 
 
 

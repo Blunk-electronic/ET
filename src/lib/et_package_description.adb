@@ -58,9 +58,7 @@ package body et_package_description is
 
 	function to_package_description (description : in string)
 		return type_package_description
-	is begin
-		return type_package_description (pac_package_description.to_bounded_string (description));
-	end to_package_description;
+	is (type_package_description (pac_package_description.to_bounded_string (description)));
 
 
 end et_package_description;

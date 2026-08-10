@@ -120,17 +120,13 @@ package body et_net_labels is
 	function get_rotation (
 		label : in type_net_label)
 		return type_rotation_documentation
-	is begin
-		return label.rotation;
-	end get_rotation;
+	is (label.rotation);
 
 
 	function get_rotation (
 		label : in type_net_label)
 		return string
-	is begin
-		return to_string (label.rotation);
-	end get_rotation;
+	is (to_string (label.rotation));
 
 
 
@@ -148,9 +144,7 @@ package body et_net_labels is
 	function get_position (
 		label : in type_net_label)
 		return type_vector_model
-	is begin
-		return label.position;
-	end get_position;
+	is (label.position);
 
 
 
@@ -167,9 +161,7 @@ package body et_net_labels is
 	function get_position (
 		label : in type_net_label)
 		return string
-	is begin
-		return to_string (label.position);
-	end get_position;
+	is (to_string (label.position));
 
 
 
@@ -217,33 +209,25 @@ package body et_net_labels is
 	function get_position (
 		label : in pac_net_labels.cursor)
 		return type_vector_model
-	is begin
-		return get_position (element (label));
-	end get_position;
+	is (get_position (element (label)));
 
 
 	function get_position (
 		label : in pac_net_labels.cursor)
 		return string
-	is begin
-		return to_string (get_position (element (label)));
-	end get_position;
+	is (to_string (get_position (element (label))));
 
 
 	function get_rotation (
 		label : in pac_net_labels.cursor)
 		return type_rotation_documentation
-	is begin
-		return get_rotation (element (label));
-	end get_rotation;
+	is (get_rotation (element (label)));
 
 
 	function get_rotation (
 		label : in pac_net_labels.cursor)
 		return string
-	is begin
-		return get_rotation (element (label));
-	end get_rotation;
+	is (get_rotation (element (label)));
 
 
 
@@ -251,25 +235,19 @@ package body et_net_labels is
 	function is_proposed (
 		label : in pac_net_labels.cursor)
 		return boolean
-	is begin
-		return is_proposed (element (label));
-	end is_proposed;
+	is (is_proposed (element (label)));
 
 
 	function is_selected (
 		label : in pac_net_labels.cursor)
 		return boolean
-	is begin
-		return is_selected (element (label));
-	end is_selected;
+	is (is_selected (element (label)));
 
 
 	function is_moving (
 		label : in pac_net_labels.cursor)
 		return boolean
-	is begin
-		return is_moving (element (label));
-	end is_moving;
+	is (is_moving (element (label)));
 
 
 

@@ -49,18 +49,14 @@ package body et_terminal_stencil is
 	function to_string (
 		shape : in type_stencil_shrink_mode)
 		return string
-	is begin
-		return to_lower (type_stencil_shrink_mode'image (shape));
-	end to_string;
+	is (to_lower (type_stencil_shrink_mode'image (shape)));
 
 
 
 	function to_modification (
 		shape : in string)
 		return type_stencil_shrink_mode
-	is begin
-		return type_stencil_shrink_mode'value (shape);
-	end to_modification;
+	is (type_stencil_shrink_mode'value (shape));
 
 
 

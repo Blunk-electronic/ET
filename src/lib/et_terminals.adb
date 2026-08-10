@@ -57,13 +57,10 @@ package body et_terminals is
 	function to_string (
 		position : in type_terminal_position_fine)
 		return string
-	is begin
-		return
-			"place: " & to_string (position.place)
+	is ("place: " & to_string (position.place)
 			& " rotation: " & to_string (position.rotation)
 			& " face: " & to_string (position.face)
-			& " technology: " & to_string (position.technology);
-	end to_string;
+			& " technology: " & to_string (position.technology));
 
 
 
@@ -190,18 +187,14 @@ package body et_terminals is
 	function get_terminal_name (
 		terminal_cursor	: in pac_terminals.cursor)
 		return type_terminal_name
-	is begin
-		return key (terminal_cursor);
-	end get_terminal_name;
+	is (key (terminal_cursor));
 
 
 
 	function get_terminal_name (
 		terminal_cursor	: in pac_terminals.cursor)
 		return string
-	is begin
-		return to_string (get_terminal_name (terminal_cursor));
-	end get_terminal_name;
+	is (to_string (get_terminal_name (terminal_cursor)));
 
 
 

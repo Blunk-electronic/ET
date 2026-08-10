@@ -46,9 +46,7 @@ package body et_rotation_docu is
 	function to_rotation_documentation (
 		rotation : in string)
 		return type_rotation_documentation
-	is begin
-		return type_rotation_documentation'value (rotation);
-	end to_rotation_documentation;
+	is (type_rotation_documentation'value (rotation));
 
 
 

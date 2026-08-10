@@ -395,11 +395,11 @@ is
 
 				procedure query_via (v : in pac_vias.cursor) is
 
-					function to_circle (restring : in type_restring_width) return type_circle is begin
-						return (
+					function to_circle (restring : in type_restring_width)
+						return type_circle
+					is ((
 							center => element (v).position,
-							radius	=> element (v).diameter * 0.5 + restring);
-					end to_circle;
+							radius	=> element (v).diameter * 0.5 + restring));
 
 				begin
 					case element (v).category is

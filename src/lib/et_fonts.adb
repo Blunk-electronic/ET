@@ -45,18 +45,14 @@ package body et_fonts is
 	function to_string (
 		family : in type_font_family)
 		return string
-	is begin
-		return pac_font_family.to_string (pac_font_family.bounded_string (family));
-	end to_string;
+	is (pac_font_family.to_string (pac_font_family.bounded_string (family)));
 
 
 
 	function to_family (
 		family : in string)
 		return type_font_family
-	is begin
-		return type_font_family (pac_font_family.to_bounded_string (family));
-	end to_family;
+	is (type_font_family (pac_font_family.to_bounded_string (family)));
 
 
 

@@ -59,9 +59,7 @@ package body et_geometry_2a.grid is
 	function to_on_off (
 		on_off : in string)
 		return type_grid_on_off
-	is begin
-		return type_grid_on_off'value (on_off);
-	end to_on_off;
+	is (type_grid_on_off'value (on_off));
 
 
 
@@ -78,9 +76,7 @@ package body et_geometry_2a.grid is
 	function to_style (
 		style : in string)
 		return type_grid_style
-	is begin
-		return type_grid_style'value (style);
-	end to_style;
+	is (type_grid_style'value (style));
 
 
 
@@ -164,17 +160,13 @@ package body et_geometry_2a.grid is
 	function to_notches (
 		notches : in string)
 		return type_grid_notches
-	is begin
-		return type_grid_notches'value (notches);
-	end to_notches;
+	is (type_grid_notches'value (notches));
 
 
 	function to_string (
 		notches : in type_grid_notches)
 		return string
-	is begin
-		return type_grid_notches'image (notches);
-	end to_string;
+	is (type_grid_notches'image (notches));
 
 
 

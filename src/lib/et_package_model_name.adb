@@ -56,9 +56,7 @@ package body et_package_model_name is
 	function to_string (
 		name : in type_package_model_name)
 		return string
-	is begin
-		return pac_package_model_file.to_string (pac_package_model_file.bounded_string (name));
-	end to_string;
+	is (pac_package_model_file.to_string (pac_package_model_file.bounded_string (name)));
 
 
 
@@ -66,9 +64,7 @@ package body et_package_model_name is
 	function to_package_model_name (
 		name : in string)
 		return type_package_model_name
-	is begin
-		return type_package_model_name (pac_package_model_file.to_bounded_string (name));
-	end to_package_model_name;
+	is (type_package_model_name (pac_package_model_file.to_bounded_string (name)));
 
 
 

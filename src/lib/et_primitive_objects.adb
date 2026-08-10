@@ -49,39 +49,39 @@ package body et_primitive_objects is
 
 
 
-	function to_shape (shape : in string) return type_shape is begin
-		return type_shape'value (shape);
-	end to_shape;
+	function to_shape (shape : in string)
+		return type_shape
+	is (type_shape'value (shape));
 
 
-	function to_string (shape : in type_shape) return string is begin
-		return to_lower (type_shape'image (shape));
-	end to_string;
-
-
-
+	function to_string (shape : in type_shape)
+		return string
+	is (to_lower (type_shape'image (shape)));
 
 
 
 
-	function to_string (filled : in type_filled) return string is begin
-		return to_lower (type_filled'image (filled));
-	end to_string;
 
-	function to_filled (filled : in string) return type_filled is begin
-		return type_filled'value (filled);
-	end to_filled;
+
+
+	function to_string (filled : in type_filled)
+		return string
+	is (to_lower (type_filled'image (filled)));
+
+	function to_filled (filled : in string)
+		return type_filled
+	is (type_filled'value (filled));
 
 
 
 	-- FILL STYLE
-	function to_string (fill_style : in type_fill_style) return string is begin
-		return to_lower (type_fill_style'image (fill_style));
-	end to_string;
+	function to_string (fill_style : in type_fill_style)
+		return string
+	is (to_lower (type_fill_style'image (fill_style)));
 
-	function to_fill_style (fill_style : in string) return type_fill_style is begin
-		return type_fill_style'value (fill_style);
-	end to_fill_style;
+	function to_fill_style (fill_style : in string)
+		return type_fill_style
+	is (type_fill_style'value (fill_style));
 
 
 

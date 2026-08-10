@@ -63,9 +63,7 @@ package body et_package_variant_name is
 	function to_variant_name (
 		variant_name : in string)
 		return type_package_variant_name
-	is begin
-		return type_package_variant_name (pac_package_variant_name.to_bounded_string (variant_name));
-	end to_variant_name;
+	is (type_package_variant_name (pac_package_variant_name.to_bounded_string (variant_name)));
 
 
 	-- function to_string (

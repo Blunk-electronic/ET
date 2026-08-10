@@ -46,9 +46,7 @@ package body et_netlist_category is
 	function to_string (
 		category	: in type_netlist_category)
 		return string
-	is begin
-		return type_netlist_category'image (category);
-	end to_string;
+	is (type_netlist_category'image (category));
 
 
 

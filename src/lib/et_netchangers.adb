@@ -51,18 +51,14 @@ package body et_netchangers is
 	function to_netchanger_id (
 		id : in string)
 		return type_netchanger_id
-	is begin
-		return type_netchanger_id'value (id);
-	end to_netchanger_id;
+	is (type_netchanger_id'value (id));
 
 
 
 	function to_string (
 		id : in type_netchanger_id)
 		return string
-	is begin
-		return trim (type_netchanger_id'image (id), left);
-	end to_string;
+	is (trim (type_netchanger_id'image (id), left));
 
 
 
@@ -70,9 +66,7 @@ package body et_netchangers is
 	function get_netchanger_name (
 		id : in type_netchanger_id)
 		return string
-	is begin
-		return netchanger_prefix & to_string (id);
-	end get_netchanger_name;
+	is (netchanger_prefix & to_string (id));
 
 
 
@@ -95,17 +89,13 @@ package body et_netchangers is
 	function to_netchanger_direction (
 		direction : in string)
 		return type_netchanger_direction
-	is begin
-		return type_netchanger_direction'value (direction);
-	end to_netchanger_direction;
+	is (type_netchanger_direction'value (direction));
 
 
 	function to_string (
 		direction : in type_netchanger_direction)
 		return string
-	is begin
-		return type_netchanger_direction'image (direction);
-	end to_string;
+	is (type_netchanger_direction'image (direction));
 
 
 
@@ -132,18 +122,14 @@ package body et_netchangers is
 	function get_netchanger_name (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return string
-	is begin
-		return get_netchanger_name (key (netchanger_cursor));
-	end get_netchanger_name;
+	is (get_netchanger_name (key (netchanger_cursor)));
 
 
 
 	function get_netchanger_id (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_id
-	is begin
-		return key (netchanger_cursor);
-	end get_netchanger_id;
+	is (key (netchanger_cursor));
 
 
 
@@ -151,9 +137,7 @@ package body et_netchangers is
 		netchangers : in pac_netchangers.map;
 		index		: in type_netchanger_id)
 		return pac_netchangers.cursor
-	is begin
-		return netchangers.find (index);
-	end get_netchanger;
+	is (netchangers.find (index));
 
 
 

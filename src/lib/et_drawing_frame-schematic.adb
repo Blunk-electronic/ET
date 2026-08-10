@@ -161,15 +161,15 @@ package body et_drawing_frame.schematic is
 
 
 
-	function to_string (cat : in type_schematic_sheet_category) return string is begin
-		return type_schematic_sheet_category'image (cat);
-	end to_string;
+	function to_string (cat : in type_schematic_sheet_category)
+		return string
+	is (type_schematic_sheet_category'image (cat));
 
 
 
-	function to_category (cat : in string) return type_schematic_sheet_category is begin
-		return type_schematic_sheet_category'value (cat);
-	end to_category;
+	function to_category (cat : in string)
+		return type_schematic_sheet_category
+	is (type_schematic_sheet_category'value (cat));
 
 
 
@@ -177,9 +177,7 @@ package body et_drawing_frame.schematic is
 	function get_sheet_count (
 		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet
-	is begin
-		return type_sheet (descriptions.length);
-	end get_sheet_count;
+	is (type_sheet (descriptions.length));
 
 
 

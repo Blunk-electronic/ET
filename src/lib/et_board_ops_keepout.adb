@@ -786,9 +786,7 @@ package body et_board_ops_keepout is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

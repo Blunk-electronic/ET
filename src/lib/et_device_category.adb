@@ -46,10 +46,9 @@ package body et_device_category is
 
 
 
-	function to_string (cat : in type_device_category) return string is
-	begin
-		return " " & type_device_category'image (cat);
-	end to_string;
+	function to_string (cat : in type_device_category)
+		return string
+	is (" " & type_device_category'image (cat));
 
 
 

@@ -72,12 +72,11 @@ package body et_device_renumbering is
 
 	function to_index_range (
 		module_name	: in type_module_name;
-		index_range	: in type_index_range) return string is
-	begin
-		return ("module " & enclose_in_quotes (to_string (module_name)) &
+		index_range	: in type_index_range)
+		return string
+	is (("module " & enclose_in_quotes (to_string (module_name)) &
 			" range" & to_string (index_range.lowest) &
-			" .." & to_string (index_range.highest));
-	end to_index_range;
+			" .." & to_string (index_range.highest)));
 
 
 
@@ -122,17 +121,13 @@ package body et_device_renumbering is
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
 		return count_type
-	is begin
-		return modules.node_count;
-	end get_module_count;
+	is (modules.node_count);
 
 
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
 		return string
-	is begin
-		return count_type'image (modules.node_count);
-	end get_module_count;
+	is (count_type'image (modules.node_count));
 
 
 

@@ -73,16 +73,12 @@ package body et_text_vectorized is
 
 		function get_position (text : in type_text_fab)
 			return pac_geometry.type_position
-		is begin
-			return text.position;
-		end get_position;
+		is (text.position);
 
 
 		function get_place (text : in type_text_fab)
 			return type_vector_model
-		is begin
-			return text.position.place;
-		end get_place;
+		is (text.position.place);
 
 
 		procedure set_place (
@@ -96,9 +92,7 @@ package body et_text_vectorized is
 
 		function get_rotation (text : in type_text_fab)
 			return type_rotation
-		is begin
-			return text.position.rotation;
-		end get_rotation;
+		is (text.position.rotation);
 
 
 		function to_string (
@@ -641,9 +635,7 @@ package body et_text_vectorized is
 		function first (
 			text	: in type_vector_text)
 			return pac_character_lines.cursor
-		is begin
-			return text.lines.first;
-		end first;
+		is (text.lines.first);
 
 
 		procedure iterate (
@@ -664,25 +656,19 @@ package body et_text_vectorized is
 		function get_lines (
 			text	: in type_vector_text)
 			return pac_character_lines.list
-		is begin
-			return text.lines;
-		end get_lines;
+		is (text.lines);
 
 
 		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list
-		is begin
-			return text.borders;
-		end get_borders;
+		is (text.borders);
 
 
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive
-		is begin
-			return text.width;
-		end get_linewidth;
+		is (text.width);
 
 
 		procedure mirror_vector_text (

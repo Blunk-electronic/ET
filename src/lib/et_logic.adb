@@ -46,13 +46,13 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_logic is
 
 
-	function to_string (inverted : in type_output_inverted) return string is begin
-		return to_lower (type_output_inverted'image (inverted));
-	end to_string;
+	function to_string (inverted : in type_output_inverted)
+		return string
+	is (to_lower (type_output_inverted'image (inverted)));
 
-	function to_output_inverted (inverted : in string) return type_output_inverted is begin
-		return type_output_inverted'value (inverted);
-	end to_output_inverted;
+	function to_output_inverted (inverted : in string)
+		return type_output_inverted
+	is (type_output_inverted'value (inverted));
 
 
 

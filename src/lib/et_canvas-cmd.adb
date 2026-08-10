@@ -63,9 +63,7 @@ package body et_canvas.cmd is
 	function to_string (
 		noun : in type_canvas_noun)
 		return string
-	is begin
-		return type_canvas_noun'image (noun);
-	end to_string;
+	is (type_canvas_noun'image (noun));
 
 
 
@@ -100,9 +98,7 @@ package body et_canvas.cmd is
 
 		function get_field (place : in type_field_count)
 			return string
-		is begin
-			return get_field (cmd, place);
-		end get_field;
+		is (get_field (cmd, place));
 
 
 

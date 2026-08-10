@@ -49,9 +49,7 @@ package body et_nets is
 	function to_string (
 		net_count : in type_net_count)
 		return string
-	is begin
-		return type_net_count'image (net_count);
-	end to_string;
+	is (type_net_count'image (net_count));
 
 
 
@@ -59,18 +57,14 @@ package body et_nets is
 	function get_class_name (
 		net : in type_net)
 		return type_net_class_name
-	is begin
-		return net.class;
-	end get_class_name;
+	is (net.class);
 
 
 
 	function get_class_name (
 		net : in type_net)
 		return string
-	is begin
-		return to_string (net.class);
-	end get_class_name;
+	is (to_string (net.class));
 
 
 
@@ -79,9 +73,7 @@ package body et_nets is
 	function get_net_scope (
 		net : in type_net)
 		return type_net_scope
-	is begin
-		return net.scope;
-	end get_net_scope;
+	is (net.scope);
 
 
 
@@ -612,17 +604,13 @@ package body et_nets is
 	function is_proposed (
 		net : in pac_nets.cursor)
 		return boolean
-	is begin
-		return is_proposed (element (net));
-	end is_proposed;
+	is (is_proposed (element (net)));
 
 
 	function is_selected (
 		net : in pac_nets.cursor)
 		return boolean
-	is begin
-		return is_selected (element (net));
-	end is_selected;
+	is (is_selected (element (net)));
 
 
 
@@ -633,9 +621,7 @@ package body et_nets is
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return type_net_name
-	is begin
-		return key (net_cursor);
-	end get_net_name;
+	is (key (net_cursor));
 
 
 
@@ -644,9 +630,7 @@ package body et_nets is
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return string
-	is begin
-		return to_string (key (net_cursor));
-	end get_net_name;
+	is (to_string (key (net_cursor)));
 
 
 
@@ -760,9 +744,7 @@ package body et_nets is
 	function has_strands (
 		net : in pac_nets.cursor)
 		return boolean
-	is begin
-		return has_strands (element (net));
-	end has_strands;
+	is (has_strands (element (net)));
 
 
 
@@ -857,9 +839,7 @@ package body et_nets is
 	function get_netchanger_ports (
 		net_cursor	: in pac_nets.cursor)
 		return pac_netchanger_ports.set
-	is begin
-		return get_net_ports (net_cursor).netchangers;
-	end get_netchanger_ports;
+	is (get_net_ports (net_cursor).netchangers);
 
 
 
@@ -869,9 +849,7 @@ package body et_nets is
 	function get_net_name (
 		object	: in type_object_segment)
 		return type_net_name
-	is begin
-		return key (object.net_cursor);
-	end get_net_name;
+	is (key (object.net_cursor));
 
 
 
@@ -922,9 +900,7 @@ package body et_nets is
 	function get_net_name (
 		strand	: in type_object_strand)
 		return type_net_name
-	is begin
-		return key (strand.net_cursor);
-	end get_net_name;
+	is (key (strand.net_cursor));
 
 
 
@@ -932,10 +908,8 @@ package body et_nets is
 	function to_string (
 		object	: in type_object_strand)
 		return string
-	is begin
-		return "net " & get_net_name (object.net_cursor)
-			& " strand " & get_position (object.strand_cursor);
-	end to_string;
+	is ("net " & get_net_name (object.net_cursor)
+			& " strand " & get_position (object.strand_cursor));
 
 
 
@@ -944,9 +918,7 @@ package body et_nets is
 	function get_strand (
 		strand : in type_object_strand)
 		return type_strand
-	is begin
-		return element (strand.strand_cursor);
-	end get_strand;
+	is (element (strand.strand_cursor));
 
 
 
@@ -1019,9 +991,7 @@ package body et_nets is
 	function to_string (
 		object	: in type_object_net)
 		return string
-	is begin
-		return "net " & get_net_name (object.net_cursor);
-	end to_string;
+	is ("net " & get_net_name (object.net_cursor));
 
 
 

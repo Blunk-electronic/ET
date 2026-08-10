@@ -50,9 +50,7 @@ package body et_package_variant is
 	function get_first_package_variant (
 		variants : in pac_package_variants.map)
 		return type_package_variant_name
-	is begin
-		return key (variants.first);
-	end get_first_package_variant;
+	is (key (variants.first));
 
 
 
@@ -60,9 +58,7 @@ package body et_package_variant is
 	function get_variant_count (
 		variants : in pac_package_variants.map)
 		return natural
-	is begin
-		return natural (variants.length);
-	end get_variant_count;
+	is (natural (variants.length));
 
 
 

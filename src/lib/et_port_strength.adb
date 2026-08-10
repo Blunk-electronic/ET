@@ -46,23 +46,23 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_port_strength is
 
 
-	function to_string (weakness : in type_output_weakness) return string is begin
-		return to_lower (type_output_weakness'image (weakness));
-	end to_string;
+	function to_string (weakness : in type_output_weakness)
+		return string
+	is (to_lower (type_output_weakness'image (weakness)));
 
-	function to_output_weakness (weakness : in string) return type_output_weakness is begin
-		return type_output_weakness'value (weakness);
-	end to_output_weakness;
+	function to_output_weakness (weakness : in string)
+		return type_output_weakness
+	is (type_output_weakness'value (weakness));
 
 
 
-	function to_string (tristate : in type_output_tristate) return string is begin
-		return to_lower (type_output_tristate'image (tristate));
-	end to_string;
+	function to_string (tristate : in type_output_tristate)
+		return string
+	is (to_lower (type_output_tristate'image (tristate)));
 
-	function to_output_tristate (tristate : in string) return type_output_tristate is begin
-		return type_output_tristate'value (tristate);
-	end to_output_tristate;
+	function to_output_tristate (tristate : in string)
+		return type_output_tristate
+	is (type_output_tristate'value (tristate));
 
 
 

@@ -57,10 +57,9 @@ package body et_generic_stacks is
 			return s (top + 1);
 		end pop;
 
-		function depth return natural is
-		begin
-			return top;
-		end depth;
+		function depth
+			return natural
+		is (top);
 
 		procedure init is
 		begin

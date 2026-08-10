@@ -57,10 +57,9 @@ package body et_kicad_general is
 		return type_library_name.to_string (library_name);
 	end to_string;
 
-	function to_string (dir : in type_library_directory.bounded_string) return string is
-	begin
-		return type_library_directory.to_string (dir);
-	end to_string;
+	function to_string (dir : in type_library_directory.bounded_string)
+		return string
+	is (type_library_directory.to_string (dir));
 
 
 end et_kicad_general;

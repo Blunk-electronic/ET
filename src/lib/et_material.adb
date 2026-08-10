@@ -51,14 +51,14 @@ with et_csv;					use et_csv;
 
 package body et_material is
 
-	function to_string (name : in type_file_name.bounded_string) return string is begin
-		return type_file_name.to_string (name);
-	end to_string;
+	function to_string (name : in type_file_name.bounded_string)
+		return string
+	is (type_file_name.to_string (name));
 
 
-	function to_file_name (name : in string) return type_file_name.bounded_string is begin
-		return type_file_name.to_bounded_string (name);
-	end to_file_name;
+	function to_file_name (name : in string)
+		return type_file_name.bounded_string
+	is (type_file_name.to_bounded_string (name));
 
 
 	procedure write_bom (

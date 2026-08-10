@@ -146,9 +146,7 @@ package body et_device_model is
 	function get_first_package_variant (
 		device_model : in type_device_model)
 		return type_package_variant_name
-	is begin
-		return get_first_package_variant (device_model.variants);
-	end get_first_package_variant;
+	is (get_first_package_variant (device_model.variants));
 
 
 

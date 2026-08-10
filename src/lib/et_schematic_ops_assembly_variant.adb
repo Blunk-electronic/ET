@@ -100,9 +100,7 @@ package body et_schematic_ops_assembly_variant is
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_assembly_variant_name
-	is begin
-		return element (module_cursor).assembly_variants.active;
-	end get_active_assembly_variant;
+	is (element (module_cursor).assembly_variants.active);
 
 
 

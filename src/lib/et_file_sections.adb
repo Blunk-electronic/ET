@@ -70,9 +70,9 @@ package body et_file_sections is
 		return "missing section begin or section end after section name !";
 	end write_missing_begin_end;
 
-	function write_section_stack_not_empty return string is begin
-		return "section stack not empty !";
-	end write_section_stack_not_empty;
+	function write_section_stack_not_empty
+		return string
+	is ("section stack not empty !");
 
 	procedure invalid_section is begin
 		log (SEVERITY_ERROR, "invalid section name !", console => true);
@@ -108,10 +108,9 @@ package body et_file_sections is
 			return s (top + 1);
 		end pop;
 
-		function depth return natural is
-		begin
-			return top;
-		end depth;
+		function depth
+			return natural
+		is (top);
 
 		procedure init is
 		begin
@@ -125,10 +124,9 @@ package body et_file_sections is
 			end if;
 		end empty;
 
-		function current return item is
-		begin
-			return s (top);
-		end current;
+		function current
+			return item
+		is (s (top));
 
 		function parent (degree : in natural := 1) return item is
 		begin

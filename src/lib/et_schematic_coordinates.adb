@@ -305,9 +305,7 @@ package body et_schematic_coordinates is
 	function get_rotation (
 		position : in type_object_position)
 		return type_rotation_model
-	is begin
-		return position.rotation;
-	end get_rotation;
+	is (position.rotation);
 
 
 
@@ -326,9 +324,7 @@ package body et_schematic_coordinates is
 	function get_sheet (
 		position : in type_object_position)
 		return type_sheet
-	is begin
-		return position.sheet;
-	end get_sheet;
+	is (position.sheet);
 
 
 

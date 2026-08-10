@@ -54,13 +54,13 @@ with et_pcb_sides;				use et_pcb_sides;
 
 package body et_pick_and_place is
 
-	function to_string (name : in type_pnp_file_name) return string is begin
-		return pac_pnp_file_name.to_string (pac_pnp_file_name.bounded_string (name));
-	end to_string;
+	function to_string (name : in type_pnp_file_name)
+		return string
+	is (pac_pnp_file_name.to_string (pac_pnp_file_name.bounded_string (name)));
 
-	function to_file_name (name : in string) return type_pnp_file_name is begin
-		return type_pnp_file_name (pac_pnp_file_name.to_bounded_string (name));
-	end to_file_name;
+	function to_file_name (name : in string)
+		return type_pnp_file_name
+	is (type_pnp_file_name (pac_pnp_file_name.to_bounded_string (name)));
 
 
 	procedure write_pnp (

@@ -71,9 +71,7 @@ package body et_pcb_placeholders.non_conductor is
 	function get_meaning (
 		placeholder : in type_placeholder_non_conductor)
 		return type_placeholder_meaning_non_conductor
-	is begin
-		return placeholder.meaning;
-	end get_meaning;
+	is (placeholder.meaning);
 
 
 
@@ -99,9 +97,7 @@ package body et_pcb_placeholders.non_conductor is
 	function to_string (
 		placeholder : in pac_placeholders_non_conductor.cursor)
 		return string
-	is begin
-		return to_string (element (placeholder));
-	end to_string;
+	is (to_string (element (placeholder)));
 
 
 

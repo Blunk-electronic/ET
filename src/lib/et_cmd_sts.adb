@@ -49,9 +49,7 @@ package body et_cmd_sts is
 	function to_string (
 		origin : in type_cmd_origin)
 		return string
-	is begin
-		return type_cmd_origin'image (origin);
-	end to_string;
+	is (type_cmd_origin'image (origin));
 
 
 
@@ -68,18 +66,14 @@ package body et_cmd_sts is
 	function get_origin (
 		cmd		: in type_single_cmd)
 		return type_cmd_origin
-	is begin
-		return cmd.origin;
-	end get_origin;
+	is (cmd.origin);
 
 
 
 	function get_origin (
 		cmd		: in type_single_cmd)
 		return string
-	is begin
-		return to_string (cmd.origin);
-	end get_origin;
+	is (to_string (cmd.origin));
 
 
 
@@ -103,18 +97,14 @@ package body et_cmd_sts is
 	function get_line_number (
 		cmd		: in type_single_cmd)
 		return positive
-	is begin
-		return get_line_number (cmd.fields);
-	end get_line_number;
+	is (get_line_number (cmd.fields));
 
 
 
 	function get_line_number (
 		cmd		: in type_single_cmd)
 		return string
-	is begin
-		return "line" & positive'image (get_line_number (cmd.fields)) & ": ";
-	end get_line_number;
+	is ("line" & positive'image (get_line_number (cmd.fields)) & ": ");
 
 
 
@@ -133,9 +123,7 @@ package body et_cmd_sts is
 		cmd		: in type_single_cmd;
 		place	: in type_field_count)
 		return string
-	is begin
-		return get_field (cmd.fields, place);
-	end get_field;
+	is (get_field (cmd.fields, place));
 
 
 
@@ -143,9 +131,7 @@ package body et_cmd_sts is
 	function get_fields (
 		cmd		: in type_single_cmd)
 		return type_fields_of_line
-	is begin
-		return cmd.fields;
-	end get_fields;
+	is (cmd.fields);
 
 
 
@@ -153,9 +139,7 @@ package body et_cmd_sts is
 	function get_all_fields (
 		cmd		: in type_single_cmd)
 		return string
-	is begin
-		return to_string (cmd.fields);
-	end get_all_fields;
+	is (to_string (cmd.fields));
 
 
 
@@ -163,9 +147,7 @@ package body et_cmd_sts is
 	function get_field_count (
 		cmd		: in type_single_cmd)
 		return natural
-	is begin
-		return natural (get_field_count (cmd.fields));
-	end get_field_count;
+	is (natural (get_field_count (cmd.fields)));
 
 
 
@@ -173,9 +155,7 @@ package body et_cmd_sts is
 	function is_complete (
 		cmd		: in type_single_cmd)
 		return boolean
-	is begin
-		return cmd.complete;
-	end is_complete;
+	is (cmd.complete);
 
 
 
@@ -197,9 +177,7 @@ package body et_cmd_sts is
 	function finalization_is_pending (
 		cmd		: in type_single_cmd)
 		return boolean
-	is begin
-		return cmd.finalization_pending;
-	end finalization_is_pending;
+	is (cmd.finalization_pending);
 
 
 
@@ -214,18 +192,14 @@ package body et_cmd_sts is
 	function to_string (
 		exit_code : in type_exit_code_command)
 		return string
-	is begin
-		return type_exit_code_command'image (exit_code);
-	end to_string;
+	is (type_exit_code_command'image (exit_code));
 
 
 
 	function get_exit_code (
 		cmd		: in type_single_cmd)
 		return type_exit_code_command
-	is begin
-		return cmd.exit_code;
-	end get_exit_code;
+	is (cmd.exit_code);
 
 
 

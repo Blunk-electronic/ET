@@ -400,10 +400,8 @@ package body et_kicad.schematic is
 
 	-- Returns the component reference where cursor points to.
 	function component_reference (cursor : in type_components_schematic.cursor)
-		return type_device_name is
-	begin
-		return type_components_schematic.key (cursor);
-	end component_reference;
+		return type_device_name
+	is (type_components_schematic.key (cursor));
 
 
 
@@ -458,10 +456,9 @@ package body et_kicad.schematic is
 	-- Returns the position of the given no-connection-flag as string.
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in et_kicad_coordinates.type_scope) return string is
-	begin
-		return (to_string (position => no_connection_flag.coordinates, scope => scope));
-	end to_string;
+		scope				: in et_kicad_coordinates.type_scope)
+		return string
+	is ((to_string (position => no_connection_flag.coordinates, scope => scope)));
 
 
 
@@ -589,10 +586,9 @@ package body et_kicad.schematic is
 	end library_name;
 
 
-	function to_string (dir : in type_library_directory.bounded_string) return string is
-	begin
-		return type_library_directory.to_string (dir);
-	end to_string;
+	function to_string (dir : in type_library_directory.bounded_string)
+		return string
+	is (type_library_directory.to_string (dir));
 
 
 
@@ -2505,17 +2501,17 @@ package body et_kicad.schematic is
 						--return type_keyword'image (section);
 					end to_string;
 
-					function enter_section (section : in type_keyword) return string is begin
-						return ("entering section " & to_string (section));
-					end enter_section;
+					function enter_section (section : in type_keyword)
+						return string
+					is (("entering section " & to_string (section)));
 
-					function return_to_section (section : in type_keyword) return string is begin
-						return ("returning to section " & to_string (section));
-					end return_to_section;
+					function return_to_section (section : in type_keyword)
+						return string
+					is (("returning to section " & to_string (section)));
 
-					function process_section (section : in type_keyword) return string is begin
-						return ("processing section " & to_string (section));
-					end process_section;
+					function process_section (section : in type_keyword)
+						return string
+					is (("processing section " & to_string (section)));
 
 					-- TEMPORARILY STORAGE PLACES
 
@@ -4984,12 +4980,11 @@ package body et_kicad.schematic is
 						use et_erc;
 
 
-						function unit_not_deployed return string is
-						begin
-							return to_string (key (component_sch))
+						function unit_not_deployed
+							return string
+						is (to_string (key (component_sch))
 								& " unit " & to_string (key (unit))
-								& " not deployed !";
-						end unit_not_deployed;
+								& " not deployed !");
 
 
 					begin
@@ -6325,13 +6320,13 @@ package body et_kicad.schematic is
 
 
 
-	function to_string (appearance : in type_net_label_appearance) return string is begin
-		return to_lower (type_net_label_appearance'image (appearance));
-	end to_string;
+	function to_string (appearance : in type_net_label_appearance)
+		return string
+	is (to_lower (type_net_label_appearance'image (appearance)));
 
-	function to_appearance (appearance : in string) return type_net_label_appearance is begin
-		return type_net_label_appearance'value (appearance);
-	end to_appearance;
+	function to_appearance (appearance : in string)
+		return type_net_label_appearance
+	is (type_net_label_appearance'value (appearance));
 
 
 
@@ -6400,10 +6395,8 @@ package body et_kicad.schematic is
 	function to_string (
 		junction	: in type_net_junction;
 		scope		: in et_kicad_coordinates.type_scope)
-		return string is
-	begin
-		return (to_string (position => junction.coordinates, scope => scope));
-	end to_string;
+		return string
+	is ((to_string (position => junction.coordinates, scope => scope)));
 
 
 
@@ -6492,14 +6485,14 @@ package body et_kicad.schematic is
 				ic_count		: natural := 0;
 				others_count	: natural := 0;
 
-				function sum_connectives return natural is begin
-					return connector_count + testpoint_count + jumper_count + switch_count;
-				end sum_connectives;
+				function sum_connectives
+					return natural
+				is (connector_count + testpoint_count + jumper_count + switch_count);
 				pragma unreferenced (sum_connectives);
 
-				function sum_drivers return natural is begin
-					return output_count + bidir_count + weak0_count + weak1_count;
-				end sum_drivers;
+				function sum_drivers
+					return natural
+				is (output_count + bidir_count + weak0_count + weak1_count);
 
 				procedure increment (count : in out natural) is
 				begin count := count + 1; end increment;

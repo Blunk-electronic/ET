@@ -54,27 +54,21 @@ package body et_generic_modules is
 	function get_module_name (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_module_name
-	is begin
-		return key (module_cursor);
-	end get_module_name;
+	is (key (module_cursor));
 
 
 
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean
-	is begin
-		return schematic_rules_assigned (module.rules);
-	end design_rules_schematic_assigned;
+	is (schematic_rules_assigned (module.rules));
 	pragma unreferenced (design_rules_schematic_assigned);
 
 
 	function design_rules_board_assigned (
 		module : in type_generic_module)
 		return boolean
-	is begin
-		return board_rules_assigned (module.rules);
-	end design_rules_board_assigned;
+	is (board_rules_assigned (module.rules));
 
 
 
@@ -84,9 +78,7 @@ package body et_generic_modules is
 	function get_grid_schematic (
 		module : in type_generic_module)
 		return et_schematic_geometry.pac_grid.type_grid
-	is begin
-		return module.grid;
-	end get_grid_schematic;
+	is (module.grid);
 	pragma unreferenced (get_grid_schematic);
 
 
@@ -94,9 +86,7 @@ package body et_generic_modules is
 	function get_grid_board (
 		module : in type_generic_module)
 		return et_board_geometry.pac_grid.type_grid
-	is begin
-		return module.board.grid;
-	end get_grid_board;
+	is (module.board.grid);
 	pragma unreferenced (get_grid_board);
 
 
@@ -122,9 +112,7 @@ package body et_generic_modules is
 	function get_count (
 		modules : in pac_generic_modules.map)
 		return natural
-	is begin
-		return natural (length (modules));
-	end get_count;
+	is (natural (length (modules)));
 
 
 
@@ -138,9 +126,7 @@ package body et_generic_modules is
 	function generic_module_exists (
 		module : in type_module_name)
 		return boolean
-	is begin
-		return pac_generic_modules.contains (generic_modules, module);
-	end generic_module_exists;
+	is (pac_generic_modules.contains (generic_modules, module));
 
 
 
@@ -175,9 +161,7 @@ package body et_generic_modules is
 	function get_meta_information (
 		module : in pac_generic_modules.cursor)
 		return et_meta.type_meta
-	is begin
-		return element (module).meta;
-	end get_meta_information;
+	is (element (module).meta);
 
 
 

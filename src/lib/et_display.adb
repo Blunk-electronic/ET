@@ -42,13 +42,13 @@
 
 package body et_display is
 
-	function to_string (on_off : in type_layer_status) return string is begin
-		return type_layer_status'image (on_off);
-	end to_string;
+	function to_string (on_off : in type_layer_status)
+		return string
+	is (type_layer_status'image (on_off));
 
-	function to_layer_status (on_off : in string) return type_layer_status is begin
-		return type_layer_status'value (on_off);
-	end to_layer_status;
+	function to_layer_status (on_off : in string)
+		return type_layer_status
+	is (type_layer_status'value (on_off));
 
 end et_display;
 

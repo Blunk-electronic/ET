@@ -307,18 +307,14 @@ package body et_board_ops_netchangers is
 	function get_object_name (
 		object : in type_object_netchanger)
 		return string
-	is begin
-		return get_netchanger_name (object.netchanger_cursor);
-	end get_object_name;
+	is (get_netchanger_name (object.netchanger_cursor));
 
 
 
 	function get_object_id (
 		object : in type_object_netchanger)
 		return type_netchanger_id
-	is begin
-		return get_netchanger_id (object.netchanger_cursor);
-	end get_object_id;
+	is (get_netchanger_id (object.netchanger_cursor));
 
 
 
@@ -601,9 +597,7 @@ package body et_board_ops_netchangers is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

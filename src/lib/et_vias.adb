@@ -45,25 +45,25 @@ with et_exceptions;					use et_exceptions;
 package body et_vias is
 
 
-	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed is begin
-		return type_micro_vias_allowed'value (allowed);
-	end to_micro_vias_allowed;
+	function to_micro_vias_allowed (allowed : in string)
+		return type_micro_vias_allowed
+	is (type_micro_vias_allowed'value (allowed));
 
 
-	function to_string (allowed : in type_micro_vias_allowed) return string is begin
-		return " micro vias allowed " & type_micro_vias_allowed'image (allowed);
-	end to_string;
+	function to_string (allowed : in type_micro_vias_allowed)
+		return string
+	is (" micro vias allowed " & type_micro_vias_allowed'image (allowed));
 
 
 
-	function to_string (category : in type_via_category) return string is begin
-		return type_via_category'image (category);
-	end to_string;
+	function to_string (category : in type_via_category)
+		return string
+	is (type_via_category'image (category));
 
 
-	function to_via_category (category : in string) return type_via_category is begin
-		return type_via_category'value (category);
-	end to_via_category;
+	function to_via_category (category : in string)
+		return type_via_category
+	is (type_via_category'value (category));
 
 
 
@@ -157,18 +157,14 @@ package body et_vias is
 	function to_string (
 		via : in pac_vias.cursor)
 		return string
-	is begin
-		return to_string (element (via).position);
-	end to_string;
+	is (to_string (element (via).position));
 
 
 
 	function get_position (
 		via : in pac_vias.cursor)
 		return type_vector_model
-	is begin
-		return get_position (element (via));
-	end get_position;
+	is (get_position (element (via)));
 
 
 
@@ -176,25 +172,19 @@ package body et_vias is
 	function is_selected (
 		via : in pac_vias.cursor)
 		return boolean
-	is begin
-		return is_selected (element (via));
-	end is_selected;
+	is (is_selected (element (via)));
 
 
 	function is_proposed (
 		via : in pac_vias.cursor)
 		return boolean
-	is begin
-		return is_proposed (element (via));
-	end is_proposed;
+	is (is_proposed (element (via)));
 
 
 	function is_moving (
 		via : in pac_vias.cursor)
 		return boolean
-	is begin
-		return is_moving (element (via));
-	end is_moving;
+	is (is_moving (element (via)));
 
 
 
@@ -283,10 +273,9 @@ package body et_vias is
 
 
 
-	function to_string (layers : in type_buried_layers) return string is
-	begin
-		return to_string (layers.upper) & space & to_string (layers.lower);
-	end to_string;
+	function to_string (layers : in type_buried_layers)
+		return string
+	is (to_string (layers.upper) & space & to_string (layers.lower));
 
 
 

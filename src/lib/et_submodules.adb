@@ -49,12 +49,12 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 
 package body et_submodules is
 
-	function to_submodule_size (size : in type_submodule_size) return string is begin
-		return " size (x/y)" &
+	function to_submodule_size (size : in type_submodule_size)
+		return string
+	is (" size (x/y)" &
 			to_string (size.x) &
 			axis_separator &
-			to_string (size.y);
-	end to_submodule_size;
+			to_string (size.y));
 
 
 
@@ -103,16 +103,16 @@ package body et_submodules is
 
 
 
-	function to_submodule_path (path : in string) return type_submodule_path is begin
-		return type_submodule_path (pac_submodule_path.to_bounded_string (path));
-	end to_submodule_path;
+	function to_submodule_path (path : in string)
+		return type_submodule_path
+	is (type_submodule_path (pac_submodule_path.to_bounded_string (path)));
 
 
 
 
-	function to_string (path : in type_submodule_path) return string is begin
-		return pac_submodule_path.to_string (pac_submodule_path.bounded_string (path));
-	end to_string;
+	function to_string (path : in type_submodule_path)
+		return string
+	is (pac_submodule_path.to_string (pac_submodule_path.bounded_string (path)));
 
 
 
@@ -164,25 +164,23 @@ package body et_submodules is
 
 
 
-	function to_string (view : in type_submodule_view_mode) return string is begin
-		return to_lower (type_submodule_view_mode'image (view));
-	end to_string;
+	function to_string (view : in type_submodule_view_mode)
+		return string
+	is (to_lower (type_submodule_view_mode'image (view)));
 
 
 
 
-	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
-		return type_submodule_view_mode'value (mode);
-	end to_view_mode;
+	function to_view_mode (mode : in string)
+		return type_submodule_view_mode
+	is (type_submodule_view_mode'value (mode));
 
 
 
 	function get_count (
 		submodules : in pac_submodules.map)
 		return natural
-	is begin
-		return natural (submodules.length);
-	end get_count;
+	is (natural (submodules.length));
 
 
 

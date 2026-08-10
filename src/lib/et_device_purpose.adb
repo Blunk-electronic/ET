@@ -46,9 +46,9 @@ with et_exceptions;				use et_exceptions;
 
 package body et_device_purpose is
 
-	function to_string (purpose : in type_device_purpose) return string is begin
-		return pac_device_purpose.to_string (pac_device_purpose.bounded_string (purpose));
-	end to_string;
+	function to_string (purpose : in type_device_purpose)
+		return string
+	is (pac_device_purpose.to_string (pac_device_purpose.bounded_string (purpose)));
 
 
 
@@ -68,9 +68,7 @@ package body et_device_purpose is
 	function get_length (
 		purpose : in type_device_purpose)
 		return natural
-	is begin
-		return natural (length (pac_device_purpose.bounded_string (purpose)));
-	end get_length;
+	is (natural (length (pac_device_purpose.bounded_string (purpose))));
 
 
 

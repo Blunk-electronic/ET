@@ -51,17 +51,13 @@ package body et_symbol_shapes is
 	function get_A (
 		line : in pac_symbol_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (line));
-	end get_A;
+	is (get_A (element (line)));
 
 
 	function get_B (
 		line : in pac_symbol_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (line));
-	end get_B;
+	is (get_B (element (line)));
 
 
 
@@ -79,33 +75,25 @@ package body et_symbol_shapes is
 	function get_A (
 		arc : in pac_symbol_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (arc));
-	end get_A;
+	is (get_A (element (arc)));
 
 
 	function get_B (
 		arc : in pac_symbol_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (arc));
-	end get_B;
+	is (get_B (element (arc)));
 
 
 	function get_center (
 		arc : in pac_symbol_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_center (element (arc));
-	end get_center;
+	is (get_center (element (arc)));
 
 
 	function get_direction (
 		arc : in pac_symbol_arcs.cursor)
 		return type_direction_of_rotation
-	is begin
-		return get_direction (element (arc));
-	end get_direction;
+	is (get_direction (element (arc)));
 
 
 
@@ -124,13 +112,13 @@ package body et_symbol_shapes is
 
 
 
-	function to_string (filled : in type_circle_filled) return string is begin
-		return to_lower (type_circle_filled'image (filled));
-	end to_string;
+	function to_string (filled : in type_circle_filled)
+		return string
+	is (to_lower (type_circle_filled'image (filled)));
 
-	function to_circle_filled (filled : in string) return type_circle_filled is begin
-		return type_circle_filled'value (filled);
-	end to_circle_filled;
+	function to_circle_filled (filled : in string)
+		return type_circle_filled
+	is (type_circle_filled'value (filled));
 
 
 

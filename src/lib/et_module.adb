@@ -51,17 +51,13 @@ package body et_module is
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)
 		return pac_library_paths_schematic.list
-	is begin
-		return get_device_libraries (module.meta.schematic);
-	end get_preferred_device_libraries_schematic;
+	is (get_device_libraries (module.meta.schematic));
 
 
 	function get_preferred_device_libraries_board (
 		module : in type_generic_module)
 		return pac_library_paths_board.list
-	is begin
-		return get_device_libraries (module.meta.board);
-	end get_preferred_device_libraries_board;
+	is (get_device_libraries (module.meta.board));
 
 
 
@@ -70,9 +66,7 @@ package body et_module is
 	function get_design_rules (
 		module : in type_generic_module)
 		return type_design_rules
-	is begin
-		return module.rules;
-	end get_design_rules;
+	is (module.rules);
 
 
 
@@ -80,17 +74,13 @@ package body et_module is
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean
-	is begin
-		return schematic_rules_assigned (module.rules);
-	end design_rules_schematic_assigned;
+	is (schematic_rules_assigned (module.rules));
 
 
 	function design_rules_board_assigned (
 		module : in type_generic_module)
 		return boolean
-	is begin
-		return board_rules_assigned (module.rules);
-	end design_rules_board_assigned;
+	is (board_rules_assigned (module.rules));
 
 
 
@@ -100,18 +90,14 @@ package body et_module is
 	function get_grid_schematic (
 		module : in type_generic_module)
 		return et_schematic_geometry.pac_grid.type_grid
-	is begin
-		return module.grid;
-	end get_grid_schematic;
+	is (module.grid);
 
 
 
 	function get_grid_board (
 		module : in type_generic_module)
 		return et_board_geometry.pac_grid.type_grid
-	is begin
-		return module.board.grid;
-	end get_grid_board;
+	is (module.board.grid);
 
 
 
@@ -120,27 +106,21 @@ package body et_module is
 		module	: in type_generic_module;
 		variant	: in type_assembly_variant_name)
 		return boolean
-	is begin
-		return variant_exists (module.assembly_variants, variant);
-	end variant_exists;
+	is (variant_exists (module.assembly_variants, variant));
 
 
 
 	function get_active_variant (
 		module	: in type_generic_module)
 		return type_assembly_variant_name
-	is begin
-		return module.assembly_variants.active;
-	end get_active_variant;
+	is (module.assembly_variants.active);
 
 
 
 	function get_variant_count (
 		module	: in type_generic_module)
 		return natural
-	is begin
-		return get_count (module.assembly_variants);
-	end get_variant_count;
+	is (get_count (module.assembly_variants));
 
 end et_module;
 

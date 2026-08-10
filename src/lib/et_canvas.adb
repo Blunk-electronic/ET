@@ -56,9 +56,7 @@ package body et_canvas is
 	function to_string (
 		zf : in type_zoom_factor)
 		return string
-	is begin
-		return type_zoom_factor'image (zf);
-	end to_string;
+	is (type_zoom_factor'image (zf));
 
 
 
@@ -141,17 +139,13 @@ package body et_canvas is
 	function to_distance (
 		d : in type_distance_positive)
 		return type_logical_pixels_positive
-	is begin
-		return type_logical_pixels (d) * type_logical_pixels (S);
-	end to_distance;
+	is (type_logical_pixels (d) * type_logical_pixels (S));
 
 
 	function to_distance (
 		d : in type_logical_pixels_positive)
 		return type_distance_positive
-	is begin
-		return type_distance_positive (d / type_logical_pixels (S));
-	end to_distance;
+	is (type_distance_positive (d / type_logical_pixels (S)));
 
 
 
@@ -955,9 +949,7 @@ package body et_canvas is
 
 	function get_group_offset
 		return type_vector_model
-	is begin
-		return get_object_tool_position - object_point_of_attack;
-	end get_group_offset;
+	is (get_object_tool_position - object_point_of_attack);
 
 
 
@@ -2736,11 +2728,9 @@ package body et_canvas is
 
 
 
-	function get_cursor_position return
-		type_vector_model
-	is begin
-		return cursor.position;
-	end get_cursor_position;
+	function get_cursor_position
+		return type_vector_model
+	is (cursor.position);
 
 
 	-- function get_mouse_position;
@@ -2960,9 +2950,7 @@ package body et_canvas is
 	function to_reality (
 		d : in type_distance)
 		return type_distance
-	is begin
-		return type_distance_positive (M) * d;
-	end to_reality;
+	is (type_distance_positive (M) * d);
 
 
 	procedure to_reality (
@@ -2976,9 +2964,7 @@ package body et_canvas is
 	function to_model (
 		d : in type_distance)
 		return type_distance
-	is begin
-		return type_distance_positive (1.0 / M) * d;
-	end to_model;
+	is (type_distance_positive (1.0 / M) * d);
 
 	procedure to_model (
 		d : in out type_distance)
@@ -2991,17 +2977,13 @@ package body et_canvas is
 	function to_reality (
 		v : in type_vector_model)
 		return type_vector_model
-	is begin
-		return (x => to_reality (v.x), y => to_reality (v.y));
-	end to_reality;
+	is ((x => to_reality (v.x), y => to_reality (v.y)));
 
 
 	function to_model (
 		v : in type_vector_model)
 		return type_vector_model
-	is begin
-		return (x => to_model (v.x), y => to_model (v.y));
-	end to_model;
+	is ((x => to_model (v.x), y => to_model (v.y)));
 
 
 
@@ -3819,9 +3801,9 @@ package body et_canvas is
 	end reset_request_clarification;
 
 
-	function clarification_pending return boolean is begin
-		return editing_process.request_clarificaton;
-	end clarification_pending;
+	function clarification_pending
+		return boolean
+	is (editing_process.request_clarificaton);
 
 
 
@@ -3844,9 +3826,9 @@ package body et_canvas is
 	end reset_edit_process_running;
 
 
-	function edit_process_running return boolean is begin
-		return editing_process.running;
-	end edit_process_running;
+	function edit_process_running
+		return boolean
+	is (editing_process.running);
 
 
 
@@ -3867,9 +3849,9 @@ package body et_canvas is
 	end reset_finalizing_granted;
 
 
-	function finalizing_granted return boolean is begin
-		return editing_process.finalizing_granted;
-	end finalizing_granted;
+	function finalizing_granted
+		return boolean
+	is (editing_process.finalizing_granted);
 
 
 
@@ -3895,9 +3877,9 @@ package body et_canvas is
 
 
 
-	function get_escape_counter return type_escape_count is begin
-		return editing_process.escape_counter;
-	end get_escape_counter;
+	function get_escape_counter
+		return type_escape_count
+	is (editing_process.escape_counter);
 
 
 
@@ -4762,9 +4744,7 @@ package body et_canvas is
 	function to_string (
 		event	: in type_mouse_event)
 		return string
-	is begin
-		return to_string (event.button) & " " & to_string (event.point);
-	end to_string;
+	is (to_string (event.button) & " " & to_string (event.point));
 
 
 

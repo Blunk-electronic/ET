@@ -58,10 +58,9 @@ package body et_package_name is
 
 
 
-	function to_package_name (package_name : in string) return type_package_name is
-	begin
-		return type_package_name (pac_package_name.to_bounded_string (package_name));
-	end to_package_name;
+	function to_package_name (package_name : in string)
+		return type_package_name
+	is (type_package_name (pac_package_name.to_bounded_string (package_name)));
 
 
 

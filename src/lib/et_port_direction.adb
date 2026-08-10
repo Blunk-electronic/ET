@@ -49,18 +49,14 @@ package body et_port_direction is
 	function to_string (
 		direction : in type_port_direction)
 		return string
-	is begin
-		return to_lower (type_port_direction'image (direction));
-	end to_string;
+	is (to_lower (type_port_direction'image (direction)));
 
 
 
 	function to_port_direction (
 		direction : in string)
 		return type_port_direction
-	is begin
-		return type_port_direction'value (direction);
-	end to_port_direction;
+	is (type_port_direction'value (direction));
 
 
 

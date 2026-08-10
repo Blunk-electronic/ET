@@ -631,9 +631,7 @@ package body et_schematic_ops_units is
 		device			: in type_device_name; -- R2
 		unit			: in type_unit_name)
 		return type_sheet
-	is begin
-		return get_sheet (get_position (module_cursor, device, unit));
-	end get_sheet;
+	is (get_sheet (get_position (module_cursor, device, unit)));
 
 
 
@@ -2953,36 +2951,28 @@ package body et_schematic_ops_units is
 	function get_device_name (
 		object	: in type_object_unit)
 		return string
-	is begin
-		return get_device_name (object.device_cursor);
-	end get_device_name;
+	is (get_device_name (object.device_cursor));
 
 
 
 	function get_device_name (
 		object	: in type_object_unit)
 		return type_device_name
-	is begin
-		return key (object.device_cursor);
-	end get_device_name;
+	is (key (object.device_cursor));
 
 
 
 	function get_unit_name (
 		object	: in type_object_unit)
 		return string
-	is begin
-		return get_unit_name (object.unit_cursor);
-	end get_unit_name;
+	is (get_unit_name (object.unit_cursor));
 
 
 
 	function get_unit_name (
 		object	: in type_object_unit)
 		return type_unit_name
-	is begin
-		return key (object.unit_cursor);
-	end get_unit_name;
+	is (key (object.unit_cursor));
 
 
 
@@ -2990,9 +2980,7 @@ package body et_schematic_ops_units is
 	function get_object_name (
 		object	: in type_object_unit)
 		return string
-	is begin
-		return get_full_name (object.device_cursor, object.unit_cursor);
-	end get_object_name;
+	is (get_full_name (object.device_cursor, object.unit_cursor));
 
 
 
@@ -4422,17 +4410,13 @@ package body et_schematic_ops_units is
 	function get_device_name (
 		object : in type_object_placeholder)
 		return type_device_name
-	is begin
-		return key (object.device_cursor);
-	end get_device_name;
+	is (key (object.device_cursor));
 
 
 	function get_unit_name (
 		object : in type_object_placeholder)
 		return type_unit_name
-	is begin
-		return key (object.unit_cursor);
-	end get_unit_name;
+	is (key (object.unit_cursor));
 
 
 
@@ -4440,18 +4424,14 @@ package body et_schematic_ops_units is
 	function get_object_name (
 		object	: in type_object_placeholder)
 		return string
-	is begin
-		return get_full_name (object.device_cursor, object.unit_cursor);
-	end get_object_name;
+	is (get_full_name (object.device_cursor, object.unit_cursor));
 
 
 
 	function get_meaning (
 		object : in type_object_placeholder)
 		return type_placeholder_meaning
-	is begin
-		return object.meaning;
-	end get_meaning;
+	is (object.meaning);
 
 
 
@@ -4459,26 +4439,20 @@ package body et_schematic_ops_units is
 	function get_device_name (
 		object : in type_object_placeholder)
 		return string
-	is begin
-		return get_device_name (object.device_cursor);
-	end get_device_name;
+	is (get_device_name (object.device_cursor));
 
 
 	function get_unit_name (
 		object : in type_object_placeholder)
 		return string
-	is begin
-		return to_string (object.unit_cursor);
-	end get_unit_name;
+	is (to_string (object.unit_cursor));
 
 
 
 	function get_meaning (
 		object : in type_object_placeholder)
 		return string
-	is begin
-		return to_string (object.meaning);
-	end get_meaning;
+	is (to_string (object.meaning));
 
 
 
@@ -4887,9 +4861,7 @@ package body et_schematic_ops_units is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

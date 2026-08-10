@@ -76,9 +76,7 @@ package body et_device_appearance is
 	function to_appearance (
 		appearance : in string)
 		return type_appearance
-	is begin
-		return type_appearance'value (appearance_prefix & appearance);
-	end to_appearance;
+	is (type_appearance'value (appearance_prefix & appearance));
 
 
 

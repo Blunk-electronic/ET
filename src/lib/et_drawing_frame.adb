@@ -45,39 +45,39 @@ with ada.characters.handling;	use ada.characters.handling;
 
 package body et_drawing_frame is
 
-	function to_paper_size (paper_size : in string) return type_paper_size is begin
-		return type_paper_size'value (paper_size);
-	end to_paper_size;
+	function to_paper_size (paper_size : in string)
+		return type_paper_size
+	is (type_paper_size'value (paper_size));
 
-	function to_string (paper_size : in type_paper_size) return string is begin
-		return type_paper_size'image (paper_size);
-	end to_string;
-
-
-	function to_string (orientation : in type_orientation) return string is begin
-		return to_lower (type_orientation'image (orientation));
-	end to_string;
-
-	function to_orientation (orientation : in string) return type_orientation is begin
-		return type_orientation'value (orientation);
-	end to_orientation;
+	function to_string (paper_size : in type_paper_size)
+		return string
+	is (type_paper_size'image (paper_size));
 
 
-	function to_string (rows : in type_rows) return string is begin
-		return trim (type_rows'image (rows), left);
-	end to_string;
+	function to_string (orientation : in type_orientation)
+		return string
+	is (to_lower (type_orientation'image (orientation)));
 
-	function to_rows (rows : in string) return type_rows is begin
-		return type_rows'value (rows);
-	end to_rows;
+	function to_orientation (orientation : in string)
+		return type_orientation
+	is (type_orientation'value (orientation));
 
-	function to_string (columns : in type_columns) return string is begin
-		return trim (type_columns'image (columns), left);
-	end to_string;
 
-	function to_columns (columns : in string) return type_columns is begin
-		return type_columns'value (columns);
-	end to_columns;
+	function to_string (rows : in type_rows)
+		return string
+	is (trim (type_rows'image (rows), left));
+
+	function to_rows (rows : in string)
+		return type_rows
+	is (type_rows'value (rows));
+
+	function to_string (columns : in type_columns)
+		return string
+	is (trim (type_columns'image (columns), left));
+
+	function to_columns (columns : in string)
+		return type_columns
+	is (type_columns'value (columns));
 
 
 
@@ -86,18 +86,14 @@ package body et_drawing_frame is
 	function to_string (
 		distance : in type_distance)
 		return string
-	is begin
-		return type_distance'image (distance);
-	end to_string;
+	is (type_distance'image (distance));
 
 
 
 	function to_distance (
 		distance : in string)
 		return type_distance
-	is begin
-		return type_distance'value (distance);
-	end to_distance;
+	is (type_distance'value (distance));
 
 
 
@@ -183,15 +179,15 @@ package body et_drawing_frame is
 
 
 
-	function to_string (name : in type_template_name) return string is begin
-		return pac_template_name.to_string (pac_template_name.bounded_string (name));
-	end to_string;
+	function to_string (name : in type_template_name)
+		return string
+	is (pac_template_name.to_string (pac_template_name.bounded_string (name)));
 
 
 
-	function to_template_name (name : in string) return type_template_name is begin
-		return type_template_name (pac_template_name.to_bounded_string (name));
-	end to_template_name;
+	function to_template_name (name : in string)
+		return type_template_name
+	is (type_template_name (pac_template_name.to_bounded_string (name)));
 
 
 
@@ -203,9 +199,9 @@ package body et_drawing_frame is
 
 
 
-	function to_domain (domain : in string) return type_domain is begin
-		return type_domain'value (domain_prefix & domain);
-	end to_domain;
+	function to_domain (domain : in string)
+		return type_domain
+	is (type_domain'value (domain_prefix & domain));
 
 
 
@@ -223,9 +219,7 @@ package body et_drawing_frame is
 	function get_position (
 		frame		: in type_frame_general)
 		return type_position
-	is begin
-		return frame.position;
-	end get_position;
+	is (frame.position);
 
 
 

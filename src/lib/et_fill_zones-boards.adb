@@ -47,14 +47,14 @@ with et_keywords;					use et_keywords;
 
 package body et_fill_zones.boards is
 
-	function to_string (priority_level : in type_priority) return string is begin
-		return type_priority'image (priority_level);
-	end to_string;
+	function to_string (priority_level : in type_priority)
+		return string
+	is (type_priority'image (priority_level));
 
 
-	function to_priority (priority_level : in string) return type_priority is begin
-		return type_priority'value (priority_level);
-	end to_priority;
+	function to_priority (priority_level : in string)
+		return type_priority
+	is (type_priority'value (priority_level));
 
 
 

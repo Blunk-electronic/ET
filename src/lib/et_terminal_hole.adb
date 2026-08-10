@@ -48,14 +48,14 @@ package body et_terminal_hole is
 
 
 
-	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
-		return to_lower (type_terminal_tht_hole'image (tht_hole));
-	end to_string;
+	function to_string (tht_hole : in type_terminal_tht_hole)
+		return string
+	is (to_lower (type_terminal_tht_hole'image (tht_hole)));
 
 
-	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
-		return type_terminal_tht_hole'value (tht_hole);
-	end to_tht_hole;
+	function to_tht_hole (tht_hole : in string)
+		return type_terminal_tht_hole
+	is (type_terminal_tht_hole'value (tht_hole));
 
 
 

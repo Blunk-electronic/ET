@@ -50,9 +50,7 @@ package body et_board_ops_meta is
 	function get_basic_meta_information (
 		module : in pac_generic_modules.cursor)
 		return type_meta_basic
-	is begin
-		return type_meta_basic (element (module).meta.board);
-	end get_basic_meta_information;
+	is (type_meta_basic (element (module).meta.board));
 
 
 

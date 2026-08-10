@@ -51,9 +51,7 @@ package body et_pcb_signal_layers is
 	function to_string (
 		category	: in type_signal_layer_category)
 		return string
-	is begin
-		return type_signal_layer_category'image (category);
-	end to_string;
+	is (type_signal_layer_category'image (category));
 
 
 
@@ -75,15 +73,15 @@ package body et_pcb_signal_layers is
 
 
 
-	function to_string (layer : in type_signal_layer) return string is begin
-		return trim (type_signal_layer'image (layer), left);
-	end to_string;
+	function to_string (layer : in type_signal_layer)
+		return string
+	is (trim (type_signal_layer'image (layer), left));
 
 
 
-	function to_signal_layer (layer : in string) return type_signal_layer is begin
-		return type_signal_layer'value (layer);
-	end to_signal_layer;
+	function to_signal_layer (layer : in string)
+		return type_signal_layer
+	is (type_signal_layer'value (layer));
 
 
 

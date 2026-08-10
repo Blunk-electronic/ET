@@ -218,11 +218,8 @@ package body et_text is
 		function text_properties (
 			text : in type_text)
 			return string
-		is begin
-			return
-				"size" & to_string (text.size)
-				& to_string (text.alignment);
-		end text_properties;
+		is ("size" & to_string (text.size)
+				& to_string (text.alignment));
 
 
 
@@ -258,10 +255,8 @@ package body et_text is
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
 			rotation_add	: in type_rotation)
-			return type_rotation is
-		begin
-			return to_rotation (rotation_doc) + rotation_add;
-		end "+";
+			return type_rotation
+		is (to_rotation (rotation_doc) + rotation_add);
 
 
 

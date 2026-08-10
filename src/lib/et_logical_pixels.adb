@@ -44,34 +44,26 @@ package body et_logical_pixels is
 	function to_string (
 		lp : in type_logical_pixels)
 		return string
-	is begin
-		return type_logical_pixels'image (lp);
-	end to_string;
+	is (type_logical_pixels'image (lp));
 
 
 
 	function to_lp (
 		gd : in glib.gdouble)
 		return type_logical_pixels
-	is begin
-		return type_logical_pixels (gd);
-	end to_lp;
+	is (type_logical_pixels (gd));
 
 
 	function to_gdouble (
 		lp : in type_logical_pixels)
 		return glib.gdouble
-	is begin
-		return glib.gdouble (lp);
-	end to_gdouble;
+	is (glib.gdouble (lp));
 
 
 	function to_gdouble_positive (
 		lp : in type_logical_pixels_positive)
 		return glib.gdouble
-	is begin
-		return glib.gdouble (lp);
-	end to_gdouble_positive;
+	is (glib.gdouble (lp));
 
 
 	function to_string (

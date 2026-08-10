@@ -482,9 +482,7 @@ package body et_stopmask is
 	function to_string (
 		text : in pac_stop_texts.cursor)
 		return string
-	is begin
-		return to_string (element (text));
-	end to_string;
+	is (to_string (element (text)));
 
 
 

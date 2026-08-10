@@ -64,9 +64,7 @@ package body et_devices_electrical is
 	function get_position (
 		device : in type_device_electrical)
 		return et_board_coordinates.type_package_position
-	is begin
-		return device.position;
-	end get_position;
+	is (device.position);
 
 
 
@@ -162,18 +160,14 @@ package body et_devices_electrical is
 	function get_count (
 		devices	: in pac_devices_electrical.map)
 		return natural
-	is begin
-		return natural (devices.length);
-	end get_count;
+	is (natural (devices.length));
 
 
 
 	function get_count (
 		devices	: in pac_devices_electrical.map)
 		return string
-	is begin
-		return count_type'image (devices.length);
-	end get_count;
+	is (count_type'image (devices.length));
 
 
 
@@ -183,9 +177,7 @@ package body et_devices_electrical is
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
 		return type_device_model_name
-	is begin
-		return get_device_model_file (element (device));
-	end get_device_model_file;
+	is (get_device_model_file (element (device)));
 
 
 
@@ -213,9 +205,7 @@ package body et_devices_electrical is
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
 		return type_device_name
-	is begin
-		return key (device);
-	end get_device_name;
+	is (key (device));
 
 
 
@@ -223,9 +213,7 @@ package body et_devices_electrical is
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
 		return string
-	is begin
-		return to_string (key (device));
-	end get_device_name;
+	is (to_string (key (device)));
 
 
 
@@ -233,9 +221,7 @@ package body et_devices_electrical is
 	function get_prefix (
 		device : in pac_devices_electrical.cursor)
 		return type_device_prefix
-	is begin
-		return get_prefix (key (device));
-	end get_prefix;
+	is (get_prefix (key (device)));
 
 
 

@@ -42,58 +42,58 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_meta is
 
-	function to_company (company : in string) return type_company is begin
-		return type_company (pac_company.to_bounded_string (company));
-	end to_company;
+	function to_company (company : in string)
+		return type_company
+	is (type_company (pac_company.to_bounded_string (company)));
 
-	function to_string (company : in type_company) return string is begin
-		return pac_company.to_string (pac_company.bounded_string (company));
-	end to_string;
-
-
-	function to_customer (customer : in string) return type_customer is begin
-		return type_customer (pac_customer.to_bounded_string (customer));
-	end to_customer;
-
-	function to_string (customer : in type_customer) return string is begin
-		return pac_customer.to_string (pac_customer.bounded_string (customer));
-	end to_string;
+	function to_string (company : in type_company)
+		return string
+	is (pac_company.to_string (pac_company.bounded_string (company)));
 
 
-	function to_partcode (partcode : in string) return type_partcode is begin
-		return type_partcode (pac_partcode.to_bounded_string (partcode));
-	end to_partcode;
+	function to_customer (customer : in string)
+		return type_customer
+	is (type_customer (pac_customer.to_bounded_string (customer)));
 
-	function to_string (partcode : in type_partcode) return string is begin
-		return pac_partcode.to_string (pac_partcode.bounded_string (partcode));
-	end to_string;
-
-
-	function to_drawing_number (drawing_number : in string) return type_drawing_number is begin
-		return type_drawing_number (pac_drawing_number.to_bounded_string (drawing_number));
-	end to_drawing_number;
-
-	function to_string (drawing_number : in type_drawing_number) return string is begin
-		return pac_drawing_number.to_string (pac_drawing_number.bounded_string (drawing_number));
-	end to_string;
+	function to_string (customer : in type_customer)
+		return string
+	is (pac_customer.to_string (pac_customer.bounded_string (customer)));
 
 
-	function to_revision (revision : in string) return type_revision is begin
-		return type_revision (pac_revision.to_bounded_string (revision));
-	end to_revision;
+	function to_partcode (partcode : in string)
+		return type_partcode
+	is (type_partcode (pac_partcode.to_bounded_string (partcode)));
 
-	function to_string (revision : in type_revision) return string is begin
-		return pac_revision.to_string (pac_revision.bounded_string (revision));
-	end to_string;
+	function to_string (partcode : in type_partcode)
+		return string
+	is (pac_partcode.to_string (pac_partcode.bounded_string (partcode)));
 
 
-	function to_person (person : in string) return type_person is begin
-		return type_person (pac_person.to_bounded_string (person));
-	end to_person;
+	function to_drawing_number (drawing_number : in string)
+		return type_drawing_number
+	is (type_drawing_number (pac_drawing_number.to_bounded_string (drawing_number)));
 
-	function to_string (person : in type_person) return string is begin
-		return pac_person.to_string (pac_person.bounded_string (person));
-	end to_string;
+	function to_string (drawing_number : in type_drawing_number)
+		return string
+	is (pac_drawing_number.to_string (pac_drawing_number.bounded_string (drawing_number)));
+
+
+	function to_revision (revision : in string)
+		return type_revision
+	is (type_revision (pac_revision.to_bounded_string (revision)));
+
+	function to_string (revision : in type_revision)
+		return string
+	is (pac_revision.to_string (pac_revision.bounded_string (revision)));
+
+
+	function to_person (person : in string)
+		return type_person
+	is (type_person (pac_person.to_bounded_string (person)));
+
+	function to_string (person : in type_person)
+		return string
+	is (pac_person.to_string (pac_person.bounded_string (person)));
 
 
 
@@ -130,9 +130,7 @@ package body et_meta is
 	function get_device_libraries (
 		meta : in type_meta_schematic)
 		return pac_library_paths_schematic.list
-	is begin
-		return meta.preferred_libs;
-	end get_device_libraries;
+	is (meta.preferred_libs);
 
 
 
@@ -170,9 +168,7 @@ package body et_meta is
 	function get_device_libraries (
 		meta : in type_meta_board)
 		return pac_library_paths_board.list
-	is begin
-		return meta.preferred_libs;
-	end get_device_libraries;
+	is (meta.preferred_libs);
 
 
 

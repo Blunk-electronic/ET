@@ -58,9 +58,7 @@ package body et_device_prefix is
 	function to_prefix (
 		prefix : in string)
 		return type_device_prefix
-	is begin
-		return type_device_prefix (pac_device_prefix.to_bounded_string (prefix));
-	end to_prefix;
+	is (type_device_prefix (pac_device_prefix.to_bounded_string (prefix)));
 
 
 

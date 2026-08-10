@@ -54,18 +54,16 @@ package body et_drills is
 
 
 
-	function to_string (drill : in type_drill) return string is begin
-		return ("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter));
-	end to_string;
+	function to_string (drill : in type_drill)
+		return string
+	is (("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter)));
 
 
 
 	function get_position (
 		drill : in type_drill)
 		return type_vector_model
-	is begin
-		return drill.position;
-	end get_position;
+	is (drill.position);
 
 
 
