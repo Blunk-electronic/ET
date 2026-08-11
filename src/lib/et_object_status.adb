@@ -61,13 +61,7 @@ package body et_object_status is
 	function is_proposed (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.proposed then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (status.proposed));
 
 
 
@@ -89,13 +83,7 @@ package body et_object_status is
 	function is_selected (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.selected then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (status.selected));
 
 
 
@@ -117,13 +105,7 @@ package body et_object_status is
 	function is_moving (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.moving then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (status.moving));
 
 
 
@@ -145,13 +127,7 @@ package body et_object_status is
 	function is_locked (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.locked then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (status.locked));
 
 
 

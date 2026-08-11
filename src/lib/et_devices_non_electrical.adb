@@ -351,13 +351,7 @@ package body et_devices_non_electrical is
 	function is_proposed (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_proposed (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (device.status)));
 
 
 
@@ -379,13 +373,7 @@ package body et_devices_non_electrical is
 	function is_selected (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_selected (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (device.status)));
 
 
 
@@ -407,13 +395,7 @@ package body et_devices_non_electrical is
 	function is_moving (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_moving (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (device.status)));
 
 
 
@@ -435,13 +417,7 @@ package body et_devices_non_electrical is
 	function is_locked (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_locked (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (is_locked (device.status)));
 
 
 
@@ -606,51 +582,27 @@ package body et_devices_non_electrical is
 	function is_proposed (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (device))));
 
 
 
 	function is_selected (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_selected (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (device))));
 
 
 
 	function is_moving (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_moving (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (element (device))));
 
 
 	function is_locked (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_locked (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (is_locked (element (device))));
 
 
 

@@ -140,15 +140,8 @@ package body et_net_segment is
 	function has_junctions (
 		segment	: in type_net_segment)
 		return boolean
-	is begin
-		if segment.junctions.A or
-		   segment.junctions.B
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end has_junctions;
+	is (boolean (segment.junctions.A or
+		   segment.junctions.B));
 
 
 
@@ -230,15 +223,8 @@ package body et_net_segment is
 	function has_connectors (
 		segment	: in type_net_segment)
 		return boolean
-	is begin
-		if is_active (segment.connectors.A) or
-		   is_active (segment.connectors.B)
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end has_connectors;
+	is (boolean (is_active (segment.connectors.A) or
+		   is_active (segment.connectors.B)));
 
 
 
@@ -338,16 +324,8 @@ package body et_net_segment is
 		segment	: in type_net_segment;
 		port	: in type_port_netchanger)
 		return boolean
-	is
-	begin
-		if	in_ports (segment.ports.A, port) or
-			in_ports (segment.ports.B, port) then
-
-			return true;
-		else
-			return false;
-		end if;
-	end is_connected;
+	is (boolean (in_ports (segment.ports.A, port) or
+			in_ports (segment.ports.B, port)));
 
 
 
@@ -1210,13 +1188,7 @@ package body et_net_segment is
 	function is_selected (
 		segment : in pac_net_segments.cursor)
 		return boolean
-	is begin
-		if is_selected (element (segment)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (segment))));
 
 
 

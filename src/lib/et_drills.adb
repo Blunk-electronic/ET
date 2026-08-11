@@ -87,13 +87,7 @@ package body et_drills is
 	function is_selected (
 		drill : in type_drill)
 		return boolean
-	is begin
-		if is_selected (drill.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (drill.status)));
 
 
 	procedure set_selected (
@@ -113,13 +107,7 @@ package body et_drills is
 	function is_proposed (
 		drill : in type_drill)
 		return boolean
-	is begin
-		if is_proposed (drill.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (drill.status)));
 
 
 
@@ -140,13 +128,7 @@ package body et_drills is
 	function is_moving (
 		drill : in type_drill)
 		return boolean
-	is begin
-		if is_moving (drill.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (drill.status)));
 
 
 	procedure set_moving (

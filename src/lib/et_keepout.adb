@@ -45,13 +45,7 @@ package body et_keepout is
 	function is_circular (
 		zone	: in pac_keepout_zones.cursor)
 		return boolean
-	is begin
-		if is_circular (element (zone)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_circular;
+	is (boolean (is_circular (element (zone))));
 
 
 

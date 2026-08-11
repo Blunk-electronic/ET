@@ -108,25 +108,13 @@ package body et_pcb_placeholders.non_conductor is
 	function is_selected (
 		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean
-	is begin
-		if is_selected (element (placeholder)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (placeholder))));
 
 
 	function is_proposed (
 		placeholder : in pac_placeholders_non_conductor.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (placeholder)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (placeholder))));
 
 
 

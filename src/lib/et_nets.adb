@@ -106,13 +106,7 @@ package body et_nets is
 	function is_proposed (
 		net : in type_net)
 		return boolean
-	is begin
-		if is_proposed (net.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (net.status)));
 
 
 
@@ -134,13 +128,7 @@ package body et_nets is
 	function is_selected (
 		net : in type_net)
 		return boolean
-	is begin
-		if is_selected (net.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (net.status)));
 
 
 
@@ -877,15 +865,8 @@ package body et_nets is
 	function is_empty (
 		strand	: in type_object_strand)
 		return boolean
-	is begin
-		if not has_element (strand.net_cursor)
-		and not has_element (strand.strand_cursor)
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (boolean (not has_element (strand.net_cursor)
+		and not has_element (strand.strand_cursor)));
 
 
 

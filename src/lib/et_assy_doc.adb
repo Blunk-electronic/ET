@@ -81,26 +81,14 @@ package body et_assy_doc is
 	function is_proposed (
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (line_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (line_cursor))));
 
 
 
 	function is_selected (
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean
-	is begin
-		if is_selected (element (line_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (line_cursor))));
 
 
 
@@ -204,25 +192,13 @@ package body et_assy_doc is
 	function is_proposed (
 		arc_cursor	: in pac_doc_arcs.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (arc_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (arc_cursor))));
 
 
 	function is_selected (
 		arc_cursor	: in pac_doc_arcs.cursor)
 		return boolean
-	is begin
-		if is_selected (element (arc_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (arc_cursor))));
 
 
 
@@ -306,25 +282,13 @@ package body et_assy_doc is
 	function is_proposed (
 		circle_cursor	: in pac_doc_circles.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (circle_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (circle_cursor))));
 
 
 	function is_selected (
 		circle_cursor	: in pac_doc_circles.cursor)
 		return boolean
-	is begin
-		if is_selected (element (circle_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (circle_cursor))));
 
 
 	procedure mirror_circles (
@@ -391,13 +355,7 @@ package body et_assy_doc is
 	function is_circular (
 		zone	: in pac_doc_zones.cursor)
 		return boolean
-	is begin
-		if is_circular (element (zone)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_circular;
+	is (boolean (is_circular (element (zone))));
 
 
 
@@ -488,26 +446,14 @@ package body et_assy_doc is
 	function is_proposed (
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (text_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (text_cursor))));
 
 
 
 	function is_selected (
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean
-	is begin
-		if is_selected (element (text_cursor)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (text_cursor))));
 
 
 
