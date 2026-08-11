@@ -86,8 +86,8 @@ package et_commandline_switches is
 
 
 	-- Outputs the command line switches that initiate something.
-	procedure show_cdl_switches;
-
+	procedure show_help;
+	procedure show_version;
 
 
 end et_commandline_switches;
