@@ -42,53 +42,6 @@
 -- with ada.text_io;			use ada.text_io;
 package body et_meta is
 
-	function to_customer (customer : in string)
-		return type_customer
-	is (type_customer (pac_customer.to_bounded_string (customer)));
-
-	function to_string (customer : in type_customer)
-		return string
-	is (pac_customer.to_string (pac_customer.bounded_string (customer)));
-
-
-	function to_partcode (partcode : in string)
-		return type_partcode
-	is (type_partcode (pac_partcode.to_bounded_string (partcode)));
-
-	function to_string (partcode : in type_partcode)
-		return string
-	is (pac_partcode.to_string (pac_partcode.bounded_string (partcode)));
-
-
-	function to_drawing_number (drawing_number : in string)
-		return type_drawing_number
-	is (type_drawing_number (pac_drawing_number.to_bounded_string (drawing_number)));
-
-	function to_string (drawing_number : in type_drawing_number)
-		return string
-	is (pac_drawing_number.to_string (pac_drawing_number.bounded_string (drawing_number)));
-
-
-	function to_revision (revision : in string)
-		return type_revision
-	is (type_revision (pac_revision.to_bounded_string (revision)));
-
-	function to_string (revision : in type_revision)
-		return string
-	is (pac_revision.to_string (pac_revision.bounded_string (revision)));
-
-
-	function to_person (person : in string)
-		return type_person
-	is (type_person (pac_person.to_bounded_string (person)));
-
-	function to_string (person : in type_person)
-		return string
-	is (pac_person.to_string (pac_person.bounded_string (person)));
-
-
-
-
 
 
 
