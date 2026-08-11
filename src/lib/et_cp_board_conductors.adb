@@ -121,7 +121,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_fill_style (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -132,7 +132,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_linewidth (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -143,7 +143,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_iso (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -154,7 +154,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_priority (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -166,7 +166,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_easing_style (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -177,7 +177,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_easing_radius (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -188,7 +188,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_connection (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -199,7 +199,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_hatching_spacing (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -210,7 +210,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_thermal_width (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -221,7 +221,7 @@ package body et_cp_board_conductors is
 
 
 		procedure set_thermal_gap (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -359,7 +359,7 @@ package body et_cp_board_conductors is
 			use et_board_ops_fill_zones;
 			use et_schematic_ops_nets;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 
 			-- Extract from the given command the polygon arguments (everything after "zone"):
@@ -546,7 +546,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -595,7 +595,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -763,7 +763,7 @@ package body et_cp_board_conductors is
 			width_tmp : type_distance_positive;
 			layer_tmp : type_signal_layer;
 			arc_tmp	: type_arc;
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 
 			use et_schematic_ops_nets;
 		begin
@@ -878,7 +878,7 @@ package body et_cp_board_conductors is
 
 
 		procedure do_it is
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			use et_schematic_ops_nets;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
@@ -970,7 +970,7 @@ package body et_cp_board_conductors is
 			use et_board_ops_conductors;
 			catch_zone : type_catch_zone;
 
-			net_name : pac_net_name.bounded_string;
+			net_name : type_net_name;
 			use et_schematic_ops_nets;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));

@@ -185,7 +185,7 @@ is
 		procedure process_silkscreen is
 
 			procedure query_silkscreen (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -262,7 +262,7 @@ is
 		procedure process_assembly_doc is
 
 			procedure query_assy_doc (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -337,7 +337,7 @@ is
 		procedure process_stencil is
 
 			procedure query_stencil (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -407,7 +407,7 @@ is
 		procedure process_stopmask is
 
 			procedure query_stopmask (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -480,7 +480,7 @@ is
 		procedure process_keepout is
 
 			procedure query_keepout (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -526,7 +526,7 @@ is
 		procedure process_route_restrict is
 
 			procedure query_route_restrict (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -599,7 +599,7 @@ is
 		procedure process_via_restrict is
 
 			procedure query_via_restrict (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -641,7 +641,7 @@ is
 		procedure process_conductors is
 
 			procedure query_conductors (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -741,7 +741,7 @@ is
 			procedure process_outline is
 
 				procedure query_outline (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
@@ -772,7 +772,7 @@ is
 
 
 				procedure query_holes (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
@@ -1621,7 +1621,7 @@ is
 			procedure process_electrical_devices is
 
 				procedure query_module (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
@@ -1671,7 +1671,7 @@ is
 			procedure process_non_electrical_devices is
 
 				procedure query_module (
-					module_name	: in pac_module_name.bounded_string;
+					module_name	: in type_module_name;
 					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
@@ -1727,7 +1727,7 @@ is
 		procedure process_nets is
 
 			procedure query_module (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);

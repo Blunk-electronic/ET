@@ -55,10 +55,10 @@ package et_rig is
 
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_module_connection is record
-		instance_A	: pac_module_instance_name.bounded_string; -- LMX_2
-		purpose_A	: pac_device_purpose.bounded_string; -- pwr_in
-		instance_B	: pac_module_instance_name.bounded_string; -- PWR
-		purpose_B	: pac_device_purpose.bounded_string; -- pwr_out
+		instance_A	: type_module_instance_name; -- LMX_2
+		purpose_A	: type_device_purpose; -- pwr_in
+		instance_B	: type_module_instance_name; -- PWR
+		purpose_B	: type_device_purpose; -- pwr_out
 
 		-- CS
 		-- net_comparator : on/off
@@ -89,17 +89,14 @@ package et_rig is
 	type type_rig is record
 		module_instances	: pac_module_instances.map;
 		connections			: pac_module_connections.set;
-		conventions			: et_conventions.pac_file_name.bounded_string; -- ../conventions.txt
+		conventions			: et_conventions.type_conventions_file_name; -- ../conventions.txt
 		-- CS description, docs, links, images ... ?
 	end record;
 
 
-	use et_rig_name.pac_file_name;
-
-
 	-- Lots of rigs are stored in a map:
 	package pac_rigs is new ordered_maps (
-		key_type		=> et_rig_name.pac_file_name.bounded_string, -- CS dedicated type_rig_name ?
+		key_type		=> et_rig_name.type_rig_file_name,
 		element_type	=> type_rig);
 
 

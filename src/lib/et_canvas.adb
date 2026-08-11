@@ -2901,7 +2901,9 @@ package body et_canvas is
 		package pac_scale_bounded is new generic_bounded_length (10);
 		use pac_scale_bounded;
 
-		m_bounded : pac_scale_bounded.bounded_string;
+		type type_scale_bounded is new pac_scale_bounded.bounded_string;
+
+		m_bounded : type_scale_bounded;
 
 		-- This string holds temporarily the given scale.
 		-- The length of the string should be set in advance
@@ -2927,7 +2929,7 @@ package body et_canvas is
 				exp		=> 0); -- no exponent
 
 			-- Trim the string on both ends and store it in m_bounded:
-			m_bounded := trim (to_bounded_string (m_fixed), both);
+			m_bounded := type_scale_bounded (trim (pac_scale_bounded.to_bounded_string (m_fixed), both));
 			-- CS remove leading zeroes after the comma.
 
 			-- Return a nicely formatted expression like 1:100
@@ -2946,7 +2948,7 @@ package body et_canvas is
 				exp		=> 0); -- no exponent
 
 			-- Trim the string on both ends and store it in m_bounded:
-			m_bounded := trim (to_bounded_string (m_fixed), both);
+			m_bounded := type_scale_bounded (trim (pac_scale_bounded.to_bounded_string (m_fixed), both));
 			-- CS remove leading zeroes after the comma.
 
 			-- Return a nicely formatted expression like 100:1

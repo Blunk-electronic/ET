@@ -150,7 +150,7 @@ package body et_module_write_devices_electrical is
 
 
 			use et_device_appearance;
-			use et_unit_name.pac_unit_name;
+			use et_unit_name;
 
 
 		begin -- query_units
@@ -275,7 +275,7 @@ package body et_module_write_devices_electrical is
 			use et_device_value;
 			use et_device_partcode;
 
-			use et_package_variant_name.pac_package_variant_name;
+			use et_package_variant_name;
 		begin
 			log (text => get_device_name (d), level => log_threshold + 1);
 
@@ -327,7 +327,7 @@ package body et_module_write_devices_electrical is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

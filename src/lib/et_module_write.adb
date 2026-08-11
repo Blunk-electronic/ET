@@ -88,7 +88,7 @@ package body et_module_write is
 
 	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
+		save_as_name	: in type_module_name := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level)
 	is
 		use pac_generic_modules;
@@ -108,7 +108,7 @@ package body et_module_write is
 			-- use pac_project_path;
 			use et_system_info;
 		begin
-			if pac_module_name.length (save_as_name) = 0 then
+			if length (save_as_name) = 0 then
 				-- The module is to be saved with its own name:
 
 				log (text => "Saving module as "

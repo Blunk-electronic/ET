@@ -137,7 +137,7 @@ is
 		procedure process_nets is
 
 			procedure query_nets (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);
@@ -235,7 +235,7 @@ is
 
 
 			procedure query_devices (
-				module_name	: in pac_module_name.bounded_string;
+				module_name	: in type_module_name;
 				module		: in type_generic_module)
 			is
 				pragma unreferenced (module_name);

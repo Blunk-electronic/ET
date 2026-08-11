@@ -96,7 +96,7 @@ package body et_schematic_ops_units is
 	use pac_unit_name;
 	use pac_text_schematic;
 
-	use pac_net_name;
+	use et_net_names;
 
 
 
@@ -135,7 +135,7 @@ package body et_schematic_ops_units is
 	function locate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
-		unit			: in pac_unit_name.bounded_string)
+		unit			: in type_unit_name)
 		return pac_units.cursor
 	is
 		device_cursor : pac_devices_electrical.cursor;
@@ -168,7 +168,7 @@ package body et_schematic_ops_units is
 	function is_deployed (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
-		unit			: in pac_unit_name.bounded_string)
+		unit			: in type_unit_name)
 		return boolean
 	is
 		unit_cursor : pac_units.cursor;
@@ -190,14 +190,14 @@ package body et_schematic_ops_units is
 	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in pac_port_name.bounded_string) -- CE
+		port_name		: in type_port_name) -- CE
 		return boolean
 	is
 		result : boolean := false; -- to be returned. goes true once the target has been found
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -213,7 +213,7 @@ package body et_schematic_ops_units is
 				unit_cursor : pac_units.cursor := device.units.first;
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
-				use pac_port_name;
+				use et_port_names;
 			begin
 				while unit_cursor /= pac_units.no_element loop
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
@@ -267,15 +267,15 @@ package body et_schematic_ops_units is
 	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
+		unit_name		: in type_unit_name := to_unit_name (""); -- A
+		port_name		: in type_port_name := to_port_name ("")) -- CE
 		return boolean
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -290,7 +290,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
-				use pac_port_name;
+				use et_port_names;
 			begin
 				if contains (device.units, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
@@ -353,7 +353,7 @@ package body et_schematic_ops_units is
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		device_model : pac_device_model_file.bounded_string;
+		device_model : type_device_model_name;
 		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_names;
@@ -395,7 +395,7 @@ package body et_schematic_ops_units is
 
 
 		procedure get_device_model (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -454,7 +454,7 @@ package body et_schematic_ops_units is
 	function unit_available (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in pac_unit_name.bounded_string)
+		unit_name		: in type_unit_name)
 		return boolean
 	is
 		available : boolean := true; -- to be returned
@@ -583,7 +583,7 @@ package body et_schematic_ops_units is
 	function get_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
-		unit			: in pac_unit_name.bounded_string)
+		unit			: in type_unit_name)
 		return type_object_position
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
@@ -629,7 +629,7 @@ package body et_schematic_ops_units is
 	function get_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
-		unit			: in pac_unit_name.bounded_string)
+		unit			: in type_unit_name)
 		return type_sheet
 	is begin
 		return get_sheet (get_position (module_cursor, device, unit));
@@ -645,7 +645,7 @@ package body et_schematic_ops_units is
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		ports			: in pac_symbol_ports.map;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
@@ -662,7 +662,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -671,7 +671,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -698,7 +698,7 @@ package body et_schematic_ops_units is
 						--    build a device port.
 						-- 3. The device port is then deleted on the A/B end of the segment:
 						procedure delete_port (AB_end : in type_start_end_point) is
-							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							port_name : type_port_name; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
 						begin
@@ -794,7 +794,7 @@ package body et_schematic_ops_units is
 	procedure insert_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		ports			: in pac_symbol_ports.map;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
@@ -810,7 +810,7 @@ package body et_schematic_ops_units is
 		-- CS: On the end of this procedure make sure ports_tmp is empty.
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -819,7 +819,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -846,7 +846,7 @@ package body et_schematic_ops_units is
 						--    build a device port.
 						-- 3. The device port is then added to the A/B end of the segment:
 						procedure add_port (AB_end : in type_start_end_point) is
-							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							port_name : type_port_name; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
 						begin
@@ -941,7 +941,7 @@ package body et_schematic_ops_units is
 	procedure fetch_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
+		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
@@ -997,13 +997,13 @@ package body et_schematic_ops_units is
 	function get_port_properties (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		port_name		: in pac_port_name.bounded_string) -- CE
+		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
+		port_name		: in type_port_name) -- CE
 		return type_port_properties_access
 	is
 		properties : type_port_properties_access; -- to be returned
 
-		terminal_name : pac_terminal_name.bounded_string;
+		terminal_name : type_terminal_name;
 
 		use et_port_direction;
 		port_direction : type_port_direction := PASSIVE;
@@ -1011,17 +1011,17 @@ package body et_schematic_ops_units is
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
 			device_cursor_sch	: pac_devices_electrical.cursor;
-			variant			: pac_package_variant_name.bounded_string; -- D, N
+			variant			: type_package_variant_name; -- D, N
 			device_cursor_lib	: pac_device_models.cursor;
 
 
 			procedure query_variants (
-				model	: in pac_device_model_file.bounded_string;
+				model	: in type_device_model_name;
 				device	: in type_device_model)
 			is
 				pragma unreferenced (model);
@@ -1029,13 +1029,13 @@ package body et_schematic_ops_units is
 
 
 				procedure query_ports (
-					variant_name	: in pac_package_variant_name.bounded_string;
+					variant_name	: in type_package_variant_name;
 					variant			: in type_package_variant)
 				is
 					pragma unreferenced (variant_name);
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
-					use pac_port_name;
+					use et_port_names;
 					use pac_unit_name;
 				begin
 					while terminal_cursor /= pac_terminal_port_map.no_element loop
@@ -1123,7 +1123,7 @@ package body et_schematic_ops_units is
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1135,7 +1135,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1251,7 +1251,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name, module);
@@ -1270,7 +1270,7 @@ package body et_schematic_ops_units is
 				procedure query_unit (
 					c : in pac_unit_names.cursor)
 				is
-					unit_name : pac_unit_name.bounded_string
+					unit_name : type_unit_name
 						renames element (c);
 				begin
 					delete_unit (module_cursor, device_name,
@@ -1348,7 +1348,7 @@ package body et_schematic_ops_units is
 		-- Queries a unit of the list unit_names and deletes it:
 		procedure query_unit (c : in pac_unit_names.cursor) is
 			use pac_unit_names;
-			name : constant pac_unit_name.bounded_string := element (c);
+			name : constant type_unit_name := element (c);
 		begin
 			log (text => "Delete unit " & to_string (name), level => log_threshold + 1);
 
@@ -1420,7 +1420,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1430,7 +1430,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_strands;
@@ -1560,7 +1560,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1688,7 +1688,7 @@ package body et_schematic_ops_units is
 	procedure move_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
@@ -1703,7 +1703,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -1722,7 +1722,7 @@ package body et_schematic_ops_units is
 
 				-- Does the actual move of the unit:
 				procedure move_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -1871,7 +1871,7 @@ package body et_schematic_ops_units is
 	pragma unreferenced (log_threshold);
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 	pragma unreferenced (module_name);
@@ -1887,7 +1887,7 @@ package body et_schematic_ops_units is
 				-- Moves the unit candidate by the given offset
 				-- if it is on the given sheet_old:
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -2024,7 +2024,7 @@ package body et_schematic_ops_units is
 	procedure movable_test (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		location		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
@@ -2112,7 +2112,7 @@ package body et_schematic_ops_units is
 	function get_unit_position (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string) -- C
+		unit_name		: in type_unit_name) -- C
 		return type_unit_query
 	is
 		exists : boolean := false;
@@ -2120,7 +2120,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2136,7 +2136,7 @@ package body et_schematic_ops_units is
 			begin
 				-- If the given unit_name contains something, locate the unit
 				-- by its name. If unit_name is empty, locate the first unit.
-				if pac_unit_name.length (unit_name) > 0 then -- locate by name
+				if get_length (unit_name) > 0 then -- locate by name
 
 					unit_cursor := pac_units.find (device.units, unit_name);
 
@@ -2196,7 +2196,7 @@ package body et_schematic_ops_units is
 	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		location		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
@@ -2304,13 +2304,13 @@ package body et_schematic_ops_units is
 
 		use pac_dragged_ports;
 		port_cursor : pac_dragged_ports.cursor := port_drag_list.ports.first;
-		port_name : pac_port_name.bounded_string;
+		port_name : type_port_name;
 		port_drag : type_drag;
 		port_sheet : type_sheet renames port_drag_list.sheet;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2319,7 +2319,7 @@ package body et_schematic_ops_units is
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_strands;
@@ -2450,7 +2450,7 @@ package body et_schematic_ops_units is
 	procedure drag_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
+		unit_name		: in type_unit_name;
 		coordinates		: in type_coordinates;
 		destination		: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -2464,7 +2464,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2484,7 +2484,7 @@ package body et_schematic_ops_units is
 
 				-- Moves the the unit:
 				procedure move_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -2628,7 +2628,7 @@ package body et_schematic_ops_units is
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in type_rotation_model; -- 90
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -2643,7 +2643,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2663,7 +2663,7 @@ package body et_schematic_ops_units is
 
 				-- Does the actual rotation of the unit:
 				procedure rotate_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -2806,7 +2806,7 @@ package body et_schematic_ops_units is
 	procedure mirror_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2819,7 +2819,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -2838,7 +2838,7 @@ package body et_schematic_ops_units is
 
 				-- Does the actual mirroring of the unit:
 				procedure mirror_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -2979,7 +2979,7 @@ package body et_schematic_ops_units is
 
 	function get_unit_name (
 		object	: in type_object_unit)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is begin
 		return key (object.unit_cursor);
 	end get_unit_name;
@@ -3007,7 +3007,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3019,7 +3019,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -3084,7 +3084,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3098,7 +3098,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is begin
 					if in_catch_zone (unit, catch_zone, active_sheet) then
@@ -3186,7 +3186,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3199,7 +3199,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is begin
 					log (text => to_string (unit_name), level => log_threshold + 2);
@@ -3265,7 +3265,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3326,7 +3326,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3424,7 +3424,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3440,7 +3440,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -3502,11 +3502,11 @@ package body et_schematic_ops_units is
 		-- Here we store the device and unit name
 		-- of a selected unit:
 		d_name : type_device_name;
-		u_name : pac_unit_name.bounded_string;
+		u_name : type_unit_name;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3521,7 +3521,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in type_unit)
 				is begin
 					if is_selected (unit) then
@@ -3608,7 +3608,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3623,7 +3623,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is begin
 					if is_selected (unit) then
@@ -3693,7 +3693,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3709,7 +3709,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -3772,7 +3772,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3788,7 +3788,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -3851,7 +3851,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3867,7 +3867,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -3953,7 +3953,7 @@ package body et_schematic_ops_units is
 		-- unit_cursor_old.
 		-- It sets the flag unit_found:
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -3969,7 +3969,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -4133,7 +4133,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4149,7 +4149,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in type_unit)
 				is
 					use et_module_clipboard.devices_electrical;
@@ -4204,13 +4204,36 @@ package body et_schematic_ops_units is
 
 
 
+	procedure paste_units_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_object_position_relative;									 
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " paste units from clipboard. Group offset: " & to_string (offset),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- CS
+
+		log_indentation_down;
+	end paste_units_from_clipboard;
+
+
+	
+
+
+	
 
 
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
@@ -4225,7 +4248,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4243,7 +4266,7 @@ package body et_schematic_ops_units is
 
 
 				procedure move_placeholder (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -4321,7 +4344,7 @@ package body et_schematic_ops_units is
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
+		unit_name		: in type_unit_name; -- A
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_documentation := HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
@@ -4337,7 +4360,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4355,7 +4378,7 @@ package body et_schematic_ops_units is
 
 
 				procedure rotate_placeholder (
-					name	: in pac_unit_name.bounded_string; -- A
+					name	: in type_unit_name; -- A
 					unit	: in out type_unit)
 				is
 					pragma unreferenced (name);
@@ -4429,7 +4452,7 @@ package body et_schematic_ops_units is
 
 	function get_unit_name (
 		object : in type_object_placeholder)
-		return pac_unit_name.bounded_string
+		return type_unit_name
 	is begin
 		return key (object.unit_cursor);
 	end get_unit_name;
@@ -4492,7 +4515,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4504,7 +4527,7 @@ package body et_schematic_ops_units is
 				pragma unreferenced (device_name);
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
@@ -4566,7 +4589,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4580,7 +4603,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					unit_position : constant type_vector_model := get_place (unit.position);
@@ -4667,7 +4690,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4680,7 +4703,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
 					use et_device_placeholders.symbols;
@@ -4750,7 +4773,7 @@ package body et_schematic_ops_units is
 		result : type_object_placeholder;
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -4767,7 +4790,7 @@ package body et_schematic_ops_units is
 
 
 				procedure query_unit (
-					unit_name	: in pac_unit_name.bounded_string;
+					unit_name	: in type_unit_name;
 					unit		: in type_unit)
 				is
 					procedure set_result is begin
@@ -4993,7 +5016,7 @@ package body et_schematic_ops_units is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -5084,7 +5107,7 @@ package body et_schematic_ops_units is
 
 
 					procedure query_unit (
-						name	: in pac_unit_name.bounded_string;
+						name	: in type_unit_name;
 						unit	: in type_unit)
 					is
 						use et_device_placeholders.symbols;
@@ -5442,7 +5465,7 @@ package body et_schematic_ops_units is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -5765,7 +5788,7 @@ package body et_schematic_ops_units is
 	procedure set_value (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_value		: in pac_device_value.bounded_string;
+		new_value		: in type_device_value;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
@@ -5801,7 +5824,7 @@ package body et_schematic_ops_units is
 	procedure set_purpose (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_purpose		: in pac_device_purpose.bounded_string;
+		new_purpose		: in type_device_purpose;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
@@ -5838,7 +5861,7 @@ package body et_schematic_ops_units is
 	procedure set_partcode (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_partcode	: in pac_device_partcode.bounded_string;
+		new_partcode	: in type_device_partcode;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
@@ -5875,7 +5898,7 @@ package body et_schematic_ops_units is
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_variant		: in pac_package_variant_name.bounded_string;
+		new_variant		: in type_package_variant_name;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)

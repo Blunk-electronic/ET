@@ -44,6 +44,9 @@
 
 -- with ada.text_io;			use ada.text_io;
 
+with et_device_name;				use et_device_name;
+with et_unit_name;					use et_unit_name;
+
 
 
 package body et_module_clipboard.devices_electrical is
@@ -55,14 +58,86 @@ package body et_module_clipboard.devices_electrical is
 		unit_cursor		: in pac_units.cursor;
 		log_threshold	: in type_log_level)
 	is
-		pragma unreferenced (device_cursor, unit_cursor);
+		use pac_devices_electrical;
+		
+		-- Get the name of the given device (like IC3):
+		device_name : constant type_device_name := 
+			get_device_name (device_cursor);
+			
+		-- Get the given 
+		device : constant type_device_electrical :=
+			element (device_cursor);
+			
+		unit_name : constant type_unit_name :=
+			get_unit_name (unit_cursor);
 
+		
+		
+		procedure insert_device_and_unit is
+			device_cursor_clipboard : pac_devices_electrical.cursor;
+			inserted : boolean;
+			
+
+			-- This procedure inserts the given unit
+			-- in the candidate device:			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is
+				use pac_units;
+				unit : constant type_unit := element (unit_cursor);
+			begin
+				log (text => "insert unit " & to_string (unit_name),
+					level => log_threshold + 2);
+					
+				device.units.insert (
+					key			=> unit_name,
+					new_item	=> unit);
+					
+				-- The unit should not exist already.
+				-- Otherwise an exception will be raised here.
+				-- CS: Exception handler ?
+			end query_device;
+			
+			
+		begin
+			-- Locate the given device in the clipboard:
+			device_cursor_clipboard := clipboard.devices.find (device_name);
+			
+			-- If the device already exists, then do nothing
+			-- special except a log message:
+			if has_element (device_cursor_clipboard) then
+				
+				log (text => "device " & to_string (device_name)
+					& " already in clipboard",
+					level => log_threshold + 1);
+
+			else
+			-- If the device does not exist yet, then
+			-- insert the bare device (witout units) in the clipboard.
+				clipboard.devices.insert (
+					key			=> device_name,
+					new_item	=> copy_bare_device (device),
+					position	=> device_cursor_clipboard,
+					inserted	=> inserted);
+			
+			end if;
+			
+			-- Insert the given unit in the device:
+			clipboard.devices.update_element (
+				device_cursor_clipboard, query_device'access);
+			
+		end insert_device_and_unit;
+		
+		
 	begin
-		log (text => "copy device and unit to clipboard",
+		log (text => "copy device " & to_string (device_name)
+			& " unit " & to_string (unit_name) & " to clipboard.",
 			 level => log_threshold);
 
 		log_indentation_up;
 
+		insert_device_and_unit;
 
 		log_indentation_down;
 	end copy_unit_to_clipboard;

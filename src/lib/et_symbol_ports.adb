@@ -47,7 +47,7 @@ package body et_symbol_ports is
 
 	function get_port_name (
 		port_cursor : in pac_symbol_ports.cursor)
-		return pac_port_name.bounded_string
+		return type_port_name
 	is begin
 		return key (port_cursor);
 	end get_port_name;
@@ -80,7 +80,7 @@ package body et_symbol_ports is
 		ports		: in out pac_symbol_ports.map;
 		position	: in type_vector_model;
 		deleted		: out boolean;
-		port_name	: out pac_port_name.bounded_string)
+		port_name	: out type_port_name)
 	is
 		c : pac_symbol_ports.cursor := ports.first;
 
@@ -88,7 +88,7 @@ package body et_symbol_ports is
 		-- equal the given position. On match the
 		-- flag "deleted" is set so that the iteration stops:
 		procedure query_port (
-			port_name	: in pac_port_name.bounded_string;
+			port_name	: in type_port_name;
 			port		: in type_symbol_port)
 		is begin
 			if port.position = position then
@@ -134,7 +134,7 @@ package body et_symbol_ports is
 		use pac_symbol_ports;
 
 		procedure move (
-			name	: in pac_port_name.bounded_string;
+			name	: in type_port_name;
 			port	: in out type_symbol_port)
 		is
 			pragma unreferenced (name);
@@ -163,7 +163,7 @@ package body et_symbol_ports is
 	is
 
 		procedure rotate (
-			name	: in pac_port_name.bounded_string;
+			name	: in type_port_name;
 			port	: in out type_symbol_port)
 		is
 			pragma unreferenced (name);
@@ -199,7 +199,7 @@ package body et_symbol_ports is
 
 
 		procedure query_port (
-			name : in pac_port_name.bounded_string;
+			name : in type_port_name;
 			port : in out type_symbol_port)
 		is
 			pragma unreferenced (name);

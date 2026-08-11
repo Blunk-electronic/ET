@@ -68,14 +68,14 @@ package body et_project is
 
 
 
-	function to_string (path : in pac_project_path.bounded_string) return string is begin
-		return pac_project_path.to_string (path);
+	function to_string (path : in type_project_path) return string is begin
+		return pac_project_path.to_string (pac_project_path.bounded_string (path));
 	end to_string;
 
 
 
-	function to_project_path (path : in string) return pac_project_path.bounded_string is begin
-		return pac_project_path.to_bounded_string (path);
+	function to_project_path (path : in string) return type_project_path is begin
+		return type_project_path (pac_project_path.to_bounded_string (path));
 	end to_project_path;
 
 
@@ -125,8 +125,8 @@ package body et_project is
 
 
 	procedure create_project_directory (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
+		project_name	: in type_project_name;		-- blood_sample_analyzer
+		module_name		: in type_module_name := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
@@ -141,21 +141,21 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 
 			use et_project.configuration;
-			prj_conf_file : pac_file_name.bounded_string; -- led_matrix.prj
+			prj_conf_file : type_project_config_file_name; -- led_matrix.prj
 		begin
 			log (text => "creating project configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name
-			prj_conf_file := pac_file_name.to_bounded_string (compose (
+			prj_conf_file := type_project_config_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
 				name					=> to_string (project_name),
-				extension				=> file_extension));
+				extension				=> file_extension)));
 
 			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file,
-				name => pac_file_name.to_string (prj_conf_file));
+				name => pac_file_name.to_string (pac_file_name.bounded_string (prj_conf_file)));
 
 			set_output (file_handle);
 
@@ -181,7 +181,6 @@ package body et_project is
 		procedure create_module_file is
 			previous_directory : constant string := current_directory;
 			use et_module_ops;
-			use pac_module_name;
 		begin
 			-- change into project directory
 			set_directory (to_string (project_name));
@@ -222,23 +221,23 @@ package body et_project is
 			use pac_generic_modules;
 			use et_rig;
 			use et_rig_name;
-			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
+			rig_conf_file : type_rig_file_name; -- led_matrix.conf
 
 			example_instance_name : constant string := "MOD1";
 		begin
 			log (text => "creating default rig configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name
-			rig_conf_file := pac_file_name.to_bounded_string (compose (
+			rig_conf_file := type_rig_file_name (pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (project_name),
 				name					=> to_string (project_name),
-				extension				=> file_extension));
+				extension				=> file_extension)));
 
 			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file,
-				name => pac_file_name.to_string (rig_conf_file));
+				name => pac_file_name.to_string (pac_file_name.bounded_string (rig_conf_file)));
 
 			set_output (file_handle);
 
@@ -320,7 +319,7 @@ package body et_project is
 
 
 	procedure create_project_directory_bare (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
@@ -367,7 +366,7 @@ package body et_project is
 
 
 	procedure validate_project (
-		project_name	: in pac_project_name.bounded_string;
+		project_name	: in type_project_name;
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (log_threshold);
@@ -389,7 +388,7 @@ package body et_project is
 
 
 	procedure open_project (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in type_project_name;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level)
 	is
 		use ada.directories;
@@ -456,7 +455,7 @@ package body et_project is
 
 
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
+		destination		: in type_project_name; -- blood_sample_analyzer_experimental
 		log_threshold	: in type_log_level)
 	is
 		use et_rig;
@@ -470,13 +469,13 @@ package body et_project is
 		current_working_directory : constant string := current_directory;
 
 		-- break down destination into path and project name:
-		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
-		name : constant pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
+		path : type_project_path := to_project_path (containing_directory (to_string (destination)));
+		name : constant type_project_name := to_project_name (simple_name (to_string (destination)));
 
 
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
-			module_name : constant pac_module_name.bounded_string := key (module_cursor); -- motor_driver
+			module_name : constant type_module_name := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
 
@@ -510,8 +509,7 @@ package body et_project is
 			rig_cursor : in pac_rigs.cursor)
 		is
 			use et_rig_name;
-			use pac_file_name;
-			rig_name : constant pac_file_name.bounded_string := key (rig_cursor);
+			rig_name : constant type_rig_file_name := key (rig_cursor);
 		begin
 			log_indentation_up;
 			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);

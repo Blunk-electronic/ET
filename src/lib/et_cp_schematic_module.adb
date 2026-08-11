@@ -70,7 +70,7 @@ package body et_cp_schematic_module is
 
 
 		procedure do_it (
-			module_name : in pac_module_name.bounded_string)
+			module_name : in type_module_name)
 		is begin
 			create_module (
 				module_name		=> module_name, -- led_driver_test
@@ -126,7 +126,7 @@ package body et_cp_schematic_module is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		module : pac_module_name.bounded_string;
+		module : type_module_name;
 
 		use et_sheets;
 		sheet : type_sheet := 1;
@@ -236,7 +236,7 @@ package body et_cp_schematic_module is
 
 		-- Deletes an explicitly given module:
 		procedure delete_explicit (
-			module_name : in pac_module_name.bounded_string)
+			module_name : in type_module_name)
 		is begin
 			delete_module (
 				module_name		=> module_name, -- pwr_supply

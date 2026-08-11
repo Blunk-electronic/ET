@@ -62,7 +62,7 @@ package body et_gui_2 is
 
 
 	procedure init_schematic (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		log_threshold_in : in type_log_level)
@@ -191,7 +191,7 @@ package body et_gui_2 is
 
 
 	procedure init_board (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in : in type_log_level)
 	is
@@ -286,10 +286,10 @@ package body et_gui_2 is
 
 
 	procedure single_module (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in type_project_name;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr
+		script			: in type_script_name; -- rename_nets.scr
 		log_threshold	: in type_log_level)
 	is
 		use et_sheets;
@@ -301,7 +301,7 @@ package body et_gui_2 is
 		log (text => "module " & enclose_in_quotes (to_string (pac_generic_modules.key (module))), level => log_threshold);
 		log (text => "sheet" & to_string (sheet), level => log_threshold);
 
-		if pac_script_name.length (script) > 0 then
+		if get_length (script) > 0 then
 			log (text => "script " & enclose_in_quotes (to_string (script)), level => log_threshold);
 		end if;
 
@@ -332,7 +332,7 @@ package body et_gui_2 is
 		--         in et_canvas_schematic and et_canvas_board.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
-		if pac_script_name.length (script) > 0 then
+		if get_length (script) > 0 then
 
 			--et_gui.schematic_callbacks.execute_script (script);
 			et_canvas_schematic.execute_script_console (script);

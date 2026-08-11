@@ -433,18 +433,18 @@ package body et_kicad_packages is
 
 
 
-	function to_string (directory_name : in pac_directory_name.bounded_string)
+	function to_string (directory_name : in type_directory_name)
 		return string
 	is begin
-		return pac_directory_name.to_string (directory_name);
+		return pac_directory_name.to_string (pac_directory_name.bounded_string (directory_name));
 	end to_string;
 
 
 
 	function to_directory (directory_name : in string)
-		return pac_directory_name.bounded_string
+		return type_directory_name
 	is begin
-		return pac_directory_name.to_bounded_string (directory_name);
+		return type_directory_name (pac_directory_name.to_bounded_string (directory_name));
 	end to_directory;
 	pragma unreferenced (to_directory);
 
@@ -464,7 +464,7 @@ package body et_kicad_packages is
 		use pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : constant pac_package_name.bounded_string :=
+		package_name : constant type_package_name :=
 			to_package_name (ada.directories.base_name (file_name));
 
 		function path_and_file_name return string is
@@ -586,7 +586,7 @@ package body et_kicad_packages is
 
 
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
-		description	: pac_package_description.bounded_string; -- temp. storage of package description
+		description	: type_package_description; -- temp. storage of package description
 		tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		-- The majority of terminals dictates the package technology. The default is THT.
@@ -605,7 +605,7 @@ package body et_kicad_packages is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name			: pac_terminal_name.bounded_string;
+		terminal_name			: type_terminal_name;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht	: type_pad_shape_tht;
 		terminal_pad_shape_smt	: type_pad_shape_smt;
@@ -915,7 +915,6 @@ package body et_kicad_packages is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use pac_text_content;
 			use et_pcb_sides;
 			use pac_geometry_brd;
 
@@ -2663,8 +2662,8 @@ package body et_kicad_packages is
 		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
 
 		-- backup the directory of origin
-		use pac_directory_name;
-		origin_directory : constant pac_directory_name.bounded_string := to_bounded_string (current_directory);
+		origin_directory : constant type_directory_name :=
+			type_directory_name (pac_directory_name.to_bounded_string (current_directory));
 
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.
@@ -2685,7 +2684,7 @@ package body et_kicad_packages is
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 		procedure read_packages (
-			library_name	: in pac_package_model_file.bounded_string;
+			library_name	: in type_package_model_name;
 			packages		: in out type_packages_library.map)
 		is
 			package_names : pac_directory_entries.list;

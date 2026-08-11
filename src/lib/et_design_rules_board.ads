@@ -59,10 +59,12 @@ package et_design_rules_board is
 	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
 	use pac_file_name;
 
-	function is_empty (rules : in pac_file_name.bounded_string) return boolean;
+	type type_design_rules_file_name is new pac_file_name.bounded_string;
 
-	function to_file_name (file : in string) return pac_file_name.bounded_string;
-	function to_string (file : in pac_file_name.bounded_string) return string;
+	function is_empty (rules : in type_design_rules_file_name) return boolean;
+
+	function to_file_name (file : in string) return type_design_rules_file_name;
+	function to_string (file : in type_design_rules_file_name) return string;
 
 	file_extension : constant string := "dru";
 
@@ -189,7 +191,7 @@ package et_design_rules_board is
 
 
 	package pac_design_rules_board is new ordered_maps (
-		key_type		=> pac_file_name.bounded_string, -- JLP_ML4_standard.dru
+		key_type		=> type_design_rules_file_name, -- JLP_ML4_standard.dru
 		element_type	=> type_design_rules_board);
 
 	-- Here we collect all sets of design rules of the project:
@@ -199,7 +201,7 @@ package et_design_rules_board is
 	-- Reads the design rules specified in the given file
 	-- and inserts the data set in list "design_rules" (see above):
 	procedure read_rules (
-		file_name		: in pac_file_name.bounded_string;
+		file_name		: in type_design_rules_file_name;
 		log_threshold	: in type_log_level);
 
 
@@ -207,7 +209,7 @@ package et_design_rules_board is
 	-- Returns the design rule data set specified in given rules file.
 	-- If the given rules file does not exist (of if rules is empty)
 	-- returns default rules.
-	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
+	function get_rules (rules : in type_design_rules_file_name) -- JLP_ML4_standard.dru
 		return type_design_rules_board;
 
 

@@ -105,19 +105,19 @@ package et_devices_electrical is
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
-				value		: pac_device_value.bounded_string; -- 470R
+				value		: type_device_value; -- 470R
 
-				partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				partcode	: type_device_partcode; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)
 				-- usually no partcode is required.
 
 				-- The purpose indicates what the device is doing.
 				-- It is usually required for devices that require interaction
 				-- with the user of a PCBA:
-				purpose		: pac_device_purpose.bounded_string; -- brightness_control
+				purpose		: type_device_purpose; -- brightness_control
 
 				-- The package variant:
-				variant		: pac_package_variant_name.bounded_string; -- D, N
+				variant		: type_package_variant_name; -- D, N
 
 				-- This is layout related. In the layout, the package has a position
 				-- and placeholders for name, value and purpose.
@@ -148,6 +148,15 @@ package et_devices_electrical is
 		return boolean;
 
 
+	-- This function copies a given device but
+	-- removes all units so that a bare device
+	-- with all properties of the original device is
+	-- created on return:
+	function copy_bare_device (
+		device_in : in type_device_electrical)
+		return type_device_electrical;
+
+	
 
 	function get_position (
 		device : in type_device_electrical)
@@ -157,7 +166,7 @@ package et_devices_electrical is
 
 	function get_device_model_file (
 		device : type_device_electrical)
-		return pac_device_model_file.bounded_string; -- *.dev
+		return type_device_model_name; -- *.dev
 	-- CS rename to get_device_model_name
 
 
@@ -184,7 +193,7 @@ package et_devices_electrical is
 	-- The given device must be real. Otherwise constraint error arises here.
 	function get_package_model_name (
 		device : in type_device_electrical)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 
@@ -225,7 +234,7 @@ package et_devices_electrical is
 
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
-		return pac_device_model_file.bounded_string; -- *.dev
+		return type_device_model_name; -- *.dev
 
 
 
@@ -247,7 +256,7 @@ package et_devices_electrical is
 
 	function get_prefix (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_prefix.bounded_string;
+		return type_device_prefix;
 
 
 
@@ -383,7 +392,7 @@ package et_devices_electrical is
 	-- The given device must be real. Otherwise constraint error arises here.
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_model_file.bounded_string;
+		return type_package_model_name;
 
 
 	-- Returns the cursor to the package model of the given device
@@ -413,7 +422,7 @@ package et_devices_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
 		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
-		return pac_text_content.bounded_string;
+		return type_text_content;
 
 
 

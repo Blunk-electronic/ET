@@ -73,7 +73,7 @@ package et_board_ops_silkscreen is
 
 	-- Draws a line:
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -166,7 +166,7 @@ package et_board_ops_silkscreen is
 
 	-- Adds an arc to the silkscreen:
 	procedure add_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -250,7 +250,7 @@ package et_board_ops_silkscreen is
 
 	-- Adds a circle to the silkscreen:
 	procedure add_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_silk_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -660,7 +660,7 @@ package et_board_ops_silkscreen is
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_object (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;

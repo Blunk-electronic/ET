@@ -48,6 +48,8 @@ package et_rig_name is
 
 	package pac_file_name is new generic_bounded_length (file_length_max);
 
+	type type_rig_file_name is new pac_file_name.bounded_string;
+
 
 	file_extension : constant string := "rig";
 	file_extension_asterisk : constant string := "*." & file_extension;

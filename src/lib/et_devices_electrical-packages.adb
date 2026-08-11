@@ -59,7 +59,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_value (
 		device	: in out type_device_electrical;
-		value	: in pac_device_value.bounded_string)
+		value	: in type_device_value)
 	is begin
 		device.value := value;
 	end set_value;
@@ -67,7 +67,7 @@ package body et_devices_electrical.packages is
 
 	function get_value (
 		device	: in type_device_electrical)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return device.value;
 	end get_value;
@@ -83,7 +83,7 @@ package body et_devices_electrical.packages is
 
 	function get_value (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_value.bounded_string
+		return type_device_value
 	is begin
 		return pac_devices_electrical.element (device).value;
 	end get_value;
@@ -108,7 +108,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_partcode (
 		device		: in out type_device_electrical;
-		partcode	: in pac_device_partcode.bounded_string)
+		partcode	: in type_device_partcode)
 	is begin
 		device.partcode := partcode;
 	end set_partcode;
@@ -116,7 +116,7 @@ package body et_devices_electrical.packages is
 
 	function get_partcode (
 		device	: in type_device_electrical)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return device.partcode;
 	end get_partcode;
@@ -133,7 +133,7 @@ package body et_devices_electrical.packages is
 
 	function get_partcode (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_partcode.bounded_string
+		return type_device_partcode
 	is begin
 		return pac_devices_electrical.element (device).partcode;
 	end get_partcode;
@@ -158,7 +158,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_purpose (
 		device	: in out type_device_electrical;
-		purpose	: in pac_device_purpose.bounded_string)
+		purpose	: in type_device_purpose)
 	is begin
 		device.purpose := purpose;
 	end set_purpose;
@@ -166,7 +166,7 @@ package body et_devices_electrical.packages is
 
 	function get_purpose (
 		device	: in type_device_electrical)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return device.purpose;
 	end get_purpose;
@@ -183,7 +183,7 @@ package body et_devices_electrical.packages is
 
 	function get_purpose (
 		device : in pac_devices_electrical.cursor)
-		return pac_device_purpose.bounded_string
+		return type_device_purpose
 	is begin
 		return pac_devices_electrical.element (device).purpose;
 	end get_purpose;
@@ -208,7 +208,7 @@ package body et_devices_electrical.packages is
 
 	function get_package_variant (
 		device : in type_device_electrical)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is begin
 		return device.variant;
 	end get_package_variant;
@@ -236,7 +236,7 @@ package body et_devices_electrical.packages is
 
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_variant_name.bounded_string
+		return type_package_variant_name
 	is
 		d : type_device_electrical renames element (device);
 	begin
@@ -1178,8 +1178,8 @@ package body et_devices_electrical.packages is
 
 	function get_terminal (
 		device	: in pac_devices_electrical.cursor;
-		unit	: in pac_unit_name.bounded_string;
-		port	: in pac_port_name.bounded_string)
+		unit	: in type_unit_name;
+		port	: in type_port_name)
 		return et_terminals.pac_terminals.cursor
 	is
 		use pac_terminals;
@@ -1189,7 +1189,7 @@ package body et_devices_electrical.packages is
 		device_model_lib : constant pac_device_models.cursor := get_device_model (device);
 
 		-- This is the name of the package variant used by the given device:
-		variant_sch : constant pac_package_variant_name.bounded_string :=
+		variant_sch : constant type_package_variant_name :=
 			get_package_variant (device); -- N, D
 
 		-- Get full information about the package variant:
@@ -1197,7 +1197,7 @@ package body et_devices_electrical.packages is
 		variant_lib : constant pac_package_variants.cursor :=
 			get_package_variant (device_model_lib, variant_sch);
 
-		terminal_name : constant pac_terminal_name.bounded_string :=
+		terminal_name : constant type_terminal_name :=
 			get_terminal (variant_lib, unit, port);
 
 		use pac_package_models;

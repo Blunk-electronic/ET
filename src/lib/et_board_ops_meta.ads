@@ -71,14 +71,14 @@ package et_board_ops_meta is
 	-- Adds a library path to the board editor:
 	procedure add_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_board.bounded_string;
+		path			: in type_library_path_board;
 		log_threshold	: in type_log_level);
 
 
 	-- Removes a library path from the board editor:
 	procedure remove_library_path (
 		module_cursor	: in pac_generic_modules.cursor;
-		path			: in pac_library_path_board.bounded_string;
+		path			: in type_library_path_board;
 		log_threshold	: in type_log_level);
 
 

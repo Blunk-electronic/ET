@@ -106,36 +106,36 @@ procedure et is
 	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
 --	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
-	project_name_create		: pac_project_name.bounded_string; -- the project to be created
-	project_name_import		: pac_project_name.bounded_string; -- the project to be imported
-	project_name_open		: pac_project_name.bounded_string; -- the project to be opened
-	project_name_save_as	: pac_project_name.bounded_string; -- the "save as" name of the project
+	project_name_create		: type_project_name; -- the project to be created
+	project_name_import		: type_project_name; -- the project to be imported
+	project_name_open		: type_project_name; -- the project to be opened
+	project_name_save_as	: type_project_name; -- the "save as" name of the project
 
-	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_file_name		: type_module_file_name;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 
-	package_name_create		: pac_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: pac_package_model_file.bounded_string; -- the package to be imported
-	package_name_open		: pac_package_model_file.bounded_string; -- the package to be opened
-	package_name_save_as	: pac_package_model_file.bounded_string; -- the package to be saved as
+	package_name_create		: type_package_model_name; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: type_package_model_name; -- the package to be imported
+	package_name_open		: type_package_model_name; -- the package to be opened
+	package_name_save_as	: type_package_model_name; -- the package to be saved as
 	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
-	symbol_name_create		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
-	symbol_name_open		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be opened
-	symbol_name_save_as		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be saved as
+	symbol_name_create		: et_symbol_name.type_symbol_model_name; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbol_name.type_symbol_model_name; -- the symbol to be opened
+	symbol_name_save_as		: et_symbol_name.type_symbol_model_name; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
-	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
-	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
+	device_name_create		: type_device_model_name; -- the device to be created like libraries/devices/TL084.dev
+	device_name_open		: type_device_model_name; -- the device to be opened
+	device_name_save_as		: type_device_model_name; -- the device to be saved as
 	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
-	frame_name_open			: et_drawing_frame.pac_template_name.bounded_string;
-	unused_frame_name_save_as	: et_drawing_frame.pac_template_name.bounded_string;
+	frame_name_create		: et_drawing_frame.type_template_name; -- the frame to be created like lib/frames/A3_landscape.frs
+	frame_name_open			: et_drawing_frame.type_template_name;
+	unused_frame_name_save_as	: et_drawing_frame.type_template_name;
 	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 
-	script_name				: pac_script_name.bounded_string;
+	script_name				: type_script_name;
 
 	dummy_name : constant string := "dummy";
 
@@ -358,10 +358,9 @@ procedure et is
 
 	procedure backup_projects_root_directory is
 		use et_project;
-		use et_project.pac_root_directory;
 	begin
 		-- CS: log ?
-		projects_root_dir := to_bounded_string (current_directory);
+		projects_root_dir := type_root_directory (pac_root_directory.to_bounded_string (current_directory));
 	end backup_projects_root_directory;
 	pragma unreferenced (backup_projects_root_directory);
 
@@ -370,7 +369,6 @@ procedure et is
 
 	procedure restore_projects_root_directory is
 		use et_project;
-		use et_project.pac_root_directory;
 	begin
 		log_indentation_reset;
 		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",
@@ -485,7 +483,7 @@ procedure et is
 
 	procedure save_symbol_as is
 		use et_symbol_library;
-		use et_symbol_name.pac_symbol_model_name;
+		use et_symbol_name;
 	begin
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol is saved.
@@ -523,13 +521,11 @@ procedure et is
 	procedure launch_schematic_and_board_editor is
 		use et_gui_2;
 		use pac_generic_modules;
-		use pac_module_file_name;
-		use pac_module_name;
 		use et_module_ops;
 
-		generic_module_name : pac_module_name.bounded_string;
+		generic_module_name : type_module_name;
 		module_cursor : pac_generic_modules.cursor;
-		script_name_tmp : pac_script_name.bounded_string;
+		script_name_tmp : type_script_name;
 	begin
 		-- If no generic modules available at all, create an untitled module:
 		if get_count (generic_modules) = 0 then
@@ -550,7 +546,7 @@ procedure et is
 			else
 				-- Convert the optionally given module file name to a module name.
 				generic_module_name := to_module_name (remove_extension (
-					simple_name (pac_module_file_name.to_string (module_file_name))));
+					simple_name (pac_module_file_name.to_string (pac_module_file_name.bounded_string (module_file_name)))));
 
 				module_cursor := find (generic_modules, generic_module_name);
 			end if;
@@ -558,7 +554,7 @@ procedure et is
 
 		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.
 		-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
-		if pac_script_name.length (script_name) > 0 then
+		if get_length (script_name) > 0 then
 			script_name_tmp := to_script_name (simple_name (to_string (script_name))); -- rename_nets.scr
 		end if;
 
@@ -579,11 +575,11 @@ procedure et is
 
 
 	procedure process_commandline_arguments is
-		use et_conventions.pac_file_name;
+		use et_conventions;
 		use pac_package_model_file;
-		use et_symbol_name.pac_symbol_model_name;
+		use et_symbol_name;
 		use pac_device_model_file;
-		use et_drawing_frame.pac_template_name;
+		use et_drawing_frame;
 		use et_script_processor;
 
 		exit_code_script : type_exit_code_script;

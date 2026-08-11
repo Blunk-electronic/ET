@@ -86,6 +86,8 @@ package et_undo_redo is
 	undo_message_length_max : constant positive := 50;
 	package pac_undo_message is new generic_bounded_length (undo_message_length_max);
 
+	type type_undo_message is new pac_undo_message.bounded_string;
+
 
 	-- Restores the design state (both in schematic and board)
 	-- to the state BEFORE the latest commit.
@@ -93,12 +95,14 @@ package et_undo_redo is
 	-- Via the argument "message" the procedure returns some helpful information
 	-- to be displayed in the GUI:
 	procedure undo (
-		message	: in out pac_undo_message.bounded_string;
+		message	: in out type_undo_message;
 		lth		: in type_log_level);
 
 
 	redo_message_length_max : constant positive := 50;
 	package pac_redo_message is new generic_bounded_length (redo_message_length_max);
+
+	type type_redo_message is new pac_redo_message.bounded_string;
 
 
 	-- Redoes the the latest undo-operation:
@@ -106,7 +110,7 @@ package et_undo_redo is
 	-- Via the argument "message" the procedure returns some helpful information
 	-- to be displayed in the GUI:
 	procedure redo  (
-		message	: in out pac_redo_message.bounded_string;
+		message	: in out type_redo_message;
 		lth		: in type_log_level);
 
 

@@ -114,7 +114,7 @@ package body et_cp_board_module is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		module_name : pac_module_name.bounded_string;
+		module_name : type_module_name;
 
 		use et_sheets;
 		sheet : type_sheet := 1;

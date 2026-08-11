@@ -88,7 +88,7 @@ package body et_units_of_measurement is
 
 
 	procedure check_abbrevation_of_unit_characters (
-		abbrevation	: in pac_unit_abbrevation.bounded_string;
+		abbrevation	: in type_unit_abbrevation;
 		characters	: in character_set)
 	is
 		invalid_character_position : natural := 0;

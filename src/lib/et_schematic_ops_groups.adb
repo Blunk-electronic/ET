@@ -169,7 +169,7 @@ package body et_schematic_ops_groups is
 		-- Set the sheet of the reference point.
 		-- This is only relevant if the clipboard is used:
 		set_sheet (group_reference_point, sheet);
-		
+
 		-- CS: this should be depended on
 		-- the currently displayed layers:
 		group_units;
@@ -607,9 +607,9 @@ package body et_schematic_ops_groups is
 
 
 
-	
 
-	
+
+
 
 	procedure copy_group_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -618,21 +618,21 @@ package body et_schematic_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
-		-- procedure copy_to_clipboard is
-		-- 	use et_schematic_ops_units;
-		-- begin
-		-- 	log (text => "copy selected objects to clipboard",
-		-- 		 level => log_threshold + 1);
-  -- 
-		-- 	log_indentation_up;
-  -- 
-		-- 	copy_selected_units_to_clipboard (
-		-- 		module_cursor, log_threshold + 2);
-  -- 
-		-- 	log_indentation_down;
-		-- end copy_to_clipboard;
+		procedure copy_units_to_clipboard is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units",
+				 level => log_threshold + 1);
+  
+			log_indentation_up;
+  
+			copy_selected_units_to_clipboard (
+				module_cursor, log_threshold + 2);
+  
+			log_indentation_down;
+		end copy_units_to_clipboard;
 
-		
+
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
@@ -640,29 +640,33 @@ package body et_schematic_ops_groups is
 				& " reference point: auto center.",
 				level => log_threshold);
 
+			-- CS set x/y of group_reference_point
 		else
 			log (text => "module " & to_string (module_cursor)
 				& " copy group to clipboard."
 				& " reference point: " & to_string (reference_point),
 				level => log_threshold);
+
+			set_place (group_reference_point, reference_point);
 		end if;
-			
+
+		
 		log_indentation_up;
 
-		-- CS set x/y of group_reference_point
 
-		-- Copy selected objects to clipboard:
-		-- copy_to_clipboard;
+		-- Copy selected units to clipboard:
+		copy_units_to_clipboard;
 
+		-- CS nets, texts
 
 		log_indentation_down;
 	end copy_group_to_clipboard;
 
 
 
-	
 
-	
+
+
 
 
 
@@ -678,6 +682,39 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
+		offset : type_object_position_relative;
+
+		
+
+		procedure compute_offset is
+			destination : type_object_position;
+		begin
+			destination := to_position (place, sheet);
+
+			offset := get_offset (group_reference_point, destination);
+
+			log (text => "group offset " & to_string (offset),
+				 level => log_threshold + 1);
+		end compute_offset;
+
+		
+		
+		procedure paste_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+  
+			paste_units_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+  
+			log_indentation_down;
+		end paste_units;
+
+			
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste group at sheet " & to_string (sheet)
@@ -694,9 +731,16 @@ package body et_schematic_ops_groups is
 		end if;
 
 
-		-- CS
+		compute_offset;
+
+		
 		-- Transfer objects from clipboard to the
 		-- given module:
+		paste_units;
+
+		-- CS
+		-- nets, texts
+		
 
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:

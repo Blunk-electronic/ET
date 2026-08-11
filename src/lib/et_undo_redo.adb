@@ -72,11 +72,10 @@ package body et_undo_redo is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_commit_message;
 
 
 			procedure commit_nets is
@@ -259,11 +258,10 @@ package body et_undo_redo is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_commit_message;
 
 
 			procedure commit_nets is
@@ -446,19 +444,16 @@ package body et_undo_redo is
 
 
 	procedure undo (
-		message	: in out pac_undo_message.bounded_string;
+		message	: in out type_undo_message;
 		lth		: in type_log_level)
 	is
 		use et_board_ops_ratsnest;
-
-		use pac_undo_message;
-		use pac_commit_message;
 
 		domain : type_domain;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -748,18 +743,16 @@ package body et_undo_redo is
 
 
 	procedure redo (
-		message	: in out pac_redo_message.bounded_string;
+		message	: in out type_redo_message;
 		lth		: in type_log_level)
 	is
 		use et_board_ops_ratsnest;
-		use pac_redo_message;
-		use pac_commit_message;
 
 		domain : type_domain;
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

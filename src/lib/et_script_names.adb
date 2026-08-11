@@ -43,29 +43,29 @@ package body et_script_names is
 
 
 	function get_length (
-		name : in pac_script_name.bounded_string)
+		name : in type_script_name)
 		return natural
 	is begin
-		return natural (length (name));
+		return natural (length (pac_script_name.bounded_string (name)));
 	end get_length;
 
 
 
 
 	function to_string (
-		name : in pac_script_name.bounded_string)
+		name : in type_script_name)
 		return string
 	is begin
-		return pac_script_name.to_string (name);
+		return pac_script_name.to_string (pac_script_name.bounded_string (name));
 	end to_string;
 
 
 
 	function to_script_name (
 		name : in string)
-		return pac_script_name.bounded_string
+		return type_script_name
 	is begin
-		return pac_script_name.to_bounded_string (name);
+		return type_script_name (pac_script_name.to_bounded_string (name));
 	end to_script_name;
 
 

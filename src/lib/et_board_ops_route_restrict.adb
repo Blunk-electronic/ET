@@ -51,7 +51,7 @@ package body et_board_ops_route_restrict is
 
 
 	procedure draw_route_restrict_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -67,7 +67,7 @@ package body et_board_ops_route_restrict is
 
 
 		procedure draw (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -126,7 +126,7 @@ package body et_board_ops_route_restrict is
 
 
 	procedure draw_route_restrict_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -141,7 +141,7 @@ package body et_board_ops_route_restrict is
 
 
 		procedure draw (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -198,7 +198,7 @@ package body et_board_ops_route_restrict is
 
 
 	procedure draw_route_restrict_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -213,7 +213,7 @@ package body et_board_ops_route_restrict is
 
 
 		procedure draw (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -270,7 +270,7 @@ package body et_board_ops_route_restrict is
 
 
 	procedure delete_route_restrict (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
 		catch_zone		: in type_catch_zone;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -283,7 +283,7 @@ package body et_board_ops_route_restrict is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -389,7 +389,7 @@ package body et_board_ops_route_restrict is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

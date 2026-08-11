@@ -193,7 +193,7 @@ package body et_canvas.drawing_frame is
 
 
 			procedure draw_index (
-				content	: in pac_text_content.bounded_string;
+				content	: in type_text_content;
 				pos		: in type_vector_model)
 			is
 				use pac_draw_text;

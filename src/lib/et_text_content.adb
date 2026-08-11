@@ -48,22 +48,22 @@ package body et_text_content is
 
 
 
-	function to_string (text_content : in pac_text_content.bounded_string) return string is begin
-		return pac_text_content.to_string (text_content);
+	function to_string (text_content : in type_text_content) return string is begin
+		return pac_text_content.to_string (pac_text_content.bounded_string (text_content));
 	end to_string;
 
 
 
-	function to_content (content : in string) return pac_text_content.bounded_string is begin
-		return pac_text_content.to_bounded_string (content);
+	function to_content (content : in string) return type_text_content is begin
+		return type_text_content (pac_text_content.to_bounded_string (content));
 	end to_content;
 
 
 
 
 
-	function is_empty (content : in pac_text_content.bounded_string) return boolean is begin
-		if pac_text_content.length (content) > 0 then -- contains something -> not empty
+	function is_empty (content : in type_text_content) return boolean is begin
+		if length (content) > 0 then -- contains something -> not empty
 			return false;
 		else
 			return true; -- contains nothing -> is empty
@@ -74,7 +74,7 @@ package body et_text_content is
 
 
 	procedure clear_content (
-		content : in out pac_text_content.bounded_string)
+		content : in out type_text_content)
 	is begin
 		content := empty_text_content;
 	end clear_content;
@@ -84,11 +84,10 @@ package body et_text_content is
 
 
 	function characters_valid (
-		content		: in pac_text_content.bounded_string;
+		content		: in type_text_content;
 		characters	: in character_set := valid_characters)
 		return boolean
 	is
-		use pac_text_content;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -113,11 +112,10 @@ package body et_text_content is
 
 
 	procedure replace_invalid_characters (
-		content		: in out pac_text_content.bounded_string;
+		content		: in out type_text_content;
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters)
 	is
-		use pac_text_content;
 		invalid_character_position : natural := 0;
 
 		l_max : natural;

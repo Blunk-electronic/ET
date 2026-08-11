@@ -95,9 +95,9 @@ procedure draw_units is
 	procedure draw_unit (
 		symbol			: in type_symbol_model;
 		device_name		: in type_device_name;
-		device_value	: in pac_device_value.bounded_string; -- like 100R or TL084
-		device_purpose	: in pac_device_purpose.bounded_string := empty_purpose; -- like "brightness control"
-		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+		device_value	: in type_device_value; -- like 100R or TL084
+		device_purpose	: in type_device_purpose := empty_purpose; -- like "brightness control"
+		unit_name		: in type_unit_name; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 		-- The unit count is required in order to decide whether a suffix
 		-- for the unit name is to be drawn. If the device has only a single unit,
@@ -961,7 +961,7 @@ procedure draw_units is
 
 
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);
@@ -985,14 +985,14 @@ procedure draw_units is
 
 
 			-- The name, value and purpose of the candidate device if it is real:
-			device_value : pac_device_value.bounded_string; -- like 100R or TL084
-			device_purpose : pac_device_purpose.bounded_string; -- like "brightness control"
+			device_value : type_device_value; -- like 100R or TL084
+			device_purpose : type_device_purpose; -- like "brightness control"
 
 
 
 			-- This procedure queries a unit:
 			procedure query_unit (
-				unit_name	: in pac_unit_name.bounded_string;
+				unit_name	: in type_unit_name;
 				unit		: in type_unit)
 			is
 				-- Get the position of the unit candidate as it is

@@ -177,7 +177,7 @@ package body et_schematic_ops_netlists_2 is
 
 	procedure make_netlist_cat_1 (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
+		variant			: in type_assembly_variant_name;
 		log_threshold	: in type_log_level)
 	is
 		use et_module;
@@ -193,7 +193,7 @@ package body et_schematic_ops_netlists_2 is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -201,12 +201,12 @@ package body et_schematic_ops_netlists_2 is
 			use pac_nets;
 
 			use et_net_names;
-			use pac_net_name;
+			use et_net_names;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				pragma unreferenced (net);

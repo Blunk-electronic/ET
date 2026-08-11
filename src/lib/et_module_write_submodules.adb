@@ -79,7 +79,7 @@ package body et_module_write_submodules is
 		use et_schematic_geometry.pac_geometry_2;
 
 		use pac_submodules;
-		use et_net_names.pac_net_name;
+		use et_net_names;
 
 
 
@@ -121,7 +121,7 @@ package body et_module_write_submodules is
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
-			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
+			write (keyword => keyword_file, parameters => to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position,
 				parameters => to_string (element (submodule_cursor).position, FORMAT_2));
@@ -145,7 +145,7 @@ package body et_module_write_submodules is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);

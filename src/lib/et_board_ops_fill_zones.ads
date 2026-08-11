@@ -412,7 +412,7 @@ package et_board_ops_fill_zones is
 
 		-- Net name is relevant if the zone is part of a route.
 		-- The type of the given fill zone is the cirteria:
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name;
+		net_name		: in type_net_name := et_net_names.no_name;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

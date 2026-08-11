@@ -59,8 +59,8 @@ separate (et_schematic_ops_device)
 
 procedure add_electrical_device (
 	module_cursor	: in pac_generic_modules.cursor;
-	device_model	: in pac_device_model_file.bounded_string;
-	variant			: in pac_package_variant_name.bounded_string;
+	device_model	: in type_device_model_name;
+	variant			: in type_package_variant_name;
 	destination		: in type_object_position;
 	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level)
@@ -70,7 +70,7 @@ is
 	use et_modes.schematic;
 
 
-	use pac_package_variant_name;
+	use et_package_variant_name;
 
 	use pac_device_models;
 	device_cursor_lib : pac_device_models.cursor; -- points to the device in the library
@@ -81,7 +81,7 @@ is
 
 
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in out type_generic_module)
 	is
 		pragma unreferenced (module_name);
@@ -135,7 +135,7 @@ is
 		-- device_cursor_sch points to the device in the schematic.
 		-- For the moment, no units are added:
 		procedure add_real_device is
-			selected_variant : pac_package_variant_name.bounded_string;
+			selected_variant : type_package_variant_name;
 
 
 			-- Compose and insert the device in the schematic.
@@ -443,7 +443,7 @@ is
 
 		-- This is the place where we temporarily keep the name
 		-- of the unit to be added:
-		unit_name : pac_unit_name.bounded_string;
+		unit_name : type_unit_name;
 
 
 

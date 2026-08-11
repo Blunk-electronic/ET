@@ -55,12 +55,12 @@ package et_netlist_submodules is
 	-- a certain net is modelled by this type:
 	type type_submodule_port_extended is record
 		-- The name of the submodule instance:
-		submodule	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submodule	: type_module_instance_name; -- MOT_DRV_3
 
 		-- The port of the submodule instance
 		-- is named after a net that is exported by
 		-- the submodule:
-		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port		: type_net_name; -- CLOCK_GENERATOR_OUT
 
 		-- CS ? direction	: type_netchanger_port_name; -- master/slave
 		-- CS ? characteristics. See et_netlist_devices.type_device_port_extended

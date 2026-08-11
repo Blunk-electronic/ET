@@ -272,7 +272,7 @@ package et_drawing_frame is
 	-- Static texts are strings like "drawn" or "sheet".
 	-- They are usually placed left of a placeholder:
 	type type_static_text is new type_placeholder with record
-		content : pac_text_content.bounded_string;
+		content : type_text_content;
 	end record;
 
 	package pac_static_texts is new doubly_linked_lists (type_static_text);
@@ -320,10 +320,11 @@ package et_drawing_frame is
 
 	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
 
+	type type_template_name is new pac_template_name.bounded_string;
 
 
-	function to_string (name : in pac_template_name.bounded_string) return string;
-	function to_template_name (name : in string) return pac_template_name.bounded_string;
+	function to_string (name : in type_template_name) return string;
+	function to_template_name (name : in string) return type_template_name;
 
 
 

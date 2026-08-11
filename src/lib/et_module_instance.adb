@@ -43,13 +43,13 @@
 package body et_module_instance is
 
 
-	function to_string (name : in pac_module_instance_name.bounded_string) return string is begin
-		return pac_module_instance_name.to_string (name);
+	function to_string (name : in type_module_instance_name) return string is begin
+		return pac_module_instance_name.to_string (pac_module_instance_name.bounded_string (name));
 	end to_string;
 
 
-	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string is begin
-		return pac_module_instance_name.to_bounded_string (name);
+	function to_instance_name (name : in string) return type_module_instance_name is begin
+		return type_module_instance_name (pac_module_instance_name.to_bounded_string (name));
 	end to_instance_name;
 
 

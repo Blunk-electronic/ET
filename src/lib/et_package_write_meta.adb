@@ -60,7 +60,7 @@ package body et_package_write_meta is
 		log (text => "write meta data", level => log_threshold);
 
 		write (keyword => keyword_description, wrap => true,
-			   parameters => to_string (packge.description));
+			   parameters => to_string (packge.description, false));
 
 		write (keyword => keyword_bom_relevant,
 			   parameters => to_string (packge.appearance));

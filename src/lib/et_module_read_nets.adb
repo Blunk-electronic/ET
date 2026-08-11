@@ -79,13 +79,13 @@ package body et_module_read_nets is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_net_name;
+	use et_net_names;
 
 
 
 -- NETS:
 
-	net_name	: pac_net_name.bounded_string; -- motor_on_off
+	net_name	: type_net_name; -- motor_on_off
 	net			: et_nets.type_net;
 
 
@@ -149,11 +149,11 @@ package body et_module_read_nets is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_net_name;
+			use et_net_names;
 			inserted : boolean;
 			cursor : pac_nets.cursor;
 		begin

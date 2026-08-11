@@ -109,8 +109,8 @@ procedure draw_packages is
 	brightness : type_brightness := NORMAL;
 
 	device_name	: et_device_name.type_device_name;
-	device_value	: et_device_value.pac_device_value.bounded_string;
-	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
+	device_value	: et_device_value.type_device_value;
+	device_purpose	: et_device_purpose.type_device_purpose;
 
 	-- Placeholders for name, value, purpose:
 	device_placeholders	: et_device_placeholders.packages.type_text_placeholders;
@@ -161,9 +161,9 @@ procedure draw_packages is
 		-- the related content:
 		function placeholder_to_content (
 			placeholder : in type_text_placeholder)
-			return pac_text_content.bounded_string
+			return type_text_content
 		is
-			result : pac_text_content.bounded_string;
+			result : type_text_content;
 
 			use et_device_name;
 			use et_device_value;
@@ -187,7 +187,7 @@ procedure draw_packages is
 			ph : type_text_placeholder renames element (c);
 
 			-- Build the content of the placeholder:
-			content : constant pac_text_content.bounded_string := placeholder_to_content (ph);
+			content : constant type_text_content := placeholder_to_content (ph);
 
 
 			-- This procedure converts the placeholder to a complete
@@ -869,7 +869,7 @@ procedure draw_packages is
 		device	: in type_device_electrical)
 	is
 		use pac_package_models;
-		package_model_name : pac_package_model_file.bounded_string;
+		package_model_name : type_package_model_name;
 	begin
 		-- put_line ("device " & to_string (name));
 
@@ -959,7 +959,7 @@ procedure draw_packages is
 	-- This procedure queries the active module and iterates
 	-- through the electrical and non-electrical devices:
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
 		pragma unreferenced (module_name);

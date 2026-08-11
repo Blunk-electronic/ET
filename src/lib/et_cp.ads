@@ -54,7 +54,7 @@ package et_cp is
 	-- project like my_projects/blood_sample_analyzer.
 	procedure execute_script_command (
 		-- The script file that contains the command. for debug messages only:
-		script_name		: in pac_script_name.bounded_string;
+		script_name		: in type_script_name;
 		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);

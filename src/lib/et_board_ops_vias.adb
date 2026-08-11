@@ -58,7 +58,7 @@ with et_commit;
 package body et_board_ops_vias is
 
 	use pac_nets;
-	use pac_net_name;
+	use et_net_names;
 	use pac_vias;
 
 
@@ -90,7 +90,7 @@ package body et_board_ops_vias is
 	is
 		use pac_proposed_vias;
 		v : type_via renames element (via).via;
-		n : pac_net_name.bounded_string renames element (via).net;
+		n : type_net_name renames element (via).net;
 	begin
 		return to_string (v.position) & ". Cat "
 			& to_string (v.category) & ". Net " & to_string (n);
@@ -112,7 +112,7 @@ package body et_board_ops_vias is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -120,7 +120,7 @@ package body et_board_ops_vias is
 
 
 			procedure query_net (
-				name	: in pac_net_name.bounded_string;
+				name	: in type_net_name;
 				net		: in type_net)
 			is
 				via_cursor : pac_vias.cursor := net.route.vias.first;
@@ -191,13 +191,13 @@ package body et_board_ops_vias is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_vias;
@@ -267,13 +267,13 @@ package body et_board_ops_vias is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				use pac_vias;
@@ -332,7 +332,7 @@ package body et_board_ops_vias is
 
 	function get_net_name (
 		object : in pac_objects.cursor)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
 		use pac_objects;
 		v : constant type_object_via := element (object);
@@ -369,7 +369,7 @@ package body et_board_ops_vias is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -379,7 +379,7 @@ package body et_board_ops_vias is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 
 				procedure query_vias (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
@@ -460,7 +460,7 @@ package body et_board_ops_vias is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -470,7 +470,7 @@ package body et_board_ops_vias is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 
 				procedure query_vias (
-					net_name	: in pac_net_name.bounded_string;
+					net_name	: in type_net_name;
 					net		: in type_net)
 				is
 					pragma unreferenced (net_name);
@@ -545,14 +545,14 @@ package body et_board_ops_vias is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
   pragma unreferenced (module_name);
 
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -626,7 +626,7 @@ package body et_board_ops_vias is
 
 	procedure place_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in type_net_name; -- reset_n
 		via				: in type_via;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -640,7 +640,7 @@ package body et_board_ops_vias is
 
 
 		procedure locate_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -649,7 +649,7 @@ package body et_board_ops_vias is
 			use et_nets;
 
 			procedure locate_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -784,9 +784,9 @@ package body et_board_ops_vias is
 	function get_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_via)
-		return pac_net_name.bounded_string
+		return type_net_name
 	is
-		result : pac_net_name.bounded_string;
+		result : type_net_name;
 
 		module : type_generic_module renames element (module_cursor);
 
@@ -827,13 +827,13 @@ package body et_board_ops_vias is
 
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
@@ -889,13 +889,13 @@ package body et_board_ops_vias is
 	is
 
 		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
 
 			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
+				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);

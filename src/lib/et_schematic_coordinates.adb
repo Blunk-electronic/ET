@@ -171,6 +171,8 @@ package body et_schematic_coordinates is
 
 
 
+	
+
 	function to_string (
 		position	: in type_object_position;
 		format		: in type_output_format := FORMAT_1)
@@ -203,6 +205,63 @@ package body et_schematic_coordinates is
 
 
 
+
+	function to_string (
+		position	: in type_object_position_relative;
+		format		: in type_output_format := FORMAT_1)
+		return string
+	is
+		-- s : constant string := to_string (get_sheet (position));
+		-- x : constant string := to_string (get_x (position));
+		-- y : constant string := to_string (get_y (position));
+		-- r : constant string := to_string (get_rotation (position));
+  -- 
+		-- separator : constant string := " / ";
+	begin
+		-- case format is
+		-- 	when FORMAT_1 =>
+		-- 		return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+  -- 
+		-- 	when FORMAT_2 =>
+		-- 		return "sheet " & s & " x " & x & " y " & y & " rotation " & r;
+  -- 
+		-- 	when FORMAT_3 =>
+		-- 		return s & space & x & space & y & space & r;
+  -- 
+		-- 	when others => -- CS: do the same as with FORMAT_1
+		-- 		return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+  -- 
+		-- end case;
+		return "";
+	end to_string;
+
+	
+
+
+
+	function get_offset (
+		left, right : in type_object_position'class)
+		return type_object_position_relative
+	is 
+		result : type_object_position_relative;
+	begin
+		-- subtract location vectors:
+		result.place := right.place - left.place;
+
+		-- subtract rotation:
+		result.rotation := add (right.rotation, -left.rotation);
+		-- CS: probably not correct. Instead a sub (right, left)
+		-- should be used.
+
+		-- subtract sheets:
+		result.sheet := right.sheet - left.sheet;
+		
+		return result;
+	end get_offset;
+
+
+
+	
 
 
 	function to_position (

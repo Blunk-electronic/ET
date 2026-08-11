@@ -209,7 +209,7 @@ package body et_module_read_route_restrict is
 		use pac_route_restrict_lines;
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -244,7 +244,7 @@ package body et_module_read_route_restrict is
 		use pac_route_restrict_arcs;
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
@@ -281,7 +281,7 @@ package body et_module_read_route_restrict is
 		use pac_route_restrict_circles;
 
 		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
+			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);

@@ -142,7 +142,7 @@ package et_package_model is
 
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_bom_relevant) is abstract tagged record
-		description		: pac_package_description.bounded_string;
+		description		: type_package_description;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
 		keepout		: type_keepout_both_sides;
 		stopmask		: type_stopmask_both_sides; -- not terminal related

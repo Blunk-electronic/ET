@@ -49,7 +49,7 @@ separate (et_schematic_ops_units)
 procedure fetch_unit (
 	module_cursor	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC1
-	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
+	unit_name		: in type_unit_name; -- A, B, IO_BANK_2
 	destination		: in type_object_position; -- sheet/x/y/rotation
 	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level)
@@ -62,7 +62,7 @@ is
 
 
 	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in out type_generic_module)
 	is
 		pragma unreferenced (module_name);

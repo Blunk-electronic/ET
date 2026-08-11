@@ -189,7 +189,7 @@ is
 
 
 	procedure query_obstacles (
-		module_name	: in pac_module_name.bounded_string;
+		module_name	: in type_module_name;
 		module		: in et_schematic.type_module)
 	is
 		use pac_distances_sorting;
@@ -325,7 +325,7 @@ is
 
 			-- Queries the conductor segments of foregin nets.
 			procedure query_net (nf : in pac_nets.cursor) is
-				use pac_net_name;
+				use et_net_names;
 				use pac_conductor_lines;
 				use pac_conductor_arcs;
 

@@ -56,7 +56,7 @@ package body et_symbol_read is
 
 
 	procedure read_symbol (
-		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
+		file_name		: in type_symbol_model_name; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level)
 	is
 		file_handle : ada.text_io.file_type;
