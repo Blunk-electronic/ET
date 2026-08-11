@@ -42,7 +42,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with et_string_processing;		use et_string_processing;
+with et_string_processing;				use et_string_processing;
 with et_drawing_frame.schematic;
 with et_sheets;							use et_sheets;
 with et_schematic_ops_sheets;			use et_schematic_ops_sheets;
@@ -100,8 +100,76 @@ package body et_cp_schematic_sheet is
 
 
 
+	
+	
+	
+	procedure add_sheet (
+		module			: in pac_generic_modules.cursor;
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
+		
+		procedure add_default_sheet is begin
+			add_sheet (
+				module_cursor	=> module,
 
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
+				
+		end add_default_sheet;
+		
+		
+		
+		procedure add_sheet_with_category is
+			use et_drawing_frame.schematic;
+			category : type_schematic_sheet_category;
+		begin
+			category := to_category (get_field (cmd, 5));
+
+			add_sheet (
+				module_cursor	=> module,
+				category		=> category,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
+
+		end add_sheet_with_category;
+		
+		
+		
+	begin
+		log (text => "add sheet", level => log_threshold);
+		log_indentation_up;
+		
+		case cmd_field_count is
+			when 4 =>
+				add_default_sheet;
+
+			when 5 =>
+				add_sheet_with_category;
+				
+			when 6 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+
+			when others => command_incomplete (cmd);
+		end case;
+		
+		log_indentation_down;
+	end add_sheet;
+	
+
+	
+	
+		
+		
+		
 
 
 

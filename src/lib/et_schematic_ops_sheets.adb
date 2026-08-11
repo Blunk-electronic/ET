@@ -210,6 +210,47 @@ package body et_schematic_ops_sheets is
 
 
 
+	
+	procedure add_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		category		: in type_schematic_sheet_category := PRODUCT;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+		begin
+			-- CS
+			null;
+
+			-- CS log sheet number. or log total ?
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " add sheet. category " & to_string (category),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end add_sheet;
+
+
+
+
+
+	
 
 
 	procedure delete_sheet (

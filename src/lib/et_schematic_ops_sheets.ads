@@ -90,6 +90,16 @@ package et_schematic_ops_sheets is
 
 
 
+	-- This procedure creates a new sheet and appends
+	-- it to the exsting sheets:
+	procedure add_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		category		: in type_schematic_sheet_category := PRODUCT;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+	
+
 	-- Deletes the given sheet.
 	-- Assumes that the sheet exists. Otherwise an exception
 	-- is raised:
