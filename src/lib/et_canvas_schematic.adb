@@ -83,6 +83,7 @@ with et_canvas_schematic_group;
 with et_undo_redo;
 
 with et_schematic_ops_grid;
+with et_schematic_ops_sheets;
 
 with et_schematic_ops_groups;
 with et_module_clipboard;
@@ -1116,6 +1117,7 @@ package body et_canvas_schematic is
 
 
 	procedure build_sheet_number_display is
+		use et_schematic_ops_sheets;
 		spacing : constant gint := 10;
 	begin
 		gtk_new_vbox (box_sheet);
@@ -1128,7 +1130,7 @@ package body et_canvas_schematic is
 		gtk_new (cbox_sheet);
 		pack_start (box_sheet, cbox_sheet);
 
-		for sheet in type_sheet loop
+		for sheet in type_sheet'first .. get_sheet_count (active_module) loop
 			cbox_sheet.append (
 				id		=> to_string (sheet),
 				text	=> to_string (sheet));
