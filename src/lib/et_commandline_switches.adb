@@ -36,17 +36,16 @@
 --   history of changes:
 --
 
-with ada.characters;				use ada.characters;
-with ada.characters.latin_1;		use ada.characters.latin_1;
 with ada.text_io;					use ada.text_io;
 
-with et_system_info;
+with ada.characters;				use ada.characters;
+with ada.characters.latin_1;		use ada.characters.latin_1;
 
 
 package body et_commandline_switches is
 
 
-	procedure show_help is
+	procedure show_cdl_switches is
 		dash : constant character := hyphen;
 	begin
 		put_line ("available commandline switches:");
@@ -83,15 +82,8 @@ package body et_commandline_switches is
 		put_line (dash & switch_runmode);
 
 		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
-	end show_help;
+	end show_cdl_switches;
 
-
-
-	procedure show_version is
-		use et_system_info;
-	begin
-		put_line (system_name & " version " & version);
-	end show_version;
 
 
 

@@ -100,11 +100,8 @@ with et_gui_2;
 
 procedure et is
 
-	show_help_switch		: boolean := false;
-	show_version_switch		: boolean := false;
-
-	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
---	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
+	conv_file_name_create	: et_conventions.type_conventions_file_name;
+-- 	conv_file_name_use		: et_conventions.type_conventions_file_name;
 
 	project_name_create		: type_project_name; -- the project to be created
 	project_name_import		: type_project_name; -- the project to be imported
@@ -203,10 +200,10 @@ procedure et is
 
 				when hyphen => -- which is a '-'
 					if full_switch = switch_version then
-						show_version_switch := true;
+						put_line (system_name & " version " & version);
 
 					elsif full_switch = switch_help then
-						show_help_switch := true;
+						put_line ("help"); -- CS write helpful help
 
 					elsif full_switch = switch_import_project then
 						log (text => arg & full_switch & space & strip_directory_separator (parameter));
@@ -349,7 +346,7 @@ procedure et is
 	exception
 		when others =>
 			put_line (message_error & "command line argument error !");
-			show_help;
+			show_cdl_switches;
 			raise;
 
 	end get_commandline_arguments;
@@ -586,25 +583,15 @@ procedure et is
 
 	begin
 		-- The arguments are processed according to a certain priority.
-		-- 0. show help or version
 		-- 1. create conventions file
 		-- 2. import foreign project
 		-- 3. open native project
 		-- 3.1. execute script on native project
 
-		if show_help_switch then
-			show_help;
-			runmode := MODE_HEADLESS;
-
-		elsif show_version_switch then
-			show_version;
-			runmode := MODE_HEADLESS;
-
-		elsif length (conv_file_name_create) > 0 then
-			-- If the operator wishes to create a conventions file it will be done.
-			-- Other command line parameters are ignored:
+		-- If the operator wishes to create a conventions file it will be done.
+		-- Other command line parameters are ignored:
+		if length (conv_file_name_create) > 0 then
 			et_conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
-
 		else
 			-- If operator wants to create a new project it will be created in the current directory:
 			if get_length (project_name_create) > 0 then
@@ -779,7 +766,7 @@ begin -- main
 
 	if argument_count = 0 then
 		-- If operator does not provide any arguments, show possible options.
-		show_help;
+		show_cdl_switches;
 
 	else
 
