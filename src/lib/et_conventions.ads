@@ -75,13 +75,13 @@ package et_conventions is
 --	option_module_interconnections_comparator_on	: constant string := "net_comparator_on";
 --	option_module_interconnections_warn_only		: constant string := "warn_only";
 
---	-- A module to be imported has a name, an abbrevation, a CAD format and a certain
+--	-- A module to be imported has a name, an abbreviation, a CAD format and a certain
 --	-- number of instances.
 --	-- Example: nucleo_core NCC kicad_v4 1
 --	-- We collect these modules in a simple list because the order must be kept.
 --	type type_import_module is record
 --		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
---		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
+--		abbreviation	: et_coordinates.type_submodule_abbreviation.bounded_string; -- MOT
 --		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
 --		instances	: et_coordinates.type_submodule_instance; -- 4
 --	end record;
@@ -98,7 +98,7 @@ package et_conventions is
 
 --	type type_connector is record
 --		-- CS: gender ?
---		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
+--		abbreviation	: et_coordinates.type_submodule_abbreviation.bounded_string; -- MOT
 --		instance	: et_coordinates.type_submodule_instance; -- 4
 --		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN
 --	end record;
@@ -257,9 +257,9 @@ package et_conventions is
 
 
 	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
-	-- actual abbrevation like R or V.
-	function to_abbrevation (unit : in type_unit_of_measurement)
-		return type_unit_abbrevation;
+	-- actual abbreviation like R or V.
+	function to_abbreviation (unit : in type_unit_of_measurement)
+		return type_unit_abbreviation;
 
 
 

@@ -21,7 +21,7 @@
 - true hierarchic and modular design with interfaces at the module boundaries
 - submodules instantiated in parent module by reference
 - extensive design rule checking (device prefixes, purpose of user-interactive devices, partcodes, pinout of board-to-board connections ...)
-- interfacing with system modelling tools
+- interfacing with system modeling tools
 
 ### Examples of design and component models
 - A module file (containing schematic and layout stuff) looks like 
@@ -143,7 +143,7 @@ $ sh install.sh
 
 #### Why Ada ??
 - The only programming language that provides a robust and strong typing system is Ada.
-- Objects and structures within a schematic, library and board layout are very very complex things and require sound modelling.
+- Objects and structures within a schematic, library and board layout are very very complex things and require sound modeling.
 - If saftey/mission critical and military applications use Ada, then is must be good for an advanced ECAD system as well.
 - Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)

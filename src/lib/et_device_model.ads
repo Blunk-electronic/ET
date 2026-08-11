@@ -65,7 +65,7 @@ package et_device_model is
 
 	-- NOTE: Devices can be composed of internal and/or external units.
 	--
-	-- An internal unit is modelled directly inside the device model,
+	-- An internal unit is modeled directly inside the device model,
 	-- is fixed to the that device model
 	-- and can be used by that device model exclusively.
 	-- For example after importing a KiCad project there will only be

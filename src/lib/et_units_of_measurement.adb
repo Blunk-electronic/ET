@@ -87,26 +87,26 @@ package body et_units_of_measurement is
 
 
 
-	procedure check_abbrevation_of_unit_characters (
-		abbrevation	: in type_unit_abbrevation;
+	procedure check_abbreviation_of_unit_characters (
+		abbreviation	: in type_unit_abbreviation;
 		characters	: in character_set)
 	is
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => abbrevation,
+			source => abbreviation,
 			set => characters,
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "abbrevaton of unit of measurement "
-				& to_string (abbrevation)
+			log (SEVERITY_ERROR, "abbreviation of unit of measurement "
+				& to_string (abbreviation)
 				& " has invalid character at position"
 				& natural'image (invalid_character_position),
 				console => true);
 			raise constraint_error;
 		end if;
-	end check_abbrevation_of_unit_characters;
+	end check_abbreviation_of_unit_characters;
 
 
 

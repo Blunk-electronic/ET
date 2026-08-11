@@ -1241,7 +1241,7 @@ package body et_canvas is
 
 
 
-		-- behaviour:
+		-- behavior:
 		swin.set_policy ( -- for scrollbars
 			hscrollbar_policy => gtk.enums.POLICY_AUTOMATIC,
 			-- hscrollbar_policy => gtk.enums.POLICY_NEVER,
@@ -3560,7 +3560,7 @@ package body et_canvas is
 
 			-- Opon resizing the scrolled window, the settings of the
 			-- scrollbars (upper, lower and page size) adapt to the size of
-			-- the scrolled window. But we do NOT want this behaviour.
+			-- the scrolled window. But we do NOT want this behavior.
 			-- Instead we restore the settings
 			-- as they where BEFORE this procedure has been called:
 			restore_scrollbar_settings;

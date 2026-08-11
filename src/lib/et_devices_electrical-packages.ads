@@ -514,7 +514,7 @@ package et_devices_electrical.packages is
 	-- CS: In the future there could be an option to keep the
 	-- properties of the default placeholders or to use the properties
 	-- as specified in the board.
-	-- This behaviour would be similar to the "smash"-function implemented
+	-- This behavior would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -536,7 +536,7 @@ package et_devices_electrical.packages is
 	-- CS: In the future there could be an option to keep the
 	-- properties of the default placeholders or to use the properties
 	-- as specified in the board.
-	-- This behaviour would be similar to the "smash"-function implemented
+	-- This behavior would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_assy_doc_objects (
 		device_cursor	: in pac_devices_electrical.cursor;

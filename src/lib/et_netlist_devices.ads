@@ -51,7 +51,7 @@ package et_netlist_devices is
 
 
 	-- In a netlist, a device that is connected with
-	-- a certain net is modelled by this type:
+	-- a certain net is modeled by this type:
 	type type_device_port_extended (
 		direction : type_port_direction)
 	is record

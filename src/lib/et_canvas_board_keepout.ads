@@ -61,7 +61,7 @@ package et_canvas_board_keepout is
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
 	-- Only displayed layers are taken into account.
-	-- Depending on how many objects have been found, the behaviour is:
+	-- Depending on how many objects have been found, the behavior is:
 	-- - If only one object found, then it is selected automatically.
 	-- - If more than one object found, then clarification is requested.
 	--   The first object of them is selected.

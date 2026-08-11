@@ -43,7 +43,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 package et_rig_name is
 
 
-	-- The rig configuration is modelled here:
+	-- The rig configuration is modeled here:
 	file_length_max : constant positive := 100;
 
 	package pac_file_name is new generic_bounded_length (file_length_max);

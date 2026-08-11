@@ -93,7 +93,7 @@ package et_package_library is
 	--function to_layer (layer : in string) return type_placeholder_package_layer;
 
 	---- A collection of text placeholders in silk screen and assembly documentation
-	---- modelled by this type. The user is free to change them in the
+	---- modeled by this type. The user is free to change them in the
 	---- layout (position, text size, rotation, line width ...).
 	---- Initally, when a device is added to the schematic, these placeholders are
 	---- copies of the placeholders defined in the package model.

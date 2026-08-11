@@ -81,7 +81,7 @@ package body et_scripting_interactive_schematic is
 
 	-- procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	-- begin
-	--	set_status ("Unit selection cancelled");
+	--	set_status ("Unit selection canceled");
 	-- end unit_selection_cancelled;
 
 
