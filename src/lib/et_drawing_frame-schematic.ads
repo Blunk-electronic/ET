@@ -162,7 +162,12 @@ package et_drawing_frame.schematic is
 
 
 
-	-- Returns the total number of sheets:
+	-- Returns the total number of sheets according to
+	-- the number of given sheet descriptions.
+	-- CS: Quick fix. Not sure if this is a good idea:
+	-- If the given list of descriptions is empty,
+	-- then a count of 1 is returned to ensure a minimum
+	-- of 1 sheet:
 	function get_sheet_count (
 		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet;
@@ -181,6 +186,7 @@ package et_drawing_frame.schematic is
 
 
 
+	
 	-- Returns true if the given sheet exists:
 	function sheet_exists (
 		frames	: in type_frames_schematic;

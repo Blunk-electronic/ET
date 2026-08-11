@@ -251,7 +251,14 @@ package body et_drawing_frame.schematic is
 	is
 		use pac_schematic_descriptions;
 	begin
-		return type_sheet (frames.descriptions.length);
+		-- If no descriptions given, then return 1.
+		-- Otherwise derive the total number of
+		-- sheets from the number of descriptions:
+		if frames.descriptions.is_empty then
+			return 1;
+		else
+			return type_sheet (frames.descriptions.length);
+		end if;
 	end get_sheet_count;
 
 
