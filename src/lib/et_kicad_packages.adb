@@ -431,17 +431,6 @@ package body et_kicad_packages is
 
 
 
-	function to_string (directory_name : in type_directory_name)
-		return string
-	is (pac_directory_name.to_string (pac_directory_name.bounded_string (directory_name)));
-
-
-
-	function to_directory (directory_name : in string)
-		return type_directory_name
-	is (type_directory_name (pac_directory_name.to_bounded_string (directory_name)));
-	pragma unreferenced (to_directory);
-
 
 
 

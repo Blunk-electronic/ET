@@ -52,6 +52,8 @@ with et_logging;					use et_logging;
 with et_drills;						use et_drills;
 
 
+with et_bounded_string_helpers;
+
 package et_design_rules_board is
 
 
@@ -63,8 +65,8 @@ package et_design_rules_board is
 
 	function is_empty (rules : in type_design_rules_file_name) return boolean;
 
-	function to_file_name (file : in string) return type_design_rules_file_name;
-	function to_string (file : in type_design_rules_file_name) return string;
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_file_name, to_type   => type_design_rules_file_name);
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_file_name, from_type => type_design_rules_file_name);
 
 	file_extension : constant string := "dru";
 

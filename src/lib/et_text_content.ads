@@ -41,6 +41,8 @@ with ada.strings.bounded;		use ada.strings.bounded;
 
 
 
+with et_bounded_string_helpers;
+
 package et_text_content is
 
 
@@ -51,8 +53,8 @@ package et_text_content is
 
 	type type_text_content is new pac_text_content.bounded_string;
 
-	function to_string (text_content : in type_text_content) return string;
-	function to_content (content : in string) return type_text_content;
+	function to_string  is new et_bounded_string_helpers.to_string   (pac_text_content, from_type => type_text_content);
+	function to_content is new et_bounded_string_helpers.from_string (pac_text_content, to_type   => type_text_content);
 
 	empty_text_content : constant type_text_content :=
 		type_text_content (pac_text_content.to_bounded_string (""));

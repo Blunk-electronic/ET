@@ -40,6 +40,8 @@ with cairo;						use cairo;
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_fonts is
 
 
@@ -50,14 +52,10 @@ package et_fonts is
 	type type_font_family is new pac_font_family.bounded_string;
 
 
-	function to_string (
-		family : in type_font_family)
-		return string;
+	function to_string is new et_bounded_string_helpers.to_string   (pac_font_family, from_type => type_font_family);
 
 
-	function to_family (
-		family : in string)
-		return type_font_family;
+	function to_family is new et_bounded_string_helpers.from_string (pac_font_family, to_type   => type_font_family);
 
 
 	type type_family is (

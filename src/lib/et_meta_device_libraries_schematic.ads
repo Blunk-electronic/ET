@@ -44,6 +44,8 @@ with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
+with et_bounded_string_helpers;
+
 package et_meta_device_libraries_schematic is
 
 
@@ -77,14 +79,10 @@ package et_meta_device_libraries_schematic is
 		return boolean;
 
 
-	function to_library_path (
-		lib : in string)
-		return type_library_path_schematic;
+	function to_library_path is new et_bounded_string_helpers.from_string (pac_library_path_schematic, to_type   => type_library_path_schematic);
 
 
-	function to_string (
-		lib : in type_library_path_schematic)
-		return string;
+	function to_string       is new et_bounded_string_helpers.to_string   (pac_library_path_schematic, from_type => type_library_path_schematic);
 
 
 	package pac_library_paths_schematic is new

@@ -40,6 +40,8 @@
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_package_model_name is
 
 	-- The package model name is
@@ -62,14 +64,10 @@ package et_package_model_name is
 
 
 
-	function to_string (
-		name : in type_package_model_name)
-		return string;
+	function to_string             is new et_bounded_string_helpers.to_string   (pac_package_model_file, from_type => type_package_model_name);
 
 
-	function to_package_model_name (
-		name : in string)
-		return type_package_model_name;
+	function to_package_model_name is new et_bounded_string_helpers.from_string (pac_package_model_file, to_type   => type_package_model_name);
 
 
 

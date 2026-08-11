@@ -73,6 +73,8 @@ use et_board_geometry.pac_contours;
 with et_logging;				use et_logging;
 
 
+with et_bounded_string_helpers;
+
 package et_kicad_packages is
 
 	-- NOTE: this is not a real file extension but just a part of a directory name:
@@ -276,10 +278,10 @@ package et_kicad_packages is
 
 	type type_directory_name is new pac_directory_name.bounded_string;
 
-	function to_string (directory_name : in type_directory_name) return string;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_directory_name, from_type => type_directory_name);
 	-- Converts a directory name to a string.
 
--- 	function to_directory (directory_name : in string) return type_directory_name;
+-- 	function to_directory is new et_bounded_string_helpers.from_string (pac_directory_name, to_type   => type_directory_name);
 -- 	-- Converts a string to a pac_directory_name.
 
 

@@ -430,7 +430,7 @@ is
 										if log_level >= log_threshold + 1 then
 											log_indentation_up;
 											--log (text => "label at" & to_string (label => type_net_label (ls), scope => xy));
-											log (text => "label at" & to_string (label => type_net_label (ls)));
+											log (text => "label at" & to_string (type_net_label (ls)));
 											log_indentation_down;
 										end if;
 
@@ -448,7 +448,7 @@ is
 												log (SEVERITY_ERROR,
 													"hierarchic net " & to_string (anon_strand_a.name)
 													& " has a local label at"
-													--& to_string (position => ls.coordinates) & " !");
+													--& to_string (ls.coordinates) & " !");
 													& to_string (ls.coordinates) & " !");
 												raise constraint_error;
 
@@ -457,7 +457,7 @@ is
 												log (SEVERITY_ERROR,
 													"global net " & to_string (anon_strand_a.name)
 													& " has a local label at"
-													--& to_string (position => ls.coordinates) & " !");
+													--& to_string (ls.coordinates) & " !");
 													& to_string (ls.coordinates) & " !");
 													raise constraint_error;
 										end case;
@@ -477,7 +477,7 @@ is
 												-- for the log, some more information
 												log (SEVERITY_ERROR,
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label "
-														--& "at" & to_string (position => ls.coordinates) & " !");
+														--& "at" & to_string (ls.coordinates) & " !");
 														& "at" & to_string (ls.coordinates) & " !");
 												raise constraint_error;
 											end if;
@@ -534,7 +534,7 @@ is
 										if log_level >= log_threshold + 1 then
 											log_indentation_up;
 											--log (text => "label at" & to_string (label => type_net_label (lt), scope => xy));
-											log (text => "label at" & to_string (label => type_net_label (lt)));
+											log (text => "label at" & to_string (type_net_label (lt)));
 											log_indentation_down;
 										end if;
 
@@ -555,7 +555,7 @@ is
 													log (SEVERITY_ERROR,
 														"local net " & to_string (anon_strand_a.name)
 														& " has a hierarchic or global label at"
-														--& to_string (position => lt.coordinates) & " !");
+														--& to_string (lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
@@ -566,7 +566,7 @@ is
 													log (SEVERITY_ERROR,
 														"hierarchic net " & to_string (anon_strand_a.name)
 														& " has a global label at"
-														--& to_string (position => lt.coordinates) & " !");
+														--& to_string (lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
@@ -577,7 +577,7 @@ is
 													log (SEVERITY_ERROR,
 														"global net " & to_string (anon_strand_a.name)
 														& " has a hierarchic label at"
-														--& to_string (position => lt.coordinates) & " !");
+														--& to_string (lt.coordinates) & " !");
 														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
@@ -592,7 +592,7 @@ is
 											if anon_strand_a.name /= lt.text then
 												log (SEVERITY_ERROR,
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label "
-														--& "at" & to_string (position => lt.coordinates) & " !");
+														--& "at" & to_string (lt.coordinates) & " !");
 														& "at" & to_string (lt.coordinates) & " !");
 												raise constraint_error;
 											end if;
@@ -1763,7 +1763,7 @@ is
 
 		-- for the log
 		--log (text => "simple label" & to_string (label => type_net_label (label), scope => xy), level => log_threshold);
-		log (text => "simple label" & to_string (label => type_net_label (label)), level => log_threshold);
+		log (text => "simple label" & to_string (type_net_label (label)), level => log_threshold);
 
 		check_schematic_text_size (category => net_label, size => label.size);
 		-- CS: check label style
@@ -1849,7 +1849,7 @@ is
 
 		-- for the log
 		--log (text => "tag label" & to_string (label => type_net_label (label), scope => xy), level => log_threshold);
-		log (text => "tag label" & to_string (label => type_net_label (label)), level => log_threshold);
+		log (text => "tag label" & to_string (type_net_label (label)), level => log_threshold);
 
 		check_schematic_text_size (category => net_label, size => label.size);
 		-- CS: check style and line width
@@ -2127,7 +2127,7 @@ is
 				log (SEVERITY_ERROR,
 						"component " & to_string (reference)
 						& latin_1.space
-						& to_string (position => unit_position)
+						& to_string (unit_position)
 						& latin_1.lf
 						& "text field " & to_string (m) & " missing !",
 					console => true);
@@ -2275,7 +2275,7 @@ is
 				others =>
 					log (SEVERITY_ERROR,
 						"invalid field in component " & to_string (reference)
-						& to_string (position => unit_position),
+						& to_string (unit_position),
 						console => true);
 					log (text => ada.exceptions.exception_message (event), console => true);
 					-- CS: evaluate prog position and provided more detailled output
@@ -2605,7 +2605,7 @@ is
 		exception
 			when constraint_error =>
 				log (SEVERITY_ERROR, "component " & to_string (reference)
-						& " " & to_string (position => unit_position),
+						& " " & to_string (unit_position),
 					console => true);
 				raise constraint_error;
 

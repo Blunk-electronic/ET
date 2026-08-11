@@ -414,7 +414,7 @@ package body et_devices_electrical.units is
 			log (text =>
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
-				to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
+				to_string (pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end write;
 

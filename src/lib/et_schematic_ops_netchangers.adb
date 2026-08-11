@@ -80,7 +80,7 @@ package body et_schematic_ops_netchangers is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
-			to_string (position => position) &
+			to_string (position) &
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
@@ -582,7 +582,7 @@ package body et_schematic_ops_netchangers is
 							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
 
 							log_indentation_up;
-							log (text => "strand " & to_string (position => element (strand_cursor).position),
+							log (text => "strand " & to_string (element (strand_cursor).position),
 								level => log_threshold + 3);
 
 							update_element (
@@ -772,7 +772,7 @@ package body et_schematic_ops_netchangers is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log (text => "strand " & to_string (position => element (strand_cursor).position),
+						log (text => "strand " & to_string (element (strand_cursor).position),
 							level => log_threshold + 1);
 
 						-- Iterate in segments of strand. If point sits on any segment
@@ -1146,7 +1146,7 @@ package body et_schematic_ops_netchangers is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " add netchanger at " & to_string (position => place)
+			 & " add netchanger at " & to_string (place)
 			 & " rotation " & to_string (get_rotation (place)),
 			level => log_threshold);
 

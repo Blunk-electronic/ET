@@ -106,7 +106,7 @@ package body et_schematic_ops_units is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
-			to_string (position => position) &
+			to_string (position) &
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;

@@ -46,6 +46,8 @@ with et_module_names;				use et_module_names;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
 
+with et_bounded_string_helpers;
+
 package et_module_instance is
 
 
@@ -56,8 +58,8 @@ package et_module_instance is
 
 	type type_module_instance_name is new pac_module_instance_name.bounded_string;
 
-	function to_string (name : in type_module_instance_name) return string;
-	function to_instance_name (name : in string) return type_module_instance_name;
+	function to_string        is new et_bounded_string_helpers.to_string   (pac_module_instance_name, from_type => type_module_instance_name);
+	function to_instance_name is new et_bounded_string_helpers.from_string (pac_module_instance_name, to_type   => type_module_instance_name);
 
 
 

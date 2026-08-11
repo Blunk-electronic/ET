@@ -61,9 +61,11 @@ package et_unit_name is
 
 	unit_name_default : constant type_unit_name := type_unit_name (pac_unit_name.to_bounded_string (""));
 
-	-- function to_string (unit_name : in type_unit_name) return string;
+	-- function to_string    is new et_bounded_string_helpers.to_string   (pac_unit_name, from_type => type_unit_name);
 
 
+	-- Converts the given string to a unit name. Converts to upper case.
+	-- CS do character and length checks
 	function to_unit_name (
 		unit_name : in string)
 		return type_unit_name;

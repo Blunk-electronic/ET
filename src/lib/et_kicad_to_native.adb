@@ -2605,12 +2605,12 @@ package body et_kicad_to_native is
 			characters : constant character_mapping := to_mapping ("./", "_-");
 
 		begin -- concatenate_lib_name_and_generic_name
-			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
+			dir := to_file_name (containing_directory (to_string (library)) & '-'); -- "..-..-lbr"
 
 			translate (dir, characters); -- __-__-lbr
 			--log (text => "dir " & et_libraries.to_string (dir));
 
-			name := to_file_name (base_name (to_string (name => library))); -- bel_logic
+			name := to_file_name (base_name (to_string (library))); -- bel_logic
 			name := dir & name;
 			--log (text => "name " & et_libraries.to_string (name));
 
@@ -2618,8 +2618,8 @@ package body et_kicad_to_native is
 			--log (text => "name " & et_libraries.to_string (name));
 
 			name := to_file_name (compose (
-					containing_directory	=> to_string (name => prefix_devices_dir),
-					name					=> to_string (name => name),
+					containing_directory	=> to_string (prefix_devices_dir),
+					name					=> to_string (name),
 					extension				=> device_model_file_extension));
 
 			--log (text => "name " & et_libraries.to_string (name));
@@ -2646,8 +2646,8 @@ package body et_kicad_to_native is
 			translate (model_copy, characters);
 
 			model_return := to_package_model_name (compose (
-					containing_directory	=> to_string (name => prefix_packages_dir),
-					name					=> to_string (name => model_copy),
+					containing_directory	=> to_string (prefix_packages_dir),
+					name					=> to_string (model_copy),
 					extension				=> package_model_file_extension));
 
 			return model_return;
@@ -2955,8 +2955,7 @@ package body et_kicad_to_native is
 					-- simple labels
 					while simple_label_cursor /= et_kicad.schematic.type_simple_labels.no_element loop
 
-						log (text => "simple label" & et_kicad.schematic.to_string (
-								label => et_kicad.schematic.type_net_label (element (simple_label_cursor))),
+						log (text => "simple label" & et_kicad.schematic.to_string (et_kicad.schematic.type_net_label (element (simple_label_cursor))),
 							level => log_threshold + 5);
 
 						-- move label by offset
@@ -2979,8 +2978,7 @@ package body et_kicad_to_native is
 					-- tag labels
 					while tag_label_cursor /= et_kicad.schematic.type_tag_labels.no_element loop
 
-						log (text => "tag label" & et_kicad.schematic.to_string (
-							label => et_kicad.schematic.type_net_label (element (tag_label_cursor))),
+						log (text => "tag label" & et_kicad.schematic.to_string (et_kicad.schematic.type_net_label (element (tag_label_cursor))),
 							 level => log_threshold + 5);
 
 						-- CS: Here we convert a tag label to a native simple label
@@ -3765,7 +3763,7 @@ package body et_kicad_to_native is
 
 						-- log (text => "package variant " & to_string (variant_name)
 							 -- & " now uses package "
-							 -- & to_string (name => variant.package_model), level => log_threshold + 4);
+							 -- & to_string (variant.package_model), level => log_threshold + 4);
 					end rename;
 
 
@@ -3803,7 +3801,7 @@ package body et_kicad_to_native is
 					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name); -- ../lbr/logic_ttl/7400.dev
 
 					-- Create a new device model in container et_libraries.devices:
-					log (text => "device model " & to_string (name => device_model), level => log_threshold + 3);
+					log (text => "device model " & to_string (device_model), level => log_threshold + 3);
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
@@ -3900,12 +3898,12 @@ package body et_kicad_to_native is
 
 					-- build the new native package model name
 					package_model := to_package_model_name (compose (
-								containing_directory	=> to_string (name => library_name), -- projects/lbr/smd_packages.pretty
-								name					=> to_string (packge => package_name))); -- S_0805
+								containing_directory	=> to_string (library_name), -- projects/lbr/smd_packages.pretty
+								name					=> to_string (package_name))); -- S_0805
 
 					-- replace . and / in package_model
 					package_model := rename_package_model (package_model);
-					log (text => "package model " & to_string (name => package_model), level => log_threshold + 3);
+					log (text => "package model " & to_string (package_model), level => log_threshold + 3);
 
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the
 					-- container (due to other project imports), the flag "inserted" will go false. The package
@@ -3932,7 +3930,7 @@ package body et_kicad_to_native is
 			-- Loop in kicad component libraries:
 			while component_library_cursor /= et_kicad_libraries.type_device_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
-				log (text => "component library " & to_string (name => component_library_name), level => log_threshold + 2);
+				log (text => "component library " & to_string (component_library_name), level => log_threshold + 2);
 
 				log_indentation_up;
 
@@ -3958,7 +3956,7 @@ package body et_kicad_to_native is
 
 						-- Loop in footprint libraries:
 						while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
-							log (text => "package library " & to_string (name => key (package_library_cursor)), level => log_threshold + 2);
+							log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 							log_indentation_up;
 
@@ -3979,7 +3977,7 @@ package body et_kicad_to_native is
 
 					-- Loop in footprint libraries:
 					while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
-						log (text => "package library " & to_string (name => key (package_library_cursor)), level => log_threshold + 2);
+						log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 						log_indentation_up;
 
@@ -4026,7 +4024,7 @@ package body et_kicad_to_native is
 				et_package_write.write_package (
 					-- package name like:
 					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
-					file_name		=> to_package_model_name (name => to_string (key (package_cursor))),
+					file_name		=> to_package_model_name (to_string (key (package_cursor))),
 
 					-- the package model itself:
 					packge			=> element (package_cursor),

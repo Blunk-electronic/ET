@@ -39,6 +39,8 @@
 with ada.strings.bounded;				use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_port_names is
 
 
@@ -49,14 +51,10 @@ package et_port_names is
 	type type_port_name is new pac_port_name.bounded_string;
 
 
-	function to_string (
-		port : in type_port_name)
-		return string;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_port_name, from_type => type_port_name);
 
 
-	function to_port_name (
-		name : in string)
-		return type_port_name;
+	function to_port_name is new et_bounded_string_helpers.from_string (pac_port_name, to_type   => type_port_name);
 
 
 

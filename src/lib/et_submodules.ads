@@ -59,6 +59,8 @@ with et_netchangers;				use et_netchangers;
 with et_netchangers.schematic;		use et_netchangers.schematic;
 
 
+with et_bounded_string_helpers;
+
 package et_submodules is
 
 	use pac_geometry_2;
@@ -115,10 +117,10 @@ package et_submodules is
 	type type_submodule_path is new pac_submodule_path.bounded_string;
 
 
-	function to_submodule_path (path : in string) return type_submodule_path;
+	function to_submodule_path is new et_bounded_string_helpers.from_string (pac_submodule_path, to_type   => type_submodule_path);
 
 
-	function to_string (path : in type_submodule_path) return string;
+	function to_string         is new et_bounded_string_helpers.to_string   (pac_submodule_path, from_type => type_submodule_path);
 
 
 	function to_module_name (path : in type_submodule_path)

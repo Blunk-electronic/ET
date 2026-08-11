@@ -179,15 +179,9 @@ package body et_drawing_frame is
 
 
 
-	function to_string (name : in type_template_name)
-		return string
-	is (pac_template_name.to_string (pac_template_name.bounded_string (name)));
 
 
 
-	function to_template_name (name : in string)
-		return type_template_name
-	is (type_template_name (pac_template_name.to_bounded_string (name)));
 
 
 

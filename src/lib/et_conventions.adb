@@ -229,7 +229,7 @@ package body et_conventions is
 --		use type_submodule_name;
 --
 --	begin -- to_connector_reference
---		log ("locating module " & to_string (submodule => generic_module_name) & " in rig ...", log_threshold);
+--		log ("locating module " & to_string (generic_module_name) & " in rig ...", log_threshold);
 --		log_indentation_up;
 --
 --		-- locate the module in the rig by its generic name and instance
@@ -249,7 +249,7 @@ package body et_conventions is
 --
 --		if not module_found then
 --			log_indentation_reset;
---			log (message_error & "no generic module " & to_string (submodule => generic_module_name)
+--			log (message_error & "no generic module " & to_string (generic_module_name)
 --				 & " with instance " & et_schematic_coordinates_2.to_string (instance)
 --				 & " found in the rig !", console => true);
 --			raise constraint_error;
@@ -286,7 +286,7 @@ package body et_conventions is
 --			instance	: in et_schematic_coordinates_2.type_submodule_instance) is
 --		begin
 --			log_indentation_reset;
---			log (message_error & "module " & to_string (submodule => name)
+--			log (message_error & "module " & to_string (name)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance) & " not found !",
 --				console => true);
 --			raise constraint_error;
@@ -304,7 +304,7 @@ package body et_conventions is
 --				if element (et_kicad.module_cursor).instance = instance_A then
 --					-- get the terminal count of connector A
 --					terminal_count_A := et_kicad.terminal_count (reference_A, log_threshold + 2);
---					log ("module " & to_string (submodule => module_A) & " instance "
+--					log ("module " & to_string (module_A) & " instance "
 --						& et_schematic_coordinates_2.to_string (instance_A) & " connector "
 --						& to_string (reference_A) & to_string (terminal_count_A),
 --						log_threshold + 1);
@@ -327,7 +327,7 @@ package body et_conventions is
 --				if element (et_kicad.module_cursor).instance = instance_B then
 --					-- get the terminal count of connector B
 --					terminal_count_B := et_kicad.terminal_count (reference_B, log_threshold + 2);
---					log ("module " & to_string (submodule => module_B) & " instance "
+--					log ("module " & to_string (module_B) & " instance "
 --						& et_schematic_coordinates_2.to_string (instance_B) & " connector "
 --						& to_string (reference_B) & to_string (terminal_count_B),
 --						log_threshold + 1);
@@ -349,10 +349,10 @@ package body et_conventions is
 --		if terminal_count_A /= terminal_count_B then
 --			log_indentation_reset;
 --			log (message_error
---				& " module " & to_string (submodule => module_A)
+--				& " module " & to_string (module_A)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_A)
 --				& " connector " & to_string (reference_A)
---				& " and module " & to_string (submodule => module_B)
+--				& " and module " & to_string (module_B)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_B)
 --				& " connector " & to_string (reference_B)
 --				& " do not match !",
@@ -435,7 +435,7 @@ package body et_conventions is
 --			function net_or_terminal_not_found return string is
 --			begin
 --				return "module " & to_string (module_left)
---					& " : expect net " & et_schematic.to_string (net_name => net_right)
+--					& " : expect net " & et_schematic.to_string (net_right)
 --					& " connected with " & to_string (reference_left)
 --					& to_string (terminal_right) & "!";
 --			end net_or_terminal_not_found;
@@ -449,7 +449,7 @@ package body et_conventions is
 -- 				terminal_found : boolean := false;
 -- 			begin -- query_ports_left
 -- 				log_indentation_up;
--- 				log ("locating connector " & to_string (reference => reference_left)
+-- 				log ("locating connector " & to_string (reference_left)
 -- 					& to_string (terminal_right) & "...", log_threshold + 8);
 --
 --				log_indentation_up;
@@ -494,13 +494,13 @@ package body et_conventions is
 --			end query_ports_left;
 --
 --		begin -- query_nets_left
---			log ("locating net " & et_schematic.to_string (net_name => net_right)
+--			log ("locating net " & et_schematic.to_string (net_right)
 --				& " in module " & to_string (module_left) & " ...", log_threshold + 6);
 --			log_indentation_up;
 --
 --			while net_cursor /= et_kicad.type_netlist.no_element loop
 --				net_left := key (net_cursor);
---				log (et_schematic.to_string (net_name => net_left), log_threshold + 7);
+--				log (et_schematic.to_string (net_left), log_threshold + 7);
 --
 --				if net_left = net_right then
 --					net_found := true;
@@ -595,11 +595,11 @@ package body et_conventions is
 --		procedure set_module_cursors is
 --			use type_submodule_name;
 --		begin
---			log ("module right " & to_string (submodule => module_right)
+--			log ("module right " & to_string (module_right)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_right)
 --				& " connector right " & to_string (reference_right), log_threshold + 1);
 --
---			log ("module left " & to_string (submodule => module_left)
+--			log ("module left " & to_string (module_left)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_left)
 --				& " connector left " & to_string (reference_left), log_threshold + 1);
 --
@@ -2141,7 +2141,7 @@ package body et_conventions is
 		pragma unreferenced (arg);
 		begin
 			log (text => "keyword " & to_string (kw)
-				 & " argument " & to_string (argument => argument), level => log_threshold + 1);
+				 & " argument " & to_string (argument), level => log_threshold + 1);
 
 			-- CS: currently no validation ! Here the argument could be checked against the keyword
 			-- example: after PMAX must follow something like 15 (for 15W watts)
@@ -2365,16 +2365,10 @@ package body et_conventions is
 
 
 
-	function to_file_name (file : in string)
-		return type_conventions_file_name
-	is (type_conventions_file_name (pac_file_name.to_bounded_string (file)));
 
 
 
 
-	function to_string (file : in type_conventions_file_name)
-		return string
-	is (pac_file_name.to_string (pac_file_name.bounded_string (file)));
 
 
 
@@ -3202,7 +3196,7 @@ package body et_conventions is
 		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
 			if device_prefixes.find (prefix) = pac_device_prefixes.no_element then
-				log (SEVERITY_WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
+				log (SEVERITY_WARNING, "invalid prefix " & to_string (prefix) & " !");
 				result := false;
 			end if;
 		end if;

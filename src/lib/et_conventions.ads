@@ -56,6 +56,8 @@ with et_device_name;			use et_device_name;
 with et_units_of_measurement;	use et_units_of_measurement;
 
 
+with et_bounded_string_helpers;
+
 package et_conventions is
 
 	comment_mark : constant string := "#";
@@ -430,8 +432,8 @@ package et_conventions is
 
 	type type_conventions_file_name is new pac_file_name.bounded_string;
 
-	function to_file_name (file : in string) return type_conventions_file_name;
-	function to_string (file : in type_conventions_file_name) return string;
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_file_name, to_type   => type_conventions_file_name);
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_file_name, from_type => type_conventions_file_name);
 
 
 	-- Creates a default conventions file:

@@ -65,19 +65,11 @@ package body et_meta_device_libraries_board is
 
 
 
-	function to_library_path (
-		lib : in string)
-		return type_library_path_board
-	is (type_library_path_board (pac_library_path_board.to_bounded_string (lib)));
 
 
 
 
 
-	function to_string (
-		lib : in type_library_path_board)
-		return string
-	is (pac_library_path_board.to_string (pac_library_path_board.bounded_string (lib)));
 
 
 

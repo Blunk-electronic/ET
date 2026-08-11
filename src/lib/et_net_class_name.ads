@@ -42,6 +42,8 @@
 with ada.strings.bounded;			use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_net_class_name is
 
 
@@ -61,14 +63,10 @@ package et_net_class_name is
 		type_net_class_name (pac_net_class_name.to_bounded_string ("default"));
 
 
-	function to_string (
-		net_class_name : in type_net_class_name)
-		return string;
+	function to_string         is new et_bounded_string_helpers.to_string   (pac_net_class_name, from_type => type_net_class_name);
 
 
-	function to_net_class_name (
-		net_class_name : in string)
-		return type_net_class_name;
+	function to_net_class_name is new et_bounded_string_helpers.from_string (pac_net_class_name, to_type   => type_net_class_name);
 
 
 

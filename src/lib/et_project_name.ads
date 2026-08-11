@@ -42,6 +42,8 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 with et_logging;				use et_logging;
 
+with et_bounded_string_helpers;
+
 package et_project_name is
 
 
@@ -61,15 +63,11 @@ package et_project_name is
 
 
 
-	function to_string (
-		project_name : in type_project_name)
-		return string;
+	function to_string       is new et_bounded_string_helpers.to_string   (pac_project_name, from_type => type_project_name);
 
 
 
-	function to_project_name (
-		name : in string)
-		return type_project_name;
+	function to_project_name is new et_bounded_string_helpers.from_string (pac_project_name, to_type   => type_project_name);
 
 
 

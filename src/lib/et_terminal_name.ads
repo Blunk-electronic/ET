@@ -44,6 +44,8 @@ with ada.containers.doubly_linked_lists;
 with et_board_text;				use et_board_text;
 with et_fonts;					use et_fonts;
 
+with et_bounded_string_helpers;
+
 package et_terminal_name is
 
 
@@ -62,14 +64,10 @@ package et_terminal_name is
 	type type_terminal_name is new pac_terminal_name.bounded_string;
 
 
-	function to_string (
-		terminal : in type_terminal_name)
-		return string;
+	function to_string        is new et_bounded_string_helpers.to_string   (pac_terminal_name, from_type => type_terminal_name);
 
 
-	function to_terminal_name (
-		terminal : in string)
-		return type_terminal_name;
+	function to_terminal_name is new et_bounded_string_helpers.from_string (pac_terminal_name, to_type   => type_terminal_name);
 
 
 	package pac_terminal_names is new
