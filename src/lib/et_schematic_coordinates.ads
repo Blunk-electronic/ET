@@ -181,6 +181,12 @@ package et_schematic_coordinates is
 		return type_sheet;
 
 
+	-- Returns the sheet number of the given position:
+	function get_sheet (
+		position : in type_object_position_relative)
+		return type_sheet_relative;
+
+
 	-- Sets the sheet number in given position:
 	procedure set_sheet (
 		position	: in out type_object_position;
