@@ -485,13 +485,7 @@ package body et_geometry_2a is
 	function is_0_or_90 (
 		rotation : in type_rotation)
 		return boolean
-	is begin
-		if rotation = 0.0 or rotation = 90.0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_0_or_90;
+	is (rotation = 0.0 or rotation = 90.0);
 
 
 
@@ -2651,15 +2645,10 @@ package body et_geometry_2a is
 
 		-- Returns true if start or end points of the two lines
 		-- meet each other on the same spot:
-		function touch return boolean is begin
-			if get_A (line_1) = get_B (line_2) or get_A (line_1) = get_A (line_2)
-			or get_B (line_1) = get_B (line_2) or get_B (line_1) = get_A (line_2)
-			then
-				return true;
-			else
-				return false;
-			end if;
-		end touch;
+		function touch
+			return boolean
+		is (get_A (line_1) = get_B (line_2) or get_A (line_1) = get_A (line_2)
+			or get_B (line_1) = get_B (line_2) or get_B (line_1) = get_A (line_2));
 
 
 		procedure test_ranges is
@@ -3331,14 +3320,9 @@ package body et_geometry_2a is
 
 
 
-	function zero_length (arc : in type_arc) return boolean is
-	begin
-		if arc.A = arc.B then
-			return true;
-		else
-			return false;
-		end if;
-	end zero_length;
+	function zero_length (arc : in type_arc)
+		return boolean
+	is (arc.A = arc.B);
 
 
 
@@ -4173,13 +4157,7 @@ package body et_geometry_2a is
 		distance : in type_float_positive;
 		radius	 : in type_zone_radius)
 		return boolean
-	is begin
-		if distance <= radius then
-			return true;
-		else
-			return false;
-		end if;
-	end in_radius;
+	is (distance <= radius);
 
 
 

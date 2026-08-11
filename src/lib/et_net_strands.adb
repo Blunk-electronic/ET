@@ -194,13 +194,7 @@ package body et_net_strands is
 	function has_segments (
 		strand : in type_strand)
 		return boolean
-	is begin
-		if strand.segments.length > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end has_segments;
+	is (strand.segments.length > 0);
 
 
 

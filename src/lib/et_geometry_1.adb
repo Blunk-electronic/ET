@@ -662,13 +662,7 @@ package body et_geometry_1 is
 	function "<" (
 		left, right : in type_vector)
 		return boolean
-	is begin
-		if get_absolute (left) < get_absolute (right) then
-			return true;
-		else
-			return false;
-		end if;
-	end "<";
+	is (get_absolute (left) < get_absolute (right));
 
 
 
@@ -1012,13 +1006,9 @@ package body et_geometry_1 is
 		end record;
 
 
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end "<";
+		function "<" (left, right : in type_item)
+			return boolean
+		is (left.distance < right.distance);
 
 		package pac_items is new doubly_linked_lists (type_item);
 		use pac_items;
@@ -2389,13 +2379,7 @@ package body et_geometry_1 is
 	function zero_length (
 		arc : in type_arc_fine)
 		return boolean
-	is begin
-		if arc.A = arc.B then
-			return true;
-		else
-			return false;
-		end if;
-	end zero_length;
+	is (arc.A = arc.B);
 
 
 

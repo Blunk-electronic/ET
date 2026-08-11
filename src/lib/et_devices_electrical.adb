@@ -50,13 +50,7 @@ package body et_devices_electrical is
 	function is_real (
 		device : in type_device_electrical)
 		return boolean
-	is begin
-		if device.appearance = APPEARANCE_PCB then
-			return true;
-		else
-			return false;
-		end if;
-	end is_real;
+	is (device.appearance = APPEARANCE_PCB);
 
 
 

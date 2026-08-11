@@ -47,13 +47,7 @@ package body et_units is
 	function is_real (
 		unit : in type_unit)
 		return boolean
-	is begin
-		if unit.appearance = APPEARANCE_PCB then
-			return true;
-		else
-			return false;
-		end if;
-	end is_real;
+	is (unit.appearance = APPEARANCE_PCB);
 
 
 

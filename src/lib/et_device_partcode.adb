@@ -108,13 +108,9 @@ package body et_device_partcode is
 	end partcode_invalid;
 
 
-	function is_empty (partcode : in type_device_partcode) return boolean is begin
-		if pac_device_partcode.length (pac_device_partcode.bounded_string (partcode)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	function is_empty (partcode : in type_device_partcode)
+		return boolean
+	is (pac_device_partcode.length (pac_device_partcode.bounded_string (partcode)) = 0);
 
 
 	function to_partcode (

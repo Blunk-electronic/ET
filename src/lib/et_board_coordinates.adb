@@ -200,13 +200,7 @@ package body et_board_coordinates is
 	function is_flipped (
 		position : in type_package_position)
 		return boolean
-	is begin
-		if position.face = BOTTOM then
-			return true;
-		else
-			return false;
-		end if;
-	end is_flipped;
+	is (position.face = BOTTOM);
 
 
 

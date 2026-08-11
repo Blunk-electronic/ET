@@ -50,13 +50,9 @@ with et_exceptions;					use et_exceptions;
 package body et_design_rules_board is
 
 
-	function is_empty (rules : in type_design_rules_file_name) return boolean is begin
-		if pac_file_name.length (pac_file_name.bounded_string (rules)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	function is_empty (rules : in type_design_rules_file_name)
+		return boolean
+	is (pac_file_name.length (pac_file_name.bounded_string (rules)) = 0);
 
 
 

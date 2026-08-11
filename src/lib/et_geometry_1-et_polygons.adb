@@ -1794,13 +1794,9 @@ package body et_geometry_1.et_polygons is
 		end record;
 
 
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end "<";
+		function "<" (left, right : in type_item)
+			return boolean
+		is (left.distance < right.distance);
 
 
 		package pac_items is new doubly_linked_lists (type_item);
@@ -2432,13 +2428,9 @@ package body et_geometry_1.et_polygons is
 		end record;
 
 
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end "<";
+		function "<" (left, right : in type_item)
+			return boolean
+		is (left.distance < right.distance);
 
 
 		package pac_items is new doubly_linked_lists (type_item);
@@ -2515,13 +2507,9 @@ package body et_geometry_1.et_polygons is
 	end is_leaving;
 
 
-	function is_regular (v : pac_vertices.cursor) return boolean is begin
-		if element (v).category = REGULAR then
-			return true;
-		else
-			return false;
-		end if;
-	end is_regular;
+	function is_regular (v : pac_vertices.cursor)
+		return boolean
+	is (element (v).category = REGULAR);
 
 
 	function is_inside (v : pac_vertices.cursor) return boolean is begin
@@ -3042,16 +3030,12 @@ package body et_geometry_1.et_polygons is
 
 		result : pac_vertices.list;
 
-		function is_to_be_replaced (v1, v2, v3 : in pac_vertices.cursor) return boolean is begin
-			if element (v1).position = element (v2).position
+		function is_to_be_replaced (v1, v2, v3 : in pac_vertices.cursor)
+			return boolean
+		is (element (v1).position = element (v2).position
 			and element (v1).position = element (v3).position
 
-			and is_entering (v1) and is_regular (v2) and is_leaving (v3) then
-				return true;
-			else
-				return false;
-			end if;
-		end is_to_be_replaced;
+			and is_entering (v1) and is_regular (v2) and is_leaving (v3));
 
 		look_ahead : boolean := true;
 
@@ -3275,14 +3259,8 @@ package body et_geometry_1.et_polygons is
 		-- This function returns true if the given vertex
 		-- does not sit on the given start_vertex:
 		function not_on_start (c : in pac_vertices.cursor)
-			return boolean is
-		begin
-			if element (c).position /= element (start_vertex).position then
-				return true;
-			else
-				return false;
-			end if;
-		end not_on_start;
+			return boolean
+		is (element (c).position /= element (start_vertex).position);
 
 		-- This cursor points at the vertex being processed:
 		v : pac_vertices.cursor;

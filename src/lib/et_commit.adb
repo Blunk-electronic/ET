@@ -75,13 +75,7 @@ package body et_commit is
 		function "=" (
 			left, right : in type_commit)
 			return boolean
-		is begin
-			if left.item = right.item then
-				return true;
-			else
-				return false;
-			end if;
-		end "=";
+		is (left.item = right.item);
 
 
 

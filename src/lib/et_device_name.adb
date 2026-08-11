@@ -234,13 +234,7 @@ package body et_device_name is
 	function is_default_name (
 		name : in type_device_name)
 		return boolean
-	is begin
-		if name = device_name_default then
-			return true;
-		else
-			return false;
-		end if;
-	end is_default_name;
+	is (name = device_name_default);
 
 
 

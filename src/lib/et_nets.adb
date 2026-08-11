@@ -188,13 +188,7 @@ package body et_nets is
 	function has_strands (
 		net : in type_net)
 		return boolean
-	is begin
-		if net.strands.length > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end has_strands;
+	is (net.strands.length > 0);
 
 
 

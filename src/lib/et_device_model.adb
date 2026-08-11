@@ -48,13 +48,7 @@ package body et_device_model is
 	function is_real (
 		model : in type_device_model)
 		return boolean
-	is begin
-		if model.appearance = APPEARANCE_PCB then
-			return true;
-		else
-			return false;
-		end if;
-	end is_real;
+	is (model.appearance = APPEARANCE_PCB);
 
 
 

@@ -164,13 +164,7 @@ package body et_device_value is
 	function is_empty (
 		value : in type_device_value)
 		return boolean
-	is begin
-		if value = empty_value then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (value = empty_value);
 
 
 

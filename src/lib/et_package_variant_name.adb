@@ -49,13 +49,7 @@ package body et_package_variant_name is
 	function is_empty (
 		variant_name : in type_package_variant_name)
 		return boolean
-	is begin
-		if length (pac_package_variant_name.bounded_string (variant_name)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (length (pac_package_variant_name.bounded_string (variant_name)) = 0);
 
 
 

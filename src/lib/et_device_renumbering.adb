@@ -81,24 +81,16 @@ package body et_device_renumbering is
 
 
 
-	function below (left, right : in type_index_range) return boolean is begin
-		if left.highest < right.lowest then
-			return true;
-		else
-			return false;
-		end if;
-	end below;
+	function below (left, right : in type_index_range)
+		return boolean
+	is (left.highest < right.lowest);
 
 
 
 
-	function above (left, right : in type_index_range) return boolean is begin
-		if left.lowest > right.highest then
-			return true;
-		else
-			return false;
-		end if;
-	end above;
+	function above (left, right : in type_index_range)
+		return boolean
+	is (left.lowest > right.highest);
 
 
 

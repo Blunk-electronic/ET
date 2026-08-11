@@ -84,14 +84,10 @@ package body et_package_write_terminals is
 
 		procedure write_stop_mask_tht is
 
-			function user_specific_contours return boolean is begin
-				if element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC
-				or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC then
-					return true;
-				else
-					return false;
-				end if;
-			end user_specific_contours;
+			function user_specific_contours
+				return boolean
+			is (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC
+				or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC);
 
 
 		begin -- write_stop_mask_tht
@@ -148,13 +144,9 @@ package body et_package_write_terminals is
 
 		procedure write_stop_mask_smt is
 
-			function user_specific_contours return boolean is begin
-				if element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC then
-					return true;
-				else
-					return false;
-				end if;
-			end user_specific_contours;
+			function user_specific_contours
+				return boolean
+			is (element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC);
 
 
 		begin -- write_stop_mask_smt
@@ -204,13 +196,9 @@ package body et_package_write_terminals is
 
 		procedure write_stencil is
 
-			function user_specific_contours return boolean is begin
-				if element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC then
-					return true;
-				else
-					return false;
-				end if;
-			end user_specific_contours;
+			function user_specific_contours
+				return boolean
+			is (element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC);
 
 
 		begin

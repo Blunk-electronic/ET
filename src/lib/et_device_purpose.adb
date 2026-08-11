@@ -144,13 +144,7 @@ package body et_device_purpose is
 	function is_empty (
 		purpose : in type_device_purpose)
 		return boolean
-	is begin
-		if purpose = empty_purpose then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (purpose = empty_purpose);
 
 
 

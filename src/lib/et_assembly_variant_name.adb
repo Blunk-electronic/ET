@@ -46,13 +46,7 @@ package body et_assembly_variant_name is
 	function is_default (
 		variant : in type_assembly_variant_name)
 		return boolean
-	is begin
-		if variant = default_assembly_variant then
-			return true;
-		else
-			return false;
-		end if;
-	end is_default;
+	is (variant = default_assembly_variant);
 
 
 

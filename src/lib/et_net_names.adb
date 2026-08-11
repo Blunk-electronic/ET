@@ -107,13 +107,7 @@ package body et_net_names is
 
 	function is_empty (net : in type_net_name)
 		return boolean
-	is begin
-		if length (pac_net_name.bounded_string (net)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (length (pac_net_name.bounded_string (net)) = 0);
 
 
 

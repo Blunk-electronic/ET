@@ -218,13 +218,7 @@ package body et_text_vectorized is
 		function "<" (
 			left, right : in type_character_line)
 			return boolean
-		is begin
-			if left.A < right.A then
-				return true;
-			else
-				return false;
-			end if;
-		end "<";
+		is (left.A < right.A);
 
 
 
