@@ -68,9 +68,7 @@ package body et_meta_device_libraries_board is
 	function to_library_path (
 		lib : in string)
 		return type_library_path_board
-	is begin
-		return type_library_path_board (pac_library_path_board.to_bounded_string (lib));
-	end to_library_path;
+	is (type_library_path_board (pac_library_path_board.to_bounded_string (lib)));
 
 
 
@@ -79,9 +77,7 @@ package body et_meta_device_libraries_board is
 	function to_string (
 		lib : in type_library_path_board)
 		return string
-	is begin
-		return pac_library_path_board.to_string (pac_library_path_board.bounded_string (lib));
-	end to_string;
+	is (pac_library_path_board.to_string (pac_library_path_board.bounded_string (lib)));
 
 
 
@@ -90,9 +86,7 @@ package body et_meta_device_libraries_board is
 	function get_first (
 		paths : in pac_library_paths_board.list)
 		return type_library_path_board
-	is begin
-		return paths.first_element;
-	end get_first;
+	is (paths.first_element);
 
 
 
@@ -101,9 +95,7 @@ package body et_meta_device_libraries_board is
 	function is_empty (
 		paths : in pac_library_paths_board.list)
 		return boolean
-	is begin
-		return pac_library_paths_board.is_empty (paths);
-	end is_empty;
+	is (pac_library_paths_board.is_empty (paths));
 
 
 

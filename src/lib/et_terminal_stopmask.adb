@@ -50,18 +50,14 @@ package body et_terminal_stopmask is
 	function to_string (
 		shape : in type_stopmask_expand_mode)
 		return string
-	is begin
-		return to_lower (type_stopmask_expand_mode'image (shape));
-	end to_string;
+	is (to_lower (type_stopmask_expand_mode'image (shape)));
 
 
 
 	function to_shape (
 		shape : in string)
 		return type_stopmask_expand_mode
-	is begin
-		return type_stopmask_expand_mode'value (shape);
-	end to_shape;
+	is (type_stopmask_expand_mode'value (shape));
 
 
 

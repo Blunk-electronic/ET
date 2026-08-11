@@ -116,9 +116,7 @@ package body et_net_ports_devices is
 
 		function f (place : in type_field_count_positive)
 			return string
-		is begin
-			return get_field (arguments, place);
-		end f;
+		is (get_field (arguments, place));
 
 	begin
 		error := false;

@@ -67,9 +67,7 @@ package body et_device_library is
 	function get_prefix (
 		cursor	: in pac_device_models.cursor)
 		return type_device_prefix
-	is begin
-		return element (cursor).prefix;
-	end get_prefix;
+	is (element (cursor).prefix);
 
 
 
@@ -77,9 +75,7 @@ package body et_device_library is
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
 		return type_device_model_name
-	is begin
-		return key (cursor);
-	end get_device_model_file;
+	is (key (cursor));
 
 
 
@@ -140,18 +136,14 @@ package body et_device_library is
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return type_device_model_name
-	is begin
-		return key (device_cursor);
-	end get_device_model_name;
+	is (key (device_cursor));
 
 
 
 	function get_device_model_name (
 		device_cursor : in pac_device_models.cursor)
 		return string
-	is begin
-		return to_string (key (device_cursor));
-	end get_device_model_name;
+	is (to_string (key (device_cursor)));
 
 
 

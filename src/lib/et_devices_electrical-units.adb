@@ -105,9 +105,7 @@ package body et_devices_electrical.units is
 	function get_unit_count_deployed (
 		device : in type_device_electrical)
 		return natural
-	is begin
-		return natural (device.units.length);
-	end get_unit_count_deployed;
+	is (natural (device.units.length));
 
 
 
@@ -118,9 +116,7 @@ package body et_devices_electrical.units is
 	function get_first_unit (
 		device : in type_device_electrical)
 		return pac_units.cursor
-	is begin
-		return device.units.first;
-	end get_first_unit;
+	is (device.units.first);
 
 
 
@@ -132,9 +128,7 @@ package body et_devices_electrical.units is
 		device	: in type_device_electrical;
 		unit	: in type_unit_name)
 		return pac_units.cursor
-	is begin
-		return find (device.units, unit);
-	end locate_unit;
+	is (find (device.units, unit));
 
 
 
@@ -171,9 +165,7 @@ package body et_devices_electrical.units is
 	function get_unit_names_deployed (
 		device : in pac_devices_electrical.cursor)
 		return pac_unit_names.list
-	is begin
-		return get_unit_names_deployed (element (device));
-	end get_unit_names_deployed;
+	is (get_unit_names_deployed (element (device)));
 
 
 
@@ -205,9 +197,7 @@ package body et_devices_electrical.units is
 	function get_unit_count_deployed (
 		device : in pac_devices_electrical.cursor)
 		return natural
-	is begin
-		return get_unit_count_deployed (element (device));
-	end get_unit_count_deployed;
+	is (get_unit_count_deployed (element (device)));
 
 
 
@@ -1241,9 +1231,7 @@ package body et_devices_electrical.units is
 	function to_string (
 		mode : in type_device_search_mode)
 		return string
-	is begin
-		return type_device_search_mode'image (mode);
-	end to_string;
+	is (type_device_search_mode'image (mode));
 
 
 

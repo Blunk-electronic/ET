@@ -153,9 +153,7 @@ package body et_board_coordinates is
 	function get_face (
 		packge : in type_package_position)
 		return type_face
-	is begin
-		return packge.face;
-	end get_face;
+	is (packge.face);
 
 
 
@@ -177,9 +175,7 @@ package body et_board_coordinates is
 	function get_position (
 		position : in type_package_position)
 		return type_position
-	is begin
-		return type_position (position);
-	end get_position;
+	is (type_position (position));
 
 
 
@@ -197,22 +193,14 @@ package body et_board_coordinates is
 	function get_place (
 		position : in type_package_position)
 		return type_vector_model
-	is begin
-		return position.place;
-	end get_place;
+	is (position.place);
 
 
 
 	function is_flipped (
 		position : in type_package_position)
 		return boolean
-	is begin
-		if position.face = BOTTOM then
-			return true;
-		else
-			return false;
-		end if;
-	end is_flipped;
+	is (position.face = BOTTOM);
 
 
 

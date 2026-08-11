@@ -54,10 +54,8 @@ package body et_netchangers.board is
 	function to_string (
 		position	: in type_netchanger_position_board)
 		return string
-	is begin
-		return to_string (position.place)
-			& " layer " & to_string (position.layer);
-	end to_string;
+	is (to_string (position.place)
+			& " layer " & to_string (position.layer));
 
 
 
@@ -73,9 +71,7 @@ package body et_netchangers.board is
 	function get_place (
 		netchanger	: in type_netchanger)
 		return type_vector_model
-	is begin
-		return netchanger.position_brd.place;
-	end get_place;
+	is (netchanger.position_brd.place);
 
 
 
@@ -92,18 +88,14 @@ package body et_netchangers.board is
 	function get_layer (
 		netchanger	: in type_netchanger)
 		return type_signal_layer
-	is begin
-		return netchanger.position_brd.layer;
-	end get_layer;
+	is (netchanger.position_brd.layer);
 
 
 
 	function get_layer (
 		netchanger	: in type_netchanger)
 		return string
-	is begin
-		return "L" & to_string (get_layer (netchanger));
-	end get_layer;
+	is ("L" & to_string (get_layer (netchanger)));
 
 
 
@@ -143,39 +135,21 @@ package body et_netchangers.board is
 	function is_selected (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_selected (netchanger.status_brd) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (netchanger.status_brd)));
 
 
 
 	function is_proposed (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_proposed (netchanger.status_brd) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (netchanger.status_brd)));
 
 
 
 	function is_moving (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_moving (netchanger.status_brd) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (netchanger.status_brd)));
 
 
 

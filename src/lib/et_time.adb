@@ -93,10 +93,9 @@ package body et_time is
 	end date_first;
 
 
-	function to_string (date : in type_date) return string is
-	begin
-		return string (date);
-	end to_string;
+	function to_string (date : in type_date)
+		return string
+	is (string (date));
 
 
 	function to_date (

@@ -49,15 +49,15 @@ with et_exceptions;				use et_exceptions;
 package body et_device_value is
 
 
-	function to_string (value : in type_device_value) return string is begin
-		return pac_device_value.to_string (pac_device_value.bounded_string (value));
-	end to_string;
+	function to_string (value : in type_device_value)
+		return string
+	is (pac_device_value.to_string (pac_device_value.bounded_string (value)));
 
 
 
-	function to_value (value : in string) return type_device_value is begin
-		return type_device_value (pac_device_value.to_bounded_string (value));
-	end to_value;
+	function to_value (value : in string)
+		return type_device_value
+	is (type_device_value (pac_device_value.to_bounded_string (value)));
 
 
 
@@ -164,13 +164,7 @@ package body et_device_value is
 	function is_empty (
 		value : in type_device_value)
 		return boolean
-	is begin
-		if value = empty_value then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (value = empty_value);
 
 
 

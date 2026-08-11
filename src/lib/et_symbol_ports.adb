@@ -48,9 +48,7 @@ package body et_symbol_ports is
 	function get_port_name (
 		port_cursor : in pac_symbol_ports.cursor)
 		return type_port_name
-	is begin
-		return key (port_cursor);
-	end get_port_name;
+	is (key (port_cursor));
 
 
 
@@ -59,9 +57,7 @@ package body et_symbol_ports is
 	function get_count (
 		ports : in pac_symbol_ports.map)
 		return natural
-	is begin
-		return natural (ports.length);
-	end get_count;
+	is (natural (ports.length));
 
 
 
@@ -69,9 +65,7 @@ package body et_symbol_ports is
 	function get_position (
 		port	: in pac_symbol_ports.cursor)
 		return type_vector_model
-	is begin
-		return element (port).position;
-	end get_position;
+	is (element (port).position);
 
 
 

@@ -44,14 +44,14 @@ package body et_pcb_sides is
 
 
 
-	function to_string (face : in type_face) return string is begin
-		return latin_1.space & to_lower (type_face'image (face));
-	end to_string;
+	function to_string (face : in type_face)
+		return string
+	is (latin_1.space & to_lower (type_face'image (face)));
 
 
-	function to_face (face : in string) return type_face is begin
-		return type_face'value (face);
-	end to_face;
+	function to_face (face : in string)
+		return type_face
+	is (type_face'value (face));
 
 
 	procedure toggle (face : in out type_face) is begin
@@ -63,13 +63,13 @@ package body et_pcb_sides is
 
 
 
-	function to_string (flipped : in type_flipped) return string is begin
-		return to_lower (type_flipped'image (flipped));
-	end to_string;
+	function to_string (flipped : in type_flipped)
+		return string
+	is (to_lower (type_flipped'image (flipped)));
 
-	function to_flipped (flipped : in string) return type_flipped is begin
-		return type_flipped'value (flipped);
-	end to_flipped;
+	function to_flipped (flipped : in string)
+		return type_flipped
+	is (type_flipped'value (flipped));
 
 
 

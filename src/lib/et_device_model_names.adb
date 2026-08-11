@@ -56,18 +56,14 @@ package body et_device_model_names is
 
 
 	function to_string (name : in type_device_model_name)
-		return string is
-	begin
-		return pac_device_model_file.to_string (pac_device_model_file.bounded_string (name));
-	end to_string;
+		return string
+	is (pac_device_model_file.to_string (pac_device_model_file.bounded_string (name)));
 
 
 
 	function to_file_name (name : in string)
-		return type_device_model_name is
-	begin
-		return type_device_model_name (pac_device_model_file.to_bounded_string (name));
-	end to_file_name;
+		return type_device_model_name
+	is (type_device_model_name (pac_device_model_file.to_bounded_string (name)));
 
 
 

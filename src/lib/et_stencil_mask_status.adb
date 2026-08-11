@@ -48,14 +48,14 @@ package body et_stencil_mask_status is
 
 
 
-	function to_string (solder_paste : in type_solder_paste_status) return string is begin
-		return to_lower (type_solder_paste_status'image (solder_paste));
-	end to_string;
+	function to_string (solder_paste : in type_solder_paste_status)
+		return string
+	is (to_lower (type_solder_paste_status'image (solder_paste)));
 
 
-	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
-		return type_solder_paste_status'value (solder_paste);
-	end to_solder_paste_status;
+	function to_solder_paste_status (solder_paste : in string)
+		return type_solder_paste_status
+	is (type_solder_paste_status'value (solder_paste));
 
 
 

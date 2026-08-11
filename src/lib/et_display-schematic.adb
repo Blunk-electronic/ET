@@ -44,53 +44,29 @@
 package body et_display.schematic is
 
 
-	function device_names_enabled return boolean is begin
-		if layers.device_names = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end device_names_enabled;
+	function device_names_enabled
+		return boolean
+	is (layers.device_names = ON);
 
-	function device_values_enabled return boolean is begin
-		if layers.device_values = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end device_values_enabled;
+	function device_values_enabled
+		return boolean
+	is (layers.device_values = ON);
 
-	function device_purposes_enabled return boolean is begin
-		if layers.device_purposes = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end device_purposes_enabled;
+	function device_purposes_enabled
+		return boolean
+	is (layers.device_purposes = ON);
 
-	function ports_enabled return boolean is begin
-		if layers.ports = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end ports_enabled;
+	function ports_enabled
+		return boolean
+	is (layers.ports = ON);
 
-	function nets_enabled return boolean is begin
-		if layers.nets = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end nets_enabled;
+	function nets_enabled
+		return boolean
+	is (layers.nets = ON);
 
-	function texts_enabled return boolean is begin
-		if layers.texts = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end texts_enabled;
+	function texts_enabled
+		return boolean
+	is (layers.texts = ON);
 
 
 end et_display.schematic;

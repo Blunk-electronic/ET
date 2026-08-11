@@ -45,9 +45,7 @@ package body et_net_class_name is
 	function to_string (
 		net_class_name : in type_net_class_name)
 		return string
-	is begin
-		return pac_net_class_name.to_string (pac_net_class_name.bounded_string (net_class_name));
-	end to_string;
+	is (pac_net_class_name.to_string (pac_net_class_name.bounded_string (net_class_name)));
 
 
 
@@ -55,9 +53,7 @@ package body et_net_class_name is
 	function to_net_class_name (
 		net_class_name : in string)
 		return type_net_class_name
-	is begin
-		return type_net_class_name (pac_net_class_name.to_bounded_string (net_class_name));
-	end to_net_class_name;
+	is (type_net_class_name (pac_net_class_name.to_bounded_string (net_class_name)));
 
 
 

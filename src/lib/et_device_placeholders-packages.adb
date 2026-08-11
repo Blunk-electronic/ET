@@ -74,18 +74,14 @@ package body et_device_placeholders.packages is
 	function get_anchor_mode (
 		placeholder		: in type_text_placeholder)
 		return type_anchor_mode
-	is begin
-		return placeholder.anchor_mode;
-	end get_anchor_mode;
+	is (placeholder.anchor_mode);
 
 
 
 	function get_anchor_mode (
 		placeholder		: in type_text_placeholder)
 		return string
-	is begin
-		return to_string (placeholder.anchor_mode);
-	end get_anchor_mode;
+	is (to_string (placeholder.anchor_mode));
 
 
 
@@ -186,9 +182,7 @@ package body et_device_placeholders.packages is
 	function get_meaning (
 		placeholder : in type_text_placeholder)
 		return type_placeholder_meaning
-	is begin
-		return placeholder.meaning;
-	end get_meaning;
+	is (placeholder.meaning);
 
 
 
@@ -196,20 +190,16 @@ package body et_device_placeholders.packages is
 	function to_string (
 		placeholder : in type_text_placeholder)
 		return string
-	is begin
-		return "meaning " & to_string (placeholder.meaning)
+	is ("meaning " & to_string (placeholder.meaning)
 			& " place " & to_string (get_place (placeholder))
-			& " rotation " & to_string (get_rotation (placeholder));
-	end to_string;
+			& " rotation " & to_string (get_rotation (placeholder)));
 
 
 
 	function to_placeholder_index (
 		index : in string)
 		return type_placeholder_index
-	is begin
-		return type_placeholder_index'value (index);
-	end to_placeholder_index;
+	is (type_placeholder_index'value (index));
 
 
 
@@ -237,9 +227,7 @@ package body et_device_placeholders.packages is
 	function get_meaning (
 		placeholder : in pac_text_placeholders.cursor)
 		return type_placeholder_meaning
-	is begin
-		return element (placeholder).meaning;
-	end get_meaning;
+	is (element (placeholder).meaning);
 
 
 
@@ -381,17 +369,13 @@ package body et_device_placeholders.packages is
 	function to_string (
 		layer : in type_placeholder_layer)
 		return string
-	is begin
-		return to_lower (type_placeholder_layer'image (layer));
-	end to_string;
+	is (to_lower (type_placeholder_layer'image (layer)));
 
 
 	function to_placeholder_layer (
 		layer : in string)
 		return type_placeholder_layer
-	is begin
-		return type_placeholder_layer'value (layer);
-	end to_placeholder_layer;
+	is (type_placeholder_layer'value (layer));
 
 
 

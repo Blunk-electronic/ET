@@ -51,9 +51,7 @@ package body et_coordinates_abs_rel is
 	function to_string (
 		coordinates : in type_coordinates)
 		return string
-	is begin
-		return space & to_lower (type_coordinates'image (coordinates));
-	end to_string;
+	is (space & to_lower (type_coordinates'image (coordinates)));
 
 
 

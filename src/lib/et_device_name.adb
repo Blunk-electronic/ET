@@ -56,15 +56,13 @@ package body et_device_name is
 
 	function to_string (index : in type_name_index)
 		return string
-	is begin
-		return latin_1.space & trim (type_name_index'image (index), left);
-	end to_string;
+	is (latin_1.space & trim (type_name_index'image (index), left));
 
 
 
-	function to_index (index : in string) return type_name_index is begin
-		return type_name_index'value (index);
-	end to_index;
+	function to_index (index : in string)
+		return type_name_index
+	is (type_name_index'value (index));
 
 
 
@@ -236,13 +234,7 @@ package body et_device_name is
 	function is_default_name (
 		name : in type_device_name)
 		return boolean
-	is begin
-		if name = device_name_default then
-			return true;
-		else
-			return false;
-		end if;
-	end is_default_name;
+	is (name = device_name_default);
 
 
 
@@ -282,9 +274,7 @@ package body et_device_name is
 	function get_prefix (
 		name : in type_device_name)
 		return type_device_prefix
-	is begin
-		return name.prefix;
-	end get_prefix;
+	is (name.prefix);
 
 
 
@@ -305,9 +295,7 @@ package body et_device_name is
 	function get_index (
 		name : in type_device_name)
 		return type_name_index
-	is begin
-		return name.id;
-	end get_index;
+	is (name.id);
 
 
 
@@ -424,9 +412,7 @@ package body et_device_name is
 	function merge_device_names (
 		left, right : in pac_device_names.set)
 		return pac_device_names.set
-	is begin
-		return union (left, right);
-	end merge_device_names;
+	is (union (left, right));
 
 
 
@@ -489,9 +475,7 @@ package body et_device_name is
 		function get_message_text (
 			name : in type_device_name)
 			return string
-		is begin
-			return "Device " & to_string (name) & " not found !";
-		end get_message_text;
+		is ("Device " & to_string (name) & " not found !");
 
 
 	begin
@@ -528,9 +512,7 @@ package body et_device_name is
 		function get_message_text (
 			name : in type_device_name)
 			return string
-		is begin
-			return "Device " & to_string (name) & " already exists !";
-		end get_message_text;
+		is ("Device " & to_string (name) & " already exists !");
 
 
 	begin

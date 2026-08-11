@@ -89,11 +89,11 @@ package body et_scripting_interactive_schematic is
 	-- item on the menu is "unit C", "unit D", ...
 	-- This function extracts the 2nd field from that entry
 	-- and returns something like "C" or "D":
-	function extract_unit_name (menu_item : in string) return string is begin
-		return get_field_from_line (
+	function extract_unit_name (menu_item : in string)
+		return string
+	is (get_field_from_line (
 			text_in		=> menu_item,
-			position	=> 2);
-	end extract_unit_name;
+			position	=> 2));
 
 
 

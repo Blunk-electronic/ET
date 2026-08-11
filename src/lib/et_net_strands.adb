@@ -50,26 +50,20 @@ package body et_net_strands is
 	function get_x (
 		position	: in type_strand_position)
 		return type_distance_model
-	is begin
-		return position.place.x;
-	end get_x;
+	is (position.place.x);
 
 
 	function get_y (
 		position	: in type_strand_position)
 		return type_distance_model
-	is begin
-		return position.place.y;
-	end get_y;
+	is (position.place.y);
 
 
 
 	function get_sheet (
 		position	: in type_strand_position)
 		return type_sheet
-	is begin
-		return position.sheet;
-	end get_sheet;
+	is (position.sheet);
 
 
 
@@ -200,13 +194,7 @@ package body et_net_strands is
 	function has_segments (
 		strand : in type_strand)
 		return boolean
-	is begin
-		if strand.segments.length > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end has_segments;
+	is (strand.segments.length > 0);
 
 
 
@@ -717,18 +705,14 @@ package body et_net_strands is
 	function has_ports (
 		segment	: in type_connected_segment)
 		return boolean
-	is begin
-		return has_ports (segment.segment, segment.AB_end);
-	end has_ports;
+	is (has_ports (segment.segment, segment.AB_end));
 
 
 
 	function get_length (
 		segments : in pac_connected_segments.list)
 		return natural
-	is begin
-		return natural (segments.length);
-	end get_length;
+	is (natural (segments.length));
 
 
 
@@ -1079,9 +1063,7 @@ package body et_net_strands is
 	function has_element (
 		segment : in type_segment_to_extend)
 		return boolean
-	is begin
-		return has_element (segment.cursor);
-	end has_element;
+	is (has_element (segment.cursor));
 
 
 
@@ -1089,18 +1071,14 @@ package body et_net_strands is
 	function get_segment (
 		segment	: in type_segment_to_extend)
 		return pac_net_segments.cursor
-	is begin
-		return segment.cursor;
-	end get_segment;
+	is (segment.cursor);
 
 
 
 	function get_end (
 		segment	: in type_segment_to_extend)
 		return type_start_end_point
-	is begin
-		return segment.AB_end;
-	end get_end;
+	is (segment.AB_end);
 
 
 
@@ -1892,13 +1870,7 @@ package body et_net_strands is
 	function is_proposed (
 		strand : in type_strand)
 		return boolean
-	is begin
-		if is_proposed (strand.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (strand.status)));
 
 
 
@@ -1920,13 +1892,7 @@ package body et_net_strands is
 	function is_selected (
 		strand : in type_strand)
 		return boolean
-	is begin
-		if is_selected (strand.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (strand.status)));
 
 
 
@@ -1955,9 +1921,7 @@ package body et_net_strands is
 	function get_sheet (
 		strand	: in type_strand)
 		return type_sheet
-	is begin
-		return get_sheet (strand.position);
-	end get_sheet;
+	is (get_sheet (strand.position));
 
 
 
@@ -1965,18 +1929,14 @@ package body et_net_strands is
 	function get_position (
 		strand : in type_strand)
 		return type_strand_position
-	is begin
-		return strand.position;
-	end get_position;
+	is (strand.position);
 
 
 
 	function get_position (
 		strand : in type_strand)
 		return string
-	is begin
-		return to_string (strand.position);
-	end get_position;
+	is (to_string (strand.position));
 
 
 
@@ -2056,9 +2016,7 @@ package body et_net_strands is
 	function has_segments (
 		strand : in pac_strands.cursor)
 		return boolean
-	is begin
-		return has_segments (element (strand));
-	end has_segments;
+	is (has_segments (element (strand)));
 
 
 
@@ -2066,17 +2024,13 @@ package body et_net_strands is
 	function is_proposed (
 		strand : in pac_strands.cursor)
 		return boolean
-	is begin
-		return is_proposed (element (strand));
-	end is_proposed;
+	is (is_proposed (element (strand)));
 
 
 	function is_selected (
 		strand : in pac_strands.cursor)
 		return boolean
-	is begin
-		return is_selected (element (strand));
-	end is_selected;
+	is (is_selected (element (strand)));
 
 
 
@@ -2085,9 +2039,7 @@ package body et_net_strands is
 	function get_position (
 		strand : in pac_strands.cursor)
 		return string
-	is begin
-		return get_position (element (strand));
-	end get_position;
+	is (get_position (element (strand)));
 
 
 
@@ -2153,9 +2105,7 @@ package body et_net_strands is
 	function get_sheet (
 		strand_cursor	: in pac_strands.cursor)
 		return type_sheet
-	is begin
-		return get_sheet (element (strand_cursor).position);
-	end get_sheet;
+	is (get_sheet (element (strand_cursor).position));
 
 
 
@@ -2165,9 +2115,7 @@ package body et_net_strands is
 		segment_cursor	: in pac_net_segments.cursor;
 		point			: in type_vector_model)
 		return boolean
-	is begin
-		return element (segment_cursor).on_line (point);
-	end on_segment;
+	is (element (segment_cursor).on_line (point));
 
 
 
@@ -2304,15 +2252,8 @@ package body et_net_strands is
 		segment		: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point)
 		return boolean
-	is begin
-		if not has_connected_segments (segment, AB_end, strand)
-		and not has_ports (segment, AB_end)
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end is_stub;
+	is (boolean (not has_connected_segments (segment, AB_end, strand)
+		and not has_ports (segment, AB_end)));
 
 
 

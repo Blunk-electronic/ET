@@ -74,9 +74,7 @@ package body et_mirroring is
 	function to_mirror_style (
 		style : in string)
 		return type_mirror
-	is begin
-		return type_mirror'value (mirror_prefix & style);
-	end to_mirror_style;
+	is (type_mirror'value (mirror_prefix & style));
 
 
 

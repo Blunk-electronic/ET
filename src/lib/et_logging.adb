@@ -51,14 +51,14 @@ with et_system_info;
 
 package body et_logging is
 
-	function to_string (cat : in type_log_category) return string is begin
-		return type_log_category'image (cat);
-	end to_string;
+	function to_string (cat : in type_log_category)
+		return string
+	is (type_log_category'image (cat));
 
 
-	function to_log_category (cat : in string) return type_log_category is begin
-		return type_log_category'value (cat);
-	end to_log_category;
+	function to_log_category (cat : in string)
+		return type_log_category
+	is (type_log_category'value (cat));
 
 
 
@@ -121,10 +121,9 @@ package body et_logging is
 
 
 
-	function indent (width : in type_indentation_level) return string is
-	begin
-		return (natural (width) * latin_1.space);
-	end indent;
+	function indent (width : in type_indentation_level)
+		return string
+	is ((natural (width) * latin_1.space));
 
 
 
@@ -214,10 +213,9 @@ package body et_logging is
 	end message_warning;
 
 
-	function message_note return string is
-	begin
-		return "NOTE : ";
-	end message_note;
+	function message_note
+		return string
+	is ("NOTE : ");
 
 
 
@@ -255,9 +253,9 @@ package body et_logging is
 	end increment_warning_counter;
 
 
-	function warning_count return type_warning_counter is begin
-		return warning_counter;
-	end warning_count;
+	function warning_count
+		return type_warning_counter
+	is (warning_counter);
 
 
 	function no_warnings return boolean is begin
@@ -267,9 +265,9 @@ package body et_logging is
 	end no_warnings;
 
 
-	function warning_count return string is begin
-		return type_warning_counter'image (warning_counter);
-	end warning_count;
+	function warning_count
+		return string
+	is (type_warning_counter'image (warning_counter));
 
 
 

@@ -59,9 +59,7 @@ package body et_axes is
 	function to_axis (
 		axis : in string)
 		return type_axis
-	is begin
-		return type_axis'value (axis_prefix & axis);
-	end to_axis;
+	is (type_axis'value (axis_prefix & axis));
 
 
 

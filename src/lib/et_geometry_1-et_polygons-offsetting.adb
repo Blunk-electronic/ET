@@ -50,9 +50,9 @@ package body et_geometry_1.et_polygons.offsetting is
 	end to_string;
 
 
-	function to_string (oe : in pac_offset_edges.cursor) return string is begin
-		return to_string (element (oe));
-	end to_string;
+	function to_string (oe : in pac_offset_edges.cursor)
+		return string
+	is (to_string (element (oe)));
 
 
 

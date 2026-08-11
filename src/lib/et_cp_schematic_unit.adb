@@ -123,12 +123,10 @@ package body et_cp_schematic_unit is
 			-- in the drawing:
 			function locate_unit (unit : in type_unit_name)
 				return type_unit_query
-			is begin
-				return get_unit_position (
+			is (get_unit_position (
 					module_cursor	=> module,
 					device_name		=> device,
-					unit_name		=> unit);
-			end locate_unit;
+					unit_name		=> unit));
 
 
 

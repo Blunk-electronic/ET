@@ -82,9 +82,7 @@ package body et_geometry_2a.contours is
 	function to_string (
 		segment	: in pac_segments.cursor)
 		return string
-	is begin
-		return to_string (element (segment));
-	end to_string;
+	is (to_string (element (segment)));
 
 
 
@@ -325,18 +323,14 @@ package body et_geometry_2a.contours is
 	function get_shape (
 		segment	: in type_segment)
 		return type_segment_shape
-	is begin
-		return segment.shape;
-	end get_shape;
+	is (segment.shape);
 
 
 
 	function get_shape (
 		segment	: in pac_segments.cursor)
 		return type_segment_shape
-	is begin
-		return element (segment).shape;
-	end get_shape;
+	is (element (segment).shape);
 
 
 
@@ -453,13 +447,7 @@ package body et_geometry_2a.contours is
 	function is_selected (
 		contour : in type_contour)
 		return boolean
-	is begin
-		if is_selected (contour.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (contour.status)));
 
 
 
@@ -471,13 +459,7 @@ package body et_geometry_2a.contours is
 	function is_circular (
 		contour : in type_contour)
 		return boolean
-	is begin
-		if contour.contour.circular then
-			return true;
-		else
-			return false;
-		end if;
-	end is_circular;
+	is (boolean (contour.contour.circular));
 
 
 
@@ -595,9 +577,7 @@ package body et_geometry_2a.contours is
 		function f (
 			place : in type_field_count_positive)
 			return string
-		is begin
-			return to_lower (get_field (arguments, place));
-		end f;
+		is (to_lower (get_field (arguments, place)));
 
 		l : type_line;
 		a : type_arc;
@@ -1069,9 +1049,7 @@ package body et_geometry_2a.contours is
 	function get_segments (
 		contour	: in type_contour)
 		return type_segments
-	is begin
-		return contour.contour;
-	end get_segments;
+	is (contour.contour);
 
 
 
@@ -1833,9 +1811,9 @@ package body et_geometry_2a.contours is
 
 
 
-	function to_string (status : in type_location) return string is begin
-		return type_location'image (status);
-	end to_string;
+	function to_string (status : in type_location)
+		return string
+	is (type_location'image (status));
 
 
 

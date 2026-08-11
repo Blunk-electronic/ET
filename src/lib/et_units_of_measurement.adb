@@ -79,9 +79,7 @@ package body et_units_of_measurement is
 	function to_string (
 		unit : in type_unit_of_measurement)
 		return string
-	is begin
-		return type_unit_of_measurement'image (unit);
-	end to_string;
+	is (type_unit_of_measurement'image (unit));
 
 
 

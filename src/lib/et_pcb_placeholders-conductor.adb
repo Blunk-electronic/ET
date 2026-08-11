@@ -73,18 +73,14 @@ package body et_pcb_placeholders.conductor is
 	function get_meaning (
 		placeholder : in type_placeholder_conductor)
 		return type_placeholder_meaning
-	is begin
-		return placeholder.meaning;
-	end get_meaning;
+	is (placeholder.meaning);
 
 
 
 	function get_layer (
 		placeholder : in type_placeholder_conductor)
 		return type_signal_layer
-	is begin
-		return placeholder.layer;
-	end get_layer;
+	is (placeholder.layer);
 
 
 
@@ -92,9 +88,7 @@ package body et_pcb_placeholders.conductor is
 	function to_string (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return string
-	is begin
-		return to_string (element (placeholder));
-	end to_string;
+	is (to_string (element (placeholder)));
 
 
 
@@ -118,35 +112,21 @@ package body et_pcb_placeholders.conductor is
 	function get_layer (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return type_signal_layer
-	is begin
-		return element (placeholder).layer;
-	end get_layer;
+	is (element (placeholder).layer);
 
 
 
 	function is_selected (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
-	is begin
-		if is_selected (element (placeholder)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (placeholder))));
 
 
 
 	function is_proposed (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (placeholder)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (placeholder))));
 
 
 

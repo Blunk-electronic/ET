@@ -46,20 +46,16 @@ package body et_colors is
 	function to_string (
 		col_range : in color_range)
 		return string
-	is begin
-		return color_range'image (col_range);
-	end to_string;
+	is (color_range'image (col_range));
 
 
 
 	function to_string (
 		color	: in type_color)
 		return string
-	is begin
-		return "R: " & to_string (color.red)
+	is ("R: " & to_string (color.red)
 		& " G: " & to_string (color.green)
-		& " B: " & to_string (color.blue);
-	end to_string;
+		& " B: " & to_string (color.blue));
 
 
 

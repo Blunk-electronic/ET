@@ -59,13 +59,9 @@ package body et_project.configuration is
 
 
 
-	function conventions_specified return boolean is begin
-		if et_conventions.length (project.rules.conventions) > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end conventions_specified;
+	function conventions_specified
+		return boolean
+	is (et_conventions.length (project.rules.conventions) > 0);
 
 
 

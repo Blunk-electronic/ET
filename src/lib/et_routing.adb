@@ -250,9 +250,9 @@ package body et_routing is
 
 
 
-	function to_string (place : in type_place) return string is begin
-		return "place: " & type_place'image (place);
-	end to_string;
+	function to_string (place : in type_place)
+		return string
+	is ("place: " & type_place'image (place));
 
 
 	--function get_dimensions (

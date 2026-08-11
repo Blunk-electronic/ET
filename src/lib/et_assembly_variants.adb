@@ -48,22 +48,20 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_assembly_variants is
 
 
-	function to_mounted (mounted : in string) return type_mounted is begin
-		return type_mounted'value (mounted);
-	end to_mounted;
+	function to_mounted (mounted : in string)
+		return type_mounted
+	is (type_mounted'value (mounted));
 
-	function to_mounted (mounted : in type_mounted) return string is begin
-		return space & to_lower (type_mounted'image (mounted));
-	end to_mounted;
+	function to_mounted (mounted : in type_mounted)
+		return string
+	is (space & to_lower (type_mounted'image (mounted)));
 
 
 
 	function get_count (
 		variants : in pac_assembly_variants.map)
 		return natural
-	is begin
-		return natural (length (variants));
-	end get_count;
+	is (natural (length (variants)));
 
 
 
@@ -123,9 +121,7 @@ package body et_assembly_variants is
 	function get_count (
 		variants : in type_module_assembly_variants)
 		return natural
-	is begin
-		return get_count (variants.variants);
-	end get_count;
+	is (get_count (variants.variants));
 
 
 
@@ -133,9 +129,7 @@ package body et_assembly_variants is
 		variants	: in type_module_assembly_variants;
 		variant		: in type_assembly_variant_name)
 		return boolean
-	is begin
-		return contains (variants.variants, variant);
-	end variant_exists;
+	is (contains (variants.variants, variant));
 
 
 

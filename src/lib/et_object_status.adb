@@ -61,13 +61,7 @@ package body et_object_status is
 	function is_proposed (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.proposed then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (status.proposed));
 
 
 
@@ -89,13 +83,7 @@ package body et_object_status is
 	function is_selected (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.selected then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (status.selected));
 
 
 
@@ -117,13 +105,7 @@ package body et_object_status is
 	function is_moving (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.moving then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (status.moving));
 
 
 
@@ -145,13 +127,7 @@ package body et_object_status is
 	function is_locked (
 		status : in type_object_status)
 		return boolean
-	is begin
-		if status.locked then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (status.locked));
 
 
 
@@ -159,9 +135,7 @@ package body et_object_status is
 
 	function get_default_status
 		return type_object_status
-	is begin
-		return object_status_default;
-	end get_default_status;
+	is (object_status_default);
 
 
 
@@ -170,9 +144,7 @@ package body et_object_status is
 		action	: in type_action;
 		flag	: in type_flag)
 		return type_status_operation
-	is begin
-		return (action, flag);
-	end to_operation;
+	is ((action, flag));
 
 
 
@@ -181,18 +153,14 @@ package body et_object_status is
 	function get_action (
 		operation : in type_status_operation)
 		return type_action
-	is begin
-		return operation.action;
-	end get_action;
+	is (operation.action);
 
 
 
 	function get_flag (
 		operation : in type_status_operation)
 		return type_flag
-	is begin
-		return operation.flag;
-	end get_flag;
+	is (operation.flag);
 
 
 
@@ -256,18 +224,14 @@ package body et_object_status is
 	function to_string (
 		flag : in type_flag)
 		return string
-	is begin
-		return "flag: " & type_flag'image (flag);
-	end to_string;
+	is ("flag: " & type_flag'image (flag));
 
 
 	function to_string (
 		operation : in type_status_operation)
 		return string
-	is begin
-		return "operation: " & type_action'image (operation.action)
-			& " " & type_flag'image (operation.flag);
-	end to_string;
+	is ("operation: " & type_action'image (operation.action)
+			& " " & type_flag'image (operation.flag));
 
 
 
@@ -278,17 +242,13 @@ package body et_object_status is
 	function is_A_selected (
 		status : in type_AB_status)
 		return boolean
-	is begin
-		return boolean (status.selected.A);
-	end is_A_selected;
+	is (boolean (status.selected.A));
 
 
 	function is_B_selected (
 		status : in type_AB_status)
 		return boolean
-	is begin
-		return boolean (status.selected.B);
-	end is_B_selected;
+	is (boolean (status.selected.B));
 
 
 	procedure set_A_selected (
@@ -334,17 +294,13 @@ package body et_object_status is
 	function is_A_moving (
 		status : in type_AB_status)
 		return boolean
-	is begin
-		return boolean (status.moving.A);
-	end is_A_moving;
+	is (boolean (status.moving.A));
 
 
 	function is_B_moving (
 		status : in type_AB_status)
 		return boolean
-	is begin
-		return boolean (status.moving.B);
-	end is_B_moving;
+	is (boolean (status.moving.B));
 
 
 

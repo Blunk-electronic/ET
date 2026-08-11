@@ -54,9 +54,7 @@ package body et_canvas.drawing_frame is
 	function to_distance (
 		d : in et_drawing_frame.type_distance)
 		return pac_geometry.type_distance
-	is begin
-		return pac_geometry.type_distance (d);
-	end to_distance;
+	is (pac_geometry.type_distance (d));
 
 
 

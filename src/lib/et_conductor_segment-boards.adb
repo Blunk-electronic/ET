@@ -61,9 +61,7 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		line : in type_conductor_line)
 		return type_signal_layer
-	is begin
-		return line.layer;
-	end get_layer;
+	is (line.layer);
 
 
 
@@ -133,17 +131,13 @@ package body et_conductor_segment.boards is
 	function get_A (
 		line : in pac_conductor_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (line));
-	end get_A;
+	is (get_A (element (line)));
 
 
 	function get_B (
 		line : in pac_conductor_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (line));
-	end get_B;
+	is (get_B (element (line)));
 
 
 
@@ -152,9 +146,7 @@ package body et_conductor_segment.boards is
 		line	: in pac_conductor_lines.cursor;
 		width	: in boolean)
 		return string
-	is begin
-		return to_string (element (line), width);
-	end to_string;
+	is (to_string (element (line), width));
 
 
 
@@ -162,9 +154,7 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		line : in pac_conductor_lines.cursor)
 		return type_signal_layer
-	is begin
-		return element (line).layer;
-	end get_layer;
+	is (element (line).layer);
 
 
 
@@ -173,13 +163,7 @@ package body et_conductor_segment.boards is
 	function is_proposed (
 		line : in pac_conductor_lines.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (line)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (line))));
 
 
 
@@ -187,13 +171,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		line : in pac_conductor_lines.cursor)
 		return boolean
-	is begin
-		if is_selected (element (line)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (line))));
 
 
 
@@ -298,9 +276,7 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		arc : in type_conductor_arc)
 		return type_signal_layer
-	is begin
-		return arc.layer;
-	end get_layer;
+	is (arc.layer);
 
 
 
@@ -326,17 +302,13 @@ package body et_conductor_segment.boards is
 	function get_A (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (arc));
-	end get_A;
+	is (get_A (element (arc)));
 
 
 	function get_B (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (arc));
-	end get_B;
+	is (get_B (element (arc)));
 
 
 
@@ -346,9 +318,7 @@ package body et_conductor_segment.boards is
 		arc		: in pac_conductor_arcs.cursor;
 		width	: in boolean)
 		return string
-	is begin
-		return to_string (element (arc), width);
-	end to_string;
+	is (to_string (element (arc), width));
 
 
 
@@ -356,22 +326,14 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		arc : in pac_conductor_arcs.cursor)
 		return type_signal_layer
-	is begin
-		return element (arc).layer;
-	end get_layer;
+	is (element (arc).layer);
 
 
 
 	function is_proposed (
 		arc : in pac_conductor_arcs.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (arc)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (arc))));
 
 
 
@@ -379,13 +341,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		arc : in pac_conductor_arcs.cursor)
 		return boolean
-	is begin
-		if is_selected (element (arc)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (arc))));
 
 
 
@@ -461,9 +417,7 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		circle : in type_conductor_circle)
 		return type_signal_layer
-	is begin
-		return circle.layer;
-	end get_layer;
+	is (circle.layer);
 
 
 
@@ -505,22 +459,14 @@ package body et_conductor_segment.boards is
 	function get_layer (
 		circle : in pac_conductor_circles.cursor)
 		return type_signal_layer
-	is begin
-		return element (circle).layer;
-	end get_layer;
+	is (element (circle).layer);
 
 
 
 	function is_proposed (
 		circle : in pac_conductor_circles.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (circle)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (circle))));
 
 
 
@@ -528,13 +474,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		circle : in pac_conductor_circles.cursor)
 		return boolean
-	is begin
-		if is_selected (element (circle)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (circle))));
 
 
 

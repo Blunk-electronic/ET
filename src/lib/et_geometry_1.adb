@@ -65,9 +65,7 @@ package body et_geometry_1 is
 	function get_average (
 		f1, f2 : in type_float)
 		return type_float
-	is begin
-		return (f1 + f2) * 0.5;
-	end get_average;
+	is ((f1 + f2) * 0.5);
 
 
 
@@ -88,19 +86,19 @@ package body et_geometry_1 is
 
 
 
-	function to_string (f : in type_float) return string is begin
-		return type_float'image (f);
-	end to_string;
+	function to_string (f : in type_float)
+		return string
+	is (type_float'image (f));
 
 
-	function to_float (s : in string) return type_float is begin
-		return type_float'value (s);
-	end to_float;
+	function to_float (s : in string)
+		return type_float
+	is (type_float'value (s));
 
 
-	function to_angle (a : in string) return type_angle is begin
-		return type_angle'value (a);
-	end to_angle;
+	function to_angle (a : in string)
+		return type_angle
+	is (type_angle'value (a));
 
 
 	function to_radians (degrees : in type_angle) return type_float is
@@ -292,9 +290,7 @@ package body et_geometry_1 is
 
 	function to_distance (df : in string)
 		return type_float
-	is begin
-		return type_float'value (df);
-	end to_distance;
+	is (type_float'value (df));
 
 
 
@@ -342,9 +338,7 @@ package body et_geometry_1 is
 	function to_offset (
 		x, y : in type_float)
 		return type_offset
-	is begin
-		return (x, y);
-	end to_offset;
+	is ((x, y));
 
 
 
@@ -352,9 +346,7 @@ package body et_geometry_1 is
 	function invert (
 		d : in type_offset)
 		return type_offset
-	is begin
-		return (-1.0 * d.x, -1.0 * d.y);
-	end invert;
+	is ((-1.0 * d.x, -1.0 * d.y));
 
 
 
@@ -430,10 +422,8 @@ package body et_geometry_1 is
 	function to_string (
 		distance : in type_distance_polar)
 		return string
-	is begin
-		return ("abs:" & to_string (distance.absolute)
-			& " / angle:" & to_string (distance.angle));
-	end to_string;
+	is (("abs:" & to_string (distance.absolute)
+			& " / angle:" & to_string (distance.angle)));
 
 
 
@@ -442,9 +432,7 @@ package body et_geometry_1 is
 		absolute	: in type_float_positive;
 		angle		: in type_angle)
 		return type_distance_polar
-	is begin
-		return (absolute, angle);
-	end to_polar;
+	is ((absolute, angle));
 
 
 
@@ -481,9 +469,7 @@ package body et_geometry_1 is
 	function get_angle (
 		distance : in type_distance_polar)
 		return type_angle
-	is begin
-		return distance.angle;
-	end get_angle;
+	is (distance.angle);
 
 
 
@@ -491,9 +477,7 @@ package body et_geometry_1 is
 	function get_absolute (
 		distance : in type_distance_polar)
 		return type_float_positive
-	is begin
-		return distance.absolute;
-	end get_absolute;
+	is (distance.absolute);
 
 
 
@@ -564,9 +548,7 @@ package body et_geometry_1 is
 	function get_offset (
 		v1, v2 : in type_vector)
 		return type_offset
-	is begin
-		return (v2.x - v1.x, v2.y - v1.y);
-	end get_offset;
+	is ((v2.x - v1.x, v2.y - v1.y));
 
 
 
@@ -574,9 +556,7 @@ package body et_geometry_1 is
 	function to_offset (
 		v : in type_vector)
 		return type_offset
-	is begin
-		return (v.x, v.y);
-	end to_offset;
+	is ((v.x, v.y));
 
 
 
@@ -629,38 +609,30 @@ package body et_geometry_1 is
 		y : in type_float;
 		z : in type_float := 0.0)
 		return type_vector
-	is begin
-		return (x, y, z);
-	end set;
+	is ((x, y, z));
 
 
 
 	function get_x (
 		v	: in type_vector)
-		return type_float is
-	begin
-		return v.x;
-	end get_x;
+		return type_float
+	is (v.x);
 
 
 
 
 	function get_y (
 		v	: in type_vector)
-		return type_float is
-	begin
-		return v.y;
-	end get_y;
+		return type_float
+	is (v.y);
 
 
 
 
 	function get_z (
 		v	: in type_vector)
-		return type_float is
-	begin
-		return v.z;
-	end get_z;
+		return type_float
+	is (v.z);
 
 
 
@@ -668,14 +640,10 @@ package body et_geometry_1 is
 	function get_absolute (
 		vector	: in type_vector)
 		return type_float
-	is begin
-		return
-			sqrt (
+	is (sqrt (
 				vector.x * vector.x +
 				vector.y * vector.y +
-				vector.z * vector.z);
-
-	end get_absolute;
+				vector.z * vector.z));
 
 
 
@@ -683,13 +651,10 @@ package body et_geometry_1 is
 	function get_sum_of_squared_components (
 		vector	: in type_vector)
 		return type_float
-	is begin
-		return (
+	is ((
 			vector.x * vector.x +
 			vector.y * vector.y +
-			vector.z * vector.z);
-
-	end get_sum_of_squared_components;
+			vector.z * vector.z));
 
 
 
@@ -697,13 +662,7 @@ package body et_geometry_1 is
 	function "<" (
 		left, right : in type_vector)
 		return boolean
-	is begin
-		if get_absolute (left) < get_absolute (right) then
-			return true;
-		else
-			return false;
-		end if;
-	end "<";
+	is (get_absolute (left) < get_absolute (right));
 
 
 
@@ -712,13 +671,11 @@ package body et_geometry_1 is
 		v	: in type_vector;
 		s	: in type_float)
 		return type_vector
-	is begin
-		return (
+	is ((
 			x => s * v.x,
 			y => s * v.y,
 			z => s * v.z
-			);
-	end scale;
+			));
 
 
 
@@ -726,12 +683,10 @@ package body et_geometry_1 is
 	function add (
 		a, b	: in type_vector)
 		return type_vector
-	is begin
-		return (
+	is ((
 			x => a.x + b.x,
 			y => a.y + b.y,
-			z => a.z + b.z);
-	end add;
+			z => a.z + b.z));
 
 
 
@@ -739,12 +694,10 @@ package body et_geometry_1 is
 	function subtract (
 		a, b	: in type_vector)
 		return type_vector
-	is begin
-		return (
+	is ((
 			x => a.x - b.x,
 			y => a.y - b.y,
-			z => a.z - b.z);
-	end subtract;
+			z => a.z - b.z));
 
 
 
@@ -752,12 +705,10 @@ package body et_geometry_1 is
 	function cross_product (
 		a, b	: in type_vector)
 		return type_vector
-	is begin
-		return (
+	is ((
 			x => a.y * b.z - a.z * b.y,
 			y => a.z * b.x - a.x * b.z,
-			z => a.x * b.y - a.y * b.x);
-	end cross_product;
+			z => a.x * b.y - a.y * b.x));
 
 
 
@@ -765,9 +716,7 @@ package body et_geometry_1 is
 	function dot_product (
 		a, b	: in type_vector)
 		return type_float
-	is begin
-		return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
-	end dot_product;
+	is ((a.x * b.x  +  a.y * b.y  +  a.z * b.z));
 
 
 
@@ -846,12 +795,10 @@ package body et_geometry_1 is
 	function get_displacement (
 		v1, v2 : in type_vector)
 		return type_vector
-	is begin
-		return (
+	is ((
 			v2.x - v1.x,
 			v2.y - v1.y,
-			v2.z - v1.z);
-	end get_displacement;
+			v2.z - v1.z));
 
 
 
@@ -1059,13 +1006,9 @@ package body et_geometry_1 is
 		end record;
 
 
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end "<";
+		function "<" (left, right : in type_item)
+			return boolean
+		is (left.distance < right.distance);
 
 		package pac_items is new doubly_linked_lists (type_item);
 		use pac_items;
@@ -1396,11 +1339,9 @@ package body et_geometry_1 is
 	function to_string (
 		lv : in type_line_vector)
 		return string
-	is begin
-		return "line vector start: " & to_string (lv.v_start)
+	is ("line vector start: " & to_string (lv.v_start)
 			& " direction: " & to_string (lv.v_direction)
-			& " angle: " & to_string (get_angle (lv));
-	end to_string;
+			& " angle: " & to_string (get_angle (lv)));
 
 
 
@@ -1446,12 +1387,9 @@ package body et_geometry_1 is
 	function to_line_vector (
 		ray : in type_ray)
 		return type_line_vector
-	is begin
-		return (
+	is ((
 			v_start		=> start_vector (ray),
-			v_direction	=> direction_vector (ray));
-
-	end to_line_vector;
+			v_direction	=> direction_vector (ray)));
 
 
 
@@ -1667,12 +1605,12 @@ package body et_geometry_1 is
 
 -- BOUNDARIES:
 
-	function to_string (boundaries : in type_boundaries) return string is begin
-		return "boundaries: SX:" & to_string (boundaries.smallest_x)
+	function to_string (boundaries : in type_boundaries)
+		return string
+	is ("boundaries: SX:" & to_string (boundaries.smallest_x)
 			& " / GX:" & to_string (boundaries.greatest_x)
 			& " / SY:" & to_string (boundaries.smallest_y)
-			& " / GY:" & to_string (boundaries.greatest_y);
-	end to_string;
+			& " / GY:" & to_string (boundaries.greatest_y));
 
 
 
@@ -1709,44 +1647,32 @@ package body et_geometry_1 is
 
 	function get_height (boundaries : in type_boundaries)
 		return type_float_positive
-	is begin
-		return boundaries.greatest_y - boundaries.smallest_y;
-	end get_height;
+	is (boundaries.greatest_y - boundaries.smallest_y);
 
 
 	function get_width (boundaries : in type_boundaries)
 		return type_float_positive
-	is begin
-		return boundaries.greatest_x - boundaries.smallest_x;
-	end get_width;
+	is (boundaries.greatest_x - boundaries.smallest_x);
 
 
 	function get_left (boundaries : in type_boundaries)
 		return type_float
-	is begin
-		return boundaries.smallest_x;
-	end get_left;
+	is (boundaries.smallest_x);
 
 
 	function get_right (boundaries : in type_boundaries)
 		return type_float
-	is begin
-		return boundaries.greatest_x;
-	end get_right;
+	is (boundaries.greatest_x);
 
 
 	function get_bottom (boundaries : in type_boundaries)
 		return type_float
-	is begin
-		return boundaries.smallest_y;
-	end get_bottom;
+	is (boundaries.smallest_y);
 
 
 	function get_top (boundaries : in type_boundaries)
 		return type_float
-	is begin
-		return boundaries.greatest_y;
-	end get_top;
+	is (boundaries.greatest_y);
 
 
 
@@ -1874,9 +1800,7 @@ package body et_geometry_1 is
 	function get_length (
 		line : in type_line_fine)
 		return type_float_positive
-	is begin
-		return get_distance_total (line.A, line.B);
-	end get_length;
+	is (get_distance_total (line.A, line.B));
 
 
 
@@ -1884,10 +1808,8 @@ package body et_geometry_1 is
 	function to_string (
 		line	: in type_line_fine)
 		return string
-	is begin
-		return "A: " & to_string (line.A)
-			& " B: " & to_string (line.B);
-	end to_string;
+	is ("A: " & to_string (line.A)
+			& " B: " & to_string (line.B));
 
 
 
@@ -1895,9 +1817,7 @@ package body et_geometry_1 is
 	function make_line (
 		A, B : in type_vector)
 		return type_line_fine
-	is begin
-		return (A, B, others => <>);
-	end make_line;
+	is ((A, B, others => <>));
 
 
 
@@ -2011,13 +1931,7 @@ package body et_geometry_1 is
 	function is_selected (
 		line : in type_line_fine)
 		return boolean
-	is begin
-		if is_selected (line.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (line.status)));
 
 
 	procedure set_selected (
@@ -2037,13 +1951,7 @@ package body et_geometry_1 is
 	function is_proposed (
 		line : in type_line_fine)
 		return boolean
-	is begin
-		if is_proposed (line.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (line.status)));
 
 
 
@@ -2064,13 +1972,7 @@ package body et_geometry_1 is
 	function is_moving (
 		line : in type_line_fine)
 		return boolean
-	is begin
-		if is_moving (line.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (line.status)));
 
 
 	procedure set_moving (
@@ -2350,75 +2252,59 @@ package body et_geometry_1 is
 		B	: in type_vector;
 		direction	: in type_direction_of_rotation)
 		return type_arc_fine
-	is begin
-		return (center, A, B, direction);
-	end to_arc_fine;
+	is ((center, A, B, direction));
 
 
 
 	function to_string (
 		arc : in type_arc_fine)
 		return string
-	is begin
-		return "A: " & to_string (arc.A)
+	is ("A: " & to_string (arc.A)
 			& " B: " & to_string (arc.B)
 			& " C: " & to_string (arc.center)
-			& " D: " & to_string (arc.direction);
-	end to_string;
+			& " D: " & to_string (arc.direction));
 
 
 
 	function get_center (
 		arc : in type_arc_fine)
 		return type_vector
-	is begin
-		return arc.center;
-	end get_center;
+	is (arc.center);
 
 
 
 	function get_A (
 		arc : in type_arc_fine)
 		return type_vector
-	is begin
-		return arc.A;
-	end get_A;
+	is (arc.A);
 
 
 
 	function get_B (
 		arc : in type_arc_fine)
 		return type_vector
-	is begin
-		return arc.B;
-	end get_B;
+	is (arc.B);
 
 
 
 	function get_direction (
 		arc : in type_arc_fine)
 		return type_direction_of_rotation
-	is begin
-		return arc.direction;
-	end get_direction;
+	is (arc.direction);
 
 
 
 	function get_radius_start (
 		arc : in type_arc_fine)
 		return type_float_positive
-	is begin
-		return get_distance_total (arc.center, arc.A);
-	end get_radius_start;
+	is (get_distance_total (arc.center, arc.A));
 
 
 
 	function get_radius_end (
 		arc : in type_arc_fine)
 		return type_float_positive
-	is begin
-		return get_distance_total (arc.center, arc.B);
-	end get_radius_end;
+	is (get_distance_total (arc.center, arc.B));
 
 
 
@@ -2475,13 +2361,7 @@ package body et_geometry_1 is
 	function zero_length (
 		arc : in type_arc_fine)
 		return boolean
-	is begin
-		if arc.A = arc.B then
-			return true;
-		else
-			return false;
-		end if;
-	end zero_length;
+	is (arc.A = arc.B);
 
 
 
@@ -2625,9 +2505,7 @@ package body et_geometry_1 is
 		angle_end	: in type_angle; -- can be negative
 		direction	: in type_direction_of_rotation := arc_direction_default)
 		return type_arc_angles
-	is begin
-		return (center, radius, angle_start, angle_end, direction);
-	end to_arc_angles;
+	is ((center, radius, angle_start, angle_end, direction));
 
 
 
@@ -2678,57 +2556,45 @@ package body et_geometry_1 is
 	function get_center (
 		arc		: in type_arc_angles)
 		return type_vector
-	is begin
-		return arc.center;
-	end get_center;
+	is (arc.center);
 
 
 	function get_angle_start (
 		arc		: in type_arc_angles)
 		return type_angle
-	is begin
-		return arc.angle_start;
-	end get_angle_start;
+	is (arc.angle_start);
 
 
 
 	function get_angle_end (
 		arc		: in type_arc_angles)
 		return type_angle
-	is begin
-		return arc.angle_end;
-	end get_angle_end;
+	is (arc.angle_end);
 
 
 
 	function get_radius (
 		arc		: in type_arc_angles)
 		return type_float_positive
-	is begin
-		return arc.radius;
-	end get_radius;
+	is (arc.radius);
 
 
 
 	function get_direction (
 		arc		: in type_arc_angles)
 		return type_direction_of_rotation
-	is begin
-		return arc.direction;
-	end get_direction;
+	is (arc.direction);
 
 
 
 	function to_string (
 		arc : in type_arc_angles)
 		return string
-	is begin
-		return " A: " & to_string (arc.angle_start)
+	is (" A: " & to_string (arc.angle_start)
 			& " B: " & to_string (arc.angle_end)
 			& " C: " & to_string (arc.center)
 			& " D: " & to_string (arc.direction)
-			& " R: " & to_string (arc.radius);
-	end to_string;
+			& " R: " & to_string (arc.radius));
 
 
 
@@ -3176,18 +3042,14 @@ package body et_geometry_1 is
 	function get_center (
 		circle	: in type_circle_fine)
 		return type_vector
-	is begin
-		return circle.center;
-	end get_center;
+	is (circle.center);
 
 
 
 	function get_radius (
 		circle	: in type_circle_fine)
 		return type_float_positive
-	is begin
-		return circle.radius;
-	end get_radius;
+	is (circle.radius);
 
 
 
@@ -3195,10 +3057,8 @@ package body et_geometry_1 is
 	function to_string (
 		circle	: in type_circle_fine)
 		return string
-	is begin
-		return "C: " & to_string (circle.center)
-			& " R: " & to_string (circle.radius);
-	end to_string;
+	is ("C: " & to_string (circle.center)
+			& " R: " & to_string (circle.radius));
 
 
 
@@ -4195,34 +4055,30 @@ package body et_geometry_1 is
 
 
 
-	function out_of_range (d : in type_distance_point_line) return boolean is begin
-		return d.out_of_range;
-	end out_of_range;
+	function out_of_range (d : in type_distance_point_line)
+		return boolean
+	is (d.out_of_range);
 
 
 	function get_distance (d : in type_distance_point_line)
 		return type_float
-	is begin
-		return d.distance;
-	end get_distance;
+	is (d.distance);
 
 
 	function get_intersection (d : in type_distance_point_line)
 		return type_vector
-	is begin
-		return d.intersection;
-	end get_intersection;
+	is (d.intersection);
 
 
 
-	function on_A (d : in type_distance_point_line) return boolean is begin
-		return d.sits_on_start;
-	end on_A;
+	function on_A (d : in type_distance_point_line)
+		return boolean
+	is (d.sits_on_start);
 
 
-	function on_B (d : in type_distance_point_line) return boolean is begin
-		return d.sits_on_end;
-	end on_B;
+	function on_B (d : in type_distance_point_line)
+		return boolean
+	is (d.sits_on_end);
 
 
 end et_geometry_1;

@@ -140,15 +140,8 @@ package body et_net_segment is
 	function has_junctions (
 		segment	: in type_net_segment)
 		return boolean
-	is begin
-		if segment.junctions.A or
-		   segment.junctions.B
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end has_junctions;
+	is (boolean (segment.junctions.A or
+		   segment.junctions.B));
 
 
 
@@ -230,15 +223,8 @@ package body et_net_segment is
 	function has_connectors (
 		segment	: in type_net_segment)
 		return boolean
-	is begin
-		if is_active (segment.connectors.A) or
-		   is_active (segment.connectors.B)
-		then
-			return true;
-		else
-			return false;
-		end if;
-	end has_connectors;
+	is (boolean (is_active (segment.connectors.A) or
+		   is_active (segment.connectors.B)));
 
 
 
@@ -338,16 +324,8 @@ package body et_net_segment is
 		segment	: in type_net_segment;
 		port	: in type_port_netchanger)
 		return boolean
-	is
-	begin
-		if	in_ports (segment.ports.A, port) or
-			in_ports (segment.ports.B, port) then
-
-			return true;
-		else
-			return false;
-		end if;
-	end is_connected;
+	is (boolean (in_ports (segment.ports.A, port) or
+			in_ports (segment.ports.B, port)));
 
 
 
@@ -1165,9 +1143,7 @@ package body et_net_segment is
 		segment	: in pac_net_segments.cursor;
 		AB_end	: in type_start_end_point)
 		return boolean
-	is begin
-		return get_junction_status (element (segment), AB_end);
-	end get_junction_status;
+	is (get_junction_status (element (segment), AB_end));
 
 
 
@@ -1176,9 +1152,7 @@ package body et_net_segment is
 		segment : in pac_net_segments.cursor;
 		AB_end	: in type_start_end_point)
 		return type_net_ports
-	is begin
-		return get_ports (element (segment), AB_end);
-	end get_ports;
+	is (get_ports (element (segment), AB_end));
 
 
 
@@ -1214,13 +1188,7 @@ package body et_net_segment is
 	function is_selected (
 		segment : in pac_net_segments.cursor)
 		return boolean
-	is begin
-		if is_selected (element (segment)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (segment))));
 
 
 
@@ -1228,18 +1196,14 @@ package body et_net_segment is
 	function get_A (
 		segment : in pac_net_segments.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (segment));
-	end get_A;
+	is (get_A (element (segment)));
 
 
 
 	function get_B (
 		segment : in pac_net_segments.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (segment));
-	end get_B;
+	is (get_B (element (segment)));
 
 
 
@@ -1260,9 +1224,7 @@ package body et_net_segment is
 	function is_moving (
 		segment : in pac_net_segments.cursor)
 		return boolean
-	is begin
-		return is_moving (element (segment));
-	end is_moving;
+	is (is_moving (element (segment)));
 
 
 
@@ -1270,18 +1232,14 @@ package body et_net_segment is
 	function is_A_moving (
 		segment	: in pac_net_segments.cursor)
 		return boolean
-	is begin
-		return is_A_moving (element (segment));
-	end is_A_moving;
+	is (is_A_moving (element (segment)));
 
 
 
 	function is_B_moving (
 		segment	: in pac_net_segments.cursor)
 		return boolean
-	is begin
-		return is_B_moving (element (segment));
-	end is_B_moving;
+	is (is_B_moving (element (segment)));
 
 
 
@@ -1304,9 +1262,7 @@ package body et_net_segment is
 	function to_string (
 		segment : in pac_net_segments.cursor)
 		return string
-	is begin
-		return to_string (element (segment));
-	end to_string;
+	is (to_string (element (segment)));
 
 
 
@@ -1361,9 +1317,7 @@ package body et_net_segment is
 		s1, s2		: in pac_net_segments.cursor;
 		test_touch	: in boolean := false)
 		return boolean
-	is begin
-		return lines_overlap (element (s1), element (s2), test_touch);
-	end segments_overlap;
+	is (lines_overlap (element (s1), element (s2), test_touch));
 
 
 
@@ -1420,9 +1374,7 @@ package body et_net_segment is
 		segment	: in pac_net_segments.cursor;
 		point	: in type_vector_model)
 		return type_split_segment
-	is begin
-		return split_segment (element (segment), point);
-	end split_segment;
+	is (split_segment (element (segment), point));
 
 
 

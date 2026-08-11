@@ -51,14 +51,14 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 package body et_kicad_coordinates is
 
 
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
-		return type_schematic_file_name.to_string (schematic);
-	end to_string;
+	function to_string (schematic : in type_schematic_file_name.bounded_string)
+		return string
+	is (type_schematic_file_name.to_string (schematic));
 
 
-	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string is begin
-		return type_schematic_file_name.to_bounded_string (file);
-	end to_schematic_file_name;
+	function to_schematic_file_name (file : in string)
+		return type_schematic_file_name.bounded_string
+	is (type_schematic_file_name.to_bounded_string (file));
 
 
 	procedure check_submodule_name_characters (
@@ -118,19 +118,19 @@ package body et_kicad_coordinates is
 	end to_string;
 
 
-	function get_point (position : in type_position) return type_vector_model is begin
-		return position.point;
-	end get_point;
+	function get_point (position : in type_position)
+		return type_vector_model
+	is (position.point);
 
 
-	function get_x (position : in type_position) return type_distance_model is begin
-		return position.point.x;
-	end get_x;
+	function get_x (position : in type_position)
+		return type_distance_model
+	is (position.point.x);
 
 
-	function get_y (position : in type_position) return type_distance_model is begin
-		return position.point.y;
-	end get_y;
+	function get_y (position : in type_position)
+		return type_distance_model
+	is (position.point.y);
 
 
 	procedure set_point (
@@ -177,9 +177,9 @@ package body et_kicad_coordinates is
 	end set;
 
 
-	function path (position : in type_position) return type_path_to_submodule.list is begin
-		return position.path;
-	end path;
+	function path (position : in type_position)
+		return type_path_to_submodule.list
+	is (position.path);
 
 
 	procedure set_path (
@@ -334,9 +334,9 @@ package body et_kicad_coordinates is
 	end to_string;
 
 
-	function sheet (position : in type_position) return type_sheet is begin
-		return position.sheet_number;
-	end sheet;
+	function sheet (position : in type_position)
+		return type_sheet
+	is (position.sheet_number);
 
 
 	function same_path_and_sheet (left, right : in type_position) return boolean is

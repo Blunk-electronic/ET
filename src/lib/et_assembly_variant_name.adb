@@ -46,22 +46,14 @@ package body et_assembly_variant_name is
 	function is_default (
 		variant : in type_assembly_variant_name)
 		return boolean
-	is begin
-		if variant = default_assembly_variant then
-			return true;
-		else
-			return false;
-		end if;
-	end is_default;
+	is (variant = default_assembly_variant);
 
 
 
 	function to_variant (
 		variant : in type_assembly_variant_name)
 		return string
-	is begin
-		return pac_assembly_variant_name.to_string (pac_assembly_variant_name.bounded_string (variant));
-	end to_variant;
+	is (pac_assembly_variant_name.to_string (pac_assembly_variant_name.bounded_string (variant)));
 
 
 

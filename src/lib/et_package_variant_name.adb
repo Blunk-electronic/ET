@@ -49,13 +49,7 @@ package body et_package_variant_name is
 	function is_empty (
 		variant_name : in type_package_variant_name)
 		return boolean
-	is begin
-		if length (pac_package_variant_name.bounded_string (variant_name)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	is (length (pac_package_variant_name.bounded_string (variant_name)) = 0);
 
 
 
@@ -63,9 +57,7 @@ package body et_package_variant_name is
 	function to_variant_name (
 		variant_name : in string)
 		return type_package_variant_name
-	is begin
-		return type_package_variant_name (pac_package_variant_name.to_bounded_string (variant_name));
-	end to_variant_name;
+	is (type_package_variant_name (pac_package_variant_name.to_bounded_string (variant_name)));
 
 
 	-- function to_string (

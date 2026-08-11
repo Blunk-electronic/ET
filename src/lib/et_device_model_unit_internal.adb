@@ -109,9 +109,7 @@ package body et_device_model_unit_internal is
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
 		return pac_symbol_ports.map
-	is begin
-		return element (unit_cursor).symbol.ports;
-	end get_ports_internal;
+	is (element (unit_cursor).symbol.ports);
 
 
 

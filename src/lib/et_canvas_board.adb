@@ -630,26 +630,14 @@ package body et_canvas_board is
 
 	function is_double_layer_board
 		return boolean
-	is begin
-		if bottom_layer = 2 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_double_layer_board;
+	is (bottom_layer = 2);
 
 
 
 	function is_inner_layer (
 		layer : in type_signal_layer)
 		return boolean
-	is begin
-		if layer > top_layer and layer < bottom_layer then
-			return true;
-		else
-			return false;
-		end if;
-	end is_inner_layer;
+	is (layer > top_layer and layer < bottom_layer);
 
 
 

@@ -44,10 +44,9 @@ with ada.strings.fixed;		use ada.strings.fixed;
 
 package body et_csv is
 
-	function to_string (column : in type_column) return string is
-	begin
-		return trim (type_column'image (column), left);
-	end to_string;
+	function to_string (column : in type_column)
+		return string
+	is (trim (type_column'image (column), left));
 
 	procedure reset_column is
 	begin

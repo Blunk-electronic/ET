@@ -68,25 +68,19 @@ package body et_devices_electrical.packages is
 	function get_value (
 		device	: in type_device_electrical)
 		return type_device_value
-	is begin
-		return device.value;
-	end get_value;
+	is (device.value);
 
 
 	function get_value (
 		device	: in type_device_electrical)
 		return string
-	is begin
-		return to_string (get_value (device));
-	end get_value;
+	is (to_string (get_value (device)));
 
 
 	function get_value (
 		device : in pac_devices_electrical.cursor)
 		return type_device_value
-	is begin
-		return pac_devices_electrical.element (device).value;
-	end get_value;
+	is (pac_devices_electrical.element (device).value);
 
 
 
@@ -117,26 +111,20 @@ package body et_devices_electrical.packages is
 	function get_partcode (
 		device	: in type_device_electrical)
 		return type_device_partcode
-	is begin
-		return device.partcode;
-	end get_partcode;
+	is (device.partcode);
 
 
 	function get_partcode (
 		device	: in type_device_electrical)
 		return string
-	is begin
-		return to_string (get_partcode (device));
-	end get_partcode;
+	is (to_string (get_partcode (device)));
 
 
 
 	function get_partcode (
 		device : in pac_devices_electrical.cursor)
 		return type_device_partcode
-	is begin
-		return pac_devices_electrical.element (device).partcode;
-	end get_partcode;
+	is (pac_devices_electrical.element (device).partcode);
 
 
 
@@ -167,26 +155,20 @@ package body et_devices_electrical.packages is
 	function get_purpose (
 		device	: in type_device_electrical)
 		return type_device_purpose
-	is begin
-		return device.purpose;
-	end get_purpose;
+	is (device.purpose);
 
 
 	function get_purpose (
 		device	: in type_device_electrical)
 		return string
-	is begin
-		return to_string (get_purpose (device));
-	end get_purpose;
+	is (to_string (get_purpose (device)));
 
 
 
 	function get_purpose (
 		device : in pac_devices_electrical.cursor)
 		return type_device_purpose
-	is begin
-		return pac_devices_electrical.element (device).purpose;
-	end get_purpose;
+	is (pac_devices_electrical.element (device).purpose);
 
 
 
@@ -209,9 +191,7 @@ package body et_devices_electrical.packages is
 	function get_package_variant (
 		device : in type_device_electrical)
 		return type_package_variant_name
-	is begin
-		return device.variant;
-	end get_package_variant;
+	is (device.variant);
 
 
 
@@ -271,9 +251,7 @@ package body et_devices_electrical.packages is
 	function get_position (
 		device : in type_device_electrical)
 		return type_package_position
-	is begin
-		return device.position;
-	end get_position;
+	is (device.position);
 
 
 
@@ -281,18 +259,14 @@ package body et_devices_electrical.packages is
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is begin
-		return to_string (device.position, format);
-	end get_position;
+	is (to_string (device.position, format));
 
 
 
 	function get_rotation (
 		device	: in out type_device_electrical)
 		return type_rotation_model
-	is begin
-		return get_rotation (device.position);
-	end get_rotation;
+	is (get_rotation (device.position));
 
 
 	procedure set_rotation (
@@ -334,18 +308,14 @@ package body et_devices_electrical.packages is
 	function get_face (
 		device	: in type_device_electrical)
 		return type_face
-	is begin
-		return get_face (device.position);
-	end get_face;
+	is (get_face (device.position));
 
 
 
 	function get_face (
 		device	: in type_device_electrical)
 		return string
-	is begin
-		return to_string (get_face (device.position));
-	end get_face;
+	is (to_string (get_face (device.position)));
 
 
 
@@ -370,9 +340,7 @@ package body et_devices_electrical.packages is
 	function get_place (
 		device	: in type_device_electrical)
 		return type_vector_model
-	is begin
-		return get_place (device.position);
-	end get_place;
+	is (get_place (device.position));
 
 
 
@@ -380,10 +348,8 @@ package body et_devices_electrical.packages is
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is begin
-		return et_board_geometry.pac_geometry_2.to_string (
-			get_place (device.position), format);
-	end get_place;
+	is (et_board_geometry.pac_geometry_2.to_string (
+			get_place (device.position), format));
 
 
 

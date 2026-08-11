@@ -71,9 +71,7 @@ package body et_module_clipboard is
 
 	function copy_to_clipboard_enabled
 		return boolean
-	is begin
-		return copy_to_clipboard;
-	end copy_to_clipboard_enabled;
+	is (copy_to_clipboard);
 
 
 end et_module_clipboard;

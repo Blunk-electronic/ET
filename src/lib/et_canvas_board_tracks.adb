@@ -93,9 +93,7 @@ package body et_canvas_board_tracks is
 	function to_string (
 		mode	: in type_snap_mode)
 		return string
-	is begin
-		return " " & type_snap_mode'image (mode);
-	end to_string;
+	is (" " & type_snap_mode'image (mode));
 
 
 

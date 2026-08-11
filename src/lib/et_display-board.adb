@@ -44,13 +44,9 @@ with ada.strings.unbounded;
 package body et_display.board is
 
 
-	function board_contour_enabled return boolean is begin
-		if layers.outline = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end board_contour_enabled;
+	function board_contour_enabled
+		return boolean
+	is (layers.outline = ON);
 
 
 
@@ -67,13 +63,9 @@ package body et_display.board is
 
 
 
-	function plated_millings_enabled return boolean is begin
-		if layers.plated_millings = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end plated_millings_enabled;
+	function plated_millings_enabled
+		return boolean
+	is (layers.plated_millings = ON);
 
 
 
@@ -241,22 +233,14 @@ package body et_display.board is
 	end device_origins_enabled;
 
 
-	function ratsnest_enabled return boolean is begin
-		if layers.ratsnest = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end ratsnest_enabled;
+	function ratsnest_enabled
+		return boolean
+	is (layers.ratsnest = ON);
 
 
-	function vias_enabled return boolean is begin
-		if layers.vias = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end vias_enabled;
+	function vias_enabled
+		return boolean
+	is (layers.vias = ON);
 
 
 
@@ -292,13 +276,8 @@ package body et_display.board is
 
 	function conductor_enabled (
 		layer : in type_signal_layer)
-	return boolean is begin
-		if layers.conductors (layer) = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end conductor_enabled;
+		return boolean
+	is (layers.conductors (layer) = ON);
 
 
 	procedure enable_conductor (
@@ -329,13 +308,7 @@ package body et_display.board is
 	function route_restrict_layer_enabled (
 		layer : in type_signal_layer)
 		return boolean
-	is begin
-		if layers.route_restrict (layer) = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end route_restrict_layer_enabled;
+	is (layers.route_restrict (layer) = ON);
 
 
 
@@ -404,13 +377,7 @@ package body et_display.board is
 	function via_restrict_layer_enabled (
 		layer : in type_signal_layer)
 		return boolean
-	is begin
-		if layers.via_restrict (layer) = ON then
-			return true;
-		else
-			return false;
-		end if;
-	end via_restrict_layer_enabled;
+	is (layers.via_restrict (layer) = ON);
 
 
 

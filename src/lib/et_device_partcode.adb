@@ -52,16 +52,14 @@ package body et_device_partcode is
 	function get_length (
 		partcode : in type_device_partcode)
 		return natural
-	is begin
-		return natural (length (pac_device_partcode.bounded_string (partcode)));
-	end get_length;
+	is (natural (length (pac_device_partcode.bounded_string (partcode))));
 
 
 
 
-	function to_string (partcode : in type_device_partcode) return string is begin
-		return pac_device_partcode.to_string (pac_device_partcode.bounded_string (partcode));
-	end to_string;
+	function to_string (partcode : in type_device_partcode)
+		return string
+	is (pac_device_partcode.to_string (pac_device_partcode.bounded_string (partcode)));
 
 
 	function partcode_length_valid (partcode : in string) return boolean is
@@ -110,13 +108,9 @@ package body et_device_partcode is
 	end partcode_invalid;
 
 
-	function is_empty (partcode : in type_device_partcode) return boolean is begin
-		if pac_device_partcode.length (pac_device_partcode.bounded_string (partcode)) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
+	function is_empty (partcode : in type_device_partcode)
+		return boolean
+	is (pac_device_partcode.length (pac_device_partcode.bounded_string (partcode)) = 0);
 
 
 	function to_partcode (

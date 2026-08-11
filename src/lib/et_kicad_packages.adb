@@ -76,17 +76,15 @@ package body et_kicad_packages is
 	use pac_holes;
 
 
-	function to_string (tags : in type_package_tags.bounded_string) return string is
-	begin
-		return "tags '" & type_package_tags.to_string (tags) & "'";
-	end to_string;
+	function to_string (tags : in type_package_tags.bounded_string)
+		return string
+	is ("tags '" & type_package_tags.to_string (tags) & "'");
 
 
 
-	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
-	begin
-		return type_package_tags.to_bounded_string (tags);
-	end to_package_tags;
+	function to_package_tags (tags : in string)
+		return type_package_tags.bounded_string
+	is (type_package_tags.to_bounded_string (tags));
 
 
 
@@ -101,15 +99,15 @@ package body et_kicad_packages is
 
 
 
-	function to_string (shape : in type_pad_shape_tht) return string is begin
-		return space & to_lower (type_pad_shape_tht'image (shape));
-	end to_string;
+	function to_string (shape : in type_pad_shape_tht)
+		return string
+	is (space & to_lower (type_pad_shape_tht'image (shape)));
 
 
 
-	function to_string (shape : in type_pad_shape_smt) return string is begin
-		return space & to_lower (type_pad_shape_smt'image (shape));
-	end to_string;
+	function to_string (shape : in type_pad_shape_smt)
+		return string
+	is (space & to_lower (type_pad_shape_smt'image (shape)));
 
 
 
@@ -435,17 +433,13 @@ package body et_kicad_packages is
 
 	function to_string (directory_name : in type_directory_name)
 		return string
-	is begin
-		return pac_directory_name.to_string (pac_directory_name.bounded_string (directory_name));
-	end to_string;
+	is (pac_directory_name.to_string (pac_directory_name.bounded_string (directory_name)));
 
 
 
 	function to_directory (directory_name : in string)
 		return type_directory_name
-	is begin
-		return type_directory_name (pac_directory_name.to_bounded_string (directory_name));
-	end to_directory;
+	is (type_directory_name (pac_directory_name.to_bounded_string (directory_name)));
 	pragma unreferenced (to_directory);
 
 
@@ -568,17 +562,17 @@ package body et_kicad_packages is
 			return to_lower (type_keyword'image (section)(sec_prefix'last + 1 .. len));
 		end to_string;
 
-		function enter_section (section : in type_keyword) return string is begin
-			return ("entering section " & to_string (section));
-		end enter_section;
+		function enter_section (section : in type_keyword)
+			return string
+		is (("entering section " & to_string (section)));
 
-		function return_to_section (section : in type_keyword) return string is begin
-			return ("returning to section " & to_string (section));
-		end return_to_section;
+		function return_to_section (section : in type_keyword)
+			return string
+		is (("returning to section " & to_string (section)));
 
-		function process_section (section : in type_keyword) return string is begin
-			return ("processing section " & to_string (section));
-		end process_section;
+		function process_section (section : in type_keyword)
+			return string
+		is (("processing section " & to_string (section)));
 
 
 
@@ -2437,9 +2431,9 @@ package body et_kicad_packages is
 			cursor : et_terminals.pac_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
 
-			function number (count : in natural) return string is begin
-				return " (" & trim (positive'image (count), left) & "). ";
-			end number;
+			function number (count : in natural)
+				return string
+			is (" (" & trim (positive'image (count), left) & "). ");
 
 		begin -- check_technology
 			log (text => "checking package technology vs. terminal count ...", level => log_threshold + 1);

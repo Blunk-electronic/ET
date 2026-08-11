@@ -60,18 +60,14 @@ package body et_netchangers.schematic is
 	function to_port_name (
 		name : in string)
 		return type_netchanger_port_name
-	is begin
-		return type_netchanger_port_name'value (name);
-	end to_port_name;
+	is (type_netchanger_port_name'value (name));
 
 
 
 	function to_string (
 		name : in type_netchanger_port_name)
 		return string
-	is begin
-		return trim (to_lower (type_netchanger_port_name'image (name)), left);
-	end to_string;
+	is (trim (to_lower (type_netchanger_port_name'image (name)), left));
 
 
 
@@ -106,9 +102,7 @@ package body et_netchangers.schematic is
 	function get_direction (
 		netchanger : in type_netchanger)
 		return type_netchanger_direction
-	is begin
-		return netchanger.direction;
-	end get_direction;
+	is (netchanger.direction);
 
 
 
@@ -173,9 +167,7 @@ package body et_netchangers.schematic is
 	function get_place (
 		position	: in type_netchanger_position_schematic)
 		return type_vector_model
-	is begin
-		return position.place;
-	end get_place;
+	is (position.place);
 
 
 
@@ -201,9 +193,7 @@ package body et_netchangers.schematic is
 	function get_sheet (
 		position : in type_netchanger_position_schematic)
 		return type_sheet
-	is begin
-		return position.sheet;
-	end get_sheet;
+	is (position.sheet);
 
 
 
@@ -220,9 +210,7 @@ package body et_netchangers.schematic is
 	function get_rotation (
 		position : in type_netchanger_position_schematic)
 		return type_rotation_0_90
-	is begin
-		return position.rotation;
-	end get_rotation;
+	is (position.rotation);
 
 
 
@@ -245,9 +233,7 @@ package body et_netchangers.schematic is
 		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
 		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
 		return type_netchanger_position_schematic
-	is begin
-		return (place, rotation, sheet);
-	end to_netchanger_position;
+	is ((place, rotation, sheet));
 
 
 
@@ -284,9 +270,7 @@ package body et_netchangers.schematic is
 	function get_position (
 		netchanger : in type_netchanger)
 		return type_netchanger_position_schematic
-	is begin
-		return netchanger.position_sch;
-	end get_position;
+	is (netchanger.position_sch);
 
 
 
@@ -325,9 +309,7 @@ package body et_netchangers.schematic is
 	function get_rotation (
 		netchanger	: in type_netchanger)
 		return type_rotation_0_90
-	is begin
-		return netchanger.position_sch.rotation;
-	end get_rotation;
+	is (netchanger.position_sch.rotation);
 
 
 	procedure set_rotation (
@@ -350,9 +332,7 @@ package body et_netchangers.schematic is
 	function get_sheet (
 		netchanger	: in type_netchanger)
 		return type_sheet
-	is begin
-		return netchanger.position_sch.sheet;
-	end get_sheet;
+	is (netchanger.position_sch.sheet);
 
 
 
@@ -560,39 +540,21 @@ package body et_netchangers.schematic is
 	function is_selected (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_selected (netchanger.status_sch) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (netchanger.status_sch)));
 
 
 
 	function is_proposed (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_proposed (netchanger.status_sch) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (netchanger.status_sch)));
 
 
 
 	function is_moving (
 		netchanger : in type_netchanger)
 		return boolean
-	is begin
-		if is_moving (netchanger.status_sch) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (netchanger.status_sch)));
 
 
 

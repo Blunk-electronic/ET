@@ -360,9 +360,9 @@ package body et_schematic_ops_netchangers is
 
 			-- This function returns true if master and slave port have been deleted.
 			-- All iterations abort prematurely once all ports have been deleted.
-			function all_ports_deleted return boolean is begin
-				return deleted_ports.master and deleted_ports.slave;
-			end all_ports_deleted;
+			function all_ports_deleted
+				return boolean
+			is (deleted_ports.master and deleted_ports.slave);
 
 
 			procedure query_strands (
@@ -2655,35 +2655,27 @@ package body et_schematic_ops_netchangers is
 	function get_object_name (
 		object : in type_object_netchanger)
 		return string
-	is begin
-		return get_netchanger_name (object.netchanger_cursor);
-	end get_object_name;
+	is (get_netchanger_name (object.netchanger_cursor));
 
 
 
 	function get_object_id (
 		object : in type_object_netchanger)
 		return type_netchanger_id
-	is begin
-		return get_netchanger_id (object.netchanger_cursor);
-	end get_object_id;
+	is (get_netchanger_id (object.netchanger_cursor));
 
 
 
 	function get_rotation (
 		object : in type_object_netchanger)
 		return type_rotation_0_90
-	is begin
-		return get_rotation (object.netchanger_cursor);
-	end get_rotation;
+	is (get_rotation (object.netchanger_cursor));
 
 
 	function get_direction (
 		object : in type_object_netchanger)
 		return type_netchanger_direction
-	is begin
-		return get_direction (object.netchanger_cursor);
-	end get_direction;
+	is (get_direction (object.netchanger_cursor));
 
 
 
@@ -3526,9 +3518,7 @@ package body et_schematic_ops_netchangers is
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
-	is begin
-		return natural (objects.length);
-	end get_count;
+	is (natural (objects.length));
 
 
 

@@ -49,17 +49,15 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_string_processing is
 
 
-	function metric_system return string is
-	begin
-		return "CAUTION: Measurement system is METRIC. All dimensions given in millimeters !";
-	end metric_system;
+	function metric_system
+		return string
+	is ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !");
 
 
 
-	function angles_in_degrees return string is
-	begin
-		return "CAUTION: All angles are given in degrees (1/360) !";
-	end angles_in_degrees;
+	function angles_in_degrees
+		return string
+	is ("CAUTION: All angles are given in degrees (1/360) !");
 
 
 
@@ -271,20 +269,16 @@ package body et_string_processing is
 	function enclose_in_quotes (
 		text_in	: in string;
 		quote	: in character := latin_1.apostrophe)
-		return string is
-	begin
-		return quote & text_in & quote;
-	end enclose_in_quotes;
+		return string
+	is (quote & text_in & quote);
 
 
 
 	function enclose_in_quotes (
 		charcter_in	: in character;
 		quote		: in character := latin_1.apostrophe)
-		return string is
-	begin
-		return quote & charcter_in & quote;
-	end enclose_in_quotes;
+		return string
+	is (quote & charcter_in & quote);
 
 
 
@@ -824,9 +818,7 @@ package body et_string_processing is
 	function get_line_number (
 		line : in type_fields_of_line)
 		return positive
-	is begin
-		return line.number;
-	end get_line_number;
+	is (line.number);
 
 
 
@@ -836,9 +828,7 @@ package body et_string_processing is
 	function get_affected_line (
 		line : in type_fields_of_line)
 		return string
-	is begin
-		return ("line" & positive'image (line.number) & ": ");
-	end get_affected_line;
+	is (("line" & positive'image (line.number) & ": "));
 
 
 
@@ -848,9 +838,7 @@ package body et_string_processing is
 	function get_field_count (
 		line : in type_fields_of_line)
 		return type_field_count
-	is begin
-		return line.field_count;
-	end get_field_count;
+	is (line.field_count);
 
 
 

@@ -68,15 +68,15 @@ package body et_project is
 
 
 
-	function to_string (path : in type_project_path) return string is begin
-		return pac_project_path.to_string (pac_project_path.bounded_string (path));
-	end to_string;
+	function to_string (path : in type_project_path)
+		return string
+	is (pac_project_path.to_string (pac_project_path.bounded_string (path)));
 
 
 
-	function to_project_path (path : in string) return type_project_path is begin
-		return type_project_path (pac_project_path.to_bounded_string (path));
-	end to_project_path;
+	function to_project_path (path : in string)
+		return type_project_path
+	is (type_project_path (pac_project_path.to_bounded_string (path)));
 
 
 

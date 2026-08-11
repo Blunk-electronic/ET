@@ -116,13 +116,7 @@ package body et_text is
 		function is_proposed (
 			text : in type_text)
 			return boolean
-		is begin
-			if is_proposed (text.status) then
-				return true;
-			else
-				return false;
-			end if;
-		end is_proposed;
+		is (boolean (is_proposed (text.status)));
 
 
 		procedure set_proposed (
@@ -143,13 +137,7 @@ package body et_text is
 		function is_moving (
 			text : in type_text)
 			return boolean
-		is begin
-			if is_moving (text.status) then
-				return true;
-			else
-				return false;
-			end if;
-		end is_moving;
+		is (boolean (is_moving (text.status)));
 
 
 
@@ -171,13 +159,7 @@ package body et_text is
 		function is_selected (
 			text : in type_text)
 			return boolean
-		is begin
-			if is_selected (text.status) then
-				return TRUE;
-			else
-				return FALSE;
-			end if;
-		end is_selected;
+		is (boolean (is_selected (text.status)));
 
 
 		procedure set_selected (
@@ -218,11 +200,8 @@ package body et_text is
 		function text_properties (
 			text : in type_text)
 			return string
-		is begin
-			return
-				"size" & to_string (text.size)
-				& to_string (text.alignment);
-		end text_properties;
+		is ("size" & to_string (text.size)
+				& to_string (text.alignment));
 
 
 
@@ -258,10 +237,8 @@ package body et_text is
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
 			rotation_add	: in type_rotation)
-			return type_rotation is
-		begin
-			return to_rotation (rotation_doc) + rotation_add;
-		end "+";
+			return type_rotation
+		is (to_rotation (rotation_doc) + rotation_add);
 
 
 

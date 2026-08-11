@@ -46,18 +46,15 @@ package body et_terminal_name is
 
 	function to_string (
 		terminal : in type_terminal_name)
-	return string is begin
-		return pac_terminal_name.to_string (pac_terminal_name.bounded_string (terminal));
-	end to_string;
+		return string
+	is (pac_terminal_name.to_string (pac_terminal_name.bounded_string (terminal)));
 
 
 
 	function to_terminal_name (
 		terminal : in string)
 		return type_terminal_name
-	is begin
-		return type_terminal_name (pac_terminal_name.to_bounded_string (terminal));
-	end to_terminal_name;
+	is (type_terminal_name (pac_terminal_name.to_bounded_string (terminal)));
 
 
 end et_terminal_name;

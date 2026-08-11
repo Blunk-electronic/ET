@@ -46,14 +46,14 @@ with et_keywords;						use et_keywords;
 package body et_net_connectors is
 
 
-	function to_string (direction : in type_connector_direction) return string is begin
-		return to_lower (type_connector_direction'image (direction));
-	end to_string;
+	function to_string (direction : in type_connector_direction)
+		return string
+	is (to_lower (type_connector_direction'image (direction)));
 
 
-	function to_direction (direction : in string) return type_connector_direction is begin
-		return type_connector_direction'value (direction);
-	end to_direction;
+	function to_direction (direction : in string)
+		return type_connector_direction
+	is (type_connector_direction'value (direction));
 
 
 
@@ -68,9 +68,7 @@ package body et_net_connectors is
 
 		function f (place : in type_field_count_positive)
 			return string
-		is begin
-			return to_lower (get_field (arguments, place));
-		end f;
+		is (to_lower (get_field (arguments, place)));
 
 	begin
 		error := false;
@@ -121,17 +119,13 @@ package body et_net_connectors is
 	function get_direction (
 		connector	: in type_net_connector)
 		return type_connector_direction
-	is begin
-		return connector.direction;
-	end get_direction;
+	is (connector.direction);
 
 
 	function get_direction (
 		connector	: in type_net_connector)
 		return string
-	is begin
-		return to_string (get_direction (connector));
-	end get_direction;
+	is (to_string (get_direction (connector)));
 
 
 
@@ -167,9 +161,7 @@ package body et_net_connectors is
 	function is_active (
 		connector : in type_net_connector)
 		return boolean
-	is begin
-		return connector.active;
-	end is_active;
+	is (connector.active);
 
 
 	procedure set_active (

@@ -63,13 +63,9 @@ is
 	top_layer : constant type_signal_layer := type_signal_layer'first;
 
 
-	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
-		if layer > top_layer and layer < bottom_layer then
-			return true;
-		else
-			return false;
-		end if;
-	end is_inner_layer;
+	function is_inner_layer (layer : in type_signal_layer)
+		return boolean
+	is (layer > top_layer and layer < bottom_layer);
 
 
 

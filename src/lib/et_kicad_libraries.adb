@@ -74,15 +74,15 @@ with et_package_library;
 
 package body et_kicad_libraries is
 
-	function to_string (meaning : in type_placeholder_meaning) return string is begin
-		return to_lower (type_placeholder_meaning'image (meaning));
-	end to_string;
+	function to_string (meaning : in type_placeholder_meaning)
+		return string
+	is (to_lower (type_placeholder_meaning'image (meaning)));
 
 
 
-	function to_meaning (meaning : in string) return type_placeholder_meaning is begin
-		return type_placeholder_meaning'value (meaning);
-	end to_meaning;
+	function to_meaning (meaning : in string)
+		return type_placeholder_meaning
+	is (type_placeholder_meaning'value (meaning));
 
 
 
@@ -96,9 +96,9 @@ package body et_kicad_libraries is
 
 
 
-	function to_string (style : in type_port_style) return string is begin
-		return space & to_lower (type_port_style'image (style));
-	end to_string;
+	function to_string (style : in type_port_style)
+		return string
+	is (space & to_lower (type_port_style'image (style)));
 
 
 
@@ -116,11 +116,11 @@ package body et_kicad_libraries is
 
 
 
-	function to_string (fill : in type_fill) return string is begin
-		return space & to_lower (type_fill_border'image (fill.border))
+	function to_string (fill : in type_fill)
+		return string
+	is (space & to_lower (type_fill_border'image (fill.border))
 		& space & "pattern" & space
-		& to_lower (type_fill_pattern'image (fill.pattern));
-	end to_string;
+		& to_lower (type_fill_pattern'image (fill.pattern)));
 
 
 
@@ -274,20 +274,18 @@ package body et_kicad_libraries is
 	-- Returns the position of the given no-connection-flag as string.
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in et_kicad_coordinates.type_scope) return string is
-	begin
-		return (to_string (position => no_connection_flag.coordinates, scope => scope));
-	end to_string;
+		scope				: in et_kicad_coordinates.type_scope)
+		return string
+	is ((to_string (position => no_connection_flag.coordinates, scope => scope)));
 
 
 
 	-- Returns the properties of the given port as string.
-	function to_string (port : in type_port_with_reference) return string is
-	begin
-		return "reference " & to_string (port.reference)
+	function to_string (port : in type_port_with_reference)
+		return string
+	is ("reference " & to_string (port.reference)
 			& " port " & to_string (port.name)
-			& " coordinates " & to_string (position => port.coordinates, scope => module);
-	end to_string;
+			& " coordinates " & to_string (position => port.coordinates, scope => module));
 
 
 
@@ -336,10 +334,8 @@ package body et_kicad_libraries is
 
 	-- Returns the component appearance where cursor points to.
 	function component_appearance (cursor : in type_components_library.cursor)
-		return type_appearance is
-	begin
-		return type_components_library.element (cursor).appearance;
-	end component_appearance;
+		return type_appearance
+	is (type_components_library.element (cursor).appearance);
 
 
 
@@ -1503,10 +1499,9 @@ package body et_kicad_libraries is
 
 
 			-- returns the given unit id as pac_unit_name
-			function to_unit_name (id : in type_unit_id) return type_unit_name is
-			begin
-				return type_unit_name (pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left)));
-			end to_unit_name;
+			function to_unit_name (id : in type_unit_id)
+				return type_unit_name
+			is (type_unit_name (pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left))));
 
 
 			-- Converts the given kicad fill style to a type_fill.

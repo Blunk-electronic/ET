@@ -66,13 +66,9 @@ is
 	top_layer : constant type_signal_layer := type_signal_layer'first;
 
 
-	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
-		if layer > top_layer and layer < bottom_layer then
-			return true;
-		else
-			return false;
-		end if;
-	end is_inner_layer;
+	function is_inner_layer (layer : in type_signal_layer)
+		return boolean
+	is (layer > top_layer and layer < bottom_layer);
 
 
 
@@ -395,11 +391,11 @@ is
 
 				procedure query_via (v : in pac_vias.cursor) is
 
-					function to_circle (restring : in type_restring_width) return type_circle is begin
-						return (
+					function to_circle (restring : in type_restring_width)
+						return type_circle
+					is ((
 							center => element (v).position,
-							radius	=> element (v).diameter * 0.5 + restring);
-					end to_circle;
+							radius	=> element (v).diameter * 0.5 + restring));
 
 				begin
 					case element (v).category is

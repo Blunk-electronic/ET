@@ -92,15 +92,13 @@ package body et_kicad.pcb is
 
 
 
-	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
-	begin
-		return type_plot_output_directory.to_bounded_string (directory);
-	end to_plot_output_directory;
+	function to_plot_output_directory (directory : in string)
+		return type_plot_output_directory.bounded_string
+	is (type_plot_output_directory.to_bounded_string (directory));
 
-	function to_string (directory : in type_plot_output_directory.bounded_string) return string is
-	begin
-		return type_plot_output_directory.to_string (directory);
-	end to_string;
+	function to_string (directory : in type_plot_output_directory.bounded_string)
+		return string
+	is (type_plot_output_directory.to_string (directory));
 
 	function to_net_id (net_id : in string) return type_net_id is
 	-- returns the given net id as type_net_id
@@ -196,14 +194,14 @@ package body et_kicad.pcb is
 	end to_signal_layer_id;
 
 
-	function to_string (polygon_pad_connection : in type_fill_zone_pad_connection) return string is begin
-		return latin_1.space & to_lower (type_fill_zone_pad_connection'image (polygon_pad_connection));
-	end to_string;
+	function to_string (polygon_pad_connection : in type_fill_zone_pad_connection)
+		return string
+	is (latin_1.space & to_lower (type_fill_zone_pad_connection'image (polygon_pad_connection)));
 
 
-	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection is begin
-		return type_fill_zone_pad_connection'value (connection);
-	end to_pad_connection;
+	function to_pad_connection (connection : in string)
+		return type_fill_zone_pad_connection
+	is (type_fill_zone_pad_connection'value (connection));
 
 
 
@@ -481,17 +479,17 @@ package body et_kicad.pcb is
 			return to_lower (type_keyword'image (section)(sec_prefix'last + 1 .. len));
 		end to_string;
 
-		function enter_section (section : in type_keyword) return string is begin
-			return ("entering section " & to_string (section));
-		end enter_section;
+		function enter_section (section : in type_keyword)
+			return string
+		is (("entering section " & to_string (section)));
 
-		function return_to_section (section : in type_keyword) return string is begin
-			return ("returning to section " & to_string (section));
-		end return_to_section;
+		function return_to_section (section : in type_keyword)
+			return string
+		is (("returning to section " & to_string (section)));
 
-		function process_section (section : in type_keyword) return string is begin
-			return ("processing section " & to_string (section));
-		end process_section;
+		function process_section (section : in type_keyword)
+			return string
+		is (("processing section " & to_string (section)));
 
 
 

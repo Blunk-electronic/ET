@@ -114,9 +114,7 @@ package body et_cp_project is
 		-- from the given command:
 		function get_field (place : in type_field_count)
 			return string
-		is begin
-			return get_field (cmd, place);
-		end get_field;
+		is (get_field (cmd, place));
 
 
 

@@ -59,9 +59,7 @@ package body et_package_bom_relevance is
 	function to_bom_relevant (
 		bom_relevant : in string)
 		return type_bom_relevant
-	is begin
-		return type_bom_relevant'value (bom_relevant_prefix & bom_relevant);
-	end to_bom_relevant;
+	is (type_bom_relevant'value (bom_relevant_prefix & bom_relevant));
 
 
 end et_package_bom_relevance;

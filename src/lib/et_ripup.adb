@@ -47,9 +47,7 @@ package body et_ripup is
 	function to_string (
 		mode : in type_ripup_mode)
 		return string
-	is begin
-		return "ripup mode: " & type_ripup_mode'image (mode);
-	end to_string;
+	is ("ripup mode: " & type_ripup_mode'image (mode));
 
 
 

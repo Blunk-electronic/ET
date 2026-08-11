@@ -47,13 +47,7 @@ package body et_units is
 	function is_real (
 		unit : in type_unit)
 		return boolean
-	is begin
-		if unit.appearance = APPEARANCE_PCB then
-			return true;
-		else
-			return false;
-		end if;
-	end is_real;
+	is (unit.appearance = APPEARANCE_PCB);
 
 
 
@@ -62,9 +56,7 @@ package body et_units is
 	function get_position (
 		unit	: in type_unit)
 		return type_object_position
-	is begin
-		return unit.position;
-	end get_position;
+	is (unit.position);
 
 
 
@@ -81,9 +73,7 @@ package body et_units is
 	function get_mirror_status (
 		unit	: in type_unit)
 		return type_mirror
-	is begin
-		return unit.mirror_status;
-	end get_mirror_status;
+	is (unit.mirror_status);
 
 
 
@@ -108,9 +98,7 @@ package body et_units is
 	function get_rotation (
 		unit	: in type_unit)
 		return type_rotation_model
-	is begin
-		return get_rotation (unit.position);
-	end get_rotation;
+	is (get_rotation (unit.position));
 
 
 
@@ -144,9 +132,7 @@ package body et_units is
 	function get_sheet (
 		unit	: in type_unit)
 		return type_sheet
-	is begin
-		return get_sheet (unit.position);
-	end get_sheet;
+	is (get_sheet (unit.position));
 
 
 
@@ -270,13 +256,7 @@ package body et_units is
 	function is_selected (
 		unit : in type_unit)
 		return boolean
-	is begin
-		if is_selected (unit.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (unit.status)));
 
 
 
@@ -297,13 +277,7 @@ package body et_units is
 	function is_proposed (
 		unit : in type_unit)
 		return boolean
-	is begin
-		if is_proposed (unit.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (unit.status)));
 
 
 
@@ -325,13 +299,7 @@ package body et_units is
 	function is_moving (
 		unit : in type_unit)
 		return boolean
-	is begin
-		if is_moving (unit.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (unit.status)));
 
 
 
@@ -474,9 +442,7 @@ package body et_units is
 	function get_unit (
 		unit_cursor : in pac_units.cursor)
 		return type_unit
-	is begin
-		return element (unit_cursor);
-	end get_unit;
+	is (element (unit_cursor));
 
 
 
@@ -485,27 +451,21 @@ package body et_units is
 	function get_position (
 		unit	: in pac_units.cursor)
 		return type_object_position
-	is begin
-		return get_position (element (unit));
-	end get_position;
+	is (get_position (element (unit)));
 
 
 
 	function get_rotation (
 		unit	: in pac_units.cursor)
 		return type_rotation_model
-	is begin
-		return get_rotation (element (unit));
-	end get_rotation;
+	is (get_rotation (element (unit)));
 
 
 
 	function get_mirror_status (
 		unit	: in pac_units.cursor)
 		return type_mirror
-	is begin
-		return element (unit).mirror_status;
-	end get_mirror_status;
+	is (element (unit).mirror_status);
 
 
 
@@ -529,9 +489,7 @@ package body et_units is
 	function get_unit_name (
 		unit : in pac_units.cursor)
 		return type_unit_name
-	is begin
-		return key (unit);
-	end get_unit_name;
+	is (key (unit));
 
 
 
@@ -540,9 +498,7 @@ package body et_units is
 	function get_unit_name (
 		unit : in pac_units.cursor)
 		return string
-	is begin
-		return to_string (key (unit));
-	end get_unit_name;
+	is (to_string (key (unit)));
 
 
 
@@ -564,17 +520,13 @@ package body et_units is
 	function is_proposed (
 		unit : in pac_units.cursor)
 		return boolean
-	is begin
-		return is_proposed (element (unit));
-	end is_proposed;
+	is (is_proposed (element (unit)));
 
 
 	function is_selected (
 		unit : in pac_units.cursor)
 		return boolean
-	is begin
-		return is_selected (element (unit));
-	end is_selected;
+	is (is_selected (element (unit)));
 
 
 
@@ -583,9 +535,7 @@ package body et_units is
 	function is_moving (
 		unit : in pac_units.cursor)
 		return boolean
-	is begin
-		return is_moving (element (unit));
-	end is_moving;
+	is (is_moving (element (unit)));
 
 
 
@@ -653,9 +603,7 @@ package body et_units is
 	function get_port_name (
 		port : in pac_dragged_ports.cursor)
 		return type_port_name
-	is begin
-		return key (port);
-	end get_port_name;
+	is (key (port));
 
 
 

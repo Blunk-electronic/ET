@@ -179,25 +179,19 @@ package body et_net_ports is
 	function get_port_count_devices (
 		ports : in type_net_ports)
 		return natural
-	is begin
-		return natural (ports.devices.length);
-	end get_port_count_devices;
+	is (natural (ports.devices.length));
 
 
 	function get_port_count_submodules (
 		ports : in type_net_ports)
 		return natural
-	is begin
-		return natural (ports.submodules.length);
-	end get_port_count_submodules;
+	is (natural (ports.submodules.length));
 
 
 	function get_port_count_netchangers (
 		ports : in type_net_ports)
 		return natural
-	is begin
-		return natural (ports.netchangers.length);
-	end get_port_count_netchangers;
+	is (natural (ports.netchangers.length));
 
 
 

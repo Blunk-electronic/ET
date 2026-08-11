@@ -44,17 +44,13 @@ package body et_symbol_name is
 
 	function to_string (name : in type_symbol_model_name)
 		return string
-	is begin
-		return pac_symbol_model_name.to_string (pac_symbol_model_name.bounded_string (name));
-	end to_string;
+	is (pac_symbol_model_name.to_string (pac_symbol_model_name.bounded_string (name)));
 
 
 
 	function to_file_name (name : in string)
 		return type_symbol_model_name
-	is begin
-		return type_symbol_model_name (pac_symbol_model_name.to_bounded_string (name));
-	end to_file_name;
+	is (type_symbol_model_name (pac_symbol_model_name.to_bounded_string (name)));
 
 
 end et_symbol_name;

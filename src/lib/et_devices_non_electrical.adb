@@ -94,9 +94,7 @@ package body et_devices_non_electrical is
 	function get_package_model_name (
 		device : in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_package_model_name (device));
-	end get_package_model_name;
+	is (to_string (get_package_model_name (device)));
 
 
 
@@ -117,9 +115,7 @@ package body et_devices_non_electrical is
 	function get_position (
 		device : in type_device_non_electrical)
 		return type_package_position
-	is begin
-		return device.position;
-	end get_position;
+	is (device.position);
 
 
 
@@ -138,9 +134,7 @@ package body et_devices_non_electrical is
 	function get_rotation (
 		device	: in type_device_non_electrical)
 		return type_rotation_model
-	is begin
-		return get_rotation (device.position);
-	end get_rotation;
+	is (get_rotation (device.position));
 
 
 
@@ -184,18 +178,14 @@ package body et_devices_non_electrical is
 	function get_face (
 		device	: in type_device_non_electrical)
 		return type_face
-	is begin
-		return get_face (device.position);
-	end get_face;
+	is (get_face (device.position));
 
 
 
 	function get_face (
 		device	: in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_face (device.position));
-	end get_face;
+	is (to_string (get_face (device.position)));
 
 
 
@@ -219,9 +209,7 @@ package body et_devices_non_electrical is
 	function get_place (
 		device	: in type_device_non_electrical)
 		return type_vector_model
-	is begin
-		return get_place (device.position);
-	end get_place;
+	is (get_place (device.position));
 
 
 
@@ -229,9 +217,7 @@ package body et_devices_non_electrical is
 		device	: in type_device_non_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is begin
-		return to_string (get_place (device.position), format);
-	end get_place;
+	is (to_string (get_place (device.position), format));
 
 
 
@@ -250,17 +236,13 @@ package body et_devices_non_electrical is
 	function get_value (
 		device	: in type_device_non_electrical)
 		return type_device_value
-	is begin
-		return device.value;
-	end get_value;
+	is (device.value);
 
 
 	function get_value (
 		device	: in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_value (device));
-	end get_value;
+	is (to_string (get_value (device)));
 
 
 	function has_value (
@@ -289,17 +271,13 @@ package body et_devices_non_electrical is
 	function get_partcode (
 		device	: in type_device_non_electrical)
 		return type_device_partcode
-	is begin
-		return device.partcode;
-	end get_partcode;
+	is (device.partcode);
 
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_partcode (device));
-	end get_partcode;
+	is (to_string (get_partcode (device)));
 
 
 	function has_partcode (
@@ -329,17 +307,13 @@ package body et_devices_non_electrical is
 	function get_purpose (
 		device	: in type_device_non_electrical)
 		return type_device_purpose
-	is begin
-		return device.purpose;
-	end get_purpose;
+	is (device.purpose);
 
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
 		return string
-	is begin
-		return to_string (get_purpose (device));
-	end get_purpose;
+	is (to_string (get_purpose (device)));
 
 
 	function has_purpose (
@@ -377,13 +351,7 @@ package body et_devices_non_electrical is
 	function is_proposed (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_proposed (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (device.status)));
 
 
 
@@ -405,13 +373,7 @@ package body et_devices_non_electrical is
 	function is_selected (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_selected (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (device.status)));
 
 
 
@@ -433,13 +395,7 @@ package body et_devices_non_electrical is
 	function is_moving (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_moving (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (device.status)));
 
 
 
@@ -461,13 +417,7 @@ package body et_devices_non_electrical is
 	function is_locked (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		if is_locked (device.status) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (is_locked (device.status)));
 
 
 
@@ -526,18 +476,14 @@ package body et_devices_non_electrical is
 	function get_count (
 		devices	: in pac_devices_non_electrical.map)
 		return natural
-	is begin
-		return natural (devices.length);
-	end get_count;
+	is (natural (devices.length));
 
 
 
 	function get_count (
 		devices	: in pac_devices_non_electrical.map)
 		return string
-	is begin
-		return count_type'image (devices.length);
-	end get_count;
+	is (count_type'image (devices.length));
 
 
 
@@ -577,9 +523,7 @@ package body et_devices_non_electrical is
 	function get_device_name (
 		device : in pac_devices_non_electrical.cursor)
 		return type_device_name
-	is begin
-		return key (device);
-	end get_device_name;
+	is (key (device));
 
 
 
@@ -587,9 +531,7 @@ package body et_devices_non_electrical is
 	function get_device_name (
 		device : in pac_devices_non_electrical.cursor)
 		return string
-	is begin
-		return to_string (key (device));
-	end get_device_name;
+	is (to_string (key (device)));
 
 
 
@@ -640,51 +582,27 @@ package body et_devices_non_electrical is
 	function is_proposed (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	is (boolean (is_proposed (element (device))));
 
 
 
 	function is_selected (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_selected (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	is (boolean (is_selected (element (device))));
 
 
 
 	function is_moving (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_moving (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_moving;
+	is (boolean (is_moving (element (device))));
 
 
 	function is_locked (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
-	is begin
-		if is_locked (element (device)) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_locked;
+	is (boolean (is_locked (element (device))));
 
 
 

@@ -154,13 +154,9 @@ package body et_kicad_to_native is
 
 
 		-- Returns true if the current kicad module has a layout file.
-		function board_available return boolean is begin
-			if element (module_cursor).board_available then
-				return true;
-			else
-				return false;
-			end if;
-		end board_available;
+		function board_available
+			return boolean
+		is (boolean (element (module_cursor).board_available));
 
 
 

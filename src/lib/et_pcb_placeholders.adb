@@ -48,18 +48,14 @@ package body et_pcb_placeholders is
 	function to_string (
 		meaning : in type_placeholder_meaning)
 		return string
-	is begin
-		return type_placeholder_meaning'image (meaning);
-	end to_string;
+	is (type_placeholder_meaning'image (meaning));
 
 
 
 	function to_meaning (
 		meaning : in string)
 		return type_placeholder_meaning
-	is begin
-		return type_placeholder_meaning'value (meaning);
-	end to_meaning;
+	is (type_placeholder_meaning'value (meaning));
 
 
 end et_pcb_placeholders;

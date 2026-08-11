@@ -245,13 +245,13 @@ package body et_fill_zones is
 
 -- EASING:
 
-	function to_easing_style (easing : in string) return type_easing_style is begin
-		return type_easing_style'value (easing);
-	end to_easing_style;
+	function to_easing_style (easing : in string)
+		return type_easing_style
+	is (type_easing_style'value (easing));
 
-	function to_string (easing : in type_easing_style) return string is begin
-		return to_lower (type_easing_style'image (easing));
-	end to_string;
+	function to_string (easing : in type_easing_style)
+		return string
+	is (to_lower (type_easing_style'image (easing)));
 
 
 
@@ -261,9 +261,7 @@ package body et_fill_zones is
 	function get_half_linewidth (
 		zone	: in type_zone)
 		return type_float_positive
-	is begin
-		return type_float_positive (zone.linewidth) * 0.5;
-	end get_half_linewidth;
+	is (type_float_positive (zone.linewidth) * 0.5);
 
 
 

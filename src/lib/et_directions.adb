@@ -47,15 +47,15 @@ with ada.characters.handling;	use ada.characters.handling;
 
 package body et_directions is
 
-	function to_string (direction : in type_direction_of_rotation) return string is begin
-		return to_lower (type_direction_of_rotation'image (direction));
-	end to_string;
+	function to_string (direction : in type_direction_of_rotation)
+		return string
+	is (to_lower (type_direction_of_rotation'image (direction)));
 
 
 
-	function to_direction (direction : in string) return type_direction_of_rotation is begin
-		return type_direction_of_rotation'value (direction);
-	end to_direction;
+	function to_direction (direction : in string)
+		return type_direction_of_rotation
+	is (type_direction_of_rotation'value (direction));
 
 
 

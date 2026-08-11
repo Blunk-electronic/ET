@@ -63,14 +63,11 @@ package body et_conductor_segment is
 		line		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
 		return type_polygon
-	is begin
-		return to_polygon (
+	is (to_polygon (
 			line		=> to_line_fine (line),
 			linewidth	=> type_float_positive (line.width),
 			tolerance	=> type_float_positive (tolerance),
-			mode		=> EXPAND);
-
-	end to_polygon;
+			mode		=> EXPAND));
 
 
 
@@ -78,17 +75,13 @@ package body et_conductor_segment is
 	function get_A (
 		line : in pac_conductor_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (line));
-	end get_A;
+	is (get_A (element (line)));
 
 
 	function get_B (
 		line : in pac_conductor_lines.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (line));
-	end get_B;
+	is (get_B (element (line)));
 
 
 
@@ -308,14 +301,11 @@ package body et_conductor_segment is
 		arc		: in type_conductor_arc;
 		tolerance	: in type_distance_positive)
 		return type_polygon
-	is begin
-		return to_polygon (
+	is (to_polygon (
 			arc			=> to_arc_fine (arc),
 			linewidth	=> type_float_positive (arc.width),
 			tolerance	=> type_float_positive (tolerance),
-			mode		=> EXPAND);
-
-	end to_polygon;
+			mode		=> EXPAND));
 
 
 
@@ -323,17 +313,13 @@ package body et_conductor_segment is
 	function get_A (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_A (element (arc));
-	end get_A;
+	is (get_A (element (arc)));
 
 
 	function get_B (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model
-	is begin
-		return get_B (element (arc));
-	end get_B;
+	is (get_B (element (arc)));
 
 
 

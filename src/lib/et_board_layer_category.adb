@@ -48,9 +48,7 @@ package body et_board_layer_category is
 	function to_layer_category (
 		cat : in string)
 		return type_layer_category
-	is begin
-		return type_layer_category'value (layer_category_prefix & cat);
-	end to_layer_category;
+	is (type_layer_category'value (layer_category_prefix & cat));
 
 
 

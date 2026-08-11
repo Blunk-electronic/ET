@@ -96,10 +96,8 @@ package body et_device_model_unit_external is
 	function get_symbol_model_name (
 		unit	: in pac_units_external.cursor)
 		return string
-	is begin
-		return to_string (
-			get_symbol_model_file (unit));
-	end get_symbol_model_name;
+	is (to_string (
+			get_symbol_model_file (unit)));
 
 
 

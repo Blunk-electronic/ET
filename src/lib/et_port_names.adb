@@ -44,18 +44,14 @@ package body et_port_names is
 	function to_string (
 		port : in type_port_name)
 		return string
-	is begin
-		return pac_port_name.to_string (pac_port_name.bounded_string (port));
-	end to_string;
+	is (pac_port_name.to_string (pac_port_name.bounded_string (port)));
 
 
 
 	function to_port_name (
 		name : in string)
 		return type_port_name
-	is begin
-		return type_port_name (pac_port_name.to_bounded_string (name));
-	end to_port_name;
+	is (type_port_name (pac_port_name.to_bounded_string (name)));
 
 
 

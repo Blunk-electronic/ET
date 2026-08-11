@@ -48,17 +48,13 @@ package body et_symbol_library is
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
 		return type_symbol_model_name
-	is begin
-		return key (symbol_cursor);
-	end get_symbol_model_name;
+	is (key (symbol_cursor));
 
 
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
 		return string
-	is begin
-		return to_string (key (symbol_cursor));
-	end get_symbol_model_name;
+	is (to_string (key (symbol_cursor)));
 
 
 
@@ -112,9 +108,7 @@ package body et_symbol_library is
 	function get_symbol_model (
 		model_name : in type_symbol_model_name)
 		return pac_symbol_models.cursor
-	is begin
-		return symbol_library.find (model_name);
-	end get_symbol_model;
+	is (symbol_library.find (model_name));
 
 
 
@@ -134,9 +128,7 @@ package body et_symbol_library is
 	function get_port_positions (
 		symbol	: in pac_symbol_models.cursor)
 		return pac_points.list
-	is begin
-		return get_port_positions (element (symbol));
-	end get_port_positions;
+	is (get_port_positions (element (symbol)));
 
 
 
@@ -184,9 +176,7 @@ package body et_symbol_library is
 	function get_symbol (
 		symbol	: in pac_symbol_models.cursor)
 		return type_symbol_model
-	is begin
-		return element (symbol);
-	end get_symbol;
+	is (element (symbol));
 
 
 
