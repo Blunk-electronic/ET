@@ -54,7 +54,7 @@ package body et_devices_electrical is
 
 
 
-	
+
 
 	function copy_bare_device (
 		device_in : in type_device_electrical)
@@ -66,10 +66,10 @@ package body et_devices_electrical is
 		return device_out;
 	end copy_bare_device;
 
-	
 
 
-	
+
+
 
 	function get_position (
 		device : in type_device_electrical)

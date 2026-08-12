@@ -690,7 +690,7 @@ package et_schematic_ops_units is
 
 
 
-	
+
 
 -- PLACEHOLDERS:
 

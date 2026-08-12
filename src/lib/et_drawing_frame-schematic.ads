@@ -186,7 +186,7 @@ package et_drawing_frame.schematic is
 
 
 
-	
+
 	-- Returns true if the given sheet exists:
 	function sheet_exists (
 		frames	: in type_frames_schematic;

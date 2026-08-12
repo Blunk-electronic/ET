@@ -46,14 +46,14 @@ package body et_sheets is
 	is (type_sheet_relative'image (sheet));
 
 
-	
+
 	function to_sheet (sheet : in string)
 		return type_sheet
 	is (type_sheet'value (sheet));
 
 
 
-	
+
 	function relative_to_string (sheet : in type_sheet_relative)
 		return string
 	is (type_sheet_relative'image (sheet));

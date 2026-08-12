@@ -4193,7 +4193,7 @@ package body et_schematic_ops_units is
 
 	procedure paste_units_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;									 
+		offset			: in type_object_position_relative;
 		log_threshold	: in type_log_level)
 	is
 
@@ -4203,17 +4203,17 @@ package body et_schematic_ops_units is
 			 level => log_threshold);
 
 		log_indentation_up;
-		
+
 		-- CS
 
 		log_indentation_down;
 	end paste_units_from_clipboard;
 
 
-	
 
 
-	
+
+
 
 
 
