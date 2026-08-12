@@ -41,6 +41,8 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_package_name is
 
 
@@ -67,12 +69,13 @@ package et_package_name is
 	type type_package_name is new pac_package_name.bounded_string;
 
 
-	function to_string (packge : in type_package_name) return string;
+	-- CS: provide a parameter that turns the preamble on/off
+	function to_string       is new et_bounded_string_helpers.to_string   (pac_package_name, from_type => type_package_name);
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
 
-	function to_package_name (package_name : in string) return type_package_name;
+	function to_package_name is new et_bounded_string_helpers.from_string (pac_package_name, to_type   => type_package_name);
 	-- Converts a string to a pac_package_name.
 
 

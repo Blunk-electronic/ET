@@ -1,14 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                           NET CLASS NAME                                 --
+--              B O U N D E D  S T R I N G  H E L P E R S                   --
 --                                                                          --
---                              B o d y                                     --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
--- Mario Blunk / Blunk electronic                                           --
--- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+-- Copyright (C) 2026 Jesper Quorning                                       --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -23,41 +21,29 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction site" where things are not
---   finished yet or intended for the future.
+package body et_bounded_string_helpers is
 
---   Please send your questions and comments to:
---
---   info@blunk-electronic.de
---   or visit <http://www.blunk-electronic.de> for more contact data
---
---   history of changes:
---
+	-----------------
+	-- from_string --
+	-----------------
 
+	function from_string (item : in string) return to_type is
+	begin
+		return to_type (bounded.to_bounded_string (item));
+	end from_string;
 
+	---------------
+	-- to_string --
+	---------------
 
--- with ada.text_io;			use ada.text_io;
-package body et_net_class_name is
+	function to_string (item : in from_type) return string is
+	begin
+		return bounded.to_string (bounded.bounded_string (item));
+	end to_string;
 
-
-	function to_string (
-		net_class_name : in type_net_class_name)
-		return string
-	is (pac_net_class_name.to_string (pac_net_class_name.bounded_string (net_class_name)));
-
-
-
-
-	function to_net_class_name (
-		net_class_name : in string)
-		return type_net_class_name
-	is (type_net_class_name (pac_net_class_name.to_bounded_string (net_class_name)));
-
-
-
-end et_net_class_name;
+end et_bounded_string_helpers;
 
 -- Soli Deo Gloria
 

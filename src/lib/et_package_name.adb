@@ -50,17 +50,6 @@ with et_string_processing;		use et_string_processing;
 package body et_package_name is
 
 
-	function to_string (packge : in type_package_name) return string is
-	-- CS: provide a parameter that turns the preamble on/off
-	begin
-		return pac_package_name.to_string (pac_package_name.bounded_string (packge));
-	end to_string;
-
-
-
-	function to_package_name (package_name : in string)
-		return type_package_name
-	is (type_package_name (pac_package_name.to_bounded_string (package_name)));
 
 
 

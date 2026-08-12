@@ -140,7 +140,7 @@ package body et_kicad_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "component prefix " & to_string (prefix => prefix)
+			log (SEVERITY_ERROR, "component prefix " & to_string (prefix)
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -1208,7 +1208,7 @@ package body et_kicad_libraries is
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_terminals.pac_terminals.no_element then
-					log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
+					log (SEVERITY_ERROR, "package " & to_string (package_name)
 						 & " does not have a terminal '"
 						 & to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
@@ -1240,7 +1240,7 @@ package body et_kicad_libraries is
 				-- locate the package
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
-					log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
+					log (SEVERITY_ERROR, "package " & to_string (package_name)
 						& " not found in library " & to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
@@ -1250,7 +1250,7 @@ package body et_kicad_libraries is
 
 					-- If the package has less terminals than the given terminal_port_map abort:
 					if terminals < natural (length (terminal_port_map)) then
-						log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
+						log (SEVERITY_ERROR, "package " & to_string (package_name)
 							& " as too few terminals !",
 							console => true);
 						raise constraint_error;
@@ -2040,7 +2040,7 @@ package body et_kicad_libraries is
 				-- port name offset
 				port.port_name_offset := tmp_port_name_offset;
 
-				--log (text => text => et_schematic_coordinates.to_string (point => port.coordinates), level => 1);
+				--log (text => text => et_schematic_coordinates.to_string (port.coordinates), level => 1);
 
 				-- CS: log other port properties
 
@@ -3492,8 +3492,8 @@ package body et_kicad_libraries is
 					-- is set to be returned.
 					if get_package_model_file (element (variant_cursor).model_cursor) =
 						to_package_model_name (compose (
-							containing_directory	=> to_string (name => full_package_library_name),
-							name					=> to_string (packge => package_name)))
+							containing_directory	=> to_string (full_package_library_name),
+							name					=> to_string (package_name)))
 					then
 
 						log (text => "variant "
@@ -3532,8 +3532,8 @@ package body et_kicad_libraries is
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
 
 						package_model_name := to_package_model_name (compose (
-							containing_directory	=> to_string (name => full_package_library_name),
-							name					=> to_string (packge => package_name)));
+							containing_directory	=> to_string (full_package_library_name),
+							name					=> to_string (package_name)));
 
 
 						-- build the new package variant
@@ -3545,13 +3545,13 @@ package body et_kicad_libraries is
 						-- insert the new package variant in the component (in library)
 						pac_package_variants.insert (
 							container	=> component.variants,
-							key			=> to_variant_name (to_string (packge => package_name)),
+							key			=> to_variant_name (to_string (package_name)),
 							new_item	=> new_variant);
 
 						--log (text => count_type'image (pac_package_variants.length (component.variants)));
 
 						-- Set the variant name to be returned:
-						variant := to_variant_name (to_string (packge => package_name));
+						variant := to_variant_name (to_string (package_name));
 
 					else
 						log (SEVERITY_ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details

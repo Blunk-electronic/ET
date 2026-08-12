@@ -39,6 +39,8 @@
 with ada.strings.bounded;       use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_script_names is
 
 	script_name_length_max : constant positive := 100; -- CS increase if necessary
@@ -54,14 +56,10 @@ package et_script_names is
 		return natural;
 
 
-	function to_string (
-		name : in type_script_name)
-		return string;
+	function to_string      is new et_bounded_string_helpers.to_string   (pac_script_name, from_type => type_script_name);
 
 
-	function to_script_name (
-		name : in string)
-		return type_script_name;
+	function to_script_name is new et_bounded_string_helpers.from_string (pac_script_name, to_type   => type_script_name);
 
 
 end et_script_names;

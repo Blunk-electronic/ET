@@ -58,16 +58,8 @@ package body et_project_name is
 
 
 
-	function to_string (
-		project_name : in type_project_name)
-		return string
-	is (pac_project_name.to_string (pac_project_name.bounded_string (project_name)));
 
 
-	function to_project_name (
-		name : in string)
-		return type_project_name
-	is (type_project_name (pac_project_name.to_bounded_string (name)));
 
 
 

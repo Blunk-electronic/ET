@@ -40,6 +40,8 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_device_prefix is
 
 
@@ -53,14 +55,11 @@ package et_device_prefix is
 
 	type type_device_prefix is new pac_device_prefix.bounded_string;
 
-	function to_string (
-		prefix : in type_device_prefix)
-		return string;
+	-- NOTE: a device prefix must not have a leading space !
+	function to_string is new et_bounded_string_helpers.to_string   (pac_device_prefix, from_type => type_device_prefix);
 
 
-	function to_prefix (
-		prefix : in string)
-		return type_device_prefix;
+	function to_prefix is new et_bounded_string_helpers.from_string (pac_device_prefix, to_type   => type_device_prefix);
 
 
 	-- Tests if the given prefix is longer than allowed.

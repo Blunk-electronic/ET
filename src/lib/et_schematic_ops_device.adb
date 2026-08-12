@@ -141,7 +141,7 @@ package body et_schematic_ops_device is
 					use pac_unit_name;
 				begin
 					log (text => "unit " & to_string (unit_name) &
-						" at " & to_string (position => unit_position),
+						" at " & to_string (unit_position),
 						 level => log_threshold + 2);
 
 					pac_renumber_devices.insert (
@@ -159,7 +159,7 @@ package body et_schematic_ops_device is
 					if not inserted then
 						log (SEVERITY_ERROR, "device " & to_string (device_name) &
 							 " unit " & to_string (unit_name) &
-							 " at " & to_string (position => unit_position) &
+							 " at " & to_string (unit_position) &
 							 " sits on top of another unit !",
 							 console => true);
 						raise constraint_error;

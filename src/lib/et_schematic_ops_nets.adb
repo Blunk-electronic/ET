@@ -371,7 +371,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " locate ports at " & to_string (position => place),
+			& " locate ports at " & to_string (place),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5768,7 +5768,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			 " identify nets at" & to_string (position => place),
+			 " identify nets at" & to_string (place),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -7413,7 +7413,7 @@ package body et_schematic_ops_nets is
 	begin -- delete_net_label
 		log (text => "module " & to_string (module_cursor)
 			& " delete net label at "
-			& et_schematic_coordinates.to_string (position => position),
+			& et_schematic_coordinates.to_string (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -8238,7 +8238,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " place net connector at " & to_string (position => position)
+			& " place net connector at " & to_string (position)
 			& " direction " & to_string (direction),
 			level => log_threshold);
 

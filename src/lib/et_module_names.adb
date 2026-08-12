@@ -45,13 +45,7 @@ with ada.strings;
 package body et_module_names is
 
 
-	function to_module_file_name (name : in string)
-		return type_module_file_name
-	is (type_module_file_name (pac_module_file_name.to_bounded_string (name)));
 
-	function to_string (name : in type_module_file_name)
-		return string
-	is (pac_module_file_name.to_string (pac_module_file_name.bounded_string (name)));
 
 
 
@@ -78,14 +72,8 @@ package body et_module_names is
 
 
 
-	function to_string (name : in type_module_name)
-		return string
-	is (pac_module_name.to_string (pac_module_name.bounded_string (name)));
 
 
-	function to_module_name (name : in string)
-		return type_module_name
-	is (type_module_name (pac_module_name.to_bounded_string (name)));
 
 
 

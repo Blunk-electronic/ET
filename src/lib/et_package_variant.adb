@@ -161,13 +161,13 @@ package body et_package_variant is
 			when true =>
 				case show_unit is
 					when true =>
-						return (" port " & to_string (port => terminal.port)
+						return (" port " & to_string (terminal.port)
 							& " unit " & to_string (terminal.unit)
 							& " terminal " & to_string (terminal.name)
 							& latin_1.space);
 
 					when false =>
-						return (" port " & to_string (port => terminal.port)
+						return (" port " & to_string (terminal.port)
 							& " terminal " & to_string (terminal.name)
 							& latin_1.space);
 				end case;
@@ -175,13 +175,13 @@ package body et_package_variant is
 			when false =>
 				case show_unit is
 					when true =>
-						return (latin_1.space & to_string (port => terminal.port)
+						return (latin_1.space & to_string (terminal.port)
 							& latin_1.space & to_string (terminal.unit)
 							& latin_1.space & to_string (terminal.name)
 							& latin_1.space);
 
 					when false =>
-						return (latin_1.space & to_string (port => terminal.port)
+						return (latin_1.space & to_string (terminal.port)
 							& latin_1.space & to_string (terminal.name)
 							& latin_1.space);
 				end case;

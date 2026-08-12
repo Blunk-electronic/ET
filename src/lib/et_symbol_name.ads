@@ -45,6 +45,8 @@
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_symbol_name is
 
 
@@ -65,14 +67,10 @@ package et_symbol_name is
 	symbol_library_file_extension : constant string := "sym";
 
 
-	function to_string (
-		name : in type_symbol_model_name)
-		return string;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_symbol_model_name, from_type => type_symbol_model_name);
 
 
-	function to_file_name (
-		name : in string)
-		return type_symbol_model_name;
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_symbol_model_name, to_type   => type_symbol_model_name);
 
 
 

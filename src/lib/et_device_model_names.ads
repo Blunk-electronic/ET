@@ -43,6 +43,8 @@
 with ada.strings.bounded;		use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_device_model_names is
 
 
@@ -70,9 +72,9 @@ package et_device_model_names is
 		return natural;
 
 
-	function to_string (name : in type_device_model_name) return string;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_device_model_file, from_type => type_device_model_name);
 
-	function to_file_name (name : in string) return type_device_model_name;
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_device_model_file, to_type   => type_device_model_name);
 	-- CS rename to to_device_model_name
 
 

@@ -46,6 +46,8 @@ with et_text_content;			use et_text_content;
 with et_fonts;					use et_fonts;
 
 
+with et_bounded_string_helpers;
+
 package et_drawing_frame is
 
 
@@ -323,8 +325,8 @@ package et_drawing_frame is
 	type type_template_name is new pac_template_name.bounded_string;
 
 
-	function to_string (name : in type_template_name) return string;
-	function to_template_name (name : in string) return type_template_name;
+	function to_string        is new et_bounded_string_helpers.to_string   (pac_template_name, from_type => type_template_name);
+	function to_template_name is new et_bounded_string_helpers.from_string (pac_template_name, to_type   => type_template_name);
 
 
 

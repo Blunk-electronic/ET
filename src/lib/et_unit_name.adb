@@ -69,6 +69,9 @@ package body et_unit_name is
 
 
 
+
+
+
 	procedure message_unit_not_found (
 		severity	: in type_message_severity;
 		name		: in type_unit_name)

@@ -196,7 +196,7 @@ package body et_kicad.schematic is
 			& string (type_units_schematic.element (unit).timestamp), level => log_threshold);
 
 		-- position
-		log (text => to_string (position => type_units_schematic.element (unit).position), level => log_threshold);
+		log (text => to_string (type_units_schematic.element (unit).position), level => log_threshold);
 
 		-- orientation or angle
 		log (text => to_string (type_units_schematic.element (unit).rotation), level => log_threshold);
@@ -280,7 +280,7 @@ package body et_kicad.schematic is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (SEVERITY_ERROR, "component prefix " & to_string (prefix => prefix)
+			log (SEVERITY_ERROR, "component prefix " & to_string (prefix)
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -1062,8 +1062,8 @@ package body et_kicad.schematic is
 					-- is set to be returned.
 					if get_package_model_file (element (variant_cursor).model_cursor) =
 						to_package_model_name (compose (
-							containing_directory	=> to_string (name => full_package_library_name),
-							name					=> to_string (packge => package_name)))
+							containing_directory	=> to_string (full_package_library_name),
+							name					=> to_string (package_name)))
 					then
 						log (text => "variant "
 							& to_string (key (variant_cursor))
@@ -1101,8 +1101,8 @@ package body et_kicad.schematic is
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
 
 						package_model_name := to_package_model_name (compose (
-							containing_directory	=> to_string (name => full_package_library_name),
-							name					=> to_string (packge => package_name)));
+							containing_directory	=> to_string (full_package_library_name),
+							name					=> to_string (package_name)));
 
 						-- build the new package variant
 						new_variant := (
@@ -1113,13 +1113,13 @@ package body et_kicad.schematic is
 						-- insert the new package variant in the component (in library)
 						pac_package_variants.insert (
 							container	=> component.variants,
-							key			=> to_variant_name (to_string (packge => package_name)),
+							key			=> to_variant_name (to_string (package_name)),
 							new_item	=> new_variant);
 
 						--log (text => count_type'image (pac_package_variants.length (component.variants)));
 
 						-- Set the variant name to be returned:
-						variant := to_variant_name (to_string (packge => package_name));
+						variant := to_variant_name (to_string (package_name));
 
 					else
 						log (SEVERITY_ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
@@ -3961,7 +3961,7 @@ package body et_kicad.schematic is
 
 						-- CS: skip already processed ports to improve performance
 
-						log (text => "probing port " & to_string (position => element (port).coordinates), level => log_threshold + 4);
+						log (text => "probing port " & to_string (element (port).coordinates), level => log_threshold + 4);
 
 						-- test if port is connected with segment
 						if port_connected_with_segment (element (port), element (segment)) then
@@ -4048,13 +4048,13 @@ package body et_kicad.schematic is
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
-					--log (text => "simple label " & to_string (position => element (label_simple).coordinates));
+					--log (text => "simple label " & to_string (element (label_simple).coordinates));
 					log (text => "simple label " & to_string (element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
-					--log (text => "tag label " & to_string (position => element (label_tag).coordinates));
+					--log (text => "tag label " & to_string (element (label_tag).coordinates));
 					log (text => "tag label " & to_string (element (label_tag).coordinates));
 					next (label_tag);
 				end loop;
@@ -4430,7 +4430,7 @@ package body et_kicad.schematic is
 					log (text => to_string (type_ports.last_element (ports).direction), level => log_threshold + 3);
 					log_indentation_up;
 					-- CS: other port properties
-					log (text => to_string (position => type_ports.last_element (ports).coordinates), level => log_threshold + 3);
+					log (text => to_string (type_ports.last_element (ports).coordinates), level => log_threshold + 3);
 					log_indentation_down;
 				end add;
 
@@ -4518,7 +4518,7 @@ package body et_kicad.schematic is
 					log (text => "unit " & to_string (unit_name_lib), level => log_threshold + 1);
 					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
-					log (text => to_string (position => unit_position), level => log_threshold + 2);
+					log (text => to_string (unit_position), level => log_threshold + 2);
 
 					-- Get the ports of the current unit. Start with the first port of the unit.
 					-- The unit_position plus the relative port position (in library) yields the absolute
@@ -6342,20 +6342,20 @@ package body et_kicad.schematic is
 			when SIMPLE =>
 			log (text => "simple label " &
 				 to_string (label.text) & " at " &
-				 --to_string (position => label.coordinates)); -- CS log_threshold ?
+				 --to_string (label.coordinates)); -- CS log_threshold ?
 				 to_string (label.coordinates)); -- CS log_threshold ?
 
 			when TAG =>
 				if label.hierarchic then
 					log (text => "hierarchic label " &
 					to_string (label.text) & " at " &
-					--to_string (position => label.coordinates));  -- CS log_threshold ?
+					--to_string (label.coordinates));  -- CS log_threshold ?
 					to_string (label.coordinates));  -- CS log_threshold ?
 				end if;
 
 				if label.global then
 					log (text => "global label " & to_string (label.text) & " at " &
-					--to_string (position => label.coordinates));  -- CS log_threshold ?
+					--to_string (label.coordinates));  -- CS log_threshold ?
 					to_string (label.coordinates));  -- CS log_threshold ?
 				end if;
 
@@ -7731,11 +7731,11 @@ package body et_kicad.schematic is
 							case port.appearance is
 								when APPEARANCE_PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
-									log (text => to_string (port => port)
+									log (text => to_string (port)
 										& to_string (terminal, show_unit => true, preamble => true));
 
 								when APPEARANCE_VIRTUAL =>
-									log (text => to_string (port => port));
+									log (text => to_string (port));
 							end case;
 
 							pac_ports_with_reference.next (port_cursor);

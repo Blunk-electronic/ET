@@ -2,13 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            NETLIST NAME                                  --
+--              B O U N D E D  S T R I N G  H E L P E R S                   --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
--- Mario Blunk / Blunk electronic                                           --
--- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+-- Copyright (C) 2026 Jesper Quorning                                       --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -25,38 +23,27 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction site" where things are not
---   finished yet or intended for the future.
+with ada.strings.bounded;
 
---   Please send your questions and comments to:
---
---   info@blunk-electronic.de
---   or visit <http://www.blunk-electronic.de> for more contact data
---
---   history of changes:
---
---   ToDo:
+package et_bounded_string_helpers is
 
 
--- with ada.text_io;			use ada.text_io;
-with ada.strings;
+	generic
+		with package bounded is new ada.strings.bounded.generic_bounded_length (<>);
+		type to_type is new bounded.bounded_string;
+
+	function from_string (item : in string) return to_type;
 
 
 
-package body et_netlist_name is
+	generic
+		with package bounded is new ada.strings.bounded.generic_bounded_length (<>);
+		type from_type is new bounded.bounded_string;
 
-	function to_string (name : in type_netlist_file_name)
-		return string
-	is (pac_netlist_file_name.to_string (pac_netlist_file_name.bounded_string (name)));
-
-
-	function to_file_name (name : in string)
-		return type_netlist_file_name
-	is (type_netlist_file_name (pac_netlist_file_name.to_bounded_string (name)));
+	function to_string (item : in from_type) return string;
 
 
-
-end et_netlist_name;
+end et_bounded_string_helpers;
 
 -- Soli Deo Gloria
 

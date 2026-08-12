@@ -41,6 +41,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 with ada.calendar;				use ada.calendar;
 
+with et_bounded_string_helpers;
 with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
 with et_meta_device_libraries_board;		use et_meta_device_libraries_board;
 
@@ -56,10 +57,10 @@ package et_meta is
 
 	type type_company is new pac_company.bounded_string;
 
-	function to_company (company : in string) return type_company;
-	function to_string (company : in type_company) return string;
+	function to_company is new et_bounded_string_helpers.from_string (pac_company, to_type   => type_company);
+	function to_string  is new et_bounded_string_helpers.to_string   (pac_company, from_type => type_company);
 
-	company_default : constant type_company := type_company (pac_company.to_bounded_string (not_assigned));
+	company_default : constant type_company := to_company (not_assigned);
 
 
 	customer_length_max : constant positive := 100;
@@ -67,10 +68,10 @@ package et_meta is
 
 	type type_customer is new pac_customer.bounded_string;
 
-	function to_customer (customer : in string) return type_customer;
-	function to_string (customer : in type_customer) return string;
+	function to_customer is new et_bounded_string_helpers.from_string (pac_customer, to_type   => type_customer);
+	function to_string   is new et_bounded_string_helpers.to_string   (pac_customer, from_type => type_customer);
 
-	customer_default : constant type_customer := type_customer (pac_customer.to_bounded_string (not_assigned));
+	customer_default : constant type_customer := to_customer (not_assigned);
 
 
 	partcode_length_max : constant positive := 100;
@@ -78,10 +79,10 @@ package et_meta is
 
 	type type_partcode is new pac_partcode.bounded_string;
 
-	function to_partcode (partcode : in string) return type_partcode;
-	function to_string (partcode : in type_partcode) return string;
+	function to_partcode is new et_bounded_string_helpers.from_string (pac_partcode, to_type   => type_partcode);
+	function to_string  is new et_bounded_string_helpers.to_string   (pac_partcode, from_type => type_partcode);
 
-	partcode_default : constant type_partcode := type_partcode (pac_partcode.to_bounded_string (not_assigned));
+	partcode_default : constant type_partcode := to_partcode (not_assigned);
 
 
 	drawing_number_length_max : constant positive := 100;
@@ -89,10 +90,10 @@ package et_meta is
 
 	type type_drawing_number is new pac_drawing_number.bounded_string;
 
-	function to_drawing_number (drawing_number : in string) return type_drawing_number;
-	function to_string (drawing_number : in type_drawing_number) return string;
+	function to_drawing_number is new et_bounded_string_helpers.from_string (pac_drawing_number, to_type   => type_drawing_number);
+	function to_string         is new et_bounded_string_helpers.to_string   (pac_drawing_number, from_type => type_drawing_number);
 
-	drawing_number_default : constant type_drawing_number := type_drawing_number (pac_drawing_number.to_bounded_string (not_assigned));
+	drawing_number_default : constant type_drawing_number := to_drawing_number (not_assigned);
 
 
 	revision_length_max : constant positive := 5;
@@ -100,10 +101,10 @@ package et_meta is
 
 	type type_revision is new pac_revision.bounded_string;
 
-	function to_revision (revision : in string) return type_revision;
-	function to_string (revision : in type_revision) return string;
+	function to_revision is new et_bounded_string_helpers.from_string (pac_revision, to_type   => type_revision);
+	function to_string   is new et_bounded_string_helpers.to_string   (pac_revision, from_type => type_revision);
 
-	revision_default : constant type_revision := type_revision (pac_revision.to_bounded_string (not_assigned));
+	revision_default : constant type_revision := to_revision (not_assigned);
 
 
 
@@ -112,10 +113,10 @@ package et_meta is
 
 	type type_person is new pac_person.bounded_string;
 
-	function to_person (person : in string) return type_person;
-	function to_string (person : in type_person) return string;
+	function to_person is new et_bounded_string_helpers.from_string (pac_person, to_type   => type_person);
+	function to_string is new et_bounded_string_helpers.to_string   (pac_person, from_type => type_person);
 
-	person_default : constant type_person := type_person (pac_person.to_bounded_string (not_assigned));
+	person_default : constant type_person := to_person (not_assigned);
 
 
 

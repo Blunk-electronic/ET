@@ -46,19 +46,9 @@ package body et_device_prefix is
 
 
 
-	function to_string (
-		prefix : in type_device_prefix)
-		return string
-	is begin
-		return pac_device_prefix.to_string (pac_device_prefix.bounded_string (prefix)); -- leading space not allowd !
-	end to_string;
 
 
 
-	function to_prefix (
-		prefix : in string)
-		return type_device_prefix
-	is (type_device_prefix (pac_device_prefix.to_bounded_string (prefix)));
 
 
 

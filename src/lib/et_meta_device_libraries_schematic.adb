@@ -65,18 +65,10 @@ package body et_meta_device_libraries_schematic is
 
 
 
-	function to_library_path (
-		lib : in string)
-		return type_library_path_schematic
-	is (type_library_path_schematic (pac_library_path_schematic.to_bounded_string (lib)));
 
 
 
 
-	function to_string (
-		lib : in type_library_path_schematic)
-		return string
-	is (pac_library_path_schematic.to_string (pac_library_path_schematic.bounded_string (lib)));
 
 
 

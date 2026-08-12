@@ -103,16 +103,10 @@ package body et_submodules is
 
 
 
-	function to_submodule_path (path : in string)
-		return type_submodule_path
-	is (type_submodule_path (pac_submodule_path.to_bounded_string (path)));
 
 
 
 
-	function to_string (path : in type_submodule_path)
-		return string
-	is (pac_submodule_path.to_string (pac_submodule_path.bounded_string (path)));
 
 
 

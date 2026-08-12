@@ -56,15 +56,9 @@ package body et_design_rules_board is
 
 
 
-	function to_file_name (file : in string)
-		return type_design_rules_file_name
-	is (type_design_rules_file_name (pac_file_name.to_bounded_string (file)));
 
 
 
-	function to_string (file : in type_design_rules_file_name)
-		return string
-	is (pac_file_name.to_string (pac_file_name.bounded_string (file)));
 
 
 

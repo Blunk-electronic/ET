@@ -92,7 +92,7 @@ package body et_schematic_ops_submodules is
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
-			to_string (position => position) &
+			to_string (position) &
 			 ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
@@ -609,7 +609,7 @@ package body et_schematic_ops_submodules is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log (text => "strand " & to_string (position => element (strand_cursor).position),
+						log (text => "strand " & to_string (element (strand_cursor).position),
 							level => log_threshold + 1);
 
 						update_element (
@@ -642,7 +642,7 @@ package body et_schematic_ops_submodules is
 
 	begin -- insert_port
 		log (text => "inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" &
-			 to_string (position => position) & " ...", level => log_threshold);
+			 to_string (position) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (
@@ -925,7 +925,7 @@ package body et_schematic_ops_submodules is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log (text => "strand " & to_string (position => element (strand_cursor).position),
+						log (text => "strand " & to_string (element (strand_cursor).position),
 							level => log_threshold + 1);
 
 						update_element (
@@ -1512,7 +1512,7 @@ package body et_schematic_ops_submodules is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log (text => "strand " & to_string (position => element (strand_cursor).position),
+						log (text => "strand " & to_string (element (strand_cursor).position),
 							level => log_threshold + 1);
 
 						-- Iterate in segments of strand. If point sits on any segment
@@ -1884,7 +1884,7 @@ package body et_schematic_ops_submodules is
 							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
 
 							log_indentation_up;
-							log (text => "strand " & to_string (position => element (strand_cursor).position),
+							log (text => "strand " & to_string (element (strand_cursor).position),
 								level => log_threshold + 3);
 
 							update_element (
@@ -2014,7 +2014,7 @@ package body et_schematic_ops_submodules is
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
 
-		log (text => " at " & to_string (position => position) &
+		log (text => " at " & to_string (position) &
 			to_submodule_size (size),
 			level => log_threshold);
 
@@ -2128,7 +2128,7 @@ package body et_schematic_ops_submodules is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log (text => "strand " & to_string (position => element (strand_cursor).position),
+						log (text => "strand " & to_string (element (strand_cursor).position),
 							level => log_threshold + 1);
 
 						update_element (
@@ -2802,7 +2802,7 @@ package body et_schematic_ops_submodules is
 		log (text => "module " & to_string (module_name) &
 			 " copy submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
 			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
-			" at" & et_schematic_coordinates.to_string (position => destination), level => log_threshold);
+			" at" & et_schematic_coordinates.to_string (destination), level => log_threshold);
 
 
 		log_indentation_up;
@@ -3807,7 +3807,7 @@ package body et_schematic_ops_submodules is
 
 
 					begin
-						log (text => "strand " & to_string (position => element (strand_cursor).position), level => log_threshold + 2);
+						log (text => "strand " & to_string (element (strand_cursor).position), level => log_threshold + 2);
 						log_indentation_up;
 
 						query_element (

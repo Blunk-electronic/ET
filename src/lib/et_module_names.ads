@@ -41,6 +41,8 @@ with ada.strings.bounded;       use ada.strings.bounded;
 
 
 
+with et_bounded_string_helpers;
+
 package et_module_names is
 
 
@@ -51,8 +53,8 @@ package et_module_names is
 
 	type type_module_file_name is new pac_module_file_name.bounded_string;
 
-	function to_module_file_name (name : in string) return type_module_file_name;
-	function to_string (name : in type_module_file_name) return string;
+	function to_module_file_name is new et_bounded_string_helpers.from_string (pac_module_file_name, to_type   => type_module_file_name);
+	function to_string           is new et_bounded_string_helpers.to_string   (pac_module_file_name, from_type => type_module_file_name);
 
 
 
@@ -76,8 +78,8 @@ package et_module_names is
 
 	type type_module_name is new pac_module_name.bounded_string;
 
-	function to_string (name : in type_module_name) return string;
-	function to_module_name (name : in string) return type_module_name;
+	function to_string      is new et_bounded_string_helpers.to_string   (pac_module_name, from_type => type_module_name);
+	function to_module_name is new et_bounded_string_helpers.from_string (pac_module_name, to_type   => type_module_name);
 
 
 

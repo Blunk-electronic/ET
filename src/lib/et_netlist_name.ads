@@ -42,6 +42,8 @@
 with ada.strings.bounded;       use ada.strings.bounded;
 
 
+with et_bounded_string_helpers;
+
 package et_netlist_name is
 
 
@@ -54,9 +56,9 @@ package et_netlist_name is
 
 	extension_netlist : constant string := "net";
 
-	function to_string (name : in type_netlist_file_name) return string;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_netlist_file_name, from_type => type_netlist_file_name);
 
-	function to_file_name (name : in string) return type_netlist_file_name;
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_netlist_file_name, to_type   => type_netlist_file_name);
 
 
 end et_netlist_name;

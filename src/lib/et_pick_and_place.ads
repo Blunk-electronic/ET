@@ -48,6 +48,8 @@ with et_logging;				use et_logging;
 with et_board_coordinates;		use et_board_coordinates;
 with et_device_name;			use et_device_name;
 
+with et_bounded_string_helpers;
+
 package et_pick_and_place is
 
 
@@ -59,8 +61,8 @@ package et_pick_and_place is
 
 	extension_pnp : constant string := "pnp";
 
-	function to_string (name : in type_pnp_file_name) return string;
-	function to_file_name (name : in string) return type_pnp_file_name;
+	function to_string    is new et_bounded_string_helpers.to_string   (pac_pnp_file_name, from_type => type_pnp_file_name);
+	function to_file_name is new et_bounded_string_helpers.from_string (pac_pnp_file_name, to_type   => type_pnp_file_name);
 
 	type type_device is record
 		position : et_board_coordinates.type_package_position; -- x/y, rotation and face

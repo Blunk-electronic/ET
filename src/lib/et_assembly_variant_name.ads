@@ -41,6 +41,8 @@
 
 with ada.strings.bounded;	use ada.strings.bounded;
 
+with et_bounded_string_helpers;
+
 
 package et_assembly_variant_name is
 
@@ -74,15 +76,10 @@ package et_assembly_variant_name is
 		return boolean;
 
 
-	function to_variant (
-		variant : in type_assembly_variant_name)
-		return string;
-	-- CS rename to to_string
+	function to_variant is new et_bounded_string_helpers.to_string (pac_assembly_variant_name, from_type => type_assembly_variant_name);
 
-
-	function to_variant (
-		variant : in string)
-		return type_assembly_variant_name;
+	-- CS lenght and character check
+	function to_variant is new et_bounded_string_helpers.from_string (pac_assembly_variant_name, to_type => type_assembly_variant_name);
 
 
 

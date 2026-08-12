@@ -47,6 +47,8 @@ with et_module_names;			use et_module_names;
 with et_project_name;			use et_project_name;
 
 
+with et_bounded_string_helpers;
+
 package et_project is
 
 
@@ -103,9 +105,9 @@ package et_project is
 
 	type type_project_path is new pac_project_path.bounded_string;
 
-	function to_string (path : in type_project_path) return string;
+	function to_string       is new et_bounded_string_helpers.to_string   (pac_project_path, from_type => type_project_path);
 
-	function to_project_path (path : in string) return type_project_path;
+	function to_project_path is new et_bounded_string_helpers.from_string (pac_project_path, to_type   => type_project_path);
 
 
 

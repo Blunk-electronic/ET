@@ -50,20 +50,6 @@ package body et_assembly_variant_name is
 
 
 
-	function to_variant (
-		variant : in type_assembly_variant_name)
-		return string
-	is (pac_assembly_variant_name.to_string (pac_assembly_variant_name.bounded_string (variant)));
-
-
-
-	function to_variant (
-		variant : in string)
-		return type_assembly_variant_name
-	is begin
-		-- CS lenght and character check
-		return type_assembly_variant_name (pac_assembly_variant_name.to_bounded_string (variant));
-	end to_variant;
 
 
 
