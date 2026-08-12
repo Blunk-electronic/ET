@@ -2972,7 +2972,7 @@ package body et_conventions is
 		-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
 
 		-- This flag goes false once an error has been detected.
-		result : boolean := true;
+		okay : boolean := true;
 
 		use et_string_processing;
 
@@ -2982,19 +2982,19 @@ package body et_conventions is
 		procedure value_invalid is begin
 			log (SEVERITY_WARNING, "value " & enclose_in_quotes (to_string (value)) &
 				" invalid ! Check unit of measurement !");
-			result := false;
+			okay := false;
 		end value_invalid;
 
 		procedure no_value is begin
 			log (SEVERITY_WARNING, "no value found !");
-			result := false;
+			okay := false;
 		end no_value;
 
 
 
 		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
 		-- Tests if the first character is a digit.
-		-- Sets the result to false on first error and exits prematurely.
+		-- Sets okay to false on first error and exits prematurely.
 		procedure unit_of_measurement_valid is
 			place		: positive := 1; -- the pointer to the character being examined
 			char		: character; -- the character being examined
@@ -3007,7 +3007,7 @@ package body et_conventions is
 
 			-- Sets unit_ok flag true if the given abbreviation starts at position "place".
 			-- If so, sets "place" to the position of the last character of the unit.
-			-- If at "place" unit not found, set result to false.
+			-- If at "place" unit not found, set okay to false.
 			function valid (unit : in type_unit_of_measurement)
 				return boolean
 			is
@@ -3031,12 +3031,12 @@ package body et_conventions is
 
 		begin -- unit_of_measurement_valid
 			-- We process one character after another in the given value.
-			while place <= value_length and result = true loop
+			while place <= value_length and okay loop
 				char := element (value, place);
 
 				-- Test if first character is a digit.
 				if place = 1 and not is_digit (char) then
-					value_invalid; -- sets result to false
+					value_invalid; -- sets okay to false
 					exit; -- no need to proceed. cancel immediately
 				end if;
 
@@ -3055,7 +3055,7 @@ package body et_conventions is
 
 							when BATTERY =>
 								if not valid (VOLT) then
-									result := false;
+									okay := false;
 								end if;
 
 							when CAPACITOR =>
@@ -3063,22 +3063,25 @@ package body et_conventions is
 									or valid (NANOFARAD)
 									or valid (MICROFARAD)
 									or valid (MILLIFARAD)
-									or valid (FARAD)) then
-										result := false;
+									or valid (FARAD))
+								then
+									okay := false;
 								end if;
 
 							when FUSE =>
 								if not (valid (MILLIAMPERE)
-									or valid (AMPERE)) then
-										result := false;
+									or valid (AMPERE))
+								then
+									okay := false;
 								end if;
 
 							when INDUCTOR =>
 								if not (valid (NANOHENRY)
 									or valid (MICROHENRY)
 									or valid (MILLIHENRY)
-									or valid (HENRY)) then
-										result := false;
+									or valid (HENRY))
+								then
+									okay := false;
 								end if;
 
 							when RESISTOR | RESISTOR_NETWORK =>
@@ -3086,15 +3089,17 @@ package body et_conventions is
 									or valid (OHM)
 									or valid (KILOOHM)
 									or valid (MEGAOHM)
-									or valid (GIGAOHM)) then
-										result := false;
+									or valid (GIGAOHM))
+								then
+									okay := false;
 								end if;
 
 							when QUARTZ =>
 								if not (valid (KILOHERTZ)
 									or valid (MEGAHERTZ)
-									or valid (GIGAHERTZ)) then
-										result := false;
+									or valid (GIGAHERTZ))
+								then
+									okay := false;
 								end if;
 
 							when others => null;
@@ -3106,7 +3111,7 @@ package body et_conventions is
 					-- Unit has been found valid.
 					-- Expect ONLY trailing digits after the unit of measurement.
 					if not is_digit (char) then
-						value_invalid; -- sets result false
+						value_invalid; -- sets okay false
 						exit; -- no need to proceed. cancel immediately
 					end if;
 				end if;
@@ -3118,7 +3123,7 @@ package body et_conventions is
 			-- Now all characters have been tested.
 			-- If no valid unit of measurement found, set result false.
 			if unit_ok then
-				result := true;
+				okay := true;
 			else
 				value_invalid; -- sets result false
 			end if;
@@ -3144,7 +3149,7 @@ package body et_conventions is
 						unit_of_measurement_valid; -- sets result false on error
 
 					when others =>
-						result := true;
+						okay := true;
 				end case;
 
 			else
@@ -3157,7 +3162,7 @@ package body et_conventions is
 
 					-- no value required for:
 					when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
-						result := true;
+						okay := true;
 
 					-- value essential for all other categories:
 					when others =>
@@ -3167,10 +3172,10 @@ package body et_conventions is
 			end if;
 
 		else
-			result := true;
+			okay := true;
 		end if;
 
-		return result;
+		return okay;
 
 	exception
 		when others =>
