@@ -4190,14 +4190,76 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 
 	procedure paste_units_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;									 
+		offset			: in type_object_position_relative;
 		log_threshold	: in type_log_level)
 	is
 
+		procedure do_paste is
+			use et_module_clipboard;
+
+			
+			device_cursor : pac_devices_electrical.cursor :=
+				clipboard.devices.first;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_electrical)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+				
+				
+				procedure query_unit (
+					unit_name	: in type_unit_name;
+					unit		: in type_unit)
+				is
+					pragma unreferenced (unit);
+					use et_module_clipboard.devices_electrical;
+				begin
+					log (text => "unit " & to_string (unit_name),
+						level => log_threshold + 2);
+					
+					log_indentation_up;
+					
+					paste_unit_from_clipboard (
+						module_cursor, device_cursor, 
+						unit_cursor, offset, log_threshold + 3);
+
+					log_indentation_down;
+				end query_unit;
+				
+				
+			begin
+				log (text => "device " & to_string (device_name),
+					level => log_threshold + 1);
+					
+				log_indentation_up;
+				
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop					
+					query_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_device;
+			
+			
+		begin
+			-- Iterate through the devices in the clipboard:
+			while has_element (device_cursor) loop
+				query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end do_paste;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " paste units from clipboard. Group offset: " & to_string (offset),
@@ -4205,7 +4267,7 @@ package body et_schematic_ops_units is
 
 		log_indentation_up;
 		
-		-- CS
+		do_paste;
 
 		log_indentation_down;
 	end paste_units_from_clipboard;
