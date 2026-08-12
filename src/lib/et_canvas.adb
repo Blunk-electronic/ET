@@ -1881,7 +1881,7 @@ package body et_canvas is
 
 		-- The width of the text view shall be wide enough
 		-- to fit the greatest numbers:
-		pos_field_width_min : constant gint := 92;
+		pos_field_width_min : constant gint := 96;
 	begin
 		-- CS To disable focus use
 		-- procedure Set_Focus_On_Click
