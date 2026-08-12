@@ -53,7 +53,7 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 with et_pcb_sides;						use et_pcb_sides;
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
-with et_logging;						use et_logging;
+with et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;

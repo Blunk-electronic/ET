@@ -78,7 +78,6 @@ with et_alignment;						use et_alignment;
 
 package body et_module_read_device_non_electrical is
 
-	use pac_generic_modules;
 
 
 

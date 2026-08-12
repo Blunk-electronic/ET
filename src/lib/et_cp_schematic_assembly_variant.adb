@@ -58,7 +58,6 @@ with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 
 package body et_cp_schematic_assembly_variant is
 
-	use pac_generic_modules;
 
 
 

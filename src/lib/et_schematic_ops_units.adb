@@ -96,7 +96,6 @@ package body et_schematic_ops_units is
 	use pac_unit_name;
 	use pac_text_schematic;
 
-	use et_net_names;
 
 
 

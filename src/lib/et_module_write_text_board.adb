@@ -75,7 +75,6 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 
 package body et_module_write_text_board is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	-- use pac_text_board_vectorized;
 

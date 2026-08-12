@@ -61,7 +61,6 @@ with et_file_write;					use et_file_write;
 
 package body et_module_write_pcb_layer_stack is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 	use package_layers;

@@ -48,20 +48,20 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_sheets;							use et_sheets;
 
-with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_symbol_model;					use et_symbol_model;
 with et_terminal_name;					use et_terminal_name;
 with et_device_model;					use et_device_model;
-with et_device_name;					use et_device_name;
-with et_device_library;					use et_device_library;
+with et_device_name;
+with et_device_library;
 with et_device_library.units;			use et_device_library.units;
 with et_device_property_level;			use et_device_property_level;
 with et_unit_name;						use et_unit_name;
-with et_units;							use et_units;
+with et_units;
 with et_symbol_ports;					use et_symbol_ports;
-with et_logging;						use et_logging;
+with et_logging;
 
 
 package et_devices_electrical.units is

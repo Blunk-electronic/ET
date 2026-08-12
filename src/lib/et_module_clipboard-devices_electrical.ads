@@ -40,7 +40,7 @@
 --
 
 
-with et_module;						use et_module;
+with et_module;
 
 with et_devices_electrical;			use et_devices_electrical;
 with et_units;						use et_units;

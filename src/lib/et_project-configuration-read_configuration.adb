@@ -44,7 +44,6 @@ procedure read_configuration (
 	project_name	: in type_project_name; -- blood_sample_analyzer
 	log_threshold	: in type_log_level)
 is
-	use et_string_processing;
 	use ada.directories;
 
 	-- compose the name of the project file to read like blood_sample_analyzer.prj

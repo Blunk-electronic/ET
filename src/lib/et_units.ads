@@ -398,7 +398,6 @@ package et_units is
 
 
 
-	use et_port_names;
 
 	-- When units are dragged about the sheet then connected
 	-- net segments must be dragged along.

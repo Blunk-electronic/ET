@@ -68,7 +68,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_schematic_submodule is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

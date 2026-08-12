@@ -70,7 +70,6 @@ is
 	use et_modes.schematic;
 
 
-	use et_package_variant_name;
 
 	use pac_device_models;
 	device_cursor_lib : pac_device_models.cursor; -- points to the device in the library

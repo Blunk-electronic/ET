@@ -59,7 +59,6 @@ with et_time;						use et_time;
 
 package body et_module_read_meta is
 
-	use pac_generic_modules;
 
 
 

@@ -55,9 +55,7 @@ with et_assembly_variant_name;	use et_assembly_variant_name;
 
 package et_assembly_variants is
 
-	use et_module_instance;
 
-	use et_assembly_variant_name;
 
 
 

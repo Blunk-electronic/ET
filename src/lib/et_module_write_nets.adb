@@ -78,9 +78,7 @@ with et_file_write;					use et_file_write;
 
 package body et_module_write_nets is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
-	use et_net_names;
 
 
 	procedure write_nets (

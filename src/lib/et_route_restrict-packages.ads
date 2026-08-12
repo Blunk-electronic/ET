@@ -42,7 +42,6 @@ with et_pcb_sides;				use et_pcb_sides;
 
 package et_route_restrict.packages is
 
-	use pac_polygons;
 
 
 	type type_one_side is record

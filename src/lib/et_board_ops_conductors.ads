@@ -71,7 +71,6 @@ package et_board_ops_conductors is
 
 	use pac_generic_modules;
 	use pac_text_board_vectorized;
-	use et_net_names;
 	use pac_grid;
 
 

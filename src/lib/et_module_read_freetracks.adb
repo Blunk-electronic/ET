@@ -56,7 +56,6 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 package body et_module_read_freetracks is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 	track_line : type_conductor_line;

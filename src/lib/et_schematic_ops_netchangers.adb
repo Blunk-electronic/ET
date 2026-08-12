@@ -69,7 +69,6 @@ with et_commit;
 package body et_schematic_ops_netchangers is
 
 
-	use et_net_names;
 	use pac_netchangers;
 
 

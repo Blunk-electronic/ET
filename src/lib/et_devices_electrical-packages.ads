@@ -48,7 +48,7 @@ with et_board_coordinates;				use et_board_coordinates;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 
-with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 with et_silkscreen;						use et_silkscreen;
@@ -66,12 +66,12 @@ with et_stencil;						use et_stencil;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 
-with et_device_purpose;					use et_device_purpose;
-with et_device_value;					use et_device_value;
+with et_device_purpose;
+with et_device_value;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
-with et_device_partcode;				use et_device_partcode;
-with et_package_variant;				use et_package_variant;
+with et_device_partcode;
+with et_package_variant;
 with et_terminals;						use et_terminals;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;

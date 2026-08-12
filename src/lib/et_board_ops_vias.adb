@@ -58,7 +58,6 @@ with et_commit;
 package body et_board_ops_vias is
 
 	use pac_nets;
-	use et_net_names;
 	use pac_vias;
 
 
