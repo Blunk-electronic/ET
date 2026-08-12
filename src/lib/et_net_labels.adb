@@ -61,7 +61,7 @@ package body et_net_labels is
 	function is_proposed (
 		label : in type_net_label_base)
 		return boolean
-	is (boolean (is_proposed (label.status)));
+	is (is_proposed (label.status));
 
 
 
@@ -83,7 +83,7 @@ package body et_net_labels is
 	function is_selected (
 		label : in type_net_label_base)
 		return boolean
-	is (boolean (is_selected (label.status)));
+	is (is_selected (label.status));
 
 
 
@@ -182,7 +182,7 @@ package body et_net_labels is
 	function is_moving (
 		label : in type_net_label)
 		return boolean
-	is (boolean (is_moving (label.status)));
+	is (is_moving (label.status));
 
 
 

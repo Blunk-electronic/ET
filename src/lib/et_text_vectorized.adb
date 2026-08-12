@@ -236,7 +236,7 @@ package body et_text_vectorized is
 		function is_empty (
 			text : in type_text_fab_with_content)
 			return boolean
-		is (boolean (is_empty (text.content)));
+		is (is_empty (text.content));
 
 
 

@@ -119,14 +119,14 @@ package body et_pcb_placeholders.conductor is
 	function is_selected (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
-	is (boolean (is_selected (element (placeholder))));
+	is (is_selected (element (placeholder)));
 
 
 
 	function is_proposed (
 		placeholder : in pac_placeholders_conductor.cursor)
 		return boolean
-	is (boolean (is_proposed (element (placeholder))));
+	is (is_proposed (element (placeholder)));
 
 
 

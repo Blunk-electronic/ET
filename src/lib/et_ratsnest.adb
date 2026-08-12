@@ -49,14 +49,14 @@ package body et_ratsnest is
 	function is_proposed (
 		wire : in pac_airwires.cursor)
 		return boolean
-	is (boolean (is_proposed (element (wire))));
+	is (is_proposed (element (wire)));
 
 
 
 	function is_selected (
 		wire : in pac_airwires.cursor)
 		return boolean
-	is (boolean (is_selected (element (wire))));
+	is (is_selected (element (wire)));
 
 
 
