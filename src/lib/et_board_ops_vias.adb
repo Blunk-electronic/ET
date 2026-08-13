@@ -59,7 +59,6 @@ package body et_board_ops_vias is
 
 	use pac_nets;
 	use et_net_names;
-	use pac_vias;
 
 
 
@@ -123,6 +122,7 @@ package body et_board_ops_vias is
 				name	: in type_net_name;
 				net		: in type_net)
 			is
+				use pac_vias;
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 
@@ -784,6 +784,7 @@ package body et_board_ops_vias is
 		via				: in type_via)
 		return type_net_name
 	is
+		use pac_vias;
 		result : type_net_name;
 
 		module : type_generic_module renames element (module_cursor);
