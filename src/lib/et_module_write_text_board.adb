@@ -60,7 +60,7 @@ with et_alignment;					use et_alignment;
 
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+with et_pcb_placeholders.non_conductor;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 

@@ -77,6 +77,7 @@ package body et_cp_board_text is
 
 
 
+
 	procedure place_text (
 		module			: in pac_generic_modules.cursor;
 		cmd			: in out type_single_cmd;

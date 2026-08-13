@@ -48,7 +48,7 @@ with et_module_names;				use et_module_names;
 with et_module;						use et_module;
 with et_board_geometry;
 
-with et_board_holes;				use et_board_holes;
+with et_board_holes;
 
 with et_file_sections;				use et_file_sections;
 with et_file_write;					use et_file_write;

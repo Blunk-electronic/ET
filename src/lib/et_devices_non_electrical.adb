@@ -45,7 +45,7 @@ with et_contour_to_polygon;
 with et_stopmask.packages;
 with et_silkscreen.packages;
 with et_assy_doc.packages;
-with et_logging;					use et_logging;
+with et_logging;
 with et_string_processing;			use et_string_processing;
 
 

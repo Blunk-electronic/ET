@@ -65,7 +65,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
 
-with et_device_appearance;			use et_device_appearance;
+with et_device_appearance;
 with et_device_prefix;
 with et_board_holes;				use et_board_holes;
 with et_axes;						use et_axes;
