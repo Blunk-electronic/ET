@@ -41,7 +41,8 @@
 
 
 with et_module;
-
+with et_generic_modules;			use et_generic_modules;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_devices_electrical;			use et_devices_electrical;
 with et_units;						use et_units;
 with et_logging;					use et_logging;
@@ -63,6 +64,18 @@ package et_module_clipboard.devices_electrical is
 		unit_cursor		: in pac_units.cursor;
 		log_threshold	: in type_log_level);
 
+
+
+	-- This procedure pastes a device and its unit
+	-- from the clipboard into the given target module.
+	-- Arguments device_cursor and unit_cursor indicate
+	-- the device and unit in the clipboard.
+	procedure paste_unit_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
+		unit_cursor		: in pac_units.cursor;
+		offset			: in type_object_position_relative;
+		log_threshold	: in type_log_level);
 
 
 
