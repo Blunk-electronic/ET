@@ -189,6 +189,37 @@ package body et_schematic_ops_groups is
 
 
 
+	
+
+
+	function get_center_of_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_vector_model
+	is
+		result : type_vector_model;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get center of group (schematic)",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- CS
+		
+		log_indentation_down;
+
+		return result;
+	end get_center_of_group;
+	
+
+
+
+	
+
+	
+
+
 
 	procedure delete_group (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -618,6 +649,34 @@ package body et_schematic_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+		-- This procedure sets the group_reference_point
+		-- according to the mode specified by argument auto_center.
+		-- If auto_center is true then the geometrical center
+		-- of the group is assigned to group_reference_point.
+		-- If auto_center is false, then the given reference_point
+		-- is assigned to group_reference_point:
+		procedure set_group_reference_point is
+			center : type_vector_model;
+		begin
+			if auto_center then
+
+				-- Compute the center of the group:
+				center := get_center_of_group (module_cursor, log_threshold + 1);
+
+				log (text => "center " & to_string (center),
+					level => log_threshold + 1);
+					
+				-- Set x/y of group_reference_point by
+				-- the center of the group:
+				set_place (group_reference_point, center);
+
+			else
+				set_place (group_reference_point, reference_point);
+			end if;					
+		end set_group_reference_point;
+
+		
+		
 		procedure copy_units_to_clipboard is
 			use et_schematic_ops_units;
 		begin
@@ -639,20 +698,20 @@ package body et_schematic_ops_groups is
 				& " copy group to clipboard."
 				& " reference point: auto center.",
 				level => log_threshold);
-
-			-- CS set x/y of group_reference_point
+					   
 		else
 			log (text => "module " & to_string (module_cursor)
 				& " copy group to clipboard."
 				& " reference point: " & to_string (reference_point),
 				level => log_threshold);
 
-			set_place (group_reference_point, reference_point);
 		end if;
 
 		
 		log_indentation_up;
 
+		set_group_reference_point;
+		
 
 		-- Copy selected units to clipboard:
 		copy_units_to_clipboard;
