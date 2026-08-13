@@ -53,7 +53,7 @@ with et_module_names;				use et_module_names;
 with et_file_sections;				use et_file_sections;
 with et_keywords;					use et_keywords;
 
-with et_module_instance;			use et_module_instance;
+with et_module_instance;
 with et_device_name;				use et_device_name;
 with et_device_purpose;
 with et_device_value;
