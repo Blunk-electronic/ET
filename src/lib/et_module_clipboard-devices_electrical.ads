@@ -75,6 +75,8 @@ package et_module_clipboard.devices_electrical is
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		offset			: in type_object_position_relative;
+		-- target_device	: in type_device_name := device_name_default;
+		-- device_created	: out type_device_name;
 		log_threshold	: in type_log_level);
 
 	
