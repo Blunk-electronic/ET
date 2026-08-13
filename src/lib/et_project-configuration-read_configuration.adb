@@ -38,6 +38,9 @@
 
 
 
+with et_string_processing;			use et_string_processing;
+
+
 separate (et_project.configuration)
 
 procedure read_configuration (

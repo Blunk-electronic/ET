@@ -45,7 +45,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.directories;
 
-with et_string_processing;			use et_string_processing;
+with et_string_processing;
 
 with et_time;						use et_time;
 with et_system_info;
