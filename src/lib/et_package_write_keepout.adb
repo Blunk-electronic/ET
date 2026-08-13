@@ -60,7 +60,6 @@ package body et_package_write_keepout is
 	use et_board_geometry.pac_file_rw;
 
 	use pac_keepout_zones;
-	use pac_keepout_cutouts;
 
 
 
@@ -90,6 +89,8 @@ package body et_package_write_keepout is
 			section_mark (section_cutout_zone, FOOTER);
 		end write_cutout;
 
+
+		use pac_keepout_cutouts;
 
 
 	begin
