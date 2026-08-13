@@ -53,7 +53,6 @@ with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
-with et_conductor_text.boards;
 with et_conductor_segment;
 with ada.directories;
 with ada.strings;					use ada.strings;

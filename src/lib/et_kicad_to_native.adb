@@ -121,7 +121,6 @@ with et_silkscreen;					use et_silkscreen;
 with et_assy_doc;					use et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
-with et_schematic_text;
 with et_object_status;
 with et_devices_electrical;
 
