@@ -38,6 +38,10 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+with et_unit_name;						use et_unit_name;
+use et_unit_name.pac_unit_name;
+
+
 separate (et_schematic_ops_units)
 
 procedure copy_unit (

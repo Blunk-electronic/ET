@@ -56,7 +56,7 @@ with et_schematic_ops_groups;
 
 with et_units;					use et_units;
 
-with et_device_category;				use et_device_category;
+with et_device_category;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_device_library.packages;
 with et_devices_electrical.units;	use et_devices_electrical.units;
@@ -64,7 +64,7 @@ with et_devices_non_electrical;		use et_devices_non_electrical;
 
 with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops_groups;
-with et_conventions;				use et_conventions;
+with et_conventions;
 
 with et_modes.schematic;
 with et_undo_redo;
