@@ -51,8 +51,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_device_name is
 
-	use pac_device_prefix;
-
 
 	function to_string (index : in type_name_index)
 		return string
