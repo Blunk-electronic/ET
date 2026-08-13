@@ -69,8 +69,6 @@ with et_commit;
 
 package body et_board_ops_conductors is
 
-	use pac_nets;
-
 
 
 	function is_freetrack (
@@ -162,6 +160,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -751,6 +750,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 
 		procedure query_module (
@@ -1003,6 +1003,7 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use pac_conductor_lines;
 
 
@@ -1107,6 +1108,7 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1211,6 +1213,7 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1314,6 +1317,7 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_line_net
 	is
+		use pac_nets;
 		result : type_object_line_net;
 
 		use pac_conductor_lines;
@@ -1498,6 +1502,7 @@ package body et_board_ops_conductors is
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1832,6 +1837,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1987,6 +1993,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2098,6 +2105,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 
 		procedure query_module (
@@ -2206,6 +2214,7 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2312,6 +2321,7 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2403,6 +2413,7 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_arc_net
 	is
+		use pac_nets;
 		result : type_object_arc_net;
 
 		use pac_conductor_arcs;
@@ -2728,6 +2739,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2879,6 +2891,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -3056,6 +3069,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -3138,6 +3152,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use pac_contours;
 		use pac_segments;
 		use pac_route_solid;
@@ -3347,6 +3362,7 @@ package body et_board_ops_conductors is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3563,6 +3579,7 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 
 		procedure query_module (
@@ -3763,6 +3780,7 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_segment_net
 	is
+		use pac_nets;
 
 		result : type_object_segment_net;
 		-- Note: By default the fill style of the result is SOLID.
@@ -4128,6 +4146,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -4336,6 +4355,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -5870,6 +5890,7 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
+		use pac_nets;
 		use pac_objects;
 		result : pac_objects.list;
 
