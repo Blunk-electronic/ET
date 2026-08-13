@@ -459,7 +459,6 @@ package body et_canvas is
 				decrease_zoom_factor;
 				-- put_line (" zoom out");
 
-			when others => null;
 		end case;
 
 		update_zoom_display;

@@ -195,7 +195,6 @@ package body et_cp_board_silkscreen is
 							command_incomplete (cmd);
 					end case;
 
-				when others => null;
 			end case;
 		end draw_shape;
 
