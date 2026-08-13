@@ -60,11 +60,6 @@ package body et_package_write_stencil is
 	use pac_geometry_2;
 	use pac_file_rw;
 
-	use pac_stencil_lines;
-	use pac_stencil_arcs;
-	use pac_stencil_circles;
-	use pac_stencil_zones;
-
 
 
 	procedure write_stencil (
@@ -111,6 +106,12 @@ package body et_package_write_stencil is
 			section_mark (section_contours, FOOTER);
 			section_mark (section_zone, FOOTER);
 		end write_polygon;
+
+
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
+		use pac_stencil_zones;
 
 
 	begin
