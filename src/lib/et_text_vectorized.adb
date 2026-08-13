@@ -300,8 +300,10 @@ package body et_text_vectorized is
 
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
+			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
 			spacing : constant type_distance_positive :=
 				size * (0.25 + type_distance_positive (type_character_width'last));
+			pragma Warnings (On, "static fixed-point value is not a multiple of Small");
 
 
 			-- The scaling is done so that text height and width are

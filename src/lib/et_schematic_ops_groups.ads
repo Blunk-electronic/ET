@@ -86,6 +86,16 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the geometrical center of a group.
+	-- It iterates through all selected objects which
+	-- are on the sheet as given by group_reference_point:
+	function get_center_of_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_vector_model;
+	
+
+									 
 	-- This deletes all objects which are in the
 	-- current group. This affects all objects whose
 	-- "selected"-flag is set:

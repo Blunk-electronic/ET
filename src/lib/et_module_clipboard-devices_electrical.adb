@@ -148,10 +148,6 @@ package body et_module_clipboard.devices_electrical is
 
 
 
-
-
-
-
 	procedure paste_unit_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;

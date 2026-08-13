@@ -4201,7 +4201,6 @@ package body et_schematic_ops_units is
 		procedure do_paste is
 			use et_module_clipboard;
 
-
 			device_cursor : pac_devices_electrical.cursor :=
 				clipboard.devices.first;
 
@@ -4212,6 +4211,17 @@ package body et_schematic_ops_units is
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 
+				-- On copying a unit, a new device is created
+				-- indirectly. Here we store the name of the
+				-- newly created device. It is required in case
+				-- another unit is found that belongs to the
+				-- same device:
+				device_created : type_device_name;
+
+				-- Here we store the name of the last device
+				-- for which a unit has been copied:
+				device_last : type_device_name; -- assumes default
+
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
@@ -4219,15 +4229,65 @@ package body et_schematic_ops_units is
 				is
 					pragma unreferenced (unit);
 					use et_module_clipboard.devices_electrical;
+					
+					
+					procedure copy_in_same_device is begin
+						log (text => "copy unit into same device",
+							level => log_threshold + 3);
+
+						copy_unit (
+							module_cursor	=> module_cursor,
+							device_cursor	=> device_cursor,
+							unit_cursor		=> unit_cursor,
+							sheet			=> get_sheet (offset),
+							destination		=> get_place (offset),
+							target_device	=> device_created,
+							device_created	=> device_created,
+							log_threshold	=> log_threshold + 4);
+					
+					end copy_in_same_device;
+					
+					
+					procedure copy_in_new_device is begin
+						log (text => "copy unit in new device",
+							level => log_threshold + 3);
+
+						log_indentation_up;
+
+						copy_unit (
+							module_cursor	=> module_cursor,
+							device_cursor	=> device_cursor,
+							unit_cursor		=> unit_cursor,
+							sheet			=> get_sheet (offset),
+							destination		=> get_place (offset),
+							device_created	=> device_created,
+							log_threshold	=> log_threshold + 4);
+
+						log_indentation_down;
+					end copy_in_new_device;
+
+					
+					
 				begin
 					log (text => "unit " & to_string (unit_name),
 						level => log_threshold + 2);
 
 					log_indentation_up;
 
-					paste_unit_from_clipboard (
-						module_cursor, device_cursor,
-						unit_cursor, offset, log_threshold + 3);
+					-- If the last processed device is the same
+					-- as the current one, then no new device is
+					-- to be created but just the unit copied:
+					if device_last = device_name then
+						copy_in_same_device;
+					else
+						-- If a another device is being processed,
+						-- then copy the current unit in a new
+						-- device:
+						copy_in_new_device;
+					end if;
+
+					-- Backup the name of the last device:
+					device_last := device_name;
 
 					log_indentation_down;
 				end query_unit;
