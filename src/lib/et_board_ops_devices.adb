@@ -77,9 +77,6 @@ with et_commit;
 
 
 package body et_board_ops_devices is
-
-	use pac_devices_electrical;
-	use pac_devices_non_electrical;
 	use pac_nets;
 
 
@@ -91,7 +88,7 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_electrical)
 		return string
-	is (to_string (key (object.cursor)));
+	is (to_string (pac_devices_electrical.key (object.cursor)));
 
 
 
@@ -99,7 +96,7 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_electrical)
 		return type_device_name
-	is (key (object.cursor));
+	is (pac_devices_electrical.key (object.cursor));
 
 
 
@@ -167,6 +164,8 @@ package body et_board_ops_devices is
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -242,6 +241,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object_electrical
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : type_object_electrical;
 
 
@@ -306,6 +307,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -443,6 +446,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -575,6 +580,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -700,6 +707,8 @@ package body et_board_ops_devices is
 		device	: in type_device_name)
 		return boolean
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		device_found : boolean := false; -- to be returned
 
 		procedure query_devices (
@@ -734,6 +743,8 @@ package body et_board_ops_devices is
 		device	: in type_device_name) -- FD1
 		return pac_devices_non_electrical.cursor
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.cursor;
 
 		procedure query_devices (
@@ -865,14 +876,14 @@ package body et_board_ops_devices is
 	function get_device_name (
 		object	: in type_object_non_electrical)
 		return string
-	is (to_string (key (object.cursor)));
+	is (to_string (pac_devices_non_electrical.key (object.cursor)));
 
 
 
 	function get_device_name (
 		object	: in type_object_non_electrical)
 		return type_device_name
-	is (key (object.cursor));
+	is (pac_devices_non_electrical.key (object.cursor));
 
 
 
@@ -883,6 +894,8 @@ package body et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -934,6 +947,8 @@ package body et_board_ops_devices is
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1003,6 +1018,8 @@ package body et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1064,6 +1081,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.cursor
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.cursor;
 
 
@@ -1126,6 +1145,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object_non_electrical
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : type_object_non_electrical;
 
 
@@ -1188,6 +1209,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.map
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.map;
 
 
@@ -1363,6 +1386,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -1442,6 +1467,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -1504,6 +1531,8 @@ package body et_board_ops_devices is
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -1624,6 +1653,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -1740,6 +1771,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -1885,6 +1918,8 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -2014,7 +2049,10 @@ package body et_board_ops_devices is
 	function get_device_name (
 		placeholder	: in type_object_placeholder)
 		return type_device_name
-	is begin
+	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
+	begin
 		if has_element (placeholder.device_electrical) then
 			return get_device_name (placeholder.device_electrical);
 		else
@@ -2089,6 +2127,8 @@ package body et_board_ops_devices is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2200,6 +2240,8 @@ package body et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2283,6 +2325,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object_placeholder
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		result : type_object_placeholder;
 
 
@@ -2447,6 +2491,8 @@ package body et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3837,6 +3883,8 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_terminals.map
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
 		use pac_terminals;
 
 		-- To be returned:
