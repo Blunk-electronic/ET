@@ -182,7 +182,7 @@ package body et_cp_schematic is
 
 						when NOUN_SHEET =>
 							add_sheet (module_cursor, cmd, log_threshold + 1);
-							
+
 						when NOUN_SUBMODULE =>
 							add_submodule (module_cursor, cmd, log_threshold + 1);
 

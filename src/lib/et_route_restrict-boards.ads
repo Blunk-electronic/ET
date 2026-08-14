@@ -42,7 +42,6 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 package et_route_restrict.boards is
 
-	use pac_geometry_2;
 
 
 

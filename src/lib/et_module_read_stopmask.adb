@@ -56,7 +56,6 @@ with et_stopmask.board;				use et_stopmask.board;
 
 package body et_module_read_stopmask is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

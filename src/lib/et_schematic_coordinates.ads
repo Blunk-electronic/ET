@@ -105,8 +105,8 @@ package et_schematic_coordinates is
 	zero_position : constant type_object_position;
 
 
-		
-	
+
+
 
 	-- This function returns the given object position
 	-- as string formatted as follows:
@@ -124,16 +124,16 @@ package et_schematic_coordinates is
 		format		: in type_output_format := FORMAT_1)
 		return string;
 
-		
-		
+
+
 	-- Computes the distance from left to right.
 	-- Each component of left is subtracted from right:
 	function get_offset (
 		left, right : in type_object_position'class)
 		return type_object_position_relative;
 
-		
-		
+
+
 	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"
 	-- starting at a field given by "from" and returns
 	-- an object position:

@@ -77,9 +77,7 @@ with et_net_scope;					use et_net_scope;
 
 package body et_module_read_nets is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
-	use et_net_names;
 
 
 

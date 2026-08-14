@@ -1870,7 +1870,7 @@ package body et_net_strands is
 	function is_proposed (
 		strand : in type_strand)
 		return boolean
-	is (boolean (is_proposed (strand.status)));
+	is (is_proposed (strand.status));
 
 
 
@@ -1892,7 +1892,7 @@ package body et_net_strands is
 	function is_selected (
 		strand : in type_strand)
 		return boolean
-	is (boolean (is_selected (strand.status)));
+	is (is_selected (strand.status));
 
 
 
@@ -2252,8 +2252,8 @@ package body et_net_strands is
 		segment		: in pac_net_segments.cursor;
 		AB_end		: in type_start_end_point)
 		return boolean
-	is (boolean (not has_connected_segments (segment, AB_end, strand)
-		and not has_ports (segment, AB_end)));
+	is (not has_connected_segments (segment, AB_end, strand)
+		and not has_ports (segment, AB_end));
 
 
 

@@ -333,7 +333,6 @@ package et_netlists is
 
 
 
-	use et_assembly_variant_name;
 
 
 	-- As there are assembly variants, for each of them

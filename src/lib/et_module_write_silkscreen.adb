@@ -57,7 +57,6 @@ with et_file_sections;				use et_file_sections;
 
 package body et_module_write_silkscreen is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	use pac_file_rw;
 

@@ -49,7 +49,6 @@ with et_board_ops_material_pnp;			use et_board_ops_material_pnp;
 
 package body et_cp_board_material_pnp is
 
-	use pac_generic_modules;
 
 
 

@@ -57,7 +57,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_board_stopmask is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	use pac_contours;
 
@@ -194,7 +193,6 @@ package body et_cp_board_stopmask is
 							command_incomplete (cmd);
 					end case;
 
-				when others => null;
 			end case;
 		end draw_shape;
 

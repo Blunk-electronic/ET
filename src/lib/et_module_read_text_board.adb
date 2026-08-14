@@ -77,7 +77,6 @@ with et_file_sections;				use et_file_sections;
 
 package body et_module_read_text_board is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	use et_board_text.pac_text_board_vectorized;
 

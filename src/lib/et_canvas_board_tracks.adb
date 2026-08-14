@@ -71,7 +71,6 @@ with et_board_ops_conductors;			use et_board_ops_conductors;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 
 with et_nets;
-with et_net_names;
 with et_schematic_ops_nets;
 
 with et_display;						use et_display;

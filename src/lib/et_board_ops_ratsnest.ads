@@ -57,7 +57,6 @@ with et_logging;					use et_logging;
 package et_board_ops_ratsnest is
 
 	use pac_generic_modules;
-	use et_net_names;
 
 
 	-- Returns the start and end positions (x/y) of all track

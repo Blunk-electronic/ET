@@ -70,7 +70,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_nets is
 
 	use pac_generic_modules;
-	use et_net_names;
 
 
 

@@ -38,7 +38,7 @@
 --   to do:
 
 -- with ada.text_io;			use ada.text_io;
-with et_design_rules_board;		use et_design_rules_board;
+with et_design_rules_board;
 with et_directions;
 
 
@@ -163,7 +163,7 @@ package body et_conductor_segment.boards is
 	function is_proposed (
 		line : in pac_conductor_lines.cursor)
 		return boolean
-	is (boolean (is_proposed (element (line))));
+	is (is_proposed (element (line)));
 
 
 
@@ -171,7 +171,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		line : in pac_conductor_lines.cursor)
 		return boolean
-	is (boolean (is_selected (element (line))));
+	is (is_selected (element (line)));
 
 
 
@@ -333,7 +333,7 @@ package body et_conductor_segment.boards is
 	function is_proposed (
 		arc : in pac_conductor_arcs.cursor)
 		return boolean
-	is (boolean (is_proposed (element (arc))));
+	is (is_proposed (element (arc)));
 
 
 
@@ -341,7 +341,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		arc : in pac_conductor_arcs.cursor)
 		return boolean
-	is (boolean (is_selected (element (arc))));
+	is (is_selected (element (arc)));
 
 
 
@@ -466,7 +466,7 @@ package body et_conductor_segment.boards is
 	function is_proposed (
 		circle : in pac_conductor_circles.cursor)
 		return boolean
-	is (boolean (is_proposed (element (circle))));
+	is (is_proposed (element (circle)));
 
 
 
@@ -474,7 +474,7 @@ package body et_conductor_segment.boards is
 	function is_selected (
 		circle : in pac_conductor_circles.cursor)
 		return boolean
-	is (boolean (is_selected (element (circle))));
+	is (is_selected (element (circle)));
 
 
 

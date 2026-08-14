@@ -60,7 +60,6 @@ with et_file_sections;				use et_file_sections;
 
 package body et_module_write_grid is
 
-	use pac_generic_modules;
 
 
 

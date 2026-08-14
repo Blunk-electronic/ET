@@ -73,7 +73,6 @@ is
 	-- This is the total number of sheets as it is given in the sheet header.
 	-- A line like "Sheet 1 7" gives the sheet number (1), which is meaningless,
 	-- and the total number of sheet of the design (7).
-	use et_sheets;
 	sheet_count_total : type_sheet;
 
 	wild_simple_labels	: type_simple_labels.list;

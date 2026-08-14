@@ -52,8 +52,8 @@ with et_board_ops_netchangers;
 
 package body et_board_ops_ratsnest is
 
-
 	use pac_nets;
+
 
 
 	function get_track_ends (

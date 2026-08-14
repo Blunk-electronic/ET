@@ -42,7 +42,7 @@ with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.directories;
 
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 with et_system_info;
 
 with et_time;					use et_time;

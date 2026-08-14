@@ -60,7 +60,6 @@ with et_alignment;					use et_alignment;
 
 package body et_module_read_text_schematic is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

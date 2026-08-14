@@ -40,13 +40,13 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_terminal_name;					use et_terminal_name;
-with et_package_library;				use et_package_library;
+with et_package_library;
 with et_silkscreen.packages;
 with et_assy_doc.packages;
 with et_board_text;
 with et_stopmask.packages;
 with et_package_model;					use et_package_model;
-with et_logging;						use et_logging;
+with et_logging;
 with et_device_library.packages;	use et_device_library.packages;
 
 

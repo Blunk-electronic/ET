@@ -62,7 +62,6 @@ with et_netchangers.schematic;		use et_netchangers.schematic;
 
 package body et_module_read_netchangers is
 
-	use pac_generic_modules;
 
 
 	netchanger		: type_netchanger;

@@ -52,7 +52,7 @@ with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;		use ada.strings.fixed;
-with ada.directories;			use ada.directories;
+with ada.directories;
 with ada.exceptions;			use ada.exceptions;
 
 with et_board_holes;			use et_board_holes;

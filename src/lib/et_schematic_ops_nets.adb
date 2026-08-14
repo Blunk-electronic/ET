@@ -82,7 +82,6 @@ package body et_schematic_ops_nets is
 	use pac_net_segments;
 	use pac_strands;
 	use pac_nets;
-	use et_net_names;
 
 
 

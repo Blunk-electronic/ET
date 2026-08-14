@@ -38,10 +38,12 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_symbol_library;
-with et_device_appearance;				use et_device_appearance;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+with et_device_appearance;
+with et_device_placeholders.symbols;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;
+with et_unit_name;						use et_unit_name;
+use et_unit_name.pac_unit_name;
 
 
 separate (et_schematic_ops_units)

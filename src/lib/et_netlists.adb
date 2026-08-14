@@ -49,7 +49,6 @@
 with et_string_processing;		use et_string_processing;
 package body et_netlists is
 
-	use et_net_names;
 
 
 

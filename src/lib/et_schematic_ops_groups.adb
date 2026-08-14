@@ -682,12 +682,12 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "units",
 				 level => log_threshold + 1);
-  
+
 			log_indentation_up;
-  
+
 			copy_selected_units_to_clipboard (
 				module_cursor, log_threshold + 2);
-  
+
 			log_indentation_down;
 		end copy_units_to_clipboard;
 
@@ -707,7 +707,7 @@ package body et_schematic_ops_groups is
 
 		end if;
 
-		
+
 		log_indentation_up;
 
 		set_group_reference_point;
@@ -743,7 +743,7 @@ package body et_schematic_ops_groups is
 
 		offset : type_object_position_relative;
 
-		
+
 
 		procedure compute_offset is
 			destination : type_object_position;
@@ -756,8 +756,8 @@ package body et_schematic_ops_groups is
 				 level => log_threshold + 1);
 		end compute_offset;
 
-		
-		
+
+
 		procedure paste_units is
 			use et_schematic_ops_units;
 		begin
@@ -765,15 +765,15 @@ package body et_schematic_ops_groups is
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-  
+
 			paste_units_from_clipboard (
 				module_cursor, offset, log_threshold + 2);
-  
+
 			log_indentation_down;
 		end paste_units;
 
-			
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste group at sheet " & to_string (sheet)
@@ -792,14 +792,14 @@ package body et_schematic_ops_groups is
 
 		compute_offset;
 
-		
+
 		-- Transfer objects from clipboard to the
 		-- given module:
 		paste_units;
 
 		-- CS
 		-- nets, texts
-		
+
 
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset:

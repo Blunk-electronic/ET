@@ -60,7 +60,7 @@ with et_alignment;					use et_alignment;
 
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+with et_pcb_placeholders.non_conductor;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -75,7 +75,6 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 
 package body et_module_write_text_board is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	-- use pac_text_board_vectorized;
 

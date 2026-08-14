@@ -56,7 +56,7 @@ package et_sheets is
 
 
 	function to_string (
-		sheet : in type_sheet_relative) 
+		sheet : in type_sheet_relative)
 		return string;
 
 

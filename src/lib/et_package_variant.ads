@@ -63,7 +63,6 @@ package et_package_variant is
 	end record;
 
 
-	use et_package_variant_name;
 
 	package pac_package_variants is new ordered_maps (
 		key_type		=> type_package_variant_name, -- D, N

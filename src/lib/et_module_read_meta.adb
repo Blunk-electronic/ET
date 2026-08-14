@@ -53,13 +53,12 @@ with et_meta_device_libraries_board;		use et_meta_device_libraries_board;
 
 with et_meta;						use et_meta;
 
-with et_time;						use et_time;
+with et_time;
 
 
 
 package body et_module_read_meta is
 
-	use pac_generic_modules;
 
 
 

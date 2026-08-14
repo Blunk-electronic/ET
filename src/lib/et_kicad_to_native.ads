@@ -47,7 +47,6 @@ with et_logging;					use et_logging;
 
 package et_kicad_to_native is
 
-	use et_net_names;
 
 	procedure transpose (log_threshold : in type_log_level);
 	-- Transposes coordinates of schematic and layout elements:

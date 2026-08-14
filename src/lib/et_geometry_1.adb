@@ -1931,7 +1931,7 @@ package body et_geometry_1 is
 	function is_selected (
 		line : in type_line_fine)
 		return boolean
-	is (boolean (is_selected (line.status)));
+	is (is_selected (line.status));
 
 
 	procedure set_selected (
@@ -1951,7 +1951,7 @@ package body et_geometry_1 is
 	function is_proposed (
 		line : in type_line_fine)
 		return boolean
-	is (boolean (is_proposed (line.status)));
+	is (is_proposed (line.status));
 
 
 
@@ -1972,7 +1972,7 @@ package body et_geometry_1 is
 	function is_moving (
 		line : in type_line_fine)
 		return boolean
-	is (boolean (is_moving (line.status)));
+	is (is_moving (line.status));
 
 
 	procedure set_moving (

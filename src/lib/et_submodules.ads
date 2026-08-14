@@ -190,7 +190,6 @@ package et_submodules is
 
 
 
-	use et_net_names;
 	package pac_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
 		-- The net inside the submodule is here the port name:
@@ -254,7 +253,6 @@ package et_submodules is
 
 
 
-	use et_module_instance;
 
 	package pac_submodules is new ordered_maps (
 		key_type		=> type_module_instance_name, -- MOT_DRV_3

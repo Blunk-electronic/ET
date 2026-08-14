@@ -63,7 +63,6 @@ with et_design_rules_board;			use et_design_rules_board;
 
 package body et_module_read_net_classes is
 
-	use pac_generic_modules;
 
 
 	net_class		: et_net_class.type_net_class;

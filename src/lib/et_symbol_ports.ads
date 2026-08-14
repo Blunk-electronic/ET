@@ -131,7 +131,6 @@ package et_symbol_ports is
 	-- at the package (footprint):
 
 	use et_port_names;
-	use et_port_names;
 
 
 	package pac_symbol_ports is new indefinite_ordered_maps (

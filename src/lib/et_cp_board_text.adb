@@ -70,10 +70,10 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package body et_cp_board_text is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 	use et_board_text.pac_text_board_vectorized;
+
 
 
 

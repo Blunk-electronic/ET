@@ -447,7 +447,7 @@ package body et_geometry_2a.contours is
 	function is_selected (
 		contour : in type_contour)
 		return boolean
-	is (boolean (is_selected (contour.status)));
+	is (is_selected (contour.status));
 
 
 
@@ -459,7 +459,7 @@ package body et_geometry_2a.contours is
 	function is_circular (
 		contour : in type_contour)
 		return boolean
-	is (boolean (contour.contour.circular));
+	is (contour.contour.circular);
 
 
 

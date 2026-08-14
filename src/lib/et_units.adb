@@ -256,7 +256,7 @@ package body et_units is
 	function is_selected (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_selected (unit.status)));
+	is (is_selected (unit.status));
 
 
 
@@ -277,7 +277,7 @@ package body et_units is
 	function is_proposed (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_proposed (unit.status)));
+	is (is_proposed (unit.status));
 
 
 
@@ -299,7 +299,7 @@ package body et_units is
 	function is_moving (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_moving (unit.status)));
+	is (is_moving (unit.status));
 
 
 

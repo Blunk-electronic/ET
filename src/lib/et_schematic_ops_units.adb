@@ -93,10 +93,8 @@ package body et_schematic_ops_units is
 	use pac_devices_electrical;
 	use pac_units;
 
-	use pac_unit_name;
 	use pac_text_schematic;
 
-	use et_net_names;
 
 
 
@@ -4190,8 +4188,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 
 	procedure paste_units_from_clipboard (
@@ -4202,7 +4200,7 @@ package body et_schematic_ops_units is
 
 		procedure do_paste is
 			use et_module_clipboard;
-			
+
 			device_cursor : pac_devices_electrical.cursor :=
 				clipboard.devices.first;
 
@@ -4210,21 +4208,21 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
-				
+
 				-- On copying a unit, a new device is created
 				-- indirectly. Here we store the name of the
 				-- newly created device. It is required in case
 				-- another unit is found that belongs to the
 				-- same device:
 				device_created : type_device_name;
-				
+
 				-- Here we store the name of the last device
 				-- for which a unit has been copied:
 				device_last : type_device_name; -- assumes default
-				
-				
+
+
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in type_unit)
@@ -4273,9 +4271,9 @@ package body et_schematic_ops_units is
 				begin
 					log (text => "unit " & to_string (unit_name),
 						level => log_threshold + 2);
-					
+
 					log_indentation_up;
-					
+
 					-- If the last processed device is the same
 					-- as the current one, then no new device is
 					-- to be created but just the unit copied:
@@ -4287,30 +4285,30 @@ package body et_schematic_ops_units is
 						-- device:
 						copy_in_new_device;
 					end if;
-			
+
 					-- Backup the name of the last device:
 					device_last := device_name;
-					
+
 					log_indentation_down;
 				end query_unit;
-				
-				
+
+
 			begin
 				log (text => "device " & to_string (device_name),
 					level => log_threshold + 1);
-					
+
 				log_indentation_up;
-				
+
 				-- Iterate through the units:
-				while has_element (unit_cursor) loop					
+				while has_element (unit_cursor) loop
 					query_element (unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_device;
-			
-			
+
+
 		begin
 			-- Iterate through the devices in the clipboard:
 			while has_element (device_cursor) loop
@@ -4319,24 +4317,23 @@ package body et_schematic_ops_units is
 			end loop;
 		end do_paste;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " paste units from clipboard. Group offset: " & to_string (offset),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
 		do_paste;
 
 		log_indentation_down;
 	end paste_units_from_clipboard;
 
 
-	
 
 
-	
+
+
 
 
 

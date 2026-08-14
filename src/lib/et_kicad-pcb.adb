@@ -53,7 +53,6 @@ with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
-with et_conductor_text.boards;
 with et_conductor_segment;
 with ada.directories;
 with ada.strings;					use ada.strings;
@@ -66,7 +65,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
 
-with et_device_appearance;			use et_device_appearance;
+with et_device_appearance;
 with et_device_prefix;
 with et_board_holes;				use et_board_holes;
 with et_axes;						use et_axes;
