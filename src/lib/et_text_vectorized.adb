@@ -265,6 +265,7 @@ package body et_text_vectorized is
 		
 		
 		
+		
 		function compute_character_spacing (
 			text_size : in type_text_size)
 			return type_distance_positive
@@ -272,11 +273,13 @@ package body et_text_vectorized is
 			spacing : type_distance_positive;
 		begin
 			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
+			-- CS: Probably no longer required ?
 			
 			spacing := text_size * (0.25 + type_distance_positive (type_character_width'last));
 			
 			pragma Warnings (On, "static fixed-point value is not a multiple of Small");		
-		
+			-- CS: Probably no longer required ?
+			
 			return spacing;
 		end compute_character_spacing;
 		
@@ -583,7 +586,14 @@ package body et_text_vectorized is
 				use pac_offsetting;
 				p_scratch : type_polygon;
 				
-				package line_sorting is new pac_character_lines.generic_sorting;				
+				-- package line_sorting is new pac_character_lines.generic_sorting;
+				-- CS 1: If compiled with -gnata switch, then an assertion error is
+				-- raised here. I presume this is because no "<" operator is defined
+				-- for type_character_line. 
+				-- CS 2: Actually no sorting is required. So if we just spice the
+				-- lines (see below) instead of sorting, the error as described
+				-- above does not arise anymore.
+				
 			begin
 				scale_and_move_lines (
 					lines			=> text_lines, 
@@ -592,7 +602,10 @@ package body et_text_vectorized is
 					scale_factor	=> scale_factor_float,
 					spacing			=> spacing);
 					
-				line_sorting.merge (target => result.lines, source => text_lines);
+				-- line_sorting.merge (target => result.lines, source => text_lines);
+				-- CS: no sorting required. Instead we splice result.lines and text_lines:
+				splice (target => result.lines, before => pac_character_lines.no_element, 
+					source => text_lines);
 
 				if make_border then
 					border_vertices := to_list (char.border);
