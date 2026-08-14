@@ -176,7 +176,6 @@ package body et_kicad.schematic is
 	is
 		use et_device_placeholders.symbols;
 
-		use pac_unit_name;
 	begin
 		log_indentation_up;
 
@@ -271,7 +270,6 @@ package body et_kicad.schematic is
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
-		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -328,7 +326,6 @@ package body et_kicad.schematic is
 		d : positive;
 		digit : natural := 0;
 
-		use pac_device_prefix;
 	begin
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -961,7 +958,6 @@ package body et_kicad.schematic is
 	function to_power_flag (reference : in type_device_name)
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
-		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
 		if get_prefix (reference) = power_flag_prefix then
@@ -1044,7 +1040,6 @@ package body et_kicad.schematic is
 				use et_package_library;
 				use et_package_name;
 				use pac_package_variants;
-				use pac_package_model_file;
 				package_model_name : type_package_model_name;
 
 				-- This cursor points to the package variant being queryied.
@@ -4503,7 +4498,6 @@ package body et_kicad.schematic is
 			end ports_of_global_unit;
 
 
-			use pac_unit_name;
 
 
 		begin -- extract_ports

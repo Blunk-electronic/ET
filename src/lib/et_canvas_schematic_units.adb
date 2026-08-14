@@ -1821,7 +1821,6 @@ package body et_canvas_schematic_units is
 		-- This cursor points to the device model in the library:
 		device_cursor_lib : pac_device_models.cursor;
 
-		use pac_unit_name;
 		unit_name : type_unit_name;
 
 		-- If package variants are available, then
@@ -2323,7 +2322,6 @@ package body et_canvas_schematic_units is
 		use pac_unit_names;
 		unit_names : pac_unit_names.list;
 
-		use pac_unit_name;
 
 
 		procedure show_menu is
@@ -2553,7 +2551,6 @@ package body et_canvas_schematic_units is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		use pac_unit_name;
 
 
 		procedure finalize is begin

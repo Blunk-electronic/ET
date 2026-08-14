@@ -201,7 +201,6 @@ package body et_schematic_ops_units is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_unit_name;
 			device_cursor : pac_devices_electrical.cursor;
 
 
@@ -362,7 +361,6 @@ package body et_schematic_ops_units is
 
 
 		procedure query_in_use (c : in pac_unit_names.cursor) is
-			use pac_unit_name;
 			in_use : boolean := false;
 
 			-- Sets the in_use flag if given unit is already in use:
@@ -531,7 +529,6 @@ package body et_schematic_ops_units is
 		is
 			pragma unreferenced (device_name);
 			procedure query_unit (c : in pac_units.cursor) is
-				use pac_unit_name;
 				use pac_unit_names;
 			begin
 				-- If the unit is on the given sheet then append it to the result:
@@ -648,7 +645,6 @@ package body et_schematic_ops_units is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
-		use pac_unit_name;
 
 		-- In the course of this procedure the given list
 		-- of ports is processed. Each processed port will be
@@ -797,7 +793,6 @@ package body et_schematic_ops_units is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
-		use pac_unit_name;
 
 		-- In the course of this procedure the given list
 		-- of ports is processed. Each processed port will be
@@ -1034,7 +1029,6 @@ package body et_schematic_ops_units is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use et_port_names;
-					use pac_unit_name;
 				begin
 					while terminal_cursor /= pac_terminal_port_map.no_element loop
 						if	element (terminal_cursor).unit = unit_name and then
@@ -4230,7 +4224,6 @@ package body et_schematic_ops_units is
 					unit		: in type_unit)
 				is
 					pragma unreferenced (unit);
-					use et_module_clipboard.devices_electrical;
 					
 					
 					procedure copy_in_same_device is begin

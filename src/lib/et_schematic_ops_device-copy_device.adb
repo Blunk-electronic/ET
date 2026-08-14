@@ -73,7 +73,6 @@ is
 	use et_undo_redo;
 	use et_modes.schematic;
 
-	use pac_unit_name;
 
 	-- The pointer to the device in the schematic:
 	device_cursor_sch : pac_devices_electrical.cursor;
@@ -91,7 +90,6 @@ is
 		module		: in out type_generic_module)
 	is
 		pragma unreferenced (module_name);
-		use pac_unit_name;
 
 		-- CS:
 		-- There is a lot of code almost the same as with

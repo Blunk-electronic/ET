@@ -490,7 +490,6 @@ package body et_kicad_to_native is
 				use et_kicad.schematic.type_units_schematic;
 				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
 
-				use pac_unit_name;
 
 
 				procedure change_path (
@@ -2597,7 +2596,6 @@ package body et_kicad_to_native is
 			return type_device_model_name
 		is
 
-			use pac_device_model_file;
 			dir : type_device_model_name; -- ../../lbr
 			name : type_device_model_name; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
@@ -2635,7 +2633,6 @@ package body et_kicad_to_native is
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
-			use pac_package_model_file;
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
@@ -2690,7 +2687,6 @@ package body et_kicad_to_native is
 				unit_native_virtual	: et_units.type_unit (APPEARANCE_VIRTUAL);
 				unit_native_real	: et_units.type_unit (APPEARANCE_PCB);
 
-				use pac_unit_name;
 				use et_object_status;
 			begin
 				log_indentation_up;
@@ -3071,7 +3067,6 @@ package body et_kicad_to_native is
 					use pac_geometry_2;
 					use et_port_names;
 					use et_device_name;
-					use pac_unit_name;
 					use et_package_variant;
 
 					dist : pac_geometry_sch.type_distance_point_line;
@@ -3332,7 +3327,6 @@ package body et_kicad_to_native is
 			use et_kicad_libraries.type_device_libraries;
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
 
-			use pac_device_model_file;
 			component_library_name : type_device_model_name; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:
@@ -3652,7 +3646,6 @@ package body et_kicad_to_native is
 					end copy_ports;
 
 
-					use pac_unit_name;
 
 
 				begin -- copy_units

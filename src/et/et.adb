@@ -145,7 +145,6 @@ procedure et is
 
 	procedure get_commandline_arguments is
 		use ada.characters.latin_1;
-		use et_system_info;
 
 		arg : constant string := ("argument: -");
 		equals : character renames equals_sign;

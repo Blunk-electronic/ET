@@ -2717,7 +2717,6 @@ is
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
-			use pac_unit_name;
 		begin
 			if to_string (unit_name) /= f (line, 1) then
 				log (SEVERITY_ERROR, "invalid unit name '" & f (line, 1) & "'", console => true);

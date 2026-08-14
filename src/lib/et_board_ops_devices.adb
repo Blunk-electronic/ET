@@ -165,7 +165,6 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 	is
 		use pac_devices_electrical;
-		use pac_devices_non_electrical;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -242,7 +241,6 @@ package body et_board_ops_devices is
 		return type_object_electrical
 	is
 		use pac_devices_electrical;
-		use pac_devices_non_electrical;
 		result : type_object_electrical;
 
 
@@ -707,7 +705,6 @@ package body et_board_ops_devices is
 		device	: in type_device_name)
 		return boolean
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		device_found : boolean := false; -- to be returned
 
@@ -743,7 +740,6 @@ package body et_board_ops_devices is
 		device	: in type_device_name) -- FD1
 		return pac_devices_non_electrical.cursor
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.cursor;
 
@@ -894,7 +890,6 @@ package body et_board_ops_devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 
 		procedure query_module (
@@ -947,7 +942,6 @@ package body et_board_ops_devices is
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 
 		procedure query_module (
@@ -1018,7 +1012,6 @@ package body et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 
 		procedure query_module (
@@ -1081,7 +1074,6 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.cursor
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.cursor;
 
@@ -1145,7 +1137,6 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return type_object_non_electrical
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		result : type_object_non_electrical;
 
@@ -1209,7 +1200,6 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.map
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		result : pac_devices_non_electrical.map;
 
@@ -1221,7 +1211,6 @@ package body et_board_ops_devices is
 			pragma unreferenced (module_name);
 
 			procedure query_device (c : in pac_devices_non_electrical.cursor) is
-				use pac_device_prefix;
 				device	: type_device_non_electrical renames element (c);
 				name	: constant type_device_name := key (c); -- FD3
 			begin
@@ -1386,7 +1375,6 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
@@ -1467,7 +1455,6 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
@@ -1531,7 +1518,6 @@ package body et_board_ops_devices is
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level)
 	is
-		use pac_devices_electrical;
 		use pac_devices_non_electrical;
 		use et_commit;
 		use et_undo_redo;
@@ -3884,7 +3870,6 @@ package body et_board_ops_devices is
 		return pac_terminals.map
 	is
 		use pac_devices_electrical;
-		use pac_devices_non_electrical;
 		use pac_terminals;
 
 		-- To be returned:

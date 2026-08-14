@@ -51,7 +51,6 @@ package body et_net_ports_devices is
 		return boolean
 	is
 		use et_port_names;
-		use pac_unit_name;
 	begin
 		-- compare device names:
 		if left.device_name < right.device_name then
@@ -175,7 +174,6 @@ package body et_net_ports_devices is
 		port : in type_device_port)
 		return string
 	is
-		use pac_unit_name;
 	begin
 		return "device " & to_string (port.device_name)
 			& " unit " & to_string (port.unit_name)

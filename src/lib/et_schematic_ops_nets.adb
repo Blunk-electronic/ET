@@ -170,7 +170,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_units (unit_cursor : in pac_units.cursor) is
 					use pac_units;
-					use pac_unit_name;
 					unit_position : type_object_position;
 					ports : pac_symbol_ports.map;
 

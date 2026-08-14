@@ -68,7 +68,6 @@ package body et_device_name is
 		left, right : in type_device_name)
 		return boolean
 	is
-		use pac_device_prefix;
 	begin
 		if get_prefix (left) = get_prefix (right) then
 			return true;
@@ -106,7 +105,6 @@ package body et_device_name is
 		d : positive;
 		digit : natural := 0;
 
-		use pac_device_prefix;
 
 
 	begin -- to_device_name
@@ -176,7 +174,6 @@ package body et_device_name is
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
 		result : boolean := false;
-		use pac_device_prefix;
 	begin
 		-- First we compare the prefix.
 		-- Example: If left is C201 and right is R4 then the result is true as C comes before R.
@@ -207,7 +204,6 @@ package body et_device_name is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
-		use pac_device_prefix;
 	begin
 		-- First we compare the prefix. If prefixes are equal, we compare the id.
 		-- If either of them does not match, the result is set false.

@@ -127,8 +127,6 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_lines;
-		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 
 		procedure query_module (
@@ -200,8 +198,6 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_lines;
-		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -286,8 +282,6 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_lines;
-		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -532,8 +526,6 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is
 		use pac_stencil_lines;
-		use pac_stencil_arcs;
-		use pac_stencil_circles;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -691,9 +683,7 @@ package body et_board_ops_stencil is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 
 		procedure query_module (
@@ -765,9 +755,7 @@ package body et_board_ops_stencil is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -852,9 +840,7 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2417,7 +2403,6 @@ package body et_board_ops_stencil is
 	is
 		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move stencil object "
@@ -2495,7 +2480,6 @@ package body et_board_ops_stencil is
 	is
 		use pac_stencil_lines;
 		use pac_stencil_arcs;
-		use pac_stencil_circles;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete stencil object",
