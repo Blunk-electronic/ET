@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 with ada.containers.doubly_linked_lists;
 with ada.directories;			use ada.directories;
 with ada.text_io;				use ada.text_io;
@@ -2378,6 +2378,7 @@ package body et_conventions is
 		log_threshold	: in type_log_level)
 	is
 		use et_system_info;
+		use et_string_processing;
 		use et_schematic_geometry.pac_geometry_2;
 
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
