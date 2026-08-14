@@ -133,6 +133,13 @@ package et_kicad_v6.sexp is
 	-- Constraint_Error if node is not a list or index is out of range:
 	function get_child (node : in type_node; index : in positive) return type_node;
 
+	-- Same as get_child, but returns the underlying access value
+	-- rather than a by-value copy -- for callers that need to keep
+	-- a verbatim reference to an unparsed sub-tree (see
+	-- et_kicad_v6.schematic's opaque symbol-graphics storage)
+	-- without paying for/needing a deep copy:
+	function get_child_access (node : in type_node; index : in positive) return type_node_access;
+
 	-- The "tag" of a list: the text of its first child, if that
 	-- child is an unquoted atom -- e.g. head of (sheet (at ...) ...)
 	-- is "sheet". Returns "" if node is not a non-empty list, or if

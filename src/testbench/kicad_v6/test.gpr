@@ -1,3 +1,5 @@
+with "gtkada.gpr";
+
 project test is
 
 	for exec_dir use ".";

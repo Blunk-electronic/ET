@@ -279,6 +279,12 @@ package body et_kicad_v6.sexp is
 	end get_child;
 
 
+	function get_child_access (node : in type_node; index : in positive) return type_node_access is
+	begin
+		return node.children (index);
+	end get_child_access;
+
+
 	function head (node : in type_node) return string is
 	begin
 		if node.kind = SEXP_LIST and then natural (node.children.length) > 0 then

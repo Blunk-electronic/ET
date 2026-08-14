@@ -10,6 +10,8 @@ with ada.command_line;			use ada.command_line;
 
 with et_kicad_v6;
 with et_kicad_v6.sexp;			use et_kicad_v6.sexp;
+with et_kicad_v6.schematic;	use et_kicad_v6.schematic;
+with et_logging;				use et_logging;
 
 procedure test is
 
@@ -224,6 +226,96 @@ procedure test is
 	end test_parse_file_pg_12;
 
 
+	----------------------------------------------------------------
+	-- 11. et_kicad_v6.schematic.read_sheet_file against pg_12 --
+	--     Phase 2 gate: counts cross-checked against "grep -c",
+	--     plus a hand spot-check of one specific symbol/pin.
+	----------------------------------------------------------------
+	procedure test_read_sheet_file_pg_12 is
+		s : constant type_sheet_data := read_sheet_file (example_dir & "pg_12.kicad_sch", 0);
+	begin
+		check (natural (s.wires.length) = 186, "read_sheet_file pg_12: 186 wires");
+		check (natural (s.buses.length) = 6, "read_sheet_file pg_12: 6 buses");
+		check (natural (s.bus_entries.length) = 4, "read_sheet_file pg_12: 4 bus_entries");
+		check (natural (s.junctions.length) = 19, "read_sheet_file pg_12: 19 junctions");
+		check (natural (s.no_connects.length) = 3, "read_sheet_file pg_12: 3 no_connects");
+		check (natural (s.texts.length) = 1, "read_sheet_file pg_12: 1 free text");
+		check (natural (s.placed_symbols.length) = 34, "read_sheet_file pg_12: 34 placed symbols");
+		check (natural (s.symbols.length) = 10, "read_sheet_file pg_12: 10 lib_symbols entries");
+
+		declare
+			local_count, global_count, hier_count : natural := 0;
+			lc : pac_labels.cursor := s.labels.first;
+		begin
+			while pac_labels.has_element (lc) loop
+				case pac_labels.element (lc).label_kind is
+					when LABEL_LOCAL => local_count := local_count + 1;
+					when LABEL_GLOBAL => global_count := global_count + 1;
+					when LABEL_HIERARCHICAL => hier_count := hier_count + 1;
+				end case;
+				pac_labels.next (lc);
+			end loop;
+
+			check (local_count = 19, "read_sheet_file pg_12: 19 local labels");
+			check (global_count = 35, "read_sheet_file pg_12: 35 global labels");
+			check (hier_count = 0, "read_sheet_file pg_12: 0 hierarchical labels");
+		end;
+
+		check (to_string (s.title) = "CS DISPLAY REGISTER CONTROL", "read_sheet_file pg_12: title matches");
+
+		-- Spot-check the lib_symbol "r1000:F00" by hand against the
+		-- source: unit 1 / convert 1 has exactly 3 pins (D0, D1, Q):
+		declare
+			f00_id  : constant type_lib_id := to_lib_id ("r1000:F00");
+			f00_cur : constant pac_lib_symbols.cursor := s.symbols.find (f00_id);
+		begin
+			check (pac_lib_symbols.has_element (f00_cur), "read_sheet_file pg_12: lib_symbol r1000:F00 found");
+
+			if pac_lib_symbols.has_element (f00_cur) then
+				declare
+					sub : constant type_symbol_sub_unit :=
+						get_sub_unit (pac_lib_symbols.element (f00_cur), 1, 1);
+				begin
+					check (natural (sub.pins.length) = 3, "read_sheet_file pg_12: F00 unit1/convert1 has 3 pins");
+
+					if natural (sub.pins.length) = 3 then
+						declare
+							p1 : constant type_pin := sub.pins.first_element;
+						begin
+							check (to_string (p1.name) = "D0", "read_sheet_file pg_12: F00 first pin name = D0");
+							check (to_string (p1.number) = "1", "read_sheet_file pg_12: F00 first pin number = 1");
+							check (p1.electrical_type = PIN_INPUT, "read_sheet_file pg_12: F00 first pin is PIN_INPUT");
+						end;
+					end if;
+				end;
+			end if;
+		end;
+
+		-- Strand connectivity sanity: every strand's point count
+		-- should be >= 1, and the total number of strands should be
+		-- well below the raw wire count (i.e. real merging happened,
+		-- not just one strand per wire):
+		declare
+			total_strands : constant natural := natural (s.strands.length);
+			sc : pac_strands.cursor := s.strands.first;
+			min_points : natural := natural'last;
+		begin
+			while pac_strands.has_element (sc) loop
+				if natural (pac_strands.element (sc).points.length) < min_points then
+					min_points := natural (pac_strands.element (sc).points.length);
+				end if;
+				pac_strands.next (sc);
+			end loop;
+
+			check (total_strands > 0, "read_sheet_file pg_12: at least one strand built");
+			check (total_strands < 186, "read_sheet_file pg_12: strand count well below raw wire count (merging happened)");
+			check (min_points >= 1, "read_sheet_file pg_12: every strand has at least one point");
+
+			put_line ("  INFO  pg_12: " & natural'image (total_strands) & " strands built from 186 wires + 6 buses");
+		end;
+	end test_read_sheet_file_pg_12;
+
+
 begin
 	put_line ("=== et_kicad_v6.sexp testbench ===");
 	new_line;
@@ -242,6 +334,7 @@ begin
 
 	test_parse_file_pg_01;
 	test_parse_file_pg_12;
+	test_read_sheet_file_pg_12;
 
 	new_line;
 	put_line ("=== " & natural'image (pass_count) & " passed, "
