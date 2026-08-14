@@ -52,6 +52,12 @@ package body et_units is
 
 
 
+	function get_place (
+		unit	: in type_unit)
+		return type_vector_model
+	is (get_place (unit.position));
+
+	
 
 	function get_position (
 		unit	: in type_unit)
@@ -226,6 +232,26 @@ package body et_units is
 
 
 
+
+
+	
+
+
+	function on_sheet_and_selected (
+		unit	: in type_unit;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+
+		return result;
+	end on_sheet_and_selected;
+
+
+
+
+	
 
 
 	procedure unit_not_found (

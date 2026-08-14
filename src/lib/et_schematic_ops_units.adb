@@ -3476,6 +3476,104 @@ package body et_schematic_ops_units is
 
 
 
+	
+
+	
+
+
+	function get_group_unit_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_electrical)
+			is
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				procedure query_unit (
+					unit_name	: in type_unit_name;
+					unit		: in type_unit)
+				is 
+					place : type_vector_model;
+				begin
+					-- Log device and unit name:
+					log (text => to_string (device_name, unit_name),
+						 level => log_threshold + 1);
+
+					-- Filter out only selected units and
+					-- those which are on the given sheet:
+					if on_sheet_and_selected (unit, sheet) then
+
+						-- Get x/y position of the unit candidate:
+						place := get_place (unit);
+
+						-- Append the unit position to
+						-- the result:
+						result.append (place);
+					end if;
+				end query_unit;
+
+
+			begin
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					query_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+			end query_device;
+
+
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+
+				query_element (
+					device_cursor, query_device'access);
+
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get group units positions on sheet " & to_string (sheet),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_group_unit_positions;
+
+
+
+
+	
+	
+
+
+
 
 
 
