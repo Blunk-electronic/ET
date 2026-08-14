@@ -12,6 +12,14 @@ with ada.directories;
 with et_kicad_v6;
 with et_kicad_v6.sexp;			use et_kicad_v6.sexp;
 with et_kicad_v6.schematic;	use et_kicad_v6.schematic;
+with et_kicad_v6_to_native;
+with et_module;					use et_module;
+with et_device_appearance;		use et_device_appearance;
+with et_devices_electrical;		use et_devices_electrical;
+with et_nets;					use et_nets;
+with et_net_names;
+with et_net_scope;				use et_net_scope;
+with ada.containers;			use ada.containers;
 with et_logging;				use et_logging;
 with et_project_name;			use et_project_name;
 with et_mirroring;				use et_mirroring;
@@ -365,8 +373,7 @@ procedure test is
 	end count_unresolved_pages;
 
 
-	procedure test_import_design_seq is
-		proj			: type_project;
+	procedure test_import_design_seq (proj : out type_project) is
 		total_symbols	: natural := 0;
 		found_mirror_y	: boolean := false;
 		found_convert_2 : boolean := false;
@@ -429,6 +436,79 @@ procedure test is
 	end test_import_design_seq;
 
 
+	procedure test_convert_to_native (proj : in type_project) is
+		module : type_generic_module;
+
+		virtual_count, pcb_count, total_units : natural := 0;
+		global_count, local_count : natural := 0;
+	begin
+		put_line ("  ....  et_kicad_v6_to_native.convert (this may take a few seconds) ...");
+
+		module := et_kicad_v6_to_native.convert (project => proj, log_threshold => 0);
+
+		put_line ("  INFO  native devices: " & count_type'image (module.devices.length));
+		put_line ("  INFO  native nets: " & count_type'image (module.nets.length));
+
+		check (natural (module.devices.length) > 0, "convert: at least one native device was created");
+		check (natural (module.nets.length) > 0, "convert: at least one native net was created");
+
+		declare
+			dc : pac_devices_electrical.cursor := module.devices.first;
+		begin
+			while pac_devices_electrical.has_element (dc) loop
+				declare
+					dev : type_device_electrical renames pac_devices_electrical.element (dc);
+				begin
+					case dev.appearance is
+						when APPEARANCE_VIRTUAL => virtual_count := virtual_count + 1;
+						when APPEARANCE_PCB     => pcb_count     := pcb_count + 1;
+					end case;
+
+					total_units := total_units + natural (dev.units.length);
+				end;
+
+				pac_devices_electrical.next (dc);
+			end loop;
+		end;
+
+		put_line ("  INFO  virtual devices: " & natural'image (virtual_count)
+			& ", pcb devices: " & natural'image (pcb_count)
+			& ", total units: " & natural'image (total_units));
+
+		check (virtual_count > 0, "convert: at least one virtual (power-symbol) device was created");
+		check (pcb_count > 0, "convert: at least one real (pcb) device was created");
+		check (total_units >= natural (module.devices.length),
+			"convert: every device has at least one unit");
+
+		declare
+			nc : et_nets.pac_nets.cursor := module.nets.first;
+		begin
+			while et_nets.pac_nets.has_element (nc) loop
+				declare
+					net : et_nets.type_net renames et_nets.pac_nets.element (nc);
+				begin
+					case net.scope is
+						when GLOBAL => global_count := global_count + 1;
+						when LOCAL  => local_count  := local_count + 1;
+					end case;
+
+					check (not net.strands.is_empty, "convert: net " & et_net_names.to_string (et_nets.pac_nets.key (nc))
+						& " has at least one strand");
+				end;
+
+				et_nets.pac_nets.next (nc);
+			end loop;
+		end;
+
+		put_line ("  INFO  global nets: " & natural'image (global_count)
+			& ", local/anonymous nets: " & natural'image (local_count));
+
+		check (global_count > 0, "convert: at least one GLOBAL-scope net was created");
+	end test_convert_to_native;
+
+
+	proj : type_project;
+
 begin
 	-- et_logging.create_report writes to "ET/reports/messages.log"
 	-- relative to the current directory -- the example project
@@ -460,7 +540,8 @@ begin
 	test_parse_file_pg_01;
 	test_parse_file_pg_12;
 	test_read_sheet_file_pg_12;
-	test_import_design_seq;
+	test_import_design_seq (proj);
+	test_convert_to_native (proj);
 
 	new_line;
 	put_line ("=== " & natural'image (pass_count) & " passed, "
