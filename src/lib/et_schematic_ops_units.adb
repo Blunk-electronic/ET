@@ -3553,7 +3553,7 @@ package body et_schematic_ops_units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " get units positions of group on sheet " & to_string (sheet),
+			 & " get unit positions of group on sheet " & to_string (sheet),
 			level => log_threshold);
 
 		log_indentation_up;
