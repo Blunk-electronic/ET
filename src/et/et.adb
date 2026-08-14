@@ -62,6 +62,8 @@ with et_import;
 with et_conventions;
 with et_kicad.schematic;
 with et_kicad_to_native;
+with et_kicad_v6.schematic;
+with et_kicad_v6_to_native;
 with et_project_name;			use et_project_name;
 with et_project;
 -- with et_scripting;
@@ -442,6 +444,26 @@ procedure et is
 				et_kicad_to_native.to_native (to_project_name
 					(base_name (to_string (project_name_import))), log_threshold => 0);
 				log_indentation_down;
+
+			when et_import.KICAD_V6 =>
+				declare
+					v6_project_name : constant type_project_name :=
+						to_project_name (base_name (to_string (project_name_import)));
+
+					v6_project : constant et_kicad_v6.schematic.type_project :=
+						et_kicad_v6.schematic.import_design (
+							project				=> v6_project_name,
+							project_directory	=> to_string (project_name_import),
+							log_threshold		=> 0);
+				begin
+					log (text => et_string_processing.row_separator_single);
+					log (text => "converting to " & system_name & " native project ...", console => true);
+					log_indentation_up;
+
+					et_kicad_v6_to_native.to_native (project => v6_project, log_threshold => 0);
+
+					log_indentation_down;
+				end;
 
 			when others => -- CS
 				raise constraint_error;

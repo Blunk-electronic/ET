@@ -57,7 +57,7 @@ with et_object_status;					use et_object_status;
 with et_device_write;
 
 with et_symbol_model;					use et_symbol_model;
-with et_symbol_shapes;					use et_symbol_shapes;
+with et_symbol_shapes;
 with et_symbol_text;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_port_general;				use et_symbol_port_general;
@@ -73,7 +73,7 @@ with et_package_variant_name;
 with et_package_variant;					use et_package_variant;
 with et_board_coordinates;
 
-with et_mirroring;						use et_mirroring;
+with et_mirroring;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_sheets;							use et_sheets;
@@ -98,10 +98,6 @@ package body et_kicad_v6_to_native is
 	use et_kicad_v6.pac_uuid_path;
 
 	use et_device_library.pac_device_models;
-	use et_devices_electrical.pac_devices_electrical;
-	use et_units.pac_units;
-	use et_device_model_unit_internal.pac_units_internal;
-	use et_symbol_ports.pac_symbol_ports;
 
 
 	------------------------------------------------------------------

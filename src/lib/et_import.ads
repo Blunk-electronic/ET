@@ -45,7 +45,8 @@ package et_import is
 	type type_cad_format is (
 		UNKNOWN,
 		KICAD_V4,
-		KICAD_V5
+		KICAD_V5,
+		KICAD_V6
 		); -- CS: eagle_vx
 
 	-- If no format specified via cmd line, a default applies so that the operator can be
