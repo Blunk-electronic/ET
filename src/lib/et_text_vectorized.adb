@@ -280,7 +280,56 @@ package body et_text_vectorized is
 		
 
 		
+		
+		
+		
+		
+		procedure scale_and_move_lines (
+			lines			: in out pac_character_lines.list;
+			place			: in positive;
+			offset			: in type_offset;
+			scale_factor	: in type_float_positive;
+			spacing			: in type_distance_positive)
+		is
+			-- Here we collect the lines of the moved character.
+			-- scratch will overwrite the given lines at the end of this procedure:
+			scratch : pac_character_lines.list;
 
+			
+			procedure query_line (c : in pac_character_lines.cursor) is
+				l : type_character_line := element (c);
+			begin
+				-- According to the given text size, the line is now
+				-- to be scaled:
+				scale (l, scale_factor);
+
+				-- Move the line by offset:
+				move_by (
+					line	=> l,
+					offset	=> offset);
+
+				-- Move the line to the right according to the
+				-- position of the character inside the text.
+				-- CS: depends on alignment ?
+				move_by (
+					line	=> l,
+					offset	=> to_offset (
+						x => type_distance (place - 1) * spacing,
+						y => zero));
+
+				-- Collect the line in scratch:
+				append (scratch, l);
+			end query_line;
+
+		begin
+			iterate (lines, query_line'access); -- query the lines of the character
+			lines := scratch; -- replace old lines by new lines
+		end scale_and_move_lines;
+	
+		
+		
+
+		
 		
 		function vectorize_text (
 			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
@@ -305,7 +354,8 @@ package body et_text_vectorized is
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := to_string (content);
 
-			package sorting is new pac_character_lines.generic_sorting;
+			
+			package line_sorting is new pac_character_lines.generic_sorting;
 
 
 			half_line_width : constant type_float_positive :=
@@ -343,43 +393,6 @@ package body et_text_vectorized is
 
 			text_height : constant type_distance_positive := size;
 			text_height_half : constant type_distance_positive := size * 0.5;
-
-
-			procedure scale_and_move_lines (lines : in out pac_character_lines.list) is
-
-				-- Here we collect the lines of the moved character.
-				-- scratch will overwrite the given lines at the end of this procedure:
-				scratch : pac_character_lines.list;
-
-				procedure query_line (c : in pac_character_lines.cursor) is
-					l : type_character_line := element (c);
-				begin
-					-- According to the given text size, the line is now
-					-- to be scaled:
-					scale (l, scale_factor_float);
-
-					-- Move the line by offset_due_to_line_width (see above):
-					move_by (
-						line	=> l,
-						offset	=> offset_due_to_line_width);
-
-					-- Move the line to the right according to the
-					-- position of the character inside the text.
-					-- CS: depends on alignment ?
-					move_by (
-						line	=> l,
-						offset	=> to_offset (
-									x => type_distance (place - 1) * spacing,
-									y => zero));
-
-					-- Collect the line in scratch:
-					append (scratch, l);
-				end query_line;
-
-			begin
-				iterate (lines, query_line'access); -- query the lines of the character
-				lines := scratch; -- replace old lines by new lines
-			end scale_and_move_lines;
 
 
 
@@ -452,8 +465,10 @@ package body et_text_vectorized is
 				use pac_offsetting;
 				p_scratch : type_polygon;
 			begin
-				scale_and_move_lines (text_lines);
-				sorting.merge (target => result.lines, source => text_lines);
+				scale_and_move_lines (text_lines, place, 
+					offset_due_to_line_width, scale_factor_float, spacing);
+					
+				line_sorting.merge (target => result.lines, source => text_lines);
 
 				if make_border then
 					border_vertices := to_list (char.border);
