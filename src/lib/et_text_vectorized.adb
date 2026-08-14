@@ -325,10 +325,87 @@ package body et_text_vectorized is
 			iterate (lines, query_line'access); -- query the lines of the character
 			lines := scratch; -- replace old lines by new lines
 		end scale_and_move_lines;
+
+	
+
+
+	
+	
+	
+		procedure scale_and_move_border (
+			border				: in out pac_vectors.list;
+			place				: in positive;
+			scale_factor		: in type_float_positive;
+			offset				: in type_offset;
+			spacing				: in type_distance_positive;
+			position			: in type_vector_model;
+			text_height			: in type_distance_positive;
+			text_height_half	: in type_distance_positive;
+			text_length			: in type_distance_positive;
+			text_length_half	: in type_distance_positive;
+			alignment			: in type_text_alignment;
+			rotation			: in type_rotation;
+			mirror				: in type_mirror)
+		is
+
+			procedure align_vertical is begin
+				case alignment.vertical is
+					when ALIGN_BOTTOM =>
+						null; -- already computed for bottom alignment. nothing to do
+
+					when ALIGN_CENTER =>
+						move_by (border, to_offset (zero, -text_height_half));
+
+					when ALIGN_TOP =>
+						move_by (border, to_offset (zero, -text_height));
+				end case;
+			end align_vertical;
+
+
+		begin
+			scale (border, scale_factor);
+			move_by (border, offset);
+
+			move_by (border, to_offset (
+				x => type_distance (place - 1) * spacing,
+				y => zero));
+
+
+			-- CS: Not tested !
+			-- Align with the origin:
+			case alignment.horizontal is
+				when ALIGN_LEFT =>
+					-- already computed for left alignment. so no need to align horizontal.
+					align_vertical;
+
+				when ALIGN_CENTER =>
+					move_by (border, to_offset (-text_length_half, zero));
+
+					align_vertical;
+
+				when ALIGN_RIGHT =>
+					move_by (border, to_offset (-text_length, zero));
+
+					align_vertical;
+			end case;
+
+
+			-- Rotate as given by argument "rotation":
+			rotate_by (border, type_angle (rotation));
+
+			-- Mirror if required:
+			if mirror = MIRROR_ALONG_Y_AXIS then
+				mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
+			end if;
+
+			-- Move to final position as given by argument "position":
+			move_by (border, to_offset (position));
+		end scale_and_move_border;
+	
 	
 		
 		
-
+		
 		
 		
 		function vectorize_text (
@@ -396,63 +473,6 @@ package body et_text_vectorized is
 
 
 
-			procedure scale_and_move_border (border : in out pac_vectors.list) is
-
-				procedure align_vertical is begin
-					case alignment.vertical is
-						when ALIGN_BOTTOM =>
-							null; -- already computed for bottom alignment. nothing to do
-
-						when ALIGN_CENTER =>
-							move_by (border, to_offset (zero, -text_height_half));
-
-						when ALIGN_TOP =>
-							move_by (border, to_offset (zero, -text_height));
-					end case;
-				end align_vertical;
-
-
-			begin -- scale_and_move_border
-				scale (border, scale_factor_float);
-				move_by (border, offset_due_to_line_width);
-
-				move_by (border, to_offset (
-									x => type_distance (place - 1) * spacing,
-									y => zero));
-
-
-				-- CS: Not tested !
-				-- Align with the origin:
-				case alignment.horizontal is
-					when ALIGN_LEFT =>
-						-- already computed for left alignment. so no need to align horizontal.
-						align_vertical;
-
-					when ALIGN_CENTER =>
-						move_by (border, to_offset (-text_length_half, zero));
-
-						align_vertical;
-
-					when ALIGN_RIGHT =>
-						move_by (border, to_offset (-text_length, zero));
-
-						align_vertical;
-				end case;
-
-
-				-- Rotate as given by argument "rotation":
-				rotate_by (border, type_angle (rotation));
-
-				-- Mirror if required:
-				if mirror = MIRROR_ALONG_Y_AXIS then
-					mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
-				end if;
-
-				-- Move to final position as given by argument "position":
-				move_by (border, to_offset (position));
-			end scale_and_move_border;
-
-
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
 			-- If required by argument make_border, a border around the
@@ -465,14 +485,33 @@ package body et_text_vectorized is
 				use pac_offsetting;
 				p_scratch : type_polygon;
 			begin
-				scale_and_move_lines (text_lines, place, 
-					offset_due_to_line_width, scale_factor_float, spacing);
+				scale_and_move_lines (
+					lines			=> text_lines, 
+					place			=> place, 
+					offset			=> offset_due_to_line_width,
+					scale_factor	=> scale_factor_float,
+					spacing			=> spacing);
 					
 				line_sorting.merge (target => result.lines, source => text_lines);
 
 				if make_border then
 					border_vertices := to_list (char.border);
-					scale_and_move_border (border_vertices);
+					
+					scale_and_move_border (
+						border				=> border_vertices,
+						place				=> place,
+						scale_factor		=> scale_factor_float,
+						offset				=> offset_due_to_line_width,
+						spacing				=> spacing,
+						position			=> position,
+						text_height			=> text_height,
+						text_height_half	=> text_height_half,
+						text_length			=> text_length,
+						text_length_half	=> text_length_half,
+						alignment			=> alignment,
+						rotation			=> rotation,
+						mirror				=> mirror);
+					
 					p_scratch := to_polygon (border_vertices);
 					offset_polygon (p_scratch, half_line_width, log_threshold + 2);
 					result.borders.append (p_scratch);
