@@ -200,10 +200,15 @@ package body et_schematic_ops_groups is
 	is
 		result : type_vector_model;
 
+		all_positions : pac_points.list;
+		
+		unit_positions : pac_points.list;
+		-- CS
+		-- text_positions : pac_points.list;
+		-- segment_positions : pac_points.list;
 		
 		procedure query_units is
 			use et_schematic_ops_units;
-			unit_positions : pac_points.list;
 		begin
 			log (text => "query units", level => log_threshold + 1);
 			log_indentation_up;
@@ -217,6 +222,20 @@ package body et_schematic_ops_groups is
 		end query_units;
 
 		
+		procedure merge_positions is
+			use pac_points;
+			c : pac_points.cursor;
+		begin
+			-- Unit positions:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> unit_positions);
+				
+			-- CS: segment, net positions
+		end merge_positions;
+			
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " get center of group (schematic)",
@@ -225,14 +244,17 @@ package body et_schematic_ops_groups is
 		log_indentation_up;
 
 		query_units;
-
-		-- CS: net segments, texts
+		-- CS: query net segments, texts
 		
-		-- CS: merge unit_positions, net segment positions,
-		-- text positons 
+		-- Merge unit positions, net segment positions,
+		-- text positons, ...
+		merge_positions;
+		
+
+		result := get_center (all_positions);
 		
 		log_indentation_down;
-
+		
 		return result;
 	end get_center_of_group;
 	

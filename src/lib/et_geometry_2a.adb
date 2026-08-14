@@ -1348,6 +1348,74 @@ package body et_geometry_2a is
 
 
 
+
+	function get_center (
+		points : in out pac_points.list)
+		return type_vector_model
+	is
+		use pac_points;
+		result : type_vector_model;
+
+		-- Get the number of points given:
+		count : constant count_type := points.length;
+
+
+		procedure two_points is 
+			-- Both points form a line with A and B end:
+			A : constant type_vector_model := first_element (points);
+			B : constant type_vector_model := last_element (points);
+			line : type_line;
+		begin
+			-- If both points are equal, then the line
+			-- has no length. The result is just A:
+			if A = B then
+				result := A;
+			else
+				-- Form a line of A and B:
+				set_A (line, A);
+				set_B (line, B);
+
+				-- Compute the center of the line:
+				result := get_center (line);
+			end if;
+		end two_points;
+
+
+		
+		procedure more_than_two_points is begin
+			null;
+			-- CS
+		end more_than_two_points;
+
+		
+	begin
+		case count is
+			when 0 => 
+				raise constraint_error; -- CS
+
+			when 1 =>
+				-- The single given point is the center:
+				result := first_element (points);
+
+			when 2 =>
+				-- Compute the point between the two points:
+				two_points;
+
+			when others =>
+				-- Form a rectangle and compute the center:
+				more_than_two_points;
+		end case;
+
+		return result;
+	end get_center;
+
+
+
+
+
+
+	
+
 -- AREA:
 
 	function to_string (

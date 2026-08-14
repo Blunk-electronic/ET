@@ -642,7 +642,25 @@ package et_geometry_2a is
 		points : in out pac_points.list);
 
 
+	-- This function computes the geometrical
+	-- center of a given number of points.
+	-- 1. If only one point is given, then the result
+	--    is just that point.
+	-- 2. If two points are given, then the result is
+	--    the point that lies exactly between them.
+	-- 3. If more than two points are given, then
+	--    a rectangle is formed, that wraps around all
+	--    points. Then the center of the rectangle is
+	--    computed and returned.
+	-- 4. If the given list is empty (no points) then
+	--    an exception is raised:
+	function get_center (
+		points : in out pac_points.list)
+		return type_vector_model;
 
+
+
+	
 
 -- AREA (rectangular):
 
