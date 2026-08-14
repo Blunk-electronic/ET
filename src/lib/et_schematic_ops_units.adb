@@ -3421,19 +3421,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if on_sheet_and_in_area (unit, sheet, area) then
-						-- CS: log the full name like IC1.C
-						-- log (text =>  to_string (unit_name), level => log_threshold;
+						
+						log (text =>  to_string (device_name, unit_name),
+							 level => log_threshold + 1);
+
 						set_selected (unit);
 					end if;
 				end query_unit;
@@ -3512,14 +3511,14 @@ package body et_schematic_ops_units is
 				is 
 					place : type_vector_model;
 				begin
-					-- Log device and unit name:
-					log (text => to_string (device_name, unit_name),
-						 level => log_threshold + 1);
-
 					-- Filter out only selected units and
 					-- those which are on the given sheet:
 					if on_sheet_and_selected (unit, sheet) then
 
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+						
 						-- Get x/y position of the unit candidate:
 						place := get_place (unit);
 
@@ -3554,7 +3553,7 @@ package body et_schematic_ops_units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " get group units positions on sheet " & to_string (sheet),
+			 & " get units positions of group on sheet " & to_string (sheet),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3610,6 +3609,10 @@ package body et_schematic_ops_units is
 				is begin
 					if is_selected (unit) then
 
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+						
 						-- Backup the unit and device name:
 						u_name := unit_name;
 						d_name := device_name;
@@ -3711,7 +3714,10 @@ package body et_schematic_ops_units is
 					unit		: in out type_unit)
 				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						log_indentation_up;
 
@@ -3722,7 +3728,7 @@ package body et_schematic_ops_units is
 							coordinates		=> RELATIVE,
 							destination		=> offset,
 							commit_design	=> NO_COMMIT,
-							log_threshold	=> log_threshold + 1);
+							log_threshold	=> log_threshold + 2);
 
 						log_indentation_down;
 					end if;
@@ -3788,18 +3794,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						set_moving (unit);
 					end if;
@@ -3867,18 +3873,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						clear_moving (unit);
 					end if;
@@ -3946,17 +3952,17 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					-- CS log full name like IC1.D
+				is begin
+					-- Log device and unit name:
+					log (text => to_string (device_name, unit_name),
+						level => log_threshold + 1);
+
 					clear_moving (unit);
 				end query_unit;
 
@@ -4048,18 +4054,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						-- We have a selected unit.
 						-- The search must be aborted by setting
@@ -4228,7 +4234,6 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
@@ -4237,15 +4242,20 @@ package body et_schematic_ops_units is
 					unit		: in type_unit)
 				is
 					use et_module_clipboard.devices_electrical;
-					pragma unreferenced (unit_name);
 				begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
-
 						-- We have a selected unit.
 
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+
+						log_indentation_up;
+
 						copy_unit_to_clipboard (
-							device_cursor, unit_cursor, log_threshold + 1);
+							device_cursor, unit_cursor, log_threshold + 2);
+
+						log_indentation_down;
 					end if;
 				end query_unit;
 
