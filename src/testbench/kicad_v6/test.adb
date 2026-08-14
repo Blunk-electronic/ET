@@ -7,11 +7,14 @@
 with ada.text_io;				use ada.text_io;
 with ada.exceptions;			use ada.exceptions;
 with ada.command_line;			use ada.command_line;
+with ada.directories;
 
 with et_kicad_v6;
 with et_kicad_v6.sexp;			use et_kicad_v6.sexp;
 with et_kicad_v6.schematic;	use et_kicad_v6.schematic;
 with et_logging;				use et_logging;
+with et_project_name;			use et_project_name;
+with et_mirroring;				use et_mirroring;
 
 procedure test is
 
@@ -316,7 +319,129 @@ procedure test is
 	end test_read_sheet_file_pg_12;
 
 
+	----------------------------------------------------------------
+	-- 12. import_design against the full 87-sheet SEQ project --
+	--     Phase 4 gate per the project plan: sheet-tree node count,
+	--     total placed-symbol count, zero cycle errors, all pages
+	--     resolved, mirror_y / convert_2 both parsed correctly
+	--     somewhere in the project.
+	----------------------------------------------------------------
+
+	-- Recursively counts every node in the sheet tree:
+	function count_nodes (node : in type_sheet_node_access) return natural is
+		total : natural := 0;
+	begin
+		if node = null then
+			return 0;
+		end if;
+
+		total := 1;
+
+		for i in node.children.first_index .. node.children.last_index loop
+			total := total + count_nodes (node.children (i));
+		end loop;
+
+		return total;
+	end count_nodes;
+
+	-- Recursively counts nodes whose page field is still empty
+	-- (i.e. NOT resolved from the root's sheet_instances block):
+	function count_unresolved_pages (node : in type_sheet_node_access) return natural is
+		total : natural := 0;
+	begin
+		if node = null then
+			return 0;
+		end if;
+
+		if to_string (node.page)'length = 0 then
+			total := 1;
+		end if;
+
+		for i in node.children.first_index .. node.children.last_index loop
+			total := total + count_unresolved_pages (node.children (i));
+		end loop;
+
+		return total;
+	end count_unresolved_pages;
+
+
+	procedure test_import_design_seq is
+		proj			: type_project;
+		total_symbols	: natural := 0;
+		found_mirror_y	: boolean := false;
+		found_convert_2 : boolean := false;
+	begin
+		put_line ("  ....  import_design (this may take a few seconds) ...");
+
+		proj := import_design (
+			project				=> to_project_name ("SEQ"),
+			project_directory	=> example_dir,
+			log_threshold		=> 0);
+
+		put_line ("  INFO  sheets loaded (file_cache): " & natural'image (natural (proj.file_cache.length)));
+		put_line ("  INFO  merged_symbols: " & natural'image (natural (proj.merged_symbols.length)));
+		put_line ("  INFO  merged_nets: " & natural'image (natural (proj.merged_nets.length)));
+
+		check (proj.root /= null, "import_design: root node is not null");
+		check (count_nodes (proj.root) = 87, "import_design: sheet-tree has 87 nodes (1 root + 86 children)");
+		check (count_unresolved_pages (proj.root) = 0, "import_design: every node's page was resolved");
+
+		-- Total placed-symbol count and mirror_y/convert_2 spot
+		-- checks, scanning every loaded sheet's own placed_symbols:
+		declare
+			fc : pac_sheet_data_by_path.cursor := proj.file_cache.first;
+		begin
+			while pac_sheet_data_by_path.has_element (fc) loop
+				declare
+					data : constant type_sheet_data_access := pac_sheet_data_by_path.element (fc);
+					sc	 : pac_placed_symbols.cursor := data.placed_symbols.first;
+				begin
+					while pac_placed_symbols.has_element (sc) loop
+						declare
+							sym : constant type_placed_symbol := pac_placed_symbols.element (sc);
+						begin
+							total_symbols := total_symbols + 1;
+
+							if sym.mirror = MIRROR_ALONG_Y_AXIS then
+								found_mirror_y := true;
+							end if;
+
+							if sym.convert = 2 then
+								found_convert_2 := true;
+							end if;
+						end;
+
+						pac_placed_symbols.next (sc);
+					end loop;
+				end;
+
+				pac_sheet_data_by_path.next (fc);
+			end loop;
+		end;
+
+		-- 1566 in the 86 leaf pg_*.kicad_sch files (grep -c '(lib_id "'
+		-- pg_*.kicad_sch) + 4 more directly on the root SEQ.kicad_sch
+		-- itself (easy to miss with a pg_*-only glob, as the first
+		-- draft of this check did):
+		check (total_symbols = 1570, "import_design: 1570 total placed symbol instances across all sheets");
+		check (found_mirror_y, "import_design: at least one symbol parsed with mirror = MIRROR_ALONG_Y_AXIS");
+		check (found_convert_2, "import_design: at least one symbol parsed with convert = 2");
+	end test_import_design_seq;
+
+
 begin
+	-- et_logging.create_report writes to "ET/reports/messages.log"
+	-- relative to the current directory -- the example project
+	-- already has that directory (part of its own file layout), so
+	-- run from there:
+	ada.directories.set_directory (example_dir);
+
+	-- et_kicad_v6.schematic.import_design (and read_sheet_file)
+	-- calls et_logging.log, which writes to a report file that must
+	-- be opened first:
+	create_report;
+	log_level := 20; -- otherwise WARNING/NOTE text is counted but not printed
+
 	put_line ("=== et_kicad_v6.sexp testbench ===");
 	new_line;
 
@@ -335,10 +460,13 @@ begin
 	test_parse_file_pg_01;
 	test_parse_file_pg_12;
 	test_read_sheet_file_pg_12;
+	test_import_design_seq;
 
 	new_line;
 	put_line ("=== " & natural'image (pass_count) & " passed, "
 		& natural'image (fail_count) & " failed ===");
+
+	close_report;
 
 	if fail_count > 0 then
 		set_exit_status (failure);

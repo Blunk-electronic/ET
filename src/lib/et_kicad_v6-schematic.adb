@@ -27,6 +27,7 @@
 
 with ada.directories;
 with ada.strings.fixed;			use ada.strings.fixed;
+with ada.containers.ordered_sets;
 with et_kicad_v6.sexp;				use et_kicad_v6.sexp;
 
 package body et_kicad_v6.schematic is
@@ -943,6 +944,21 @@ package body et_kicad_v6.schematic is
 	end is_known_top_level_tag;
 
 
+	-- Standalone graphics drawn directly on a sheet (as opposed to
+	-- inside a symbol/lib_symbol definition) -- cosmetic annotations
+	-- with no electrical meaning, e.g. a hand-drawn divider line.
+	-- CS: STUB, same treatment as symbol-body graphics (see
+	-- type_symbol_graphic_item) -- not modeled, since this is a
+	-- loader, not a renderer, but acknowledged rather than treated
+	-- as a genuinely unexpected tag. Confirmed present (polyline) in
+	-- the reference project's pg_79/pg_80.kicad_sch:
+	function is_deferred_top_level_graphic_tag (tag : in string) return boolean is
+	begin
+		return tag = "polyline" or tag = "rectangle" or tag = "circle"
+			or tag = "arc" or tag = "bitmap" or tag = "polygon";
+	end is_deferred_top_level_graphic_tag;
+
+
 	function read_sheet_file (
 		file_path		: in string;
 		log_threshold	: in type_log_level)
@@ -1108,7 +1124,9 @@ package body et_kicad_v6.schematic is
 			declare
 				tag : constant string := sexp.head (sexp.get_child (root, i));
 			begin
-				if not is_known_top_level_tag (tag) then
+				if is_deferred_top_level_graphic_tag (tag) then
+					log_unknown_key ("kicad_sch", tag, log_threshold, deferred => true);
+				elsif not is_known_top_level_tag (tag) then
 					log_unknown_key ("kicad_sch", tag, log_threshold);
 				end if;
 			end;
@@ -1121,8 +1139,243 @@ package body et_kicad_v6.schematic is
 
 
 	------------------------------------------------------------------
-	-- ENTRY POINT: import_design  -- placeholder, filled in next phase
+	-- ENTRY POINT: import_design
 	------------------------------------------------------------------
+
+	package pac_path_set is new ada.containers.ordered_sets (type_property_value);
+
+
+	-- Relative Sheetfile values resolve relative to the REFERENCING
+	-- sheet's own containing directory (KiCad's own convention) --
+	-- not independently exercisable against the reference project
+	-- since all of its sheets sit flat in one directory, but this
+	-- generalizes correctly for a project that does use
+	-- subdirectories:
+	function resolve_relative (base_dir : in string; sheetfile : in string) return string is
+	begin
+		if sheetfile'length > 0 and then sheetfile (sheetfile'first) = '/' then
+			return sheetfile;
+		else
+			return ada.directories.compose (base_dir, sheetfile);
+		end if;
+	end resolve_relative;
+
+
+	-- Loads file_path and everything it (recursively) references.
+	-- parent_uuid_path is the uuid path up to but NOT including this
+	-- sheet's own uuid (which is only known once the file itself has
+	-- been parsed) -- see the package spec's cycle-detection notes:
+	function load_recursive (
+		file_path			: in string;
+		parent_uuid_path	: in pac_uuid_path.list;
+		parent				: in type_sheet_node_access;
+		on_stack			: in out pac_path_set.set;
+		project_data		: in out type_project;
+		log_threshold		: in type_log_level)
+		return type_sheet_node_access
+	is
+		resolved	: constant string := ada.directories.full_name (file_path);
+		resolved_pv	: constant type_property_value := to_property_value (resolved);
+		data		: type_sheet_data_access;
+		node		: type_sheet_node_access;
+		this_uuid_path : pac_uuid_path.list := parent_uuid_path;
+	begin
+		if on_stack.contains (resolved_pv) then
+			raise sheet_cycle_error with
+				"sheet cycle detected: " & resolved & " is its own ancestor (path so far: "
+				& et_kicad_v6.to_string (parent_uuid_path) & ")";
+		end if;
+
+		on_stack.insert (resolved_pv);
+
+		declare
+			cache_c : constant pac_sheet_data_by_path.cursor := project_data.file_cache.find (resolved_pv);
+		begin
+			if pac_sheet_data_by_path.has_element (cache_c) then
+				data := pac_sheet_data_by_path.element (cache_c);
+			else
+				log (text => "reading " & resolved, level => log_threshold + 1);
+
+				data := new type_sheet_data'(read_sheet_file (resolved, log_threshold + 2));
+				project_data.file_cache.insert (resolved_pv, data);
+
+				-- Fold this sheet's own symbols into the project-wide
+				-- map, first-definition-wins:
+				declare
+					sc : pac_lib_symbols.cursor := data.symbols.first;
+				begin
+					while pac_lib_symbols.has_element (sc) loop
+						if not project_data.merged_symbols.contains (pac_lib_symbols.key (sc)) then
+							project_data.merged_symbols.insert (pac_lib_symbols.key (sc), pac_lib_symbols.element (sc));
+						end if;
+
+						pac_lib_symbols.next (sc);
+					end loop;
+				end;
+			end if;
+		end;
+
+		this_uuid_path.append (data.uuid);
+
+		node := new type_sheet_node'(
+			uuid_path	=> this_uuid_path,
+			data		=> data,
+			parent		=> parent,
+			children	=> pac_sheet_node_children.empty_vector,
+			page		=> to_property_value (""));
+
+		declare
+			base_dir : constant string := ada.directories.containing_directory (resolved);
+			rc		 : pac_sheet_refs.cursor := data.child_sheets.first;
+		begin
+			while pac_sheet_refs.has_element (rc) loop
+				declare
+					ref			: constant type_sheet_ref := pac_sheet_refs.element (rc);
+					child_path	: constant string := resolve_relative (base_dir, to_string (ref.sheetfile));
+				begin
+					node.children.append (
+						load_recursive (child_path, this_uuid_path, node, on_stack, project_data, log_threshold));
+				end;
+
+				pac_sheet_refs.next (rc);
+			end loop;
+		end;
+
+		on_stack.delete (resolved_pv);
+
+		return node;
+	end load_recursive;
+
+
+	-- Walks the whole tree looking for the node whose uuid_path
+	-- renders as path_text (as found in the root's own
+	-- (sheet_instances (path "..." (page "..")))) block), and sets
+	-- its page field. A path_text matching no node is silently
+	-- ignored (a sheet present in sheet_instances but not reachable
+	-- via any (sheet ...) reference would be unusual and is not
+	-- expected, not worth failing the whole import over):
+	procedure apply_page (
+		node		: in type_sheet_node_access;
+		path_text	: in string;
+		page		: in type_property_value)
+	is
+	begin
+		if node = null then
+			return;
+		end if;
+
+		if et_kicad_v6.to_string (node.uuid_path) = path_text then
+			node.page := page;
+		end if;
+
+		for i in node.children.first_index .. node.children.last_index loop
+			apply_page (node.children (i), path_text, page);
+		end loop;
+	end apply_page;
+
+
+	procedure resolve_pages (
+		project_data	: in out type_project;
+		root_sexp		: in sexp.type_node;
+		log_threshold	: in type_log_level)
+	is
+		si_node : constant sexp.type_node := sexp.find_first_child (root_sexp, "sheet_instances");
+	begin
+		if sexp.kind (si_node) /= sexp.SEXP_LIST then
+			log (SEVERITY_WARNING, "root sheet has no (sheet_instances ...) block -- page numbers left unresolved",
+				level => log_threshold);
+			return;
+		end if;
+
+		declare
+			path_nodes	: constant sexp.pac_node_list.vector := sexp.find_all_children (si_node, "path");
+			pc			: sexp.pac_node_list.cursor := path_nodes.first;
+		begin
+			while sexp.pac_node_list.has_element (pc) loop
+				declare
+					pn			: constant sexp.type_node := sexp.pac_node_list.element (pc);
+					page_node	: constant sexp.type_node := sexp.find_first_child (pn, "page");
+					path_text	: type_property_value := to_property_value ("");
+					page_text	: type_property_value := to_property_value ("");
+				begin
+					if sexp.child_count (pn) >= 2 then
+						path_text := to_property_value (sexp.atom_text (sexp.get_child (pn, 2)));
+					end if;
+
+					if sexp.kind (page_node) = sexp.SEXP_LIST and then sexp.child_count (page_node) >= 2 then
+						page_text := to_property_value (sexp.atom_text (sexp.get_child (page_node, 2)));
+					end if;
+
+					apply_page (project_data.root, to_string (path_text), page_text);
+				end;
+
+				sexp.pac_node_list.next (pc);
+			end loop;
+		end;
+	end resolve_pages;
+
+
+	-- Folds every strand carrying at least one global label into
+	-- project_data.merged_nets, keyed by that label's text (the
+	-- first global label found on a strand, if it happens to carry
+	-- more than one with different text -- unusual, not expected).
+	-- Local/hierarchical-only strands stay reachable solely via
+	-- their owning type_sheet_data.strands, never merged here:
+	procedure merge_nets (project_data : in out type_project) is
+		fc : pac_sheet_data_by_path.cursor := project_data.file_cache.first;
+	begin
+		while pac_sheet_data_by_path.has_element (fc) loop
+			declare
+				data : constant type_sheet_data_access := pac_sheet_data_by_path.element (fc);
+				sc	 : pac_strands.cursor := data.strands.first;
+			begin
+				while pac_strands.has_element (sc) loop
+					declare
+						strand	 : constant type_strand := pac_strands.element (sc);
+						lc		 : pac_labels.cursor := strand.labels.first;
+						net_name : type_property_value := to_property_value ("");
+						found	 : boolean := false;
+					begin
+						while pac_labels.has_element (lc) and then not found loop
+							if pac_labels.element (lc).label_kind = LABEL_GLOBAL then
+								net_name := pac_labels.element (lc).text;
+								found := true;
+							end if;
+
+							pac_labels.next (lc);
+						end loop;
+
+						if found then
+							declare
+								existing_c : constant pac_nets.cursor := project_data.merged_nets.find (net_name);
+							begin
+								if pac_nets.has_element (existing_c) then
+									declare
+										lst : pac_strands.list := pac_nets.element (existing_c);
+									begin
+										lst.append (strand);
+										project_data.merged_nets.replace_element (existing_c, lst);
+									end;
+								else
+									declare
+										lst : pac_strands.list;
+									begin
+										lst.append (strand);
+										project_data.merged_nets.insert (net_name, lst);
+									end;
+								end if;
+							end;
+						end if;
+					end;
+
+					pac_strands.next (sc);
+				end loop;
+			end;
+
+			pac_sheet_data_by_path.next (fc);
+		end loop;
+	end merge_nets;
+
 
 	function import_design (
 		project				: in et_project_name.type_project_name;
@@ -1130,11 +1383,29 @@ package body et_kicad_v6.schematic is
 		log_threshold		: in type_log_level)
 		return type_project
 	is
-		result : type_project;
-		pragma unreferenced (project_directory);
+		result		: type_project;
+		on_stack	: pac_path_set.set;
+		root_file	: constant string :=
+			ada.directories.compose (project_directory, et_project_name.to_string (project) & ".kicad_sch");
+		empty_uuid_path : pac_uuid_path.list;
 	begin
 		result.name := project;
-		log (SEVERITY_WARNING, "import_design not yet implemented", level => log_threshold);
+
+		log (text => "importing KiCad v6 project " & et_project_name.to_string (project)
+			& " from " & project_directory, level => log_threshold, console => true);
+		log_indentation_up;
+
+		result.root := load_recursive (
+			root_file, empty_uuid_path, null, on_stack, result, log_threshold);
+
+		log (text => "resolving sheet page numbers ...", level => log_threshold + 1);
+		resolve_pages (result, sexp.parse_file (root_file), log_threshold + 1);
+
+		log (text => "merging global nets ...", level => log_threshold + 1);
+		merge_nets (result);
+
+		log_indentation_down;
+
 		return result;
 	end import_design;
 
