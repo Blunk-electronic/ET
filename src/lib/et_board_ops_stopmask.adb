@@ -49,11 +49,6 @@ with et_commit;
 
 package body et_board_ops_stopmask is
 
-	use pac_stop_lines;
-	use pac_stop_arcs;
-	use pac_stop_circles;
-	use pac_stop_texts;
-
 
 
 
@@ -64,6 +59,10 @@ package body et_board_ops_stopmask is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -132,6 +131,10 @@ package body et_board_ops_stopmask is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 
 		procedure query_module (
@@ -202,6 +205,10 @@ package body et_board_ops_stopmask is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -285,6 +292,10 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -531,6 +542,10 @@ package body et_board_ops_stopmask is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -614,6 +629,10 @@ package body et_board_ops_stopmask is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -689,6 +708,10 @@ package body et_board_ops_stopmask is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 
 		procedure query_module (
@@ -760,6 +783,10 @@ package body et_board_ops_stopmask is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -844,6 +871,10 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1178,6 +1209,10 @@ package body et_board_ops_stopmask is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1995,6 +2030,10 @@ package body et_board_ops_stopmask is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2255,6 +2294,10 @@ package body et_board_ops_stopmask is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2564,6 +2607,10 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3726,7 +3773,12 @@ package body et_board_ops_stopmask is
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move stopmask object "
 			-- CS & to_string (object)
@@ -3814,7 +3866,12 @@ package body et_board_ops_stopmask is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_texts;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete stopmask object",
 			-- CS & to_string (object)
