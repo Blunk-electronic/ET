@@ -46,10 +46,6 @@ with et_module;							use et_module;
 
 package body et_board_ops_stencil is
 
-	use pac_stencil_lines;
-	use pac_stencil_arcs;
-	use pac_stencil_circles;
-
 
 	procedure add_line (
 		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
@@ -130,6 +126,9 @@ package body et_board_ops_stencil is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 
 		procedure query_module (
@@ -200,6 +199,9 @@ package body et_board_ops_stencil is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -283,6 +285,9 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -526,6 +531,9 @@ package body et_board_ops_stencil is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -683,6 +691,9 @@ package body et_board_ops_stencil is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 
 		procedure query_module (
@@ -754,6 +765,9 @@ package body et_board_ops_stencil is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -838,6 +852,9 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2397,7 +2414,11 @@ package body et_board_ops_stencil is
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move stencil object "
 			-- CS & to_string (object)
@@ -2471,7 +2492,11 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete stencil object",
 			-- CS & to_string (object)
