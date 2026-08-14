@@ -64,7 +64,6 @@ with et_net_names;
 
 package body et_module_read_submodules is
 
-	use pac_generic_modules;
 
 
 	submodule_port_name	: et_net_names.type_net_name; -- RESET

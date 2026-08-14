@@ -65,7 +65,6 @@ with et_primitive_objects;
 
 package body et_module_read_board_user_settings is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

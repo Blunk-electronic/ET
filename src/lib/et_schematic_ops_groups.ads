@@ -88,9 +88,13 @@ package et_schematic_ops_groups is
 
 	-- Returns the geometrical center of a group.
 	-- It iterates through all selected objects which
-	-- are on the sheet as given by group_reference_point:
+	-- are on the sheet as given by group_reference_point.
+	-- The group can be only on one sheet.
+	-- In order to speed up the process, the affected
+	-- sheet number must also be specified:
 	function get_center_of_group (
 		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 		return type_vector_model;
 	

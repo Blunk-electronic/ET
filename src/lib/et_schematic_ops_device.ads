@@ -64,7 +64,6 @@ with et_package_variant_name;	use et_package_variant_name;
 with et_package_variant;		use et_package_variant;
 
 with et_device_property_level;	use et_device_property_level;
-with et_logging;				use et_logging;
 
 with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 

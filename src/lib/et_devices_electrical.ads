@@ -156,7 +156,7 @@ package et_devices_electrical is
 		device_in : in type_device_electrical)
 		return type_device_electrical;
 
-	
+
 
 	function get_position (
 		device : in type_device_electrical)

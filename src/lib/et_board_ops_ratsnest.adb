@@ -52,7 +52,6 @@ with et_board_ops_netchangers;
 
 package body et_board_ops_ratsnest is
 
-
 	function get_track_ends (
 		net_cursor : in pac_nets.cursor)
 		return pac_points.list

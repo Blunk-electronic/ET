@@ -98,7 +98,7 @@ package et_schematic_ops_sheets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- Deletes the given sheet.
 	-- Assumes that the sheet exists. Otherwise an exception

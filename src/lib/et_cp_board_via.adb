@@ -64,7 +64,6 @@ with et_vias;
 
 package body et_cp_board_via is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

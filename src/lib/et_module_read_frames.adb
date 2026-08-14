@@ -60,7 +60,6 @@ with et_sheets;						use et_sheets;
 
 package body et_module_read_frames is
 
-	use pac_generic_modules;
 
 
 

@@ -210,7 +210,7 @@ package body et_schematic_ops_sheets is
 
 
 
-	
+
 	procedure add_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		category		: in type_schematic_sheet_category := PRODUCT;
@@ -231,14 +231,14 @@ package body et_schematic_ops_sheets is
 			-- CS log sheet number. or log total ?
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " add sheet. category " & to_string (category),
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -250,7 +250,7 @@ package body et_schematic_ops_sheets is
 
 
 
-	
+
 
 
 	procedure delete_sheet (

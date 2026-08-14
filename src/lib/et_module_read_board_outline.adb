@@ -58,7 +58,6 @@ with et_board_holes;				use et_board_holes;
 
 package body et_module_read_board_outline is
 
-	use pac_generic_modules;
 	use et_board_geometry.pac_geometry_2;
 	use et_board_geometry.pac_contours;
 

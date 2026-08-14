@@ -84,7 +84,6 @@ package et_netlist_cat_1 is
 
 
 
-	use et_net_names;
 
 	-- The key to the netlist is the net name:
 	package pac_netlist_cat_1 is new ordered_maps (

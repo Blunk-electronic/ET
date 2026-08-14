@@ -56,7 +56,6 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 
 package body et_module_read_route_restrict is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

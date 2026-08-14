@@ -57,7 +57,6 @@ with et_file_sections;				use et_file_sections;
 
 package body et_module_write_route_restrict is
 
-	use pac_generic_modules;
 	use et_board_geometry.pac_file_rw;
 
 

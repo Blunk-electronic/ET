@@ -615,6 +615,17 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns a list of he positions of all units
+	-- of the group. The group can be only on one sheet.
+	-- In order to speed up the process, the affected
+	-- sheet number must also be specified:
+	function get_group_unit_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_points.list;
+	
+
 	-- Deletes all units which are in the current
 	-- group. This affects all units which have the
 	-- "selected"-flag set:
@@ -690,7 +701,7 @@ package et_schematic_ops_units is
 
 
 
-	
+
 
 -- PLACEHOLDERS:
 

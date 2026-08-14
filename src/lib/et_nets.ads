@@ -65,7 +65,6 @@ with et_net_scope;				use et_net_scope;
 package et_nets is
 
 	use pac_geometry_2;
-	use et_net_names;
 
 	use pac_net_segments;
 	use pac_strands;

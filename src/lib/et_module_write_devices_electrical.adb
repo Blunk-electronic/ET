@@ -86,7 +86,6 @@ with et_schematic_text;					use et_schematic_text;
 
 package body et_module_write_devices_electrical is
 
-	use pac_generic_modules;
 
 
 

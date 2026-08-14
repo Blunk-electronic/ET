@@ -50,7 +50,6 @@ with et_net_class_name;				use et_net_class_name;
 package et_net_classes is
 
 
-	use et_net_class_name;
 
 	package pac_net_classes is new ordered_maps (
 		key_type		=> type_net_class_name,

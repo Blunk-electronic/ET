@@ -135,21 +135,21 @@ package body et_netchangers.board is
 	function is_selected (
 		netchanger : in type_netchanger)
 		return boolean
-	is (boolean (is_selected (netchanger.status_brd)));
+	is (is_selected (netchanger.status_brd));
 
 
 
 	function is_proposed (
 		netchanger : in type_netchanger)
 		return boolean
-	is (boolean (is_proposed (netchanger.status_brd)));
+	is (is_proposed (netchanger.status_brd));
 
 
 
 	function is_moving (
 		netchanger : in type_netchanger)
 		return boolean
-	is (boolean (is_moving (netchanger.status_brd)));
+	is (is_moving (netchanger.status_brd));
 
 
 

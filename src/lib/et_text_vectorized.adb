@@ -236,7 +236,7 @@ package body et_text_vectorized is
 		function is_empty (
 			text : in type_text_fab_with_content)
 			return boolean
-		is (boolean (is_empty (text.content)));
+		is (is_empty (text.content));
 
 
 
@@ -249,6 +249,8 @@ package body et_text_vectorized is
 			return to_string (text.content);
 		end get_content;
 
+		
+		
 
 
 		function to_string (
@@ -260,8 +262,256 @@ package body et_text_vectorized is
 		end to_string;
 
 
+		
+		
+		
+		
+		function compute_character_spacing (
+			text_size : in type_text_size)
+			return type_distance_positive
+		is
+			spacing : type_distance_positive;
+		begin
+			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
+			-- CS: Probably no longer required ?
+			
+			spacing := text_size * (0.25 + type_distance_positive (type_character_width'last));
+			
+			pragma Warnings (On, "static fixed-point value is not a multiple of Small");		
+			-- CS: Probably no longer required ?
+			
+			return spacing;
+		end compute_character_spacing;
+		
+
+		
+		
+		
+		
+		
+		procedure scale_and_move_lines (
+			lines			: in out pac_character_lines.list;
+			place			: in positive;
+			offset			: in type_offset;
+			scale_factor	: in type_float_positive;
+			spacing			: in type_distance_positive)
+		is
+			-- Here we collect the lines of the moved character.
+			-- scratch will overwrite the given lines at the end of this procedure:
+			scratch : pac_character_lines.list;
+
+			
+			procedure query_line (c : in pac_character_lines.cursor) is
+				l : type_character_line := element (c);
+			begin
+				-- According to the given text size, the line is now
+				-- to be scaled:
+				scale (l, scale_factor);
+
+				-- Move the line by offset:
+				move_by (
+					line	=> l,
+					offset	=> offset);
+
+				-- Move the line to the right according to the
+				-- position of the character inside the text.
+				-- CS: depends on alignment ?
+				move_by (
+					line	=> l,
+					offset	=> to_offset (
+						x => type_distance (place - 1) * spacing,
+						y => zero));
+
+				-- Collect the line in scratch:
+				append (scratch, l);
+			end query_line;
+
+		begin
+			iterate (lines, query_line'access); -- query the lines of the character
+			lines := scratch; -- replace old lines by new lines
+		end scale_and_move_lines;
+
+	
+
+	
+
+	
+	
+	
+		procedure scale_and_move_border (
+			border				: in out pac_vectors.list;
+			place				: in positive;
+			scale_factor		: in type_float_positive;
+			offset				: in type_offset;
+			spacing				: in type_distance_positive;
+			position			: in type_vector_model;
+			text_height			: in type_distance_positive;
+			text_height_half	: in type_distance_positive;
+			text_length			: in type_distance_positive;
+			text_length_half	: in type_distance_positive;
+			alignment			: in type_text_alignment;
+			rotation			: in type_rotation;
+			mirror				: in type_mirror)
+		is
+
+			procedure align_vertical is begin
+				case alignment.vertical is
+					when ALIGN_BOTTOM =>
+						null; -- already computed for bottom alignment. nothing to do
+
+					when ALIGN_CENTER =>
+						move_by (border, to_offset (zero, -text_height_half));
+
+					when ALIGN_TOP =>
+						move_by (border, to_offset (zero, -text_height));
+				end case;
+			end align_vertical;
 
 
+		begin
+			scale (border, scale_factor);
+			move_by (border, offset);
+
+			move_by (border, to_offset (
+				x => type_distance (place - 1) * spacing,
+				y => zero));
+
+
+			-- CS: Not tested !
+			-- Align with the origin:
+			case alignment.horizontal is
+				when ALIGN_LEFT =>
+					-- already computed for left alignment. so no need to align horizontal.
+					align_vertical;
+
+				when ALIGN_CENTER =>
+					move_by (border, to_offset (-text_length_half, zero));
+
+					align_vertical;
+
+				when ALIGN_RIGHT =>
+					move_by (border, to_offset (-text_length, zero));
+
+					align_vertical;
+			end case;
+
+
+			-- Rotate as given by argument "rotation":
+			rotate_by (border, type_angle (rotation));
+
+			-- Mirror if required:
+			if mirror = MIRROR_ALONG_Y_AXIS then
+				mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
+			end if;
+
+			-- Move to final position as given by argument "position":
+			move_by (border, to_offset (position));
+		end scale_and_move_border;
+	
+	
+	
+	
+		
+		
+		
+		
+		
+		procedure finalize (
+			text				: in out type_vector_text;
+			alignment			: in type_text_alignment;
+			position			: in type_vector_model;
+			rotation			: in type_rotation;
+			mirror				: in type_mirror;
+			text_height			: in type_distance_positive;
+			text_height_half	: in type_distance_positive;
+			text_length			: in type_distance_positive;
+			text_length_half	: in type_distance_positive)			
+		is
+			scratch : pac_character_lines.list;
+
+			
+			procedure query_line (c : in pac_character_lines.cursor) is
+				l : type_character_line := element (c);
+
+				
+				procedure align_vertical is begin
+					case alignment.vertical is
+						when ALIGN_BOTTOM =>
+							null; -- text is already computed for bottom alignment. nothing to do
+
+						when ALIGN_CENTER =>
+							move_by (
+								line	=> l,
+								offset	=> to_offset (zero, -text_height_half));
+
+
+						when ALIGN_TOP =>
+							move_by (
+								line	=> l,
+								offset	=> to_offset (zero, -text_height));
+
+					end case;
+				end align_vertical;
+
+
+			begin -- query_line
+
+				-- Align the text with the origin:
+				case alignment.horizontal is
+					when ALIGN_LEFT =>
+						-- text is already computed for left alignment. so no need to align horizontal.
+						align_vertical;
+
+					when ALIGN_CENTER =>
+						move_by (
+							line	=> l,
+							offset	=> to_offset (-text_length_half, zero));
+
+						align_vertical;
+
+					when ALIGN_RIGHT =>
+						move_by (
+							line	=> l,
+							offset	=> to_offset (-text_length, zero));
+
+						align_vertical;
+				end case;
+
+
+				-- Rotate the text (about the origin) if required:
+				if rotation /= zero_rotation then
+					rotate_by (l, type_angle (rotation));
+				end if;
+
+				-- Mirror the text if required:
+				if mirror = MIRROR_ALONG_Y_AXIS then
+					mirror_line (l, MIRROR_ALONG_Y_AXIS);
+				end if;
+
+				-- Move the line to the given position.
+				-- The given position is the anchor point of the text.
+				move_by (l, to_offset (position));
+
+				append (scratch, l);
+			end query_line;
+
+
+		begin
+			--put_line ("length " & to_string (text_length));
+
+			iterate (text.lines, query_line'access);
+			text.lines := scratch;
+
+		end finalize;
+
+		
+		
+		
+		
+		
+		
+		
+		
 		function vectorize_text (
 			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
@@ -285,8 +535,6 @@ package body et_text_vectorized is
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := to_string (content);
 
-			package sorting is new pac_character_lines.generic_sorting;
-
 
 			half_line_width : constant type_float_positive :=
 				type_float (line_width) * 0.5;
@@ -296,14 +544,14 @@ package body et_text_vectorized is
 				to_offset (half_line_width, half_line_width);
 
 			-- This indicates the position of the character being processed:
-			place : positive := 1;
+			place : positive := 1; -- CS subtype with limited range
 
+
+			
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
-			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
-			spacing : constant type_distance_positive :=
-				size * (0.25 + type_distance_positive (type_character_width'last));
-			pragma Warnings (On, "static fixed-point value is not a multiple of Small");
+			spacing : constant type_distance_positive := compute_character_spacing (size);
+		
 
 
 			-- The scaling is done so that text height and width are
@@ -325,100 +573,6 @@ package body et_text_vectorized is
 			text_height_half : constant type_distance_positive := size * 0.5;
 
 
-			procedure scale_and_move_lines (lines : in out pac_character_lines.list) is
-
-				-- Here we collect the lines of the moved character.
-				-- scratch will overwrite the given lines at the end of this procedure:
-				scratch : pac_character_lines.list;
-
-				procedure query_line (c : in pac_character_lines.cursor) is
-					l : type_character_line := element (c);
-				begin
-					-- According to the given text size, the line is now
-					-- to be scaled:
-					scale (l, scale_factor_float);
-
-					-- Move the line by offset_due_to_line_width (see above):
-					move_by (
-						line	=> l,
-						offset	=> offset_due_to_line_width);
-
-					-- Move the line to the right according to the
-					-- position of the character inside the text.
-					-- CS: depends on alignment ?
-					move_by (
-						line	=> l,
-						offset	=> to_offset (
-									x => type_distance (place - 1) * spacing,
-									y => zero));
-
-					-- Collect the line in scratch:
-					append (scratch, l);
-				end query_line;
-
-			begin
-				iterate (lines, query_line'access); -- query the lines of the character
-				lines := scratch; -- replace old lines by new lines
-			end scale_and_move_lines;
-
-
-
-			procedure scale_and_move_border (border : in out pac_vectors.list) is
-
-				procedure align_vertical is begin
-					case alignment.vertical is
-						when ALIGN_BOTTOM =>
-							null; -- already computed for bottom alignment. nothing to do
-
-						when ALIGN_CENTER =>
-							move_by (border, to_offset (zero, -text_height_half));
-
-						when ALIGN_TOP =>
-							move_by (border, to_offset (zero, -text_height));
-					end case;
-				end align_vertical;
-
-
-			begin -- scale_and_move_border
-				scale (border, scale_factor_float);
-				move_by (border, offset_due_to_line_width);
-
-				move_by (border, to_offset (
-									x => type_distance (place - 1) * spacing,
-									y => zero));
-
-
-				-- CS: Not tested !
-				-- Align with the origin:
-				case alignment.horizontal is
-					when ALIGN_LEFT =>
-						-- already computed for left alignment. so no need to align horizontal.
-						align_vertical;
-
-					when ALIGN_CENTER =>
-						move_by (border, to_offset (-text_length_half, zero));
-
-						align_vertical;
-
-					when ALIGN_RIGHT =>
-						move_by (border, to_offset (-text_length, zero));
-
-						align_vertical;
-				end case;
-
-
-				-- Rotate as given by argument "rotation":
-				rotate_by (border, type_angle (rotation));
-
-				-- Mirror if required:
-				if mirror = MIRROR_ALONG_Y_AXIS then
-					mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
-				end if;
-
-				-- Move to final position as given by argument "position":
-				move_by (border, to_offset (position));
-			end scale_and_move_border;
-
 
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
@@ -431,95 +585,51 @@ package body et_text_vectorized is
 				use pac_polygons;
 				use pac_offsetting;
 				p_scratch : type_polygon;
+				
+				-- package line_sorting is new pac_character_lines.generic_sorting;
+				-- CS 1: If compiled with -gnata switch, then an assertion error is
+				-- raised here. I presume this is because no "<" operator is defined
+				-- for type_character_line. 
+				-- CS 2: Actually no sorting is required. So if we just spice the
+				-- lines (see below) instead of sorting, the error as described
+				-- above does not arise anymore.
+				
 			begin
-				scale_and_move_lines (text_lines);
-				sorting.merge (target => result.lines, source => text_lines);
+				scale_and_move_lines (
+					lines			=> text_lines, 
+					place			=> place, 
+					offset			=> offset_due_to_line_width,
+					scale_factor	=> scale_factor_float,
+					spacing			=> spacing);
+					
+				-- line_sorting.merge (target => result.lines, source => text_lines);
+				-- CS: no sorting required. Instead we splice result.lines and text_lines:
+				splice (target => result.lines, before => pac_character_lines.no_element, 
+					source => text_lines);
 
 				if make_border then
 					border_vertices := to_list (char.border);
-					scale_and_move_border (border_vertices);
+					
+					scale_and_move_border (
+						border				=> border_vertices,
+						place				=> place,
+						scale_factor		=> scale_factor_float,
+						offset				=> offset_due_to_line_width,
+						spacing				=> spacing,
+						position			=> position,
+						text_height			=> text_height,
+						text_height_half	=> text_height_half,
+						text_length			=> text_length,
+						text_length_half	=> text_length_half,
+						alignment			=> alignment,
+						rotation			=> rotation,
+						mirror				=> mirror);
+					
 					p_scratch := to_polygon (border_vertices);
 					offset_polygon (p_scratch, half_line_width, log_threshold + 2);
 					result.borders.append (p_scratch);
 				end if;
 			end add;
-
-
-			procedure finalize is
-				scratch : pac_character_lines.list;
-
-				procedure query_line (c : in pac_character_lines.cursor) is
-					l : type_character_line := element (c);
-
-					procedure align_vertical is begin
-						case alignment.vertical is
-							when ALIGN_BOTTOM =>
-								null; -- text is already computed for bottom alignment. nothing to do
-
-							when ALIGN_CENTER =>
-								move_by (
-									line	=> l,
-									offset	=> to_offset (zero, -text_height_half));
-
-
-							when ALIGN_TOP =>
-								move_by (
-									line	=> l,
-									offset	=> to_offset (zero, -text_height));
-
-						end case;
-					end align_vertical;
-
-
-				begin -- query_line
-
-					-- Align the text with the origin:
-					case alignment.horizontal is
-						when ALIGN_LEFT =>
-							-- text is already computed for left alignment. so no need to align horizontal.
-							align_vertical;
-
-						when ALIGN_CENTER =>
-							move_by (
-								line	=> l,
-								offset	=> to_offset (-text_length_half, zero));
-
-							align_vertical;
-
-						when ALIGN_RIGHT =>
-							move_by (
-								line	=> l,
-								offset	=> to_offset (-text_length, zero));
-
-							align_vertical;
-					end case;
-
-
-					-- Rotate the text (about the origin) if required:
-					if rotation /= zero_rotation then
-						rotate_by (l, type_angle (rotation));
-					end if;
-
-					-- Mirror the text if required:
-					if mirror = MIRROR_ALONG_Y_AXIS then
-						mirror_line (l, MIRROR_ALONG_Y_AXIS);
-					end if;
-
-					-- Move the line to the given position.
-					-- The given position is the anchor point of the text.
-					move_by (l, to_offset (position));
-
-					append (scratch, l);
-				end query_line;
-
-
-			begin -- finalize
-				--put_line ("length " & to_string (text_length));
-
-				iterate (result.lines, query_line'access);
-				result.lines := scratch;
-
-			end finalize;
 
 
 		begin -- vectorize_text
@@ -613,7 +723,16 @@ package body et_text_vectorized is
 			end loop;
 
 			-- Align, mirror and move the text to the final position:
-			finalize;
+			finalize (
+				text				=> result,
+				alignment			=> alignment,
+				position			=> position,
+				rotation			=> rotation,
+				mirror				=> mirror,
+				text_height			=> text_height,
+				text_height_half	=> text_height_half,
+				text_length			=> text_length,
+				text_length_half	=> text_length_half);
 
 
 			log_indentation_down;
@@ -621,6 +740,8 @@ package body et_text_vectorized is
 		end vectorize_text;
 
 
+		
+		
 
 		function first (
 			text	: in type_vector_text)
@@ -628,6 +749,9 @@ package body et_text_vectorized is
 		is (text.lines.first);
 
 
+		
+		
+		
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
@@ -642,6 +766,9 @@ package body et_text_vectorized is
 			end loop;
 		end iterate;
 
+		
+		
+		
 
 		function get_lines (
 			text	: in type_vector_text)
@@ -649,18 +776,26 @@ package body et_text_vectorized is
 		is (text.lines);
 
 
+		
+		
 		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list
 		is (text.borders);
 
 
+		
+		
+		
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive
 		is (text.width);
 
 
+		
+		
+		
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -685,6 +820,9 @@ package body et_text_vectorized is
 
 		end mirror_vector_text;
 
+		
+		
+		
 
 		procedure rotate_vector_text (
 			text	: in out type_vector_text;
@@ -711,6 +849,10 @@ package body et_text_vectorized is
 			rotate_polygons (text.borders, angle_float);
 		end rotate_vector_text;
 
+		
+		
+		
+		
 
 		procedure move_vector_text (
 			text	: in out type_vector_text;

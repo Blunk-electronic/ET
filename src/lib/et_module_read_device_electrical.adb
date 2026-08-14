@@ -100,7 +100,6 @@ with et_object_status;
 
 package body et_module_read_device_electrical is
 
-	use pac_generic_modules;
 
 
 

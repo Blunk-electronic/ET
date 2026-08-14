@@ -39,7 +39,7 @@
 --
 
 
-with et_pcb_sides;						use et_pcb_sides;
+with et_pcb_sides;
 
 
 package et_stencil.packages is

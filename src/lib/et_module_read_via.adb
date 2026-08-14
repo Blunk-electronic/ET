@@ -60,7 +60,6 @@ with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 package body et_module_read_via is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

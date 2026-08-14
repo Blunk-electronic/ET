@@ -66,7 +66,6 @@ with et_file_write;					use et_file_write;
 
 package body et_module_write_submodules is
 
-	use pac_generic_modules;
 
 
 

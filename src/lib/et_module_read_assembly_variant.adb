@@ -64,7 +64,6 @@ with et_schematic_ops_submodules;
 
 package body et_module_read_assembly_variant is
 
-	use pac_generic_modules;
 
 
 

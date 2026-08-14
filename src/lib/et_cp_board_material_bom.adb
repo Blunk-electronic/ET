@@ -52,7 +52,6 @@ with et_schematic_ops_submodules;
 
 package body et_cp_board_material_bom is
 
-	use pac_generic_modules;
 
 
 

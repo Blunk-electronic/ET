@@ -2103,7 +2103,7 @@ package body et_geometry_2a is
 	function is_selected (
 		line : in type_line)
 		return boolean
-	is (boolean (is_selected (line.status)));
+	is (is_selected (line.status));
 
 
 	procedure set_selected (
@@ -2168,7 +2168,7 @@ package body et_geometry_2a is
 	function is_proposed (
 		line : in type_line)
 		return boolean
-	is (boolean (is_proposed (line.status)));
+	is (is_proposed (line.status));
 
 
 	procedure set_proposed (
@@ -2191,7 +2191,7 @@ package body et_geometry_2a is
 	function is_moving (
 		line : in type_line)
 		return boolean
-	is (boolean (is_moving (line.status)));
+	is (is_moving (line.status));
 
 
 	procedure set_moving (
@@ -3159,7 +3159,7 @@ package body et_geometry_2a is
 	function is_selected (
 		arc : in type_arc)
 		return boolean
-	is (boolean (is_selected (arc.status)));
+	is (is_selected (arc.status));
 
 
 
@@ -3182,7 +3182,7 @@ package body et_geometry_2a is
 	function is_proposed (
 		arc : in type_arc)
 		return boolean
-	is (boolean (is_proposed (arc.status)));
+	is (is_proposed (arc.status));
 
 
 	procedure set_proposed (
@@ -3205,7 +3205,7 @@ package body et_geometry_2a is
 	function is_moving (
 		arc : in type_arc)
 		return boolean
-	is (boolean (is_moving (arc.status)));
+	is (is_moving (arc.status));
 
 
 	procedure set_moving (
@@ -3662,7 +3662,7 @@ package body et_geometry_2a is
 	function is_selected (
 		circle : in type_circle)
 		return boolean
-	is (boolean (is_selected (circle.status)));
+	is (is_selected (circle.status));
 
 
 	procedure set_selected (
@@ -3684,7 +3684,7 @@ package body et_geometry_2a is
 	function is_proposed (
 		circle : in type_circle)
 		return boolean
-	is (boolean (is_proposed (circle.status)));
+	is (is_proposed (circle.status));
 
 
 	procedure set_proposed (
@@ -3707,7 +3707,7 @@ package body et_geometry_2a is
 	function is_moving (
 		circle : in type_circle)
 		return boolean
-	is (boolean (is_moving (circle.status)));
+	is (is_moving (circle.status));
 
 
 	procedure set_moving (

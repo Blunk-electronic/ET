@@ -56,7 +56,6 @@ with et_board_geometry;
 
 package body et_module_read_grid is
 
-	use pac_generic_modules;
 
 
 	grid_schematic : et_schematic_geometry.pac_grid.type_grid; -- CS rename to schematic_grid

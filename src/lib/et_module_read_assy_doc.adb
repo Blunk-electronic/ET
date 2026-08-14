@@ -56,7 +56,6 @@ with et_assy_doc.board;				use et_assy_doc.board;
 
 package body et_module_read_assy_doc is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

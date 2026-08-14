@@ -93,10 +93,8 @@ package body et_schematic_ops_units is
 	use pac_devices_electrical;
 	use pac_units;
 
-	use pac_unit_name;
 	use pac_text_schematic;
 
-	use et_net_names;
 
 
 
@@ -3417,19 +3415,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if on_sheet_and_in_area (unit, sheet, area) then
-						-- CS: log the full name like IC1.C
-						-- log (text =>  to_string (unit_name), level => log_threshold;
+						
+						log (text =>  to_string (device_name, unit_name),
+							 level => log_threshold + 1);
+
 						set_selected (unit);
 					end if;
 				end query_unit;
@@ -3472,6 +3469,104 @@ package body et_schematic_ops_units is
 
 
 
+	
+
+	
+
+
+	function get_group_unit_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_electrical)
+			is
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				procedure query_unit (
+					unit_name	: in type_unit_name;
+					unit		: in type_unit)
+				is 
+					place : type_vector_model;
+				begin
+					-- Filter out only selected units and
+					-- those which are on the given sheet:
+					if on_sheet_and_selected (unit, sheet) then
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+						
+						-- Get x/y position of the unit candidate:
+						place := get_place (unit);
+
+						-- Append the unit position to
+						-- the result:
+						result.append (place);
+					end if;
+				end query_unit;
+
+
+			begin
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					query_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+			end query_device;
+
+
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+
+				query_element (
+					device_cursor, query_device'access);
+
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get units positions of group on sheet " & to_string (sheet),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_group_unit_positions;
+
+
+
+
+	
+	
+
+
+
 
 
 
@@ -3508,6 +3603,10 @@ package body et_schematic_ops_units is
 				is begin
 					if is_selected (unit) then
 
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+						
 						-- Backup the unit and device name:
 						u_name := unit_name;
 						d_name := device_name;
@@ -3609,7 +3708,10 @@ package body et_schematic_ops_units is
 					unit		: in out type_unit)
 				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						log_indentation_up;
 
@@ -3620,7 +3722,7 @@ package body et_schematic_ops_units is
 							coordinates		=> RELATIVE,
 							destination		=> offset,
 							commit_design	=> NO_COMMIT,
-							log_threshold	=> log_threshold + 1);
+							log_threshold	=> log_threshold + 2);
 
 						log_indentation_down;
 					end if;
@@ -3686,18 +3788,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						set_moving (unit);
 					end if;
@@ -3765,18 +3867,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						clear_moving (unit);
 					end if;
@@ -3844,17 +3946,17 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					-- CS log full name like IC1.D
+				is begin
+					-- Log device and unit name:
+					log (text => to_string (device_name, unit_name),
+						level => log_threshold + 1);
+
 					clear_moving (unit);
 				end query_unit;
 
@@ -3946,18 +4048,18 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
+				is begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
+
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
 
 						-- We have a selected unit.
 						-- The search must be aborted by setting
@@ -4126,7 +4228,6 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-				pragma unreferenced (device_name);
 				unit_cursor : pac_units.cursor := device.units.first;
 
 
@@ -4135,15 +4236,20 @@ package body et_schematic_ops_units is
 					unit		: in type_unit)
 				is
 					use et_module_clipboard.devices_electrical;
-					pragma unreferenced (unit_name);
 				begin
 					if is_selected (unit) then
-						-- CS log full name like IC1.D
-
 						-- We have a selected unit.
 
+						-- Log device and unit name:
+						log (text => to_string (device_name, unit_name),
+							level => log_threshold + 1);
+
+						log_indentation_up;
+
 						copy_unit_to_clipboard (
-							device_cursor, unit_cursor, log_threshold + 1);
+							device_cursor, unit_cursor, log_threshold + 2);
+
+						log_indentation_down;
 					end if;
 				end query_unit;
 
@@ -4184,8 +4290,8 @@ package body et_schematic_ops_units is
 
 
 
-	
-	
+
+
 
 
 	procedure paste_units_from_clipboard (
@@ -4196,7 +4302,7 @@ package body et_schematic_ops_units is
 
 		procedure do_paste is
 			use et_module_clipboard;
-			
+
 			device_cursor : pac_devices_electrical.cursor :=
 				clipboard.devices.first;
 
@@ -4204,21 +4310,21 @@ package body et_schematic_ops_units is
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
-			is 
+			is
 				unit_cursor : pac_units.cursor := device.units.first;
-				
+
 				-- On copying a unit, a new device is created
 				-- indirectly. Here we store the name of the
 				-- newly created device. It is required in case
 				-- another unit is found that belongs to the
 				-- same device:
 				device_created : type_device_name;
-				
+
 				-- Here we store the name of the last device
 				-- for which a unit has been copied:
 				device_last : type_device_name; -- assumes default
-				
-				
+
+
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in type_unit)
@@ -4266,9 +4372,9 @@ package body et_schematic_ops_units is
 				begin
 					log (text => "unit " & to_string (unit_name),
 						level => log_threshold + 2);
-					
+
 					log_indentation_up;
-					
+
 					-- If the last processed device is the same
 					-- as the current one, then no new device is
 					-- to be created but just the unit copied:
@@ -4280,30 +4386,30 @@ package body et_schematic_ops_units is
 						-- device:
 						copy_in_new_device;
 					end if;
-			
+
 					-- Backup the name of the last device:
 					device_last := device_name;
-					
+
 					log_indentation_down;
 				end query_unit;
-				
-				
+
+
 			begin
 				log (text => "device " & to_string (device_name),
 					level => log_threshold + 1);
-					
+
 				log_indentation_up;
-				
+
 				-- Iterate through the units:
-				while has_element (unit_cursor) loop					
+				while has_element (unit_cursor) loop
 					query_element (unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
-				
+
 				log_indentation_down;
 			end query_device;
-			
-			
+
+
 		begin
 			-- Iterate through the devices in the clipboard:
 			while has_element (device_cursor) loop
@@ -4312,24 +4418,23 @@ package body et_schematic_ops_units is
 			end loop;
 		end do_paste;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " paste units from clipboard. Group offset: " & to_string (offset),
 			 level => log_threshold);
 
 		log_indentation_up;
-		
 		do_paste;
 
 		log_indentation_down;
 	end paste_units_from_clipboard;
 
 
-	
 
 
-	
+
+
 
 
 

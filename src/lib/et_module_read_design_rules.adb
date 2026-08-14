@@ -57,7 +57,6 @@ with et_design_rules_board;			use et_design_rules_board;
 
 package body et_module_read_design_rules is
 
-	use pac_generic_modules;
 
 
 	rules : type_design_rules := (others => <>);

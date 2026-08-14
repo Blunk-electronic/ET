@@ -71,7 +71,6 @@ with et_text_content;
 
 package body et_kicad.schematic is
 
-	use et_net_names;
 
 
 	-- Returns the base name of the given schematic file name as submodule name.

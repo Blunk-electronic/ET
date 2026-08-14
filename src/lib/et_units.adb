@@ -52,6 +52,12 @@ package body et_units is
 
 
 
+	function get_place (
+		unit	: in type_unit)
+		return type_vector_model
+	is (get_place (unit.position));
+
+	
 
 	function get_position (
 		unit	: in type_unit)
@@ -228,6 +234,26 @@ package body et_units is
 
 
 
+	
+
+
+	function on_sheet_and_selected (
+		unit	: in type_unit;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+
+		return result;
+	end on_sheet_and_selected;
+
+
+
+
+	
+
+
 	procedure unit_not_found (
 		name : in type_unit_name)
 	is begin
@@ -256,7 +282,7 @@ package body et_units is
 	function is_selected (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_selected (unit.status)));
+	is (is_selected (unit.status));
 
 
 
@@ -277,7 +303,7 @@ package body et_units is
 	function is_proposed (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_proposed (unit.status)));
+	is (is_proposed (unit.status));
 
 
 
@@ -299,7 +325,7 @@ package body et_units is
 	function is_moving (
 		unit : in type_unit)
 		return boolean
-	is (boolean (is_moving (unit.status)));
+	is (is_moving (unit.status));
 
 
 

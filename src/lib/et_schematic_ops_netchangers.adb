@@ -73,6 +73,7 @@ package body et_schematic_ops_netchangers is
 
 
 
+
 	procedure dragging_not_possible (
 		port		: in string;
 		position	: in type_object_position) is

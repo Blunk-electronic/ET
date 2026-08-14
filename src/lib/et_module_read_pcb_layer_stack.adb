@@ -56,7 +56,6 @@ with et_board_geometry;				use et_board_geometry;
 
 package body et_module_read_pcb_layer_stack is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 
 

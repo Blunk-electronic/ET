@@ -68,7 +68,6 @@ package body et_device_read_package_variant is
 
 -- PACKAGE VARIANT:
 
-	use et_package_variant_name;
 	variant_name : type_package_variant_name; -- N, D
 
 

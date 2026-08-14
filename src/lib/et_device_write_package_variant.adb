@@ -45,13 +45,12 @@
 with ada.strings;					use ada.strings;
 
 with et_package_library;
-with et_package_variant_name;		use et_package_variant_name;
+with et_package_variant_name;
 with et_package_variant_terminal_port_map;
 
 with et_unit_name;
 with et_port_names;
 with et_terminal_name;
-with et_package_variant_terminal_port_map;
 
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;

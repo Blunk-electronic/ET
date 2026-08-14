@@ -43,6 +43,7 @@ with et_module_names;				use et_module_names;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_keywords;					use et_keywords;
 with et_module_read;
+with et_string_processing;			use et_string_processing;
 
 
 separate (et_rig)

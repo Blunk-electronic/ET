@@ -61,8 +61,6 @@ package body et_fonts is
 			when FAMILY_MONOSPACE =>
 				result.family := to_family ("monospace");
 
-			when others =>
-				null; -- CS
 		end case;
 
 
@@ -73,8 +71,6 @@ package body et_fonts is
 			when SLANT_ITALIC =>
 				result.slant := CAIRO_FONT_SLANT_ITALIC;
 
-			when others =>
-				null; -- CS
 		end case;
 
 
@@ -82,7 +78,6 @@ package body et_fonts is
 			when WEIGHT_NORMAL =>
 				result.weight := CAIRO_FONT_WEIGHT_NORMAL;
 
-			when others => null;
 		end case;
 
 		return result;

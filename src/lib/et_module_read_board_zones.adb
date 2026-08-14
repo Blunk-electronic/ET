@@ -70,7 +70,6 @@ with et_module_read_board_contour;	use et_module_read_board_contour;
 
 package body et_module_read_board_zones is
 
-	use pac_generic_modules;
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_signal_layers;

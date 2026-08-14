@@ -62,7 +62,6 @@ package body et_package_write_conductors is
 	use pac_geometry_2;
 	use pac_file_rw;
 
-	use et_conductor_segment;
 
 	use pac_conductor_lines;
 	use pac_conductor_arcs;

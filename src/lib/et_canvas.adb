@@ -459,7 +459,6 @@ package body et_canvas is
 				decrease_zoom_factor;
 				-- put_line (" zoom out");
 
-			when others => null;
 		end case;
 
 		update_zoom_display;
@@ -1873,7 +1872,7 @@ package body et_canvas is
 
 		-- The width of the text view shall be wide enough
 		-- to fit the greatest numbers:
-		pos_field_width_min : constant gint := 80;
+		pos_field_width_min : constant gint := 96;
 	begin
 		-- CS To disable focus use
 		-- procedure Set_Focus_On_Click
@@ -1883,13 +1882,11 @@ package body et_canvas is
 		-- Create a table, that contains headers, text labels
 		-- and text views for the actual coordinates:
 		gtk_new (coord_grid);
-		set_column_homogeneous (coord_grid, homogeneous => true);
-		-- table.set_col_spacings (50);
-		-- table.set_border_width (10);
+		coord_grid.set_column_homogeneous (homogeneous => true);
 
 		-- The table shall not expand downward:
 		box_v1.pack_start (coord_grid, expand => false);
-
+		box_v1.set_hexpand (expand => false);
 
 		-- POINTER / MOUSE:
 		gtk_new (pointer_header, "POINTER");
@@ -1901,6 +1898,7 @@ package body et_canvas is
 		-- gtk-how-to-align-a-label-to-the-left-in-a-table>
 		-- gave the solution. See also package gtk.misc for details:
 		pointer_x_label.set_alignment (0.0, 0.0);
+
 		gtk_new (pointer_x_value); -- create a text view vor the value
 		-- A minimum width must be set for the text.
 		-- Setting the size request is one way. The height is

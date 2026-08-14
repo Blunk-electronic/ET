@@ -105,6 +105,12 @@ package et_units is
 
 
 
+	-- Returns x/y position of the given unit:
+	function get_place (
+		unit	: in type_unit)
+		return type_vector_model;
+
+
 
 	function get_position (
 		unit	: in type_unit)
@@ -199,6 +205,13 @@ package et_units is
 		area	: in type_area)
 		return boolean;
 
+
+	-- Returns true if the given unit is
+	-- on the given sheet and if it is selected:
+	function on_sheet_and_selected (
+		unit	: in type_unit;
+		sheet	: in type_sheet)
+		return boolean;
 
 
 	procedure unit_not_found (
@@ -398,7 +411,6 @@ package et_units is
 
 
 
-	use et_port_names;
 
 	-- When units are dragged about the sheet then connected
 	-- net segments must be dragged along.

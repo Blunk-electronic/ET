@@ -116,7 +116,7 @@ package body et_text is
 		function is_proposed (
 			text : in type_text)
 			return boolean
-		is (boolean (is_proposed (text.status)));
+		is (is_proposed (text.status));
 
 
 		procedure set_proposed (
@@ -137,7 +137,7 @@ package body et_text is
 		function is_moving (
 			text : in type_text)
 			return boolean
-		is (boolean (is_moving (text.status)));
+		is (is_moving (text.status));
 
 
 
@@ -159,7 +159,7 @@ package body et_text is
 		function is_selected (
 			text : in type_text)
 			return boolean
-		is (boolean (is_selected (text.status)));
+		is (is_selected (text.status));
 
 
 		procedure set_selected (
