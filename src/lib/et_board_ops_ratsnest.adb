@@ -53,13 +53,11 @@ with et_board_ops_netchangers;
 package body et_board_ops_ratsnest is
 
 
-	use pac_nets;
-
-
 	function get_track_ends (
 		net_cursor : in pac_nets.cursor)
 		return pac_points.list
 	is
+		use pac_nets;
 		use et_conductor_segment.boards;
 		use pac_points;
 		result : pac_points.list;
@@ -157,6 +155,7 @@ package body et_board_ops_ratsnest is
 		module_cursor	: in pac_generic_modules.cursor;
 		lth				: in type_log_level)
 	is
+		use pac_nets;
 
 
 		procedure query_module (
@@ -306,6 +305,7 @@ package body et_board_ops_ratsnest is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -381,6 +381,7 @@ package body et_board_ops_ratsnest is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -475,6 +476,7 @@ package body et_board_ops_ratsnest is
 		log_threshold	: in type_log_level)
 		return type_object_airwire
 	is
+		use pac_nets;
 		result : type_object_airwire;
 
 
@@ -563,6 +565,7 @@ package body et_board_ops_ratsnest is
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
+		use pac_nets;
 		use pac_objects;
 		result : pac_objects.list;
 
@@ -648,6 +651,7 @@ package body et_board_ops_ratsnest is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
