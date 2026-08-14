@@ -249,6 +249,8 @@ package body et_text_vectorized is
 			return to_string (text.content);
 		end get_content;
 
+		
+		
 
 
 		function to_string (
@@ -328,6 +330,7 @@ package body et_text_vectorized is
 
 	
 
+	
 
 	
 	
@@ -403,6 +406,104 @@ package body et_text_vectorized is
 		end scale_and_move_border;
 	
 	
+	
+	
+		
+		
+		
+		
+		
+		procedure finalize (
+			text				: in out type_vector_text;
+			alignment			: in type_text_alignment;
+			position			: in type_vector_model;
+			rotation			: in type_rotation;
+			mirror				: in type_mirror;
+			text_height			: in type_distance_positive;
+			text_height_half	: in type_distance_positive;
+			text_length			: in type_distance_positive;
+			text_length_half	: in type_distance_positive)			
+		is
+			scratch : pac_character_lines.list;
+
+			
+			procedure query_line (c : in pac_character_lines.cursor) is
+				l : type_character_line := element (c);
+
+				
+				procedure align_vertical is begin
+					case alignment.vertical is
+						when ALIGN_BOTTOM =>
+							null; -- text is already computed for bottom alignment. nothing to do
+
+						when ALIGN_CENTER =>
+							move_by (
+								line	=> l,
+								offset	=> to_offset (zero, -text_height_half));
+
+
+						when ALIGN_TOP =>
+							move_by (
+								line	=> l,
+								offset	=> to_offset (zero, -text_height));
+
+					end case;
+				end align_vertical;
+
+
+			begin -- query_line
+
+				-- Align the text with the origin:
+				case alignment.horizontal is
+					when ALIGN_LEFT =>
+						-- text is already computed for left alignment. so no need to align horizontal.
+						align_vertical;
+
+					when ALIGN_CENTER =>
+						move_by (
+							line	=> l,
+							offset	=> to_offset (-text_length_half, zero));
+
+						align_vertical;
+
+					when ALIGN_RIGHT =>
+						move_by (
+							line	=> l,
+							offset	=> to_offset (-text_length, zero));
+
+						align_vertical;
+				end case;
+
+
+				-- Rotate the text (about the origin) if required:
+				if rotation /= zero_rotation then
+					rotate_by (l, type_angle (rotation));
+				end if;
+
+				-- Mirror the text if required:
+				if mirror = MIRROR_ALONG_Y_AXIS then
+					mirror_line (l, MIRROR_ALONG_Y_AXIS);
+				end if;
+
+				-- Move the line to the given position.
+				-- The given position is the anchor point of the text.
+				move_by (l, to_offset (position));
+
+				append (scratch, l);
+			end query_line;
+
+
+		begin
+			--put_line ("length " & to_string (text_length));
+
+			iterate (text.lines, query_line'access);
+			text.lines := scratch;
+
+		end finalize;
+
+		
+		
+		
 		
 		
 		
@@ -519,83 +620,6 @@ package body et_text_vectorized is
 			end add;
 
 
-			procedure finalize is
-				scratch : pac_character_lines.list;
-
-				procedure query_line (c : in pac_character_lines.cursor) is
-					l : type_character_line := element (c);
-
-					procedure align_vertical is begin
-						case alignment.vertical is
-							when ALIGN_BOTTOM =>
-								null; -- text is already computed for bottom alignment. nothing to do
-
-							when ALIGN_CENTER =>
-								move_by (
-									line	=> l,
-									offset	=> to_offset (zero, -text_height_half));
-
-
-							when ALIGN_TOP =>
-								move_by (
-									line	=> l,
-									offset	=> to_offset (zero, -text_height));
-
-						end case;
-					end align_vertical;
-
-
-				begin -- query_line
-
-					-- Align the text with the origin:
-					case alignment.horizontal is
-						when ALIGN_LEFT =>
-							-- text is already computed for left alignment. so no need to align horizontal.
-							align_vertical;
-
-						when ALIGN_CENTER =>
-							move_by (
-								line	=> l,
-								offset	=> to_offset (-text_length_half, zero));
-
-							align_vertical;
-
-						when ALIGN_RIGHT =>
-							move_by (
-								line	=> l,
-								offset	=> to_offset (-text_length, zero));
-
-							align_vertical;
-					end case;
-
-
-					-- Rotate the text (about the origin) if required:
-					if rotation /= zero_rotation then
-						rotate_by (l, type_angle (rotation));
-					end if;
-
-					-- Mirror the text if required:
-					if mirror = MIRROR_ALONG_Y_AXIS then
-						mirror_line (l, MIRROR_ALONG_Y_AXIS);
-					end if;
-
-					-- Move the line to the given position.
-					-- The given position is the anchor point of the text.
-					move_by (l, to_offset (position));
-
-					append (scratch, l);
-				end query_line;
-
-
-			begin -- finalize
-				--put_line ("length " & to_string (text_length));
-
-				iterate (result.lines, query_line'access);
-				result.lines := scratch;
-
-			end finalize;
-
-
 		begin -- vectorize_text
 			log (text => "vectorize_text", level => log_threshold);
 			log_indentation_up;
@@ -687,7 +711,16 @@ package body et_text_vectorized is
 			end loop;
 
 			-- Align, mirror and move the text to the final position:
-			finalize;
+			finalize (
+				text				=> result,
+				alignment			=> alignment,
+				position			=> position,
+				rotation			=> rotation,
+				mirror				=> mirror,
+				text_height			=> text_height,
+				text_height_half	=> text_height_half,
+				text_length			=> text_length,
+				text_length_half	=> text_length_half);
 
 
 			log_indentation_down;
@@ -695,6 +728,8 @@ package body et_text_vectorized is
 		end vectorize_text;
 
 
+		
+		
 
 		function first (
 			text	: in type_vector_text)
@@ -702,6 +737,9 @@ package body et_text_vectorized is
 		is (text.lines.first);
 
 
+		
+		
+		
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
@@ -716,6 +754,9 @@ package body et_text_vectorized is
 			end loop;
 		end iterate;
 
+		
+		
+		
 
 		function get_lines (
 			text	: in type_vector_text)
@@ -723,18 +764,26 @@ package body et_text_vectorized is
 		is (text.lines);
 
 
+		
+		
 		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list
 		is (text.borders);
 
 
+		
+		
+		
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive
 		is (text.width);
 
 
+		
+		
+		
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -759,6 +808,9 @@ package body et_text_vectorized is
 
 		end mirror_vector_text;
 
+		
+		
+		
 
 		procedure rotate_vector_text (
 			text	: in out type_vector_text;
@@ -785,6 +837,10 @@ package body et_text_vectorized is
 			rotate_polygons (text.borders, angle_float);
 		end rotate_vector_text;
 
+		
+		
+		
+		
 
 		procedure move_vector_text (
 			text	: in out type_vector_text;
