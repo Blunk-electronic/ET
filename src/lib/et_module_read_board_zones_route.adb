@@ -48,7 +48,7 @@
 with et_keywords;					use et_keywords;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
-with et_thermal_relief;				use et_thermal_relief;
+with et_thermal_relief;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
@@ -94,9 +94,9 @@ package body et_module_read_board_zones_route is
 	signal_layers : pac_signal_layers.set;
 	-- CS rename to zone_signal_layers
 
-	relief_properties : type_relief_properties;
+	relief_properties : et_thermal_relief.type_relief_properties;
 
-	pad_connection : type_pad_connection := type_pad_connection'first;
+	pad_connection : et_thermal_relief.type_pad_connection := et_thermal_relief.type_pad_connection'first;
 
 
 
@@ -109,7 +109,7 @@ package body et_module_read_board_zones_route is
 		--board_hatching		:= (others => <>);
 		board_easing		:= (others => <>);
 		relief_properties	:= (others => <>);
-		pad_connection		:= type_pad_connection'first;
+		pad_connection		:= et_thermal_relief.type_pad_connection'first;
 
 		contour_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
@@ -158,6 +158,7 @@ package body et_module_read_board_zones_route is
 	procedure read_fill_zone_route (
 		line : in type_fields_of_line)
 	is
+		use et_thermal_relief;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag

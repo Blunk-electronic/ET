@@ -57,7 +57,7 @@ with et_schematic_coordinates;
 with et_netchangers.schematic;		use et_netchangers.schematic;
 
 with et_submodules;					use et_submodules;
-with et_net_names;					use et_net_names;
+with et_net_names;
 
 
 
@@ -67,7 +67,7 @@ package body et_module_read_submodules is
 	use pac_generic_modules;
 
 
-	submodule_port_name	: type_net_name; -- RESET
+	submodule_port_name	: et_net_names.type_net_name; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
 	submodule_name		: et_module_instance.type_module_instance_name; -- MOT_DRV_3
 	submodule_port		: et_submodules.type_submodule_port;
@@ -164,6 +164,7 @@ package body et_module_read_submodules is
 		line : in type_fields_of_line)
 	is
 		use et_schematic_geometry.pac_geometry_2;
+		use et_net_names;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag

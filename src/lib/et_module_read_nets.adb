@@ -59,7 +59,7 @@ with et_sheets;						use et_sheets;
 with et_netchangers;
 with et_netchangers.schematic;
 
-with et_net_names;					use et_net_names;
+with et_net_names;
 with et_net_class_name;
 with et_net_segment;				use et_net_segment;
 with et_net_strands;				use et_net_strands;
@@ -85,7 +85,7 @@ package body et_module_read_nets is
 
 -- NETS:
 
-	net_name	: type_net_name; -- motor_on_off
+	net_name	: et_net_names.type_net_name; -- motor_on_off
 	net			: et_nets.type_net;
 
 
