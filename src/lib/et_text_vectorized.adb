@@ -532,9 +532,6 @@ package body et_text_vectorized is
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := to_string (content);
 
-			
-			package line_sorting is new pac_character_lines.generic_sorting;
-
 
 			half_line_width : constant type_float_positive :=
 				type_float (line_width) * 0.5;
@@ -544,7 +541,7 @@ package body et_text_vectorized is
 				to_offset (half_line_width, half_line_width);
 
 			-- This indicates the position of the character being processed:
-			place : positive := 1;
+			place : positive := 1; -- CS subtype with limited range
 
 
 			
@@ -585,6 +582,8 @@ package body et_text_vectorized is
 				use pac_polygons;
 				use pac_offsetting;
 				p_scratch : type_polygon;
+				
+				package line_sorting is new pac_character_lines.generic_sorting;				
 			begin
 				scale_and_move_lines (
 					lines			=> text_lines, 
