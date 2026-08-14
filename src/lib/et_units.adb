@@ -244,7 +244,12 @@ package body et_units is
 	is
 		result : boolean := false;
 	begin
-
+		if get_sheet (unit) = sheet then
+			if is_selected (unit) then
+				result := true;
+			end if;
+		end if;
+		
 		return result;
 	end on_sheet_and_selected;
 

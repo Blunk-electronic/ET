@@ -1391,7 +1391,7 @@ package body et_geometry_2a is
 	begin
 		case count is
 			when 0 => 
-				raise constraint_error; -- CS
+				raise constraint_error; -- CS message ?
 
 			when 1 =>
 				-- The single given point is the center:
