@@ -260,8 +260,28 @@ package body et_text_vectorized is
 		end to_string;
 
 
+		
+		
+		
+		function compute_character_spacing (
+			text_size : in type_text_size)
+			return type_distance_positive
+		is
+			spacing : type_distance_positive;
+		begin
+			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
+			
+			spacing := text_size * (0.25 + type_distance_positive (type_character_width'last));
+			
+			pragma Warnings (On, "static fixed-point value is not a multiple of Small");		
+		
+			return spacing;
+		end compute_character_spacing;
+		
 
+		
 
+		
 		function vectorize_text (
 			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
@@ -298,12 +318,12 @@ package body et_text_vectorized is
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
+
+			
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
-			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
-			spacing : constant type_distance_positive :=
-				size * (0.25 + type_distance_positive (type_character_width'last));
-			pragma Warnings (On, "static fixed-point value is not a multiple of Small");
+			spacing : constant type_distance_positive := compute_character_spacing (size);
+		
 
 
 			-- The scaling is done so that text height and width are
