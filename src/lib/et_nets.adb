@@ -87,15 +87,33 @@ package body et_nets is
 
 
 
+	
+	procedure clear_route (
+		net		: in out type_net)
+	is 
+		use et_route;
+	begin
+		net.route := no_route;
+	end clear_route;
+
+
+
+	
 	function copy_bare_net (
 		net_in : in type_net)
 		return type_net
 	is
+		-- Take a full copy of the original net:
 		net_out : type_net := net_in;
 	begin
+		-- Reset the status flags:
 		reset_status (net_out.status);
+		
+		-- Delete all strands and net segments:
 		net_out.strands.clear;
-		-- net_out.route := 
+		
+		-- Remove all routing stuff:
+		clear_route (net_out);
 
 		return net_out;
 	end copy_bare_net;
