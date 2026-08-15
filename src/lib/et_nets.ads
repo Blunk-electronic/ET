@@ -133,7 +133,15 @@ package et_nets is
 		scope	: in type_net_scope);
 
 
-
+		
+	-- This function copies a given net but removes
+	-- all strands, tracks and fill zones.
+	-- Properties like class and scope are coplied:
+	function copy_bare_net (
+		net_in : in type_net)
+		return type_net;
+		
+		
 
 	procedure set_proposed (
 		net : in out type_net);

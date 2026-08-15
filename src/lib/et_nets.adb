@@ -87,6 +87,22 @@ package body et_nets is
 
 
 
+	function copy_bare_net (
+		net_in : in type_net)
+		return type_net
+	is
+		net_out : type_net := net_in;
+	begin
+		reset_status (net_out.status);
+		net_out.strands.clear;
+		-- net_out.route := 
+
+		return net_out;
+	end copy_bare_net;
+
+
+
+	
 
 
 	procedure set_proposed (
