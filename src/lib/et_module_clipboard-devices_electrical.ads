@@ -55,7 +55,9 @@ package et_module_clipboard.devices_electrical is
 	-- This procedure copies a given device and its unit
 	-- to the clipboard.
 	-- 1. If the device does not exist in the clipboard yet,
-	--    then a new device is created there.
+	--    then a new bare device is created there with the same
+	--    properties as the given device. Already deployed
+	--    units are not copied.
 	-- 2. If the device does exist, then it will not be created
 	--    anew.
 	-- 3. The given unit is copied into the device.
