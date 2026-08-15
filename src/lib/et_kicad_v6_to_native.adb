@@ -55,7 +55,6 @@ with et_object_status;					use et_object_status;
 with et_device_write;
 
 with et_symbol_model;					use et_symbol_model;
-with et_symbol_shapes;
 with et_symbol_text;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_port_general;				use et_symbol_port_general;
@@ -71,7 +70,6 @@ with et_package_variant_name;
 with et_package_variant;					use et_package_variant;
 with et_board_coordinates;
 
-with et_mirroring;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_sheets;							use et_sheets;
@@ -96,6 +94,10 @@ package body et_kicad_v6_to_native is
 	use et_kicad_v6.pac_uuid_path;
 
 	use et_device_library.pac_device_models;
+
+	-- type_package_variant_name only allows letters/digits/'_'/'-' --
+	-- no '/', unlike et_device_partcode.partcode_default ("N/A"):
+	variant_name_not_assigned : constant string := "not_assigned";
 
 
 	------------------------------------------------------------------
@@ -591,7 +593,13 @@ package body et_kicad_v6_to_native is
 							value			=> et_device_value.to_value (to_string (inst.value)),
 							partcode		=> et_device_partcode.to_partcode (et_device_partcode.partcode_default),
 							purpose			=> et_device_purpose.empty_purpose,
-							variant			=> et_package_variant_name.to_variant_name (""),
+							-- No footprint/package data in this KiCad
+							-- schematic-only project (out of scope --
+							-- see the package spec) -- et_module_write
+							-- always writes "variant <name>" with a
+							-- mandatory argument, so an empty name here
+							-- would produce an unparseable *.mod line:
+							variant			=> et_package_variant_name.to_variant_name (variant_name_not_assigned),
 							position		=> et_board_coordinates.package_position_default,
 							placeholders	=> (others => <>),
 							status			=> object_status_default,
