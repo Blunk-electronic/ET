@@ -738,6 +738,8 @@ package body et_schematic_ops_groups is
 
 			copy_selected_units_to_clipboard (
 				module_cursor, log_threshold + 2);
+			-- CS: to speed up the process, pass the sheet where the group is
+			-- using get_sheet (group_reference_point)
 
 			log_indentation_down;
 		end copy_units_to_clipboard;
@@ -754,7 +756,9 @@ package body et_schematic_ops_groups is
 
 			copy_selected_net_segments_to_clipboard (
 				module_cursor, log_threshold + 2);
-
+			-- CS: to speed up the process, pass the sheet where the group is
+			-- using get_sheet (group_reference_point)
+				
 			log_indentation_down;
 		end copy_net_segments_to_clipboard;
 

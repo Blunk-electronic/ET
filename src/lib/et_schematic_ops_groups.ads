@@ -159,6 +159,8 @@ package et_schematic_ops_groups is
 	-- 3. The x/y component of the global group_reference_point
 	--    is set according to the specified reference_point
 	--    or as the auto genereated center of the group.
+	-- 4. The sheet where the group is, can be taken from
+	--    the group_reference_point.
 	procedure copy_group_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		auto_center		: in boolean := true;
