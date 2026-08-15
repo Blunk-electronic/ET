@@ -850,6 +850,23 @@ package body et_schematic_ops_groups is
 
 
 
+		procedure paste_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+
+			paste_net_segments_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+
+			log_indentation_down;
+		end paste_net_segments;
+
+		
+		
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste group at sheet " & to_string (sheet)
@@ -873,8 +890,10 @@ package body et_schematic_ops_groups is
 		-- given module:
 		paste_units;
 
+		paste_net_segments;
+		
 		-- CS
-		-- nets, texts
+		-- netchangers, texts
 
 
 		-- Previously to commiting the design,

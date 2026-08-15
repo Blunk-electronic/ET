@@ -404,6 +404,15 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure copies net segments from the clipboard
+	-- to the given module. The segments will be placed
+	-- by the given offset:
+	procedure paste_net_segments_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_object_position_relative;
+		log_threshold	: in type_log_level);
+
+		
 
 
 -- STRANDS:

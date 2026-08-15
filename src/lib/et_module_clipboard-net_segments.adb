@@ -67,7 +67,7 @@ package body et_module_clipboard.net_segments is
 
 			if has_element (net_cursor) then
 				log (text => "net " & to_string (net_name)
-						& " already in clipboard",
+					& " already in clipboard",
 					level => log_threshold + 1);
 					
 			else
@@ -81,7 +81,10 @@ package body et_module_clipboard.net_segments is
 					
 			end if;
 
-			-- insert the net segment
+			-- Insert the net segment in the first
+			-- strand of the net:
+			
+			-- CS
 			null;
 				
 		end insert_net_and_segment;
@@ -100,6 +103,7 @@ package body et_module_clipboard.net_segments is
 
 
 
+	
 end et_module_clipboard.net_segments;
 
 -- Soli Deo Gloria
