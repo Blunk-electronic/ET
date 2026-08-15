@@ -6,9 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
--- Mario Blunk / Blunk electronic                                           --
--- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+-- Copyright (C) 2026 Jesper Quorning                                       --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
