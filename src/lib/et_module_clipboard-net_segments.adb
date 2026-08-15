@@ -59,8 +59,31 @@ package body et_module_clipboard.net_segments is
 
 
 		procedure insert_net_and_segment is
+			use pac_nets;
+			net_cursor : pac_nets.cursor;
+			inserted : boolean;
 		begin
+			net_cursor := clipboard.nets.find (net_name);
+
+			if has_element (net_cursor) then
+				log (text => "net " & to_string (net_name)
+						& " already in clipboard",
+					level => log_threshold + 1);
+					
+			else
+				-- Net does not exist yet. Create
+				-- a bare copy of the given net:
+				clipboard.nets.insert (
+					key			=> net_name,
+					new_item	=> copy_bare_net (element (net_cursor)),
+					position	=> net_cursor,
+					inserted	=> inserted);
+					
+			end if;
+
+			-- insert the net segment
 			null;
+				
 		end insert_net_and_segment;
 		
 		
