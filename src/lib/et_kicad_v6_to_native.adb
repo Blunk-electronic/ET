@@ -53,6 +53,7 @@ with et_units;							use et_units;
 with et_unit_name;
 with et_object_status;					use et_object_status;
 with et_device_write;
+with et_package_write;
 
 with et_symbol_model;					use et_symbol_model;
 with et_symbol_text;
@@ -68,6 +69,9 @@ with et_power_sources;					use et_power_sources;
 
 with et_package_variant_name;
 with et_package_variant;					use et_package_variant;
+with et_package_library;					use et_package_library;
+with et_package_bom_relevance;			use et_package_bom_relevance;
+with et_package_model_name;
 with et_board_coordinates;
 
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -95,9 +99,49 @@ package body et_kicad_v6_to_native is
 
 	use et_device_library.pac_device_models;
 
-	-- type_package_variant_name only allows letters/digits/'_'/'-' --
-	-- no '/', unlike et_device_partcode.partcode_default ("N/A"):
-	variant_name_not_assigned : constant string := "not_assigned";
+	-- type_package_variant_name / type_device_value only allow
+	-- letters/digits/'_'/'-' -- no '/', unlike
+	-- et_device_partcode.partcode_default ("N/A"):
+	placeholder_not_assigned : constant string := "not_assigned";
+
+	placeholder_package_name : constant et_package_model_name.type_package_model_name :=
+		et_package_model_name.to_package_model_name (
+			compose (compose (et_project.directory_libraries, et_project.directory_libraries_packages),
+				placeholder_not_assigned));
+
+	-- Every synthesized PCB-appearance device model gets exactly one
+	-- package variant, named placeholder_not_assigned, pointing to a
+	-- single shared placeholder package model with no terminals --
+	-- there is no footprint data in this KiCad schematic-only project
+	-- (out of scope, see the package spec), but
+	-- et_module_read_device_electrical requires a device's variant
+	-- name to resolve to a real entry in its model's variants map,
+	-- which in turn requires a real (if empty) package model to
+	-- exist in the rig-wide package_library:
+	function placeholder_variants return pac_package_variants.map is
+		package_cursor : pac_package_models.cursor;
+		variants		: pac_package_variants.map;
+		variant_cursor	: pac_package_variants.cursor;
+		inserted		: boolean;
+	begin
+		if not et_package_library.pac_package_models.contains (package_library, placeholder_package_name) then
+			create_package (
+				package_name	=> placeholder_package_name,
+				appearance		=> BOM_RELEVANT_NO,
+				log_threshold	=> 0);
+		end if;
+
+		package_cursor := get_package_model (placeholder_package_name);
+
+		pac_package_variants.insert (
+			container	=> variants,
+			key			=> et_package_variant_name.to_variant_name (placeholder_not_assigned),
+			position	=> variant_cursor,
+			inserted	=> inserted,
+			new_item	=> (model_cursor => package_cursor, others => <>));
+
+		return variants;
+	end placeholder_variants;
 
 
 	------------------------------------------------------------------
@@ -135,6 +179,55 @@ package body et_kicad_v6_to_native is
 			return et_device_prefix.to_prefix (to_string (buf));
 		end if;
 	end extract_prefix;
+
+
+	-- Sanitizes a raw string (a KiCad "Value" property, whether from a
+	-- lib_symbol's library default or a placed symbol's per-instance
+	-- override) to et_device_value's allowed character set
+	-- (letters/digits/'_'/'-' only, max value_length_max chars).
+	-- KiCad values are usually already conformant, but this must not
+	-- silently produce a multi-field *.dev/*.mod line (e.g. a value
+	-- containing a space) or an empty one where the caller writes
+	-- "value <text>" with a mandatory argument:
+	function sanitize_device_value (
+		raw : in string)
+		return et_device_value.type_device_value
+	is
+		use ada.strings.unbounded;
+		buf : unbounded_string;
+	begin
+		for ch of raw loop
+			exit when length (buf) = et_device_value.value_length_max;
+
+			if ch in 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '-' then
+				append (buf, ch);
+			end if;
+		end loop;
+
+		if length (buf) = 0 then
+			return et_device_value.to_value (placeholder_not_assigned);
+		else
+			return et_device_value.to_value (to_string (buf));
+		end if;
+	end sanitize_device_value;
+
+
+	-- Reads the "Value" property of a lib_symbol (its library default,
+	-- e.g. "F00", "74LS00", "10k") and sanitizes it -- see
+	-- sanitize_device_value:
+	function extract_value (
+		props : in pac_properties.map)
+		return et_device_value.type_device_value
+	is
+		use pac_properties;
+		c : constant pac_properties.cursor := find (props, to_property_name ("Value"));
+	begin
+		if c /= pac_properties.no_element then
+			return sanitize_device_value (to_string (element (c)));
+		else
+			return sanitize_device_value ("");
+		end if;
+	end extract_value;
 
 
 	-- et_port_general.type_port_general's rotation field is
@@ -246,8 +339,18 @@ package body et_kicad_v6_to_native is
 	begin
 		for p of pins loop
 			declare
+				-- KiCad allows an explicitly empty pin name (common
+				-- for power symbols with pin_names hidden, e.g.
+				-- "(name "" ...)") -- et_symbol_write_ports always
+				-- writes "name <text>" with a mandatory argument, so
+				-- an empty name here would produce an unparseable
+				-- *.dev line. Fall back to the pin number, which
+				-- KiCad guarantees is present:
+				raw_name : constant string := to_string (p.name);
+
 				name : constant et_port_names.type_port_name :=
-					et_port_names.to_port_name (to_string (p.name));
+					et_port_names.to_port_name (
+						(if raw_name'length > 0 then raw_name else to_string (p.number)));
 			begin
 				if pac_symbol_ports.contains (ports, name) then
 					log (SEVERITY_NOTE,
@@ -429,8 +532,8 @@ package body et_kicad_v6_to_native is
 							prefix			=> extract_prefix (sym.properties),
 							units_internal	=> units_internal,
 							units_external	=> pac_units_external.empty_map,
-							value			=> et_device_value.to_value (""),
-							variants		=> pac_package_variants.empty_map));
+							value			=> extract_value (sym.properties),
+							variants		=> placeholder_variants));
 			end case;
 
 			log_indentation_down;
@@ -590,7 +693,7 @@ package body et_kicad_v6_to_native is
 						new_item	=> (
 							appearance		=> APPEARANCE_PCB,
 							model_cursor	=> model_cursor,
-							value			=> et_device_value.to_value (to_string (inst.value)),
+							value			=> sanitize_device_value (to_string (inst.value)),
 							partcode		=> et_device_partcode.to_partcode (et_device_partcode.partcode_default),
 							purpose			=> et_device_purpose.empty_purpose,
 							-- No footprint/package data in this KiCad
@@ -599,7 +702,7 @@ package body et_kicad_v6_to_native is
 							-- always writes "variant <name>" with a
 							-- mandatory argument, so an empty name here
 							-- would produce an unparseable *.mod line:
-							variant			=> et_package_variant_name.to_variant_name (variant_name_not_assigned),
+							variant			=> et_package_variant_name.to_variant_name (placeholder_not_assigned),
 							position		=> et_board_coordinates.package_position_default,
 							placeholders	=> (others => <>),
 							status			=> object_status_default,
@@ -715,7 +818,14 @@ package body et_kicad_v6_to_native is
 
 			begin
 				strand_native.segments := segments;
-				strand_native.position := (sheet => sheet_num, place => pac_points.first_element (strand.points));
+
+				-- Computes strand_native.position.place from the
+				-- segments just assigned (the point closest to the
+				-- drawing origin) -- et_module_read_nets re-derives
+				-- and cross-checks this on read, flagging anything
+				-- else as "Lowest x/y position of strand invalid":
+				et_net_strands.set_strand_position (strand_native);
+				strand_native.position.sheet := sheet_num;
 
 				et_nets.pac_nets.update_element (
 					container	=> module.nets,
@@ -784,6 +894,23 @@ package body et_kicad_v6_to_native is
 			pac_device_models.iterate (device_library, save_one'access);
 		end save_device_models;
 
+
+		-- Saves the shared placeholder package model (see
+		-- placeholder_variants) so that device model files referencing
+		-- it via "package_model libraries/packages/not_assigned" don't
+		-- point at a non-existent file:
+		procedure save_package_models (log_threshold : in type_log_level) is
+			procedure save_one (c : et_package_library.pac_package_models.cursor) is
+			begin
+				et_package_write.write_package (
+					file_name		=> et_package_library.pac_package_models.key (c),
+					packge			=> et_package_library.pac_package_models.element (c),
+					log_threshold	=> log_threshold);
+			end save_one;
+		begin
+			et_package_library.pac_package_models.iterate (package_library, save_one'access);
+		end save_package_models;
+
 	begin
 		log (text => "saving native project " & to_string (project.name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -813,6 +940,7 @@ package body et_kicad_v6_to_native is
 				log_threshold	=> log_threshold + 1);
 
 			save_device_models (log_threshold + 1);
+			save_package_models (log_threshold + 1);
 
 			set_directory (current_working_directory);
 		end;
