@@ -56,7 +56,8 @@ package et_module_clipboard.net_segments is
 	-- to the clipboard.
 	-- 1. If the net does not exist in the clipboard yet,
 	--    then it will be created there with the same properties
-	--    as the given net (like net class). Tracks and fill zones
+	--    as the given net (like scope or net class). Tracks and fill zones
+	--    are not copied. Already existing strands and net segments
 	--    are not copied.
 	-- 2. If the net does exist, then it will not be created
 	--    anew.

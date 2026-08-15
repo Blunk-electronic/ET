@@ -792,7 +792,7 @@ package body et_schematic_ops_groups is
 		copy_net_segments_to_clipboard;
 		
 		
-		-- CS texts
+		-- CS netchangers, texts
 
 		log_indentation_down;
 	end copy_group_to_clipboard;
