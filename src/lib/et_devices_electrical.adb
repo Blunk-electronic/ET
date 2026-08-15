@@ -62,7 +62,15 @@ package body et_devices_electrical is
 	is
 		device_out : type_device_electrical := device_in;
 	begin
+		-- Delete already deployed units:
 		device_out.units.clear;
+
+		-- If the given device is real, then reset
+		-- the status flags of the copy:
+		if is_real (device_in) then
+			reset_status (device_out.status);
+		end if;
+		
 		return device_out;
 	end copy_bare_device;
 

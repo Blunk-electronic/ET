@@ -151,7 +151,9 @@ package et_devices_electrical is
 	-- This function copies a given device but
 	-- removes all units so that a bare device
 	-- with all properties of the original device is
-	-- created on return:
+	-- created on return.
+	-- If the given device is real, then the status of
+	-- the copy will be reset:
 	function copy_bare_device (
 		device_in : in type_device_electrical)
 		return type_device_electrical;
