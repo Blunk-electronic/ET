@@ -65,10 +65,6 @@ package body et_package_write_assy_doc is
 	use pac_geometry_2;
 	use pac_file_rw;
 
-	use pac_doc_lines;
-	use pac_doc_arcs;
-	use pac_doc_circles;
-	use pac_doc_zones;
 	use pac_doc_texts;
 
 	use pac_text_placeholders;
@@ -185,6 +181,12 @@ package body et_package_write_assy_doc is
 
 			section_mark (section_text, FOOTER);
 		end write_text;
+
+
+		use pac_doc_lines;
+		use pac_doc_arcs;
+		use pac_doc_circles;
+		use pac_doc_zones;
 
 
 	begin

@@ -72,8 +72,6 @@ package body et_cp_board_text is
 
 	use pac_geometry_2;
 
-	use et_board_text.pac_text_board_vectorized;
-
 
 
 
@@ -86,6 +84,7 @@ package body et_cp_board_text is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
+		use et_board_text.pac_text_board_vectorized;
 
 		text			: type_text_fab_with_content;
 		pos_xy			: type_vector_model;

@@ -37,7 +37,7 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 with et_import;
 with et_kicad_packages;
 
@@ -46,7 +46,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;		use ada.strings.fixed;
-with ada.directories;			use ada.directories;
+with ada.directories;
 with ada.exceptions;			use ada.exceptions;
 with ada.environment_variables;
 
@@ -56,7 +56,7 @@ with et_sheets;					use et_sheets;
 with et_device_category;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
-with et_alignment;				use et_alignment;
+with et_alignment;
 with et_erc;
 with et_net_class;				use et_net_class;
 with et_net_classes;			use et_net_classes;
@@ -175,7 +175,6 @@ package body et_kicad.schematic is
 	is
 		use et_device_placeholders.symbols;
 
-		use pac_unit_name;
 	begin
 		log_indentation_up;
 
@@ -270,7 +269,6 @@ package body et_kicad.schematic is
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
-		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -327,7 +325,6 @@ package body et_kicad.schematic is
 		d : positive;
 		digit : natural := 0;
 
-		use pac_device_prefix;
 	begin
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -496,7 +493,9 @@ package body et_kicad.schematic is
 
 
 
-	procedure invalid_field (line : in type_fields_of_line) is begin
+	procedure invalid_field (line : in et_string_processing.type_fields_of_line) is
+		use et_string_processing;
+	begin
 		log (SEVERITY_ERROR, get_affected_line (line) & "invalid field !", console => true);
 
 		log (text => to_string (line), console => true);
@@ -571,6 +570,7 @@ package body et_kicad.schematic is
 
 
 	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
+		use et_string_processing;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
 		return et_kicad_general.type_library_name.to_bounded_string (
@@ -592,6 +592,7 @@ package body et_kicad.schematic is
 
 
 	function package_name (text : in string) return type_package_name is
+		use et_string_processing;
 	begin
 		return type_package_name (pac_package_name.to_bounded_string (
 			f (
@@ -611,9 +612,10 @@ package body et_kicad.schematic is
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
 	-- the function whether we are dealing with schematic or library fields.
-		line		: in type_fields_of_line;
+		line		: in et_string_processing.type_fields_of_line;
 		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field
 		return type_placeholder_meaning is
+		use et_string_processing;
 
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
@@ -703,7 +705,8 @@ package body et_kicad.schematic is
 
 
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
+	function to_alignment_horizontal (text : in string) return et_alignment.type_text_alignment_horizontal is
+		use et_alignment;
 		a : type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value (text) is
@@ -716,7 +719,8 @@ package body et_kicad.schematic is
 
 
 
-	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
+	function to_alignment_vertical (text : in string) return et_alignment.type_text_alignment_vertical is
+		use et_alignment;
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : type_text_alignment_vertical;
@@ -828,9 +832,10 @@ package body et_kicad.schematic is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-	function to_appearance (line : in type_fields_of_line; schematic : in boolean)
+	function to_appearance (line : in et_string_processing.type_fields_of_line; schematic : in boolean)
 		return et_device_appearance.type_appearance
 	is
+		use et_string_processing;
 		comp_app	: type_appearance;
 		lca			: type_library_component_appearance;
 
@@ -880,10 +885,11 @@ package body et_kicad.schematic is
 
 
 
-	function to_alternative_representation (line : in type_fields_of_line; schematic : in boolean)
+	function to_alternative_representation (line : in et_string_processing.type_fields_of_line; schematic : in boolean)
 	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return type_de_morgan_representation is
+		use et_string_processing;
 			pragma unreferenced (schematic);
 
 		rep_in : type_alternative_representation;
@@ -951,7 +957,6 @@ package body et_kicad.schematic is
 	function to_power_flag (reference : in type_device_name)
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
-		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
 		if get_prefix (reference) = power_flag_prefix then
@@ -1002,6 +1007,8 @@ package body et_kicad.schematic is
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D
 	is
+		use et_string_processing;
+		use ada.directories;
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 
 		use et_string_processing;
@@ -1032,7 +1039,6 @@ package body et_kicad.schematic is
 				use et_package_library;
 				use et_package_name;
 				use pac_package_variants;
-				use pac_package_model_file;
 				package_model_name : type_package_model_name;
 
 				-- This cursor points to the package variant being queryied.
@@ -2009,6 +2015,8 @@ package body et_kicad.schematic is
 		project			: in type_project_name;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
+		use ada.directories;
 		use et_kicad_packages;
 
 		-- backup current working directory
@@ -4489,7 +4497,6 @@ package body et_kicad.schematic is
 			end ports_of_global_unit;
 
 
-			use pac_unit_name;
 
 
 		begin -- extract_ports

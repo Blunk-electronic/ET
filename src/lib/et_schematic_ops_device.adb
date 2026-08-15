@@ -138,7 +138,6 @@ package body et_schematic_ops_device is
 					inserted : boolean := false;
 					cursor_sort : pac_renumber_devices.cursor;
 
-					use pac_unit_name;
 				begin
 					log (text => "unit " & to_string (unit_name) &
 						" at " & to_string (unit_position),
@@ -452,7 +451,6 @@ package body et_schematic_ops_device is
 
 
 		use pac_units;
-		use pac_unit_name;
 
 
 		procedure query_module (
@@ -996,7 +994,6 @@ package body et_schematic_ops_device is
 			pragma unreferenced (module_name);
 
 			procedure query_device (c : in pac_devices_electrical.cursor) is
-				use pac_device_prefix;
 				device	: type_device_electrical renames element (c);
 				name	: constant type_device_name := key (c); -- IC45
 			begin
@@ -1141,7 +1138,6 @@ package body et_schematic_ops_device is
 
 		use et_device_category;
 		use et_conventions;
-		use pac_unit_name;
 
 
 		-- The list of devices sorted by their coordinates.

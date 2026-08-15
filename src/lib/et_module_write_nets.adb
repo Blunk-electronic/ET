@@ -52,7 +52,7 @@ with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 
 
-with et_schematic_geometry;			use et_schematic_geometry;
+with et_schematic_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
@@ -61,9 +61,9 @@ with et_netchangers.schematic;
 
 with et_net_names;					use et_net_names;
 with et_net_class_name;
-with et_net_segment;				use et_net_segment;
+with et_net_segment;
 with et_net_strands;				use et_net_strands;
-with et_net_connectors;				use et_net_connectors;
+with et_net_connectors;
 with et_net_labels;					use et_net_labels;
 with et_net_ports_devices;
 with et_net_ports_submodules;
@@ -78,7 +78,8 @@ with et_file_write;					use et_file_write;
 
 package body et_module_write_nets is
 
-	use pac_geometry_2;
+	use pac_generic_modules;
+	use et_net_names;
 
 
 	procedure write_nets (

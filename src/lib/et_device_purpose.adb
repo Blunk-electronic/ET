@@ -79,7 +79,6 @@ package body et_device_purpose is
 		characters	: in character_set := purpose_characters)
 		return boolean
 	is
-		use pac_device_purpose;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

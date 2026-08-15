@@ -65,7 +65,6 @@ with et_keywords;					use et_keywords;
 package body et_device_write_unit is
 
 
-	use pac_unit_name;
 
 
 

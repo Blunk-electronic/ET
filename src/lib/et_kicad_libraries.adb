@@ -131,7 +131,6 @@ package body et_kicad_libraries is
 		prefix		: in type_device_prefix;
 		characters	: in character_set)
 	is
-		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -184,7 +183,6 @@ package body et_kicad_libraries is
 		d : positive;
 		digit : natural := 0;
 
-		use pac_device_prefix;
 	begin
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -393,7 +391,6 @@ package body et_kicad_libraries is
 		is
 			pragma unreferenced (name);
 			use type_ports_library;
-			use pac_unit_name;
 		begin
 			-- Set the port cursor to the first port of the unit.
 			port_cursor := type_ports_library.first (unit.symbol.ports);
@@ -916,7 +913,6 @@ package body et_kicad_libraries is
 	function to_power_flag (reference : in type_device_name)
 		return type_power_flag
 	is
-		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
 		if get_prefix (reference) = power_flag_prefix then
@@ -3471,7 +3467,6 @@ package body et_kicad_libraries is
 				-- If a new package variant is to be built, it is temporarily stored here:
 				new_variant : type_package_variant;
 
-				use pac_package_model_file;
 			begin
 				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;

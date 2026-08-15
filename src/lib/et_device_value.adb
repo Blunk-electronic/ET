@@ -95,7 +95,6 @@ package body et_device_value is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	-- Issues warning.
-		use pac_device_value;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

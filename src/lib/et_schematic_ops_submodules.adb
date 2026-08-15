@@ -46,14 +46,14 @@ with et_net_ports;						use et_net_ports;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_partcode;				use et_device_partcode;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
-with ada.containers;				use ada.containers;
+with ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with ada.directories;
 with ada.exceptions;				use ada.exceptions;
 with et_directory_and_file_ops;
-with et_string_processing;			use et_string_processing;
+with et_string_processing;
 
 with et_mirroring;					use et_mirroring;
 with et_board_geometry;
@@ -89,6 +89,7 @@ package body et_schematic_ops_submodules is
 	procedure dragging_not_possible (
 		port		: in string;
 		position	: in type_object_position) is
+		use et_string_processing;
 	begin
 		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
@@ -117,7 +118,9 @@ package body et_schematic_ops_submodules is
 
 	procedure submodule_not_found (
 		name : in type_module_instance_name)
-	is begin
+	is
+		use et_string_processing;
+	begin
 		log (SEVERITY_ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
@@ -512,7 +515,9 @@ package body et_schematic_ops_submodules is
 
 
 
-	procedure port_not_provided (port_name : in type_net_name) is begin
+	procedure port_not_provided (port_name : in type_net_name) is
+		use et_string_processing;
+	begin
 		log (SEVERITY_ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
@@ -530,6 +535,7 @@ package body et_schematic_ops_submodules is
 		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -675,6 +681,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -978,7 +985,9 @@ package body et_schematic_ops_submodules is
 
 
 
-	procedure submodule_port_not_found (name : in type_net_name) is begin
+	procedure submodule_port_not_found (name : in type_net_name) is
+		use et_string_processing;
+	begin
 		log (SEVERITY_ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
@@ -997,6 +1006,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1120,6 +1130,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1582,6 +1593,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1963,6 +1975,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		pragma unreferenced (commit_design);
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -2184,6 +2197,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		pragma unreferenced (commit_design);
 
 		use et_submodules;
@@ -2444,6 +2458,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use ada.containers;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2693,6 +2708,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2845,6 +2861,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2992,6 +3009,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -3124,6 +3142,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -3415,6 +3434,7 @@ package body et_schematic_ops_submodules is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		pragma unreferenced (commit_design);
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -3933,6 +3953,8 @@ package body et_schematic_ops_submodules is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
+		use ada.containers;
 
 
 		-- A stack keeps record of the submodule level where
@@ -4072,6 +4094,7 @@ package body et_schematic_ops_submodules is
 		module_name		: in type_module_name;
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
@@ -4495,6 +4518,8 @@ package body et_schematic_ops_submodules is
 		log_threshold		: in type_log_level)
 		return type_index_range
 	is
+		use et_string_processing;
+		use ada.containers;
 
 		index_range : type_index_range; -- to be returned
 
@@ -4567,6 +4592,8 @@ package body et_schematic_ops_submodules is
 		module_name		: in type_module_name; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
 	is
+		use et_string_processing;
+		use ada.containers;
 		module_cursor : pac_generic_modules.cursor := generic_modules.first;
 		index_range : type_index_range;
 

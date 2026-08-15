@@ -119,7 +119,6 @@ package body et_package_variant is
 			variant	: in type_package_variant)
 		is
 			pragma unreferenced (name);
-			use pac_unit_name;
 			use et_port_names;
 			use pac_terminal_port_map;
 			c : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -155,7 +154,6 @@ package body et_package_variant is
 		preamble	: in boolean := true)
 		return string
 	is
-		use pac_unit_name;
 	begin
 		case preamble is
 			when true =>

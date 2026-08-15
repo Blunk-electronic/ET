@@ -577,7 +577,6 @@ package body et_module_read_device_electrical is
 	is
 		use et_schematic_coordinates;
 		use et_unit_name;
-		use pac_unit_name;
 
 		kw : constant string := f (line, 1);
 	begin

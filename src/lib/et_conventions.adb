@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 with ada.containers.doubly_linked_lists;
 with ada.directories;			use ada.directories;
 with ada.text_io;				use ada.text_io;
@@ -808,7 +808,6 @@ package body et_conventions is
 		type_device_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
-		use pac_device_prefix;
 		use pac_device_prefixes;
 
 		prefix_cursor : pac_device_prefixes.cursor;
@@ -2089,7 +2088,6 @@ package body et_conventions is
 		value		: in type_device_value := to_value ("")) -- 100R
 		return type_device_partcode
 	is
-		use pac_device_partcode;
 
 		base : constant type_device_partcode :=
 			to_bounded_string (
@@ -2120,7 +2118,6 @@ package body et_conventions is
 		from			: in positive; -- the character position to start from
 		log_threshold	: in type_log_level)
 	is
-		use pac_device_partcode;
 		use et_string_processing;
 
 		len		: constant positive := get_length (partcode);	-- the length of the given partcode
@@ -2378,6 +2375,7 @@ package body et_conventions is
 		log_threshold	: in type_log_level)
 	is
 		use et_system_info;
+		use et_string_processing;
 		use et_schematic_geometry.pac_geometry_2;
 
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
@@ -3011,7 +3009,6 @@ package body et_conventions is
 			function valid (unit : in type_unit_of_measurement)
 				return boolean
 			is
-				use pac_device_value;
 				abbreviation : constant type_unit_abbreviation := to_abbreviation (unit);
 			begin
 				if index (value, to_string (abbreviation), place) = place then
@@ -3026,7 +3023,6 @@ package body et_conventions is
 			end valid;
 
 
-			use pac_device_value;
 
 
 		begin -- unit_of_measurement_valid
@@ -3188,7 +3184,6 @@ package body et_conventions is
 
 
 	function prefix_valid (prefix : in type_device_prefix) return boolean is
-		use pac_device_prefix;
 		use pac_device_prefixes;
 		result : boolean := true;
 	begin
@@ -3212,7 +3207,6 @@ package body et_conventions is
 
 
 	function prefix_valid (device_name : in type_device_name) return boolean is
-		use pac_device_prefix;
 		use pac_device_prefixes;
 		result : boolean := true;
 	begin

@@ -78,10 +78,8 @@ with et_commit;
 
 package body et_schematic_ops_nets is
 
-	use pac_net_labels;
-	use pac_net_segments;
 	use pac_strands;
-	use pac_nets;
+	use et_net_names;
 
 
 
@@ -91,6 +89,7 @@ package body et_schematic_ops_nets is
 		module		: in pac_generic_modules.cursor)
 		return type_net_count
 	is
+		use pac_nets;
 		result : type_net_count := 0;
 
 		procedure query_nets (
@@ -171,7 +170,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_units (unit_cursor : in pac_units.cursor) is
 					use pac_units;
-					use pac_unit_name;
 					unit_position : type_object_position;
 					ports : pac_symbol_ports.map;
 
@@ -398,6 +396,8 @@ package body et_schematic_ops_nets is
 		position		: in type_object_position;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		sheet : constant type_sheet := get_sheet (position);
 		place : constant type_vector_model := get_place (position);
@@ -502,6 +502,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -654,6 +656,8 @@ package body et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -753,6 +757,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
+		use pac_net_segments;
+		use pac_nets;
 		result : type_object_segment;
 
 
@@ -869,6 +875,8 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -1159,6 +1167,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return boolean
 	is
+		use pac_net_segments;
+		use pac_nets;
 		result : boolean := true;
 
 
@@ -1263,6 +1273,8 @@ package body et_schematic_ops_nets is
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1495,6 +1507,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_object_segments.list
 	is
+		use pac_net_segments;
+		use pac_nets;
 		use pac_object_segments;
 		result : pac_object_segments.list;
 
@@ -2136,6 +2150,8 @@ package body et_schematic_ops_nets is
 		area			: in type_area;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2247,6 +2263,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 		segment_found : boolean := false;
 
 		-- Here we store the selected net segment:
@@ -2371,6 +2389,8 @@ package body et_schematic_ops_nets is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2504,6 +2524,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2602,6 +2624,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2699,6 +2723,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2792,6 +2818,8 @@ package body et_schematic_ops_nets is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 		-- In the course of this procedure selected
 		-- net segments are searched for. Once a segment
 		-- has been found, this flag is set:
@@ -3075,6 +3103,7 @@ package body et_schematic_ops_nets is
 		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		sheets_total : type_sheet;
 
 		-- We start processing the sheets with the
@@ -3166,6 +3195,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list
 	is
+		use pac_nets;
 		use pac_strand_cursors;
 		result : pac_strand_cursors.list;
 
@@ -3229,6 +3259,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_strand_segment_cursors.list
 	is
+		use pac_nets;
 		result : pac_strand_segment_cursors.list;
 
 
@@ -3303,6 +3334,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list
 	is
+		use pac_net_segments;
+		use pac_nets;
 		result : pac_object_strands.list;
 
 
@@ -3397,6 +3430,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list
 	is
+		use pac_nets;
 		result : pac_object_strands.list;
 
 
@@ -3481,6 +3515,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3580,6 +3616,8 @@ package body et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3746,6 +3784,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_strand
 	is
+		use pac_nets;
 		result : type_object_strand;
 
 
@@ -3845,6 +3884,7 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -4002,6 +4042,7 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 
 		procedure query_module (
@@ -4082,6 +4123,7 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -4194,6 +4236,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_net
 	is
+		use pac_nets;
 		result : type_object_net;
 
 
@@ -4275,6 +4318,8 @@ package body et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -4410,6 +4455,7 @@ package body et_schematic_ops_nets is
 		net_name		: in type_net_name)
 		return boolean
 	is
+		use pac_nets;
 		net_cursor : pac_nets.cursor;
 	begin
 		net_cursor := locate_net (module_cursor, net_name);
@@ -4430,6 +4476,7 @@ package body et_schematic_ops_nets is
 		net_cursor		: out pac_nets.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -4486,6 +4533,7 @@ package body et_schematic_ops_nets is
 		target_master	: in boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -4569,6 +4617,7 @@ package body et_schematic_ops_nets is
 		module		: in pac_generic_modules.cursor)
 		return type_net_name
 	is
+		use pac_nets;
 		net : type_net_name; -- like N$56
 		cursor : pac_nets.cursor;
 
@@ -4802,6 +4851,7 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -5121,6 +5171,7 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -5477,6 +5528,7 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_net_name
 	is
+		use pac_nets;
 		result : type_net_name;
 
 		procedure query_module (
@@ -5604,6 +5656,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_net_names.list
 	is
+		use pac_nets;
 		result : pac_net_names.list;
 
 		procedure query_module (
@@ -5690,6 +5743,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_net_names.list
 	is
+		use pac_net_segments;
+		use pac_nets;
 		use pac_net_names;
 		result : pac_net_names.list; -- to be returned
 
@@ -5795,6 +5850,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return boolean
 	is
+		use pac_net_segments;
+		use pac_nets;
 		-- If none of the given segments touches a foreign
 		-- net, then this flag remains set until the end of this
 		-- function. So this flag will be negated on return:
@@ -5904,6 +5961,8 @@ package body et_schematic_ops_nets is
 		segments		: in pac_net_segments.list;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_segment (c : in pac_net_segments.cursor) is
 			segment : type_net_segment renames element (c);
@@ -6299,6 +6358,7 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -6383,6 +6443,7 @@ package body et_schematic_ops_nets is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
 
 
 		procedure do_it is
@@ -6558,6 +6619,9 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -6733,6 +6797,9 @@ package body et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -6845,6 +6912,9 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_net_label
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 		result : type_object_net_label;
 
 
@@ -7238,6 +7308,9 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -7317,6 +7390,9 @@ package body et_schematic_ops_nets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -7711,6 +7787,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -7870,6 +7948,8 @@ package body et_schematic_ops_nets is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -7976,6 +8056,8 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object_net_connector
 	is
+		use pac_net_segments;
+		use pac_nets;
 		result : type_object_net_connector;
 
 
@@ -8532,6 +8614,9 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 		result_category : type_object_category := CAT_VOID;
 		result_segment	: type_object_segment;
 		result_strand	: type_object_strand;
@@ -8682,6 +8767,9 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
+		use pac_net_labels;
+		use pac_net_segments;
+		use pac_nets;
 		use pac_objects;
 
 		-- Here the objects are collected:
@@ -9254,6 +9342,8 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -9539,6 +9629,8 @@ package body et_schematic_ops_nets is
 		object_cursor	: in pac_objects.cursor; -- the primary segment
 		log_threshold	: in type_log_level)
 	is
+		use pac_net_segments;
+		use pac_nets;
 		-- The start and end point of the given primary segment:
 		primary_A, primary_B : type_vector_model;
 

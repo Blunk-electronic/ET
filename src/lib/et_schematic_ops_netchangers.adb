@@ -68,7 +68,8 @@ with et_commit;
 
 package body et_schematic_ops_netchangers is
 
-	use pac_netchangers;
+
+	use et_net_names;
 
 
 
@@ -118,6 +119,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_netchanger_ids.list
 	is
+		use pac_netchangers;
 		result : pac_netchanger_ids.list;
 
 
@@ -1459,6 +1461,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
@@ -1614,6 +1617,7 @@ package body et_schematic_ops_netchangers is
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 		pragma unreferenced (log_threshold);
 
 
@@ -1671,6 +1675,7 @@ package body et_schematic_ops_netchangers is
 		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 		sheets_total : type_sheet;
 
 		-- We start processing the sheets with the
@@ -2961,6 +2966,7 @@ package body et_schematic_ops_netchangers is
 		area			: in type_area;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3021,6 +3027,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 		netchanger_found : boolean := false;
 
 		-- Here we store the index of a
@@ -3113,6 +3120,7 @@ package body et_schematic_ops_netchangers is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 
 
 		procedure query_module (
@@ -3184,6 +3192,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 
 
 		procedure query_module (
@@ -3248,6 +3257,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 
 
 		procedure query_module (
@@ -3314,6 +3324,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 
 
 		procedure query_module (
@@ -3373,6 +3384,7 @@ package body et_schematic_ops_netchangers is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		use pac_netchangers;
 		-- In the course of this procedure selected
 		-- netchangers are searched for. Once a netchanger
 		-- has been found, this flag is set:

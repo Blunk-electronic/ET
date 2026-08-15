@@ -52,11 +52,11 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_vias;						use et_vias;
-with et_thermal_relief;				use et_thermal_relief;
-with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_conductor_segment.boards;
+with et_vias;
+with et_thermal_relief;
+with et_fill_zones;
+with et_fill_zones.boards;
 
 with et_file_write;					use et_file_write;
 

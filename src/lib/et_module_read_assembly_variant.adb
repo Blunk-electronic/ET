@@ -49,7 +49,7 @@ with et_module_names;				use et_module_names;
 with et_file_sections;				use et_file_sections;
 with et_keywords;					use et_keywords;
 
-with et_module_instance;			use et_module_instance;
+with et_module_instance;
 with et_device_name;				use et_device_name;
 with et_device_purpose;
 with et_device_value;
@@ -384,6 +384,7 @@ package body et_module_read_assembly_variant is
 			is
 				pragma unreferenced (variant_name);
 				use pac_submodule_variants;
+				use et_module_instance;
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name		: type_module_instance_name; -- CLK_GENERATOR
 				submod_variant	: type_assembly_variant_name; -- fixed_frequency

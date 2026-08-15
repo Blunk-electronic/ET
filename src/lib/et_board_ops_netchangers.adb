@@ -56,9 +56,6 @@ with et_modes.board;
 
 package body et_board_ops_netchangers is
 
-	use pac_netchangers;
-
-
 
 
 	function get_netchanger_position (
@@ -88,6 +85,7 @@ package body et_board_ops_netchangers is
 
 
 			use et_schematic_ops_netchangers;
+			use pac_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -157,6 +155,7 @@ package body et_board_ops_netchangers is
 
 
 			use et_schematic_ops_netchangers;
+			use pac_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -254,6 +253,7 @@ package body et_board_ops_netchangers is
 
 
 			use et_schematic_ops_netchangers;
+			use pac_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);

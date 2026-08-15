@@ -140,7 +140,6 @@ package body et_devices_electrical.units is
 		query_result	: in type_unit_query)
 		return string
 	is
-		use pac_unit_name;
 	begin
 		if query_result.exists then
 			if get_length (unit_name) > 0 then
@@ -421,7 +420,6 @@ package body et_devices_electrical.units is
 	is
 
 		procedure write (cursor : in pac_unit_positions.cursor) is
-			use pac_unit_name;
 		begin
 			log (text =>
 				"unit " &

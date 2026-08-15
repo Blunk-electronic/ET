@@ -49,7 +49,7 @@ with et_keywords;					use et_keywords;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
-with et_vias;						use et_vias;
+with et_vias;
 with et_drills;						use et_drills;
 
 with et_module_read_nets;
@@ -133,6 +133,7 @@ package body et_module_read_via is
 
 	procedure build_via is
 		use et_module_read_nets;
+		use et_vias;
 		use pac_vias;
 	begin
 		-- insert via in route.vias

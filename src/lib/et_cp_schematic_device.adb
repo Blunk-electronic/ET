@@ -50,7 +50,7 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_unit_name;
-with et_device_name;					use et_device_name;
+with et_device_name;
 with et_device_model_names;				use et_device_model_names;
 with et_package_variant_name;			use et_package_variant_name;
 with et_device_value;					use et_device_value;
@@ -159,6 +159,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		name : type_device_name;
 	begin
@@ -211,6 +212,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		device_name : type_device_name;
 	begin
@@ -265,6 +267,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		name, device_created : type_device_name;
 
@@ -332,6 +335,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		name : type_device_name;
 
@@ -394,6 +398,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		name : type_device_name;
 		purpose : type_device_purpose; -- brightness_control
@@ -452,6 +457,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		partcode : type_device_partcode; -- R_PAC_S_0805_VAL_100R
 		name : type_device_name;
@@ -510,6 +516,7 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		use et_device_name;
 
 		name : type_device_name;
 		variant : type_package_variant_name; -- N, D

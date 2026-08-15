@@ -50,7 +50,7 @@ with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_fill_zones.boards;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_primitive_objects;			use et_primitive_objects;
@@ -91,7 +91,7 @@ package body et_module_read_board_zones is
 	signal_layer : type_signal_layer;
 	-- CS rename to zone_signal_layer
 
-	contour_priority : type_priority := type_priority'first;
+	contour_priority : et_fill_zones.boards.type_priority := et_fill_zones.boards.type_priority'first;
 	-- CS rename to zone_priority
 
 	polygon_width_min : type_track_width := type_track_width'first;
@@ -117,7 +117,7 @@ package body et_module_read_board_zones is
 		--board_hatching		:= (others => <>);
 		board_easing		:= (others => <>);
 
-		contour_priority		:= type_priority'first;  -- board relevant only
+		contour_priority		:= et_fill_zones.boards.type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 
@@ -416,6 +416,7 @@ package body et_module_read_board_zones is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use et_fill_zones.boards;
 
 		procedure do_it (
 			module_name	: in type_module_name;
@@ -850,6 +851,7 @@ package body et_module_read_board_zones is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use et_fill_zones.boards;
 
 
 		procedure do_it (

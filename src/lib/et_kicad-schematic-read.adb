@@ -47,6 +47,9 @@
 
 with et_object_status;				use et_object_status;
 with et_text_content;				use et_text_content;
+with et_alignment;					use et_alignment;
+with ada.directories;				use ada.directories;
+with et_string_processing;			use et_string_processing;
 
 
 separate (et_kicad.schematic)
@@ -2108,8 +2111,8 @@ is
 
 				-- build text alignment
 				alignment	=> (
-					horizontal	=> to_alignment_horizontal (f (element (line_cursor), 9)),
-					vertical	=> to_alignment_vertical   (f (element (line_cursor), 10)))
+					horizontal	=> et_kicad.schematic.to_alignment_horizontal (f (element (line_cursor), 9)),
+					vertical	=> et_kicad.schematic.to_alignment_vertical   (f (element (line_cursor), 10)))
 				);
 		end to_field;
 
@@ -2713,7 +2716,6 @@ is
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
-			use pac_unit_name;
 		begin
 			if to_string (unit_name) /= f (line, 1) then
 				log (SEVERITY_ERROR, "invalid unit name '" & f (line, 1) & "'", console => true);
@@ -3018,7 +3020,7 @@ is
 					-- NOTE: We do not allow tilde characters here. they occur ONLY in the library:
 					characters => component_generic_name_characters);
 
-				appearance := to_appearance (line => element (line_cursor), schematic => true);
+				appearance := et_kicad.schematic.to_appearance (line => element (line_cursor), schematic => true);
 				log (text => to_string (appearance, verbose => true), level => log_threshold + 3);
 
 
@@ -3066,7 +3068,7 @@ is
 					f (element (line_cursor), 2))); -- the unit id
 
 				-- Read DeMorgan flag:
-				alternative_representation := to_alternative_representation (
+				alternative_representation := et_kicad.schematic.to_alternative_representation (
 					line => element (line_cursor), schematic => true);
 
 				-- Read and check the link to the board file:

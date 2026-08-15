@@ -55,7 +55,6 @@ package body et_rig is
 
 
 	function compare_connectors (left, right : in type_module_connection) return boolean is
-		use pac_device_purpose;
 		use et_module_instance;
 		r : boolean := false; -- to be returned
 	begin

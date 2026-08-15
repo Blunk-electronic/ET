@@ -140,7 +140,6 @@ package body et_device_read_unit is
 		position : pac_units_internal.cursor;
 		inserted : boolean;
 
-		use pac_unit_name;
 		use et_unit_swap_level;
 		use et_unit_add_level;
 	begin
@@ -255,7 +254,6 @@ package body et_device_read_unit is
 	procedure insert_unit_external (
 		log_threshold	: in type_log_level)
 	is
-		use pac_unit_name;
 
 		-- CS log messages
 

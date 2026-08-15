@@ -69,7 +69,6 @@ package body et_package_name is
 		packge		: in type_package_name;
 		characters	: in character_set := package_name_characters)
 	is
-		use pac_package_name;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

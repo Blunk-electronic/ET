@@ -67,10 +67,6 @@ package body et_package_write_silkscreen is
 	use pac_file_rw;
 	use pac_contours;
 
-	use pac_silk_lines;
-	use pac_silk_arcs;
-	use pac_silk_circles;
-	use pac_silk_zones;
 	use pac_silk_texts;
 
 	use pac_text_placeholders;
@@ -187,6 +183,11 @@ package body et_package_write_silkscreen is
 			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
+
+		use pac_silk_lines;
+		use pac_silk_arcs;
+		use pac_silk_circles;
+		use pac_silk_zones;
 
 
 	begin
