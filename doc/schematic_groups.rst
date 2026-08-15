@@ -138,7 +138,14 @@ Multiple Copy
 	
 		copy group
 
-	|VNS| C g
+	Via the short cut keys:
+
+	|VNS| c g
+
+	Now hit the l key to activate the clipboard. Then do
+	a mouse click or press space at the cursor position. To
+	set the reference point.
+	
 
 
 
