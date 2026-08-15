@@ -2969,9 +2969,98 @@ package body et_schematic_ops_nets is
 
 
 
+	
+
+
+	
+
+
+	procedure copy_selected_net_segments_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (
+					strand : in type_strand)
+				is
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment : in type_net_segment)
+					is
+					begin
+						if is_A_selected (segment) or
+						   is_B_selected (segment) then
+
+						   -- CS log net name, strand pos and segment ?
+						   null;
+						   
+						   -- CS: copy_net_segment_to_clipboard
+
+						end if;
+					end query_segment;
+					
+					
+				begin
+					while has_element (segment_cursor) loop
+						query_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+				
+			begin
+				while has_element (strand_cursor) loop
+					query_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+			
+			
+		begin
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " copy selected net segments to clipboard ",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end copy_selected_net_segments_to_clipboard;
 
 
 
+	
+	
+	
 
 
 

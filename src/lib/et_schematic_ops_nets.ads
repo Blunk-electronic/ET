@@ -396,6 +396,11 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure copies selected net segments to
+	-- the clipboard:
+	procedure copy_selected_net_segments_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
 
 

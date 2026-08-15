@@ -743,6 +743,23 @@ package body et_schematic_ops_groups is
 		end copy_units_to_clipboard;
 
 
+		
+		procedure copy_net_segments_to_clipboard is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+
+			copy_selected_net_segments_to_clipboard (
+				module_cursor, log_threshold + 2);
+
+			log_indentation_down;
+		end copy_net_segments_to_clipboard;
+
+		
+		
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
@@ -767,7 +784,11 @@ package body et_schematic_ops_groups is
 		-- Copy selected units to clipboard:
 		copy_units_to_clipboard;
 
-		-- CS nets, texts
+		-- Copy selected net segments to clipboard:
+		copy_net_segments_to_clipboard;
+		
+		
+		-- CS texts
 
 		log_indentation_down;
 	end copy_group_to_clipboard;
