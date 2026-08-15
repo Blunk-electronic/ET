@@ -53,6 +53,8 @@ with et_assembly_variants;
 with et_schematic_ops_groups;
 with et_schematic_ops_sheets;
 
+with et_module_clipboard.net_segments;
+
 with et_units;
 with et_unit_name;
 
@@ -3007,15 +3009,19 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment : in type_net_segment)
 					is
+						use et_module_clipboard.net_segments;
 					begin
-						if is_A_selected (segment) or
-						   is_B_selected (segment) then
+						if is_A_selected (segment) 
+						or is_B_selected (segment) then
 
-						   -- CS log net name, strand pos and segment ?
-						   null;
+							-- CS log net name, strand pos and segment ?
 						   
-						   -- CS: copy_net_segment_to_clipboard
+							log_indentation_up;
+						   
+							copy_net_segment_to_clipboard (
+								net_cursor, segment_cursor, log_threshold + 1);
 
+							log_indentation_down;
 						end if;
 					end query_segment;
 					
