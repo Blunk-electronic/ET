@@ -68,19 +68,6 @@ package et_module_clipboard.devices_electrical is
 
 
 
-	-- This procedure pastes a device and its unit
-	-- from the clipboard into the given target module.
-	-- Arguments device_cursor and unit_cursor indicate
-	-- the device and unit in the clipboard.
-	procedure paste_unit_from_clipboard (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor;
-		unit_cursor		: in pac_units.cursor;
-		offset			: in type_object_position_relative;
-		log_threshold	: in type_log_level);
-
-
-
 end et_module_clipboard.devices_electrical;
 
 -- Soli Deo Gloria
