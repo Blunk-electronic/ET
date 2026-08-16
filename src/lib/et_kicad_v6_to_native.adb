@@ -28,6 +28,7 @@ with ada.strings.unbounded;
 with ada.characters.handling;
 with ada.containers;						use ada.containers;
 with ada.containers.ordered_sets;
+with ada.containers.ordered_maps;
 
 with et_kicad_v6;						use et_kicad_v6;
 
@@ -77,6 +78,8 @@ with et_board_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_sheets;							use et_sheets;
+with et_drawing_frame.schematic;
+with et_text_content;
 
 with et_nets;
 with et_net_strands;
@@ -370,26 +373,79 @@ package body et_kicad_v6_to_native is
 	end build_ports;
 
 
-	-- Resolves a sheet node's page number (as filled in by import_design
-	-- from the root's sheet_instances block) to a native sheet number.
-	-- Defaults to 1 if unresolved or non-numeric:
-	function sheet_number_of (
+	-- Parses a sheet node's raw page number (as filled in by
+	-- import_design from the root's sheet_instances block). Returns 0
+	-- (a value no legitimate KiCad page number below the project's
+	-- own minimum can produce) if the page is unresolved or not a
+	-- plain integer -- KiCad also allows fully custom/alphanumeric
+	-- page labels, which this does not attempt to parse:
+	function raw_page_number (
 		node			: in type_sheet_node_access;
 		log_threshold	: in type_log_level)
-		return type_sheet
+		return natural
 	is
 		text : constant string := to_string (node.page);
 	begin
 		if text'length = 0 then
-			return 1;
+			return 0;
 		end if;
 
-		return type_sheet (natural'value (text));
+		return natural'value (text);
 
 	exception
 		when others =>
 			log (SEVERITY_WARNING,
-				text	=> "sheet page number '" & text & "' not numeric -> defaulting to 1",
+				text	=> "sheet page number '" & text & "' not a plain integer -> treated as page 0",
+				level	=> log_threshold);
+			return 0;
+	end raw_page_number;
+
+
+	-- Finds the lowest raw page number anywhere in the tree. KiCad's
+	-- own page numbering is not guaranteed to start at 1 -- this
+	-- project's, for instance, runs "00" .. "86" -- while
+	-- et_sheets.type_sheet requires a minimum of 1. Rather than
+	-- assuming any particular origin, the lowest page actually found
+	-- is what gets mapped to native sheet 1 (see sheet_number_of):
+	function find_min_raw_page (
+		node			: in type_sheet_node_access;
+		log_threshold	: in type_log_level;
+		current_min		: in natural)
+		return natural
+	is
+		m : natural := current_min;
+	begin
+		if node = null then
+			return m;
+		end if;
+
+		m := natural'min (m, raw_page_number (node, log_threshold));
+
+		for child of node.children loop
+			m := find_min_raw_page (child, log_threshold, m);
+		end loop;
+
+		return m;
+	end find_min_raw_page;
+
+
+	-- Resolves a sheet node's page number to a native sheet number,
+	-- shifted so that page_offset + the project's lowest raw page
+	-- number lands on native sheet 1 (see find_min_raw_page):
+	function sheet_number_of (
+		node			: in type_sheet_node_access;
+		log_threshold	: in type_log_level;
+		page_offset		: in integer)
+		return type_sheet
+	is
+		shifted : constant integer := integer (raw_page_number (node, log_threshold)) + page_offset;
+	begin
+		return type_sheet (shifted);
+
+	exception
+		when others =>
+			log (SEVERITY_WARNING,
+				text	=> "shifted sheet number" & integer'image (shifted) & " out of range -> defaulting to 1",
 				level	=> log_threshold);
 			return 1;
 	end sheet_number_of;
@@ -560,6 +616,24 @@ package body et_kicad_v6_to_native is
 	is
 		module			: type_generic_module;
 		anonymous_index	: et_net_names.type_anonymous_net_index := 1;
+
+		-- et_module.type_generic_module.frames.descriptions drives the
+		-- GUI's sheet count/navigation (see
+		-- et_drawing_frame.schematic.get_sheet_count: an empty
+		-- descriptions vector is quietly treated as "1 sheet", which is
+		-- why an unpopulated module only ever shows a single sheet
+		-- regardless of how many sheets its devices/nets reference).
+		-- Collected per sheet number during the tree walk, then turned
+		-- into that vector once the highest sheet number is known:
+		package pac_sheet_titles is new ada.containers.ordered_maps
+			(type_sheet, ada.strings.unbounded.unbounded_string,
+				"=" => ada.strings.unbounded."=");
+		use pac_sheet_titles;
+		sheet_titles : pac_sheet_titles.map;
+
+		-- Set once, before walk, from find_min_raw_page -- see
+		-- sheet_number_of:
+		page_offset : integer := 0;
 
 
 		-- Builds (or extends, for a device already seen on another
@@ -842,7 +916,16 @@ package body et_kicad_v6_to_native is
 				return;
 			end if;
 
-			sheet_num := sheet_number_of (node, log_threshold);
+			sheet_num := sheet_number_of (node, log_threshold, page_offset);
+
+			declare
+				use ada.strings.unbounded;
+				title : constant string := to_string (node.data.title);
+			begin
+				pac_sheet_titles.include (sheet_titles, sheet_num,
+					to_unbounded_string (
+						(if title'length > 0 then title else "sheet" & type_sheet'image (sheet_num))));
+			end;
 
 			for sym of node.data.placed_symbols loop
 				build_device (sym, node, sheet_num);
@@ -863,7 +946,47 @@ package body et_kicad_v6_to_native is
 		log_indentation_up;
 
 		build_device_models (project.merged_symbols, log_threshold + 1);
+
+		page_offset := 1 - integer (find_min_raw_page (project.root, log_threshold, natural'last));
 		walk (project.root);
+
+		-- Turn the per-sheet titles collected during the walk into
+		-- module.frames.descriptions, one entry per sheet number from
+		-- 1 to the highest one seen -- see the sheet_titles/
+		-- pac_sheet_titles declaration above for why this matters:
+		declare
+			use ada.strings.unbounded;
+			max_sheet : type_sheet := 1;
+		begin
+			for c in sheet_titles.iterate loop
+				if pac_sheet_titles.key (c) > max_sheet then
+					max_sheet := pac_sheet_titles.key (c);
+				end if;
+			end loop;
+
+			for n in 1 .. max_sheet loop
+				declare
+					c : constant pac_sheet_titles.cursor := sheet_titles.find (n);
+
+					text : constant string := (
+						if c /= pac_sheet_titles.no_element
+						then to_string (pac_sheet_titles.element (c))
+						else "no description");
+
+					-- type_text_content allows at most text_length_max
+					-- characters -- a KiCad title_block title is not
+					-- expected to be anywhere near that long, but this
+					-- must not raise if one ever is:
+					clipped : constant string := text (
+						text'first .. text'first - 1 +
+							natural'min (text'length, et_text_content.text_length_max));
+				begin
+					et_drawing_frame.schematic.pac_schematic_descriptions.append (
+						module.frames.descriptions,
+						(content => et_text_content.to_content (clipped), others => <>));
+				end;
+			end loop;
+		end;
 
 		log_indentation_down;
 		return module;
