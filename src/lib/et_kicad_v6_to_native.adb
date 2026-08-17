@@ -233,6 +233,28 @@ package body et_kicad_v6_to_native is
 	end extract_value;
 
 
+	-- KiCad's Y axis grows downward from the sheet's top-left corner;
+	-- ET's grows upward from the bottom-left (see
+	-- et_kicad_to_native.transpose's "move" for the exact precedent
+	-- this mirrors -- same formula, same reasoning, just derived from
+	-- this sheet's own already-parsed paper_height instead of a
+	-- separate frame/paper-size lookup). Flips a point that is placed
+	-- directly on a sheet (device/unit positions, wire/net
+	-- coordinates) -- rotation angles are never adjusted, matching
+	-- et_kicad_to_native's own "move" (only the position moves; a
+	-- symbol's rotation is meaningful independent of which way Y
+	-- grows):
+	function flip_sheet_y (
+		point			: in et_schematic_geometry.pac_geometry_2.type_vector_model;
+		sheet_height	: in type_distance_model)
+		return et_schematic_geometry.pac_geometry_2.type_vector_model
+	is
+	begin
+		return (x => point.x, y => sheet_height - point.y);
+	end flip_sheet_y;
+
+
+
 	-- et_port_general.type_port_general's rotation field is
 	-- type_rotation_relative, range -90.0 .. 180.0 -- much narrower
 	-- than a KiCad pin's 0/90/180/270 orientation (270 alone is
@@ -267,7 +289,8 @@ package body et_kicad_v6_to_native is
 	-- with each type's own "_default" constant rather than invented
 	-- values:
 	function build_port (
-		pin : in type_pin)
+		pin				: in type_pin;
+		local_height	: in type_distance_model)
 		return type_symbol_port
 	is
 		-- type_port_length is range 2.0 .. 20.0 -- KiCad pin lengths
@@ -275,7 +298,7 @@ package body et_kicad_v6_to_native is
 		-- else out of bounds) fall back to the default rather than
 		-- raising a range check failure:
 		base : constant type_port_general := (
-			position	=> pin.position,
+			position	=> flip_sheet_y (pin.position, local_height),
 			length		=> (if pin.length in type_port_length then pin.length else port_length_default),
 			rotation	=> normalize_rotation (pin.orientation));
 
@@ -339,7 +362,25 @@ package body et_kicad_v6_to_native is
 	is
 		inserted	: boolean;
 		port_cursor	: pac_symbol_ports.cursor;
+
+		-- Pin positions are local to the sub-unit's own origin, not a
+		-- sheet -- there is no page height to flip against (and no
+		-- parsed body/rectangle extent either, since graphics are
+		-- kept opaque -- see the package spec). A plain negation
+		-- (mirroring around y=0) would push any pin whose original Y
+		-- exceeds et_schematic_geometry's axis_min (-100.0 -- an
+		-- asymmetric range, mostly positive) out of range: this
+		-- project has at least one large hand-digitized IC body with
+		-- pins well past y=100. Using the highest pin Y actually seen
+		-- in this sub-unit as the flip reference instead keeps every
+		-- flipped position non-negative, the same way flip_sheet_y
+		-- keeps sheet-level positions within 0 .. paper_height:
+		local_height : type_distance_model := 0.0;
 	begin
+		for p of pins loop
+			local_height := type_distance_model'max (local_height, p.position.y);
+		end loop;
+
 		for p of pins loop
 			declare
 				-- KiCad allows an explicitly empty pin name (common
@@ -366,7 +407,7 @@ package body et_kicad_v6_to_native is
 						key			=> name,
 						position	=> port_cursor,
 						inserted	=> inserted,
-						new_item	=> build_port (p));
+						new_item	=> build_port (p, local_height));
 				end if;
 			end;
 		end loop;
@@ -615,7 +656,7 @@ package body et_kicad_v6_to_native is
 				unit_cursor		: pac_units.cursor;
 
 				unit_position : constant type_object_position := to_position (
-					point		=> sym.position,
+					point		=> flip_sheet_y (sym.position, containing.data.paper_height),
 					sheet		=> sheet_num,
 					rotation	=> sym.orientation);
 
@@ -762,8 +803,16 @@ package body et_kicad_v6_to_native is
 				end if;
 
 				for i in pts.first_index .. pts.last_index - 1 loop
+					-- Membership is tested against the strand's own
+					-- (still raw/unflipped) points -- those were
+					-- grouped by the parser's union-find over the same
+					-- raw KiCad coordinates, so the match must happen
+					-- before flip_sheet_y is applied to build the
+					-- actual native segment:
 					if pac_points.contains (strand.points, pts (i)) then
-						pac_net_segments.append (segments, to_net_segment (pts (i), pts (i + 1)));
+						pac_net_segments.append (segments, to_net_segment (
+							flip_sheet_y (pts (i), sheet.paper_height),
+							flip_sheet_y (pts (i + 1), sheet.paper_height)));
 					end if;
 				end loop;
 			end collect_from_wire;
