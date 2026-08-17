@@ -374,11 +374,15 @@ package body et_kicad_v6_to_native is
 
 
 	-- Parses a sheet node's raw page number (as filled in by
-	-- import_design from the root's sheet_instances block). Returns 0
-	-- (a value no legitimate KiCad page number below the project's
-	-- own minimum can produce) if the page is unresolved or not a
-	-- plain integer -- KiCad also allows fully custom/alphanumeric
-	-- page labels, which this does not attempt to parse:
+	-- import_design from the root's sheet_instances block). Sheet
+	-- numbers map directly onto native sheet numbers -- no shifting --
+	-- so page "3" is native sheet 3. Returns 0 if the page is
+	-- unresolved or not a plain integer (KiCad also allows fully
+	-- custom/alphanumeric page labels, which this does not attempt to
+	-- parse); page 0 -- whether a genuine KiCad page "0"/"00" or one
+	-- of these fallback cases -- has no native sheet (et_sheets.
+	-- type_sheet requires a minimum of 1) and its content is skipped
+	-- by walk, not remapped onto some other sheet:
 	function raw_page_number (
 		node			: in type_sheet_node_access;
 		log_threshold	: in type_log_level)
@@ -395,60 +399,10 @@ package body et_kicad_v6_to_native is
 	exception
 		when others =>
 			log (SEVERITY_WARNING,
-				text	=> "sheet page number '" & text & "' not a plain integer -> treated as page 0",
+				text	=> "sheet page number '" & text & "' not a plain integer -> treated as page 0 (ignored)",
 				level	=> log_threshold);
 			return 0;
 	end raw_page_number;
-
-
-	-- Finds the lowest raw page number anywhere in the tree. KiCad's
-	-- own page numbering is not guaranteed to start at 1 -- this
-	-- project's, for instance, runs "00" .. "86" -- while
-	-- et_sheets.type_sheet requires a minimum of 1. Rather than
-	-- assuming any particular origin, the lowest page actually found
-	-- is what gets mapped to native sheet 1 (see sheet_number_of):
-	function find_min_raw_page (
-		node			: in type_sheet_node_access;
-		log_threshold	: in type_log_level;
-		current_min		: in natural)
-		return natural
-	is
-		m : natural := current_min;
-	begin
-		if node = null then
-			return m;
-		end if;
-
-		m := natural'min (m, raw_page_number (node, log_threshold));
-
-		for child of node.children loop
-			m := find_min_raw_page (child, log_threshold, m);
-		end loop;
-
-		return m;
-	end find_min_raw_page;
-
-
-	-- Resolves a sheet node's page number to a native sheet number,
-	-- shifted so that page_offset + the project's lowest raw page
-	-- number lands on native sheet 1 (see find_min_raw_page):
-	function sheet_number_of (
-		node			: in type_sheet_node_access;
-		log_threshold	: in type_log_level;
-		page_offset		: in integer)
-		return type_sheet
-	is
-		shifted : constant integer := integer (raw_page_number (node, log_threshold)) + page_offset;
-	begin
-		return type_sheet (shifted);
-
-	exception
-		when others =>
-			log (SEVERITY_WARNING,
-				text	=> "shifted sheet number" & integer'image (shifted) & " out of range -> defaulting to 1",
-				level	=> log_threshold);
-			return 1;
-	end sheet_number_of;
 
 
 	-- Synthesizes one ET device model per distinct lib_id found in the
@@ -630,10 +584,6 @@ package body et_kicad_v6_to_native is
 				"=" => ada.strings.unbounded."=");
 		use pac_sheet_titles;
 		sheet_titles : pac_sheet_titles.map;
-
-		-- Set once, before walk, from find_min_raw_page -- see
-		-- sheet_number_of:
-		page_offset : integer := 0;
 
 
 		-- Builds (or extends, for a device already seen on another
@@ -910,30 +860,47 @@ package body et_kicad_v6_to_native is
 
 
 		procedure walk (node : in type_sheet_node_access) is
-			sheet_num : type_sheet;
+			raw : natural;
 		begin
 			if node = null then
 				return;
 			end if;
 
-			sheet_num := sheet_number_of (node, log_threshold, page_offset);
+			raw := raw_page_number (node, log_threshold);
 
-			declare
-				use ada.strings.unbounded;
-				title : constant string := to_string (node.data.title);
-			begin
-				pac_sheet_titles.include (sheet_titles, sheet_num,
-					to_unbounded_string (
-						(if title'length > 0 then title else "sheet" & type_sheet'image (sheet_num))));
-			end;
+			if raw = 0 then
+				log (SEVERITY_NOTE,
+					text	=> "sheet 0 (" & to_string (node.uuid_path)
+						& ") ignored -- no devices/nets converted from it",
+					level	=> log_threshold + 1);
+			else
+				declare
+					sheet_num : constant type_sheet := type_sheet (raw);
+				begin
+					declare
+						use ada.strings.unbounded;
+						title : constant string := to_string (node.data.title);
+					begin
+						pac_sheet_titles.include (sheet_titles, sheet_num,
+							to_unbounded_string (
+								(if title'length > 0 then title else "sheet" & type_sheet'image (sheet_num))));
+					end;
 
-			for sym of node.data.placed_symbols loop
-				build_device (sym, node, sheet_num);
-			end loop;
+					for sym of node.data.placed_symbols loop
+						build_device (sym, node, sheet_num);
+					end loop;
 
-			for strand of node.data.strands loop
-				build_net_contribution (sheet_num, strand, node.data.all);
-			end loop;
+					for strand of node.data.strands loop
+						build_net_contribution (sheet_num, strand, node.data.all);
+					end loop;
+
+				exception
+					when constraint_error =>
+						log (SEVERITY_WARNING,
+							text	=> "sheet page" & natural'image (raw) & " out of range -> ignored",
+							level	=> log_threshold);
+				end;
+			end if;
 
 			for child of node.children loop
 				walk (child);
@@ -947,7 +914,6 @@ package body et_kicad_v6_to_native is
 
 		build_device_models (project.merged_symbols, log_threshold + 1);
 
-		page_offset := 1 - integer (find_min_raw_page (project.root, log_threshold, natural'last));
 		walk (project.root);
 
 		-- Turn the per-sheet titles collected during the walk into
