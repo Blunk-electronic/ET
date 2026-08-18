@@ -811,6 +811,25 @@ package body et_kicad_v6_to_native is
 		is
 			segments : pac_net_segments.list;
 
+			-- to_net_segment defaults both ends to "no junction" --
+			-- KiCad's own (junction ...) markers (type_sheet_data.
+			-- junctions, already parsed) are a separate list from the
+			-- wires themselves and were never consulted when building
+			-- native segments, so no junction dot ever appeared on
+			-- import regardless of how many the source actually had.
+			-- Raw/unflipped comparison, same reasoning as the strand.
+			-- points membership check below:
+			function has_junction_at (p : in et_schematic_geometry.pac_geometry_2.type_vector_model) return boolean is
+			begin
+				for j of sheet.junctions loop
+					if et_schematic_geometry.pac_geometry_2."=" (j.position, p) then
+						return true;
+					end if;
+				end loop;
+
+				return false;
+			end has_junction_at;
+
 			procedure collect_from_wire (pts : in pac_points.vector) is
 			begin
 				if pts.length < 2 then
@@ -825,9 +844,16 @@ package body et_kicad_v6_to_native is
 					-- before flip_sheet_y is applied to build the
 					-- actual native segment:
 					if pac_points.contains (strand.points, pts (i)) then
-						pac_net_segments.append (segments, to_net_segment (
-							flip_sheet_y (pts (i), sheet.paper_height),
-							flip_sheet_y (pts (i + 1), sheet.paper_height)));
+						declare
+							segment : type_net_segment := to_net_segment (
+								flip_sheet_y (pts (i), sheet.paper_height),
+								flip_sheet_y (pts (i + 1), sheet.paper_height));
+						begin
+							segment.junctions.A := has_junction_at (pts (i));
+							segment.junctions.B := has_junction_at (pts (i + 1));
+
+							pac_net_segments.append (segments, segment);
+						end;
 					end if;
 				end loop;
 			end collect_from_wire;
