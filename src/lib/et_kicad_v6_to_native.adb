@@ -242,6 +242,38 @@ package body et_kicad_v6_to_native is
 	end extract_value;
 
 
+	-- Reads the "Name" property of a PLACED symbol -- this project's
+	-- own convention (not part of the KiCad file format) for a
+	-- per-instance functional label distinct from "Value": many
+	-- instances share one lib_symbol/Value (e.g. several gates all
+	-- "F158"), but each gets its own "Name" naming what it actually
+	-- does in this design (e.g. "MEMDMX", "RSNAN1D"). et_device_
+	-- purpose ("what the device is doing", visible in the schematic)
+	-- is the only native slot for a visible per-instance label, so
+	-- that's where this lands. to_purpose raises on length/character
+	-- violations regardless of its error_on_invalid_character flag
+	-- (that flag is a no-op in the current implementation) -- the
+	-- real corpus never exceeds 8 of its 50 allowed characters, but
+	-- fall back to empty_purpose rather than aborting the whole
+	-- import over one future out-of-range label:
+	function extract_purpose (
+		props : in pac_properties.map)
+		return et_device_purpose.type_device_purpose
+	is
+		use pac_properties;
+		c : constant pac_properties.cursor := find (props, to_property_name ("Name"));
+	begin
+		if c /= pac_properties.no_element then
+			return et_device_purpose.to_purpose (to_string (element (c)));
+		else
+			return et_device_purpose.empty_purpose;
+		end if;
+	exception
+		when others =>
+			return et_device_purpose.empty_purpose;
+	end extract_purpose;
+
+
 	-- KiCad's Y axis grows downward from the sheet's top-left corner;
 	-- ET's grows upward from the bottom-left (see
 	-- et_kicad_to_native.transpose's "move" for the exact precedent
@@ -1176,7 +1208,7 @@ package body et_kicad_v6_to_native is
 							model_cursor	=> model_cursor,
 							value			=> sanitize_device_value (to_string (inst.value)),
 							partcode		=> et_device_partcode.to_partcode (et_device_partcode.partcode_default),
-							purpose			=> et_device_purpose.empty_purpose,
+							purpose			=> extract_purpose (sym.properties),
 							-- No footprint/package data in this KiCad
 							-- schematic-only project (out of scope --
 							-- see the package spec) -- et_module_write
