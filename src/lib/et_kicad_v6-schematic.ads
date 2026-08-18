@@ -94,6 +94,16 @@ package et_kicad_v6.schematic is
 		(key_type => type_property_name, element_type => type_property_value);
 
 
+	-- KiCad's "(effects ... (justify [left|right] [top|bottom]))" --
+	-- an axis missing from justify (or the whole "justify" node
+	-- missing) means that axis is centered on the anchor point.
+	-- Mirrors et_alignment.type_text_alignment_horizontal/vertical
+	-- one-for-one (own enum here so this package stays independent
+	-- of ET's native text model):
+	type type_justify_horizontal is (JUSTIFY_H_LEFT, JUSTIFY_H_CENTER, JUSTIFY_H_RIGHT);
+	type type_justify_vertical   is (JUSTIFY_V_TOP,  JUSTIFY_V_CENTER, JUSTIFY_V_BOTTOM);
+
+
 	-- Unlike a pin, a property's "(at x y rot)" is given in ABSOLUTE
 	-- page coordinates, not relative to the owning symbol -- captured
 	-- separately from pac_properties (which is also used for
@@ -101,6 +111,8 @@ package et_kicad_v6.schematic is
 	type type_property_placement is record
 		position	: type_vector_model;
 		rotation	: type_rotation_model := 0.0;
+		justify_h	: type_justify_horizontal := JUSTIFY_H_CENTER;
+		justify_v	: type_justify_vertical   := JUSTIFY_V_CENTER;
 	end record;
 
 	package pac_property_placements is new ada.containers.ordered_maps
@@ -325,6 +337,8 @@ package et_kicad_v6.schematic is
 		text		: type_property_value;
 		position	: type_vector_model;
 		orientation	: type_rotation_model := 0.0;
+		justify_h	: type_justify_horizontal := JUSTIFY_H_CENTER;
+		justify_v	: type_justify_vertical   := JUSTIFY_V_CENTER;
 		uuid		: type_uuid;
 	end record;
 

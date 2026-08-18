@@ -245,6 +245,68 @@ package body et_kicad_v6.schematic is
 	-- PROPERTIES
 	------------------------------------------------------------------
 
+	-- True if any direct child of n is an unquoted atom whose text
+	-- equals text -- used for flag-style blocks like
+	-- (pin_names (offset 1.016) hide) where the flag atom's
+	-- position shifts depending on which optional sub-blocks (like
+	-- "offset") are present, so a fixed child index cannot be
+	-- assumed:
+	function contains_atom (n : in sexp.type_node; text : in string) return boolean is
+	begin
+		for i in 1 .. sexp.child_count (n) loop
+			declare
+				child : constant sexp.type_node := sexp.get_child (n, i);
+			begin
+				if sexp.kind (child) = sexp.SEXP_ATOM
+					and then not sexp.atom_was_quoted (child)
+					and then sexp.atom_text (child) = text
+				then
+					return true;
+				end if;
+			end;
+		end loop;
+
+		return false;
+	end contains_atom;
+
+
+	-- Reads "(justify [left|right] [top|bottom])" out of a node's
+	-- "effects" child (n is the property/text node itself, not
+	-- effects directly) -- a missing axis, or a missing "justify"/
+	-- "effects" node entirely, means that axis is centered, matching
+	-- KiCad's own default:
+	function parse_justify_h (n : in sexp.type_node) return type_justify_horizontal is
+		effects_node : constant sexp.type_node := sexp.find_first_child (n, "effects");
+		justify_node : constant sexp.type_node := sexp.find_first_child (effects_node, "justify");
+	begin
+		if sexp.kind (justify_node) /= sexp.SEXP_LIST then
+			return JUSTIFY_H_CENTER;
+		elsif contains_atom (justify_node, "left") then
+			return JUSTIFY_H_LEFT;
+		elsif contains_atom (justify_node, "right") then
+			return JUSTIFY_H_RIGHT;
+		else
+			return JUSTIFY_H_CENTER;
+		end if;
+	end parse_justify_h;
+
+
+	function parse_justify_v (n : in sexp.type_node) return type_justify_vertical is
+		effects_node : constant sexp.type_node := sexp.find_first_child (n, "effects");
+		justify_node : constant sexp.type_node := sexp.find_first_child (effects_node, "justify");
+	begin
+		if sexp.kind (justify_node) /= sexp.SEXP_LIST then
+			return JUSTIFY_V_CENTER;
+		elsif contains_atom (justify_node, "top") then
+			return JUSTIFY_V_TOP;
+		elsif contains_atom (justify_node, "bottom") then
+			return JUSTIFY_V_BOTTOM;
+		else
+			return JUSTIFY_V_CENTER;
+		end if;
+	end parse_justify_v;
+
+
 	procedure parse_properties (n : in sexp.type_node; properties : in out pac_properties.map) is
 		nodes	: constant sexp.pac_node_list.vector := sexp.find_all_children (n, "property");
 		c		: sexp.pac_node_list.cursor := nodes.first;
@@ -282,38 +344,16 @@ package body et_kicad_v6.schematic is
 				if sexp.child_count (p) >= 3 and then sexp.kind (at_node) = sexp.SEXP_LIST then
 					placements.include (
 						to_property_name (sexp.atom_text (sexp.get_child (p, 2))),
-						(position => parse_xy (at_node), rotation => parse_rotation (at_node)));
+						(position	=> parse_xy (at_node),
+						 rotation	=> parse_rotation (at_node),
+						 justify_h	=> parse_justify_h (p),
+						 justify_v	=> parse_justify_v (p)));
 				end if;
 			end;
 
 			sexp.pac_node_list.next (c);
 		end loop;
 	end parse_property_placements;
-
-
-	-- True if any direct child of n is an unquoted atom whose text
-	-- equals text -- used for flag-style blocks like
-	-- (pin_names (offset 1.016) hide) where the flag atom's
-	-- position shifts depending on which optional sub-blocks (like
-	-- "offset") are present, so a fixed child index cannot be
-	-- assumed:
-	function contains_atom (n : in sexp.type_node; text : in string) return boolean is
-	begin
-		for i in 1 .. sexp.child_count (n) loop
-			declare
-				child : constant sexp.type_node := sexp.get_child (n, i);
-			begin
-				if sexp.kind (child) = sexp.SEXP_ATOM
-					and then not sexp.atom_was_quoted (child)
-					and then sexp.atom_text (child) = text
-				then
-					return true;
-				end if;
-			end;
-		end loop;
-
-		return false;
-	end contains_atom;
 
 
 	function get_property (properties : in pac_properties.map; name : in string) return type_property_value is
@@ -721,6 +761,9 @@ package body et_kicad_v6.schematic is
 			result.position := parse_xy (at_node);
 			result.orientation := parse_rotation (at_node);
 		end if;
+
+		result.justify_h := parse_justify_h (n);
+		result.justify_v := parse_justify_v (n);
 
 		if sexp.kind (uuid_node) = sexp.SEXP_LIST and then sexp.child_count (uuid_node) >= 2 then
 			result.uuid := to_uuid (sexp.atom_text (sexp.get_child (uuid_node, 2)));

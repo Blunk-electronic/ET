@@ -41,6 +41,7 @@ with et_module_names;					use et_module_names;
 with et_module_write;
 with et_schematic_text;					use et_schematic_text;
 with et_generic_modules;					use et_generic_modules;
+with et_alignment;						use et_alignment;
 
 with et_device_appearance;				use et_device_appearance;
 with et_device_library;					use et_device_library;
@@ -314,6 +315,58 @@ package body et_kicad_v6_to_native is
 				y => sym.position.y - p.position.y);
 		end;
 	end placeholder_position;
+
+
+	-- Maps KiCad's own justify vocabulary onto et_alignment's --
+	-- both describe which edge/corner of the text sits AT the anchor
+	-- point (e.g. "justify left" = anchor at the text's left edge,
+	-- text extends rightward), so this is a direct one-for-one
+	-- mapping, no axis flip: unlike a raw y-coordinate, "top"/
+	-- "bottom" here is already a visual (on-page) concept in both
+	-- tools, and the position itself is what carries the Y-flip (see
+	-- placeholder_position/flip_sheet_y) -- reapplying a flip here
+	-- would flip it twice:
+	function to_alignment (
+		h : in type_justify_horizontal;
+		v : in type_justify_vertical)
+		return et_alignment.type_text_alignment
+	is
+		horizontal : constant et_alignment.type_text_alignment_horizontal :=
+			(case h is
+				when JUSTIFY_H_LEFT   => et_alignment.ALIGN_LEFT,
+				when JUSTIFY_H_CENTER => et_alignment.ALIGN_CENTER,
+				when JUSTIFY_H_RIGHT  => et_alignment.ALIGN_RIGHT);
+
+		vertical : constant et_alignment.type_text_alignment_vertical :=
+			(case v is
+				when JUSTIFY_V_TOP    => et_alignment.ALIGN_TOP,
+				when JUSTIFY_V_CENTER => et_alignment.ALIGN_CENTER,
+				when JUSTIFY_V_BOTTOM => et_alignment.ALIGN_BOTTOM);
+	begin
+		return (horizontal => horizontal, vertical => vertical);
+	end to_alignment;
+
+
+	-- Same lookup as placeholder_position, but for the property's
+	-- justify instead of its offset -- falls back to ET's own default
+	-- (left/bottom) when the property has no placement data, matching
+	-- what an all-defaults placeholder used to render as before this
+	-- was tracked at all:
+	function placeholder_alignment (
+		sym				: in type_placed_symbol;
+		property_name	: in string)
+		return et_alignment.type_text_alignment
+	is
+		use pac_property_placements;
+		c : constant pac_property_placements.cursor :=
+			find (sym.placements, to_property_name (property_name));
+	begin
+		if c = pac_property_placements.no_element then
+			return et_alignment.text_alignment_default;
+		end if;
+
+		return to_alignment (element (c).justify_h, element (c).justify_v);
+	end placeholder_alignment;
 
 
 	-- KiCad's Y axis grows downward from the sheet's top-left corner;
@@ -1174,6 +1227,10 @@ package body et_kicad_v6_to_native is
 							plc.value.position   := placeholder_position (sym, "Value");
 							plc.purpose.position := placeholder_position (sym, "Name");
 
+							plc.name.alignment    := placeholder_alignment (sym, "Reference");
+							plc.value.alignment   := placeholder_alignment (sym, "Value");
+							plc.purpose.alignment := placeholder_alignment (sym, "Name");
+
 							new_unit := (
 								appearance		=> APPEARANCE_PCB,
 								position		=> unit_position,
@@ -1516,7 +1573,9 @@ package body et_kicad_v6_to_native is
 					natural'min (sanitized'length, et_text_content.text_length_max));
 		begin
 			et_schematic_text.pac_texts.append (module.texts, (
-				pac_text_schematic.type_text'(others => <>)
+				pac_text_schematic.type_text'(
+					alignment	=> to_alignment (txt.justify_h, txt.justify_v),
+					others		=> <>)
 				with
 					position	=> flip_sheet_y (txt.position, paper_height),
 					rotation	=> (if txt.orientation = 90.0 or txt.orientation = 270.0
@@ -1574,13 +1633,20 @@ package body et_kicad_v6_to_native is
 					(if place_c /= pac_property_placements.no_element
 					 then element (place_c).rotation
 					 else 0.0);
+
+				alignment : constant et_alignment.type_text_alignment :=
+					(if place_c /= pac_property_placements.no_element
+					 then to_alignment (element (place_c).justify_h, element (place_c).justify_v)
+					 else et_alignment.text_alignment_default);
 			begin
 				if clipped'length = 0 then
 					return;
 				end if;
 
 				et_schematic_text.pac_texts.append (module.texts, (
-					pac_text_schematic.type_text'(others => <>)
+					pac_text_schematic.type_text'(
+						alignment	=> alignment,
+						others		=> <>)
 					with
 						position	=> flip_sheet_y (abs_position, paper_height),
 						rotation	=> (if orientation = 90.0 or orientation = 270.0
