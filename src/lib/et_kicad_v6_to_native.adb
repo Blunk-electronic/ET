@@ -1526,6 +1526,71 @@ package body et_kicad_v6_to_native is
 		end build_free_text;
 
 
+		-- Converts a placed symbol's "Location" property -- this
+		-- project's own convention for the part's grid reference on
+		-- the original paper drawing (e.g. "H16") -- into a
+		-- standalone schematic text at its own absolute position.
+		-- Unlike "Reference"/"Value"/"Name" (which land on the
+		-- device itself as NAME/VALUE/PURPOSE placeholders, see
+		-- build_device/placeholder_position), "Location" has no
+		-- matching device concept in ET, so it becomes a free-
+		-- standing text object instead -- the closest native
+		-- equivalent to "just show this text where KiCad had it":
+		procedure build_location_text (
+			sym			: in type_placed_symbol;
+			sheet_num	: in type_sheet;
+			paper_height	: in type_distance_model)
+		is
+			use pac_properties;
+			use pac_property_placements;
+
+			prop_c : constant pac_properties.cursor :=
+				find (sym.properties, to_property_name ("Location"));
+		begin
+			if prop_c = pac_properties.no_element then
+				return;
+			end if;
+
+			declare
+				raw			: constant string := to_string (element (prop_c));
+				sanitized	: constant string := sanitize_text_content (raw);
+
+				clipped : constant string := sanitized (
+					sanitized'first .. sanitized'first - 1 +
+						natural'min (sanitized'length, et_text_content.text_length_max));
+
+				place_c : constant pac_property_placements.cursor :=
+					find (sym.placements, to_property_name ("Location"));
+
+				-- Absolute page position, same as any other property
+				-- -- fall back to the symbol's own position if this
+				-- particular file never gave "Location" an "at":
+				abs_position : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+					(if place_c /= pac_property_placements.no_element
+					 then element (place_c).position
+					 else sym.position);
+
+				orientation : constant type_rotation_model :=
+					(if place_c /= pac_property_placements.no_element
+					 then element (place_c).rotation
+					 else 0.0);
+			begin
+				if clipped'length = 0 then
+					return;
+				end if;
+
+				et_schematic_text.pac_texts.append (module.texts, (
+					pac_text_schematic.type_text'(others => <>)
+					with
+						position	=> flip_sheet_y (abs_position, paper_height),
+						rotation	=> (if orientation = 90.0 or orientation = 270.0
+										then VERTICAL else HORIZONTAL),
+						sheet		=> sheet_num,
+						content		=> et_text_content.to_content (clipped)));
+			end;
+		end build_location_text;
+
+
 		-- Captures module.meta.schematic (revision/drawing_number/
 		-- drawn_date, from title_block) and module.frames.frame's
 		-- paper size (from the sheet's own already-parsed paper_
@@ -1632,6 +1697,7 @@ package body et_kicad_v6_to_native is
 
 					for sym of node.data.placed_symbols loop
 						build_device (sym, node, sheet_num);
+						build_location_text (sym, sheet_num, node.data.paper_height);
 					end loop;
 
 					for strand of node.data.strands loop
