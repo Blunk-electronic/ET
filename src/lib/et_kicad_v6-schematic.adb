@@ -1096,10 +1096,55 @@ package body et_kicad_v6.schematic is
 		if sexp.kind (title_block_node) = sexp.SEXP_LIST then
 			declare
 				title_node : constant sexp.type_node := sexp.find_first_child (title_block_node, "title");
+				date_node  : constant sexp.type_node := sexp.find_first_child (title_block_node, "date");
+				rev_node   : constant sexp.type_node := sexp.find_first_child (title_block_node, "rev");
+
+				comment_nodes : constant sexp.pac_node_list.vector :=
+					sexp.find_all_children (title_block_node, "comment");
+				cc : sexp.pac_node_list.cursor := comment_nodes.first;
 			begin
 				if sexp.kind (title_node) = sexp.SEXP_LIST and then sexp.child_count (title_node) >= 2 then
 					result.title := to_property_value (sexp.atom_text (sexp.get_child (title_node, 2)));
 				end if;
+
+				if sexp.kind (date_node) = sexp.SEXP_LIST and then sexp.child_count (date_node) >= 2 then
+					result.date := to_property_value (sexp.atom_text (sexp.get_child (date_node, 2)));
+				end if;
+
+				if sexp.kind (rev_node) = sexp.SEXP_LIST and then sexp.child_count (rev_node) >= 2 then
+					result.revision := to_property_value (sexp.atom_text (sexp.get_child (rev_node, 2)));
+				end if;
+
+				-- (comment N "text") -- N (child 2) selects which of
+				-- the four slots; text is child 3:
+				while sexp.pac_node_list.has_element (cc) loop
+					declare
+						cn : constant sexp.type_node := sexp.pac_node_list.element (cc);
+					begin
+						if sexp.child_count (cn) >= 3 then
+							declare
+								n	 : constant natural := sexp.atom_to_natural (sexp.get_child (cn, 2));
+								text : constant type_property_value :=
+									to_property_value (sexp.atom_text (sexp.get_child (cn, 3)));
+							begin
+								case n is
+									when 1 => result.comment_1 := text;
+									when 2 => result.comment_2 := text;
+									when 3 => result.comment_3 := text;
+									when 4 => result.comment_4 := text;
+									when others =>
+										log_unknown_key (
+											context			=> "title_block comment",
+											key				=> natural'image (n),
+											log_threshold	=> log_threshold,
+											deferred		=> true);
+								end case;
+							end;
+						end if;
+					end;
+
+					sexp.pac_node_list.next (cc);
+				end loop;
 			end;
 		end if;
 

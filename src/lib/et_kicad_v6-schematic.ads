@@ -409,7 +409,19 @@ package et_kicad_v6.schematic is
 		paper_size		: type_property_value;
 		paper_width		: type_distance_model := 0.0;
 		paper_height	: type_distance_model := 0.0;
-		title			: type_property_value; -- CS: date/rev/company/comment of title_block not yet populated
+		title			: type_property_value;
+
+		-- The rest of (title_block ...): KiCad v6 has no distinct
+		-- "company" field -- comment_1 .. comment_4 are its free-form
+		-- stand-ins (this project's own convention puts a product
+		-- name in comment_1 and a drawing number in comment_2, but
+		-- that's this project's usage, not part of the file format):
+		date			: type_property_value;
+		revision		: type_property_value;
+		comment_1		: type_property_value;
+		comment_2		: type_property_value;
+		comment_3		: type_property_value;
+		comment_4		: type_property_value;
 
 		symbols			: pac_lib_symbols.map;    -- this file's own embedded lib_symbols
 		child_sheets	: pac_sheet_refs.list;
