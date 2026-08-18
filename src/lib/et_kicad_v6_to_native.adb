@@ -36,6 +36,7 @@ with et_project_name;					use et_project_name;
 with et_project;
 with et_module_names;					use et_module_names;
 with et_module_write;
+with et_schematic_text;					use et_schematic_text;
 with et_generic_modules;					use et_generic_modules;
 
 with et_device_appearance;				use et_device_appearance;
@@ -255,6 +256,56 @@ package body et_kicad_v6_to_native is
 		return (x => point.x, y => sheet_height - point.y);
 	end flip_sheet_y;
 
+
+
+	-- Makes free text safe to round-trip through et_module_write/
+	-- et_module_read's *.mod line format, which has no room for
+	-- either of these two things a KiCad text note can freely
+	-- contain:
+	--
+	-- 1. An embedded LF -- KiCad multi-line notes use a literal "\n"
+	--    two-character escape that the parser already decodes into a
+	--    real LF, but et_module_write writes text content as a single
+	--    quoted line, so an embedded LF breaks the file's own line-
+	--    oriented format on read-back (the closing quote ends up on
+	--    the next physical line, raised as "Missing delimiter").
+	--    Collapsed to a single space.
+	--
+	-- 2. A "--" substring -- et_string_processing.read_line strips
+	--    everything from "--" onward as a comment, even inside a
+	--    quoted field (comment_mark_default is "--", and the search
+	--    for it is not quote-aware). A hand-written divider line like
+	--    "------" silently eats its own closing quote the same way as
+	--    (1), confirmed with a standalone reproduction against
+	--    read_line directly. Every run of 2+ dashes gets a space
+	--    inserted between each pair, so no "--" substring survives
+	--    (a divider still reads as one, just spaced out):
+	function sanitize_text_content (raw : in string) return string is
+		use ada.strings.unbounded;
+		buf			: unbounded_string;
+		prev_dash	: boolean := false;
+	begin
+		for ch of raw loop
+			if ch = ASCII.LF or ch = ASCII.CR then
+				append (buf, ' ');
+				prev_dash := false;
+
+			elsif ch = '-' then
+				if prev_dash then
+					append (buf, ' ');
+				end if;
+
+				append (buf, ch);
+				prev_dash := true;
+
+			else
+				append (buf, ch);
+				prev_dash := false;
+			end if;
+		end loop;
+
+		return to_string (buf);
+	end sanitize_text_content;
 
 
 	-- et_port_general.type_port_general's rotation field is
@@ -1007,6 +1058,38 @@ package body et_kicad_v6_to_native is
 		end build_net_contribution;
 
 
+		-- Converts one standalone KiCad (text ...) note (not a net
+		-- label -- those are handled separately, see
+		-- append_matching_labels) into a native schematic text/note,
+		-- appended to module.texts:
+		procedure build_free_text (
+			txt			: in type_free_text;
+			sheet_num	: in type_sheet;
+			paper_height	: in type_distance_model)
+		is
+			raw			: constant string := to_string (txt.text);
+			sanitized	: constant string := sanitize_text_content (raw);
+
+			-- type_text_content allows at most text_length_max
+			-- characters -- KiCad free text is not expected to be
+			-- anywhere near that long, but this must not raise if one
+			-- ever is (same reasoning as the sheet description text in
+			-- convert's finalization):
+			clipped : constant string := sanitized (
+				sanitized'first .. sanitized'first - 1 +
+					natural'min (sanitized'length, et_text_content.text_length_max));
+		begin
+			et_schematic_text.pac_texts.append (module.texts, (
+				pac_text_schematic.type_text'(others => <>)
+				with
+					position	=> flip_sheet_y (txt.position, paper_height),
+					rotation	=> (if txt.orientation = 90.0 or txt.orientation = 270.0
+									then VERTICAL else HORIZONTAL),
+					sheet		=> sheet_num,
+					content		=> et_text_content.to_content (clipped)));
+		end build_free_text;
+
+
 		procedure walk (node : in type_sheet_node_access) is
 			raw : natural;
 		begin
@@ -1040,6 +1123,10 @@ package body et_kicad_v6_to_native is
 
 					for strand of node.data.strands loop
 						build_net_contribution (sheet_num, strand, node.data.all);
+					end loop;
+
+					for txt of node.data.texts loop
+						build_free_text (txt, sheet_num, node.data.paper_height);
 					end loop;
 
 				exception
@@ -1087,13 +1174,15 @@ package body et_kicad_v6_to_native is
 						then to_string (pac_sheet_titles.element (c))
 						else "no description");
 
+					sanitized : constant string := sanitize_text_content (text);
+
 					-- type_text_content allows at most text_length_max
 					-- characters -- a KiCad title_block title is not
 					-- expected to be anywhere near that long, but this
 					-- must not raise if one ever is:
-					clipped : constant string := text (
-						text'first .. text'first - 1 +
-							natural'min (text'length, et_text_content.text_length_max));
+					clipped : constant string := sanitized (
+						sanitized'first .. sanitized'first - 1 +
+							natural'min (sanitized'length, et_text_content.text_length_max));
 				begin
 					et_drawing_frame.schematic.pac_schematic_descriptions.append (
 						module.frames.descriptions,
