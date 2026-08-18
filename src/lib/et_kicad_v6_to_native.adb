@@ -34,6 +34,9 @@ with et_kicad_v6;						use et_kicad_v6;
 
 with et_project_name;					use et_project_name;
 with et_project;
+with ada.calendar;						use ada.calendar;
+with et_time;
+with et_meta;
 with et_module_names;					use et_module_names;
 with et_module_write;
 with et_schematic_text;					use et_schematic_text;
@@ -306,6 +309,50 @@ package body et_kicad_v6_to_native is
 
 		return to_string (buf);
 	end sanitize_text_content;
+
+
+	-- Parses a KiCad title_block date, "DD-MON-YY" (e.g. "22-MAY-90"),
+	-- into a native time value via et_time.to_date, which itself
+	-- expects ISO "YYYY-MM-DD". The two-digit year is expanded using
+	-- the common 69/00 pivot (00 .. 68 -> 2000 .. 2068, 69 .. 99 ->
+	-- 1969 .. 1999) -- appropriate here since every date actually
+	-- seen in this project is firmly in the 1900s (a decades-old
+	-- design being hand-digitized). Raises constraint_error on
+	-- anything not matching this exact shape; the caller falls back
+	-- to a default and logs a warning:
+	function parse_kicad_date (raw : in string) return time is
+		use ada.characters.handling;
+
+		months : constant array (1 .. 12) of string (1 .. 3) :=
+			("JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+			 "JUL", "AUG", "SEP", "OCT", "NOV", "DEC");
+
+		day_str		: constant string := raw (raw'first .. raw'first + 1);
+		mon_str		: constant string := to_upper (raw (raw'first + 3 .. raw'first + 5));
+		year_2d		: constant natural := natural'value (raw (raw'first + 7 .. raw'first + 8));
+		year_4d		: constant natural := (if year_2d <= 68 then 2000 + year_2d else 1900 + year_2d);
+
+		month_num	: natural := 0;
+	begin
+		if raw'length /= 9 or raw (raw'first + 2) /= '-' or raw (raw'first + 6) /= '-' then
+			raise constraint_error;
+		end if;
+
+		for m in months'range loop
+			if months (m) = mon_str then
+				month_num := m;
+			end if;
+		end loop;
+
+		if month_num = 0 then
+			raise constraint_error;
+		end if;
+
+		return et_time.to_date (
+			trim (natural'image (year_4d), left) & "-"
+			& (if month_num < 10 then "0" else "") & trim (natural'image (month_num), left) & "-"
+			& day_str);
+	end parse_kicad_date;
 
 
 	-- et_port_general.type_port_general's rotation field is
@@ -693,6 +740,15 @@ package body et_kicad_v6_to_native is
 				"=" => ada.strings.unbounded."=");
 		use pac_sheet_titles;
 		sheet_titles : pac_sheet_titles.map;
+
+		-- module.meta and module.frames.frame's paper size are both
+		-- project-wide (not per-sheet, unlike sheet_titles above), so
+		-- these are captured once from the first sheet that actually
+		-- has the data -- confirmed uniform across every sampled
+		-- sheet in the real SEQ project, so "first wins" isn't a
+		-- meaningful loss of information there. See build_meta_and_
+		-- frame, called from walk:
+		meta_captured : boolean := false;
 
 
 		-- Builds (or extends, for a device already seen on another
@@ -1090,6 +1146,83 @@ package body et_kicad_v6_to_native is
 		end build_free_text;
 
 
+		-- Captures module.meta.schematic (revision/drawing_number/
+		-- drawn_date, from title_block) and module.frames.frame's
+		-- paper size (from the sheet's own already-parsed paper_
+		-- width/height) -- both project-wide, so only the first
+		-- sheet with real data (non-empty revision/date) is used; see
+		-- meta_captured:
+		procedure build_meta_and_frame (sheet : in type_sheet_data) is
+			use et_drawing_frame;
+
+			revision_raw : constant string := to_string (sheet.revision);
+			date_raw     : constant string := to_string (sheet.date);
+			drawing_raw  : constant string := to_string (sheet.comment_2);
+		begin
+			if meta_captured or revision_raw'length = 0 or date_raw'length = 0 then
+				return;
+			end if;
+
+			module.meta.schematic.revision := et_meta.to_revision (
+				revision_raw (revision_raw'first .. revision_raw'first - 1 +
+					natural'min (revision_raw'length, et_meta.revision_length_max)));
+
+			if drawing_raw'length > 0 then
+				module.meta.schematic.drawing_number := et_meta.to_drawing_number (
+					drawing_raw (drawing_raw'first .. drawing_raw'first - 1 +
+						natural'min (drawing_raw'length, et_meta.drawing_number_length_max)));
+			end if;
+
+			begin
+				module.meta.schematic.drawn_date := parse_kicad_date (date_raw);
+			exception
+				when others =>
+					log (SEVERITY_WARNING,
+						text	=> "title_block date '" & date_raw & "' not in the expected "
+							& "DD-MON-YY form -> drawn_date left at its default",
+						level	=> log_threshold);
+			end;
+
+			-- module.frames.frame (paper/orientation/size) is never
+			-- actually written by et_module_write_frames -- only
+			-- .template (a *.frs template FILE reference) and
+			-- .descriptions round-trip through *.mod. Setting .frame
+			-- here would be silently inert: it gets recomputed from
+			-- whatever .template points to (template_schematic_
+			-- default, a placeholder "dummy" file) the next time the
+			-- project is opened, not read back from the file this
+			-- converter writes. Representing this project's actual
+			-- paper size for real would mean generating a custom
+			-- *.frs template file (et_drawing_frame.type_paper_size's
+			-- A3/A4 tag is just a label -- a template's own "size x .."
+			-- line is freely settable) and pointing .template at it --
+			-- a new capability, not a conversion fix, so it's out of
+			-- scope here. Content position itself (flip_sheet_y)
+			-- already uses this sheet's real paper_height regardless
+			-- of whatever frame is drawn, so this is purely cosmetic:
+			-- a project whose actual paper exceeds A3, as this one's
+			-- custom 584.2 x 378.46mm size does, will have correctly-
+			-- placed content extending beyond the default frame
+			-- border. Logged so this is visible up front rather than
+			-- silently discovered in the GUI:
+			if et_drawing_frame.type_distance (sheet.paper_width) > et_drawing_frame.paper_size_A3_x
+				or et_drawing_frame.type_distance (sheet.paper_height) > et_drawing_frame.paper_size_A3_y
+			then
+				log (SEVERITY_WARNING,
+					text	=> "sheet paper size" & type_distance_model'image (sheet.paper_width)
+						& " x" & type_distance_model'image (sheet.paper_height)
+						& " exceeds et_drawing_frame's largest supported size, A3 landscape ("
+						& et_drawing_frame.type_distance'image (et_drawing_frame.paper_size_A3_x) & " x"
+						& et_drawing_frame.type_distance'image (et_drawing_frame.paper_size_A3_y)
+						& ") -- content is still placed correctly, but will extend beyond the "
+						& "drawn frame border",
+					level	=> log_threshold);
+			end if;
+
+			meta_captured := true;
+		end build_meta_and_frame;
+
+
 		procedure walk (node : in type_sheet_node_access) is
 			raw : natural;
 		begin
@@ -1128,6 +1261,8 @@ package body et_kicad_v6_to_native is
 					for txt of node.data.texts loop
 						build_free_text (txt, sheet_num, node.data.paper_height);
 					end loop;
+
+					build_meta_and_frame (node.data.all);
 
 				exception
 					when constraint_error =>
