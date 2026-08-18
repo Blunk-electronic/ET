@@ -807,6 +807,79 @@ package body et_kicad_v6.schematic is
 			end if;
 		end union_points;
 
+		-- True if p lies on the segment a-b: an exact endpoint always
+		-- counts; otherwise only the axis-aligned (purely horizontal
+		-- or vertical) case is handled, which covers virtually every
+		-- wire in a hand-drawn schematic. A point on a genuinely
+		-- diagonal segment, away from either of its endpoints, is not
+		-- found this way:
+		function point_on_segment (p, a, b : in type_vector_model) return boolean is
+		begin
+			if p = a or p = b then
+				return true;
+			end if;
+
+			if a.y = b.y and p.y = a.y then -- horizontal
+				return p.x in type_distance_model'min (a.x, b.x) .. type_distance_model'max (a.x, b.x);
+			end if;
+
+			if a.x = b.x and p.x = a.x then -- vertical
+				return p.y in type_distance_model'min (a.y, b.y) .. type_distance_model'max (a.y, b.y);
+			end if;
+
+			return false;
+		end point_on_segment;
+
+
+		-- Finds the union-find root of the strand containing point p,
+		-- either because p is itself a registered vertex, or because
+		-- it lies somewhere along a wire/bus segment whose vertices
+		-- are registered (most labels sit mid-segment, not on a
+		-- vertex -- looking up registered vertices alone would miss
+		-- the vast majority of them). found is false if neither
+		-- applies (e.g. a label placed on a pin rather than a wire):
+		procedure find_segment_root (
+			p		: in type_vector_model;
+			root	: out positive;
+			found	: out boolean)
+		is
+			pic : constant pac_point_index.cursor := point_index.find (p);
+		begin
+			root  := 1;
+			found := false;
+
+			if pac_point_index.has_element (pic) then
+				root  := find_root (pac_point_index.element (pic));
+				found := true;
+				return;
+			end if;
+
+			for w of sheet.wires loop
+				if natural (w.points.length) >= 2 then
+					for i in w.points.first_index .. w.points.last_index - 1 loop
+						if point_on_segment (p, w.points (i), w.points (i + 1)) then
+							root  := find_root (get_or_add_index (w.points (i)));
+							found := true;
+							return;
+						end if;
+					end loop;
+				end if;
+			end loop;
+
+			for b of sheet.buses loop
+				if natural (b.points.length) >= 2 then
+					for i in b.points.first_index .. b.points.last_index - 1 loop
+						if point_on_segment (p, b.points (i), b.points (i + 1)) then
+							root  := find_root (get_or_add_index (b.points (i)));
+							found := true;
+							return;
+						end if;
+					end loop;
+				end if;
+			end loop;
+		end find_segment_root;
+
+
 		procedure union_chain (points : in pac_points.vector) is
 			dummy : positive;
 			pragma unreferenced (dummy);
@@ -885,20 +958,23 @@ package body et_kicad_v6.schematic is
 			end loop;
 		end;
 
-		-- Pass 3: attach every label whose position matches a
-		-- registered point to that point's strand. A label matching
-		-- no point (e.g. one placed on a pin rather than a wire) is
-		-- simply not attached -- not logged, this is routine:
+		-- Pass 3: attach every label to the strand of whichever
+		-- registered point or wire/bus segment it sits on (see
+		-- find_segment_root). A label matching neither (e.g. one
+		-- placed on a pin rather than a wire) is simply not attached
+		-- -- not logged, this is routine:
 		lc := sheet.labels.first;
 		while pac_labels.has_element (lc) loop
 			declare
-				lbl : constant type_label := pac_labels.element (lc);
-				pic : constant pac_point_index.cursor := point_index.find (lbl.position);
+				lbl			: constant type_label := pac_labels.element (lc);
+				root		: positive;
+				root_found	: boolean;
 			begin
-				if pac_point_index.has_element (pic) then
+				find_segment_root (lbl.position, root, root_found);
+
+				if root_found then
 					declare
-						root : constant positive := find_root (pac_point_index.element (pic));
-						gc	 : constant pac_group_strands.cursor := groups.find (root);
+						gc : constant pac_group_strands.cursor := groups.find (root);
 					begin
 						if pac_group_strands.has_element (gc) then
 							declare
