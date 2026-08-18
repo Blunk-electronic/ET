@@ -294,33 +294,46 @@ package body et_kicad_v6_to_native is
 	is
 		-- Pin positions are local to the sub-unit's own origin, not a
 		-- sheet -- copied as-is, no Y flip (unlike sheet-level
-		-- placement/wire coordinates, see flip_sheet_y):
-		-- type_port_length is range 2.0 .. 20.0 -- KiCad pin lengths
-		-- outside that range (0.0 for a hidden power pin, or anything
-		-- else out of bounds) fall back to the default rather than
-		-- raising a range check failure:
+		-- placement/wire coordinates, see flip_sheet_y). type_port_
+		-- length is range 2.0 .. 20.0 -- KiCad pin lengths outside
+		-- that range (0.0 for a hidden power pin, or anything else out
+		-- of bounds) fall back to the default rather than raising a
+		-- range check failure.
+		--
 		-- et_symbol_port_general's own doc comment gives the tail
 		-- (into-body) direction per rotation: 0=left, 90=down,
-		-- 180=right, 270=up -- i.e. standard_angle = rotation + 180.
-		-- KiCad's pin angle is a plain (cos,sin) direction applied to
-		-- its own raw (unflipped, per the position field above)
-		-- coordinates. Since only Y is interpreted oppositely between
-		-- the two tools (KiCad down, ET up) while X is identical in
-		-- both, the visually-matching direction is the KiCad vector
-		-- with its Y component negated, i.e. standard_angle =
-		-- -pin.orientation. Equating the two gives
-		-- rotation = -pin.orientation - 180, which is congruent mod
-		-- 360 to the simpler 180.0 - pin.orientation used here.
-		-- Verified against three real pins (r1000:8051, KiCad angles
-		-- 0/180/270, stub length checked against the symbol's own
-		-- rectangle body edges) -- all three land inside
-		-- type_rotation_relative's -90.0 .. 180.0 range with no
-		-- wraparound needed, which is itself a strong confirmation
-		-- this is the intended mapping, not a coincidence:
+		-- 180=right, 270=up -- i.e. standard_angle = rotation + 180,
+		-- and this direction is applied to the port's position
+		-- (unflipped, raw KiCad numbers, as above) exactly like KiCad
+		-- applies its own pin angle to that same raw position:
+		-- tail = position + length * (cos(angle), sin(angle)). For
+		-- both tools to compute the *same* raw tail point (so the
+		-- stub still visually reaches wherever the symbol's own body
+		-- geometry actually is, even though that body is never drawn),
+		-- rotation + 180 must equal pin.orientation, i.e.
+		-- rotation = pin.orientation - 180.
+		--
+		-- (A first attempt used 180.0 - pin.orientation instead --
+		-- reasoning by ad hoc "which way is visually up/down" instead
+		-- of solving this equation. That only coincidentally agrees
+		-- with the correct formula at pin.orientation = 0 and 180 (the
+		-- values self-mirror under negation), which is exactly why
+		-- r1000:8051's mostly-0/180 pins looked right while r1000:PU/
+		-- PD -- both 90/270, a single power pin each -- came out
+		-- exactly 180 degrees backwards.)
+		--
+		-- Re-verified against the same three r1000:8051 pins as
+		-- before, this time solving for where the tail must land
+		-- (matching the symbol's own rectangle body edges) rather than
+		-- checking the formula against its own prior output: KiCad 0
+		-- -> rotation 180, KiCad 180 -> rotation 0 (both unchanged from
+		-- the first attempt), KiCad 270 -> rotation 90 (was wrongly
+		-- -90). All three still land inside type_rotation_relative's
+		-- -90.0 .. 180.0 range with no wraparound needed:
 		base : constant type_port_general := (
 			position	=> pin.position,
 			length		=> (if pin.length in type_port_length then pin.length else port_length_default),
-			rotation	=> normalize_rotation (180.0 - pin.orientation));
+			rotation	=> normalize_rotation (pin.orientation - 180.0));
 
 		root : constant type_port_base := (base with others => <>);
 	begin
