@@ -265,6 +265,32 @@ package body et_kicad_v6.schematic is
 	end parse_properties;
 
 
+	-- Same source nodes as parse_properties, but captures each
+	-- property's "(at x y rot)" instead of its value -- only
+	-- meaningful for a PLACED symbol's own properties (a lib_symbol's
+	-- properties carry a nominal library-editor position that has no
+	-- bearing on any particular placement):
+	procedure parse_property_placements (n : in sexp.type_node; placements : in out pac_property_placements.map) is
+		nodes	: constant sexp.pac_node_list.vector := sexp.find_all_children (n, "property");
+		c		: sexp.pac_node_list.cursor := nodes.first;
+	begin
+		while sexp.pac_node_list.has_element (c) loop
+			declare
+				p		: constant sexp.type_node := sexp.pac_node_list.element (c);
+				at_node	: constant sexp.type_node := sexp.find_first_child (p, "at");
+			begin
+				if sexp.child_count (p) >= 3 and then sexp.kind (at_node) = sexp.SEXP_LIST then
+					placements.include (
+						to_property_name (sexp.atom_text (sexp.get_child (p, 2))),
+						(position => parse_xy (at_node), rotation => parse_rotation (at_node)));
+				end if;
+			end;
+
+			sexp.pac_node_list.next (c);
+		end loop;
+	end parse_property_placements;
+
+
 	-- True if any direct child of n is an unquoted atom whose text
 	-- equals text -- used for flag-style blocks like
 	-- (pin_names (offset 1.016) hide) where the flag atom's
@@ -540,6 +566,7 @@ package body et_kicad_v6.schematic is
 		end if;
 
 		parse_properties (n, result.properties);
+		parse_property_placements (n, result.placements);
 
 		if sexp.kind (instances_node) = sexp.SEXP_LIST then
 			result.instances := parse_instance_refs (instances_node);

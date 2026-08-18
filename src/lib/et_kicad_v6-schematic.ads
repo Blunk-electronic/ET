@@ -94,6 +94,19 @@ package et_kicad_v6.schematic is
 		(key_type => type_property_name, element_type => type_property_value);
 
 
+	-- Unlike a pin, a property's "(at x y rot)" is given in ABSOLUTE
+	-- page coordinates, not relative to the owning symbol -- captured
+	-- separately from pac_properties (which is also used for
+	-- lib_symbol-level properties, where no placement is meaningful):
+	type type_property_placement is record
+		position	: type_vector_model;
+		rotation	: type_rotation_model := 0.0;
+	end record;
+
+	package pac_property_placements is new ada.containers.ordered_maps
+		(key_type => type_property_name, element_type => type_property_placement);
+
+
 	-- A raw "library:symbol" reference, e.g. "r1000:F37":
 	lib_id_length_max : constant natural := 300;
 	package pac_lib_id is new generic_bounded_length (lib_id_length_max);
@@ -227,6 +240,7 @@ package et_kicad_v6.schematic is
 		dnp				: boolean := false;
 		uuid			: type_uuid;
 		properties		: pac_properties.map;
+		placements		: pac_property_placements.map; -- position/rotation of each property, keyed the same as properties
 		instances		: pac_instance_refs.list;
 	end record;
 

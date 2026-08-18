@@ -56,6 +56,8 @@ with et_device_name;
 with et_devices_electrical;				use et_devices_electrical;
 with et_units;							use et_units;
 with et_unit_name;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_object_status;					use et_object_status;
 with et_device_write;
 with et_package_write;
@@ -272,6 +274,46 @@ package body et_kicad_v6_to_native is
 		when others =>
 			return et_device_purpose.empty_purpose;
 	end extract_purpose;
+
+
+	-- Reads one property's absolute "(at x y rot)" and re-expresses
+	-- it as a position relative to the placed symbol's own origin, in
+	-- ET's Y-up sheet frame. Unlike a pin (defined once, in the
+	-- lib_symbol, in a canonical local frame), a KiCad property's
+	-- "at" is an ABSOLUTE page coordinate specific to this placement
+	-- -- same frame sym.position itself is given in -- so this is a
+	-- plain delta against sym.position. Flipping Y for a delta
+	-- between two points on the same sheet is just negating the
+	-- delta's y component (flip_sheet_y (a, h) - flip_sheet_y (b, h)
+	-- = (a.x - b.x, b.y - a.y)); no separate un-rotate/un-mirror step
+	-- is needed, since the raw KiCad delta already reflects however
+	-- the symbol itself is placed on the page -- exactly the frame
+	-- et_device_placeholders.symbols expects a placeholder position
+	-- stored in (see rotate_placeholders/draw_placeholders in
+	-- et_canvas_schematic-draw_units.adb: a placeholder's position is
+	-- baked in at the current placement rotation, not re-rotated at
+	-- draw time):
+	function placeholder_position (
+		sym				: in type_placed_symbol;
+		property_name	: in string)
+		return et_schematic_geometry.pac_geometry_2.type_vector_model
+	is
+		use pac_property_placements;
+		c : constant pac_property_placements.cursor :=
+			find (sym.placements, to_property_name (property_name));
+	begin
+		if c = pac_property_placements.no_element then
+			return (x => 0.0, y => 0.0);
+		end if;
+
+		declare
+			p : constant type_property_placement := element (c);
+		begin
+			return (
+				x => p.position.x - sym.position.x,
+				y => sym.position.y - p.position.y);
+		end;
+	end placeholder_position;
 
 
 	-- KiCad's Y axis grows downward from the sheet's top-left corner;
@@ -1119,12 +1161,26 @@ package body et_kicad_v6_to_native is
 							status			=> object_status_default);
 
 					when APPEARANCE_PCB =>
-						new_unit := (
-							appearance		=> APPEARANCE_PCB,
-							position		=> unit_position,
-							mirror_status	=> sym.mirror,
-							status			=> object_status_default,
-							placeholders	=> (others => <>));
+						declare
+							-- KiCad's "Reference"/"Value"/"Name" property
+							-- positions (see placeholder_position) map onto
+							-- ET's NAME/VALUE/PURPOSE placeholder meanings
+							-- respectively -- "Name" here is this project's
+							-- own per-instance functional-label convention,
+							-- same as extract_purpose above:
+							plc : type_text_placeholders := (others => <>);
+						begin
+							plc.name.position    := placeholder_position (sym, "Reference");
+							plc.value.position   := placeholder_position (sym, "Value");
+							plc.purpose.position := placeholder_position (sym, "Name");
+
+							new_unit := (
+								appearance		=> APPEARANCE_PCB,
+								position		=> unit_position,
+								mirror_status	=> sym.mirror,
+								status			=> object_status_default,
+								placeholders	=> plc);
+						end;
 				end case;
 
 				pac_units.insert (
