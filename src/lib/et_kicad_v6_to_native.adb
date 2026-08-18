@@ -61,6 +61,9 @@ with et_device_write;
 with et_package_write;
 
 with et_symbol_model;					use et_symbol_model;
+with et_symbol_shapes;					use et_symbol_shapes;
+with et_directions;						use et_directions;
+with et_kicad_v6.sexp;					use et_kicad_v6.sexp;
 with et_symbol_text;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_port_general;				use et_symbol_port_general;
@@ -258,6 +261,278 @@ package body et_kicad_v6_to_native is
 	begin
 		return (x => point.x, y => sheet_height - point.y);
 	end flip_sheet_y;
+
+
+	------------------------------------------------------------------
+	-- SYMBOL BODY GRAPHICS (lines/rectangles/circles/arcs)
+	--
+	-- The package spec calls this a loader, not a renderer, and that
+	-- was true through most of this project's history -- symbol body
+	-- graphics were kept as opaque parsed sub-trees and never turned
+	-- into anything ET could draw, which is why no symbol outlines
+	-- ever appeared on import. This section closes that gap: each
+	-- graphic_item.raw sub-tree is walked (using the same et_kicad_v6.
+	-- sexp helpers the parser itself uses) and turned into native
+	-- et_symbol_shapes geometry. Like pin positions, coordinates are
+	-- local to the sub-unit's own origin and are copied as-is, no Y
+	-- flip -- confirmed correct for pins, and graphics live in the
+	-- exact same local frame.
+	------------------------------------------------------------------
+
+	function to_point (x, y : in long_float) return et_schematic_geometry.pac_geometry_2.type_vector_model is
+	begin
+		return (
+			x => et_schematic_geometry.pac_geometry_2.to_distance (type_float_model (x)),
+			y => et_schematic_geometry.pac_geometry_2.to_distance (type_float_model (y)));
+	end to_point;
+
+
+	-- Reads a "(tag (at x y ...))"-shaped point child of node, e.g.
+	-- (start x y), (end x y), (center x y), (mid x y) or (xy x y):
+	function read_point (
+		node : in et_kicad_v6.sexp.type_node;
+		tag  : in string)
+		return et_schematic_geometry.pac_geometry_2.type_vector_model
+	is
+		n : constant et_kicad_v6.sexp.type_node := et_kicad_v6.sexp.find_first_child (node, tag);
+	begin
+		return to_point (
+			et_kicad_v6.sexp.atom_to_real (et_kicad_v6.sexp.get_child (n, 2)),
+			et_kicad_v6.sexp.atom_to_real (et_kicad_v6.sexp.get_child (n, 3)));
+	end read_point;
+
+
+	-- type_line_width is range 0.1 .. 10.0 -- KiCad's own "0 means
+	-- use the symbol's default width" convention falls outside that,
+	-- same treatment as pin length/device value elsewhere: fall back
+	-- to line_width_default rather than raising a range check failure:
+	function read_stroke_width (node : in et_kicad_v6.sexp.type_node) return type_line_width is
+		stroke_node : constant et_kicad_v6.sexp.type_node :=
+			et_kicad_v6.sexp.find_first_child (node, "stroke");
+		width_node  : et_kicad_v6.sexp.type_node;
+		w			: type_distance_model;
+	begin
+		if et_kicad_v6.sexp.kind (stroke_node) /= et_kicad_v6.sexp.SEXP_LIST then
+			return line_width_default;
+		end if;
+
+		width_node := et_kicad_v6.sexp.find_first_child (stroke_node, "width");
+
+		if et_kicad_v6.sexp.kind (width_node) /= et_kicad_v6.sexp.SEXP_LIST then
+			return line_width_default;
+		end if;
+
+		w := et_schematic_geometry.pac_geometry_2.to_distance (
+			type_float_model (et_kicad_v6.sexp.atom_to_real (et_kicad_v6.sexp.get_child (width_node, 2))));
+
+		if w in type_line_width then
+			return w;
+		else
+			return line_width_default;
+		end if;
+	end read_stroke_width;
+
+
+	-- The center of the circle through three points, via the standard
+	-- circumcenter formula -- done in floating point (fixed-point
+	-- arithmetic has no clean way to express the squared terms this
+	-- needs) and converted back at the end. KiCad arcs are given as
+	-- three points (start/mid/end) with no explicit center, unlike
+	-- v4/v5's center+radius+angles form that et_kicad_to_native.
+	-- copy_arc could just type-convert directly:
+	function arc_center (
+		p1, p2, p3 : in et_schematic_geometry.pac_geometry_2.type_vector_model)
+		return et_schematic_geometry.pac_geometry_2.type_vector_model
+	is
+		x1 : constant type_float_model := type_float_model (p1.x);
+		y1 : constant type_float_model := type_float_model (p1.y);
+		x2 : constant type_float_model := type_float_model (p2.x);
+		y2 : constant type_float_model := type_float_model (p2.y);
+		x3 : constant type_float_model := type_float_model (p3.x);
+		y3 : constant type_float_model := type_float_model (p3.y);
+
+		d : constant type_float_model := 2.0 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2));
+	begin
+		if abs d < 1.0e-6 then
+			-- degenerate (collinear points) -- not expected from a
+			-- real KiCad arc; midpoint of start/end is a defensive
+			-- fallback, not a correct circle center:
+			return (x => (p1.x + p3.x) / 2.0, y => (p1.y + p3.y) / 2.0);
+		end if;
+
+		declare
+			ux : constant type_float_model :=
+				((x1**2 + y1**2) * (y2 - y3) + (x2**2 + y2**2) * (y3 - y1) + (x3**2 + y3**2) * (y1 - y2)) / d;
+
+			uy : constant type_float_model :=
+				((x1**2 + y1**2) * (x3 - x2) + (x2**2 + y2**2) * (x1 - x3) + (x3**2 + y3**2) * (x2 - x1)) / d;
+		begin
+			return (
+				x => et_schematic_geometry.pac_geometry_2.to_distance (ux),
+				y => et_schematic_geometry.pac_geometry_2.to_distance (uy));
+		end;
+	end arc_center;
+
+
+	-- CW/CCW from the signed area of start/mid/end, in the same
+	-- local (unflipped) frame the points themselves are already in:
+	function arc_direction (
+		start_p, mid_p, end_p : in et_schematic_geometry.pac_geometry_2.type_vector_model)
+		return type_direction_of_rotation
+	is
+		sx : constant type_float_model := type_float_model (start_p.x);
+		sy : constant type_float_model := type_float_model (start_p.y);
+		mx : constant type_float_model := type_float_model (mid_p.x);
+		my : constant type_float_model := type_float_model (mid_p.y);
+		ex : constant type_float_model := type_float_model (end_p.x);
+		ey : constant type_float_model := type_float_model (end_p.y);
+
+		cross : constant type_float_model := (mx - sx) * (ey - sy) - (my - sy) * (ex - sx);
+	begin
+		if cross >= 0.0 then
+			return CCW;
+		else
+			return CW;
+		end if;
+	end arc_direction;
+
+
+	-- Ada.Containers.Doubly_Linked_Lists has no "&" concatenation
+	-- (unlike Vectors) -- used to combine a sub-unit's own pins/
+	-- graphics with unit 0's common ones, see build_device_models:
+	function combine_pins (a, b : in pac_pins.list) return pac_pins.list is
+		result : pac_pins.list := a;
+	begin
+		for p of b loop
+			pac_pins.append (result, p);
+		end loop;
+
+		return result;
+	end combine_pins;
+
+
+	function combine_graphics (
+		a, b : in pac_symbol_graphics.list)
+		return pac_symbol_graphics.list
+	is
+		result : pac_symbol_graphics.list := a;
+	begin
+		for g of b loop
+			pac_symbol_graphics.append (result, g);
+		end loop;
+
+		return result;
+	end combine_graphics;
+
+
+	-- Converts one sub-unit's opaque parsed graphics into native
+	-- et_symbol_shapes -- text (GFX_TEXT) and anything unrecognized
+	-- (GFX_OTHER) stay out of scope, matching the package spec's
+	-- already-stated "pins get full fidelity, body graphics don't
+	-- need to" position; only the geometry needed to actually draw a
+	-- recognizable outline is converted:
+	function convert_shapes (graphics : in pac_symbol_graphics.list) return type_shapes is
+		result : type_shapes;
+	begin
+		for item of graphics loop
+			if item.raw /= null then
+				declare
+					n : et_kicad_v6.sexp.type_node renames item.raw.all;
+					w : constant type_line_width := read_stroke_width (n);
+				begin
+					case item.item_kind is
+						when GFX_POLYLINE =>
+							declare
+								pts_node : constant et_kicad_v6.sexp.type_node :=
+									et_kicad_v6.sexp.find_first_child (n, "pts");
+								xy_nodes : constant et_kicad_v6.sexp.pac_node_list.vector :=
+									et_kicad_v6.sexp.find_all_children (pts_node, "xy");
+							begin
+								for i in xy_nodes.first_index .. xy_nodes.last_index - 1 loop
+									pac_symbol_lines.append (result.lines, (
+										pac_geometry_2.type_line (pac_geometry_2.to_line (
+											A => to_point (
+												et_kicad_v6.sexp.atom_to_real (
+													et_kicad_v6.sexp.get_child (xy_nodes (i), 2)),
+												et_kicad_v6.sexp.atom_to_real (
+													et_kicad_v6.sexp.get_child (xy_nodes (i), 3))),
+											B => to_point (
+												et_kicad_v6.sexp.atom_to_real (
+													et_kicad_v6.sexp.get_child (xy_nodes (i + 1), 2)),
+												et_kicad_v6.sexp.atom_to_real (
+													et_kicad_v6.sexp.get_child (xy_nodes (i + 1), 3)))))
+										with width => w));
+								end loop;
+							end;
+
+						when GFX_RECTANGLE =>
+							declare
+								p1 : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "start");
+								p2 : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "end");
+
+								corner_2 : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									(x => p2.x, y => p1.y);
+								corner_4 : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									(x => p1.x, y => p2.y);
+							begin
+								pac_symbol_lines.append (result.lines,
+									(pac_geometry_2.type_line (pac_geometry_2.to_line (p1, corner_2)) with width => w));
+								pac_symbol_lines.append (result.lines,
+									(pac_geometry_2.type_line (pac_geometry_2.to_line (corner_2, p2)) with width => w));
+								pac_symbol_lines.append (result.lines,
+									(pac_geometry_2.type_line (pac_geometry_2.to_line (p2, corner_4)) with width => w));
+								pac_symbol_lines.append (result.lines,
+									(pac_geometry_2.type_line (pac_geometry_2.to_line (corner_4, p1)) with width => w));
+							end;
+
+						when GFX_CIRCLE =>
+							declare
+								radius_node : constant et_kicad_v6.sexp.type_node :=
+									et_kicad_v6.sexp.find_first_child (n, "radius");
+
+								center : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "center");
+								radius : constant type_float_model := type_float_model (
+									et_kicad_v6.sexp.atom_to_real (et_kicad_v6.sexp.get_child (radius_node, 2)));
+							begin
+								pac_symbol_circles.append (result.circles, (
+									type_circle_base'(
+										pac_geometry_2.type_circle (pac_geometry_2.to_circle (
+											center	=> center,
+											radius	=> et_schematic_geometry.pac_geometry_2.to_distance (radius)))
+										with width => w)
+									with filled => NO));
+							end;
+
+						when GFX_ARC =>
+							declare
+								start_p : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "start");
+								mid_p   : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "mid");
+								end_p   : constant et_schematic_geometry.pac_geometry_2.type_vector_model :=
+									read_point (n, "end");
+							begin
+								pac_symbol_arcs.append (result.arcs, (
+									pac_geometry_2.type_arc (pac_geometry_2.to_arc (
+										center		=> arc_center (start_p, mid_p, end_p),
+										A			=> start_p,
+										B			=> end_p,
+										direction	=> arc_direction (start_p, mid_p, end_p)))
+									with width => w));
+							end;
+
+						when GFX_TEXT | GFX_OTHER =>
+							null;
+					end case;
+				end;
+			end if;
+		end loop;
+
+		return result;
+	end convert_shapes;
 
 
 
@@ -605,74 +880,91 @@ package body et_kicad_v6_to_native is
 				pac_unit_numbers.include (unit_numbers, 1);
 			end if;
 
-			for u of unit_numbers loop
-				declare
-					sub			: constant type_symbol_sub_unit := get_sub_unit (sym, u, 1);
-					ports		: pac_symbol_ports.map;
-					unit_name	: constant et_unit_name.type_unit_name :=
-						et_unit_name.to_unit_name (trim (natural'image (u), left));
+			-- Unit 0 ("common to all units") frequently carries the
+			-- symbol's own body outline separately from unit N's own
+			-- pins -- e.g. r1000:F02 has both F02_0_1 (the arc/
+			-- polylines making up the gate body) and F02_1_1 (just the
+			-- pins). get_sub_unit (sym, u, 1) alone only ever returns
+			-- unit u's own entry, silently dropping unit 0's graphics
+			-- (and pins, if any project ever puts pins there too)
+			-- whenever u itself is non-zero -- which unit_numbers
+			-- guarantees it always is, so this is not a redundant
+			-- double-fetch of the same data:
+			declare
+				common : constant type_symbol_sub_unit := get_sub_unit (sym, 0, 1);
+			begin
+				for u of unit_numbers loop
+					declare
+						sub			: constant type_symbol_sub_unit := get_sub_unit (sym, u, 1);
+						pins		: constant pac_pins.list := combine_pins (common.pins, sub.pins);
+						graphics	: constant pac_symbol_graphics.list :=
+							combine_graphics (common.graphics, sub.graphics);
+						ports		: pac_symbol_ports.map;
+						unit_name	: constant et_unit_name.type_unit_name :=
+							et_unit_name.to_unit_name (trim (natural'image (u), left));
 
-					unit_cursor	: pac_units_internal.cursor;
-					unit_inserted : boolean;
-				begin
-					build_ports (sub.pins, sym.lib_id, log_threshold, ports);
+						unit_cursor		: pac_units_internal.cursor;
+						unit_inserted	: boolean;
+					begin
+						build_ports (pins, sym.lib_id, log_threshold, ports);
 
-					-- NOTE: type_symbol_model has a variant part governed by
-					-- "appearance" -- an aggregate using "others => <>" for
-					-- it requires a STATIC discriminant (Ada needs to know
-					-- at compile time which variant "others" fills in), so
-					-- this must branch on a literal, not the runtime
-					-- "appearance" value, in each arm:
-					case appearance is
-						when APPEARANCE_VIRTUAL =>
-							declare
-								symbol_model : constant type_symbol_model (APPEARANCE_VIRTUAL) := (
-									type_symbol_base'(texts => et_symbol_text.pac_symbol_texts.empty_list)
-									with
+						-- NOTE: type_symbol_model has a variant part governed by
+						-- "appearance" -- an aggregate using "others => <>" for
+						-- it requires a STATIC discriminant (Ada needs to know
+						-- at compile time which variant "others" fills in), so
+						-- this must branch on a literal, not the runtime
+						-- "appearance" value, in each arm:
+						case appearance is
+							when APPEARANCE_VIRTUAL =>
+								declare
+									symbol_model : constant type_symbol_model (APPEARANCE_VIRTUAL) := (
+										type_symbol_base'(texts => et_symbol_text.pac_symbol_texts.empty_list)
+										with
+											appearance	=> APPEARANCE_VIRTUAL,
+											shapes		=> convert_shapes (graphics),
+											ports		=> ports);
+
+									u_internal : constant type_unit_internal (APPEARANCE_VIRTUAL) := (
 										appearance	=> APPEARANCE_VIRTUAL,
-										shapes		=> (others => <>),
-										ports		=> ports);
+										symbol		=> symbol_model,
+										position	=> (0.0, 0.0),
+										others		=> <>);
+								begin
+									pac_units_internal.insert (
+										container	=> units_internal,
+										key			=> unit_name,
+										position	=> unit_cursor,
+										inserted	=> unit_inserted,
+										new_item	=> u_internal);
+								end;
 
-								u_internal : constant type_unit_internal (APPEARANCE_VIRTUAL) := (
-									appearance	=> APPEARANCE_VIRTUAL,
-									symbol		=> symbol_model,
-									position	=> (0.0, 0.0),
-									others		=> <>);
-							begin
-								pac_units_internal.insert (
-									container	=> units_internal,
-									key			=> unit_name,
-									position	=> unit_cursor,
-									inserted	=> unit_inserted,
-									new_item	=> u_internal);
-							end;
+							when APPEARANCE_PCB =>
+								declare
+									symbol_model : constant type_symbol_model (APPEARANCE_PCB) := (
+										type_symbol_base'(texts => et_symbol_text.pac_symbol_texts.empty_list)
+										with
+											appearance		=> APPEARANCE_PCB,
+											shapes			=> convert_shapes (graphics),
+											ports			=> ports,
+											placeholders	=> (others => <>));
 
-						when APPEARANCE_PCB =>
-							declare
-								symbol_model : constant type_symbol_model (APPEARANCE_PCB) := (
-									type_symbol_base'(texts => et_symbol_text.pac_symbol_texts.empty_list)
-									with
-										appearance		=> APPEARANCE_PCB,
-										shapes			=> (others => <>),
-										ports			=> ports,
-										placeholders	=> (others => <>));
-
-								u_internal : constant type_unit_internal (APPEARANCE_PCB) := (
-									appearance	=> APPEARANCE_PCB,
-									symbol		=> symbol_model,
-									position	=> (0.0, 0.0),
-									others		=> <>);
-							begin
-								pac_units_internal.insert (
-									container	=> units_internal,
-									key			=> unit_name,
-									position	=> unit_cursor,
-									inserted	=> unit_inserted,
-									new_item	=> u_internal);
-							end;
-					end case;
-				end;
-			end loop;
+									u_internal : constant type_unit_internal (APPEARANCE_PCB) := (
+										appearance	=> APPEARANCE_PCB,
+										symbol		=> symbol_model,
+										position	=> (0.0, 0.0),
+										others		=> <>);
+								begin
+									pac_units_internal.insert (
+										container	=> units_internal,
+										key			=> unit_name,
+										position	=> unit_cursor,
+										inserted	=> unit_inserted,
+										new_item	=> u_internal);
+								end;
+						end case;
+					end;
+				end loop;
+			end;
 
 			case appearance is
 				when APPEARANCE_VIRTUAL =>
