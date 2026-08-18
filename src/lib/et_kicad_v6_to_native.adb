@@ -84,6 +84,8 @@ with et_text_content;
 with et_nets;
 with et_net_strands;
 with et_net_segment;						use et_net_segment;
+with et_net_labels;						use et_net_labels;
+with et_rotation_docu;					use et_rotation_docu;
 with et_net_names;						use et_net_names;
 with et_net_scope;						use et_net_scope;
 
@@ -830,6 +832,60 @@ package body et_kicad_v6_to_native is
 				return false;
 			end has_junction_at;
 
+			-- True if p lies on the (raw, unflipped) segment a-b -- an
+			-- exact endpoint always counts; otherwise only handles the
+			-- axis-aligned (purely horizontal or vertical) case, which
+			-- covers virtually every wire in a hand-drawn schematic. A
+			-- label sitting on a genuinely diagonal wire, away from
+			-- either of its endpoints, won't be found this way:
+			function point_on_segment (
+				p, a, b : in et_schematic_geometry.pac_geometry_2.type_vector_model)
+				return boolean
+			is
+				use et_schematic_geometry.pac_geometry_2;
+			begin
+				if p = a or p = b then
+					return true;
+				end if;
+
+				if a.y = b.y and p.y = a.y then -- horizontal
+					return p.x in type_distance_model'min (a.x, b.x) .. type_distance_model'max (a.x, b.x);
+				end if;
+
+				if a.x = b.x and p.x = a.x then -- vertical
+					return p.y in type_distance_model'min (a.y, b.y) .. type_distance_model'max (a.y, b.y);
+				end if;
+
+				return false;
+			end point_on_segment;
+
+			-- Attaches a native label to this segment for every one of
+			-- the strand's own labels that sits on it -- labels were
+			-- parsed onto the strand as a whole (et_kicad_v6.schematic
+			-- doesn't track which specific wire each one sits on), so
+			-- this reconnects each one to a segment the same way KiCad
+			-- itself does: by shared position. The net's own name is
+			-- unaffected either way, since that comes from
+			-- strand.labels directly, not from these native label
+			-- objects:
+			procedure append_matching_labels (
+				a, b	: in et_schematic_geometry.pac_geometry_2.type_vector_model;
+				target	: in out pac_net_labels.list)
+			is
+			begin
+				for lbl of strand.labels loop
+					if point_on_segment (lbl.position, a, b) then
+						pac_net_labels.append (target, (
+							type_net_label_base'(others => <>)
+							with
+								position => flip_sheet_y (lbl.position, sheet.paper_height),
+								rotation =>
+									(if lbl.orientation = 90.0 or lbl.orientation = 270.0
+									 then VERTICAL else HORIZONTAL)));
+					end if;
+				end loop;
+			end append_matching_labels;
+
 			procedure collect_from_wire (pts : in pac_points.vector) is
 			begin
 				if pts.length < 2 then
@@ -851,6 +907,8 @@ package body et_kicad_v6_to_native is
 						begin
 							segment.junctions.A := has_junction_at (pts (i));
 							segment.junctions.B := has_junction_at (pts (i + 1));
+
+							append_matching_labels (pts (i), pts (i + 1), segment.labels);
 
 							pac_net_segments.append (segments, segment);
 						end;
