@@ -299,10 +299,28 @@ package body et_kicad_v6_to_native is
 		-- outside that range (0.0 for a hidden power pin, or anything
 		-- else out of bounds) fall back to the default rather than
 		-- raising a range check failure:
+		-- et_symbol_port_general's own doc comment gives the tail
+		-- (into-body) direction per rotation: 0=left, 90=down,
+		-- 180=right, 270=up -- i.e. standard_angle = rotation + 180.
+		-- KiCad's pin angle is a plain (cos,sin) direction applied to
+		-- its own raw (unflipped, per the position field above)
+		-- coordinates. Since only Y is interpreted oppositely between
+		-- the two tools (KiCad down, ET up) while X is identical in
+		-- both, the visually-matching direction is the KiCad vector
+		-- with its Y component negated, i.e. standard_angle =
+		-- -pin.orientation. Equating the two gives
+		-- rotation = -pin.orientation - 180, which is congruent mod
+		-- 360 to the simpler 180.0 - pin.orientation used here.
+		-- Verified against three real pins (r1000:8051, KiCad angles
+		-- 0/180/270, stub length checked against the symbol's own
+		-- rectangle body edges) -- all three land inside
+		-- type_rotation_relative's -90.0 .. 180.0 range with no
+		-- wraparound needed, which is itself a strong confirmation
+		-- this is the intended mapping, not a coincidence:
 		base : constant type_port_general := (
 			position	=> pin.position,
 			length		=> (if pin.length in type_port_length then pin.length else port_length_default),
-			rotation	=> normalize_rotation (pin.orientation));
+			rotation	=> normalize_rotation (180.0 - pin.orientation));
 
 		root : constant type_port_base := (base with others => <>);
 	begin
