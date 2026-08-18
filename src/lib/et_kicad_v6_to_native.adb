@@ -289,16 +289,18 @@ package body et_kicad_v6_to_native is
 	-- with each type's own "_default" constant rather than invented
 	-- values:
 	function build_port (
-		pin				: in type_pin;
-		local_height	: in type_distance_model)
+		pin : in type_pin)
 		return type_symbol_port
 	is
+		-- Pin positions are local to the sub-unit's own origin, not a
+		-- sheet -- copied as-is, no Y flip (unlike sheet-level
+		-- placement/wire coordinates, see flip_sheet_y):
 		-- type_port_length is range 2.0 .. 20.0 -- KiCad pin lengths
 		-- outside that range (0.0 for a hidden power pin, or anything
 		-- else out of bounds) fall back to the default rather than
 		-- raising a range check failure:
 		base : constant type_port_general := (
-			position	=> flip_sheet_y (pin.position, local_height),
+			position	=> pin.position,
 			length		=> (if pin.length in type_port_length then pin.length else port_length_default),
 			rotation	=> normalize_rotation (pin.orientation));
 
@@ -362,25 +364,7 @@ package body et_kicad_v6_to_native is
 	is
 		inserted	: boolean;
 		port_cursor	: pac_symbol_ports.cursor;
-
-		-- Pin positions are local to the sub-unit's own origin, not a
-		-- sheet -- there is no page height to flip against (and no
-		-- parsed body/rectangle extent either, since graphics are
-		-- kept opaque -- see the package spec). A plain negation
-		-- (mirroring around y=0) would push any pin whose original Y
-		-- exceeds et_schematic_geometry's axis_min (-100.0 -- an
-		-- asymmetric range, mostly positive) out of range: this
-		-- project has at least one large hand-digitized IC body with
-		-- pins well past y=100. Using the highest pin Y actually seen
-		-- in this sub-unit as the flip reference instead keeps every
-		-- flipped position non-negative, the same way flip_sheet_y
-		-- keeps sheet-level positions within 0 .. paper_height:
-		local_height : type_distance_model := 0.0;
 	begin
-		for p of pins loop
-			local_height := type_distance_model'max (local_height, p.position.y);
-		end loop;
-
 		for p of pins loop
 			declare
 				-- KiCad allows an explicitly empty pin name (common
@@ -407,7 +391,7 @@ package body et_kicad_v6_to_native is
 						key			=> name,
 						position	=> port_cursor,
 						inserted	=> inserted,
-						new_item	=> build_port (p, local_height));
+						new_item	=> build_port (p));
 				end if;
 			end;
 		end loop;
