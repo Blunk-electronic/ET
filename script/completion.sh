@@ -60,7 +60,7 @@ _et_completion () {
 			;;
 
 		--import-format)
-			COMPREPLY=( $(compgen -W "kicad_v4 kicad_v5" -- "${cur}") )
+			COMPREPLY=( $(compgen -W "kicad_v4 kicad_v5 kicad_v6" -- "${cur}") )
 			return 0
 			;;
 
