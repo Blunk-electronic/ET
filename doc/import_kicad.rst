@@ -6,15 +6,22 @@
 Import Kicad Projects and Component Models
 ==========================================
 
+Currently importers for version 5 and 6 are under construction.
+
 
 Import Kicad Project
 --------------------
 
-To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
+To import a single KiCad design into a native project 'my_et_project' run this command: 
 
 	.. parsed-literal::
 
-		$ et --import-format kicad_v5 --import-project my_kicad_project/
+		$ et --import-format kicad_v5 --import-project my_kicad_v5_project/
+
+
+	.. parsed-literal::
+
+		$ et --import-format kicad_v6 --import-project my_kicad_v6_project/
 
 
 Optionally provide a log level for debugging:
@@ -22,6 +29,7 @@ Optionally provide a log level for debugging:
 	.. parsed-literal::
 		
 		$ et --import-format kicad_v5 --import-project my_kicad_project/ --log-level 2
+
 
 
 ET creates in the current working directory a folder named "ET/et_import" where you find the now native project.
