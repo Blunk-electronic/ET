@@ -150,6 +150,32 @@ package body et_symbol_read_port is
 			expect_field_count (line, 2);
 			port_output_weakness := to_output_weakness (f (line, 2));
 
+		-- BIDIR_DIGITAL ports are written (see et_symbol_write_ports.
+		-- write_port) with these "output_"/"input_" prefixed keywords
+		-- instead of the bare inverted/tristate/weakness/
+		-- sensitivity_edge/sensitivity_level used for OUTPUT_DIGITAL --
+		-- without these, saving and reloading any device with a
+		-- bidirectional port always failed with "invalid keyword":
+		elsif kw = keyword_output_inverted then -- output_inverted yes/no
+			expect_field_count (line, 2);
+			port_output_inverted := to_output_inverted (f (line, 2));
+
+		elsif kw = keyword_output_tristate then -- output_tristate yes/no
+			expect_field_count (line, 2);
+			port_output_tristate := to_output_tristate (f (line, 2));
+
+		elsif kw = keyword_output_weakness then -- output_weakness none/pull0/weak1 ...
+			expect_field_count (line, 2);
+			port_output_weakness := to_output_weakness (f (line, 2));
+
+		elsif kw = keyword_input_sensitivity_edge then -- input_sensitivity_edge rising/falling/any
+			expect_field_count (line, 2);
+			port_sensitivity_edge := to_sensitivity_edge (f (line, 2));
+
+		elsif kw = keyword_input_sensitivity_level then -- input_sensitivity_level high/low
+			expect_field_count (line, 2);
+			port_sensitivity_level := to_sensitivity_level (f (line, 2));
+
 		else
 			invalid_keyword (kw);
 		end if;
