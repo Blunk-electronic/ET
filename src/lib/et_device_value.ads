@@ -58,7 +58,6 @@ package et_device_value is
 		or to_set ('-');
 
 	package pac_device_value is new generic_bounded_length (value_length_max);
-	use pac_device_value;
 	type type_device_value is new pac_device_value.bounded_string;
 
 

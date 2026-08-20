@@ -56,7 +56,6 @@ package et_canvas_board_outline is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_path_and_bend;
 
 	use et_canvas_board.pac_canvas;
 

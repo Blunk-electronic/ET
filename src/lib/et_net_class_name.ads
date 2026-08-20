@@ -53,7 +53,6 @@ package et_net_class_name is
 	package pac_net_class_name is new generic_bounded_length (
 		net_class_name_length_max); -- hi-voltage, si-critical, ...
 
-	use pac_net_class_name;
 
 	type type_net_class_name is new pac_net_class_name.bounded_string;
 

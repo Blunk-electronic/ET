@@ -46,7 +46,6 @@ package et_project.configuration is
 
 	file_length_max : constant positive := 100;
 	package pac_file_name is new generic_bounded_length (file_length_max);
-	use pac_file_name;
 
 	type type_project_config_file_name is new pac_file_name.bounded_string;
 
