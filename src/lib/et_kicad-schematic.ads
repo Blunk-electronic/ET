@@ -55,7 +55,7 @@ with et_nets;					use et_nets;
 with et_project_name;			use et_project_name;
 with et_net_connectors;			use et_net_connectors;
 with et_terminal_name;			use et_terminal_name;
-with et_package_name;			use et_package_name;
+with et_package_name;
 with et_kicad_general;			use et_kicad_general;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
@@ -63,14 +63,14 @@ use et_schematic_geometry.pac_geometry_sch;
 use et_schematic_geometry.pac_geometry_2;
 
 with et_board_coordinates;
-with et_port_names;				use et_port_names;
+with et_port_names;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
-with et_unit_name;				use et_unit_name;
-with et_package_variant_name;	use et_package_variant_name;
+with et_unit_name;
+with et_package_variant_name;
 with et_package_variant;		use et_package_variant;
 
 with et_schematic_text;
@@ -89,7 +89,7 @@ with et_mirroring;				use et_mirroring;
 
 package et_kicad.schematic is
 
-	use et_kicad_libraries.pac_text;
+--	use et_kicad_libraries.pac_text;
 
 	-- CS: a lot of stuff should move from here to et_kicad_general
 
@@ -184,7 +184,7 @@ package et_kicad.schematic is
 	-- Adds a unit into the given commponent.
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in type_unit_name;
+		unit_name		: in et_unit_name.type_unit_name;
 		unit			: in type_unit_schematic;
 		log_threshold	: in type_log_level);
 
@@ -192,7 +192,7 @@ package et_kicad.schematic is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	package type_units_schematic is new ordered_maps (
-		key_type		=> type_unit_name,
+		key_type		=> et_unit_name.type_unit_name,
 		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_schematic);
 
@@ -200,7 +200,7 @@ package et_kicad.schematic is
 
 	-- Returns true if the unit with the given name exists in the given list of units.
 	function unit_exists (
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
@@ -210,7 +210,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function position_of_unit ( -- CS rename to get_unit_position
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position;
 
@@ -220,7 +220,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function mirror_style_of_unit ( -- CS rename to get_unit_mirror_style
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return type_mirror;
 
@@ -230,7 +230,7 @@ package et_kicad.schematic is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 	function orientation_of_unit ( -- CS rename to get_unit_orientation
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model;
 
@@ -252,7 +252,7 @@ package et_kicad.schematic is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
-		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
+		part		: et_unit_name.type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
@@ -270,7 +270,7 @@ package et_kicad.schematic is
 			-- If a component appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
 				datasheet			: type_component_datasheet.bounded_string;
-				variant				: type_package_variant_name; -- D, N
+				variant				: et_package_variant_name.type_package_variant_name; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
@@ -358,7 +358,7 @@ package et_kicad.schematic is
 
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: type_port_name; -- the port name like GPIO1, GPIO2
+		name			: et_port_names.type_port_name; -- the port name like GPIO1, GPIO2
 		coordinates	: et_kicad_coordinates.type_position;
 		direction		: et_kicad_libraries.type_port_direction; -- example: "passive"
 		style			: type_port_style;
@@ -412,7 +412,7 @@ package et_kicad.schematic is
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: type_device_name;		-- N409
-		name		: type_port_name;	-- 2
+		name		: et_port_names.type_port_name;	-- 2
 	end record;
 
 
@@ -774,7 +774,7 @@ package et_kicad.schematic is
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
-	component_package_name_characters : character_set := package_name_characters or to_set (':');
+	component_package_name_characters : character_set := et_package_name.package_name_characters or to_set (':');
 
 
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
@@ -911,7 +911,7 @@ package et_kicad.schematic is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
-	function package_name (text : in string) return type_package_name;
+	function package_name (text : in string) return et_package_name.type_package_name;
 	-- CS rename to get_package_name
 
 

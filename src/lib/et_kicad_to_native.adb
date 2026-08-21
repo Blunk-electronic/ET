@@ -1798,7 +1798,6 @@ package body et_kicad_to_native is
 
 			procedure move_contour is
 				use et_board_geometry;
-				use pac_geometry_brd;
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
@@ -2868,7 +2867,6 @@ package body et_kicad_to_native is
 				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
-				use et_kicad.schematic.type_strands;
 				kicad_strands : constant et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
 				kicad_strand_cursor : et_kicad.schematic.type_strands.cursor := kicad_strands.first;
 
@@ -3068,7 +3066,7 @@ package body et_kicad_to_native is
 					use et_device_name;
 					use et_package_variant;
 
-					dist : pac_geometry_sch.type_distance_point_line;
+					unused_dist : pac_geometry_sch.type_distance_point_line;
 
 					terminal : type_terminal;
 				begin
@@ -3778,7 +3776,6 @@ package body et_kicad_to_native is
 					prefix : in type_device_prefix) return
 					type_device_prefix
 				is
-					use pac_device_prefix;
 				begin
 					return to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
 				end remove_leading_hash;

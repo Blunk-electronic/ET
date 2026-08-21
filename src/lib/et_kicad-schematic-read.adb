@@ -61,7 +61,7 @@ function read (
 	return type_hierarchic_sheet_file_names_extended
 is
 	hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
-	name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
+	unused_name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
 
 	use pac_lines_of_file;
 
@@ -69,7 +69,7 @@ is
 	lines		: pac_lines_of_file.list;
 	line_cursor	: pac_lines_of_file.cursor;
 
-	sheet_file : type_schematic_file_name.bounded_string;
+	unused_sheet_file : type_schematic_file_name.bounded_string;
 
 	net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
@@ -341,7 +341,8 @@ is
 
 		ls	: type_net_label_simple;
 		lt	: type_net_label_tag;
-		anon_strand_a, anon_strand_b : type_anonymous_strand;
+		anon_strand_a : type_anonymous_strand;
+		unused_anon_strand_b : type_anonymous_strand;
 		--segment	: type_net_segment_base;
 		segment	: type_net_segment;
 		lls		: type_simple_labels.list;
@@ -373,7 +374,7 @@ is
 
 		-- the strand cursor points to the anonymous strand being processed
 		strand_cursor	: type_anonymous_strands.cursor := anonymous_strands.first;
-		strand_cursor_b	: type_anonymous_strands.cursor;
+		unused_strand_cursor_b	: type_anonymous_strands.cursor;
 
 		use type_simple_labels;
 		simple_label_cursor	: type_simple_labels.cursor; -- points to the simple label being processed
@@ -1996,7 +1997,9 @@ is
 
 	procedure make_component (
 		lines			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level)
+	is
+		use et_package_name;
 	-- Builds a unit or a component and inserts it in the component list of
 	-- current module. The information required to make a component is provided
 	-- in parameter "lines".
@@ -2041,7 +2044,7 @@ is
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
 
 		alternative_references		: type_alternative_references.list;
-		unit_name					: type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
+		unit_name					: et_unit_name.type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
 		orientation					: et_schematic_geometry.type_rotation_model;
 		mirror						: type_mirror;
@@ -2303,7 +2306,7 @@ is
 			component_found : boolean := false; -- goes true once the given component was found in any library
 
 			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
-			library : type_device_model_name; -- the full library name to be returned
+			unused_library : type_device_model_name; -- the full library name to be returned
 
 
 			-- Queries the components in the current library. Exits prematurely once the
@@ -2624,6 +2627,7 @@ is
 		-- of meta-data. See procedure insert_component.
 		-- Raises constraint error if unit already in unit list of component.
 		procedure insert_unit is
+			use pac_text;
 			status : type_object_status;
 		begin
 			log_indentation_up;
@@ -2716,6 +2720,7 @@ is
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+			use et_unit_name;
 		begin
 			if to_string (unit_name) /= f (line, 1) then
 				log (SEVERITY_ERROR, "invalid unit name '" & f (line, 1) & "'", console => true);
@@ -2890,6 +2895,8 @@ is
 		-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1"
 		-- to the list alternative_references.
 
+			use et_unit_name;
+
 			path	: type_fields_of_line; -- 59F17F77 5A991798
 			ref		: type_device_name; -- #PWR03
 			unit	: type_unit_name; -- 1 -- CS is this really about unit names ?
@@ -2980,7 +2987,7 @@ is
 		end extract_library_name;
 
 
-
+		use et_unit_name;
 	begin -- make_component (schematic)
 		log (text => "making component ...", level => log_threshold);
 		log_indentation_up;

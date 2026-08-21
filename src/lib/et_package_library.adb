@@ -469,7 +469,6 @@ package body et_package_library is
 		package_cursor : in pac_package_models.cursor)
 		return type_text_placeholders
 	is
-		use pac_package_models;
 	begin
 		return get_default_placeholders (element (package_cursor));
 	end get_default_placeholders;
