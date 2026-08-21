@@ -161,7 +161,7 @@ package body et_module_ops is
 
 		use et_project;
 
-		file_name : constant string := to_string (module_name) &
+		unused_file_name : constant string := to_string (module_name) &
 			latin_1.full_stop & module_file_name_extension;
 		-- motor_driver.mod or templates/clock_generator.mod
 	begin

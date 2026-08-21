@@ -87,6 +87,8 @@ with et_keywords;					use et_keywords;
 
 package body et_kicad.pcb is
 
+	use et_board_coordinates;
+	use et_fill_zones;
 	use pac_holes;
 
 
@@ -281,6 +283,7 @@ package body et_kicad.pcb is
 	is
 		board : type_board; -- to be returned
 
+		use et_net_names;
 		use et_package_bom_relevance;
 		use pac_lines_of_file;
 
@@ -1001,8 +1004,6 @@ package body et_kicad.pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_board_coordinates;
-			use pac_geometry_brd;
 
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
@@ -2966,7 +2967,7 @@ package body et_kicad.pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS validate priority
-									polygon.priority_level := to_priority (to_string (arg));
+									polygon.priority_level := et_fill_zones.boards.to_priority (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -3131,7 +3132,6 @@ package body et_kicad.pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 		procedure exec_section is
-			use et_board_coordinates;
 
 			procedure invalid_layer_reference is begin
 				log (SEVERITY_ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
@@ -3159,7 +3159,6 @@ package body et_kicad.pcb is
 
 			-- Warns operator if a terminal is not connected to a net.
 			procedure warn_on_missing_net is
-				use et_net_names;
 			begin
 				if length (terminal_net_name) = 0 then
 					log (SEVERITY_WARNING, to_string (package_reference) & latin_1.space
@@ -4372,7 +4371,7 @@ package body et_kicad.pcb is
 			procedure add_polygon_corner_point is
 			-- adds the current polygon_point to the corner points of the current polygon
 				use type_polygon_points;
-				point_cursor : type_polygon_points.cursor;
+				unused_point_cursor : type_polygon_points.cursor;
 			begin
 				if not contains (polygon.corners, polygon_point) then
 					log (text => "polygon corner point at" & to_string (polygon_point), level => log_threshold + 3);
@@ -4673,7 +4672,6 @@ package body et_kicad.pcb is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
 
-		use pac_geometry_2;
 		use pac_segments;
 
 		lines : pac_segments.list; -- to be returned
@@ -4705,11 +4703,10 @@ package body et_kicad.pcb is
 
 
 	procedure floating_copper_polygon_properties (
-		cursor			: in pac_floating_solid.cursor;
+		cursor			: in et_fill_zones.boards.pac_floating_solid.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_fill_zones;
-		use pac_floating_solid;
+		use et_fill_zones.boards.pac_floating_solid;
 	begin
 		-- general stuff
 		log (text => "polygon" &
@@ -4745,6 +4742,7 @@ package body et_kicad.pcb is
 		board_handle : ada.text_io.file_type;
 		line : type_fields_of_line; -- a line of the board file
 
+		use et_net_names;
 		use pac_lines_of_file;
 		lines : pac_lines_of_file.list; -- all lines of the board file
 
@@ -5277,7 +5275,6 @@ package body et_kicad.pcb is
 							use pac_terminals;
 							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
-							use et_net_names;
 						begin -- query_terminals
 							-- Loop in terminals of current package until a terminal
 							-- is found that is connected with the given net name_in.
@@ -5397,6 +5394,7 @@ package body et_kicad.pcb is
 				-- Transfers floating polygons (their net_id is zero) to the schematic
 				-- module (selector "board.conductors.polygons").
 				procedure transfer_floating_polygons is
+					use et_fill_zones.boards;
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 

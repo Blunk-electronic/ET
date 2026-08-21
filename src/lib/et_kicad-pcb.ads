@@ -52,7 +52,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_primitive_objects;			use et_primitive_objects;
-with et_net_names;					use et_net_names;
+with et_net_names;
 with et_net_class;					use et_net_class;
 with et_net_classes;				use et_net_classes;
 with et_net_class_name;				use et_net_class_name;
@@ -66,7 +66,7 @@ with et_module_board;
 
 with et_board_outline;				use et_board_outline;
 with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
+with et_board_coordinates;
 with et_kicad_general;				use et_kicad_general;
 
 with et_text_content;				use et_text_content;
@@ -79,19 +79,19 @@ with et_device_name;					use et_device_name;
 with et_drawing_frame;
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_fill_zones;
+with et_fill_zones.boards;
 with et_thermal_relief;				use et_thermal_relief;
 with et_conductor_segment;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
 with et_stencil.board;				use et_stencil.board;
 
-with et_silkscreen;					use et_silkscreen;
+with et_silkscreen;
 with et_silkscreen.packages;
 with et_silkscreen.board;			use et_silkscreen.board;
 
-with et_assy_doc;					use et_assy_doc;
+with et_assy_doc;
 with et_assy_doc.board;				use et_assy_doc.board;
 with et_assy_doc.packages;
 
@@ -113,8 +113,6 @@ package et_kicad.pcb is
 	use pac_contours;
 
 	use et_board_text.pac_text_board_vectorized;
-
-	use et_net_names;
 
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
@@ -383,7 +381,7 @@ package et_kicad.pcb is
 
 	type type_netlist_net is record
 		id		: type_net_id;
-		name	: type_net_name;
+		name	: et_net_names.type_net_name;
 	end record;
 
 	-- When nets are collected in an ordered set, the next two functions serve to
@@ -461,7 +459,7 @@ package et_kicad.pcb is
 
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
-		element_type	=> type_net_name,
+		element_type	=> et_net_names.type_net_name,
 		"="				=> et_net_names."=");
 
 	-- The net class type used here extends the basic net class by the list
@@ -541,7 +539,7 @@ package et_kicad.pcb is
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
-		net_name : type_net_name;
+		net_name : et_net_names.type_net_name;
 	end record;
 
 	-- the list of terminals of a package:
@@ -661,16 +659,16 @@ package et_kicad.pcb is
 		border_width : type_distance_positive := 1.0;
 
 		-- the with of the lines inside the area:
-		line_width : type_distance_positive := hatching_line_width_default;
+		line_width : type_distance_positive := et_fill_zones.hatching_line_width_default;
 
 		-- the space between the lines inside the area:
-		spacing	: type_distance_positive := hatching_spacing_default;
+		spacing	: type_distance_positive := et_fill_zones.hatching_spacing_default;
 	end record;
 
 
 
 	type type_polygon is record
-		net_name			: type_net_name; -- if name is empty, the polygon is not connected to any net
+		net_name			: et_net_names.type_net_name; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id := type_net_id'first; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id := type_signal_layer_id'first;
 		timestamp			: type_timestamp := timestamp_default;
@@ -684,19 +682,19 @@ package et_kicad.pcb is
 		thermal_width		: type_thermal_width := type_thermal_width'first; -- spoke width
 		pad_technology		: type_pad_technology := type_pad_technology'last;
 		pad_connection		: type_fill_zone_pad_connection := type_fill_zone_pad_connection'first;
-		priority_level		: type_priority := type_priority'first;
+		priority_level		: et_fill_zones.boards.type_priority := et_fill_zones.boards.type_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the fill_zone
 		corners				: type_polygon_points.list;
 		fill_style			: type_fill_style := SOLID; -- a fill_zone is always filled
 		hatching			: type_hatching;
-		easing				: type_easing;
+		easing				: et_fill_zones.type_easing;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
-		cursor			: in pac_floating_solid.cursor;
+		cursor			: in et_fill_zones.boards.pac_floating_solid.cursor;
 		log_threshold	: in type_log_level);
 
 
