@@ -400,7 +400,7 @@ package et_schematic_ops_nets is
 	-- the clipboard:
 	procedure copy_selected_net_segments_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		-- CS sheet : in type_sheet; -- to speed up the process ?												  
+		-- CS sheet : in type_sheet; -- to speed up the process ?
 		log_threshold	: in type_log_level);
 
 
@@ -412,7 +412,7 @@ package et_schematic_ops_nets is
 		offset			: in type_object_position_relative;
 		log_threshold	: in type_log_level);
 
-		
+
 
 
 -- STRANDS:

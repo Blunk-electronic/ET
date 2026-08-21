@@ -87,10 +87,10 @@ package body et_nets is
 
 
 
-	
+
 	procedure clear_route (
 		net		: in out type_net)
-	is 
+	is
 		use et_route;
 	begin
 		net.route := no_route;
@@ -98,7 +98,7 @@ package body et_nets is
 
 
 
-	
+
 	function copy_bare_net (
 		net_in : in type_net)
 		return type_net
@@ -108,10 +108,10 @@ package body et_nets is
 	begin
 		-- Reset the status flags:
 		reset_status (net_out.status);
-		
+
 		-- Delete all strands and net segments:
 		net_out.strands.clear;
-		
+
 		-- Remove all routing stuff:
 		clear_route (net_out);
 
@@ -120,7 +120,7 @@ package body et_nets is
 
 
 
-	
+
 
 
 	procedure set_proposed (

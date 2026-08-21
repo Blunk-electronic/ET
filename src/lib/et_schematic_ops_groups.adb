@@ -189,30 +189,30 @@ package body et_schematic_ops_groups is
 
 
 
-	
+
 
 
 	function get_center_of_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;							 
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 		return type_vector_model
 	is
 		result : type_vector_model;
 
 		all_positions : pac_points.list;
-		
+
 		unit_positions : pac_points.list;
 		-- CS
 		-- text_positions : pac_points.list;
 		-- segment_positions : pac_points.list;
-		
+
 		procedure query_units is
 			use et_schematic_ops_units;
 		begin
 			log (text => "query units", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			-- Get the positions (x/y) of the units
 			-- of the group:
 			unit_positions := get_group_unit_positions (
@@ -221,7 +221,7 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end query_units;
 
-		
+
 		procedure merge_positions is
 			use pac_points;
 			c : pac_points.cursor;
@@ -231,11 +231,11 @@ package body et_schematic_ops_groups is
 				target	=> all_positions,
 				before	=> c,
 				source	=> unit_positions);
-				
+
 			-- CS: segment, net positions
 		end merge_positions;
-			
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " get center of group (schematic)",
@@ -245,25 +245,25 @@ package body et_schematic_ops_groups is
 
 		query_units;
 		-- CS: query net segments, texts
-		
+
 		-- Merge unit positions, net segment positions,
 		-- text positons, ...
 		merge_positions;
-		
+
 
 		result := get_center (all_positions);
-		
+
 		log_indentation_down;
-		
+
 		return result;
 	end get_center_of_group;
-	
 
 
 
-	
 
-	
+
+
+
 
 
 
@@ -716,18 +716,18 @@ package body et_schematic_ops_groups is
 
 				log (text => "center " & to_string (center),
 					level => log_threshold + 1);
-					
+
 				-- Set x/y of group_reference_point by
 				-- the center of the group:
 				set_place (group_reference_point, center);
 
 			else
 				set_place (group_reference_point, reference_point);
-			end if;					
+			end if;
 		end set_group_reference_point;
 
-		
-		
+
+
 		procedure copy_units_to_clipboard is
 			use et_schematic_ops_units;
 		begin
@@ -745,7 +745,7 @@ package body et_schematic_ops_groups is
 		end copy_units_to_clipboard;
 
 
-		
+
 		procedure copy_net_segments_to_clipboard is
 			use et_schematic_ops_nets;
 		begin
@@ -758,19 +758,19 @@ package body et_schematic_ops_groups is
 				module_cursor, log_threshold + 2);
 			-- CS: to speed up the process, pass the sheet where the group is
 			-- using get_sheet (group_reference_point)
-				
+
 			log_indentation_down;
 		end copy_net_segments_to_clipboard;
 
-		
-		
+
+
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
 				& " copy group to clipboard."
 				& " reference point: auto center.",
 				level => log_threshold);
-					   
+
 		else
 			log (text => "module " & to_string (module_cursor)
 				& " copy group to clipboard."
@@ -783,15 +783,15 @@ package body et_schematic_ops_groups is
 		log_indentation_up;
 
 		set_group_reference_point;
-		
+
 
 		-- Copy selected units to clipboard:
 		copy_units_to_clipboard;
 
 		-- Copy selected net segments to clipboard:
 		copy_net_segments_to_clipboard;
-		
-		
+
+
 		-- CS netchangers, texts
 
 		log_indentation_down;
@@ -864,9 +864,9 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end paste_net_segments;
 
-		
-		
-		
+
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste group at sheet " & to_string (sheet)
@@ -891,7 +891,7 @@ package body et_schematic_ops_groups is
 		paste_units;
 
 		paste_net_segments;
-		
+
 		-- CS
 		-- netchangers, texts
 

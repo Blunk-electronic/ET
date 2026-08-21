@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
@@ -53,7 +53,7 @@ procedure sort is
 	points : pac_points.list;
 
 	reference : type_point := (0.0, 0.0);
-	
+
 	P1 : type_point := (1.0, 1.0);
 	P2 : type_point := (-3.0, 1.0);
 	P3 : type_point := ( 3.0, 1.0);
@@ -67,18 +67,18 @@ begin
 	points.append (P1);
 	--points.append (P4);
 	--points.append (P5);
-	
+
 	put_line ("caotic: " & to_string (points));
-	
+
 	sort_by_distance (points, reference);
 
 	put_line ("sorted: " & to_string (points));
-	
+
 end sort;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

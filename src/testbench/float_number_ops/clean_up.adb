@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -54,10 +54,10 @@ procedure clean_up is
 
 	procedure do_it (mode : in type_clean_up_mode) is begin
 		put_line ("mode: " & type_clean_up_mode'image (mode));
-		
+
 		put_line ("in:");
 		put_line (to_string (f_list));
-		
+
 		clean_up (
 			numbers	=> f_list,
 			mode	=> mode);
@@ -66,11 +66,11 @@ procedure clean_up is
 		put_line (to_string (f_list));
 	end do_it;
 
-		
+
 begin
 
 	--f_list.append (-0.19);
-	
+
 	for i in 1 .. 3 loop
 		f_list.append (1.0);
 	end loop;
@@ -83,7 +83,7 @@ begin
 
 
 	--f_list.append (-0.7);
-	
+
 	f_list_bak := f_list;
 	do_it (REDUCE_TO_ONE);
 
@@ -96,17 +96,17 @@ begin
 	do_it (REDUCE_TO_ONE);
 	do_it (REMOVE_REDUNDANT);
 
-	
+
 	f_list.append (1.0);
 	do_it (REDUCE_TO_ONE);
 	do_it (REMOVE_REDUNDANT);
 
-	
+
 end clean_up;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -54,7 +54,7 @@ procedure multi_union is
 	use pac_polygon_union;
 
 
-	
+
 
 	--subtype type_index is natural range 0 .. 100;
 	--idx : type_index := 0;
@@ -69,23 +69,23 @@ procedure multi_union is
 	--procedure count_error is begin
 		--errors := errors + 1;
 	--end count_error;
-		
+
 
 	use pac_polygon_list;
 	P_list_in : pac_polygon_list.list;
-	
+
 	P_1	: constant string := "0 0  1 0  1 1  0 1";
 	P_2 : constant string := "0.5 0.5  0.5 -1.5  1.5 -1.5  1.5 0.5";
 	P_3 : constant string := "2 1  3 1  3 3  2 3";
 	P_4 : constant string := "2.5 3  2.8 3  2.8 4  2.5 4";
-	
-	
+
+
 
 	procedure query_polygon (c : in pac_polygon_list.cursor) is begin
 		put_line (to_string (element (c)));
 	end query_polygon;
 
-	
+
 begin
 
 
@@ -93,17 +93,17 @@ begin
 	P_list_in.append (to_polygon (P_1));
 	P_list_in.append (to_polygon (P_2));
 	P_list_in.append (to_polygon (P_4));
-	
+
 	multi_union (P_list_in);
 
-	
+
 	P_list_in.iterate (query_polygon'access);
-	
+
 end multi_union;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

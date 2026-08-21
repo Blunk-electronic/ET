@@ -2971,10 +2971,10 @@ package body et_schematic_ops_nets is
 
 
 
-	
 
 
-	
+
+
 
 
 	procedure copy_selected_net_segments_to_clipboard (
@@ -2987,7 +2987,7 @@ package body et_schematic_ops_nets is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -2997,51 +2997,51 @@ package body et_schematic_ops_nets is
 				net			: in type_net)
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
+
+
 				procedure query_strand (
 					strand : in type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					
-					
+
+
 					procedure query_segment (
 						segment : in type_net_segment)
 					is
 						use et_module_clipboard.net_segments;
 					begin
-						if is_A_selected (segment) 
+						if is_A_selected (segment)
 						or is_B_selected (segment) then
 
 							-- CS log net name, strand pos and segment ?
-						   
+
 							log_indentation_up;
-						   
+
 							copy_net_segment_to_clipboard (
 								net_cursor, segment_cursor, log_threshold + 1);
 
 							log_indentation_down;
 						end if;
 					end query_segment;
-					
-					
+
+
 				begin
 					while has_element (segment_cursor) loop
 						query_element (segment_cursor, query_segment'access);
 						next (segment_cursor);
 					end loop;
 				end query_strand;
-				
-				
+
+
 			begin
 				while has_element (strand_cursor) loop
 					query_element (strand_cursor, query_strand'access);
 					next (strand_cursor);
 				end loop;
 			end query_net;
-			
-			
+
+
 		begin
 			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
@@ -3049,7 +3049,7 @@ package body et_schematic_ops_nets is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " copy selected net segments to clipboard ",
@@ -3064,53 +3064,53 @@ package body et_schematic_ops_nets is
 
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure paste_net_segments_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		offset			: in type_object_position_relative;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure do_paste is
 			use et_module_clipboard;
 			use pac_nets;
-			
+
 			net_cursor : pac_nets.cursor := clipboard.nets.first;
-			
-			
+
+
 			procedure query_net (
 				net_name	: in type_net_name;
 				net			: in type_net)
 			is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
+
+
 				procedure query_strand (
 					strand : in type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					
-					
+
+
 					procedure query_segment (
 						segment : in type_net_segment)
-					is 
+					is
 					begin
 						log (text => "net " & to_string (net_name),
 							level => log_threshold + 1);
 						-- CS log segment ?
-						
+
 						null;
 						-- CS paste net segment
 					end query_segment;
 
-					
+
 				begin
 					-- Iterate through the segments of the strand:
 					while has_element (segment_cursor) loop
@@ -3118,16 +3118,16 @@ package body et_schematic_ops_nets is
 						next (segment_cursor);
 					end loop;
 				end query_strand;
-				
-				
-					
+
+
+
 			begin
 				-- No iteration through the strands.
 				-- We use only one strand here for all segments:
 				query_element (strand_cursor, query_strand'access);
 			end query_net;
-			
-			
+
+
 		begin
 			-- Iterate through the nets in the clipboard:
 			while has_element (net_cursor) loop
@@ -3137,7 +3137,7 @@ package body et_schematic_ops_nets is
 
 		end do_paste;
 
-	
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " paste net segments from clipboard. Group offset: " & to_string (offset),
@@ -3148,10 +3148,10 @@ package body et_schematic_ops_nets is
 
 		log_indentation_down;
 	end paste_net_segments_from_clipboard;
-	
-	
 
-	
+
+
+
 
 
 

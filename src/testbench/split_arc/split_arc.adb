@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -55,7 +55,7 @@ procedure split_arc is
 	C : type_point := type_point (set ( 22.75,  0.46));
 	S : type_point := type_point (set ( 22.75, 20.46));
 	E : type_point := type_point (set (  2.75,  0.46));
-	
+
 	A : type_arc := (C, S, E, CW);
 
 	procedure show (arcs : in type_arcs) is begin
@@ -64,10 +64,10 @@ procedure split_arc is
 			null;
 		end loop;
 	end;
-	
+
 begin
 
-	
+
 	--put_line (to_string (A));
 
 	if is_valid (A) then
@@ -79,7 +79,7 @@ end split_arc;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

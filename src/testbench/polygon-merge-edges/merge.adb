@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -45,52 +45,52 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_string_processing;		use et_string_processing;
 
 procedure merge is
-	
+
 	use pac_geometry_brd;
 	use pac_polygons;
 
-	
+
 	--B_default_vertices : constant string := "0 0  100 0  100 100  0 100";
 	--B_5_vertices : constant string := "0 0  50 0  100 0  100 100  0 100";
-	
+
 	B_overlap_1 : constant string := "0 0  100 0  100 -10  100 100  0 100";
 	B_overlap_2 : constant string := "0 0  110 0  100 0  100 100  0 100";
 	B_overlap_3 : constant string := "0 0  110 0  100 0  110 0 100 0  100 100  0 100";
 	B_overlap_4 : constant string := "0 0  110 0  90 0  120 0  100 0  100 100  0 100";
-	
+
 	initial, reference, optimized : type_polygon;
 
 	errors : boolean := false;
-	
+
 begin
 	-- The initial polygon:
 	--initial := to_polygon (B_default_vertices);
 	--initial := to_polygon (B_5_vertices);
-	
+
 	--initial := to_polygon (B_overlap_1);
 	--initial := to_polygon (B_overlap_2);
 	--initial := to_polygon (B_overlap_3);
 	initial := to_polygon (vertices => B_overlap_4, clean_up => false);
-	
+
 	put_line ("initial polygon:");
 	put_line (to_string (initial));
 	new_line;
-	
+
 	-- Merge the overlapping edges of the initial polygon and keep the result:
 	reference := initial;
 	merge_overlapping_edges (polygon => reference, debug => true);
 	put_line ("reference with merged edges:");
 	put_line (to_string (reference));
-	
+
 
 --goto skip;
-	
+
 	for i in 1 .. 10 loop
 		new_line;
 		put_line ("iteration" & natural'image (i));
 		put_line ("------------------");
 		rotate (initial);
-		
+
 		put_line ("given:");
 		put_line (to_string (initial));
 
@@ -98,12 +98,12 @@ begin
 
 
 		merge_overlapping_edges (polygon => optimized, debug => true);
-			
+
 		--new_line;
 		--put_line ("cleaned up:");
 		--put_line (to_string (optimized));
 
-		
+
 		if not are_congruent (reference, optimized) then
 			new_line;
 			put_line ("ERROR !");
@@ -131,13 +131,13 @@ begin
 	end if;
 
 <<skip>>
-	
+
 end merge;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -57,7 +57,7 @@ procedure clip is
 
 	use pac_polygon_list;
 	EXP : pac_polygon_list.list;
-	
+
 
 	-- A: to be clipped
 	-- B: clipping
@@ -84,19 +84,19 @@ procedure clip is
 	procedure count_error is begin
 		errors := errors + 1;
 	end count_error;
-		
+
 
 
 	tolerance : type_distance_positive := fab_tolerance;
 
-	
+
 	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	
+
 
 	procedure init_test is begin
 		EXP.clear;
 	end init_test;
-		
+
 
 	procedure add_to_expect (
 		clipped : in out pac_polygon_list.list;
@@ -107,8 +107,8 @@ procedure clip is
 		p := to_polygon (s);
 		clipped.append (p);
 	end add_to_expect;
-	
-	
+
+
 	procedure make_set (
 		A, B	: in string;
 		expect	: in pac_polygon_list.list)
@@ -118,9 +118,9 @@ procedure clip is
 		set (idx).B := to_unbounded_string (B);
 		set (idx).result_expected := expect;
 	end;
-		
-	
-	procedure make_test is 
+
+
+	procedure make_test is
 		F	: type_fields_of_line;
 		C	: type_contour;
 		A, B: type_polygon;
@@ -134,7 +134,7 @@ procedure clip is
 			new_line;
 			put_line ("TEST:" & natural'image (i));
 			put_line ("-------------");
-			
+
 			C := type_contour (to_contour (to_string (set(i).A)));
 			A := to_polygon (C, tolerance);
 			--put_line ("A: " & to_string (A));
@@ -145,7 +145,7 @@ procedure clip is
 
 			set (i).result_actual := clip (A, B);
 			--set (i).result_actual := clip (A, B, true);
-			
+
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
 				new_line;
@@ -155,11 +155,11 @@ procedure clip is
 				new_line;
 				put_line ("B: " & to_string (B));
 				new_line;
-				
+
 				put_line ("EXPECTED:");
 				set(i).result_expected.iterate (query_polygon'access);
 				new_line;
-				
+
 				put_line ("FOUND:");
 				set (i).result_actual.iterate (query_polygon'access);
 
@@ -171,23 +171,23 @@ procedure clip is
 
 				count_error;
 			end if;
-		
+
 		end loop;
 
-		
+
 		--exception
 			--when others => null;
 
-		
+
 	end make_test;
 
-	
+
 begin
 
 	-- TEST 1:
 	--init_test;
 	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
-	
+
 	make_set (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
 		B => B_default,
@@ -195,7 +195,7 @@ begin
 	-- go
 
 
-	
+
 	-- TEST 2:
 	init_test;
 	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
@@ -206,11 +206,11 @@ begin
 		expect => EXP);
 	-- go
 
-	
+
 	-- TEST 3:
 	init_test;
 	add_to_expect (EXP, "100 20  80 20  80 10  100 10");
-	
+
 	make_set (
 		A => "line 80 10 line 150 10 line 150 20 line 80 20",
 		B => B_default,
@@ -221,20 +221,20 @@ begin
 	-- TEST 4:
 	init_test;
 	add_to_expect (EXP, "1 0.5  1 1  0.5 1  0.5 0.5");
-	
+
 	make_set (
 		A => "line 0 0 line 1 0 line 1 1 line 0 1",
 		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
 		expect => EXP);
 	-- go
 
-	
+
 
 	-- TEST 5:
 	init_test;
 	add_to_expect (EXP, "100 50  80 50  80 0  100 0");
 	add_to_expect (EXP, "60 0  60 50  40 50  40 0");
-	
+
 	make_set (
 		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
 		B => B_default,
@@ -244,21 +244,21 @@ begin
 
 	-- TEST 6:
 	init_test;
-	add_to_expect (EXP, "4.33333333333333333E+01 0  100 42.5  100 57.5 " 
+	add_to_expect (EXP, "4.33333333333333333E+01 0  100 42.5  100 57.5 "
 				   & "4.33333333333333333E+01 100  2.08333333333333333E+01 100  25 50  2.08333333333333333E+01 0");
-	
+
 	make_set (
 		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
 		B => B_default,
 		expect => EXP);
 	-- go
 
-	
+
 
 	-- TEST 7:
 	init_test;
 	add_to_expect (EXP, "50 0  50 100  40 100  40 0");
-	
+
 	make_set (
 		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
 		B => B_default,
@@ -266,11 +266,11 @@ begin
 	-- go
 
 
-	
+
 	-- TEST 8:
 	init_test;
 	add_to_expect (EXP, "50 0  50 50  0 50  0 0");
-	
+
 	make_set (
 		A => "line 0 0 line 50 0 line 50 50 line 0 50",
 		B => B_default,
@@ -281,7 +281,7 @@ begin
 	-- TEST 9:
 	init_test;
 	add_to_expect (EXP, "50 0  50 50  30 50  30 0");
-	
+
 	make_set (
 		A => "line 30 0 line 50 0 line 50 50 line 30 50",
 		B => B_default,
@@ -293,7 +293,7 @@ begin
 	-- TEST 10:
 	init_test;
 	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
-	
+
 	make_set (
 		A => "line 50 0 line 100 0 line 101 50 line 50 50",
 		B => B_default,
@@ -304,7 +304,7 @@ begin
 	---- TEST 11:
 	init_test;
 	add_to_expect (EXP, "100 0  80 20  80 40  100 40  100 60  50 60  50 0");
-	
+
 	make_set (
 		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
 		B => B_default,
@@ -315,7 +315,7 @@ begin
 	-- TEST 12:
 	init_test;
 	add_to_expect (EXP, "60 0  60 20  100 20  100 60  60 60  100 100  0 100  50 50  50 0");
-	
+
 	make_set (
 		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
 		B => B_default,
@@ -326,17 +326,17 @@ begin
 	-- TEST 13:
 	init_test;
 	add_to_expect (EXP, "100 100  0 0  100 0");
-	
+
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",
 		B => B_default,
 		expect => EXP);
-	
+
 
 	-- TEST 14:
 	init_test;
 	add_to_expect (EXP, "50 0  80 50  70 60  40 10");
-	
+
 	make_set (
 		A => "line 50 0 line 80 50 line 70 60 line 40 10",
 		B => B_default,
@@ -346,7 +346,7 @@ begin
 	-- TEST 15:
 	init_test;
 	-- we expect nothing because the polygons do not overlap
-	
+
 	make_set (
 		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
 		B => B_default,
@@ -356,7 +356,7 @@ begin
 	-- TEST 16:
 	init_test;
 	-- we expect nothing because the polygons do not overlap
-	
+
 	make_set (
 		A => "line 200 10 line 250 10 line 250 50",
 		B => B_default,
@@ -367,29 +367,29 @@ begin
 	-- TEST 17:
 	init_test;
 	add_to_expect (EXP, "100 50  50 0  100 0");
-	
+
 	make_set (
 		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
 		B => B_default,
 		expect => EXP);
 
 
-	
+
 	-- TEST 18:
 	init_test;
 	add_to_expect (EXP, "50 0  50 50  25 50  0 0");
-	
+
 	make_set (
 		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
 		B => B_default,
 		expect => EXP);
 
 
-	
+
 	-- TEST 19:
 	init_test;
 	add_to_expect (EXP, "90 0  80 10  20 10  10 0");
-	
+
 	make_set (
 		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
 		B => B_default,
@@ -399,7 +399,7 @@ begin
 	-- TEST 20:
 	init_test;
 	add_to_expect (EXP, "10 10  90 10  90 90  10 90");
-	
+
 	make_set (
 		A => "line 0 0 line 100 0 line 100 100 line 0 100",
 		B => "line 10 10 line 90 10 line 90 90 line 10 90",
@@ -410,7 +410,7 @@ begin
 	-- TEST 21 (as test 4, but polygon A and B swapped):
 	init_test;
 	add_to_expect (EXP, "0.5 1  0.5 0.5  1 0.5  1 1");
-	
+
 	make_set (
 		B => "line 0 0 line 1 0 line 1 1 line 0 1",
 		A => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
@@ -421,7 +421,7 @@ begin
 	-- TEST 22 (as test 12, but polygon A and B swapped):
 	init_test;
 	add_to_expect (EXP, "50 0  60 0  60 20  100 20  100 60  60 60  100 100  0 100  50 50");
-	
+
 	make_set (
 		B => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
 		A => B_default,
@@ -432,7 +432,7 @@ begin
 	-- TEST 23 (as test 3, but polygon A and B swapped):
 	init_test;
 	add_to_expect (EXP, "100 10  100 20  80 20  80 10");
-	
+
 	make_set (
 		B => "line 80 10 line 150 10 line 150 20 line 80 20",
 		A => B_default,
@@ -444,7 +444,7 @@ begin
 	init_test;
 	add_to_expect (EXP, "40 0  60 0  60 50  40 50 ");
 	add_to_expect (EXP, "80 0  100 0  100 50  80 50");
-	
+
 	make_set (
 		B => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
 		A => B_default,
@@ -454,11 +454,11 @@ begin
 
 	-- TEST 25
 	tolerance := 5.0;
-	
+
 	init_test;
 	add_to_expect (EXP, "50 30  0 30  0 0  10 0 "
 				  & " 15 8.66025403784438647E+00  25 8.66025403784438647E+00  30 0  50 0");
-	
+
 	make_set (
 		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped
 		B => "line 0 0 arc 20 0 10 0 cw line 30 0 line 50 0 line 50 50 line 0 50", -- pcb
@@ -466,34 +466,34 @@ begin
 	-- go
 
 
-	
+
 	-- TEST 26
 	tolerance := 5.0;
-	
+
 	init_test;
 	add_to_expect (EXP, "50 30  0 30  0 1  10 1 "
 				  & " 15 9.66025403784438647E+00  25 9.66025403784438647E+00  30 1  50 1");
-	
+
 	make_set (
 		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped
 		B => "line 0 1 arc 20 1 10 1 cw line 30 1 line 50 1 line 50 50 line 0 50", -- pcb
 		expect => EXP);
-	-- 
+	--
 
-	
-	---------------------	
+
+	---------------------
 	make_test;
 
 	new_line;
 	put_line ("--------------");
 	put_line ("ERRORS total:" & natural'image (errors));
 
-	
+
 end clip;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

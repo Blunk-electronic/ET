@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -52,16 +52,16 @@ procedure split is
 	distance_digits_left  : constant :=  5;
 	--distance_digits_right : constant := 10; -- 0.1pm
 	distance_digits_right : constant := 4; -- 1um
-	
+
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
-	
-	type type_distance_model is delta distance_smallest 
+
+	type type_distance_model is delta distance_smallest
 		digits distance_digits_left + distance_digits_right
-		range - 0.1 * (10 ** distance_digits_left) .. 
+		range - 0.1 * (10 ** distance_digits_left) ..
 			  + 0.1 * (10 ** distance_digits_left);
 
-	
-		
+
+
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
@@ -70,25 +70,25 @@ procedure split is
 	rotation_digits_right : constant := 7;
 
 	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation_model is delta rotation_smallest 
+	type type_rotation_model is delta rotation_smallest
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 
-		
 
-	
+
+
 	type type_float is digits 12;
-	
+
 	package pac_geometry_brd is new et_geometry_1 (
 		type_float	=> type_float,
 
 		-- For assumed greatest numbers of 999.999..
 		-- we have 3 digits left and 9 digits right of comma.
-		-- This leads to an accuracy of:											  
+		-- This leads to an accuracy of:
 		accuracy	=> 1.0E-14
 		-- CS: For numbers greater 999.9 this accuracy is useless.
 		);
-	
+
 	use pac_geometry_brd;
 
 
@@ -101,11 +101,11 @@ procedure split is
 		axis_min				=> -1_000.0,
 		type_rotation			=> type_rotation_model
 		);
-	
+
 	use pac_geometry_2;
 
 
-	
+
 	procedure output_segments (
 		segments	: in type_arc_segments)
 	is begin
@@ -113,7 +113,7 @@ procedure split is
 			put_line (to_string (to_arc_angles (segments (i))));
 		end loop;
 	end output_segments;
-	
+
 
 	arc : type_arc_fine;
 
@@ -125,7 +125,7 @@ procedure split is
 	P : type_vector_model := set (-0.5, 1.0);
 
 	Z : type_line_zone;
-	
+
 	-- R : type_angle := 0.0;
 begin
 	-- put_line ("split");
@@ -152,15 +152,15 @@ begin
 	arc.end_point :=	set (1.0, 0.0);
 	arc.direction := CW;
 
--- goto start_test;	
-	
+-- goto start_test;
+
 	-- test 1b:
 	arc.center := 		set (0.0, 0.0);
 	arc.start_point :=	set (0.0, -1.0);
 	arc.end_point :=	set (1.0, 0.0);
 	arc.direction := CCW;
 
-	-- goto start_test;	
+	-- goto start_test;
 
 	-- test 2a:
 	A.center := set (0.0, 0.0);
@@ -170,9 +170,9 @@ begin
 	A.direction := CCW;
 	arc := to_arc (A);
 
-	-- goto start_test;	
-	
-	
+	-- goto start_test;
+
+
 	-- test 2b:
 	A.center := set (0.0, 0.0);
 	A.radius := 1.0;
@@ -181,9 +181,9 @@ begin
 	A.direction := CW;
 	arc := to_arc (A);
 
-	-- goto start_test;	
-	
-	
+	-- goto start_test;
+
+
 	-- test 3a:
 	A.center := set (0.0, 0.0);
 	A.radius := 1.0;
@@ -193,7 +193,7 @@ begin
 	arc := to_arc (A);
 
 	-- goto start_test;
-	
+
 	-- test 3b:
 	A.center := set (0.0, 0.0);
 	A.radius := 1.0;
@@ -209,9 +209,9 @@ begin
 	arc.direction := CW;
 
 	P := set (18.0, 12.0);
-	
+
 <<start_test>>
-	
+
 	put_line (to_string (arc));
 	put_line ("P " & to_string (P));
 
@@ -222,12 +222,12 @@ begin
 	Z := get_zone (to_arc_coarse (arc), P);
 
 	put_line ("Z " & to_string (Z));
-	
+
 end split;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

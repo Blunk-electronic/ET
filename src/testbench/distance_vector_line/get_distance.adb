@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
@@ -53,8 +53,8 @@ procedure get_distance is
 	-- use pac_contours;
 	-- use pac_polygons;
 
-	
-	
+
+
 	--v : type_vector := set (8.0, 6.0, 0.0);
 	--v : type_vector := set (1.16000000000E+02, 1.24000000000E+02, 0.0);
 	v : type_vector := set (1.16000000000E+02, 1.23999999999E+02, 0.0);
@@ -75,7 +75,7 @@ begin
 
 		--put_line ("v: " & to_string (v) & " | " & to_string (l));
 		-- put_line ("v: " & to_string (v));
-		
+
 		d := get_distance (
 			vector	=> v,
 			line	=> l,
@@ -89,16 +89,16 @@ begin
 			put_line ("distance" & to_string (get_distance (d)));
 			exit;
 		end if;
-		
+
 		move_by (v, offset);
 	end loop;
-	
+
 end get_distance;
 
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -52,16 +52,16 @@ procedure test is
 	distance_digits_left  : constant :=  5;
 	--distance_digits_right : constant := 10; -- 0.1pm
 	distance_digits_right : constant := 4; -- 1um
-	
+
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
-	
-	type type_distance_model is delta distance_smallest 
+
+	type type_distance_model is delta distance_smallest
 		digits distance_digits_left + distance_digits_right
-		range - 0.1 * (10 ** distance_digits_left) .. 
+		range - 0.1 * (10 ** distance_digits_left) ..
 			  + 0.1 * (10 ** distance_digits_left);
 
-	
-		
+
+
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
@@ -70,25 +70,25 @@ procedure test is
 	rotation_digits_right : constant := 7;
 
 	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation_model is delta rotation_smallest 
+	type type_rotation_model is delta rotation_smallest
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 
-		
 
-	
+
+
 	type type_float is digits 12;
-	
+
 	package pac_geometry_brd is new et_geometry_1 (
 		type_float	=> type_float,
 
 		-- For assumed greatest numbers of 999.999..
 		-- we have 3 digits left and 9 digits right of comma.
-		-- This leads to an accuracy of:											  
+		-- This leads to an accuracy of:
 		accuracy	=> 1.0E-14
 		-- CS: For numbers greater 999.9 this accuracy is useless.
 		);
-	
+
 	use pac_geometry_brd;
 
 
@@ -101,13 +101,13 @@ procedure test is
 		axis_min				=> -1_000.0,
 		type_rotation			=> type_rotation_model
 		);
-	
+
 	use pac_geometry_2;
 
 
 
 	A : type_arc_fine;
-	
+
 
 	-- P : type_vector := set (1.0 + 1.0E-14, 0.0);
 	L : type_line_vector;
@@ -120,11 +120,11 @@ procedure test is
 		case i.status is
 			when NONE_EXIST =>
 				put_line ("no intersections");
-		
+
 			when ONE_EXISTS =>
 				put_line ("one intersection");
 				put_line (" at " & to_string (i.intersection));
-				
+
 			when TWO_EXIST =>
 				put_line ("two intersections");
 				put_line (" at " & to_string (i.intersection_1));
@@ -137,32 +137,32 @@ procedure test is
 	--offset : type_float := 1.0E-16;
 	--offset : type_float := -1.0 + 1.0E-14;
 	offset : type_float := -0.1;
-	
+
 begin
 	L.v_start 		:= set (-2.0, 0.0);
 	L.v_direction	:= set ( 2.0, 0.0);
-	
+
 	-- test 1a:
 	A.center 		:= set ( 0.0,  0.0 + offset);
 	A.start_point	:= set (-1.0,  0.0 + offset);
 	A.end_point		:= set ( 1.0,  0.0 + offset);
 	A.direction		:= CW;
 
--- goto start_test;	
-	
+-- goto start_test;
+
 <<start_test>>
-	
+
 	put_line (to_string (A));
 	put_line (to_string (L));
 
 	do_it;
-	
-	
+
+
 end test;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

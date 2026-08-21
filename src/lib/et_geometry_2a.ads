@@ -660,7 +660,7 @@ package et_geometry_2a is
 
 
 
-	
+
 
 -- AREA (rectangular):
 

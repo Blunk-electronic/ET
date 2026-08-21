@@ -69,7 +69,7 @@ package body et_module_clipboard.net_segments is
 				log (text => "net " & to_string (net_name)
 					& " already in clipboard",
 					level => log_threshold + 1);
-					
+
 			else
 				-- Net does not exist yet. Create
 				-- a bare copy of the given net:
@@ -78,18 +78,18 @@ package body et_module_clipboard.net_segments is
 					new_item	=> copy_bare_net (element (net_cursor)),
 					position	=> net_cursor,
 					inserted	=> inserted);
-					
+
 			end if;
 
 			-- Insert the net segment in the first
 			-- strand of the net:
-			
+
 			-- CS
 			null;
-				
+
 		end insert_net_and_segment;
-		
-		
+
+
 	begin
 		log (text => "copy net " & to_string (net_name),
 			 level => log_threshold);
@@ -103,7 +103,7 @@ package body et_module_clipboard.net_segments is
 
 
 
-	
+
 end et_module_clipboard.net_segments;
 
 -- Soli Deo Gloria

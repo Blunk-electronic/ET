@@ -70,7 +70,7 @@ package body et_devices_electrical is
 		if is_real (device_in) then
 			reset_status (device_out.status);
 		end if;
-		
+
 		return device_out;
 	end copy_bare_device;
 

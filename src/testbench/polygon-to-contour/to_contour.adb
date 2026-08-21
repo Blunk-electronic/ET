@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
@@ -55,7 +55,7 @@ procedure to_contour is
 	use pac_contours;
 
 
-	subtype type_index is natural range 0 .. 100;	
+	subtype type_index is natural range 0 .. 100;
 	idx : type_index := 0;
 
 	procedure next_index is begin
@@ -68,28 +68,28 @@ procedure to_contour is
 	procedure count_error is begin
 		errors := errors + 1;
 	end count_error;
-		
+
 
 
 	procedure do_test (
 		polygon_vertices	: in string;
 		contour_expect		: in string)
-	is 
+	is
 		P_in : type_polygon := to_polygon (polygon_vertices);
-		
+
 		C_exp : type_contour := type_contour (to_contour (contour_expect));
 		C_actual : type_contour;
 	begin
 		next_index;
 
-		
+
 		--put_line (to_string (P_in));
 		--new_line;
 		--put_line (to_string (C_exp));
-		
+
 		C_actual := to_contour (P_in);
 
-		
+
 		if C_actual /= C_exp then
 			count_error;
 			new_line;
@@ -107,18 +107,18 @@ begin
 		contour_expect => "line 100 100  line 0 100  line 0 0  line 100 0");
 
 
-	---------------------	
+	---------------------
 
 	new_line;
 	put_line ("--------------");
 	put_line ("ERRORS total:" & natural'image (errors));
 
-	
+
 end to_contour;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

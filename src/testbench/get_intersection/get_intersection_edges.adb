@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 
 with ada.text_io;				use ada.text_io;
@@ -57,7 +57,7 @@ procedure get_intersection_edges is
 	use pac_geometry_brd;
 
 	use pac_polygons;
-	
+
 
 	E1 : type_edge := (
 		start_point	=> (3.44773780171480198E+01, 6.44913871817609994E+00, 0.0),
@@ -75,12 +75,12 @@ begin
 
 	put_line (type_intersection_status_of_two_lines'image (I.status));
 	null;
-	
+
 end get_intersection_edges;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

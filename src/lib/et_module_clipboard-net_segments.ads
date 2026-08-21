@@ -67,7 +67,7 @@ package et_module_clipboard.net_segments is
 		segment_cursor	: in pac_net_segments.cursor;
 		log_threshold	: in type_log_level);
 
-	
+
 
 end et_module_clipboard.net_segments;
 

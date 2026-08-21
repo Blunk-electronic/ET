@@ -78,8 +78,8 @@ package et_route is
 	-- Use this constant when all routed stuff of a net
 	-- is to be removed:
 	no_route : constant type_net_route := (others => <>);
-	
-		
+
+
 
 
 	procedure add_line (

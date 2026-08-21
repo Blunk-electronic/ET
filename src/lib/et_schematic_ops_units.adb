@@ -3423,7 +3423,7 @@ package body et_schematic_ops_units is
 					unit		: in out type_unit)
 				is begin
 					if on_sheet_and_in_area (unit, sheet, area) then
-						
+
 						log (text =>  to_string (device_name, unit_name),
 							 level => log_threshold + 1);
 
@@ -3469,9 +3469,9 @@ package body et_schematic_ops_units is
 
 
 
-	
 
-	
+
+
 
 
 	function get_group_unit_positions (
@@ -3483,7 +3483,7 @@ package body et_schematic_ops_units is
 		use pac_points;
 		result : pac_points.list;
 
-		
+
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in type_generic_module)
@@ -3502,7 +3502,7 @@ package body et_schematic_ops_units is
 				procedure query_unit (
 					unit_name	: in type_unit_name;
 					unit		: in type_unit)
-				is 
+				is
 					place : type_vector_model;
 				begin
 					-- Filter out only selected units and
@@ -3512,7 +3512,7 @@ package body et_schematic_ops_units is
 						-- Log device and unit name:
 						log (text => to_string (device_name, unit_name),
 							level => log_threshold + 1);
-						
+
 						-- Get x/y position of the unit candidate:
 						place := get_place (unit);
 
@@ -3544,7 +3544,7 @@ package body et_schematic_ops_units is
 		end query_module;
 
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " get unit positions of group on sheet " & to_string (sheet),
@@ -3555,15 +3555,15 @@ package body et_schematic_ops_units is
 		query_element (module_cursor, query_module'access);
 
 		log_indentation_down;
-		
+
 		return result;
 	end get_group_unit_positions;
 
 
 
 
-	
-	
+
+
 
 
 
@@ -3606,7 +3606,7 @@ package body et_schematic_ops_units is
 						-- Log device and unit name:
 						log (text => to_string (device_name, unit_name),
 							level => log_threshold + 1);
-						
+
 						-- Backup the unit and device name:
 						u_name := unit_name;
 						d_name := device_name;
@@ -4330,8 +4330,8 @@ package body et_schematic_ops_units is
 					unit		: in type_unit)
 				is
 					pragma unreferenced (unit);
-					
-					
+
+
 					procedure copy_in_same_device is begin
 						log (text => "copy unit into same device",
 							level => log_threshold + 3);
@@ -4345,10 +4345,10 @@ package body et_schematic_ops_units is
 							target_device	=> device_created,
 							device_created	=> device_created,
 							log_threshold	=> log_threshold + 4);
-					
+
 					end copy_in_same_device;
-					
-					
+
+
 					procedure copy_in_new_device is begin
 						log (text => "copy unit in new device",
 							level => log_threshold + 3);
@@ -4367,8 +4367,8 @@ package body et_schematic_ops_units is
 						log_indentation_down;
 					end copy_in_new_device;
 
-					
-					
+
+
 				begin
 					log (text => "unit " & to_string (unit_name),
 						level => log_threshold + 2);

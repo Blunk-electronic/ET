@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -45,7 +45,7 @@ procedure rounding is
 
 use et_pcb_coordinates.pac_geometry_brd;
 
-	
+
 	d : type_distance;
 	f : type_float_internal;
 	d2 : type_distance;
@@ -64,7 +64,7 @@ use et_pcb_coordinates.pac_geometry_brd;
 
 
 	function to_distance_2 (f : in type_float_internal)
-		return type_distance 
+		return type_distance
 	is
 		use pac_distance_io;
 	begin
@@ -91,28 +91,28 @@ use et_pcb_coordinates.pac_geometry_brd;
 	end to_distance_2;
 
 
-	
+
 begin
 	--log_on := false;
 	d := S;
-	
+
 	while d < E loop
 		f := type_float_internal (d);
 
 		f := f * M;
 		--d2 := to_distance (f);
 		d2 := to_distance_2 (f) / type_distance (M);
-		
+
 		if log_on then
 			log_result;
 		end if;
-		
+
 		if d /= d2 then
 			put_line ("ERROR");
 			log_result;
 			exit;
 		end if;
-			
+
 		d := d + I;
 		--d := d * M;
 	end loop;
@@ -122,7 +122,7 @@ end rounding;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
@@ -51,7 +51,7 @@ procedure offset2 is
 
 	use pac_geometry_2;
 	use pac_geometry_brd;
-	
+
 	use pac_polygons;
 	use pac_polygon_offsetting;
 
@@ -63,7 +63,7 @@ procedure offset2 is
 	mode : type_approximation_mode := SHRINK;
 
 	debug : boolean := true;
-	
+
 begin
 	--P := to_polygon ("0.0 0.0  1.0 0.0  1.0 1.0  0.0 1.0");
 	P := to_polygon ("0.0 0.0  0.5 0.0  0.2 -1.0  0.6 -1.1  1.5 -0.3  1.0 0.0  1.0 1.0  0.0 1.0");
@@ -77,8 +77,8 @@ end offset2;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
-	
+

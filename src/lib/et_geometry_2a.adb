@@ -1360,7 +1360,7 @@ package body et_geometry_2a is
 		count : constant count_type := points.length;
 
 
-		procedure two_points is 
+		procedure two_points is
 			-- Both points form a line with A and B end:
 			A : constant type_vector_model := first_element (points);
 			B : constant type_vector_model := last_element (points);
@@ -1381,16 +1381,16 @@ package body et_geometry_2a is
 		end two_points;
 
 
-		
+
 		procedure more_than_two_points is begin
 			null;
 			-- CS
 		end more_than_two_points;
 
-		
+
 	begin
 		case count is
-			when 0 => 
+			when 0 =>
 				raise constraint_error; -- CS message ?
 
 			when 1 =>
@@ -1414,7 +1414,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 -- AREA:
 

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -59,15 +59,15 @@ procedure crop2 is
 	-- B: to be cropped
 
 
-	
+
 	contour_A_string : constant string := "circle 0 0 5";
 	contour_A : type_contour;
 	polygon_A : type_polygon;
-	
-	--contour_A_string : constant string := "line 0 -5  line 0 -10 line 10 -10 line 10 0"
-		--& " arc 0 0   5 0  cw";				  
 
-	contour_B_string : constant string := "line -10 -4  line 10 -4  line 10 4  line -10 4";				  
+	--contour_A_string : constant string := "line 0 -5  line 0 -10 line 10 -10 line 10 0"
+		--& " arc 0 0   5 0  cw";
+
+	contour_B_string : constant string := "line -10 -4  line 10 -4  line 10 4  line -10 4";
 	contour_B : type_contour;
 	polygon_B : type_polygon;
 
@@ -83,12 +83,12 @@ begin
 	polygon_A := to_polygon (contour_A, fab_tol);
 	put_line ("polygon_A " & to_string (polygon_A));
 	new_line;
-	
+
 	contour_B := type_contour (to_contour (contour_B_string));
 	polygon_B := to_polygon (contour_B, fab_tol);
 	put_line ("polygon_B " & to_string (polygon_B));
 	new_line;
-	
+
 	crop_result := crop (polygon_A, polygon_B, true); -- debug messages on
 
 	put_line ("crop result 1 :" & to_string (crop_result));
@@ -100,7 +100,7 @@ end crop2;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
