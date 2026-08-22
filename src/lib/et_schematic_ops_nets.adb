@@ -2954,7 +2954,7 @@ package body et_schematic_ops_nets is
 				module_cursor	=> module_cursor,
 				object_segment	=> object_segment,
 				sheet			=> sheet,
-				destination		=> offset,
+				offset			=> offset,
 				log_threshold	=> log_threshold + 1);
 
 			-- Restart the search for a selected segment:
@@ -6640,7 +6640,7 @@ package body et_schematic_ops_nets is
 			
 		begin
 			copy_net_segment (
-				segment, offset, segment_new);
+				segment, segment_new, offset);
 		end move_segment;
 		
 		
@@ -6670,7 +6670,7 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		object_segment	: in type_object_segment;
 		sheet			: in type_sheet_relative;
-		destination		: in type_vector_model;
+		offset			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 		use pac_net_segments;
@@ -6688,7 +6688,7 @@ package body et_schematic_ops_nets is
 			copy_net_segment (
 				segment_in	=> segment,
 				segment_out => segment_new,
-				offset		=> destination);
+				offset		=> offset);
 
 
 				sheet_new := get_sheet (object_segment);
@@ -6707,7 +6707,7 @@ package body et_schematic_ops_nets is
 			& " copy net segment"
 			-- CS net name, A and B ?
 			& " by sheet(s) " & relative_to_string (sheet)
-			& " offset " & to_string (destination),
+			& " offset " & to_string (offset),
 			level => log_threshold);
 
 		log_indentation_up;
