@@ -262,7 +262,7 @@ package body et_cp_board_restrict is
 		use et_board_ops_via_restrict;
 
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		-- Extract from the given command the zone arguments (everything after "zone"):

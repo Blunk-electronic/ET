@@ -67,7 +67,7 @@ package body et_cp_board_keepout is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		-- Extract from the given command the zone
@@ -126,7 +126,7 @@ package body et_cp_board_keepout is
 	is
 		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		-- Extract from the given command the zone
@@ -136,7 +136,7 @@ package body et_cp_board_keepout is
 				remove_field (get_fields (cmd), 1, 6);
 
 			-- Build the basic contour from zone:
-			c : constant type_contour := type_contour (to_contour (arguments));
+			unused_c : constant type_contour := type_contour (to_contour (arguments));
 
 			unused_face : type_face;
 		begin
@@ -186,7 +186,7 @@ package body et_cp_board_keepout is
 	is
 		pragma unreferenced (module);
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		log (text => "delete keepout zone", level => log_threshold);
 		log_indentation_up;

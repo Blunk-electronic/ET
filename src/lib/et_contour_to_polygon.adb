@@ -126,7 +126,7 @@ package body et_contour_to_polygon is
 		return pac_edges.list
 	is
 		-- This is the list of edges to be returned:
-		result : pac_edges.list;
+		unused_result : pac_edges.list;
 
 		use pac_geometry_brd;
 		arc : type_arc_angles;

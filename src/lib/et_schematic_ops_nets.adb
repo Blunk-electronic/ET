@@ -3717,7 +3717,7 @@ package body et_schematic_ops_nets is
 				-- catch zone, then the parent strand is set as proposed,
 				-- and the probing of segments is canceled.
 				-- This flag is cleared when a segment has been found:
-				proceed : boolean := true;
+				unused_proceed : boolean := true;
 
 
 				procedure query_strand (strand : in out type_strand) is
@@ -7246,11 +7246,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is
@@ -7730,11 +7730,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is
@@ -8564,11 +8564,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is begin

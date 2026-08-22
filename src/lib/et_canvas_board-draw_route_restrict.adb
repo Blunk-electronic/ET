@@ -162,10 +162,10 @@ procedure draw_route_restrict is
 
 
 	-- The top conductor layer 1 is always there:
-	top_layer		: constant type_signal_layer := type_signal_layer'first;
+	unused_top_layer		: constant type_signal_layer := type_signal_layer'first;
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
-	bottom_layer	: constant type_signal_layer :=
+	unused_bottom_layer	: constant type_signal_layer :=
 		get_deepest_conductor_layer (active_module);
 
 

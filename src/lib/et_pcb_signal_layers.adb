@@ -170,7 +170,7 @@ package body et_pcb_signal_layers is
 
 
 		procedure insert_range is
-			inserted : boolean := false;
+			unused_inserted : boolean := false;
 		begin
 			-- The range must be going upwards:
 			if range_start > range_end then
@@ -289,7 +289,7 @@ package body et_pcb_signal_layers is
 
 		field_2			: constant string := f (line, 2);
 		field_2_first	: constant positive := field_2'first;
-		field_2_last	: constant positive := field_2'last;
+		unused_field_2_last	: constant positive := field_2'last;
 
 
 	begin -- to_layers

@@ -265,7 +265,7 @@ package body et_kicad_packages is
 
 		-- supportive frequently used values
 		x1p : constant type_position_axis := size_x / 2.0;
-		x1n : constant type_position_axis := -(x1p);
+		unused_x1n : constant type_position_axis := -(x1p);
 
 		y1p : constant type_position_axis := size_y / 2.0;
 		y1n : constant type_position_axis := -(y1p);

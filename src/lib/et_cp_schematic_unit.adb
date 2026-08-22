@@ -137,7 +137,7 @@ package body et_cp_schematic_unit is
 				use et_canvas_schematic;
 				use et_canvas_schematic.pac_canvas;
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
-				error : boolean := false;
+				unused_error : boolean := false;
 			begin
 				log (text => "show_first_unit", level => log_threshold + 3);
 				log_indentation_up;
@@ -202,7 +202,7 @@ package body et_cp_schematic_unit is
 				use et_canvas_schematic;
 				use et_canvas_schematic.pac_canvas;
 				unit_query : constant type_unit_query := locate_unit (unit);
-				error : boolean := false;
+				unused_error : boolean := false;
 			begin
 				log (text => "show_by_unit_name", level => log_threshold + 3);
 				log_indentation_up;
@@ -273,7 +273,7 @@ package body et_cp_schematic_unit is
 				use et_canvas_schematic;
 				use et_canvas_schematic.pac_canvas;
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
-				error : boolean := false;
+				unused_error : boolean := false;
 			begin
 				log (text => "show_first_unit_on_active_sheet", level => log_threshold + 3);
 				log_indentation_up;

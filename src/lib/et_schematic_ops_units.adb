@@ -997,7 +997,7 @@ package body et_schematic_ops_units is
 		terminal_name : type_terminal_name;
 
 		use et_port_direction;
-		port_direction : type_port_direction := PASSIVE;
+		unused_port_direction : type_port_direction := PASSIVE;
 		port_properties_cursor : pac_symbol_ports.cursor;
 
 

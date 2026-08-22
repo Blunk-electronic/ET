@@ -142,7 +142,7 @@ package body et_thermal_relief is
 		return type_relief
 	is
 		pragma unreferenced (zone_clearance);
-		debug : boolean := false;
+		unused_debug : boolean := false;
 
 
 		-- The center of the given terminal;
@@ -398,7 +398,7 @@ package body et_thermal_relief is
 	is
 		result : pac_reliefes.list;
 
-		debug : boolean := false;
+		unused_debug : boolean := false;
 		-- debug : boolean := true;
 
 		use pac_terminals_with_relief;

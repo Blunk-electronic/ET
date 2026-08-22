@@ -1821,7 +1821,7 @@ package body et_canvas_schematic_units is
 		-- This cursor points to the device model in the library:
 		device_cursor_lib : pac_device_models.cursor;
 
-		unit_name : type_unit_name;
+		unused_unit_name : type_unit_name;
 
 		-- If package variants are available, then
 		-- they are stored here temporaily:

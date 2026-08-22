@@ -905,7 +905,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector
 	is
-		f : type_float := type_float (get_x (point));
+		unused_f : type_float := type_float (get_x (point));
 	begin
 		return set (
 			x => type_float (get_x (point)),
@@ -2579,7 +2579,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector_model
 	is
-		result : type_vector_model;
+		unused_result : type_vector_model;
 		v : type_vector;
 	begin
 		v := get_nearest (line, to_vector (point));
@@ -4602,7 +4602,8 @@ package body et_geometry_2a is
 		-- Make a copy of the given circle:
 		c : type_circle'class := circle;
 
-		b, result : type_area;
+		b : type_area;
+		unused_result : type_area;
 	begin
 		-- Rotate the center of the circle:
 		rotate_circle_by (c, rotation);

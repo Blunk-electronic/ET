@@ -404,7 +404,7 @@ package body et_nets is
 		net		: in out type_net;
 		strands	: in pac_strands.list)
 	is
-		c : pac_strands.cursor := strands.first;
+		unused_c : pac_strands.cursor := strands.first;
 
 		procedure query_strand (s : in pac_strands.cursor) is
 			strand_to_delete : constant type_strand := element (s);
@@ -885,7 +885,7 @@ package body et_nets is
 		object	: in type_object_segment)
 		return type_sheet
 	is
-		segment : type_net_segment;
+		unused_segment : type_net_segment;
 	begin
 		return get_sheet (object.strand_cursor);
 	end get_sheet;

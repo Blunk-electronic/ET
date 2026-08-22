@@ -165,7 +165,7 @@ package body et_geometry_1 is
 
 		result : pac_float_numbers.list;
 
-		c : pac_float_numbers.cursor := numbers.first;
+		unused_c : pac_float_numbers.cursor := numbers.first;
 
 
 		procedure do_reduce is
@@ -1869,7 +1869,7 @@ package body et_geometry_1 is
 		line	: in type_line_fine)
 		return type_line_fine
 	is
-		result : type_line_fine := line;
+		unused_result : type_line_fine := line;
 	begin
 		return (line.B, line.A, line.status);
 	end reverse_line;
@@ -3914,7 +3914,7 @@ package body et_geometry_1 is
 			procedure compute_intersection is
 				SE : constant type_vector := get_displacement (line.A, line.B);
 				SV : constant type_vector := get_displacement (line.A, vector);
-				SI : type_vector;
+				unused_SI : type_vector;
 				dp : type_float;
 				sum : type_float_positive;
 			begin

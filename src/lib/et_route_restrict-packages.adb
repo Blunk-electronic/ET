@@ -83,7 +83,8 @@ package body et_route_restrict.packages is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
-		scratch, result : pac_polygon_list.list;
+		unused_scratch : pac_polygon_list.list;
+		result : pac_polygon_list.list;
 	begin
 		-- circles:
 		-- scratch := to_polygons_outside (restrict.circles, tolerance);

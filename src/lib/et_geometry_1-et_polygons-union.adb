@@ -707,7 +707,7 @@ package body et_geometry_1.et_polygons.union is
 
 		-- Here we collect the resulting polygons.
 		-- This list will overwrite the given list in the end of this procedure:
-		result : pac_polygon_list.list;
+		unused_result : pac_polygon_list.list;
 
 		iterations : count_type := 0;
 		merge_result : type_merge_result;

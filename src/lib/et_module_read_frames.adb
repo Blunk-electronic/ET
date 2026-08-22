@@ -147,7 +147,8 @@ package body et_module_read_frames is
 
 	procedure add_sheet_description is
 		use pac_schematic_descriptions;
-		position : pac_schematic_descriptions.cursor;
+
+		unused_position : pac_schematic_descriptions.cursor;
 	begin
 		insert (
 			container	=> sheet_descriptions,

@@ -619,7 +619,7 @@ package body et_board_ops_keepout is
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is
-				c : pac_segments.cursor;
+				unused_c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS

@@ -1371,7 +1371,7 @@ package body et_board_ops_fill_zones is
 	is
 		use pac_nets;
 
-		debug : boolean := false;
+		unused_debug : boolean := false;
 
 		-- The given zone will be converted to a polygon:
 		zone_polygon : type_polygon;
@@ -1620,7 +1620,7 @@ package body et_board_ops_fill_zones is
 
 		-- Temporarily storage for properties:
 		relief_properties	: type_relief_properties;
-		terminal_reliefes	: pac_reliefes.list;
+		unused_terminal_reliefes	: pac_reliefes.list;
 		terminal_connection	: type_pad_connection := pad_connection_default;
 		unused_terminal_technology	: type_pad_technology := pad_technology_default;
 
@@ -2485,7 +2485,7 @@ package body et_board_ops_fill_zones is
 				pragma unreferenced (module_name);
 				use et_net_class;
 				net_cursor : pac_nets.cursor;
-				net_class : type_net_class;
+				unused_net_class : type_net_class;
 
 
 				procedure route_solid (

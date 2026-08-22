@@ -668,7 +668,7 @@ procedure draw_conductors is
 
 		procedure draw is
 			use et_mirroring;
-			t : type_conductor_text_board := text;
+			unused_t : type_conductor_text_board := text;
 		begin
 			-- mirror if bottom layer
 			if get_layer (text) = bottom_layer then

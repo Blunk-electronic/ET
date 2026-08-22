@@ -103,7 +103,7 @@ package body et_canvas.contours is
 			-- In case the segment is being moved
 			-- by the operator, then we store the tool
 			-- position here:
-			pointer : type_vector_model;
+			unused_pointer : type_vector_model;
 		begin
 			case segment.shape is
 				when LINE =>

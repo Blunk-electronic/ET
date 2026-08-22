@@ -54,7 +54,7 @@ is
 
 
 	-- The exact place of the pointer:
-	click_point : constant type_vector_model := event.point;
+	unused_click_point : constant type_vector_model := event.point;
 
 	-- The grid point nearest to the point:
 	snap_point : constant type_vector_model := snap_to_grid (event.point);

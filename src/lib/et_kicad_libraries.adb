@@ -171,7 +171,7 @@ package body et_kicad_libraries is
 				id_width	=> 1);
 
 		c : character;
-		p : type_device_prefix;
+		unused_p : type_device_prefix;
 
 		procedure invalid_reference is begin
 			log (SEVERITY_ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
@@ -1036,7 +1036,7 @@ package body et_kicad_libraries is
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
 	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
 
-		lib : type_package_model_name; -- to be returned
+		unused_lib : type_package_model_name; -- to be returned
 
 		use et_import;
 		use type_project_lib_dirs;

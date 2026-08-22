@@ -2050,7 +2050,7 @@ package body et_geometry_2a.contours is
 			a_norm : constant type_arc := type_arc (normalize_arc (a));
 
 			-- the radius of the arc:
-			radius : constant type_float_positive := get_radius_start (a_norm);
+			unused_radius : constant type_float_positive := get_radius_start (a_norm);
 
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate arc of the contour.

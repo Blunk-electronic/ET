@@ -129,7 +129,7 @@ is
 
 
 	procedure query_zone (c : in pac_silk_zones.cursor) is
-		contour : type_silk_zone renames element (c);
+		unused_contour : type_silk_zone renames element (c);
 		use pac_draw_contours;
 	begin
 		draw_contour (
