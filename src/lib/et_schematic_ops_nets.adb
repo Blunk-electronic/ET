@@ -3019,7 +3019,7 @@ package body et_schematic_ops_nets is
 							log_indentation_up;
 						   
 							copy_net_segment_to_clipboard (
-								net_cursor, segment_cursor, log_threshold + 1);
+								net_cursor, segment, log_threshold + 1);
 
 							log_indentation_down;
 						end if;
