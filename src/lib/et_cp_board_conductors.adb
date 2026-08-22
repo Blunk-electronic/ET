@@ -91,6 +91,7 @@ package body et_cp_board_conductors is
 	use pac_grid;
 	use pac_generic_modules;
 
+	subtype type_net_name is et_net_names.type_net_name;
 
 
 	procedure set_fill_zone_properties (

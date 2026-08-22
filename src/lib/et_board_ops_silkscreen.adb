@@ -1551,8 +1551,6 @@ package body et_board_ops_silkscreen is
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
 
 			begin
@@ -1655,8 +1653,6 @@ package body et_board_ops_silkscreen is
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
 
 			begin
@@ -1740,7 +1736,6 @@ package body et_board_ops_silkscreen is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_contours;
 			use pac_segments;
 			use pac_silk_zones;
 
@@ -1876,7 +1871,7 @@ package body et_board_ops_silkscreen is
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is
-				c : pac_segments.cursor;
+				unused_c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS
