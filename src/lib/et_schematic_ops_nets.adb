@@ -6638,10 +6638,9 @@ package body et_schematic_ops_nets is
 		procedure move_segment is
 			segment_new : type_net_segment;
 			
-			-- offset_place : type_vector_model := get_place (offset);
-			-- offset_sheet : type
 		begin
-			null;
+			copy_net_segment (
+				segment, offset, segment_new);
 		end move_segment;
 		
 		
