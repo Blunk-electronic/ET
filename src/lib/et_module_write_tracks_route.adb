@@ -49,7 +49,7 @@ with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_board_geometry;				use et_board_geometry;
+with et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_conductor_segment.boards;
@@ -65,8 +65,6 @@ with et_file_write;					use et_file_write;
 
 package body et_module_write_tracks_route is
 
-	use pac_geometry_2;
-	use pac_file_rw;
 
 
 
@@ -75,10 +73,11 @@ package body et_module_write_tracks_route is
 		net			: in type_net)
 	is
 		pragma unreferenced (net_name);
-		use et_board_geometry;
-		use pac_contours;
 
 		use et_board_geometry.pac_geometry_2;
+		use et_board_geometry.pac_file_rw;
+		use et_board_geometry;
+		use pac_contours;
 
 		use et_conductor_segment.boards;
 

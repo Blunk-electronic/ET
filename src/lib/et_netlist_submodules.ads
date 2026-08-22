@@ -44,12 +44,14 @@
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_sets;
 
-with et_net_names;				use et_net_names;
-with et_module_instance;		use et_module_instance;
+with et_net_names;
+with et_module_instance;
 
 
 package et_netlist_submodules is
 
+	subtype type_net_name				is et_net_names.type_net_name;
+	subtype type_module_instance_name	is et_module_instance.type_module_instance_name;
 
 	-- In a netlist, a submodule that is connected with
 	-- a certain net is modeled by this type:

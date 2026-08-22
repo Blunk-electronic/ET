@@ -42,6 +42,7 @@
 -- with ada.text_io;			use ada.text_io;
 with ada.exceptions;
 
+with et_generic_modules;
 with et_module;						use et_module;
 with et_submodules;					use et_submodules;
 with et_schematic_ops_submodules;	use et_schematic_ops_submodules;
@@ -55,12 +56,13 @@ package body et_board_ops_submodule is
 
 
 
-
 	function get_position (
 		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name) -- OSC1
 		return type_position
 	is
+		use et_generic_modules;
+
 		position : type_position := origin_zero_rotation; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -106,6 +108,8 @@ package body et_board_ops_submodule is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_generic_modules;
+		use et_generic_modules.pac_generic_modules;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;

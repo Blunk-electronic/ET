@@ -40,8 +40,8 @@
 with et_generic_modules;				use et_generic_modules;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules;			use et_net_ports_submodules;
-with et_netlist_devices;				use et_netlist_devices;
-with et_netlist_submodules;				use et_netlist_submodules;
+with et_netlist_devices;
+with et_netlist_submodules;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_logging;						use et_logging;
 
@@ -51,7 +51,8 @@ package et_schematic_ops_netlists_2 is
 
 	use pac_generic_modules;
 
-
+	subtype type_device_ports_extended_set		is et_netlist_devices.pac_device_ports_extended.set;
+	subtype type_submodule_ports_extended_set	is et_netlist_submodules.pac_submodule_ports_extended.set;
 
 	-- Adds further properties to the given device ports.
 	-- Ignores ports of virtual devices (like GND symbols).
@@ -60,14 +61,14 @@ package et_schematic_ops_netlists_2 is
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports			: in pac_device_ports.set)
-		return pac_device_ports_extended.set;
+		return type_device_ports_extended_set;
 
 
 	-- Adds further properties to the given submodule ports:
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set;
+		return type_submodule_ports_extended_set;
 
 
 

@@ -105,6 +105,7 @@ package body et_netlist_cat_1 is
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level)
 	is
+		use et_net_names;
 		use et_netlist_name;
 
 		-- The netlist file:

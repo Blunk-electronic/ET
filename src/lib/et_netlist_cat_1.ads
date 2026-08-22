@@ -46,7 +46,7 @@ with ada.containers.ordered_maps;
 with et_generic_modules;		use et_generic_modules;
 with et_assembly_variant_name;
 
-with et_net_names;				use et_net_names;
+with et_net_names;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
 with et_netlist_devices;		use et_netlist_devices;
@@ -59,6 +59,8 @@ with et_logging;				use et_logging;
 package et_netlist_cat_1 is
 
 	use pac_generic_modules;
+
+	subtype type_net_name is et_net_names.type_net_name;
 
 
 	-- These constants are used when the netlist
@@ -88,7 +90,8 @@ package et_netlist_cat_1 is
 	-- The key to the netlist is the net name:
 	package pac_netlist_cat_1 is new ordered_maps (
 		key_type		=> type_net_name,
-		element_type	=> type_net_ports_cat_1);
+		element_type	=> type_net_ports_cat_1,
+		"<"				=> et_net_names."<");
 
 
 

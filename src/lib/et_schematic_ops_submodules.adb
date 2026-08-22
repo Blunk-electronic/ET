@@ -85,7 +85,8 @@ package body et_schematic_ops_submodules is
 
 	use et_nets;
 
-	subtype type_module_instance_name is et_module_instance.type_module_instance_name;
+	subtype type_module_instance_name	is et_module_instance.type_module_instance_name;
+	subtype type_assembly_variant_name	is et_assembly_variant_name.type_assembly_variant_name;
 
 	procedure dragging_not_possible (
 		port		: in string;

@@ -43,7 +43,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
-with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_assembly_variant_name;
 with et_logging;				use et_logging;
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
@@ -53,6 +53,8 @@ with et_package_model_name;		use et_package_model_name;
 
 
 package et_material is
+
+	subtype type_assembly_variant_name is et_assembly_variant_name.type_assembly_variant_name;
 
 	-- Whenever we deal with BOM files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now

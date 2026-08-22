@@ -45,7 +45,7 @@ with et_logging;				use et_logging;
 
 with et_generic_modules;		use et_generic_modules;
 
-with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variants;		-- use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 
 with et_device_purpose;			use et_device_purpose;
@@ -77,7 +77,7 @@ package et_schematic_ops_assembly_variant is
 	function get_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in type_assembly_variant_name)
-		return pac_assembly_variants.cursor;
+		return et_assembly_variants.pac_assembly_variants.cursor;
 
 
 
@@ -148,7 +148,7 @@ package et_schematic_ops_assembly_variant is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in type_assembly_variant_name; -- low_cost
 		device	: in type_device_name)
-		return pac_device_variants.cursor;
+		return et_assembly_variants.pac_device_variants.cursor;
 
 
 
