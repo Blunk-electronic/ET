@@ -409,7 +409,8 @@ package et_schematic_ops_nets is
 	-- by the given offset:
 	procedure paste_net_segments_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 		
@@ -896,6 +897,19 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Inserts a net segment (along with its net labels and connectors)
+	-- in the given module. Creates the given net if not already 
+	-- existing. The net segment will be placed by the given
+	-- offset on the given sheet:
+	procedure insert_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
+		segment			: in type_net_segment;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
 	procedure copy_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_segment	: in type_object_segment;

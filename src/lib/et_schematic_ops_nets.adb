@@ -3072,7 +3072,8 @@ package body et_schematic_ops_nets is
 	
 	procedure paste_net_segments_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 	
@@ -3105,9 +3106,19 @@ package body et_schematic_ops_nets is
 						log (text => "net " & to_string (net_name),
 							level => log_threshold + 1);
 						-- CS log segment ?
+
+						log_indentation_up;
 						
-						null;
-						-- CS paste net segment
+						-- Paste the net segment:
+						insert_net_segment (
+							module_cursor	=> module_cursor,
+							net_name		=> net_name,
+							segment			=> segment,
+							sheet			=> sheet,
+							offset			=> offset,
+							log_threshold	=> log_threshold + 2);
+						
+						log_indentation_down;
 					end query_segment;
 
 					
@@ -3140,7 +3151,8 @@ package body et_schematic_ops_nets is
 	
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " paste net segments from clipboard. Group offset: " & to_string (offset),
+			 & " paste net segments from clipboard. Group offset: " 
+			 & to_string (offset) & " on sheet " & to_string (sheet),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -6612,6 +6624,45 @@ package body et_schematic_ops_nets is
 
 
 
+	
+	
+	procedure insert_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
+		segment			: in type_net_segment;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+	
+		procedure move_segment is
+			segment_new : type_net_segment;
+			
+			-- offset_place : type_vector_model := get_place (offset);
+			-- offset_sheet : type
+		begin
+			null;
+		end move_segment;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " insert net segment " & to_string (segment)
+			& " net " & to_string (net_name)
+			& " sheet " & to_string (sheet),
+			level => log_threshold);
+			
+		log_indentation_up;
+		
+		move_segment;
+		
+		log_indentation_down;
+	end insert_net_segment;
+	
+	
+
+	
+	
 
 
 
