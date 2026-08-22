@@ -114,6 +114,8 @@ package body et_module_clipboard.net_segments is
 						use pac_net_segments;
 					begin
 						-- Append the given segment:
+						
+						-- CS: reset status flags of segment ?
 						strand.segments.append (segment);
 					end query_strand;
 					

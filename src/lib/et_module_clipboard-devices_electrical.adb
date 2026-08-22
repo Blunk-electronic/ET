@@ -90,6 +90,8 @@ package body et_module_clipboard.devices_electrical is
 				log (text => "insert unit " & to_string (unit_name),
 					level => log_threshold + 2);
 
+				-- CS: reset status flags of unit ?
+				
 				device.units.insert (
 					key			=> unit_name,
 					new_item	=> unit);
