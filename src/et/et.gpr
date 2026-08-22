@@ -2,15 +2,41 @@ with "gtkada.gpr";
 
 project et is
 
-	for exec_dir use external ("HOME") & "/bin";
-	--for exec_dir use ".";
-	for object_dir use "obj";
- 	for source_dirs use ("." , "../lib");
+	for Create_Missing_Dirs use "true";
+
+	for exec_dir use "../../bin/";
+	for object_dir use "obj/";
+	for source_dirs use (
+		"./" ,
+		"../lib/");
  	for main use ("et");
 
+	Warning_Checks := ("-gnatwaRU");
+	-- R : turn off warnings for redundant construct
+	-- U : turn off warnings for unused entities
+
+	Style_Checks := ("-gnatyyd1M0-achinprs");
+	-- a : check attribute casing
+	-- b : check no blanks at end of line
+	-- c : check comment format (two spaces)
+	-- e : check end/exit label present
+	-- h : check no horizontal tabs in source
+	-- i : check if-then layout
+	-- n : check casing of package Standard identifiers
+	-- p : check pragma casing
+	-- r : check casing for identifier references
+	-- s : check separate subprogram specs present
+	-- t : check token separation rules
+
+	Switches :=
+		Warning_Checks
+		& Style_Checks
+		& "-gnatVa"
+--		& "-FPIE"		-- To link GtkAda dynamically
+		& "-g";
+
 	package Compiler is
-		for Default_Switches ("Ada") use ("-O3");
-		--for Default_Switches ("Ada") use ("-gnatn");
+		for Default_Switches ("Ada") use Switches;
 	end Compiler;
  	
 end et;
