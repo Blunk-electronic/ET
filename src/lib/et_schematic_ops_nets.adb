@@ -251,7 +251,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_port (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
 					use et_submodules.pac_submodule_ports;
-					use et_net_names;
 				begin
 					log (text => "port " & pac_net_name.to_string (pac_net_name.bounded_string (key (port_cursor))) &
 							" at" & to_string (element (port_cursor).position),
@@ -299,7 +298,6 @@ package body et_schematic_ops_nets is
 				netchanger_cursor : in pac_netchangers.cursor)
 			is
 				-- CS use renames
-				use et_netchangers;
 				use et_netchangers.schematic;
 				netchanger_position : type_netchanger_position_schematic;
 
@@ -2996,6 +2994,8 @@ package body et_schematic_ops_nets is
 				net_name	: in type_net_name;
 				net			: in type_net)
 			is
+				pragma unreferenced (net_name);
+
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 
@@ -3087,8 +3087,7 @@ package body et_schematic_ops_nets is
 				net_name	: in type_net_name;
 				net			: in type_net)
 			is
-				use pac_strands;
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				strand_cursor : constant pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (
@@ -3101,6 +3100,7 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment : in type_net_segment)
 					is
+						pragma unreferenced (segment);
 					begin
 						log (text => "net " & to_string (net_name),
 							level => log_threshold + 1);
@@ -5778,7 +5778,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_port (p : in pac_device_ports.cursor) is
 					use pac_device_ports;
-					use et_port_names;
 
 					use et_unit_name;
 
@@ -7604,7 +7603,6 @@ package body et_schematic_ops_nets is
 
 
 					procedure query_labels (segment : in out type_net_segment) is
-						use pac_net_labels;
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 					begin
 						while label_cursor /= pac_net_labels.no_element loop
@@ -8698,6 +8696,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return string
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		case object.cat is
@@ -8739,6 +8739,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_nets.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 
 		c : constant pac_nets.cursor := pac_nets.no_element;
@@ -8766,6 +8768,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_strands.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.strand_cursor;
@@ -8778,6 +8782,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_net_segments.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.segment_cursor;
@@ -9633,6 +9639,7 @@ package body et_schematic_ops_nets is
 		granted			: in out boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_objects;
 
 		-- This function tests whether the given segment
 		-- can be moved at the given end (A/B).

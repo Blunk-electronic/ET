@@ -79,6 +79,7 @@ package body et_cp_schematic_nets is
 	use pac_generic_modules;
 	use pac_geometry_2;
 
+	subtype type_net_name is et_net_names.type_net_name;
 
 
 	procedure export_netlist (

@@ -51,6 +51,7 @@ with et_commit;
 
 package body et_board_ops_net_class is
 
+	subtype type_net_name is et_net_names.type_net_name;
 
 
 	function get_net_class (

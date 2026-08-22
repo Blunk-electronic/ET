@@ -47,7 +47,7 @@ use et_schematic_geometry.pac_geometry_2;
 with et_generic_modules;				use et_generic_modules;
 with et_nets;							use et_nets;
 with et_net_scope;						use et_net_scope;
-with et_net_names;						use et_net_names;
+with et_net_names;
 with et_net_strands;					use et_net_strands;
 with et_net_connectors;					use et_net_connectors;
 with et_net_segment;					use et_net_segment;
@@ -71,6 +71,8 @@ package et_schematic_ops_nets is
 
 	use pac_generic_modules;
 
+	subtype type_net_name		is et_net_names.type_net_name;
+	subtype type_net_names_list	is et_net_names.pac_net_names.list;
 
 
 	-- This function returns the total number
@@ -814,7 +816,7 @@ package et_schematic_ops_nets is
 	function get_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return pac_net_names.list;
+		return type_net_names_list;
 
 
 
@@ -833,7 +835,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
-		return pac_net_names.list; -- CS return a list of cursors ?
+		return type_net_names_list; -- CS return a list of cursors ?
 
 
 	-- Before inserting net segments into a net, it must
@@ -1153,7 +1155,6 @@ package et_schematic_ops_nets is
 
 
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
-	use pac_objects;
 
 
 	function to_string (

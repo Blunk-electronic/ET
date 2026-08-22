@@ -48,10 +48,10 @@ with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_generic_modules;				use et_generic_modules;
-with et_net_names;						use et_net_names;
-with et_nets;							use et_nets;
+with et_net_names;
+with et_nets;
 
-with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical;
 with et_thermal_relief;					use et_thermal_relief;
 with et_fill_zones;						use et_fill_zones;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
@@ -69,6 +69,10 @@ package et_board_ops_fill_zones is
 	use pac_geometry_brd;
 	use pac_polygons;
 
+	subtype type_nets_cursor				is et_nets.pac_nets.cursor;
+	subtype type_net_names_list				is et_net_names.pac_net_names.list;
+	subtype type_net_name					is et_net_names.type_net_name;
+	subtype type_devices_electrical_cursor	is et_devices_electrical.pac_devices_electrical.cursor;
 
 
 	-- This controlled type is used by the functon below:
@@ -89,7 +93,7 @@ package et_board_ops_fill_zones is
 	-- See specification of type_terminal_polygon above.
 	function get_terminal_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor;
+		device_cursor	: in type_devices_electrical_cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
 		tolerance		: in type_distance_positive;
@@ -120,7 +124,7 @@ package et_board_ops_fill_zones is
 		offset					: in type_float_positive;
 
 		-- This is the net for which terminals are searched for:
-		net_cursor				: in pac_nets.cursor;
+		net_cursor				: in type_nets_cursor;
 
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygon_list.list;
@@ -173,7 +177,7 @@ package et_board_ops_fill_zones is
 
 		-- The net that the zone is connected with.
 		-- If no_element, then the zone is assumed to be floating:
-		parent_net				: in pac_nets.cursor;
+		parent_net				: in type_nets_cursor;
 
 		-- This is the outcome of the procedure.
 		-- The polygons found by the procedure are appended here:
@@ -332,7 +336,7 @@ package et_board_ops_fill_zones is
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
 		layer				: in type_signal_layer;
-		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		parent_net			: in type_nets_cursor := et_nets.pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
 		clearance_to_edge	: in type_distance_positive;
 
@@ -361,7 +365,7 @@ package et_board_ops_fill_zones is
 		layer				: in type_signal_layer;
 		clearance			: in type_track_clearance;
 		clearance_to_edge	: in type_distance_positive;
-		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		parent_net			: in type_nets_cursor := et_nets.pac_nets.no_element;
 		terminal_connection	: in type_pad_connection := pad_connection_default;
 		relief_properties	: in type_relief_properties := relief_properties_default;
 		reliefes			: out pac_reliefes.list;
@@ -377,7 +381,7 @@ package et_board_ops_fill_zones is
 	procedure fill_connected_zones (
 		module_cursor		: in pac_generic_modules.cursor;
 		board_outer_contour : in type_polygon;
-		nets				: in pac_net_names.list := no_net_names;
+		nets				: in type_net_names_list := et_net_names.no_net_names;
 		design_rules		: in type_design_rules_board;
 		log_threshold		: in type_log_level);
 
@@ -399,7 +403,7 @@ package et_board_ops_fill_zones is
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+		nets			: in type_net_names_list := et_net_names.no_net_names); -- GND, GNDA, P3V3, ...
 
 
 
@@ -425,7 +429,7 @@ package et_board_ops_fill_zones is
 	procedure clear_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+		nets			: in type_net_names_list := et_net_names.no_net_names); -- GND, GNDA, P3V3, ...
 
 
 end et_board_ops_fill_zones;
