@@ -43,7 +43,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
-with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_assembly_variant_name;	-- use et_assembly_variant_name;
 with et_logging;				use et_logging;
 with et_board_coordinates;		use et_board_coordinates;
 with et_device_name;			use et_device_name;
@@ -87,7 +87,7 @@ package et_pick_and_place is
 	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in pac_devices.map;
 		module_name		: in type_module_name; -- motor_driver
-		variant_name	: in type_assembly_variant_name; -- low_cost
+		variant_name	: in et_assembly_variant_name.type_assembly_variant_name; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);
 

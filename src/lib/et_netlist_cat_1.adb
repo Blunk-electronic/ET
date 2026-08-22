@@ -101,7 +101,7 @@ package body et_netlist_cat_1 is
 
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor;
-		variant			: in type_assembly_variant_name;
+		variant			: in et_assembly_variant_name.type_assembly_variant_name;
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level)
 	is
@@ -347,7 +347,7 @@ package body et_netlist_cat_1 is
 		end write_nets;
 
 
-
+		use et_assembly_variant_name;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " assembly variant " & to_variant (variant)

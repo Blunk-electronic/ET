@@ -44,7 +44,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_generic_modules;		use et_generic_modules;
-with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_assembly_variant_name;
 
 with et_net_names;				use et_net_names;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
@@ -119,7 +119,7 @@ package et_netlist_cat_1 is
 	-- Overwrites an already existing netlist.
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		variant			: in type_assembly_variant_name; -- low_cost
+		variant			: in et_assembly_variant_name.type_assembly_variant_name; -- low_cost
 		netlist			: in pac_netlist_cat_1.map;
 		log_threshold	: in type_log_level);
 
