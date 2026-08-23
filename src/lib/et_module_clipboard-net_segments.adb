@@ -44,6 +44,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_net_names;				use et_net_names;
+with et_net_strands;
 
 
 
@@ -52,16 +53,85 @@ package body et_module_clipboard.net_segments is
 
 	procedure copy_net_segment_to_clipboard (
 		net_cursor		: in pac_nets.cursor;
-		segment_cursor	: in pac_net_segments.cursor;
+		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
 		net_name : constant type_net_name := get_net_name (net_cursor);
 
 
 		procedure insert_net_and_segment is
+			use et_net_strands;
 			use pac_nets;
 			net_cursor : pac_nets.cursor;
-			inserted : boolean;
+
+
+			-- Creates a new net in the clipboard.
+			-- Sets cursor net_cursor so that it points
+			-- to the new net:
+			procedure create_net is
+				inserted : boolean;
+				
+				-- Create a bare copy of the given net.
+				-- The copy has a single empty strand.
+				-- Later we will store all net segments
+				-- of the given net in that strand:
+				net_new : type_net := copy_bare_net (
+					net_in			=> element (net_cursor),
+					create_strand	=> true);
+			begin
+				-- Net does not exist yet. Create
+				-- a bare copy of the given net:
+				clipboard.nets.insert (
+					key			=> net_name,
+					new_item	=> net_new,
+					position	=> net_cursor,
+					inserted	=> inserted);
+
+			end create_net;
+
+			
+			
+			-- Appends the given net segment to
+			-- single strand in the targeted net. The strand
+			-- serves just as a place to store the segments.
+			-- The segments are appended to the strand without
+			-- checking A/B ends, ports of units or netchangers.
+			procedure insert_segment is
+			
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in out type_net)
+				is 
+					pragma unreferenced (net_name);
+					
+					use pac_strands;
+					strand_cursor : constant pac_strands.cursor := net.strands.first;
+					
+					
+					procedure query_strand (
+						strand : in out type_strand)
+					is 
+						use pac_net_segments;
+					begin
+						-- Append the given segment:
+						
+						-- CS: reset status flags of segment ?
+						strand.segments.append (segment);
+					end query_strand;
+					
+					
+				begin
+					net.strands.update_element (
+						strand_cursor, query_strand'access);
+						
+				end query_net;
+				
+			begin
+				clipboard.nets.update_element (
+					net_cursor, query_net'access);
+			end insert_segment;
+			
+			
 		begin
 			net_cursor := clipboard.nets.find (net_name);
 
@@ -71,27 +141,25 @@ package body et_module_clipboard.net_segments is
 					level => log_threshold + 1);
 
 			else
-				-- Net does not exist yet. Create
-				-- a bare copy of the given net:
-				clipboard.nets.insert (
-					key			=> net_name,
-					new_item	=> copy_bare_net (element (net_cursor)),
-					position	=> net_cursor,
-					inserted	=> inserted);
+				log (text => "create net " & to_string (net_name)
+					& " in clipboard",
+					level => log_threshold + 1);
 
+				create_net;
 			end if;
 
-			-- Insert the net segment in the first
-			-- strand of the net:
-
-			-- CS
-			null;
+			-- Now net_cursor points to the target net
+			-- in the clipboard.
+			-- Insert the given net segment in the first
+			-- and only strand of the net:
+			insert_segment;
 
 		end insert_net_and_segment;
 
 
 	begin
-		log (text => "copy net " & to_string (net_name),
+		log (text => "copy net " & to_string (net_name)
+			& " segment " & to_string (segment),
 			 level => log_threshold);
 
 		log_indentation_up;

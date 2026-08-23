@@ -1475,11 +1475,13 @@ package body et_canvas is
 
 		-- Get the ratio of width and height based on the current dimensions
 		-- of the scrolled window:
-		sw := type_zoom_factor
-			(type_distance (a.width) / area.width);
+		sw := type_zoom_factor'min (
+			type_zoom_factor'last,
+			type_zoom_factor'base (type_distance (a.width) / area.width));
 
-		sh := type_zoom_factor
-			(type_distance (a.height) / area.height);
+		sh := type_zoom_factor'min (
+			type_zoom_factor'last,
+			type_zoom_factor'base (type_distance (a.height) / area.height));
 
 		-- CS: Alternatively the ratio can be based on the initial dimensions
 		-- of the scrolled window. A boolean argument for this function

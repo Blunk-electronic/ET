@@ -859,7 +859,10 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 
 			paste_net_segments_from_clipboard (
-				module_cursor, offset, log_threshold + 2);
+				module_cursor, 
+				sheet, -- target sheet
+				get_place (offset), -- x/y offset
+				log_threshold + 2);
 
 			log_indentation_down;
 		end paste_net_segments;

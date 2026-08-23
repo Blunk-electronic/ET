@@ -100,17 +100,26 @@ package body et_nets is
 
 
 	function copy_bare_net (
-		net_in : in type_net)
+		net_in			: in type_net;
+		create_strand	: in boolean)
 		return type_net
 	is
 		-- Take a full copy of the original net:
 		net_out : type_net := net_in;
+
+		new_empty_strand : type_strand;
 	begin
 		-- Reset the status flags:
 		reset_status (net_out.status);
 
 		-- Delete all strands and net segments:
 		net_out.strands.clear;
+
+		-- If the caller requests for a new
+		-- empty strand, then create it here:
+		if create_strand then
+			net_out.strands.append (new_empty_strand);
+		end if;
 
 		-- Remove all routing stuff:
 		clear_route (net_out);
