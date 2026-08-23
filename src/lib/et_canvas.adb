@@ -1474,7 +1474,8 @@ package body et_canvas is
 		-- put_line (" swin a.height " & gint'image (a.height));
 
 		-- Get the ratio of width and height based on the current dimensions
-		-- of the scrolled window:
+		-- of the scrolled window. Convert to base range and top saturate to
+		-- limit max zoom to around the size of a junction:
 		sw := type_zoom_factor'min (
 			type_zoom_factor'last,
 			type_zoom_factor'base (type_distance (a.width) / area.width));
