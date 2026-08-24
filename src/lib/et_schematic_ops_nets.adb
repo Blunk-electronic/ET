@@ -3150,7 +3150,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " paste net segments from clipboard. Group offset: " 
+			 & " paste net segments from clipboard. Group offset: "
 			 & to_string (offset) & " on sheet " & to_string (sheet),
 			 level => log_threshold);
 
@@ -6622,8 +6622,8 @@ package body et_schematic_ops_nets is
 
 
 
-	
-	
+
+
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
@@ -6632,34 +6632,34 @@ package body et_schematic_ops_nets is
 		offset			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure move_segment is
 			segment_new : type_net_segment;
-			
+
 		begin
 			copy_net_segment (
 				segment, segment_new, offset);
 		end move_segment;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert net segment " & to_string (segment)
 			& " net " & to_string (net_name)
 			& " sheet " & to_string (sheet),
 			level => log_threshold);
-			
+
 		log_indentation_up;
-		
+
 		move_segment;
-		
+
 		log_indentation_down;
 	end insert_net_segment;
-	
-	
 
-	
-	
+
+
+
+
 
 
 

@@ -89,7 +89,7 @@ package body et_net_segment is
 		-- Delete junctions and ports:
 		segment_out.junctions := no_junctions;
 		segment_out.ports := no_AB_ports;
-		
+
 	end copy_net_segment;
 
 

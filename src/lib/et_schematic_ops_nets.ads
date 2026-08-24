@@ -900,7 +900,7 @@ package et_schematic_ops_nets is
 
 
 	-- Inserts a net segment (along with its net labels and connectors)
-	-- in the given module. Creates the given net if not already 
+	-- in the given module. Creates the given net if not already
 	-- existing. The net segment will be placed by the given
 	-- offset on the given sheet:
 	procedure insert_net_segment (
@@ -911,7 +911,7 @@ package et_schematic_ops_nets is
 		offset			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Copies a net segment (indicated by object_segment)
 	-- by the given number of sheets and the given
 	-- x/y offset. Net labels and connectors are also copied.
