@@ -62,7 +62,7 @@ package body et_cp_board_outline is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		procedure extract_arguments is
@@ -113,7 +113,7 @@ package body et_cp_board_outline is
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		unused_cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		-- Extract from the given command the
 		-- arguments (everything after "hole"):

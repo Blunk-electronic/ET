@@ -71,6 +71,9 @@ with et_text_content;
 
 package body et_kicad.schematic is
 
+	subtype type_vector_model			is pac_geometry_2.type_vector_model;
+	subtype type_package_variant_name	is et_package_variant_name.type_package_variant_name;
+	subtype type_package_name			is et_package_name.type_package_name;
 
 
 	-- Returns the base name of the given schematic file name as submodule name.
@@ -113,7 +116,7 @@ package body et_kicad.schematic is
 
 
 	function unit_exists (
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean
 	is
@@ -129,7 +132,7 @@ package body et_kicad.schematic is
 
 
 	function position_of_unit (
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position
 	is
@@ -142,7 +145,7 @@ package body et_kicad.schematic is
 
 
 	function mirror_style_of_unit (
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return type_mirror
 	is
@@ -156,7 +159,7 @@ package body et_kicad.schematic is
 
 
 	function orientation_of_unit (
-		name	: in type_unit_name; -- the unit being inquired
+		name	: in et_unit_name.type_unit_name; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_schematic_geometry.type_rotation_model
 	is
@@ -174,7 +177,7 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 	is
 		use et_device_placeholders.symbols;
-
+		use et_unit_name;
 	begin
 		log_indentation_up;
 
@@ -309,7 +312,7 @@ package body et_kicad.schematic is
 				id_width	=> 1);
 
 		c : character;
-		p : type_device_prefix;
+		unused_p : type_device_prefix;
 
 
 		procedure invalid_reference is
@@ -460,6 +463,7 @@ package body et_kicad.schematic is
 
 	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.
+		use et_port_names;
 	begin
 		return "reference " & to_string (port.reference)
 			& " port " & to_string (port.name)
@@ -591,7 +595,8 @@ package body et_kicad.schematic is
 
 
 
-	function package_name (text : in string) return type_package_name is
+	function package_name (text : in string) return et_package_name.type_package_name is
+		use et_package_name;
 		use et_string_processing;
 	begin
 		return type_package_name (pac_package_name.to_bounded_string (
@@ -973,7 +978,7 @@ package body et_kicad.schematic is
 
 	-- Tests if the given component package name meets certain conventions.
 	procedure validate_component_package_name
-		(name : in type_package_name)
+		(name : in et_package_name.type_package_name)
 	is
 		use et_package_name;
 
@@ -1001,17 +1006,15 @@ package body et_kicad.schematic is
 	-- name of package library and package name.
 	function to_package_variant (
 		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
-		generic_name		: in type_component_generic_name.bounded_string;				-- 7400
+		generic_name		: in type_component_generic_name;				-- 7400
 		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
-		package_name		: in type_package_name;	-- S_SO14
+		package_name		: in et_package_name.type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
-		return type_package_variant_name -- D
+		return et_package_variant_name.type_package_variant_name -- D
 	is
 		use et_string_processing;
 		use ada.directories;
 		library_cursor : type_device_libraries.cursor; -- points to the component library
-
-		use et_string_processing;
 
 		use et_package_variant_name;
 		variant : type_package_variant_name; -- variant name to be returned
@@ -1032,7 +1035,7 @@ package body et_kicad.schematic is
 
 			-- Queries the package variants of the generic component.
 			procedure query_variants (
-				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
+				component_name	: in type_component_generic_name; -- RESISTOR
 				component		: in out type_component_library)
 			is
 				pragma unreferenced (component_name);
@@ -1405,7 +1408,6 @@ package body et_kicad.schematic is
 	-- The link between a global or local net and a hierarchic net is the gui_submodule (see spec. of type_hierarchic_sheet).
 	-- IMPORTANT: Gui_submodules and hierarchic nets are virtual components in a graphical GUI. Neither of them exists in reality.
 		use type_nets;
-		use type_strands;
 		net : type_nets.cursor;
 
 		-- Temparily we collect the hierarchic strands that are to be appended
@@ -2401,7 +2403,6 @@ package body et_kicad.schematic is
 					uri : type_device_model_name;
 					-- CS: not really correct. see spec for type_lib_table_entry
 
-					use et_kicad_packages;
 				begin
 					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
@@ -3917,6 +3918,8 @@ package body et_kicad.schematic is
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 	procedure update_strand_names (log_threshold : in type_log_level) is
 
+		use et_port_names;
+
 		portlists : type_portlists.map := type_portlists.empty_map;
 
 		strand		: type_strands.cursor := first_strand;
@@ -4136,7 +4139,7 @@ package body et_kicad.schematic is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
 		library		: in type_device_model_name;
-		component	: in type_component_generic_name.bounded_string)
+		component	: in type_component_generic_name)
 		return type_components_library.cursor
 	is
 		lib_cursor	: type_device_libraries.cursor;
@@ -4203,7 +4206,8 @@ package body et_kicad.schematic is
 
 
 	function build_portlists (log_threshold : in type_log_level)
-		return type_portlists.map is
+		return type_portlists.map
+	is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 	-- This applies to the module indicated by module_cursor.
 
@@ -4225,6 +4229,9 @@ package body et_kicad.schematic is
 	-- The key into this map is the component reference.
 
 	-- Saves the portlists in the module (indicated by module_cursor).
+
+		use et_port_names;
+		use et_unit_name;
 
 		-- Here we collect the portlists:
 		portlists					: type_portlists.map;
@@ -4263,7 +4270,7 @@ package body et_kicad.schematic is
 			-- The port cursor of the unit indicates the port of a unit.
 			port_cursor : type_ports_library.cursor;
 
-			unit_name_lib : type_unit_name; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_name_lib : et_unit_name.type_unit_name; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
@@ -4964,7 +4971,7 @@ package body et_kicad.schematic is
 
 
 				procedure query_units_lib (
-					component_name	: in type_component_generic_name.bounded_string;
+					component_name	: in type_component_generic_name;
 					component		: in type_component_library)
 				is
 					pragma unreferenced (component_name);
@@ -5067,7 +5074,7 @@ package body et_kicad.schematic is
 				end query_units_lib;
 
 
-				use type_component_generic_name;
+				use pac_component_generic_name;
 				generic_model_found : boolean := false; -- goes true once the generic model was found
 
 
@@ -5221,7 +5228,7 @@ package body et_kicad.schematic is
 	procedure validate_module (
 		module_name : in type_submodule_name.bounded_string) is
 	-- Tests if the given module exists. Raises error if not existent.
-		module_cursor : type_modules.cursor;
+		unused_module_cursor : type_modules.cursor;
 		use type_modules;
 	begin
 		if find (modules, module_name) = type_modules.no_element then
@@ -5445,7 +5452,7 @@ package body et_kicad.schematic is
 
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in type_unit_name;
+		unit_name		: in et_unit_name.type_unit_name;
 		unit			: in type_unit_schematic;
 		log_threshold	: in type_log_level)
 	is
@@ -5541,8 +5548,6 @@ package body et_kicad.schematic is
 				-- its start and end point.Exits prematurely when positive. Returns the composite
 				-- junction_position.
 					junction_position : type_junction;
-
-					use type_strands;
 
 					-- start strand query with the first strand of the module.
 					strand_cursor_sec : type_strands.cursor := module.strands.first;
@@ -6429,7 +6434,6 @@ package body et_kicad.schematic is
 		segment	: in type_net_segment_base'class;
 		scope	: in et_kicad_coordinates.type_scope := et_kicad_coordinates.SHEET)
 		return string is
-		use et_kicad_coordinates;
 	begin
 		return (" start"
 			& to_string (position => segment.coordinates_start, scope => scope)
@@ -6451,6 +6455,7 @@ package body et_kicad.schematic is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
 	procedure net_test (log_threshold : in type_log_level) is
+		use et_port_names;
 		use type_modules;
 
 		procedure query_nets (
@@ -6718,6 +6723,7 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return type_net_name
 	is
+		use et_port_names;
 		use type_modules;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
@@ -6739,7 +6745,6 @@ package body et_kicad.schematic is
 				ports		: in pac_ports_with_reference.set)
 			is
 				port_cursor : pac_ports_with_reference.cursor;
-				use et_port_names;
 				use pac_ports_with_reference;
 			begin
 				log (text => "querying ports ...", level => log_threshold + 2);
@@ -6843,6 +6848,7 @@ package body et_kicad.schematic is
 	-- Detects if a junction is missing where a port is connected with a net.
 	procedure make_netlists (log_threshold : in type_log_level) is
 
+		use et_port_names;
 		use type_modules;
 
 		function make_netlist return type_netlist.map is
@@ -6898,8 +6904,9 @@ package body et_kicad.schematic is
 								procedure locate_component (
 								-- Locates the component within the portlist of the submodule
 									module_name	: in type_submodule_name.bounded_string;
-									module		: in out type_module) is
-	pragma unreferenced (module_name);
+									module		: in out type_module)
+								is
+									pragma unreferenced (module_name);
 
 									procedure locate_port (
 									-- Locates the port of the component
@@ -7138,6 +7145,7 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return natural
 	is
+		use et_package_variant_name;
 		use type_modules;
 
 		terminals : natural; -- to be returned
@@ -7153,7 +7161,7 @@ package body et_kicad.schematic is
 			component_cursor : type_components_schematic.cursor;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
@@ -7170,13 +7178,12 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
 					use et_package_library;
 					use pac_package_variants;
-					use et_package_variant_name;
 
 					variant_cursor : pac_package_variants.cursor;
 				begin
@@ -7304,6 +7311,8 @@ package body et_kicad.schematic is
 	-- 5. get package variant
 	-- 6. look up given port name and return terminal/unit name
 
+		use et_port_names;
+		use et_package_variant_name;
 		use type_modules;
 		terminal : et_package_variant.type_terminal; -- to be returned
 
@@ -7317,7 +7326,7 @@ package body et_kicad.schematic is
 			component_cursor : type_components_schematic.cursor;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			--use type_libraries;
@@ -7335,15 +7344,12 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
-
-					use et_package_variant_name;
-
 
 					procedure locate_terminal (
 						variant_name	: in type_package_variant_name;
@@ -7351,7 +7357,6 @@ package body et_kicad.schematic is
 					is
 						pragma unreferenced (variant_name);
 						use pac_terminal_port_map;
-						use et_port_names;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 						unused_terminal_found : boolean := false;
 					begin
@@ -7476,6 +7481,9 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return type_net_name
 	is
+		use et_package_variant_name;
+		use et_port_names;
+
 		net : type_net_name; -- to be returned
 
 		-- As an intermediate storage place here the module name, the component reference and the port name are stored.
@@ -7500,7 +7508,7 @@ package body et_kicad.schematic is
 			--package_name : type_package_name;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
@@ -7517,7 +7525,7 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
@@ -7549,9 +7557,6 @@ package body et_kicad.schematic is
 							raise constraint_error;
 						end if;
 					end locate_terminal;
-
-
-					use et_package_variant_name;
 
 
 				begin

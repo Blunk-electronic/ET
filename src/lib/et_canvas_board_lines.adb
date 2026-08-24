@@ -317,14 +317,14 @@ package body et_canvas_board_lines is
 		-- These constants define the minimum and maximum of
 		-- characters that can be entered in the fields for
 		-- text size and line width:
-		text_size_length_min : constant gint := 1;
-		text_size_length_max : constant gint := 6;
+		unused_text_size_length_min : constant gint := 1;
+		unused_text_size_length_max : constant gint := 6;
 
 		line_width_length_min : constant gint := 1;
 		line_width_length_max : constant gint := 5;
 
-		rotation_length_min : constant gint := 1;
-		rotation_length_max : constant gint := 5;
+		unused_rotation_length_min : constant gint := 1;
+		unused_rotation_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
 
 

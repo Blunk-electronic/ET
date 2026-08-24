@@ -73,6 +73,7 @@ with et_exceptions;						use et_exceptions;
 
 package body et_kicad_packages is
 
+	use et_board_geometry.pac_geometry_2;
 	use pac_holes;
 
 
@@ -195,8 +196,6 @@ package body et_kicad_packages is
 		p11, p12 : type_vector_model;
 		p21, p22 : type_vector_model;
 
-		use pac_geometry_2;
-
 		-- These are the four lines we need for the rectangular pad contour:
 		line_1, line_2 : pac_geometry_2.type_line; -- left line, right line
 		line_3, line_4 : pac_geometry_2.type_line; -- upper line, lower line
@@ -265,7 +264,7 @@ package body et_kicad_packages is
 
 		-- supportive frequently used values
 		x1p : constant type_position_axis := size_x / 2.0;
-		x1n : constant type_position_axis := -(x1p);
+		unused_x1n : constant type_position_axis := -(x1p);
 
 		y1p : constant type_position_axis := size_y / 2.0;
 		y1n : constant type_position_axis := -(y1p);
@@ -277,8 +276,6 @@ package body et_kicad_packages is
 		p11, p12 : type_vector_model; -- start/end point of upper line
 		p21, p22 : type_vector_model; -- start/end point of lower line
 		p41, p42 : type_vector_model; -- center of left/right arc
-
-		use pac_geometry_2;
 
 		-- These are the two lines and the two arcs we need for the oval pad contour:
 		line_1, line_2	: pac_geometry_2.type_line;	-- upper/lower line
@@ -899,7 +896,6 @@ package body et_kicad_packages is
 
 			use type_argument;
 			use et_pcb_sides;
-			use pac_geometry_brd;
 
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
@@ -1947,8 +1943,6 @@ package body et_kicad_packages is
 			-- Insert a terminal in the list "terminals".
 			-- This is library related stuff.
 			procedure insert_terminal is
-
-				use et_terminals;
 
 				-- this cursor points to the terminal inserted last
 				terminal_cursor : et_terminals.pac_terminals.cursor;

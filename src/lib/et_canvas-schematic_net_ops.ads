@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-
+with gtk.gentry;		use gtk.gentry;
 
 
 generic

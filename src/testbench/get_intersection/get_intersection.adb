@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
@@ -55,7 +55,7 @@ with et_routing;				use et_routing;
 
 procedure get_intersection is
 
-	
+
 	S : type_point := type_point (set (10.0, -0.075));
 	D : type_point := type_point (set (-1.0, 0.0));
 
@@ -63,7 +63,7 @@ procedure get_intersection is
 		v_start => to_vector (S),
 		v_direction => to_vector (D));
 
-	
+
 	C : type_circle := (
 		center => type_point (set (0.0, 0.0)),
 		radius => 0.075);
@@ -91,7 +91,7 @@ begin
 					--exp => 0);
 
 
-				
+
 			when TWO_EXIST =>
 				put_line (to_string (I.intersection_1.point));
 				put_line (to_string (I.intersection_2.point));
@@ -100,23 +100,23 @@ begin
 				null;
 		end case;
 	end;
-	
+
 	--cl := (S, E, 0.15);
 	--put_line (to_string (cl));
 	--new_line;
 
 
-	
+
 	--segment := to_line_segment (cl);
 
-		
+
 	----put_line ("segment " & to_string (segment));
 	--new_line;
-	
+
 	--distance := get_shortest_distance (P,segment);
 
 	--put_line ("distance" & to_string (distance));
-	
+
 	--P := type_point (round (P));
 	--L := type_line (round (L));
 	--put_line (to_string (L));
@@ -125,19 +125,19 @@ begin
 		--new_line;
 		--P := type_point (move (P, 180.0, 0.2));
 		--put_line ("P:" & to_string (P));
-		
+
 		--d := get_intersection (P, L, WITH_END_POINTS);
 		--put_line ("D:" & to_string (get_intersection (d)));
 		--put_line ("out of range: " & boolean'image (out_of_range (d)));
 	--end loop;
 
 	null;
-	
+
 end get_intersection;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

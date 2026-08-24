@@ -53,7 +53,6 @@ package et_net_class_description is
 	package pac_net_class_description is new generic_bounded_length (
 		net_class_description_length_max);
 
-	use pac_net_class_description;
 
 	type type_net_class_description is new pac_net_class_description.bounded_string;
 

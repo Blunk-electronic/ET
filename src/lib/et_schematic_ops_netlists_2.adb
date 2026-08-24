@@ -62,16 +62,16 @@ with et_netlist_cat_1;
 
 package body et_schematic_ops_netlists_2 is
 
-
+	subtype type_net_name is et_net_names.type_net_name;
 
 
 
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports			: in pac_device_ports.set)
-		return pac_device_ports_extended.set
+		return type_device_ports_extended_set
 	is
-		ports_extended : pac_device_ports_extended.set; -- to be returned
+		ports_extended : type_device_ports_extended_set; -- to be returned
 
 		use pac_device_ports;
 
@@ -79,6 +79,8 @@ package body et_schematic_ops_netlists_2 is
 		procedure query_ports (
 			port_cursor : in pac_device_ports.cursor)
 		is
+			use et_netlist_devices;
+
 			port_sch		: constant type_device_port := element (port_cursor);
 
 			use et_device_library.units;
@@ -131,10 +133,13 @@ package body et_schematic_ops_netlists_2 is
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set
+		return type_submodule_ports_extended_set
 	is
 		pragma unreferenced (module_cursor);
-		ports_extended : pac_submodule_ports_extended.set; -- to be returned
+
+		use et_netlist_submodules;
+
+		ports_extended : type_submodule_ports_extended_set; -- to be returned
 
 		use pac_net_submodule_ports;
 
@@ -200,7 +205,6 @@ package body et_schematic_ops_netlists_2 is
 			use et_nets;
 			use pac_nets;
 
-			use et_net_names;
 			use et_net_names;
 			net_cursor : pac_nets.cursor := module.nets.first;
 

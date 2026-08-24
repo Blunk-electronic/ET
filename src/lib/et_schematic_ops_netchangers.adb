@@ -4102,7 +4102,7 @@ package body et_schematic_ops_netchangers is
 		object			: in type_object;
 		log_threshold	: in type_log_level)
 	is
-		error : boolean := false;
+		unused_error : boolean := false;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " show object",

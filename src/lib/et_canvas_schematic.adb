@@ -223,7 +223,7 @@ package body et_canvas_schematic is
 	is
 		pragma unreferenced (button);
 		-- debug : boolean := true;
-		debug : boolean := false;
+		unused_debug : boolean := false;
 	begin
 		put_line ("cb_zoom_to_fit");
 
@@ -240,7 +240,7 @@ package body et_canvas_schematic is
 		use et_modes.schematic;
 
 		-- debug : boolean := true;
-		debug : boolean := false;
+		unused_debug : boolean := false;
 	begin
 		put_line ("cb_zoom_area (schematic)");
 
@@ -286,7 +286,7 @@ package body et_canvas_schematic is
 		use gdk.types.keysyms;
 
 		key_ctrl	: constant gdk_modifier_type := event.state and control_mask;
-		key_shift	: gdk_modifier_type := event.state and shift_mask;
+		unused_key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: constant gdk_key_type := event.keyval;
 
 
@@ -1001,7 +1001,7 @@ package body et_canvas_schematic is
 
 		unused_mouse_event : type_mouse_event;
 
-		debug : boolean := false;
+		unused_debug : boolean := false;
 
 
 		-- This procedure is called if a define-group-operation

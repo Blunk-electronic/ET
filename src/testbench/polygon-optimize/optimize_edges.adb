@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -58,13 +58,13 @@ procedure optimize_edges is
 	use pac_polygons;
 
 
-	
+
 	B_default_vertices : constant string := "0 0  100 0  100 100  0 100";
 	B_5_vertices : constant string := "0 0  50 0  100 0  100 100  0 100";
-	
+
 	initial, reference, optimized : type_polygon;
 
-	
+
 begin
 	-- The initial polygon:
 	--initial := to_polygon (B_default_vertices);
@@ -72,18 +72,18 @@ begin
 	put_line ("initial polygon:");
 	put_line (to_string (initial));
 
-	
+
 	-- Optimize the initial polygon and keep the result:
 	reference := initial;
 	optimize_edges (polygon => reference, debug => false);
 	put_line ("optimized reference:");
 	put_line (to_string (reference));
-	
-	
+
+
 	for i in 1 .. 5 loop
 		put_line ("step" & natural'image (i));
 		rotate (initial);
-		
+
 		--put_line ("given:");
 		--put_line (to_string (initial));
 
@@ -99,7 +99,7 @@ begin
 		--put_line (to_string (optimized));
 		--new_line;
 
-		
+
 		if not are_congruent (reference, optimized) then
 			put_line ("ERROR !");
 			put_line ("given:");
@@ -116,13 +116,13 @@ begin
 		--put_line (to_string (Q));
 		--new_line;
 	end loop;
-	
-	
+
+
 end optimize_edges;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

@@ -139,13 +139,13 @@ package body et_module_clipboard.net_segments is
 				log (text => "net " & to_string (net_name)
 					& " already in clipboard",
 					level => log_threshold + 1);
-					
+
 			else
 				log (text => "create net " & to_string (net_name)
 					& " in clipboard",
 					level => log_threshold + 1);
 
-				create_net;				
+				create_net;
 			end if;
 
 			-- Now net_cursor points to the target net
@@ -153,10 +153,10 @@ package body et_module_clipboard.net_segments is
 			-- Insert the given net segment in the first
 			-- and only strand of the net:
 			insert_segment;
-				
+
 		end insert_net_and_segment;
-		
-		
+
+
 	begin
 		log (text => "copy net " & to_string (net_name)
 			& " segment " & to_string (segment),
@@ -171,7 +171,7 @@ package body et_module_clipboard.net_segments is
 
 
 
-	
+
 end et_module_clipboard.net_segments;
 
 -- Soli Deo Gloria

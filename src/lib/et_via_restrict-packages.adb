@@ -75,7 +75,8 @@ package body et_via_restrict.packages is
 		return pac_polygon_list.list
 	is
 		pragma unreferenced (restrict, tolerance);
-		scratch, result : pac_polygon_list.list;
+		unused_scratch : pac_polygon_list.list;
+		result : pac_polygon_list.list;
 
 	begin
 		-- -- circles:

@@ -910,7 +910,7 @@ is
 
 
 					procedure query_text (c : in pac_conductor_texts.cursor) is
-						text : et_conductor_text.type_conductor_text renames element (c);
+						unused_text : et_conductor_text.type_conductor_text renames element (c);
 					begin
 						null; -- CS
 						-- parse segments of text
@@ -1002,7 +1002,7 @@ is
 
 
 					procedure query_text (c : in pac_silk_texts.cursor) is
-						text : type_silk_text renames element (c);
+						unused_text : type_silk_text renames element (c);
 					begin
 						null; -- CS
 						-- parse segments of text
@@ -1099,7 +1099,7 @@ is
 
 
 					procedure query_text (c : in pac_doc_texts.cursor) is
-						text : type_doc_text renames element (c);
+						unused_text : type_doc_text renames element (c);
 					begin
 						null; -- CS
 						-- parse segments of text
@@ -1233,7 +1233,7 @@ is
 
 
 					procedure query_text (c : in pac_stop_texts.cursor) is
-						text : type_stop_text renames element (c);
+						unused_text : type_stop_text renames element (c);
 					begin
 						null; -- CS
 						-- parse segments of text

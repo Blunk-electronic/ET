@@ -51,7 +51,6 @@ package et_device_prefix is
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
 
 	package pac_device_prefix is new generic_bounded_length (prefix_length_max);
-	use pac_device_prefix;
 
 	type type_device_prefix is new pac_device_prefix.bounded_string;
 

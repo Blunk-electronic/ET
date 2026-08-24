@@ -482,7 +482,6 @@ procedure et is
 
 	procedure save_package_as is
 		use et_package_library;
-		use pac_package_model_file;
 	begin
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only package is saved.
@@ -522,7 +521,6 @@ procedure et is
 
 
 	procedure save_device_as is
-		use pac_device_model_file;
 	begin
 		-- If device_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only device in et_devices.devices is saved.
@@ -597,9 +595,7 @@ procedure et is
 
 	procedure process_commandline_arguments is
 		use et_conventions;
-		use pac_package_model_file;
 		use et_symbol_name;
-		use pac_device_model_file;
 		use et_drawing_frame;
 		use et_script_processor;
 

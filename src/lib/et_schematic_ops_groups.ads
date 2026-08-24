@@ -97,9 +97,9 @@ package et_schematic_ops_groups is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 		return type_vector_model;
-	
 
-									 
+
+
 	-- This deletes all objects which are in the
 	-- current group. This affects all objects whose
 	-- "selected"-flag is set:

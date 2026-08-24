@@ -43,7 +43,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_drills;
 with et_assembly_technology;	use et_assembly_technology;
-with et_terminals;				use et_terminals;
+with et_terminals;				-- use et_terminals;
 
 with et_text_content;			use et_text_content;
 with et_board_text;				use et_board_text;
@@ -67,7 +67,6 @@ with et_package_model;			use et_package_model;
 with et_kicad_general;			use et_kicad_general;
 
 with et_board_geometry;			use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
 use et_board_geometry.pac_contours;
 
 with et_logging;				use et_logging;
@@ -76,6 +75,11 @@ with et_logging;				use et_logging;
 with et_bounded_string_helpers;
 
 package et_kicad_packages is
+
+	subtype type_vector_model		is et_board_geometry.pac_geometry_2.type_vector_model;
+	subtype type_distance_positive	is et_board_geometry.pac_geometry_2.type_distance_positive;
+	subtype type_position			is et_board_geometry.pac_geometry_2.type_position;
+
 
 	-- NOTE: this is not a real file extension but just a part of a directory name:
 	package_library_directory_extension	: constant string := ".pretty";

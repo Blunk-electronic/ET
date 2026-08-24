@@ -78,11 +78,12 @@ with et_commit;
 
 package body et_board_ops_fill_zones is
 
+	subtype type_net_names_cursor is et_net_names.pac_net_names.cursor;
 
 
 	function get_terminal_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor;
+		device_cursor	: in type_devices_electrical_cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
 		tolerance		: in type_distance_positive;
@@ -161,7 +162,7 @@ package body et_board_ops_fill_zones is
 			end if;
 		end finalize;
 
-
+		use et_devices_electrical;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & "get_terminal_polygon of device " & get_device_name (device_cursor)
@@ -248,7 +249,7 @@ package body et_board_ops_fill_zones is
 		layer_category			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		offset					: in type_float_positive;
-		net_cursor				: in pac_nets.cursor;
+		net_cursor				: in type_nets_cursor;
 		polygons				: in out pac_polygon_list.list;
 		with_reliefes			: in boolean;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
@@ -405,13 +406,13 @@ package body et_board_ops_fill_zones is
 		layer					: in type_signal_layer;
 		zone_clearance			: in type_track_clearance;
 		bottom_layer			: in type_signal_layer;
-		parent_net				: in pac_nets.cursor;
+		parent_net				: in type_nets_cursor;
 		polygons				: in out pac_polygon_list.list;
 		terminal_connection		: in type_pad_connection;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets.pac_nets;
 		use et_net_names;
 
 		-- If a parent net was given (via argument parent_net) then
@@ -443,7 +444,7 @@ package body et_board_ops_fill_zones is
 			use pac_polygon_union;
 
 
-			procedure query_net (net_cursor : in pac_nets.cursor) is
+			procedure query_net (net_cursor : in type_nets_cursor) is
 				-- The offset by which the polyons of the net
 				-- are to be expanded:
 				offset : constant type_float_positive :=
@@ -525,7 +526,7 @@ package body et_board_ops_fill_zones is
 				-- flag is set to true:
 				in_parent_net : boolean := false;
 
-
+				use et_nets;
 			begin -- extract_conductor_objects
 				log (text => "net " & to_string (get_net_name (net_cursor)),
 					level => log_threshold + 1);
@@ -1068,7 +1069,7 @@ package body et_board_ops_fill_zones is
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
 		layer				: in type_signal_layer;
-		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		parent_net			: in type_nets_cursor := et_nets.pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
 		clearance_to_edge	: in type_distance_positive;
 
@@ -1087,7 +1088,7 @@ package body et_board_ops_fill_zones is
 			get_deepest_conductor_layer (module_cursor);
 
 
-		use pac_nets;
+		use et_nets.pac_nets;
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -1095,7 +1096,7 @@ package body et_board_ops_fill_zones is
 		unused_parent_net_name : type_net_name;
 
 		procedure set_parent_net_name is begin
-			if parent_net /= pac_nets.no_element then
+			if parent_net /= et_nets.pac_nets.no_element then
 				unused_parent_net_name := key (parent_net);
 			end if;
 		end set_parent_net_name;
@@ -1363,15 +1364,15 @@ package body et_board_ops_fill_zones is
 		layer				: in type_signal_layer;
 		clearance			: in type_track_clearance;
 		clearance_to_edge	: in type_distance_positive;
-		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		parent_net			: in type_nets_cursor := et_nets.pac_nets.no_element;
 		terminal_connection	: in type_pad_connection := pad_connection_default;
 		relief_properties	: in type_relief_properties := relief_properties_default;
 		reliefes			: out pac_reliefes.list;
 		log_threshold		: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets.pac_nets;
 
-		debug : boolean := false;
+		unused_debug : boolean := false;
 
 		-- The given zone will be converted to a polygon:
 		zone_polygon : type_polygon;
@@ -1556,7 +1557,7 @@ package body et_board_ops_fill_zones is
 		end process_zone_fragments;
 
 
-
+		use et_nets;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " fill_zone"
@@ -1598,7 +1599,7 @@ package body et_board_ops_fill_zones is
 	procedure fill_connected_zones (
 		module_cursor		: in pac_generic_modules.cursor;
 		board_outer_contour : in type_polygon;
-		nets				: in pac_net_names.list := no_net_names;
+		nets				: in type_net_names_list := et_net_names.no_net_names;
 		design_rules		: in type_design_rules_board;
 		log_threshold		: in type_log_level)
 	is
@@ -1607,7 +1608,7 @@ package body et_board_ops_fill_zones is
 		use et_fill_zones.boards;
 
 		use et_nets;
-		use pac_net_names;
+		use et_net_names.pac_net_names;
 
 		use pac_nets;
 		use pac_route_solid;
@@ -1620,7 +1621,7 @@ package body et_board_ops_fill_zones is
 
 		-- Temporarily storage for properties:
 		relief_properties	: type_relief_properties;
-		terminal_reliefes	: pac_reliefes.list;
+		unused_terminal_reliefes	: pac_reliefes.list;
 		terminal_connection	: type_pad_connection := pad_connection_default;
 		unused_terminal_technology	: type_pad_technology := pad_technology_default;
 
@@ -1635,6 +1636,7 @@ package body et_board_ops_fill_zones is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
 			use et_net_class;
 
 			net_cursor : pac_nets.cursor;
@@ -1647,8 +1649,8 @@ package body et_board_ops_fill_zones is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
+
 				-- The cursor that points to the zone being filled:
-				use pac_route_solid;
 				zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
 
 
@@ -1731,7 +1733,7 @@ package body et_board_ops_fill_zones is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				use pac_route_hatched;
+
 				zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 
 
@@ -1822,7 +1824,7 @@ package body et_board_ops_fill_zones is
 
 
 
-			procedure query_given_net (gn : pac_net_names.cursor) is
+			procedure query_given_net (gn : type_net_names_cursor) is
 				use et_schematic_ops_nets;
 				use et_net_names;
 				name : type_net_name renames element (gn);
@@ -2048,7 +2050,7 @@ package body et_board_ops_fill_zones is
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets			: in pac_net_names.list := no_net_names)
+		nets			: in type_net_names_list := et_net_names.no_net_names)
 	is
 		-- Get the design rules:
 		design_rules : constant type_design_rules_board :=
@@ -2104,7 +2106,7 @@ package body et_board_ops_fill_zones is
 		-- This procedure fills the zones which are
 		-- connected with nets:
 		procedure process_connected_zones is
-			use pac_net_names;
+			use et_net_names.pac_net_names;
 		begin
 			log (text => "process_connected_zones", level => log_threshold + 1);
 			log_indentation_up;
@@ -2399,7 +2401,7 @@ package body et_board_ops_fill_zones is
 	procedure clear_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
-		nets			: in pac_net_names.list := no_net_names)
+		nets			: in type_net_names_list := et_net_names.no_net_names)
 	is
 		-- CS: Most of this stuff can be moved to et_fill_zones.boards
 		-- so that solid and hatched zones inherit from primitive operations
@@ -2407,7 +2409,7 @@ package body et_board_ops_fill_zones is
 
 		use et_fill_zones.boards;
 
-		use pac_net_names;
+		use et_net_names.pac_net_names;
 
 		all_zones : boolean;
 
@@ -2485,7 +2487,7 @@ package body et_board_ops_fill_zones is
 				pragma unreferenced (module_name);
 				use et_net_class;
 				net_cursor : pac_nets.cursor;
-				net_class : type_net_class;
+				unused_net_class : type_net_class;
 
 
 				procedure route_solid (
@@ -2493,8 +2495,8 @@ package body et_board_ops_fill_zones is
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
+
 					-- The cursor that points to the zone being filled:
-					use pac_route_solid;
 					zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
 
 
@@ -2523,7 +2525,7 @@ package body et_board_ops_fill_zones is
 					net			: in out type_net)
 				is
 					pragma unreferenced (net_name);
-					use pac_route_hatched;
+
 					zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 
 

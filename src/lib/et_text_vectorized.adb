@@ -249,8 +249,8 @@ package body et_text_vectorized is
 			return to_string (text.content);
 		end get_content;
 
-		
-		
+
+
 
 
 		function to_string (
@@ -262,10 +262,10 @@ package body et_text_vectorized is
 		end to_string;
 
 
-		
-		
-		
-		
+
+
+
+
 		function compute_character_spacing (
 			text_size : in type_text_size)
 			return type_distance_positive
@@ -274,21 +274,21 @@ package body et_text_vectorized is
 		begin
 			pragma Warnings (Off, "static fixed-point value is not a multiple of Small");
 			-- CS: Probably no longer required ?
-			
+
 			spacing := text_size * (0.25 + type_distance_positive (type_character_width'last));
-			
-			pragma Warnings (On, "static fixed-point value is not a multiple of Small");		
+
+			pragma Warnings (On, "static fixed-point value is not a multiple of Small");
 			-- CS: Probably no longer required ?
-			
+
 			return spacing;
 		end compute_character_spacing;
-		
 
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		procedure scale_and_move_lines (
 			lines			: in out pac_character_lines.list;
 			place			: in positive;
@@ -300,7 +300,7 @@ package body et_text_vectorized is
 			-- scratch will overwrite the given lines at the end of this procedure:
 			scratch : pac_character_lines.list;
 
-			
+
 			procedure query_line (c : in pac_character_lines.cursor) is
 				l : type_character_line := element (c);
 			begin
@@ -331,13 +331,13 @@ package body et_text_vectorized is
 			lines := scratch; -- replace old lines by new lines
 		end scale_and_move_lines;
 
-	
 
-	
 
-	
-	
-	
+
+
+
+
+
 		procedure scale_and_move_border (
 			border				: in out pac_vectors.list;
 			place				: in positive;
@@ -407,15 +407,15 @@ package body et_text_vectorized is
 			-- Move to final position as given by argument "position":
 			move_by (border, to_offset (position));
 		end scale_and_move_border;
-	
-	
-	
-	
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
 		procedure finalize (
 			text				: in out type_vector_text;
 			alignment			: in type_text_alignment;
@@ -425,15 +425,15 @@ package body et_text_vectorized is
 			text_height			: in type_distance_positive;
 			text_height_half	: in type_distance_positive;
 			text_length			: in type_distance_positive;
-			text_length_half	: in type_distance_positive)			
+			text_length_half	: in type_distance_positive)
 		is
 			scratch : pac_character_lines.list;
 
-			
+
 			procedure query_line (c : in pac_character_lines.cursor) is
 				l : type_character_line := element (c);
 
-				
+
 				procedure align_vertical is begin
 					case alignment.vertical is
 						when ALIGN_BOTTOM =>
@@ -504,14 +504,14 @@ package body et_text_vectorized is
 
 		end finalize;
 
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
 		function vectorize_text (
 			content			: in type_text_content; -- MUST CONTAIN SOMETHING !
 			size			: in type_text_size;
@@ -547,11 +547,11 @@ package body et_text_vectorized is
 			place : positive := 1; -- CS subtype with limited range
 
 
-			
+
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
 			spacing : constant type_distance_positive := compute_character_spacing (size);
-		
+
 
 
 			-- The scaling is done so that text height and width are
@@ -585,31 +585,31 @@ package body et_text_vectorized is
 				use pac_polygons;
 				use pac_offsetting;
 				p_scratch : type_polygon;
-				
+
 				-- package line_sorting is new pac_character_lines.generic_sorting;
 				-- CS 1: If compiled with -gnata switch, then an assertion error is
 				-- raised here. I presume this is because no "<" operator is defined
-				-- for type_character_line. 
+				-- for type_character_line.
 				-- CS 2: Actually no sorting is required. So if we just spice the
 				-- lines (see below) instead of sorting, the error as described
 				-- above does not arise anymore.
-				
+
 			begin
 				scale_and_move_lines (
-					lines			=> text_lines, 
-					place			=> place, 
+					lines			=> text_lines,
+					place			=> place,
 					offset			=> offset_due_to_line_width,
 					scale_factor	=> scale_factor_float,
 					spacing			=> spacing);
-					
+
 				-- line_sorting.merge (target => result.lines, source => text_lines);
 				-- CS: no sorting required. Instead we splice result.lines and text_lines:
-				splice (target => result.lines, before => pac_character_lines.no_element, 
+				splice (target => result.lines, before => pac_character_lines.no_element,
 					source => text_lines);
 
 				if make_border then
 					border_vertices := to_list (char.border);
-					
+
 					scale_and_move_border (
 						border				=> border_vertices,
 						place				=> place,
@@ -624,7 +624,7 @@ package body et_text_vectorized is
 						alignment			=> alignment,
 						rotation			=> rotation,
 						mirror				=> mirror);
-					
+
 					p_scratch := to_polygon (border_vertices);
 					offset_polygon (p_scratch, half_line_width, log_threshold + 2);
 					result.borders.append (p_scratch);
@@ -740,8 +740,8 @@ package body et_text_vectorized is
 		end vectorize_text;
 
 
-		
-		
+
+
 
 		function first (
 			text	: in type_vector_text)
@@ -749,9 +749,9 @@ package body et_text_vectorized is
 		is (text.lines.first);
 
 
-		
-		
-		
+
+
+
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
@@ -766,9 +766,9 @@ package body et_text_vectorized is
 			end loop;
 		end iterate;
 
-		
-		
-		
+
+
+
 
 		function get_lines (
 			text	: in type_vector_text)
@@ -776,26 +776,26 @@ package body et_text_vectorized is
 		is (text.lines);
 
 
-		
-		
+
+
 		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list
 		is (text.borders);
 
 
-		
-		
-		
+
+
+
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive
 		is (text.width);
 
 
-		
-		
-		
+
+
+
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -820,9 +820,9 @@ package body et_text_vectorized is
 
 		end mirror_vector_text;
 
-		
-		
-		
+
+
+
 
 		procedure rotate_vector_text (
 			text	: in out type_vector_text;
@@ -849,10 +849,10 @@ package body et_text_vectorized is
 			rotate_polygons (text.borders, angle_float);
 		end rotate_vector_text;
 
-		
-		
-		
-		
+
+
+
+
 
 		procedure move_vector_text (
 			text	: in out type_vector_text;

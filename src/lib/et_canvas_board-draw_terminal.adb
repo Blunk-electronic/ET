@@ -238,7 +238,7 @@ is
 			pad_position	: in type_position) -- the center of the pad, rotation has no meaning
 		is
 			circle : type_circle;
-			mirror_style : type_mirror := MIRROR_NO;
+			unused_mirror_style : type_mirror := MIRROR_NO;
 
 		begin
 			if inner_conductors_enabled (bottom_layer) then

@@ -1798,7 +1798,6 @@ package body et_kicad_to_native is
 
 			procedure move_contour is
 				use et_board_geometry;
-				use pac_geometry_brd;
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
@@ -2591,7 +2590,7 @@ package body et_kicad_to_native is
 		-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 		function concatenate_lib_name_and_generic_name (
 			library	: in type_device_model_name; -- ../../lbr/bel_logic.lib
-			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
+			device	: in et_kicad_libraries.pac_component_generic_name.bounded_string) -- 7400
 			return type_device_model_name
 		is
 
@@ -2868,7 +2867,6 @@ package body et_kicad_to_native is
 				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
-				use et_kicad.schematic.type_strands;
 				kicad_strands : constant et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
 				kicad_strand_cursor : et_kicad.schematic.type_strands.cursor := kicad_strands.first;
 
@@ -3068,7 +3066,7 @@ package body et_kicad_to_native is
 					use et_device_name;
 					use et_package_variant;
 
-					dist : pac_geometry_sch.type_distance_point_line;
+					unused_dist : pac_geometry_sch.type_distance_point_line;
 
 					terminal : type_terminal;
 				begin
@@ -3345,8 +3343,8 @@ package body et_kicad_to_native is
 				use et_kicad_libraries.type_components_library;
 				component_cursor : et_kicad_libraries.type_components_library.cursor := library.first;
 
-				use et_kicad_libraries.type_component_generic_name;
-				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
+				use et_kicad_libraries.pac_component_generic_name;
+				generic_name : et_kicad_libraries.pac_component_generic_name.bounded_string; -- 7400
 				device_model : type_device_model_name; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : pac_device_models.cursor;
@@ -3778,7 +3776,6 @@ package body et_kicad_to_native is
 					prefix : in type_device_prefix) return
 					type_device_prefix
 				is
-					use pac_device_prefix;
 				begin
 					return to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
 				end remove_leading_hash;

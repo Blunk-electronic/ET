@@ -45,27 +45,28 @@ with ada.containers.multiway_trees;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
-with et_net_names;				use et_net_names;
+with et_net_names;
 with et_netchangers;			use et_netchangers;
 with et_netchangers.schematic;	use et_netchangers.schematic;
 
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_logging;				use et_logging;
 with et_port_direction;			use et_port_direction;
-with et_port_names;				use et_port_names;
+with et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_terminal_name;			use et_terminal_name;
 with et_device_name;			use et_device_name;
 with et_module_names;			use et_module_names;
-with et_module_instance;		use et_module_instance;
+with et_module_instance;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
 with et_net_scope;				use et_net_scope;
 
 
 package et_netlists is
 
-
-
+	subtype type_net_name				is et_net_names.type_net_name;
+	subtype type_module_instance_name	is et_module_instance.type_module_instance_name;
+	subtype type_port_name				is et_port_names.type_port_name;
 
 
 -- DEVICES:

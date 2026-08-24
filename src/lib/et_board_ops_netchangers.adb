@@ -901,7 +901,7 @@ package body et_board_ops_netchangers is
 		object			: in type_object;
 		log_threshold	: in type_log_level)
 	is
-		error : boolean := false;
+		unused_error : boolean := false;
 
 		use et_schematic_ops_netchangers;
 	begin

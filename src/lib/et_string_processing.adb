@@ -118,7 +118,7 @@ package body et_string_processing is
 		count_asterisk		: constant natural := ada.strings.fixed.count (text_with_wildcards, 1 * latin_1.asterisk);
 		count_question_mark	: constant natural := ada.strings.fixed.count (text_with_wildcards, 1 * latin_1.question);
 		pos_asterisk		: constant natural := ada.strings.fixed.index (text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
-		pos_question_mark	: natural := ada.strings.fixed.index (text_with_wildcards, 1 * latin_1.question); -- first question mark
+		unused_pos_question_mark	: natural := ada.strings.fixed.index (text_with_wildcards, 1 * latin_1.question); -- first question mark
 
 		length_text_with_wildcards	: constant natural := text_with_wildcards'length;
 		length_text_exact			: constant natural := text_exact'length;
@@ -208,7 +208,7 @@ package body et_string_processing is
 		IFS1		: constant character := ' ';				-- field separator space
 		IFS2		: constant character := character'val (9); -- field separator tabulator
 		field_ct	: type_field_count := 0; -- field counter (the first field found gets number 1 assigned)
-		field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
+		unused_field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
 		unused_inside_field : boolean := true;		 -- true if char_pt points inside a field
 		char_current : character;			 -- holds current character being processed
 		char_last	: character := ' ';		 -- holds character processed previous to char_current

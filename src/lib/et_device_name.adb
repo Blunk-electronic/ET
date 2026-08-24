@@ -89,7 +89,7 @@ package body et_device_name is
 				id_width	=> 1);
 
 		c : character;
-		p : type_device_prefix;
+		unused_p : type_device_prefix;
 
 		procedure invalid_device_name is
 		begin

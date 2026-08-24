@@ -60,7 +60,7 @@ package body et_pick_and_place is
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
 		module_name		: in type_module_name; -- motor_driver
-		variant_name	: in type_assembly_variant_name; -- low_cost
+		variant_name	: in et_assembly_variant_name.type_assembly_variant_name; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level)
 	is
@@ -68,7 +68,7 @@ package body et_pick_and_place is
 		file_name : type_pnp_file_name;
 
 		pnp_handle : ada.text_io.file_type;
-		device_cursor : pac_devices.cursor := pnp.first;
+		unused_device_cursor : pac_devices.cursor := pnp.first;
 
 
 		procedure set_file_name is

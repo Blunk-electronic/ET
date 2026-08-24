@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -57,11 +57,11 @@ procedure get_status is
 	P : type_polygon;
 	T : type_point;
 	V : type_vector;
-	
+
 
 	tolerance : type_distance_positive := fab_tolerance;
-	
-	
+
+
 	-- Builds the polygon P:
 	procedure make_polygon (
 		s : in string)
@@ -71,8 +71,8 @@ procedure get_status is
 		C := type_contour (to_contour (s));
 		P := to_polygon (C, tolerance);
 	end;
-	
-	
+
+
 	c_square : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	c_m_shaped : constant string := "line 0 0 line 50 50 line 100 0 line 100 100 line 0 100";
 	c_m_shaped_1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 50 line 0 70";
@@ -82,15 +82,15 @@ procedure get_status is
 	--P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
 
 
-	
+
 	procedure print_status (PPS : in type_point_to_polygon_status) is
 		use pac_float_numbers;
 		use pac_edges;
-		
+
 		procedure query_intersection (i : in pac_float_numbers.cursor) is begin
 			put_line ("x-pos : " & to_string (element (i)));
 		end;
-	
+
 	begin
 		put_line ("STATUS:");
 		put_line ("probe line start: " & to_string (PPS.start));
@@ -108,11 +108,11 @@ procedure get_status is
 
 			when ON_EDGE =>
 				put_line (to_string (element (PPS.edge)));
-				
+
 			when ON_VERTEX =>
 				put_line ("edge 1: " & to_string (element (PPS.edges.edge_1)));
 				put_line ("edge 2: " & to_string (element (PPS.edges.edge_2)));
-				
+
 		end case;
 	end print_status;
 
@@ -130,16 +130,16 @@ procedure get_status is
 			print_status (S);
 		end;
 	end do_test;
-	
+
 begin
 
 	--make_polygon (P_u_shaped);
-	
+
 	--make_polygon (c_square);
 	--V := set (0.0, 100.0); -- go
 	--V := set (0.0, 20.0); -- go
 	--V := set (0.0, 0.0); -- go
-	
+
 	--make_polygon (c_rhombus);
 	--V := set (0.0, 50.0); -- go
 	--V := set (25.0, 25.0); -- go
@@ -153,29 +153,29 @@ begin
 	--make_polygon (c_m_shaped_1);
 	--V := set (0.0, 70.0);
 	--V := set (50.0, 50.0); -- go
-	
+
 	make_polygon (c_m_shaped_2);
 	--V := set (25.0, 10.0);
 	--V := set (20.0, 10.0);
 	V := set (-20.0, 10.0);
 
-	
-	
+
+
 	--V := set (-10.0, 10.0000000000); -- go
 	--V := set (0.0, 0.0); -- go
 	--V := set (0.00000000001, 20.0000000000); -- go
 	--V := set (1.0E-12, 20.0000000000); -- go
 	--V := set (1.0E-16, 20.0000000000); -- go
 
-	
+
 	do_test;
-	
-	
+
+
 end get_status;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

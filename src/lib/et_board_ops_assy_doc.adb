@@ -2160,7 +2160,7 @@ package body et_board_ops_assy_doc is
 			procedure query_zone (
 				zone : in out type_doc_zone)
 			is
-				c : pac_segments.cursor;
+				unused_c : pac_segments.cursor;
 			begin
 				if is_circular (zone) then
 					null; -- CS

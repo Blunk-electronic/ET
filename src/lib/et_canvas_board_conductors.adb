@@ -58,7 +58,7 @@ with et_pcb_placeholders.conductor;			use et_pcb_placeholders.conductor;
 package body et_canvas_board_conductors is
 
 	use et_canvas_board.pac_canvas;
-
+	use et_object_status;
 	use pac_conductor_arcs;
 
 

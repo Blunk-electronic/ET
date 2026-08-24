@@ -251,7 +251,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_port (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
 					use et_submodules.pac_submodule_ports;
-					use et_net_names;
 				begin
 					log (text => "port " & pac_net_name.to_string (pac_net_name.bounded_string (key (port_cursor))) &
 							" at" & to_string (element (port_cursor).position),
@@ -299,7 +298,6 @@ package body et_schematic_ops_nets is
 				netchanger_cursor : in pac_netchangers.cursor)
 			is
 				-- CS use renames
-				use et_netchangers;
 				use et_netchangers.schematic;
 				netchanger_position : type_netchanger_position_schematic;
 
@@ -2971,10 +2969,10 @@ package body et_schematic_ops_nets is
 
 
 
-	
 
 
-	
+
+
 
 
 	procedure copy_selected_net_segments_to_clipboard (
@@ -2987,7 +2985,7 @@ package body et_schematic_ops_nets is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			
+
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -2996,52 +2994,54 @@ package body et_schematic_ops_nets is
 				net_name	: in type_net_name;
 				net			: in type_net)
 			is
+				pragma unreferenced (net_name);
+
 				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
+
+
 				procedure query_strand (
 					strand : in type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					
-					
+
+
 					procedure query_segment (
 						segment : in type_net_segment)
 					is
 						use et_module_clipboard.net_segments;
 					begin
-						if is_A_selected (segment) 
+						if is_A_selected (segment)
 						or is_B_selected (segment) then
 
 							-- CS log net name, strand pos and segment ?
-						   
+
 							log_indentation_up;
-						   
+
 							copy_net_segment_to_clipboard (
 								net_cursor, segment, log_threshold + 1);
 
 							log_indentation_down;
 						end if;
 					end query_segment;
-					
-					
+
+
 				begin
 					while has_element (segment_cursor) loop
 						query_element (segment_cursor, query_segment'access);
 						next (segment_cursor);
 					end loop;
 				end query_strand;
-				
-				
+
+
 			begin
 				while has_element (strand_cursor) loop
 					query_element (strand_cursor, query_strand'access);
 					next (strand_cursor);
 				end loop;
 			end query_net;
-			
-			
+
+
 		begin
 			while has_element (net_cursor) loop
 				query_element (net_cursor, query_net'access);
@@ -3049,7 +3049,7 @@ package body et_schematic_ops_nets is
 			end loop;
 		end query_module;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " copy selected net segments to clipboard ",
@@ -3064,51 +3064,50 @@ package body et_schematic_ops_nets is
 
 
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	procedure paste_net_segments_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		offset			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
-	
+
 		procedure do_paste is
 			use et_module_clipboard;
 			use pac_nets;
-			
+
 			net_cursor : pac_nets.cursor := clipboard.nets.first;
-			
-			
+
+
 			procedure query_net (
 				net_name	: in type_net_name;
 				net			: in type_net)
 			is
-				use pac_strands;
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
+				strand_cursor : constant pac_strands.cursor := net.strands.first;
+
+
 				procedure query_strand (
 					strand : in type_strand)
 				is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					
-					
+
+
 					procedure query_segment (
 						segment : in type_net_segment)
-					is 
+					is
 					begin
 						log (text => "net " & to_string (net_name),
 							level => log_threshold + 1);
 						-- CS log segment ?
 
 						log_indentation_up;
-						
+
 						-- Paste the net segment:
 						insert_net_segment (
 							module_cursor	=> module_cursor,
@@ -3117,11 +3116,11 @@ package body et_schematic_ops_nets is
 							sheet			=> sheet,
 							offset			=> offset,
 							log_threshold	=> log_threshold + 2);
-						
+
 						log_indentation_down;
 					end query_segment;
 
-					
+
 				begin
 					-- Iterate through the segments of the strand:
 					while has_element (segment_cursor) loop
@@ -3129,16 +3128,16 @@ package body et_schematic_ops_nets is
 						next (segment_cursor);
 					end loop;
 				end query_strand;
-				
-				
-					
+
+
+
 			begin
 				-- No iteration through the strands.
 				-- We use only one strand here for all segments:
 				query_element (strand_cursor, query_strand'access);
 			end query_net;
-			
-			
+
+
 		begin
 			-- Iterate through the nets in the clipboard:
 			while has_element (net_cursor) loop
@@ -3148,7 +3147,7 @@ package body et_schematic_ops_nets is
 
 		end do_paste;
 
-	
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " paste net segments from clipboard. Group offset: " 
@@ -3160,10 +3159,10 @@ package body et_schematic_ops_nets is
 
 		log_indentation_down;
 	end paste_net_segments_from_clipboard;
-	
-	
 
-	
+
+
+
 
 
 
@@ -3729,7 +3728,7 @@ package body et_schematic_ops_nets is
 				-- catch zone, then the parent strand is set as proposed,
 				-- and the probing of segments is canceled.
 				-- This flag is cleared when a segment has been found:
-				proceed : boolean := true;
+				unused_proceed : boolean := true;
 
 
 				procedure query_strand (strand : in out type_strand) is
@@ -5790,7 +5789,6 @@ package body et_schematic_ops_nets is
 
 				procedure query_port (p : in pac_device_ports.cursor) is
 					use pac_device_ports;
-					use et_port_names;
 
 					use et_unit_name;
 
@@ -7296,11 +7294,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is
@@ -7654,7 +7652,6 @@ package body et_schematic_ops_nets is
 
 
 					procedure query_labels (segment : in out type_net_segment) is
-						use pac_net_labels;
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 					begin
 						while label_cursor /= pac_net_labels.no_element loop
@@ -7780,11 +7777,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is
@@ -8614,11 +8611,11 @@ package body et_schematic_ops_nets is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				unused_strand_cursor : pac_strands.cursor := net.strands.first;
 
 
 				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					unused_segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure query_segment (segment : in out type_net_segment) is begin
@@ -8748,6 +8745,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return string
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		case object.cat is
@@ -8789,6 +8788,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_nets.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 
 		c : constant pac_nets.cursor := pac_nets.no_element;
@@ -8816,6 +8817,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_strands.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.strand_cursor;
@@ -8828,6 +8831,8 @@ package body et_schematic_ops_nets is
 		object_cursor : in pac_objects.cursor)
 		return pac_net_segments.cursor
 	is
+		use pac_objects;
+
 		object : constant type_object := element (object_cursor);
 	begin
 		return object.segment.segment_cursor;
@@ -9683,6 +9688,7 @@ package body et_schematic_ops_nets is
 		granted			: in out boolean;
 		log_threshold	: in type_log_level)
 	is
+		use pac_objects;
 
 		-- This function tests whether the given segment
 		-- can be moved at the given end (A/B).

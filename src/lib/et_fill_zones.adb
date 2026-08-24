@@ -278,7 +278,7 @@ package body et_fill_zones is
 		fill			: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		debug : boolean := false;
+		unused_debug : boolean := false;
 
 		use pac_polygon_list;
 

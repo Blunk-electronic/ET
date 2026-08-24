@@ -105,7 +105,7 @@ package body et_material is
 
 
 		bom_handle : ada.text_io.file_type;
-		device_cursor : pac_bom_devices.cursor := bom.first;
+		unused_device_cursor : pac_bom_devices.cursor := bom.first;
 
 
 		procedure eagle is

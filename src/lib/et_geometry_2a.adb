@@ -905,7 +905,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector
 	is
-		f : type_float := type_float (get_x (point));
+		unused_f : type_float := type_float (get_x (point));
 	begin
 		return set (
 			x => type_float (get_x (point)),
@@ -1360,7 +1360,7 @@ package body et_geometry_2a is
 		count : constant count_type := points.length;
 
 
-		procedure two_points is 
+		procedure two_points is
 			-- Both points form a line with A and B end:
 			A : constant type_vector_model := first_element (points);
 			B : constant type_vector_model := last_element (points);
@@ -1381,16 +1381,16 @@ package body et_geometry_2a is
 		end two_points;
 
 
-		
+
 		procedure more_than_two_points is begin
 			null;
 			-- CS
 		end more_than_two_points;
 
-		
+
 	begin
 		case count is
-			when 0 => 
+			when 0 =>
 				raise constraint_error; -- CS message ?
 
 			when 1 =>
@@ -1414,7 +1414,7 @@ package body et_geometry_2a is
 
 
 
-	
+
 
 -- AREA:
 
@@ -2579,7 +2579,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector_model
 	is
-		result : type_vector_model;
+		unused_result : type_vector_model;
 		v : type_vector;
 	begin
 		v := get_nearest (line, to_vector (point));
@@ -4602,7 +4602,8 @@ package body et_geometry_2a is
 		-- Make a copy of the given circle:
 		c : type_circle'class := circle;
 
-		b, result : type_area;
+		b : type_area;
+		unused_result : type_area;
 	begin
 		-- Rotate the center of the circle:
 		rotate_circle_by (c, rotation);

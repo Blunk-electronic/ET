@@ -49,6 +49,7 @@
 with et_string_processing;		use et_string_processing;
 package body et_netlists is
 
+--	use et_net_names;
 
 
 
@@ -106,7 +107,10 @@ package body et_netlists is
 
 
 	function to_prefix (instance : in type_module_instance_name) -- OSC1
-		return et_net_names.type_net_name is
+		return et_net_names.type_net_name
+	is
+		use et_net_names;
+		use et_module_instance;
 	begin
 		return to_net_name (to_string (instance) & level_separator);
 	end to_prefix;
@@ -122,7 +126,9 @@ package body et_netlists is
 		name			: in type_full_net_name;
 		primary			: in boolean;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use et_net_names;
+	begin
 		if primary then
 			log (
 				text => "primary net " & enclose_in_quotes (
@@ -434,6 +440,7 @@ package body et_netlists is
 		end query_submodules;
 
 
+		use et_net_names;
 	begin -- global_nets_in_submodules
 		log_indentation_up;
 
@@ -532,7 +539,7 @@ package body et_netlists is
 			log_indentation_down;
 		end query_nets;
 
-
+		use et_net_names;
 	begin
 		log_indentation_up;
 
@@ -615,7 +622,7 @@ package body et_netlists is
 			end if;
 		end query_submodules;
 
-
+		use et_net_names;
 	begin -- net_in_submodule
 		log_indentation_up;
 
@@ -651,7 +658,6 @@ package body et_netlists is
 		log_threshold	: in type_log_level)
 		return pac_netlist_nets.cursor
 	is
-		use pac_netlist_modules;
 
 		net_cursor_parent : pac_netlist_nets.cursor; -- to be returned
 
@@ -699,7 +705,7 @@ package body et_netlists is
 			end loop;
 		end query_nets;
 
-
+		use et_net_names;
 	begin -- net_in_parent_module
 		if is_root (parent_module_cursor) then -- this is the top module
 			-- there is no net

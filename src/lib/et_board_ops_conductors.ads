@@ -50,17 +50,17 @@ with et_axes;							use et_axes;
 with et_board_text;				use et_board_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_conductor_text.boards;			use et_conductor_text.boards;
+with et_conductor_text.boards;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_device_name;					use et_device_name;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_design_rules_board;				use et_design_rules_board;
 
-with et_net_names;						use et_net_names;
-with et_nets;							use et_nets;
+with et_net_names;
+with et_nets;
 
 with et_terminal_name;					use et_terminal_name;
-with et_object_status;					use et_object_status;
+with et_object_status;
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
@@ -73,6 +73,13 @@ package et_board_ops_conductors is
 	use pac_text_board_vectorized;
 	use pac_grid;
 
+	subtype type_net_name						is et_net_names.type_net_name;
+	subtype type_net_cursor						is et_nets.pac_nets.cursor;
+	subtype type_conductor_text_board			is et_conductor_text.boards.type_conductor_text_board;
+	subtype type_conductor_texts_board_list		is et_conductor_text.boards.pac_conductor_texts_board.list;
+	subtype type_conductor_texts_board_cursor	is et_conductor_text.boards.pac_conductor_texts_board.cursor;
+	subtype type_flag							is et_object_status.type_flag;
+	subtype type_status_operation				is et_object_status.type_status_operation;
 
 -- LINES:
 
@@ -192,7 +199,7 @@ package et_board_ops_conductors is
 	-- If line segments of a net are searched, then they can be
 	-- identified additionally by the associated net:
 	type type_object_line_net is record
-		net_cursor	: pac_nets.cursor;
+		net_cursor	: type_net_cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 
@@ -398,7 +405,7 @@ package et_board_ops_conductors is
 	-- If arc segments of a net are searched, then they can be
 	-- identified additionally by the associated net:
 	type type_object_arc_net is record
-		net_cursor	: pac_nets.cursor;
+		net_cursor	: type_net_cursor;
 		arc_cursor	: pac_conductor_arcs.cursor;
 	end record;
 
@@ -567,7 +574,7 @@ package et_board_ops_conductors is
 		fill_style : type_fill_style := SOLID)
 	is record
 		segment	: pac_contours.pac_segments.cursor;
-		net		: pac_nets.cursor;
+		net		: type_net_cursor;
 
 		case fill_style is
 			when SOLID =>
@@ -743,7 +750,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_conductor_texts_board.list;
+		return type_conductor_texts_board_list;
 
 
 	-- Moves a text:
@@ -758,8 +765,8 @@ package et_board_ops_conductors is
 
 	-- This type helps to identify a text by its cursor:
 	type type_object_text is record
-		cursor	: pac_conductor_texts_board.cursor :=
-			pac_conductor_texts_board.no_element;
+		cursor	: type_conductor_texts_board_cursor :=
+			et_conductor_text.boards.pac_conductor_texts_board.no_element;
 	end record;
 
 

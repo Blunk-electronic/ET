@@ -38,7 +38,7 @@
 
 
 -- with ada.text_io;			use ada.text_io;
-with et_board_geometry;				use et_board_geometry;
+with et_board_geometry;
 with et_module_names;				use et_module_names;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
@@ -172,6 +172,7 @@ package body et_board_ops_via_restrict is
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
 			procedure query_zone (z : in out type_via_restrict_contour) is
+				use et_board_geometry;
 				use pac_contours;
 				mr : type_merge_result;
 			begin

@@ -42,13 +42,14 @@ with ada.containers;            use ada.containers;
 with ada.containers.indefinite_ordered_sets;
 
 with et_port_direction;			use et_port_direction;
-with et_port_names;				use et_port_names;
+with et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_terminal_name;			use et_terminal_name;
 with et_device_name;			use et_device_name;
 
 package et_netlist_devices is
 
+	subtype type_port_name is et_port_names.type_port_name;
 
 	-- In a netlist, a device that is connected with
 	-- a certain net is modeled by this type:

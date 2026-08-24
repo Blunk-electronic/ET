@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 -- This program computes the distance of a point P to a conductor segment.
 -- The conductor segment is a line of width W. It has a start point S and
 -- an end point E.
@@ -65,9 +65,9 @@ procedure get_distance is
 	E, e_init : type_point := type_point (set (  1.000000, 1.00000000));
 	--E, e_init : type_point := type_point (set (  5.000000, 0.00000000));
 
-	
+
 	L : type_line := (S, E);
-	
+
 	d : type_rotation;
 
 	-- the center line of the conductor segment:
@@ -75,7 +75,7 @@ procedure get_distance is
 
 	-- the width of the conductor segment:
 	W : type_track_width := 0.15;
-	
+
 	segment : type_conductor_line_segment;
 	distance : type_distance;
 
@@ -87,8 +87,8 @@ procedure get_distance is
 		new_line;
 		put_line ("TEST No:" & natural'image (test_no));
 	end next_test;
-		
-	
+
+
 	function inside_segment (d : in type_distance)
 		return boolean
 	is begin
@@ -100,23 +100,23 @@ procedure get_distance is
 			return false;
 		end if;
 	end inside_segment;
-		
+
 begin
 
 	cl_init := (S, E, W);
 
-	
+
 	put_line ("line width" & to_string (W));
 
-	
+
 	--put_line ("segment " & to_string (segment));
-	
+
 	--distance := get_shortest_distance (P,segment);
 	--new_line;
-	
+
 	--put_line ("P:" & to_string (P) & " / D:" & to_string (distance));
 
-	
+
 	next_test;
 	put_line ("P MOVES UPWARDS");
 	P := p_init;
@@ -125,7 +125,7 @@ begin
 	put_line (to_string (segment));
 	for i in 1 .. 20_000 loop
 		P := type_point (move (P, 90.0, 0.0001));
-		
+
 		distance := get_shortest_distance (P,segment);
 		put_line (positive'image (i) & ": P:" & to_string (round (P))
 			& " / D:" & to_string (round (distance)));
@@ -135,7 +135,7 @@ begin
 		end if;
 	end loop;
 	-- 15000: P: (x/y)  2.0000000000/ 1.0000000000 / D: 0.9250000000
-	
+
 	next_test;
 	d := 120.0;
 	put_line ("P MOVES IN DIRECTION " & to_string (d) & " DEG");
@@ -145,7 +145,7 @@ begin
 	segment := to_line_segment (cl);
 	for i in 1 .. 40_000 loop
 		P := type_point (move (P, d, 0.0001));
-		
+
 		distance := get_shortest_distance (P,segment);
 		put_line (positive'image (i) & ": P:" & to_string (round (P))
 			& " / D:" & to_string (round (distance)));
@@ -156,19 +156,19 @@ begin
 	end loop;
 	-- 17990: P: (x/y)  1.1005000000/ 1.0579790000 / D: 0.0410250
 
-	
+
 	next_test;
 	put_line ("P ROTATES ABOUT THE ORIGIN");
 	P := type_point (set ( 1.49, -0.0000000));
 	cl := cl_init;
-	segment := to_line_segment (cl);	
+	segment := to_line_segment (cl);
 	for i in 1 .. 3600 loop
 		rotate_by (P, 0.1);
 
 		distance := get_shortest_distance (P,segment);
 
-		put_line (positive'image (i) & ": P:" & to_string (round (P)) 
-			& " A:" & to_string (get_rotation (P)) 
+		put_line (positive'image (i) & ": P:" & to_string (round (P))
+			& " A:" & to_string (get_rotation (P))
 			& " / D:" & to_string (round (distance)));
 
 		if inside_segment (distance) then
@@ -178,7 +178,7 @@ begin
 	--  450: P: (x/y)   1.0535891000/ 1.0535891000  A: 45.0000000   / D: 0.0007864
 	-- 2250: P: (x/y)  -1.0535891000/ -1.0535891000 A: -135.0000000 / D: 1.4150000
 
-	
+
 	-- The segment rotates about the origin.
 	-- The start point is fixed to the origin.
 	-- The end point rotates.
@@ -194,9 +194,9 @@ begin
 		cl := (S, E, W);
 
 		--round (cl);
-		
+
 		segment := to_line_segment (cl);
-		
+
 		distance := get_shortest_distance (P,segment);
 
 		put_line (positive'image (i) & ": E: " & to_string (round (E))
@@ -207,19 +207,19 @@ begin
 		end if;
 	end loop;
 
-	
+
 	new_line;
 	if errors = 0 then
 		put_line ("PASS");
 	else
 		put_line ("FAIL ! errors:" & natural'image (errors));
 	end if;
-	
+
 end get_distance;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

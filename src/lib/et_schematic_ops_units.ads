@@ -624,7 +624,7 @@ package et_schematic_ops_units is
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 		return pac_points.list;
-	
+
 
 	-- Deletes all units which are in the current
 	-- group. This affects all units which have the

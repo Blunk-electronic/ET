@@ -463,7 +463,7 @@ package body et_project is
 		current_working_directory : constant string := current_directory;
 
 		-- break down destination into path and project name:
-		path : type_project_path := to_project_path (containing_directory (to_string (destination)));
+		unused_path : type_project_path := to_project_path (containing_directory (to_string (destination)));
 		name : constant type_project_name := to_project_name (simple_name (to_string (destination)));
 
 

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;		use ada.strings.unbounded;
@@ -53,8 +53,8 @@ procedure winding is
 	use pac_geometry_2;
 	use pac_polygons;
 
-	
-	subtype type_index is natural range 0 .. 100;	
+
+	subtype type_index is natural range 0 .. 100;
 	idx : type_index := 0;
 
 	procedure next_index is begin
@@ -67,20 +67,20 @@ procedure winding is
 	procedure count_error is begin
 		errors := errors + 1;
 	end count_error;
-		
 
 
 
-	
+
+
 	B_default : constant string := "0 0  100 0  100 100  0 100";
 	B_default_cw : constant string := "0 0  0 100  100 100  100 0";
-	
+
 
 
 	procedure do_test (
 		s 			: in string;
 		w_expect	: in type_direction_of_rotation)
-	is 
+	is
 		P : type_polygon;
 		w_actual : type_direction_of_rotation;
 	begin
@@ -91,10 +91,10 @@ procedure winding is
 
 
 		-- USED TO TEST SET_WINDING:
-		
+
 		--new_line;
 		--put_line (to_string (P));
-		
+
 		--if w_actual = CCW then
 			--put_line ("winding is CCW. converting to CW ...");
 			--set_winding (P, CW);
@@ -102,10 +102,10 @@ procedure winding is
 			--put_line ("winding is CW. converting to CCW ...");
 			--set_winding (P, CCW);
 		--end if;
-		
+
 		--put_line ("new " & to_string (P));
 
-		
+
 		if w_actual /= w_expect then
 			count_error;
 			new_line;
@@ -116,7 +116,7 @@ procedure winding is
 		end if;
 	end do_test;
 
-	
+
 begin
 
 	-- TEST 1:
@@ -124,7 +124,7 @@ begin
 		s => B_default,
 		w_expect => CCW);
 
-	
+
 	-- TEST 2:
 	do_test (
 		s => B_default_cw,
@@ -136,12 +136,12 @@ begin
 		s => "20 -10  30 -10  110 50  30 110  20 110  25 50",
 		w_expect => CCW);
 
-	
+
 	-- TEST 4:
 	do_test (
 		s => " 40 -10  120 -10  120 50  80 50  80 -5  60 -5  60 50  40 50",
 		w_expect => CCW);
-	
+
 
 	-- TEST 5:
 	do_test (
@@ -149,19 +149,19 @@ begin
 			& " 60 90  60 110  40 110  40 80  90 80  90 10  110 10 "
 			& " 110 -5  20 -5  20 10",
 		w_expect => CCW);
-	
-	---------------------	
+
+	---------------------
 
 	new_line;
 	put_line ("--------------");
 	put_line ("ERRORS total:" & natural'image (errors));
 
-	
+
 end winding;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

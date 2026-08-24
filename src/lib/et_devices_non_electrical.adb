@@ -940,7 +940,7 @@ package body et_devices_non_electrical is
 		return string
 	is
 		use ada.strings.unbounded;
-		units_info : unbounded_string;
+		unused_units_info : unbounded_string;
 
 		device : type_device_non_electrical renames element (device_cursor);
 
@@ -1091,7 +1091,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		unused_rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			case get_face (device_cursor) is
@@ -1166,7 +1166,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		unused_rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- via restrict objects exist in outer layers only
 			case get_face (device_cursor) is
@@ -1341,7 +1341,7 @@ package body et_devices_non_electrical is
 		placeholder		: in type_text_placeholder)
 		return type_text_content
 	is
-		device : type_device_non_electrical renames element (device_cursor);
+		unused_device : type_device_non_electrical renames element (device_cursor);
 
 		result : type_text_content;
 	begin

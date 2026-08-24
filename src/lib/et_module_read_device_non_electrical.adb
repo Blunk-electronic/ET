@@ -86,11 +86,11 @@ package body et_module_read_device_non_electrical is
 
 	device_name		: et_device_name.type_device_name; -- C12
 
-	device_value	: et_device_value.type_device_value; -- 470R
+	unused_device_value	: et_device_value.type_device_value; -- 470R
 
-	device_partcode	: et_device_partcode.type_device_partcode;
-	device_purpose	: et_device_purpose.type_device_purpose;
-	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
+	unused_device_partcode	: et_device_partcode.type_device_partcode;
+	unused_device_purpose	: et_device_purpose.type_device_purpose;
+	unused_device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 

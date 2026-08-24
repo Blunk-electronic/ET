@@ -49,14 +49,15 @@
 --
 --
 
-with et_nets;					use et_nets;
-with et_net_names;				use et_net_names;
+with et_nets;
+with et_net_names;
 
 
 
 package et_module_write_tracks_route is
 
-
+	subtype type_net_name	is et_net_names.type_net_name;
+	subtype type_net		is et_nets.type_net;
 
 	procedure query_route (
 		net_name	: in type_net_name;

@@ -233,13 +233,13 @@ package body et_devices_electrical.units is
 		unit		: in type_unit_name)
 		return string
 	is begin
-		return "device " & to_string (device) 
+		return "device " & to_string (device)
 			& " unit " & to_string (unit);
 	end to_string;
 
 
 
-	
+
 
 	function get_full_name (
 		device		: in type_device_name;

@@ -150,9 +150,6 @@ package et_package_library is
 
 
 
-	use pac_package_model_file;
-
-
 	-- Package (or footprint) models are are stored in files ending with *.pac.
 	-- At the same time a
 	-- package name (like "libraries/packages/smd/SO14.pac")

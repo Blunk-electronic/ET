@@ -48,7 +48,6 @@ with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board;
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
-use et_board_geometry.pac_path_and_bend;
 
 
 

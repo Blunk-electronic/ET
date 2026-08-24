@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -63,7 +63,7 @@ begin
 
 	if is_valid (A) then
 		b := get_boundaries (A, zero);
-		
+
 		put_line (to_string (b));
 	end if;
 
@@ -73,7 +73,7 @@ end boundaries;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

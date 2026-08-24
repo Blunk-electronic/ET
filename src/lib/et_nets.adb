@@ -87,10 +87,10 @@ package body et_nets is
 
 
 
-	
+
 	procedure clear_route (
 		net		: in out type_net)
-	is 
+	is
 		use et_route;
 	begin
 		net.route := no_route;
@@ -98,7 +98,7 @@ package body et_nets is
 
 
 
-	
+
 	function copy_bare_net (
 		net_in			: in type_net;
 		create_strand	: in boolean)
@@ -111,16 +111,16 @@ package body et_nets is
 	begin
 		-- Reset the status flags:
 		reset_status (net_out.status);
-		
+
 		-- Delete all strands and net segments:
 		net_out.strands.clear;
 
 		-- If the caller requests for a new
 		-- empty strand, then create it here:
-		if create_strand then			
+		if create_strand then
 			net_out.strands.append (new_empty_strand);
 		end if;
-		
+
 		-- Remove all routing stuff:
 		clear_route (net_out);
 
@@ -129,7 +129,7 @@ package body et_nets is
 
 
 
-	
+
 
 
 	procedure set_proposed (
@@ -413,7 +413,7 @@ package body et_nets is
 		net		: in out type_net;
 		strands	: in pac_strands.list)
 	is
-		c : pac_strands.cursor := strands.first;
+		unused_c : pac_strands.cursor := strands.first;
 
 		procedure query_strand (s : in pac_strands.cursor) is
 			strand_to_delete : constant type_strand := element (s);
@@ -894,7 +894,7 @@ package body et_nets is
 		object	: in type_object_segment)
 		return type_sheet
 	is
-		segment : type_net_segment;
+		unused_segment : type_net_segment;
 	begin
 		return get_sheet (object.strand_cursor);
 	end get_sheet;

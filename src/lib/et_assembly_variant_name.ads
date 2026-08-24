@@ -54,7 +54,6 @@ package et_assembly_variant_name is
 	package pac_assembly_variant_name is new
 		generic_bounded_length (variant_name_length_max);
 
-	use pac_assembly_variant_name;
 
 	type type_assembly_variant_name is new pac_assembly_variant_name.bounded_string;
 

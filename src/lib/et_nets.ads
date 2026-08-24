@@ -133,13 +133,13 @@ package et_nets is
 		scope	: in type_net_scope);
 
 
-		
+
 	-- Removes all routing information of a net
 	-- such as tracks, vias, fill zones, ...:
 	procedure clear_route (
 		net		: in out type_net);
-		
-		
+
+
 	-- This function copies a given net but removes
 	-- all strands and routing stuff (tracks, fill zones, ...).
 	-- Properties like class and scope are copied.
@@ -150,8 +150,8 @@ package et_nets is
 		net_in			: in type_net;
 		create_strand	: in boolean)
 		return type_net;
-		
-		
+
+
 
 	procedure set_proposed (
 		net : in out type_net);

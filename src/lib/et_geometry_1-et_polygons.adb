@@ -673,7 +673,7 @@ package body et_geometry_1.et_polygons is
 	is
 		use pac_polygon_list;
 
-		result : boolean := false;
+		unused_result : boolean := false;
 
 		length_left  : constant count_type := left.length;
 		length_right : constant count_type := right.length;
@@ -974,7 +974,7 @@ package body et_geometry_1.et_polygons is
 		polygon : in type_polygon)
 		return type_direction_of_rotation
 	is
-		result : type_direction_of_rotation := CCW;
+		unused_result : type_direction_of_rotation := CCW;
 
 		-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
 		-- http://blog.element84.com/polygon-winding.html
@@ -3359,7 +3359,7 @@ package body et_geometry_1.et_polygons is
 
 
 		collected_vertices : count_type := 0;
-		deleted_vertices : count_type := 0;
+		unused_deleted_vertices : count_type := 0;
 		restart_required : boolean := false;
 
 
@@ -3378,7 +3378,7 @@ package body et_geometry_1.et_polygons is
 
 
 		procedure delete_cw is
-			c : pac_vertices.cursor;
+			unused_c : pac_vertices.cursor;
 		begin
 			null;
 			-- CS

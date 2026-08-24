@@ -48,7 +48,6 @@ with glib;						use glib;
 
 with gdk.event;					use gdk.event;
 with gdk.types;					use gdk.types;
-with gdk.types.keysyms;			use gdk.types.keysyms;
 
 with et_canvas_tool;			use et_canvas_tool;
 
@@ -57,7 +56,6 @@ with gtk.container;				use gtk.container;
 with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
-with gtk.gentry;				use gtk.gentry;
 with gtk.grid;					use gtk.grid;
 with gtk.combo_box;				use gtk.combo_box;
 with gtk.combo_box_text;		use gtk.combo_box_text;

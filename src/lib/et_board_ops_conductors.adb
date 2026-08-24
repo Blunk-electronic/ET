@@ -69,6 +69,12 @@ with et_commit;
 
 package body et_board_ops_conductors is
 
+	use et_conductor_text.boards;
+
+	subtype type_net is et_nets.type_net;
+
+	function to_string (item : type_net_name) return string
+	renames et_net_names.to_string;
 
 
 	function is_freetrack (
@@ -160,7 +166,7 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -171,11 +177,12 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			-- A track belonging to a net requires the net
-			-- to be located in the given module:
-			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
+
+			-- A track belonging to a net requires the net
+			-- to be located in the given module:
+			net_cursor : constant type_net_cursor := find (module.nets, net_name);
 
 
 			-- Appends the track to the net.
@@ -750,7 +757,9 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 
 
 		procedure query_module (
@@ -808,7 +817,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-
+		use et_object_status;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -857,6 +866,8 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return pac_object_lines.list
 	is
+		use et_nets;
+
 		result : pac_object_lines.list;
 
 
@@ -865,8 +876,9 @@ package body et_board_ops_conductors is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_nets;
-			net_cursor : pac_nets.cursor := module.nets.first;
+
+			use et_nets.pac_nets;
+			net_cursor : type_net_cursor := module.nets.first;
 
 
 			procedure query_net (
@@ -944,7 +956,7 @@ package body et_board_ops_conductors is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			net_name : type_net_name;
+			unused_net_name : type_net_name;
 
 
 			procedure query_line (c : in pac_conductor_lines.cursor) is
@@ -1003,7 +1015,9 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 		use pac_conductor_lines;
 
 
@@ -1108,7 +1122,8 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1213,7 +1228,8 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1317,7 +1333,10 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_line_net
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
+
 		result : type_object_line_net;
 
 		use pac_conductor_lines;
@@ -1423,9 +1442,10 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_line_floating
 	is
-		result : type_object_line_floating;
-
+		use et_object_status;
 		use pac_conductor_lines;
+
+		result : type_object_line_floating;
 
 
 		procedure query_module (
@@ -1502,7 +1522,8 @@ package body et_board_ops_conductors is
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -1549,7 +1570,6 @@ package body et_board_ops_conductors is
 
 
 			procedure process_nets is
-				use et_nets;
 
 				-- The serach for the next proposed line starts at the
 				-- given line. This flag is used to initiate the search:
@@ -1698,7 +1718,6 @@ package body et_board_ops_conductors is
 		use et_commit;
 
 		use pac_conductor_lines;
-		use et_nets;
 
 
 		procedure query_module (
@@ -1837,7 +1856,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -1850,8 +1870,6 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
 
 			procedure query_net (
 				net_name	: in type_net_name;
@@ -1993,7 +2011,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2020,8 +2039,6 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
 
 			-- Appends the track to the net.
 			procedure add (
@@ -2105,7 +2122,9 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 
 
 		procedure query_module (
@@ -2164,6 +2183,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use et_object_status;
 
 
 		procedure query_module (
@@ -2214,7 +2234,8 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2321,7 +2342,8 @@ package body et_board_ops_conductors is
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2413,7 +2435,10 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_arc_net
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
+
 		result : type_object_arc_net;
 
 		use pac_conductor_arcs;
@@ -2519,9 +2544,10 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_arc_floating
 	is
-		result : type_object_arc_floating;
-
+		use et_object_status;
 		use pac_conductor_arcs;
+
+		result : type_object_arc_floating;
 
 
 		procedure query_module (
@@ -2603,7 +2629,6 @@ package body et_board_ops_conductors is
 		use et_commit;
 
 		use pac_conductor_arcs;
-		use et_nets;
 
 
 		procedure query_module (
@@ -2739,7 +2764,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2752,8 +2778,6 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
 
 			procedure query_net (
 				net_name	: in type_net_name;
@@ -2891,7 +2915,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -2954,8 +2979,6 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module:
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
 
 
 			procedure ripup (
@@ -3069,7 +3092,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -3082,8 +3106,6 @@ package body et_board_ops_conductors is
 			pragma unreferenced (module_name);
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
 
 			procedure query_net (
 				net_name	: in type_net_name;
@@ -3152,7 +3174,9 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 		use pac_contours;
 		use pac_segments;
 		use pac_route_solid;
@@ -3264,6 +3288,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use et_object_status;
 		use pac_contours;
 		use pac_segments;
 		use pac_floating_solid;
@@ -3362,7 +3387,8 @@ package body et_board_ops_conductors is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -3579,7 +3605,8 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 
 
 		procedure query_module (
@@ -3780,7 +3807,9 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_segment_net
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 
 		result : type_object_segment_net;
 		-- Note: By default the fill style of the result is SOLID.
@@ -3974,6 +4003,7 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_segment_floating
 	is
+		use et_object_status;
 
 		result : type_object_segment_floating;
 		-- Note: By default the fill style of the result is SOLID.
@@ -4146,7 +4176,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -4355,7 +4386,8 @@ package body et_board_ops_conductors is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
@@ -4571,7 +4603,6 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
-		use et_conductor_text.boards;
 		use et_mirroring;
 
 
@@ -4581,7 +4612,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			use pac_conductor_texts_board;
-			vectors : pac_character_lines.list;
+			unused_vectors : pac_character_lines.list;
 			mirror : type_mirror;
 
 			v_text : type_vector_text;
@@ -4666,11 +4697,12 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_conductor_texts_board.list
+		return type_conductor_texts_board_list
 	is
 		use et_text_content;
-		use pac_conductor_texts_board;
-		result : pac_conductor_texts_board.list;
+		use et_conductor_text.boards.pac_conductor_texts_board;
+
+		result : type_conductor_texts_board_list;
 
 
 		procedure query_module (
@@ -4814,6 +4846,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use et_object_status;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -5058,6 +5091,8 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_text
 	is
+		use et_object_status;
+
 		result : type_object_text;
 
 
@@ -5075,7 +5110,6 @@ package body et_board_ops_conductors is
 
 
 			procedure query_text (c : in pac_conductor_texts_board.cursor) is
-				use et_object_status;
 			begin
 				case flag is
 					when PROPOSED =>
@@ -5245,6 +5279,7 @@ package body et_board_ops_conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use et_object_status;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -5482,6 +5517,8 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object_placeholder
 	is
+		use et_object_status;
+
 		result : type_object_placeholder;
 
 
@@ -5501,7 +5538,6 @@ package body et_board_ops_conductors is
 			procedure query_placeholder (
 				c : in pac_placeholders_conductor.cursor)
 			is
-				use et_object_status;
 			begin
 				case flag is
 					when PROPOSED =>
@@ -5625,6 +5661,8 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
+		use et_object_status;
+
 		result_category			: type_object_category := CAT_VOID;
 		result_segment_net	: type_object_segment_net;
 		result_segment_floating : type_object_segment_floating;
@@ -5890,8 +5928,12 @@ package body et_board_ops_conductors is
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
+		use et_object_status;
 		use pac_objects;
+
+
 		result : pac_objects.list;
 
 
@@ -6397,7 +6439,9 @@ package body et_board_ops_conductors is
 		object			: in type_object;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is begin
+	is
+		use et_object_status;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of object "
 			& type_object_category'image (object.cat)
@@ -6579,7 +6623,8 @@ package body et_board_ops_conductors is
 		object			: in type_object;
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
+		use et_nets;
+		use et_nets.pac_nets;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 		use et_ripup;

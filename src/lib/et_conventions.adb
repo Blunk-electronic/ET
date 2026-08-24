@@ -2617,7 +2617,7 @@ package body et_conventions is
 			inserted : boolean := false;
 
 			-- we deal with columns and need to index them
-			subtype type_column is positive range 1 .. 8;
+			-- subtype type_column is positive range 1 .. 8;
 
 			use et_schematic_geometry;
 			use pac_geometry_2;

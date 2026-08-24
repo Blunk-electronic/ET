@@ -35,7 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
--- 
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
@@ -58,7 +58,7 @@ procedure to_polygon is
 	use pac_contours;
 
 
-	subtype type_index is natural range 0 .. 100;	
+	subtype type_index is natural range 0 .. 100;
 	idx : type_index := 0;
 
 	procedure next_index is begin
@@ -71,7 +71,7 @@ procedure to_polygon is
 	procedure count_error is begin
 		errors := errors + 1;
 	end count_error;
-		
+
 
 
 	procedure do_test (
@@ -79,25 +79,25 @@ procedure to_polygon is
 		tolerance			: in type_distance_positive;
 		mode				: in type_approximation_mode;
 		polygon_expect		: in string)
-	is 
+	is
 		C_in : type_contour := type_contour (to_contour (contour_segments));
-		
+
 		P_exp : type_polygon := to_polygon (polygon_expect);
 		P_actual : type_polygon;
 	begin
 		next_index;
 
-		
+
 		--put_line (to_string (P_in));
 		--new_line;
 		--put_line (to_string (P_exp));
-		
+
 		P_actual := to_polygon (
-			contour		=> C_in, 
-			tolerance	=> tolerance, 
+			contour		=> C_in,
+			tolerance	=> tolerance,
 			mode		=> mode,
 			debug		=> true); -- debug messages on
-		
+
 		if not are_congruent (P_actual, P_exp) then
 			count_error;
 			new_line;
@@ -111,7 +111,7 @@ procedure to_polygon is
 
 begin
 
-	
+
 	do_test (
 		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
 		tolerance => 20.0, --fab_tolerance,
@@ -119,22 +119,22 @@ begin
 		polygon_expect => "0 0  100 0  100 100  0 100"); -- CCW
 
 
-	
+
 	do_test (
 		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
 		tolerance => 20.0, --fab_tolerance,
 		mode => SHRINK, -- don't care here because contour consists of lines only
 		polygon_expect => "0 0  0 100  100 100  100 0"); -- CW
 
-	
+
 	do_test (
 		contour_segments => "line 0 0  line 0 100  line 100 100  line 100 0", -- CW
 		tolerance => 20.0, --fab_tolerance,
 		mode => SHRINK, -- don't care here because contour consists of lines only
 		polygon_expect => "0 0  100 0  100 100  0 100");
 
-	
-	
+
+
 
 	do_test (
 		contour_segments => "arc 50 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
@@ -149,7 +149,7 @@ begin
 			);
 
 
-	
+
 	do_test (
 		contour_segments => "arc 50 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
 			& "line 100 0 line 100 100 line 0 100",
@@ -163,26 +163,26 @@ begin
 			& "100.0 0.0"
 			);
 
-	
+
 
 goto skip1;
 
 --<<skip1>>
-	
+
 	do_test (
 		--contour_segments => "circle 7.5 25 2.5",
 		contour_segments => "circle 0 0 10",
 
 		tolerance => 1.0, --fab_tolerance,
 		mode => SHRINK,
-		
+
 		polygon_expect =>
 			  "0 10 "
 			& "-4.33883739117558121E+00  9.00968867902419126E+00 "
 			& "-7.81831482468029809E+00  6.23489801858733530E+00 "
 			& "-9.74927912181823607E+00  2.22520933956314404E+00 "
 			& "-9.74927912181823607E+00 -2.22520933956314404E+00 "
-			& "-7.81831482468029809E+00 -6.23489801858733530E+00 " 
+			& "-7.81831482468029809E+00 -6.23489801858733530E+00 "
 			& "-4.33883739117558121E+00 -9.00968867902419126E+00 "
 			&  "0 -10 "
 
@@ -191,22 +191,22 @@ goto skip1;
 			& "9.74927912181823607E+00 -2.22520933956314404E+00 "
 			& "9.74927912181823607E+00  2.22520933956314404E+00 "
 			& "7.81831482468029809E+00  6.23489801858733530E+00 "
-			& "4.33883739117558121E+00  9.00968867902419126E+00 "); 
+			& "4.33883739117558121E+00  9.00968867902419126E+00 ");
 
 <<skip1>>
-	
-	---------------------	
+
+	---------------------
 
 	new_line;
 	put_line ("--------------");
 	put_line ("ERRORS total:" & natural'image (errors));
 
-	
+
 end to_polygon;
 
 -- Soli Deo Gloria
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16

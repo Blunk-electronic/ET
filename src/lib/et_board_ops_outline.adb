@@ -1357,7 +1357,7 @@ package body et_board_ops_outline is
 			procedure query_hole (
 				hole : in out type_hole)
 			is
-				c : pac_segments.cursor;
+				unused_c : pac_segments.cursor;
 			begin
 				if is_circular (hole) then
 					null; -- CS

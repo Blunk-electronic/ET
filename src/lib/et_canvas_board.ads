@@ -52,8 +52,6 @@ with gtk;
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
-with gtk.combo_box;
-with gtk.combo_box_text;			use gtk.combo_box_text;
 
 with cairo;							use cairo;
 

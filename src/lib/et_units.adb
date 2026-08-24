@@ -57,7 +57,7 @@ package body et_units is
 		return type_vector_model
 	is (get_place (unit.position));
 
-	
+
 
 	function get_position (
 		unit	: in type_unit)
@@ -234,7 +234,7 @@ package body et_units is
 
 
 
-	
+
 
 
 	function on_sheet_and_selected (
@@ -249,14 +249,14 @@ package body et_units is
 				result := true;
 			end if;
 		end if;
-		
+
 		return result;
 	end on_sheet_and_selected;
 
 
 
 
-	
+
 
 
 	procedure unit_not_found (

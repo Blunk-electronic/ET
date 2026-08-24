@@ -85,10 +85,10 @@ package body et_schematic_ops_assembly_variant is
 	function get_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in type_assembly_variant_name)
-		return pac_assembly_variants.cursor
+		return et_assembly_variants.pac_assembly_variants.cursor
 	is
 		module : type_generic_module renames element (module_cursor);
-		use pac_assembly_variants;
+		use et_assembly_variants.pac_assembly_variants;
 	begin
 		return find (module.assembly_variants.variants, variant_name);
 	end get_assembly_variant;
@@ -328,6 +328,8 @@ package body et_schematic_ops_assembly_variant is
 		device	: in type_device_name)
 		return boolean
 	is
+		use et_assembly_variants;
+
 		result : boolean := false; -- to be returned
 
 
@@ -345,7 +347,6 @@ package body et_schematic_ops_assembly_variant is
 				variant			: in type_assembly_variant)
 			is
 				pragma unreferenced (variant_name);
-				use et_assembly_variants;
 				use pac_device_variants;
 				device_cursor : pac_device_variants.cursor;
 			begin
@@ -398,8 +399,9 @@ package body et_schematic_ops_assembly_variant is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in type_assembly_variant_name; -- low_cost
 		device	: in type_device_name)
-		return pac_device_variants.cursor
+		return et_assembly_variants.pac_device_variants.cursor
 	is
+		use et_assembly_variants;
 
 		cursor : pac_device_variants.cursor; -- to be returned;
 

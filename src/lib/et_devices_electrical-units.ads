@@ -190,7 +190,7 @@ package et_devices_electrical.units is
 		return string;
 
 
-	
+
 	-- This function concatenates the device name and unit name, separated
 	-- by the device_unit_separator. If the given unit_count is 1 then just
 	-- the device name will be returned as string.
