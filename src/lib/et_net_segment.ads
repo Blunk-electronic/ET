@@ -83,7 +83,8 @@ package et_net_segment is
 	-- segment_out. segment_out will be moved
 	-- away from segment_in by offset.
 	-- Copies also the net labels and connectors.
-	-- NOTE: junctions are not copied.
+	-- NOTE: Junctions and ports are not copied
+	-- but deleted:
 	procedure copy_net_segment (
 		segment_in	: in type_net_segment;
 		segment_out	: out type_net_segment;
