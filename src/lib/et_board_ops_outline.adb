@@ -48,6 +48,10 @@ with et_commit;
 
 package body et_board_ops_outline is
 
+--	use pac_contours;
+
+	subtype type_merge_result	is pac_contours.type_merge_result;
+	subtype type_segment		is pac_contours.type_segment;
 
 
 	procedure set_outline (
@@ -159,6 +163,7 @@ package body et_board_ops_outline is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_contours;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -206,10 +211,11 @@ package body et_board_ops_outline is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_cursor	: in pac_segments.cursor;
+		segment_cursor	: in type_contour_segment_cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_contours;
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -268,8 +274,11 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_segments;
-			c : pac_segments.cursor;
+
+			use pac_contours;
+			use pac_contours.pac_segments;
+
+			c : pac_contours.pac_segments.cursor;
 
 
 			procedure query_segment (
@@ -331,7 +340,10 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
+
 			c : pac_segments.cursor;
 
 
@@ -386,9 +398,9 @@ package body et_board_ops_outline is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_segments.cursor
+		return type_contour_segment_cursor
 	is
-		result : pac_segments.cursor;
+		result : type_contour_segment_cursor;
 
 
 		procedure query_module (
@@ -396,6 +408,8 @@ package body et_board_ops_outline is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
 			proceed : aliased boolean := true;
 
@@ -467,7 +481,10 @@ package body et_board_ops_outline is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
+
 			proceed : aliased boolean := true;
 
 
@@ -532,7 +549,7 @@ package body et_board_ops_outline is
 
 	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in out pac_segments.cursor;
+		segment			: in out type_contour_segment_cursor;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -542,7 +559,10 @@ package body et_board_ops_outline is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
+
 			c : pac_segments.cursor := next (segment);
 		begin
 			-- Start the search after the given segment:
@@ -594,7 +614,7 @@ package body et_board_ops_outline is
 
 	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in pac_segments.cursor;
+		segment			: in type_contour_segment_cursor;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -606,6 +626,8 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
 
 			procedure do_it (s : in out type_segment) is begin
@@ -617,7 +639,7 @@ package body et_board_ops_outline is
 				segment, do_it'access);
 		end query_module;
 
-
+		use pac_contours;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving outline segment " & to_string (segment)
@@ -664,6 +686,8 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
+
+			use pac_contours;
 			use pac_segments;
 
 			procedure do_it (s : in out type_segment) is begin
@@ -680,6 +704,7 @@ package body et_board_ops_outline is
 		end query_module;
 
 
+		use pac_contours;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " move outer contour segment " & to_string (segment.segment)
@@ -769,7 +794,9 @@ package body et_board_ops_outline is
 
 
 			procedure delete_segment is
+				use pac_contours;
 				use pac_segments;
+
 				c : pac_segments.cursor;
 			begin
 				c := module.board.board_contour.outline.contour.segments.first;
@@ -853,7 +880,7 @@ package body et_board_ops_outline is
 
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in pac_segments.cursor;
+		segment			: in type_contour_segment_cursor;
 		log_threshold	: in type_log_level)
 	is
 
@@ -862,12 +889,14 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_segments.cursor := segment;
+
+			c : type_contour_segment_cursor := segment;
 		begin
 			module.board.board_contour.outline.contour.segments.delete (c);
 		end query_module;
 
 
+		use pac_contours;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " deleting outline segment " & to_string (segment),
@@ -913,13 +942,15 @@ package body et_board_ops_outline is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			c : pac_segments.cursor := segment.segment;
+
+			c : type_contour_segment_cursor := segment.segment;
 		begin
 			-- CS test circular flag ?
 			module.board.board_contour.outline.contour.segments.delete (c);
 		end query_module;
 
 
+		use pac_contours;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete outer contour segment " & to_string (segment.segment),
@@ -1071,10 +1102,7 @@ package body et_board_ops_outline is
 			procedure query_hole (
 				hole : in out type_hole)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (hole) then
 					null; -- CS
@@ -1158,10 +1186,7 @@ package body et_board_ops_outline is
 			procedure query_hole (
 				hole : in out type_hole)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (hole) then
 					null; -- CS
@@ -1233,7 +1258,6 @@ package body et_board_ops_outline is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_contours;
 			use pac_segments;
 			use pac_holes;
 
