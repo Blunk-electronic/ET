@@ -262,7 +262,7 @@ package et_kicad.schematic is
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : type_appearance_schematic) is record
 		library_name	: type_device_model_name; -- lib name like ../libraries/transistors.lib
-		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		generic_name	: type_component_generic_name; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
 		value			: type_device_value; -- 470R
 		units			: type_units_schematic.map; -- PWR, A, B, ...
@@ -965,7 +965,7 @@ package et_kicad.schematic is
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_device_model_name; -- incl. path and file name
-		component	: in type_component_generic_name.bounded_string)
+		component	: in type_component_generic_name)
 		return type_components_library.cursor;
 
 	procedure reset_component_cursor (cursor : in out type_components_schematic.cursor);

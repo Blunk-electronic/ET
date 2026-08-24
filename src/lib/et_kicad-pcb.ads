@@ -114,6 +114,10 @@ package et_kicad.pcb is
 
 	use et_board_text.pac_text_board_vectorized;
 
+	subtype type_vector_model		is et_board_geometry.pac_geometry_2.type_vector_model;
+	subtype type_distance_positive	is et_board_geometry.pac_geometry_2.type_distance_positive;
+
+
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
 	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)

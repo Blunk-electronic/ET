@@ -2038,7 +2038,7 @@ is
 
 		reference					: type_device_name;	-- like IC5
 		appearance					: type_appearance := APPEARANCE_VIRTUAL; -- CS: why this default ?
-		generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
+		generic_name_in_lbr			: type_component_generic_name; -- like TRANSISTOR_PNP
 
 		-- V5:
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
@@ -2295,7 +2295,7 @@ is
 		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function generic_name_to_library (
-			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+			component		: in type_component_generic_name; -- the generic name like "RESISTOR"
 			reference		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
 			return type_device_model_name -- the full library name like "../libraries/resistors.lib"
@@ -2327,7 +2327,7 @@ is
 
 					-- Sometimes generic names in the library start with a tilde. it must
 					-- be removed before testing the name.
-					if type_component_generic_name."=" (strip_tilde (key (component_cursor)), component) then
+					if pac_component_generic_name."=" (strip_tilde (key (component_cursor)), component) then
 						component_found := true;
 						exit;
 					end if;
@@ -2385,7 +2385,7 @@ is
 		-- The given reference serves to provide a helpful error message on the affected
 		-- component in the schematic.
 		function full_name_of_component_library (
-			component		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+			component		: in type_component_generic_name; -- the generic name like "RESISTOR"
 			reference		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
 			return type_device_model_name
@@ -2959,7 +2959,7 @@ is
 		end add_alternative_reference;
 
 
-		function generic_name (text : in string) return type_component_generic_name.bounded_string is
+		function generic_name (text : in string) return type_component_generic_name is
 		-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
 			ifs : constant string := ":";
 
@@ -2969,7 +2969,7 @@ is
 
 			pos : constant type_pos := index (text, ifs); -- get position of ifs
 		begin -- generic_name
-			return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
+			return pac_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
 		end generic_name;
 
 
@@ -3010,7 +3010,7 @@ is
 
 				case et_import.cad_format is
 					when et_import.KICAD_V4 =>
-						generic_name_in_lbr := type_component_generic_name.to_bounded_string (
+						generic_name_in_lbr := pac_component_generic_name.to_bounded_string (
 												f (element (line_cursor), 2)); -- "SN74LS00"
 
 					when et_import.KICAD_V5 =>

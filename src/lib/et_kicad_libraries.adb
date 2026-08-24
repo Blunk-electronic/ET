@@ -74,6 +74,11 @@ with et_package_library;
 
 package body et_kicad_libraries is
 
+	use et_package_name;
+
+	subtype type_vector_model is pac_geometry_2.type_vector_model;
+
+
 	function to_string (meaning : in type_placeholder_meaning)
 		return string
 	is (to_lower (type_placeholder_meaning'image (meaning)));
@@ -255,7 +260,7 @@ package body et_kicad_libraries is
 
 	function to_package_name (
 		library_name	: in type_device_model_name; -- ../libraries/transistors.lib
-		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
+		generic_name	: in type_component_generic_name; -- TRANSISTOR_PNP
 		package_variant	: in type_package_variant_name) -- N, D
 		return type_package_name
 	is
@@ -317,7 +322,7 @@ package body et_kicad_libraries is
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
 		library			: in type_device_model_name; -- ../lib/transistors.lib
-		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
+		generic_name	: in type_component_generic_name) -- TRANSISTOR_NPN
 		is
 	begin
 		log (SEVERITY_ERROR, "component " & to_string (reference) -- CS: output coordinates
@@ -346,7 +351,7 @@ package body et_kicad_libraries is
 		unit_cursor : type_units_library.cursor;
 
 		procedure locate (
-			name		: in type_component_generic_name.bounded_string;
+			name		: in type_component_generic_name;
 			component	: in type_component_library) is
 				pragma unreferenced (name);
 
@@ -930,9 +935,11 @@ package body et_kicad_libraries is
 
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
-		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
+		name		: in type_component_generic_name; -- TRANSISTOR_NPN
 		characters	: in character_set)
 	is
+		use pac_component_generic_name;
+
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given generic name and get position of possible invalid characters.
@@ -954,28 +961,28 @@ package body et_kicad_libraries is
 
 
 
-	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
+	function to_string (generic_name : in type_component_generic_name) return string is
 	-- Returns the given generic name as as string.
 	-- CS: provide a parameter that turns the pretext like "generic name" on/off
 	begin
-		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
-		return type_component_generic_name.to_string (generic_name);
+		--return ("generic name " & pac_component_generic_name.to_string (name_in_library));
+		return pac_component_generic_name.to_string (generic_name);
 	end to_string;
 
 
 
 
-	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string is
+	function strip_tilde (generic_name : in type_component_generic_name) return
+		type_component_generic_name is
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
 	-- The leading tilde marks a component whose value is set to "invisible".
-		use type_component_generic_name;
-		length : type_component_generic_name.length_range;
+		use pac_component_generic_name;
+		length : pac_component_generic_name.length_range;
 	begin
 		if element (generic_name, 1) = '~' then
-			length := type_component_generic_name.length (generic_name);
-			return type_component_generic_name.bounded_slice (generic_name, 2, length);
+			length := pac_component_generic_name.length (generic_name);
+			return pac_component_generic_name.bounded_slice (generic_name, 2, length);
 		else
 			return generic_name;
 		end if;
@@ -984,9 +991,9 @@ package body et_kicad_libraries is
 
 
 
-	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string is
-		use type_component_generic_name;
+	function prepend_tilde (generic_name : in type_component_generic_name) return
+		type_component_generic_name is
+		use pac_component_generic_name;
 	begin
 		return '~' & generic_name;
 	end prepend_tilde;
@@ -998,7 +1005,6 @@ package body et_kicad_libraries is
 	procedure validate_component_package_name
 		(name : in type_package_name)
 	is
-		use et_package_name;
 
 		procedure no_package is begin
 			log (SEVERITY_ERROR, "no package associated !",
@@ -1332,7 +1338,7 @@ package body et_kicad_libraries is
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units):
-			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
+			tmp_component_name		: type_component_generic_name; -- 74LS00 -- CS: rename to generic_name
 			tmp_prefix				: type_device_prefix; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_appearance; -- CS: rename to appearance
 
@@ -1837,7 +1843,7 @@ package body et_kicad_libraries is
 
 
 			begin -- to_text
-				text.rotation := to_rotation_doc (-to_degrees (f (line,2)));
+				text.rotation := to_rotation_doc (-to_degrees (f (line, 2)));
 
 				set (text.position, AXIS_X, mil_to_distance (mil => f (line, 3)));
 				set (text.position, AXIS_Y, mil_to_distance (mil => f (line, 4)));
@@ -2344,7 +2350,7 @@ package body et_kicad_libraries is
 
 				procedure locate_unit (
 				-- sets the unit_cursor
-					key			: in type_component_generic_name.bounded_string;
+					key			: in type_component_generic_name;
 					component	: in type_component_library) is
 				pragma unreferenced (key);
 				begin
@@ -2393,7 +2399,7 @@ package body et_kicad_libraries is
 
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
-					key			: in type_component_generic_name.bounded_string;
+					key			: in type_component_generic_name;
 					component	: in out type_component_library) is
 						pragma unreferenced (key);
 
@@ -2519,7 +2525,7 @@ package body et_kicad_libraries is
 
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
-					key			: in type_component_generic_name.bounded_string;
+					key			: in type_component_generic_name;
 					component	: in out type_component_library) is
 				pragma unreferenced (key);
 				begin
@@ -2607,7 +2613,7 @@ package body et_kicad_libraries is
 
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
-					key			: in type_component_generic_name.bounded_string;
+					key			: in type_component_generic_name;
 					component	: in out type_component_library) is
 				pragma unreferenced (key);
 				begin
@@ -2876,7 +2882,7 @@ package body et_kicad_libraries is
 				procedure do_it is
 				-- Adds the footprint finally.
 					procedure insert_footprint (
-						key			: in type_component_generic_name.bounded_string;
+						key			: in type_component_generic_name;
 						component	: in out type_component_library) is
 					pragma unreferenced (key);
 					begin
@@ -2986,7 +2992,7 @@ package body et_kicad_libraries is
 					pragma unreferenced (lib_name);
 
 					procedure build (
-						comp_name	: in type_component_generic_name.bounded_string;
+						comp_name	: in type_component_generic_name;
 						component	: in out type_component_library)
 					is
 						pragma unreferenced (comp_name);
@@ -3121,7 +3127,7 @@ package body et_kicad_libraries is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := type_component_generic_name.to_bounded_string (
+								tmp_component_name := pac_component_generic_name.to_bounded_string (
 														f (line, 2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
@@ -3425,7 +3431,7 @@ package body et_kicad_libraries is
 	-- name of package library and package name.
 	function to_package_variant (
 		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
-		generic_name		: in type_component_generic_name.bounded_string;				-- 7400
+		generic_name		: in type_component_generic_name;				-- 7400
 		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
 		package_name		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
@@ -3452,7 +3458,7 @@ package body et_kicad_libraries is
 
 			-- Queries the package variants of the generic component.
 			procedure query_variants (
-				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
+				component_name	: in type_component_generic_name; -- RESISTOR
 				component		: in out type_component_library)
 			is
 				pragma unreferenced (component_name);
@@ -3688,7 +3694,7 @@ package body et_kicad_libraries is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
 		library		: in type_device_model_name;
-		component	: in type_component_generic_name.bounded_string)
+		component	: in type_component_generic_name)
 		return type_components_library.cursor is
 
 		lib_cursor	: type_device_libraries.cursor;

@@ -71,7 +71,9 @@ with et_text_content;
 
 package body et_kicad.schematic is
 
---	use et_port_names;
+	subtype type_vector_model			is pac_geometry_2.type_vector_model;
+	subtype type_package_variant_name	is et_package_variant_name.type_package_variant_name;
+	subtype type_package_name			is et_package_name.type_package_name;
 
 
 	-- Returns the base name of the given schematic file name as submodule name.
@@ -1004,7 +1006,7 @@ package body et_kicad.schematic is
 	-- name of package library and package name.
 	function to_package_variant (
 		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
-		generic_name		: in type_component_generic_name.bounded_string;				-- 7400
+		generic_name		: in type_component_generic_name;				-- 7400
 		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
 		package_name		: in et_package_name.type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
@@ -1033,7 +1035,7 @@ package body et_kicad.schematic is
 
 			-- Queries the package variants of the generic component.
 			procedure query_variants (
-				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
+				component_name	: in type_component_generic_name; -- RESISTOR
 				component		: in out type_component_library)
 			is
 				pragma unreferenced (component_name);
@@ -4137,7 +4139,7 @@ package body et_kicad.schematic is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
 		library		: in type_device_model_name;
-		component	: in type_component_generic_name.bounded_string)
+		component	: in type_component_generic_name)
 		return type_components_library.cursor
 	is
 		lib_cursor	: type_device_libraries.cursor;
@@ -4969,7 +4971,7 @@ package body et_kicad.schematic is
 
 
 				procedure query_units_lib (
-					component_name	: in type_component_generic_name.bounded_string;
+					component_name	: in type_component_generic_name;
 					component		: in type_component_library)
 				is
 					pragma unreferenced (component_name);
@@ -5072,7 +5074,7 @@ package body et_kicad.schematic is
 				end query_units_lib;
 
 
-				use type_component_generic_name;
+				use pac_component_generic_name;
 				generic_model_found : boolean := false; -- goes true once the generic model was found
 
 
@@ -7159,7 +7161,7 @@ package body et_kicad.schematic is
 			component_cursor : type_components_schematic.cursor;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
@@ -7176,7 +7178,7 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
@@ -7324,7 +7326,7 @@ package body et_kicad.schematic is
 			component_cursor : type_components_schematic.cursor;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			--use type_libraries;
@@ -7342,7 +7344,7 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);
@@ -7506,7 +7508,7 @@ package body et_kicad.schematic is
 			--package_name : type_package_name;
 
 			library_name	: type_device_model_name;
-			generic_name	: type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
 			library_cursor	: type_device_libraries.cursor;
@@ -7523,7 +7525,7 @@ package body et_kicad.schematic is
 
 				-- Looks up the list of variants of the component.
 				procedure query_variants (
-					name		: in type_component_generic_name.bounded_string;
+					name		: in type_component_generic_name;
 					component	: in type_component_library)
 				is
 					pragma unreferenced (name);

@@ -91,6 +91,7 @@ package body et_kicad.pcb is
 	use et_fill_zones;
 	use pac_holes;
 
+	subtype type_package_name is et_package_name.type_package_name;
 
 
 	function to_plot_output_directory (directory : in string)

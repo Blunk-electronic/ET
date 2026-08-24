@@ -2590,7 +2590,7 @@ package body et_kicad_to_native is
 		-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 		function concatenate_lib_name_and_generic_name (
 			library	: in type_device_model_name; -- ../../lbr/bel_logic.lib
-			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
+			device	: in et_kicad_libraries.pac_component_generic_name.bounded_string) -- 7400
 			return type_device_model_name
 		is
 
@@ -3343,8 +3343,8 @@ package body et_kicad_to_native is
 				use et_kicad_libraries.type_components_library;
 				component_cursor : et_kicad_libraries.type_components_library.cursor := library.first;
 
-				use et_kicad_libraries.type_component_generic_name;
-				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
+				use et_kicad_libraries.pac_component_generic_name;
+				generic_name : et_kicad_libraries.pac_component_generic_name.bounded_string; -- 7400
 				device_model : type_device_model_name; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : pac_device_models.cursor;
