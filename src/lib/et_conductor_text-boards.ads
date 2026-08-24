@@ -37,7 +37,7 @@
 --
 --   to do:
 
-
+with ada.containers.doubly_linked_lists;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -63,7 +63,7 @@ package et_conductor_text.boards is
 		return type_signal_layer;
 
 
-	package pac_conductor_texts_board is new doubly_linked_lists (
+	package pac_conductor_texts_board is new ada.containers.doubly_linked_lists (
 		type_conductor_text_board);
 
 	use pac_conductor_texts_board;

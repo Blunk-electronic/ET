@@ -37,12 +37,14 @@
 --
 --   to do:
 
-
+with ada.containers.doubly_linked_lists;
 
 package et_conductor_text.packages is
 
 
-	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+	use pac_polygons;
+
+	package pac_conductor_texts is new ada.containers.doubly_linked_lists (type_conductor_text);
 	use pac_conductor_texts;
 
 

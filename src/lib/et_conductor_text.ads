@@ -37,10 +37,6 @@
 --
 --   to do:
 
-with ada.containers;			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-
 with et_mirroring;				use et_mirroring;
 with et_board_geometry;			use et_board_geometry;
 with et_board_text;				use et_board_text;
@@ -49,14 +45,7 @@ with et_board_text;				use et_board_text;
 package et_conductor_text is
 
 	use pac_geometry_2;
-
-
-	use pac_geometry_brd;
-	use pac_polygons;
-
-
 	use pac_text_board_vectorized;
-
 
 
 
