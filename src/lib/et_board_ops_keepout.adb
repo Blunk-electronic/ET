@@ -291,10 +291,7 @@ package body et_board_ops_keepout is
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -395,10 +392,7 @@ package body et_board_ops_keepout is
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -480,7 +474,6 @@ package body et_board_ops_keepout is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_contours;
 			use pac_segments;
 			use pac_keepout_zones;
 
