@@ -56,11 +56,13 @@ package body et_silkscreen is
 
 
 	procedure iterate (
-		lines	: in pac_silk_lines.list;
-		process	: not null access procedure (position : in pac_silk_lines.cursor);
+		lines	: in type_silk_lines_list;
+		process	: not null access procedure (position : in type_silk_lines_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_silk_lines.cursor := lines.first;
+		use pac_silk_lines;
+
+		c : type_silk_lines_cursor := lines.first;
 	begin
 		while c /= pac_silk_lines.no_element and proceed.all = TRUE loop
 			process (c);
@@ -71,26 +73,34 @@ package body et_silkscreen is
 
 
 	function is_proposed (
-		line_cursor	: in pac_silk_lines.cursor)
+		line_cursor	: in type_silk_lines_cursor)
 		return boolean
-	is (is_proposed (element (line_cursor)));
-
+	is
+		use pac_silk_lines;
+	begin
+		return is_proposed (element (line_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		line_cursor	: in pac_silk_lines.cursor)
+		line_cursor	: in type_silk_lines_cursor)
 		return boolean
-	is (is_selected (element (line_cursor)));
-
+	is
+		use pac_silk_lines;
+	begin
+		return is_selected (element (line_cursor));
+	end is_selected;
 
 
 	procedure mirror_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_silk_lines.list;
+		use pac_silk_lines;
 
-		procedure query_line (c : in pac_silk_lines.cursor) is
+		result : type_silk_lines_list;
+
+		procedure query_line (c : in type_silk_lines_cursor) is
 			line : type_silk_line := element (c);
 		begin
 			mirror_line (line, axis);
@@ -105,12 +115,14 @@ package body et_silkscreen is
 
 
 	procedure rotate_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_silk_lines.list;
+		use pac_silk_lines;
 
-		procedure query_line (c : in pac_silk_lines.cursor) is
+		result : type_silk_lines_list;
+
+		procedure query_line (c : in type_silk_lines_cursor) is
 			line : type_silk_line := element (c);
 		begin
 			rotate_line_by (line, angle);
@@ -125,12 +137,14 @@ package body et_silkscreen is
 
 
 	procedure move_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_silk_lines.list;
+		use pac_silk_lines;
 
-		procedure query_line (c : in pac_silk_lines.cursor) is
+		result : type_silk_lines_list;
+
+		procedure query_line (c : in type_silk_lines_cursor) is
 			line : type_silk_line := element (c);
 		begin
 			move_by (line, offset);
@@ -163,11 +177,13 @@ package body et_silkscreen is
 
 
 	procedure iterate (
-		arcs	: in pac_silk_arcs.list;
-		process	: not null access procedure (position : in pac_silk_arcs.cursor);
+		arcs	: in type_silk_arcs_list;
+		process	: not null access procedure (position : in type_silk_arcs_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_silk_arcs.cursor := arcs.first;
+		use pac_silk_arcs;
+
+		c : type_silk_arcs_cursor := arcs.first;
 	begin
 		while c /= pac_silk_arcs.no_element and proceed.all = TRUE loop
 			process (c);
@@ -180,27 +196,37 @@ package body et_silkscreen is
 
 
 	function is_proposed (
-		arc_cursor	: in pac_silk_arcs.cursor)
+		arc_cursor	: in type_silk_arcs_cursor)
 		return boolean
-	is (is_proposed (element (arc_cursor)));
+	is
+		use pac_silk_arcs;
+	begin
+		return is_proposed (element (arc_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		arc_cursor	: in pac_silk_arcs.cursor)
+		arc_cursor	: in type_silk_arcs_cursor)
 		return boolean
-	is (is_selected (element (arc_cursor)));
+	is
+		use pac_silk_arcs;
+	begin
+		return is_selected (element (arc_cursor));
+	end is_selected;
 
 
 
 
 
 	procedure mirror_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_silk_arcs.list;
+		use pac_silk_arcs;
 
-		procedure query_arc (c : in pac_silk_arcs.cursor) is
+		result : type_silk_arcs_list;
+
+		procedure query_arc (c : in type_silk_arcs_cursor) is
 			arc : type_silk_arc := element (c);
 		begin
 			mirror_arc (arc, axis);
@@ -215,12 +241,14 @@ package body et_silkscreen is
 
 
 	procedure rotate_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_silk_arcs.list;
+		use pac_silk_arcs;
 
-		procedure query_arc (c : in pac_silk_arcs.cursor) is
+		result : type_silk_arcs_list;
+
+		procedure query_arc (c : in type_silk_arcs_cursor) is
 			arc : type_silk_arc := element (c);
 		begin
 			rotate_arc_by (arc, angle);
@@ -234,12 +262,14 @@ package body et_silkscreen is
 
 
 	procedure move_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_silk_arcs.list;
+		use pac_silk_arcs;
 
-		procedure query_arc (c : in pac_silk_arcs.cursor) is
+		result : type_silk_arcs_list;
+
+		procedure query_arc (c : in type_silk_arcs_cursor) is
 			arc : type_silk_arc := element (c);
 		begin
 			move_by (arc, offset);
@@ -269,11 +299,13 @@ package body et_silkscreen is
 
 
 	procedure iterate (
-		circles	: in pac_silk_circles.list;
-		process	: not null access procedure (position : in pac_silk_circles.cursor);
+		circles	: in type_silk_circles_list;
+		process	: not null access procedure (position : in type_silk_circles_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_silk_circles.cursor := circles.first;
+		use pac_silk_circles;
+
+		c : type_silk_circles_cursor := circles.first;
 	begin
 		while c /= pac_silk_circles.no_element and proceed.all = TRUE loop
 			process (c);
@@ -284,27 +316,37 @@ package body et_silkscreen is
 
 
 	function is_proposed (
-		circle_cursor	: in pac_silk_circles.cursor)
+		circle_cursor	: in type_silk_circles_cursor)
 		return boolean
-	is (is_proposed (element (circle_cursor)));
+	is
+		use pac_silk_circles;
+	begin
+		return is_proposed (element (circle_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		circle_cursor	: in pac_silk_circles.cursor)
+		circle_cursor	: in type_silk_circles_cursor)
 		return boolean
-	is (is_selected (element (circle_cursor)));
+	is
+		use pac_silk_circles;
+	begin
+		return is_selected (element (circle_cursor));
+	end is_selected;
 
 
 
 
 
 	procedure mirror_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_silk_circles.list;
+		use pac_silk_circles;
 
-		procedure query_circle (c : in pac_silk_circles.cursor) is
+		result : type_silk_circles_list;
+
+		procedure query_circle (c : in type_silk_circles_cursor) is
 			circle : type_silk_circle := element (c);
 		begin
 			mirror_circle (circle, axis);
@@ -318,12 +360,14 @@ package body et_silkscreen is
 
 
 	procedure rotate_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_silk_circles.list;
+		use pac_silk_circles;
 
-		procedure query_circle (c : in pac_silk_circles.cursor) is
+		result : type_silk_circles_list;
+
+		procedure query_circle (c : in type_silk_circles_cursor) is
 			circle : type_silk_circle := element (c);
 		begin
 			rotate_circle_by (circle, angle);
@@ -337,12 +381,14 @@ package body et_silkscreen is
 
 
 	procedure move_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_silk_circles.list;
+		use pac_silk_circles;
 
-		procedure query_circle (c : in pac_silk_circles.cursor) is
+		result : type_silk_circles_list;
+
+		procedure query_circle (c : in type_silk_circles_cursor) is
 			circle : type_silk_circle := element (c);
 		begin
 			move_by (circle, offset);

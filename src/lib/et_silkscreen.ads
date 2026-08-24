@@ -73,14 +73,16 @@ package et_silkscreen is
 
 
 	package pac_silk_lines is new doubly_linked_lists (type_silk_line);
-	use pac_silk_lines;
+
+	subtype type_silk_lines_list	is pac_silk_lines.list;
+	subtype type_silk_lines_cursor	is pac_silk_lines.cursor;
 
 
 	-- Iterates the lines.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		lines	: in pac_silk_lines.list;
-		process	: not null access procedure (position : in pac_silk_lines.cursor);
+		lines	: in type_silk_lines_list;
+		process	: not null access procedure (position : in type_silk_lines_cursor);
 		proceed	: not null access boolean);
 
 	-- CS likewise iteratator for circles
@@ -88,13 +90,13 @@ package et_silkscreen is
 
 	-- Returns true if the "proposed-flag" of the given line is set:
 	function is_proposed (
-		line_cursor	: in pac_silk_lines.cursor)
+		line_cursor	: in type_silk_lines_cursor)
 		return boolean;
 
 
 	-- Returns true if the "selected-flag" of the given line is set:
 	function is_selected (
-		line_cursor	: in pac_silk_lines.cursor)
+		line_cursor	: in type_silk_lines_cursor)
 		return boolean;
 
 
@@ -102,17 +104,17 @@ package et_silkscreen is
 
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		angle	: in type_rotation_model);
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
-		lines	: in out pac_silk_lines.list;
+		lines	: in out type_silk_lines_list;
 		offset	: in type_vector_model);
 
 
@@ -132,14 +134,16 @@ package et_silkscreen is
 
 
 	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc);
-	use pac_silk_arcs;
+
+	subtype type_silk_arcs_list		is pac_silk_arcs.list;
+	subtype type_silk_arcs_cursor	is pac_silk_arcs.cursor;
 
 
 	-- Iterates the arcs.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		arcs	: in pac_silk_arcs.list;
-		process	: not null access procedure (position : in pac_silk_arcs.cursor);
+		arcs	: in type_silk_arcs_list;
+		process	: not null access procedure (position : in type_silk_arcs_cursor);
 		proceed	: not null access boolean);
 
 
@@ -147,28 +151,28 @@ package et_silkscreen is
 
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
-		arc_cursor	: in pac_silk_arcs.cursor)
+		arc_cursor	: in type_silk_arcs_cursor)
 		return boolean;
 
 	-- Returns true if the "selected-flag" of the given arc is set:
 	function is_selected (
-		arc_cursor	: in pac_silk_arcs.cursor)
+		arc_cursor	: in type_silk_arcs_cursor)
 		return boolean;
 
 
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		angle	: in type_rotation_model);
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
-		arcs	: in out pac_silk_arcs.list;
+		arcs	: in out type_silk_arcs_list;
 		offset	: in type_vector_model);
 
 
@@ -187,42 +191,44 @@ package et_silkscreen is
 
 
 	package pac_silk_circles is new doubly_linked_lists (type_silk_circle);
-	use pac_silk_circles;
+
+	subtype type_silk_circles_list		is pac_silk_circles.list;
+	subtype type_silk_circles_cursor	is pac_silk_circles.cursor;
 
 
 	-- Iterates the circles.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		circles	: in pac_silk_circles.list;
-		process	: not null access procedure (position : in pac_silk_circles.cursor);
+		circles	: in type_silk_circles_list;
+		process	: not null access procedure (position : in type_silk_circles_cursor);
 		proceed	: not null access boolean);
 
 
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
-		circle_cursor	: in pac_silk_circles.cursor)
+		circle_cursor	: in type_silk_circles_cursor)
 		return boolean;
 
 	-- Returns true if the "selected-flag" of the given circle is set:
 	function is_selected (
-		circle_cursor	: in pac_silk_circles.cursor)
+		circle_cursor	: in type_silk_circles_cursor)
 		return boolean;
 
 
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		angle	: in type_rotation_model);
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
-		circles	: in out pac_silk_circles.list;
+		circles	: in out type_silk_circles_list;
 		offset	: in type_vector_model);
 
 
