@@ -73,7 +73,7 @@ with et_port_direction;
 with et_device_model;						use et_device_model;
 
 
-with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
+with et_device_placeholders.symbols;		-- use et_device_placeholders.symbols;
 
 with et_device_renumbering;
 
@@ -95,6 +95,8 @@ package body et_schematic_ops_units is
 
 	use pac_text_schematic;
 
+	function to_string (item : type_port_name) return string
+	renames et_port_names.to_string;
 
 
 
@@ -265,7 +267,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name := to_unit_name (""); -- A
-		port_name		: in type_port_name := to_port_name ("")) -- CE
+		port_name		: in type_port_name := et_port_names.to_port_name ("")) -- CE
 		return boolean
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found
@@ -2657,6 +2659,8 @@ package body et_schematic_ops_units is
 					unit		: in out type_unit)
 				is
 					pragma unreferenced (unit_name);
+
+					use et_device_placeholders.symbols;
 				begin
 					case coordinates is
 						when ABSOLUTE =>

@@ -77,8 +77,6 @@ is
 
 
 		use et_device_appearance;
-		use et_devices_electrical;
-		use pac_devices_electrical;
 
 		-- Query whehter the given unit is available:
 		unit_query : constant type_unit_query :=
@@ -105,6 +103,9 @@ is
 				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
+
+				use et_device_placeholders.symbols;
+
 				placeholders : type_text_placeholders;
 			begin
 				log (text => "fetch internal unit "
@@ -183,8 +184,11 @@ is
 				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
+
 				use et_symbol_library;
 				use pac_symbol_models;
+				use et_device_placeholders.symbols;
+
 				placeholders : type_text_placeholders;
 				symbol_cursor : pac_symbol_models.cursor;
 			begin

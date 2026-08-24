@@ -77,9 +77,8 @@ with et_commit;
 
 
 package body et_board_ops_devices is
-	use pac_nets;
 
-
+	use et_nets.pac_nets;
 
 
 
