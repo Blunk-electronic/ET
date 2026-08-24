@@ -85,7 +85,6 @@ package body et_device_library is
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level)
 	is
-		use pac_device_models;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
 		log_indentation_up;

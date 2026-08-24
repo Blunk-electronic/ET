@@ -3000,8 +3000,6 @@ package body et_conventions is
 			-- goes true once a valid abbreviation of a unit of measurement is found
 			unit_ok	: boolean := false;
 
-			use et_units_of_measurement;
-
 
 			-- Sets unit_ok flag true if the given abbreviation starts at position "place".
 			-- If so, sets "place" to the position of the last character of the unit.
