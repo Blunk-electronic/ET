@@ -65,6 +65,10 @@ package et_net_ports is
 	end record;
 
 
+	-- Use this constant to clear all ports
+	-- on a start or end point (A/B) of a net segment:
+	no_ports : constant type_net_ports := (others => <>);
+	
 
 	-- Merges the given two port groups to a
 	-- single one:
@@ -97,7 +101,7 @@ package et_net_ports is
 
 
 	-- Returns true if the given record of ports is completely emtpty.
-	function no_ports (
+	function has_no_ports (
 		ports : in type_net_ports)
 		return boolean;
 
@@ -129,10 +133,13 @@ package et_net_ports is
 	-- at the A or B end of a net segment.
 	-- This type models the tag labels of a net segment:
 	type type_net_ports_AB is record
-		A, B : type_net_ports;
+		A, B : type_net_ports := no_ports;
 	end record;
 
 
+	-- Use this constant to clear all ports
+	-- of a net segment:
+	no_AB_ports : constant type_net_ports_AB := (others => <>);
 
 
 end et_net_ports;

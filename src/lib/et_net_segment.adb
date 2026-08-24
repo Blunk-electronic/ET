@@ -87,8 +87,8 @@ package body et_net_segment is
 		move_labels_by (segment_out.labels, offset);
 
 		-- Delete junctions and ports:
-		segment_out.junctions := (others => <>);
-		segment_out.ports := (others => <>);
+		segment_out.junctions := no_junctions;
+		segment_out.ports := no_AB_ports;
 		
 	end copy_net_segment;
 

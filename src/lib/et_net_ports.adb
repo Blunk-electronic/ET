@@ -125,7 +125,7 @@ package body et_net_ports is
 
 
 
-	function no_ports (
+	function has_no_ports (
 		ports : in type_net_ports)
 		return boolean
 	is
@@ -147,7 +147,7 @@ package body et_net_ports is
 		end if;
 
 		return result;
-	end no_ports;
+	end has_no_ports;
 
 
 

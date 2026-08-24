@@ -58,6 +58,12 @@ package et_net_junction is
 	end record;
 
 
+	-- Use this constant to clear all junctions
+	-- of a net segment:
+	no_junctions : constant type_junctions := (others => <>);
+	
+	
+	
 	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
 	junction_radius : constant type_distance_positive := 0.5;
 
