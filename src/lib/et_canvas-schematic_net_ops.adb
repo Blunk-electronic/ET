@@ -38,6 +38,9 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+
+with gdk.types.keysyms;			use gdk.types.keysyms;
+
 package body et_canvas.schematic_net_ops is
 
 

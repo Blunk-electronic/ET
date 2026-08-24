@@ -37,6 +37,9 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
+
+with gdk.types.keysyms;				use gdk.types.keysyms;
+
 with gtk.tree_model;				use gtk.tree_model;
 with gtk.cell_renderer_text;
 

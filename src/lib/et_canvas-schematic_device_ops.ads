@@ -38,6 +38,7 @@
 
 
 with gtk.list_store;				use gtk.list_store;
+with gtk.gentry;					use gtk.gentry;
 
 with et_conventions;				use et_conventions;
 with et_package_variant;			use et_package_variant;

@@ -40,6 +40,9 @@
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
+with gtk.combo_box;
+with gtk.combo_box_text;			use gtk.combo_box_text;
+
 with et_board_coordinates;			use et_board_coordinates;
 with et_project;
 with et_module;						use et_module;
