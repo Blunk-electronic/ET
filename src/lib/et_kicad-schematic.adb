@@ -8160,8 +8160,8 @@ package body et_kicad.schematic is
 --	procedure write_statistics (log_threshold : in type_log_level) is
 --	-- Generates the statistics on components and nets of the modules.
 --	-- Distinguishes between CAD and CAM related things.
---		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
---		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
+--		statistics_file_name_cad	: et_schematic.statistics.type_statistic_file_name;
+--		statistics_file_name_cam	: et_schematic.statistics.type_statistic_file_name;
 --
 --		statistics_handle_cad	: ada.text_io.file_type;
 --		statistics_handle_cam	: ada.text_io.file_type;
@@ -8188,7 +8188,7 @@ package body et_kicad.schematic is
 --			-- CAD
 --			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
 --			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
---			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string
+--			statistics_file_name_cad := et_schematic.statistics.pac_statistic_file_name.to_bounded_string
 --				(
 --				compose (
 --					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
