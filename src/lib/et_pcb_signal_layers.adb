@@ -92,9 +92,11 @@ package body et_pcb_signal_layers is
 
 
 		-- The layer numbers will be stored here:
-		package type_layer_string is new generic_bounded_length (100); -- CS increase if necessary.
-		use type_layer_string;
-		layer_string : type_layer_string.bounded_string; -- to be returned
+		package pac_layer_string is new generic_bounded_length (100); -- CS increase if necessary.
+
+		type type_layer_string is new pac_layer_string.bounded_string;
+
+		layer_string : type_layer_string; -- to be returned
 
 		-- set a cursor to the last layer in the given layer set:
 		last_layer : constant pac_signal_layers.cursor := layers.last;
