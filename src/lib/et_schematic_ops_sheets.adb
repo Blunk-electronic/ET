@@ -217,7 +217,7 @@ package body et_schematic_ops_sheets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-
+		pragma unreferenced (commit_design);
 
 		procedure query_module (
 			module_name	: in type_module_name;

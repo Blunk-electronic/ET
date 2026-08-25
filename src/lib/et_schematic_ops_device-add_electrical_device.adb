@@ -87,7 +87,7 @@ is
 	is
 		pragma unreferenced (module_name);
 		use et_symbol_ports;
-		use pac_devices_electrical;
+
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		-- CS:

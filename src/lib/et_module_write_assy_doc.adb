@@ -73,7 +73,6 @@ package body et_module_write_assy_doc is
 
 
 		procedure write_line (cursor : in pac_doc_lines.cursor) is
-			use pac_doc_lines;
 		begin
 			section_mark (section_line, HEADER);
 			write_line (element (cursor));
@@ -83,7 +82,6 @@ package body et_module_write_assy_doc is
 
 
 		procedure write_arc (cursor : in pac_doc_arcs.cursor) is
-			use pac_doc_arcs;
 		begin
 			section_mark (section_arc, HEADER);
 			write_arc (element (cursor));
@@ -93,7 +91,6 @@ package body et_module_write_assy_doc is
 
 
 		procedure write_circle (cursor : in pac_doc_circles.cursor) is
-			use pac_doc_circles;
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (element (cursor));

@@ -887,11 +887,7 @@ package body et_schematic_ops_device is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-
-		use pac_generic_modules;
 		device_cursor_sch : pac_devices_electrical.cursor;
-
-		use et_package_variant_name;
 
 
 		procedure query_module (

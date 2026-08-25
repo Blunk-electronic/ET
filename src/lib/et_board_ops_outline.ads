@@ -57,8 +57,8 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_board_ops_outline is
 
 	use pac_generic_modules;
-	use pac_contours;
 
+	subtype type_contour_segment_cursor is pac_contours.pac_segments.cursor;
 
 
 -- OUTER CONTOUR:
@@ -93,7 +93,7 @@ package et_board_ops_outline is
 	-- This composite type helps to identify a
 	-- segment of the outer contour:
 	type type_object_outer_contour_segment is record
-		segment	: pac_contours.pac_segments.cursor;
+		segment	: type_contour_segment_cursor;
 	end record;
 
 
@@ -109,7 +109,7 @@ package et_board_ops_outline is
 	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_cursor	: in pac_segments.cursor;
+		segment_cursor	: in type_contour_segment_cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -139,7 +139,7 @@ package et_board_ops_outline is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_segments.cursor;
+		return type_contour_segment_cursor;
 
 
 	-- Returns the first segment of the outer contour
@@ -161,7 +161,7 @@ package et_board_ops_outline is
 	-- CS last_item indicates that the last segment has been reached:
 	procedure next_proposed_segment ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in out pac_segments.cursor;
+		segment			: in out type_contour_segment_cursor;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
@@ -172,7 +172,7 @@ package et_board_ops_outline is
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
 	procedure move_segment ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in pac_segments.cursor;
+		segment			: in pac_contours.pac_segments.cursor;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -220,7 +220,7 @@ package et_board_ops_outline is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_segment ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in pac_segments.cursor;
+		segment			: in type_contour_segment_cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -240,7 +240,7 @@ package et_board_ops_outline is
 	-- segment of a hole:
 	type type_object_hole_segment is record
 		hole	: pac_holes.cursor;
-		segment	: pac_contours.pac_segments.cursor;
+		segment	: type_contour_segment_cursor;
 	end record;
 
 

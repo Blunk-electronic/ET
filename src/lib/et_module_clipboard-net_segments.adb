@@ -70,7 +70,7 @@ package body et_module_clipboard.net_segments is
 			-- to the new net:
 			procedure create_net is
 				inserted : boolean;
-				
+
 				-- Create a bare copy of the given net.
 				-- The copy has a single empty strand.
 				-- Later we will store all net segments
@@ -89,49 +89,49 @@ package body et_module_clipboard.net_segments is
 
 			end create_net;
 
-			
-			
+
+
 			-- Appends the given net segment to
 			-- single strand in the targeted net. The strand
 			-- serves just as a place to store the segments.
 			-- The segments are appended to the strand without
 			-- checking A/B ends, ports of units or netchangers.
 			procedure insert_segment is
-			
+
 				procedure query_net (
 					net_name	: in type_net_name;
 					net			: in out type_net)
-				is 
+				is
 					pragma unreferenced (net_name);
-					
+
 					use pac_strands;
 					strand_cursor : constant pac_strands.cursor := net.strands.first;
-					
-					
+
+
 					procedure query_strand (
 						strand : in out type_strand)
-					is 
+					is
 						use pac_net_segments;
 					begin
 						-- Append the given segment:
-						
+
 						-- CS: reset status flags of segment ?
 						strand.segments.append (segment);
 					end query_strand;
-					
-					
+
+
 				begin
 					net.strands.update_element (
 						strand_cursor, query_strand'access);
-						
+
 				end query_net;
-				
+
 			begin
 				clipboard.nets.update_element (
 					net_cursor, query_net'access);
 			end insert_segment;
-			
-			
+
+
 		begin
 			net_cursor := clipboard.nets.find (net_name);
 

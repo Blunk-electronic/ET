@@ -144,7 +144,7 @@ package et_nets is
 	-- all strands and routing stuff (tracks, fill zones, ...).
 	-- Properties like class and scope are copied.
 	-- The status flags are reset.
-	-- By default a new single strand without any 
+	-- By default a new single strand without any
 	-- net segments is added to the net:
 	function copy_bare_net (
 		net_in			: in type_net;

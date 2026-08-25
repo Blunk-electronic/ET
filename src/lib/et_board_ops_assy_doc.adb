@@ -1676,10 +1676,7 @@ package body et_board_ops_assy_doc is
 			procedure query_zone (
 				zone : in out type_doc_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1775,10 +1772,7 @@ package body et_board_ops_assy_doc is
 			procedure query_zone (
 				zone : in out type_doc_zone)
 			is
-				use pac_contours;
-				use pac_segments;
 				c : pac_segments.cursor;
-
 			begin
 				if is_circular (zone) then
 					null; -- CS
@@ -1856,7 +1850,6 @@ package body et_board_ops_assy_doc is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			use pac_contours;
 			use pac_segments;
 			use pac_doc_zones;
 

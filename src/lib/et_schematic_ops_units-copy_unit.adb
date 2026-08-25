@@ -113,7 +113,7 @@ is
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
-
+			pragma unreferenced (module_name);
 
 			procedure query_target_device (
 				device_name	: in type_device_name;

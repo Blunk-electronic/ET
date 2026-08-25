@@ -1273,7 +1273,6 @@ package body et_drawing_frame_rw is
 
 
 		function is_dummy_frame return boolean is
-			use et_drawing_frame;
 		begin
 			if file_name = template_schematic_default then
 				return true;
@@ -2077,7 +2076,6 @@ package body et_drawing_frame_rw is
 
 
 		function is_dummy_frame return boolean is
-			use et_drawing_frame;
 		begin
 			if file_name = template_pcb_default then
 				return true;
@@ -2168,8 +2166,6 @@ package body et_drawing_frame_rw is
 		from : in et_string_processing.type_field_count_positive)
 		return type_position
 	is
-		use et_string_processing;
-
 		result : type_position;
 
 		place : type_field_count_positive := from; -- the field being read from given line

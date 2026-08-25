@@ -63,7 +63,7 @@ with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_package_variant_name;			use et_package_variant_name;
 with et_symbol_ports;					use et_symbol_ports;
-with et_port_names;						use et_port_names;
+with et_port_names;						-- use et_port_names;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
@@ -74,6 +74,8 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_units is
 
 	use pac_generic_modules;
+
+	subtype type_port_name is et_port_names.type_port_name;
 
 
 	-- Locates the given unit of the given device in the
@@ -123,7 +125,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name := to_unit_name (""); -- A
-		port_name		: in type_port_name := to_port_name ("")) -- CE
+		port_name		: in type_port_name := et_port_names.to_port_name ("")) -- CE
 		return boolean;
 
 

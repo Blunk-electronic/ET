@@ -64,11 +64,13 @@ package body et_assy_doc is
 
 
 	procedure iterate (
-		lines	: in pac_doc_lines.list;
-		process	: not null access procedure (position : in pac_doc_lines.cursor);
+		lines	: in type_doc_line_list;
+		process	: not null access procedure (position : in type_doc_line_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_doc_lines.cursor := lines.first;
+		use pac_doc_lines;
+
+		c : type_doc_line_cursor := lines.first;
 	begin
 		while c /= pac_doc_lines.no_element and proceed.all = TRUE loop
 			process (c);
@@ -79,27 +81,37 @@ package body et_assy_doc is
 
 
 	function is_proposed (
-		line_cursor	: in pac_doc_lines.cursor)
+		line_cursor	: in type_doc_line_cursor)
 		return boolean
-	is (is_proposed (element (line_cursor)));
+	is
+		use pac_doc_lines;
+	begin
+		return is_proposed (element (line_cursor));
+	end is_proposed;
 
 
 
 	function is_selected (
-		line_cursor	: in pac_doc_lines.cursor)
+		line_cursor	: in type_doc_line_cursor)
 		return boolean
-	is (is_selected (element (line_cursor)));
+	is
+		use pac_doc_lines;
+	begin
+		return is_selected (element (line_cursor));
+	end is_selected;
 
 
 
 
 	procedure mirror_lines (
-		lines	: in out pac_doc_lines.list;
+		lines	: in out type_doc_line_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_doc_lines.list;
+		use pac_doc_lines;
 
-		procedure query_line (c : in pac_doc_lines.cursor) is
+		result : type_doc_line_list;
+
+		procedure query_line (c : in type_doc_line_cursor) is
 			line : type_doc_line := element (c);
 		begin
 			mirror_line (line, axis);
@@ -115,12 +127,14 @@ package body et_assy_doc is
 
 
 	procedure rotate_lines (
-		lines	: in out pac_doc_lines.list;
+		lines	: in out type_doc_line_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_doc_lines.list;
+		use pac_doc_lines;
 
-		procedure query_line (c : in pac_doc_lines.cursor) is
+		result : type_doc_line_list;
+
+		procedure query_line (c : in type_doc_line_cursor) is
 			line : type_doc_line := element (c);
 		begin
 			rotate_line_by (line, angle);
@@ -137,12 +151,14 @@ package body et_assy_doc is
 
 
 	procedure move_lines (
-		lines	: in out pac_doc_lines.list;
+		lines	: in out type_doc_line_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_doc_lines.list;
+		use pac_doc_lines;
 
-		procedure query_line (c : in pac_doc_lines.cursor) is
+		result : type_doc_line_list;
+
+		procedure query_line (c : in type_doc_line_cursor) is
 			line : type_doc_line := element (c);
 		begin
 			move_by (line, offset);
@@ -173,11 +189,13 @@ package body et_assy_doc is
 
 
 	procedure iterate (
-		arcs	: in pac_doc_arcs.list;
-		process	: not null access procedure (position : in pac_doc_arcs.cursor);
+		arcs	: in type_doc_arc_list;
+		process	: not null access procedure (position : in type_doc_arc_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_doc_arcs.cursor := arcs.first;
+		use pac_doc_arcs;
+
+		c : type_doc_arc_cursor := arcs.first;
 	begin
 		while c /= pac_doc_arcs.no_element and proceed.all = TRUE loop
 			process (c);
@@ -190,26 +208,36 @@ package body et_assy_doc is
 
 
 	function is_proposed (
-		arc_cursor	: in pac_doc_arcs.cursor)
+		arc_cursor	: in type_doc_arc_cursor)
 		return boolean
-	is (is_proposed (element (arc_cursor)));
+	is
+		use pac_doc_arcs;
+	begin
+		return is_proposed (element (arc_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		arc_cursor	: in pac_doc_arcs.cursor)
+		arc_cursor	: in type_doc_arc_cursor)
 		return boolean
-	is (is_selected (element (arc_cursor)));
+	is
+		use pac_doc_arcs;
+	begin
+		return is_selected (element (arc_cursor));
+	end is_selected;
 
 
 
 
 	procedure mirror_arcs (
-		arcs	: in out pac_doc_arcs.list;
+		arcs	: in out type_doc_arc_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_doc_arcs.list;
+		use pac_doc_arcs;
 
-		procedure query_arc (c : in pac_doc_arcs.cursor) is
+		result : type_doc_arc_list;
+
+		procedure query_arc (c : in type_doc_arc_cursor) is
 			arc : type_doc_arc := element (c);
 		begin
 			mirror_arc (arc, axis);
@@ -225,12 +253,14 @@ package body et_assy_doc is
 
 
 	procedure rotate_arcs (
-		arcs	: in out pac_doc_arcs.list;
+		arcs	: in out type_doc_arc_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_doc_arcs.list;
+		use pac_doc_arcs;
 
-		procedure query_arc (c : in pac_doc_arcs.cursor) is
+		result : type_doc_arc_list;
+
+		procedure query_arc (c : in type_doc_arc_cursor) is
 			arc : type_doc_arc := element (c);
 		begin
 			rotate_arc_by (arc, angle);
@@ -246,12 +276,14 @@ package body et_assy_doc is
 
 
 	procedure move_arcs (
-		arcs	: in out pac_doc_arcs.list;
+		arcs	: in out type_doc_arc_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_doc_arcs.list;
+		use pac_doc_arcs;
 
-		procedure query_arc (c : in pac_doc_arcs.cursor) is
+		result : type_doc_arc_list;
+
+		procedure query_arc (c : in type_doc_arc_cursor) is
 			arc : type_doc_arc := element (c);
 		begin
 			move_by (arc, offset);
@@ -280,24 +312,34 @@ package body et_assy_doc is
 
 
 	function is_proposed (
-		circle_cursor	: in pac_doc_circles.cursor)
+		circle_cursor	: in type_doc_circle_cursor)
 		return boolean
-	is (is_proposed (element (circle_cursor)));
+	is
+		use pac_doc_circles;
+	begin
+		return is_proposed (element (circle_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		circle_cursor	: in pac_doc_circles.cursor)
+		circle_cursor	: in type_doc_circle_cursor)
 		return boolean
-	is (is_selected (element (circle_cursor)));
+	is
+		use pac_doc_circles;
+	begin
+		return is_selected (element (circle_cursor));
+	end is_selected;
 
 
 	procedure mirror_circles (
-		circles	: in out pac_doc_circles.list;
+		circles	: in out type_doc_circle_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_doc_circles.list;
+		use pac_doc_circles;
 
-		procedure query_circle (c : in pac_doc_circles.cursor) is
+		result : type_doc_circle_list;
+
+		procedure query_circle (c : in type_doc_circle_cursor) is
 			circle : type_doc_circle := element (c);
 		begin
 			mirror_circle (circle, axis);
@@ -311,12 +353,14 @@ package body et_assy_doc is
 
 
 	procedure rotate_circles (
-		circles	: in out pac_doc_circles.list;
+		circles	: in out type_doc_circle_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_doc_circles.list;
+		use pac_doc_circles;
 
-		procedure query_circle (c : in pac_doc_circles.cursor) is
+		result : type_doc_circle_list;
+
+		procedure query_circle (c : in type_doc_circle_cursor) is
 			circle : type_doc_circle := element (c);
 		begin
 			rotate_circle_by (circle, angle);
@@ -331,12 +375,14 @@ package body et_assy_doc is
 
 
 	procedure move_circles (
-		circles	: in out pac_doc_circles.list;
+		circles	: in out type_doc_circle_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_doc_circles.list;
+		use pac_doc_circles;
 
-		procedure query_circle (c : in pac_doc_circles.cursor) is
+		result : type_doc_circle_list;
+
+		procedure query_circle (c : in type_doc_circle_cursor) is
 			circle : type_doc_circle := element (c);
 		begin
 			move_by (circle, offset);

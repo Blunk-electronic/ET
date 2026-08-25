@@ -68,7 +68,7 @@ package et_net_ports is
 	-- Use this constant to clear all ports
 	-- on a start or end point (A/B) of a net segment:
 	no_ports : constant type_net_ports := (others => <>);
-	
+
 
 	-- Merges the given two port groups to a
 	-- single one:

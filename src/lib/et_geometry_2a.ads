@@ -47,7 +47,6 @@ with ada.containers.doubly_linked_lists;
 
 
 with et_axes;						use et_axes;
-with et_primitive_objects;			use et_primitive_objects;
 with et_geometry_1;
 
 with et_string_processing;			use et_string_processing;

@@ -45,11 +45,13 @@ package body et_stencil is
 -- LINES
 
 	procedure iterate (
-		lines	: in pac_stencil_lines.list;
-		process	: not null access procedure (position : in pac_stencil_lines.cursor);
+		lines	: in type_stencil_lines_list;
+		process	: not null access procedure (position : in type_stencil_lines_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_stencil_lines.cursor := lines.first;
+		use pac_stencil_lines;
+
+		c : type_stencil_lines_cursor := lines.first;
 	begin
 		while c /= pac_stencil_lines.no_element and proceed.all = TRUE loop
 			process (c);
@@ -60,26 +62,36 @@ package body et_stencil is
 
 
 	function is_proposed (
-		line_cursor	: in pac_stencil_lines.cursor)
+		line_cursor	: in type_stencil_lines_cursor)
 		return boolean
-	is (is_proposed (element (line_cursor)));
+	is
+		use pac_stencil_lines;
+	begin
+		return is_proposed (element (line_cursor));
+	end is_proposed;
 
 
 
 	function is_selected (
-		line_cursor	: in pac_stencil_lines.cursor)
+		line_cursor	: in type_stencil_lines_cursor)
 		return boolean
-	is (is_selected (element (line_cursor)));
+	is
+		use pac_stencil_lines;
+	begin
+		return  is_selected (element (line_cursor));
+	end is_selected;
 
 
 
 	procedure mirror_lines (
-		lines	: in out pac_stencil_lines.list;
+		lines	: in out type_stencil_lines_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_stencil_lines.list;
+		use pac_stencil_lines;
 
-		procedure query_line (c : in pac_stencil_lines.cursor) is
+		result : type_stencil_lines_list;
+
+		procedure query_line (c : in type_stencil_lines_cursor) is
 			line : type_stencil_line := element (c);
 		begin
 			mirror_line (line, axis);
@@ -94,12 +106,14 @@ package body et_stencil is
 
 
 	procedure rotate_lines (
-		lines	: in out pac_stencil_lines.list;
+		lines	: in out type_stencil_lines_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_stencil_lines.list;
+		use pac_stencil_lines;
 
-		procedure query_line (c : in pac_stencil_lines.cursor) is
+		result : type_stencil_lines_list;
+
+		procedure query_line (c : in type_stencil_lines_cursor) is
 			line : type_stencil_line := element (c);
 		begin
 			rotate_line_by (line, angle);
@@ -114,12 +128,14 @@ package body et_stencil is
 
 
 	procedure move_lines (
-		lines	: in out pac_stencil_lines.list;
+		lines	: in out type_stencil_lines_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_stencil_lines.list;
+		use pac_stencil_lines;
 
-		procedure query_line (c : in pac_stencil_lines.cursor) is
+		result : type_stencil_lines_list;
+
+		procedure query_line (c : in type_stencil_lines_cursor) is
 			line : type_stencil_line := element (c);
 		begin
 			move_by (line, offset);
@@ -139,11 +155,13 @@ package body et_stencil is
 -- ARCS
 
 	procedure iterate (
-		arcs	: in pac_stencil_arcs.list;
-		process	: not null access procedure (position : in pac_stencil_arcs.cursor);
+		arcs	: in type_stencil_arcs_list;
+		process	: not null access procedure (position : in type_stencil_arcs_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_stencil_arcs.cursor := arcs.first;
+		use pac_stencil_arcs;
+
+		c : type_stencil_arcs_cursor := arcs.first;
 	begin
 		while c /= pac_stencil_arcs.no_element and proceed.all = TRUE loop
 			process (c);
@@ -154,24 +172,34 @@ package body et_stencil is
 
 
 	function is_proposed (
-		arc_cursor	: in pac_stencil_arcs.cursor)
+		arc_cursor	: in type_stencil_arcs_cursor)
 		return boolean
-	is (is_proposed (element (arc_cursor)));
+	is
+		use pac_stencil_arcs;
+	begin
+		return is_proposed (element (arc_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		arc_cursor	: in pac_stencil_arcs.cursor)
+		arc_cursor	: in type_stencil_arcs_cursor)
 		return boolean
-	is (is_selected (element (arc_cursor)));
+	is
+		use pac_stencil_arcs;
+	begin
+		return is_selected (element (arc_cursor));
+	end is_selected;
 
 
 	procedure mirror_arcs (
-		arcs	: in out pac_stencil_arcs.list;
+		arcs	: in out type_stencil_arcs_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_stencil_arcs.list;
+		use pac_stencil_arcs;
 
-		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+		result : type_stencil_arcs_list;
+
+		procedure query_arc (c : in type_stencil_arcs_cursor) is
 			arc : type_stencil_arc := element (c);
 		begin
 			mirror_arc (arc, axis);
@@ -186,12 +214,14 @@ package body et_stencil is
 
 
 	procedure rotate_arcs (
-		arcs	: in out pac_stencil_arcs.list;
+		arcs	: in out type_stencil_arcs_list;
 		angle	: in type_rotation_model)
 	is
-		result : pac_stencil_arcs.list;
+		use pac_stencil_arcs;
 
-		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+		result : type_stencil_arcs_list;
+
+		procedure query_arc (c : in type_stencil_arcs_cursor) is
 			arc : type_stencil_arc := element (c);
 		begin
 			rotate_arc_by (arc, angle);
@@ -206,12 +236,14 @@ package body et_stencil is
 
 
 	procedure move_arcs (
-		arcs	: in out pac_stencil_arcs.list;
+		arcs	: in out type_stencil_arcs_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_stencil_arcs.list;
+		use pac_stencil_arcs;
 
-		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+		result : type_stencil_arcs_list;
+
+		procedure query_arc (c : in type_stencil_arcs_cursor) is
 			arc : type_stencil_arc := element (c);
 		begin
 			move_by (arc, offset);
@@ -230,11 +262,13 @@ package body et_stencil is
 -- CIRCLES
 
 	procedure iterate (
-		circles	: in pac_stencil_circles.list;
-		process	: not null access procedure (position : in pac_stencil_circles.cursor);
+		circles	: in type_stencil_circles_list;
+		process	: not null access procedure (position : in type_stencil_circles_cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_stencil_circles.cursor := circles.first;
+		use pac_stencil_circles;
+
+		c : type_stencil_circles_cursor := circles.first;
 	begin
 		while c /= pac_stencil_circles.no_element and proceed.all = TRUE loop
 			process (c);
@@ -245,25 +279,35 @@ package body et_stencil is
 
 
 	function is_proposed (
-		circle_cursor	: in pac_stencil_circles.cursor)
+		circle_cursor	: in type_stencil_circles_cursor)
 		return boolean
-	is (is_proposed (element (circle_cursor)));
+	is
+		use pac_stencil_circles;
+	begin
+		return is_proposed (element (circle_cursor));
+	end is_proposed;
 
 
 	function is_selected (
-		circle_cursor	: in pac_stencil_circles.cursor)
+		circle_cursor	: in type_stencil_circles_cursor)
 		return boolean
-	is (is_selected (element (circle_cursor)));
+	is
+		use pac_stencil_circles;
+	begin
+		return is_selected (element (circle_cursor));
+	end is_selected;
 
 
 
 	procedure mirror_circles (
-		circles	: in out pac_stencil_circles.list;
+		circles	: in out type_stencil_circles_list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_stencil_circles.list;
+		use pac_stencil_circles;
 
-		procedure query_circle (c : in pac_stencil_circles.cursor) is
+		result : type_stencil_circles_list;
+
+		procedure query_circle (c : in type_stencil_circles_cursor) is
 			circle : type_stencil_circle := element (c);
 		begin
 			mirror_circle (circle, axis);
@@ -278,12 +322,14 @@ package body et_stencil is
 
 
 	procedure rotate_circles (
-		circles	: in out pac_stencil_circles.list;
+		circles	: in out type_stencil_circles_list;
 		angle	: in type_rotation_model)
 	is
+		use pac_stencil_circles;
+
 		result : pac_stencil_circles.list;
 
-		procedure query_circle (c : in pac_stencil_circles.cursor) is
+		procedure query_circle (c : in type_stencil_circles_cursor) is
 			circle : type_stencil_circle := element (c);
 		begin
 			rotate_circle_by (circle, angle);
@@ -298,12 +344,14 @@ package body et_stencil is
 
 
 	procedure move_circles (
-		circles	: in out pac_stencil_circles.list;
+		circles	: in out type_stencil_circles_list;
 		offset	: in type_vector_model)
 	is
-		result : pac_stencil_circles.list;
+		use pac_stencil_circles;
 
-		procedure query_circle (c : in pac_stencil_circles.cursor) is
+		result : type_stencil_circles_list;
+
+		procedure query_circle (c : in type_stencil_circles_cursor) is
 			circle : type_stencil_circle := element (c);
 		begin
 			move_by (circle, offset);
