@@ -2503,8 +2503,12 @@ package body et_schematic_ops_submodules is
 		end record;
 
 		-- Since there are lots of submodule ports we store the drag points in a simple list:
-		package type_drags is new doubly_linked_lists (type_drag);
-		drag_list : type_drags.list;
+		package pac_drags is new doubly_linked_lists (type_drag);
+
+		subtype type_drag_list		is pac_drags.list;
+		subtype type_drag_cursor	is pac_drags.cursor;
+
+		drag_list : type_drag_list;
 
 
 		procedure query_submodules (
@@ -2580,7 +2584,7 @@ package body et_schematic_ops_submodules is
 					-- Now drag.after contains the absolute port position of
 					-- the port AFTER the drag operation.
 
-					type_drags.append (drag_list, drag);
+					pac_drags.append (drag_list, drag);
 
 				end build_drag_point;
 
@@ -2655,10 +2659,11 @@ package body et_schematic_ops_submodules is
 		procedure drag_segments is
 		-- Drags the net segments according to the drag_list that has been
 		-- created earlier.
-			use type_drags;
-			drag_cursor : type_drags.cursor := drag_list.first;
+			use pac_drags;
+
+			drag_cursor : type_drag_cursor := drag_list.first;
 		begin
-			while drag_cursor /= type_drags.no_element loop
+			while drag_cursor /= pac_drags.no_element loop
 
 				drag_net_segments (
 					module			=> module_cursor,
