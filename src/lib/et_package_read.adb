@@ -950,9 +950,6 @@ package body et_package_read is
 
 		previous_input : ada.text_io.file_type renames current_input;
 
-		use et_pcb_stack;
-
-
 	begin -- read_package
 		log_indentation_up;
 		log (text => "reading package " & to_string (file_name) & " ...", level => log_threshold);
