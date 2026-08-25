@@ -51,14 +51,14 @@ with et_csv;
 
 package body et_material is
 
-	function to_string (name : in type_file_name.bounded_string)
+	function to_string (name : in type_file_name)
 		return string
-	is (type_file_name.to_string (name));
+	is (pac_file_name.to_string (name));
 
 
 	function to_file_name (name : in string)
-		return type_file_name.bounded_string
-	is (type_file_name.to_bounded_string (name));
+		return type_file_name
+	is (pac_file_name.to_bounded_string (name));
 
 
 	procedure write_bom (
@@ -69,7 +69,7 @@ package body et_material is
 		log_threshold	: in type_log_level)
 	is
 
-		file_name : type_file_name.bounded_string;
+		file_name : type_file_name;
 
 		procedure set_file_name is
 			use ada.directories;
