@@ -145,7 +145,7 @@ package body et_kicad_to_native is
 		now		: constant string := "now   ";
 
 		-- This list of frames serves to map from sheet number to paper size:
-		schematic_frames : et_kicad.schematic.type_frames.list;
+		schematic_frames : et_kicad.schematic.pac_frames.list;
 
 		-- Here the height of the layout sheet is kept. It is required for move ops of
 		-- layout objects from the kicad frame to the native frame.
@@ -182,14 +182,14 @@ package body et_kicad_to_native is
 			end query_sheet_number;
 
 			-- We search for the paper size in the list "frames":
-			use et_kicad.schematic.type_frames;
-			frame_cursor : et_kicad.schematic.type_frames.cursor := schematic_frames.first;
+			use et_kicad.schematic.pac_frames;
+			frame_cursor : et_kicad.schematic.pac_frames.cursor := schematic_frames.first;
 
 
 		begin -- paper_size_of_schematic_sheet
 
 			-- loop in list of frames given in "frames"
-			while frame_cursor /= et_kicad.schematic.type_frames.no_element loop
+			while frame_cursor /= et_kicad.schematic.pac_frames.no_element loop
 
 				query_element (
 					position	=> frame_cursor,
@@ -382,8 +382,8 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
-			use et_kicad.schematic.type_texts;
-			note_cursor : et_kicad.schematic.type_texts.cursor := module.notes.first;
+			use et_kicad.schematic.pac_texts;
+			note_cursor : et_kicad.schematic.pac_texts.cursor := module.notes.first;
 
 
 			procedure change_path (note : in out et_kicad.schematic.type_text) is
@@ -409,8 +409,8 @@ package body et_kicad_to_native is
 			log (text => "text notes ...", level => log_threshold + 2);
 			log_indentation_up;
 
-			while note_cursor /= et_kicad.schematic.type_texts.no_element loop
-				et_kicad.schematic.type_texts.update_element (
+			while note_cursor /= et_kicad.schematic.pac_texts.no_element loop
+				et_kicad.schematic.pac_texts.update_element (
 					container	=> module.notes,
 					position	=> note_cursor,
 					process		=> change_path'access);
@@ -429,8 +429,8 @@ package body et_kicad_to_native is
 		pragma unreferenced (module_name);
 		-- Changes the path of drawing frames (in schematic) to root path.
 
-			use et_kicad.schematic.type_frames;
-			frame_cursor : et_kicad.schematic.type_frames.cursor := module.frames.first;
+			use et_kicad.schematic.pac_frames;
+			frame_cursor : et_kicad.schematic.pac_frames.cursor := module.frames.first;
 
 
 			procedure change_path (frame : in out et_kicad.schematic.type_frame) is
@@ -454,8 +454,8 @@ package body et_kicad_to_native is
 			log (text => "frames ...", level => log_threshold + 2);
 			log_indentation_up;
 
-			while frame_cursor /= et_kicad.schematic.type_frames.no_element loop
-				et_kicad.schematic.type_frames.update_element (
+			while frame_cursor /= et_kicad.schematic.pac_frames.no_element loop
+				et_kicad.schematic.pac_frames.update_element (
 					container	=> module.frames,
 					position	=> frame_cursor,
 					process		=> change_path'access);
@@ -475,8 +475,8 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
-			use et_kicad.schematic.type_components_schematic;
-			component_cursor : et_kicad.schematic.type_components_schematic.cursor := module.components.first;
+			use et_kicad.schematic.pac_components_schematic;
+			component_cursor : et_kicad.schematic.pac_components_schematic.cursor := module.components.first;
 
 			use et_device_name;
 
@@ -486,8 +486,8 @@ package body et_kicad_to_native is
 				component	: in out et_kicad.schematic.type_component_schematic)
 			is
 				pragma unreferenced (reference);
-				use et_kicad.schematic.type_units_schematic;
-				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
+				use et_kicad.schematic.pac_units_schematic;
+				unit_cursor : et_kicad.schematic.pac_units_schematic.cursor := component.units.first;
 
 
 
@@ -538,9 +538,9 @@ package body et_kicad_to_native is
 				log (text => to_string (key (component_cursor)), level => log_threshold + 3);
 				log_indentation_up;
 
-				while unit_cursor /= et_kicad.schematic.type_units_schematic.no_element loop
+				while unit_cursor /= et_kicad.schematic.pac_units_schematic.no_element loop
 
-					et_kicad.schematic.type_units_schematic.update_element (
+					et_kicad.schematic.pac_units_schematic.update_element (
 						container	=> component.units,
 						position	=> unit_cursor,
 						process		=> change_path'access);
@@ -561,9 +561,9 @@ package body et_kicad_to_native is
 			log (text => "components ...", level => log_threshold + 2);
 			log_indentation_up;
 
-			while component_cursor /= et_kicad.schematic.type_components_schematic.no_element loop
+			while component_cursor /= et_kicad.schematic.pac_components_schematic.no_element loop
 
-				et_kicad.schematic.type_components_schematic.update_element (
+				et_kicad.schematic.pac_components_schematic.update_element (
 					container	=> module.components,
 					position	=> component_cursor,
 					process		=> query_units'access);
@@ -584,8 +584,8 @@ package body et_kicad_to_native is
 		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
 		-- MOves the y position of copper objects (in layout).
 
-			use et_kicad.schematic.type_nets;
-			net_cursor : et_kicad.schematic.type_nets.cursor := module.nets.first;
+			use et_kicad.schematic.pac_nets;
+			net_cursor : et_kicad.schematic.pac_nets.cursor := module.nets.first;
 
 
 			procedure query_strands (
@@ -593,20 +593,20 @@ package body et_kicad_to_native is
 				net			: in out et_kicad.schematic.type_net) is
 					pragma unreferenced (net_name);
 
-				use et_kicad.schematic.type_strands;
-				strand_cursor : et_kicad.schematic.type_strands.cursor := net.strands.first;
+				use et_kicad.schematic.pac_strands;
+				strand_cursor : et_kicad.schematic.pac_strands.cursor := net.strands.first;
 
 
 				procedure query_segments (strand : in out et_kicad.schematic.type_strand) is
 					use et_schematic_geometry.pac_geometry_2;
-					use et_kicad.schematic.type_net_segments;
-					segment_cursor : et_kicad.schematic.type_net_segments.cursor := strand.segments.first;
+					use et_kicad.schematic.pac_net_segments;
+					segment_cursor : et_kicad.schematic.pac_net_segments.cursor := strand.segments.first;
 
 
 					procedure change_path_of_segment (segment : in out et_kicad.schematic.type_net_segment) is
 
-						use et_kicad.schematic.type_simple_labels;
-						simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
+						use et_kicad.schematic.pac_simple_labels;
+						simple_label_cursor : et_kicad.schematic.pac_simple_labels.cursor := segment.label_list_simple.first;
 
 
 						procedure move_simple_label (label : in out et_kicad.schematic.type_net_label_simple) is
@@ -622,8 +622,8 @@ package body et_kicad_to_native is
 						end move_simple_label;
 
 
-						use et_kicad.schematic.type_tag_labels;
-						tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
+						use et_kicad.schematic.pac_tag_labels;
+						tag_label_cursor : et_kicad.schematic.pac_tag_labels.cursor := segment.label_list_tag.first;
 
 
 						procedure move_tag_label (label : in out et_kicad.schematic.type_net_label_tag) is
@@ -639,8 +639,8 @@ package body et_kicad_to_native is
 						end move_tag_label;
 
 
-						use et_kicad.schematic.type_junctions;
-						junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
+						use et_kicad.schematic.pac_junctions;
+						junction_cursor : et_kicad.schematic.pac_junctions.cursor := segment.junctions.first;
 
 
 						procedure change_path_of_junction (junction : in out et_kicad.schematic.type_net_junction) is
@@ -692,8 +692,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 3);
 
 						-- Move y of simple net labels.
-						while simple_label_cursor /= et_kicad.schematic.type_simple_labels.no_element loop
-							et_kicad.schematic.type_simple_labels.update_element (
+						while simple_label_cursor /= et_kicad.schematic.pac_simple_labels.no_element loop
+							et_kicad.schematic.pac_simple_labels.update_element (
 								container	=> segment.label_list_simple,
 								position	=> simple_label_cursor,
 								process	=> move_simple_label'access);
@@ -701,8 +701,8 @@ package body et_kicad_to_native is
 						end loop;
 
 						-- Move y of tag net labels.
-						while tag_label_cursor /= et_kicad.schematic.type_tag_labels.no_element loop
-							et_kicad.schematic.type_tag_labels.update_element (
+						while tag_label_cursor /= et_kicad.schematic.pac_tag_labels.no_element loop
+							et_kicad.schematic.pac_tag_labels.update_element (
 								container	=> segment.label_list_tag,
 								position	=> tag_label_cursor,
 								process	=> move_tag_label'access);
@@ -710,8 +710,8 @@ package body et_kicad_to_native is
 						end loop;
 
 						-- Change path of junctions (incl. moving y):
-						while junction_cursor /= et_kicad.schematic.type_junctions.no_element loop
-							et_kicad.schematic.type_junctions.update_element (
+						while junction_cursor /= et_kicad.schematic.pac_junctions.no_element loop
+							et_kicad.schematic.pac_junctions.update_element (
 								container	=> segment.junctions,
 								position	=> junction_cursor,
 								process	=> change_path_of_junction'access);
@@ -736,9 +736,9 @@ package body et_kicad_to_native is
 						 level => log_threshold + 3);
 
 					-- Change path of segments:
-					while segment_cursor /= et_kicad.schematic.type_net_segments.no_element loop
+					while segment_cursor /= et_kicad.schematic.pac_net_segments.no_element loop
 
-						et_kicad.schematic.type_net_segments.update_element (
+						et_kicad.schematic.pac_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
 							process		=> change_path_of_segment'access);
@@ -877,9 +877,9 @@ package body et_kicad_to_native is
 			begin -- query_strands
 
 				-- schematic related:
-				while strand_cursor /= et_kicad.schematic.type_strands.no_element loop
+				while strand_cursor /= et_kicad.schematic.pac_strands.no_element loop
 
-					et_kicad.schematic.type_strands.update_element (
+					et_kicad.schematic.pac_strands.update_element (
 						container	=> net.strands,
 						position	=> strand_cursor,
 						process		=> query_segments'access);
@@ -900,12 +900,12 @@ package body et_kicad_to_native is
 			log (text => "nets ...", level => log_threshold + 2);
 			log_indentation_up;
 
-			while net_cursor /= et_kicad.schematic.type_nets.no_element loop
+			while net_cursor /= et_kicad.schematic.pac_nets.no_element loop
 				log (text => to_string (key (net_cursor)), level => log_threshold + 3);
 
 				log_indentation_up;
 
-				et_kicad.schematic.type_nets.update_element (
+				et_kicad.schematic.pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> query_strands'access);
@@ -2134,8 +2134,8 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
-			use et_kicad.schematic.type_netlist;
-			net_cursor : et_kicad.schematic.type_netlist.cursor := module.netlist.first;
+			use et_kicad.schematic.pac_netlist;
+			net_cursor : et_kicad.schematic.pac_netlist.cursor := module.netlist.first;
 
 
 			procedure query_ports (
@@ -2196,9 +2196,9 @@ package body et_kicad_to_native is
 			log (text => "netlist ...", level => log_threshold + 2);
 			log_indentation_up;
 
-			while net_cursor /= et_kicad.schematic.type_netlist.no_element loop
+			while net_cursor /= et_kicad.schematic.pac_netlist.no_element loop
 
-				et_kicad.schematic.type_netlist.update_element (
+				et_kicad.schematic.pac_netlist.update_element (
 					container	=> module.netlist,
 					position	=> net_cursor,
 					process		=> query_ports'access);
@@ -2539,7 +2539,7 @@ package body et_kicad_to_native is
 
 
 		-- Converts kicad texts to native texts:
-		function to_texts (texts_in : et_kicad.schematic.type_texts.list)
+		function to_texts (texts_in : et_kicad.schematic.pac_texts.list)
 			return et_schematic_text.pac_texts.list
 		is
 			use et_schematic_text;
@@ -2547,8 +2547,8 @@ package body et_kicad_to_native is
 			texts_out : et_schematic_text.pac_texts.list;
 
 
-			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
-				text_kicad : constant et_kicad.schematic.type_text := et_kicad.schematic.type_texts.element (cursor);
+			procedure query_texts (cursor : in et_kicad.schematic.pac_texts.cursor) is
+				text_kicad : constant et_kicad.schematic.type_text := et_kicad.schematic.pac_texts.element (cursor);
 				text_native : et_schematic_text.type_text;
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
@@ -2570,7 +2570,7 @@ package body et_kicad_to_native is
 
 
 		begin -- to_texts
-			et_kicad.schematic.type_texts.iterate (texts_in, query_texts'access);
+			et_kicad.schematic.pac_texts.iterate (texts_in, query_texts'access);
 			return texts_out;
 		end to_texts;
 
@@ -2658,10 +2658,10 @@ package body et_kicad_to_native is
 			use et_device_appearance;
 			use et_device_purpose;
 			use et_device_name;
-			use et_kicad.schematic.type_components_schematic;
+			use et_kicad.schematic.pac_components_schematic;
 
-			components_kicad		: et_kicad.schematic.type_components_schematic.map;
-			component_cursor_kicad	: et_kicad.schematic.type_components_schematic.cursor;
+			components_kicad		: et_kicad.schematic.pac_components_schematic.map;
+			component_cursor_kicad	: et_kicad.schematic.pac_components_schematic.cursor;
 
 			component_cursor_native	: pac_devices_electrical.cursor;
 			component_inserted		: boolean;
@@ -2675,9 +2675,9 @@ package body et_kicad_to_native is
 				component	: in out type_device_electrical)
 			is
 				pragma unreferenced (reference);
-				use et_kicad.schematic.type_units_schematic;
-				units_kicad			: constant et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
-				unit_cursor_kicad	: et_kicad.schematic.type_units_schematic.cursor := units_kicad.first; -- point to first unit
+				use et_kicad.schematic.pac_units_schematic;
+				units_kicad			: constant et_kicad.schematic.pac_units_schematic.map := element (component_cursor_kicad).units;
+				unit_cursor_kicad	: et_kicad.schematic.pac_units_schematic.cursor := units_kicad.first; -- point to first unit
 
 				unit_cursor_native	: et_units.pac_units.cursor;
 				unit_inserted		: boolean;
@@ -2689,7 +2689,7 @@ package body et_kicad_to_native is
 			begin
 				log_indentation_up;
 
-				while unit_cursor_kicad /= et_kicad.schematic.type_units_schematic.no_element loop
+				while unit_cursor_kicad /= et_kicad.schematic.pac_units_schematic.no_element loop
 					log (text => "unit " & to_string (key (unit_cursor_kicad)), level => log_threshold + 3);
 
 					-- depending on the appearance of the kicad component, we create a virtual or real
@@ -2760,7 +2760,7 @@ package body et_kicad_to_native is
 
 			-- loop in the component list of the kicad schematic module
 			component_cursor_kicad := components_kicad.first;
-			while component_cursor_kicad /= et_kicad.schematic.type_components_schematic.no_element loop
+			while component_cursor_kicad /= et_kicad.schematic.pac_components_schematic.no_element loop
 
 				log (text => to_string (key (component_cursor_kicad)), level => log_threshold + 2);
 
@@ -2851,10 +2851,10 @@ package body et_kicad_to_native is
 
 		procedure copy_nets is
 
-			use et_kicad.schematic.type_nets;
-			use et_kicad.schematic.type_strands;
-			kicad_nets			: constant et_kicad.schematic.type_nets.map := element (module_cursor_kicad).nets;
-			kicad_net_cursor	: et_kicad.schematic.type_nets.cursor := kicad_nets.first;
+			use et_kicad.schematic.pac_nets;
+			use et_kicad.schematic.pac_strands;
+			kicad_nets			: constant et_kicad.schematic.pac_nets.map := element (module_cursor_kicad).nets;
+			kicad_net_cursor	: et_kicad.schematic.pac_nets.cursor := kicad_nets.first;
 
 			net_cursor_native	: et_nets.pac_nets.cursor;
 			net_inserted		: boolean;
@@ -2867,12 +2867,12 @@ package body et_kicad_to_native is
 				net_name	: in type_net_name;
 				net			: in out et_nets.type_net)
 			is
-				kicad_strands : constant et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
-				kicad_strand_cursor : et_kicad.schematic.type_strands.cursor := kicad_strands.first;
+				kicad_strands : constant et_kicad.schematic.pac_strands.list := element (kicad_net_cursor).strands;
+				kicad_strand_cursor : et_kicad.schematic.pac_strands.cursor := kicad_strands.first;
 
-				use et_kicad.schematic.type_net_segments;
-				kicad_segments : et_kicad.schematic.type_net_segments.list;
-				kicad_segment_cursor : et_kicad.schematic.type_net_segments.cursor;
+				use et_kicad.schematic.pac_net_segments;
+				kicad_segments : et_kicad.schematic.pac_net_segments.list;
+				kicad_segment_cursor : et_kicad.schematic.pac_net_segments.cursor;
 
 				use et_net_strands;
 				strands_native : pac_strands.list;
@@ -2896,8 +2896,8 @@ package body et_kicad_to_native is
 
 					labels : et_net_labels.pac_net_labels.list; -- to be returned
 
-					use et_kicad.schematic.type_simple_labels;
-					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
+					use et_kicad.schematic.pac_simple_labels;
+					simple_label_cursor : et_kicad.schematic.pac_simple_labels.cursor := segment.label_list_simple.first;
 
 					use et_schematic_geometry;
 					use et_schematic_geometry.pac_geometry_2;
@@ -2912,8 +2912,8 @@ package body et_kicad_to_native is
 					-- the new label position after applying the offset:
 					simple_label_position : type_vector_model;
 
-					use et_kicad.schematic.type_tag_labels;
-					tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
+					use et_kicad.schematic.pac_tag_labels;
+					tag_label_cursor : et_kicad.schematic.pac_tag_labels.cursor := segment.label_list_tag.first;
 
 
 					-- Kicad label can be rotated by 180 or -90 degree. This function translates
@@ -2946,7 +2946,7 @@ package body et_kicad_to_native is
 
 
 					-- simple labels
-					while simple_label_cursor /= et_kicad.schematic.type_simple_labels.no_element loop
+					while simple_label_cursor /= et_kicad.schematic.pac_simple_labels.no_element loop
 
 						log (text => "simple label" & et_kicad.schematic.to_string (et_kicad.schematic.type_net_label (element (simple_label_cursor))),
 							level => log_threshold + 5);
@@ -2969,7 +2969,7 @@ package body et_kicad_to_native is
 
 
 					-- tag labels
-					while tag_label_cursor /= et_kicad.schematic.type_tag_labels.no_element loop
+					while tag_label_cursor /= et_kicad.schematic.pac_tag_labels.no_element loop
 
 						log (text => "tag label" & et_kicad.schematic.to_string (et_kicad.schematic.type_net_label (element (tag_label_cursor))),
 							 level => log_threshold + 5);
@@ -3010,13 +3010,13 @@ package body et_kicad_to_native is
 
 					use et_schematic_geometry.pac_geometry_2;
 					use et_kicad_coordinates;
-					use et_kicad.schematic.type_junctions;
-					junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
+					use et_kicad.schematic.pac_junctions;
+					junction_cursor : et_kicad.schematic.pac_junctions.cursor := segment.junctions.first;
 
 				begin
 					log_indentation_up;
 
-					while junction_cursor /= et_kicad.schematic.type_junctions.no_element loop
+					while junction_cursor /= et_kicad.schematic.pac_junctions.no_element loop
 
 						log (text => "junction" & to_string (
 							get_point (element (junction_cursor).coordinates)),
@@ -3158,7 +3158,7 @@ package body et_kicad_to_native is
 				log_indentation_up;
 
 				-- loop in strands of current kicad net
-				while kicad_strand_cursor /= et_kicad.schematic.type_strands.no_element loop
+				while kicad_strand_cursor /= et_kicad.schematic.pac_strands.no_element loop
 					log (text => "strand" & et_kicad_coordinates.to_string (
 						 position	=> element (kicad_strand_cursor).position,
 						 scope		=> et_kicad_coordinates.SHEET),
@@ -3172,7 +3172,7 @@ package body et_kicad_to_native is
 					-- A kicad net segment has labels and junctions.
 					log_indentation_up;
 
-					while kicad_segment_cursor /= et_kicad.schematic.type_net_segments.no_element loop
+					while kicad_segment_cursor /= et_kicad.schematic.pac_net_segments.no_element loop
 
 						log (text => "segment" & et_kicad.schematic.to_string (
 							segment		=> element (kicad_segment_cursor),
@@ -3266,7 +3266,7 @@ package body et_kicad_to_native is
 
 		begin -- copy_nets
 			-- loop in kicad nets
-			while kicad_net_cursor /= et_kicad.schematic.type_nets.no_element loop
+			while kicad_net_cursor /= et_kicad.schematic.pac_nets.no_element loop
 				log (text => "net " & to_string (key (kicad_net_cursor)), level => log_threshold + 2);
 
 				et_nets.pac_nets.insert (
