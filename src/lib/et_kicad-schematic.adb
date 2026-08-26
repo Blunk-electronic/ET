@@ -579,11 +579,11 @@ package body et_kicad.schematic is
 	end to_point;
 
 
-	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
+	function library_name (text : in string) return et_kicad_general.pac_library_name.bounded_string is
 		use et_string_processing;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
-		return et_kicad_general.type_library_name.to_bounded_string (
+		return et_kicad_general.pac_library_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -595,9 +595,9 @@ package body et_kicad.schematic is
 	end library_name;
 
 
-	function to_string (dir : in type_library_directory.bounded_string)
+	function to_string (dir : in pac_library_directory.bounded_string)
 		return string
-	is (type_library_directory.to_string (dir));
+	is (pac_library_directory.to_string (dir));
 
 
 
@@ -1022,7 +1022,7 @@ package body et_kicad.schematic is
 	function to_package_variant (
 		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
 		generic_name		: in type_component_generic_name;				-- 7400
-		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
+		package_library	: in et_kicad_general.pac_library_name.bounded_string;		-- bel_ic
 		package_name		: in et_package_name.type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return et_package_variant_name.type_package_variant_name -- D
@@ -2111,10 +2111,10 @@ package body et_kicad.schematic is
 				-- search_list_project_lib_dirs applies for the single module only and is cleared once a
 				-- kicad project file is read.
 				-- search_list_project_lib_dirs assists search operations.
-					use type_library_directory;
+					use pac_library_directory;
 					directory_count	: natural;
 					lib_dir_separator	: constant string := ";";
-					lib_dir_name		: type_library_directory.bounded_string;
+					lib_dir_name		: pac_library_directory.bounded_string;
 
 				begin -- locate_library_directories
 					log (text => "locating library directories ...", level => log_threshold);
@@ -2142,8 +2142,8 @@ package body et_kicad.schematic is
 							-- project_lib_dirs is a simple list where the directory names are kept in the
 							-- same order as they appear in the project file ("../../lbr;../connectors;../misc_components")
 							-- See more in specs of project_lib_dirs in et_kicad.ads.
-							if not type_project_lib_dirs.contains (search_list_project_lib_dirs, lib_dir_name) then
-								type_project_lib_dirs.append (search_list_project_lib_dirs, lib_dir_name);
+							if not pac_project_lib_dirs.contains (search_list_project_lib_dirs, lib_dir_name) then
+								pac_project_lib_dirs.append (search_list_project_lib_dirs, lib_dir_name);
 							else
 								log (SEVERITY_WARNING, "multiple usage of directory " & to_string (lib_dir_name));
 							end if;
@@ -2173,8 +2173,8 @@ package body et_kicad.schematic is
 					search_list_library_cursor : type_library_names.cursor;
 					library_found		: boolean; -- true if library file exists
 
-					use type_project_lib_dirs;
-					search_list_lib_dir_cursor : type_project_lib_dirs.cursor;
+					use pac_project_lib_dirs;
+					search_list_lib_dir_cursor : pac_project_lib_dirs.cursor;
 
 				begin -- locate_libraries
 					log (text => "locating library directories ...", level => log_threshold);
@@ -2193,7 +2193,7 @@ package body et_kicad.schematic is
 
 						-- Loop in directories (specified in the kicad project file by LibDir=../../lbr_dir_1;../lbr_dir_2).
 						search_list_lib_dir_cursor := search_list_project_lib_dirs.first;
-						while search_list_lib_dir_cursor /= type_project_lib_dirs.no_element loop
+						while search_list_lib_dir_cursor /= pac_project_lib_dirs.no_element loop
 
 							log (text => "searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1; ../../lbr_dir_2; ...
 								level => log_threshold + 3);
@@ -2255,7 +2255,7 @@ package body et_kicad.schematic is
 
 				-- Clear search list of project libraries from earlier projects that have been imported.
 				-- If we import only one project, this statement does not matter:
-				type_project_lib_dirs.clear (search_list_project_lib_dirs);
+				pac_project_lib_dirs.clear (search_list_project_lib_dirs);
 				type_library_names.clear (search_list_component_libraries);
 
 				-- Open project file.
@@ -2324,11 +2324,11 @@ package body et_kicad.schematic is
 									-- there is no need to append it again to search_list_component_libraries.
 									if not type_library_names.contains (
 										container	=> search_list_component_libraries,
-										item		=> type_library_name.to_bounded_string (f (line, 2))) then
+										item		=> pac_library_name.to_bounded_string (f (line, 2))) then
 
 											type_library_names.append (
 												container	=> search_list_component_libraries,
-												new_item	=> type_library_name.to_bounded_string (f (line, 2)));
+												new_item	=> pac_library_name.to_bounded_string (f (line, 2)));
 
 											-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
 											-- in the project file. search_list_component_libraries assists search operations.
@@ -2556,7 +2556,7 @@ package body et_kicad.schematic is
 
 					-- TEMPORARILY STORAGE PLACES
 
-					lib_name	: et_kicad_general.type_library_name.bounded_string;
+					lib_name	: et_kicad_general.pac_library_name.bounded_string;
 					lib_type	: type_lib_type;
 					lib_uri		: type_device_model_name; -- CS not exact. see specs of type type_lib_table_entry
 					-- CS lib_options
@@ -2754,7 +2754,7 @@ package body et_kicad.schematic is
 										case section.arg_counter is
 											when 0 => null;
 											when 1 =>
-												lib_name := type_library_name.to_bounded_string (to_string (arg));
+												lib_name := pac_library_name.to_bounded_string (to_string (arg));
 											when others => too_many_arguments;
 										end case;
 
@@ -2823,7 +2823,7 @@ package body et_kicad.schematic is
 									-- can be appended to the sym-list-table.
 									when SEC_LIB =>
 										log (text => "library "
-											 & type_library_name.to_string (lib_name)
+											 & pac_library_name.to_string (lib_name)
 											 & " type "
 											 & type_lib_type'image (lib_type)
 											 & " path "

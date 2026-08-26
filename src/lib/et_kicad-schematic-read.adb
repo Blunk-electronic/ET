@@ -2044,7 +2044,7 @@ is
 		generic_name_in_lbr			: type_component_generic_name; -- like TRANSISTOR_PNP
 
 		-- V5:
-		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
+		component_library_name		: pac_library_name.bounded_string; -- the name of the component library like bel_logic
 
 		alternative_references		: pac_alternative_references.list;
 		unit_name					: et_unit_name.type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
@@ -2398,7 +2398,7 @@ is
 
 			lib_cursor : type_device_libraries.cursor;
 
-			use type_library_name;
+			use pac_library_name;
 
 			full_name : type_device_model_name;
 			component_found : boolean := false;
@@ -2976,7 +2976,7 @@ is
 		end generic_name;
 
 
-		function extract_library_name (text : in string) return type_library_name.bounded_string is
+		function extract_library_name (text : in string) return pac_library_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
 			ifs : constant string := ":";
 
@@ -2986,7 +2986,7 @@ is
 
 			pos : constant type_pos := index (text, ifs); -- get position of ifs
 		begin -- extract_library_name
-			return type_library_name.to_bounded_string (text (text'first .. pos - 1)); -- bel_logic
+			return pac_library_name.to_bounded_string (text (text'first .. pos - 1)); -- bel_logic
 		end extract_library_name;
 
 

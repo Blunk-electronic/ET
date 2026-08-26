@@ -529,7 +529,7 @@ package body et_kicad.pcb is
 
 		-- PACKAGES
 		unused_package_name			: type_package_name;
-		unused_package_library_name	: et_kicad_general.type_library_name.bounded_string;
+		unused_package_library_name	: et_kicad_general.pac_library_name.bounded_string;
 		package_position		: et_board_coordinates.type_package_position;
 
 		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80

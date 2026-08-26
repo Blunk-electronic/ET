@@ -921,7 +921,7 @@ package et_kicad.schematic is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
-	function library_name (text : in string) return type_library_name.bounded_string;
+	function library_name (text : in string) return pac_library_name.bounded_string;
 	-- CS rename to get_library_name
 
 

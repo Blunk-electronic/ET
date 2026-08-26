@@ -571,24 +571,24 @@ package et_kicad_libraries is
 	-- We use a simple list because the order of the library names sometimes matters
 	-- in V4 and must be kept.
 	package type_library_names is new doubly_linked_lists (
-		element_type	=> type_library_name.bounded_string, -- bel_logic, bel_primitives
-		"="				=> type_library_name."=");
+		element_type	=> pac_library_name.bounded_string, -- bel_logic, bel_primitives
+		"="				=> pac_library_name."=");
 
 	-- search list for component library names
 	search_list_component_libraries : type_library_names.list; -- bel_logic, bel_primitives, ...
 
 --	-- Libraries are stored in directories:
 --	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
---	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+--	package pac_library_directory is new generic_bounded_length (library_directory_length_max);
 --
---	function to_string (dir : in type_library_directory.bounded_string) return string;
+--	function to_string (dir : in pac_library_directory.bounded_string) return string;
 
 --	-- Search list for library directories.
 --	-- This list applies for both component and package search operations.
---	package type_project_lib_dirs is new doubly_linked_lists (
---		element_type	=> type_library_directory.bounded_string,
---		"="			=> type_library_directory."=");
---	search_list_project_lib_dirs : type_project_lib_dirs.list;
+--	package pac_project_lib_dirs is new doubly_linked_lists (
+--		element_type	=> pac_library_directory.bounded_string,
+--		"="			=> pac_library_directory."=");
+--	search_list_project_lib_dirs : pac_project_lib_dirs.list;
 
 	-- SYMBOL-LIBRARY-TABLES AND FOOTPRINT-LIBRARY-TABLES--------------------------
 	-- Relevant for V5:
@@ -598,7 +598,7 @@ package et_kicad_libraries is
 		); -- CS: others ?
 
 	type type_lib_table_entry is record
-		lib_name	: type_library_name.bounded_string;
+		lib_name	: pac_library_name.bounded_string;
 		lib_type	: type_lib_type;
 		lib_uri		: type_device_model_name;
 		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
@@ -788,7 +788,7 @@ package et_kicad_libraries is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
-	function library_name (text : in string) return type_library_name.bounded_string;
+	function library_name (text : in string) return pac_library_name.bounded_string;
 	-- CS rename to get_library_name
 
 
@@ -833,7 +833,7 @@ package et_kicad_libraries is
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
 	-- contains the given package library with the given package.
 	function full_library_name ( -- CS rename to get_full_library_name
-		library_name	: in type_library_name.bounded_string; -- bel_logic
+		library_name	: in pac_library_name.bounded_string; -- bel_logic
 		package_name	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
 		return type_package_model_name;

@@ -538,10 +538,10 @@ package body et_kicad_libraries is
 
 
 
-	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
+	function library_name (text : in string) return et_kicad_general.pac_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
-		return et_kicad_general.type_library_name.to_bounded_string (
+		return et_kicad_general.pac_library_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -552,9 +552,9 @@ package body et_kicad_libraries is
 				);
 	end library_name;
 
---	function to_string (dir : in type_library_directory.bounded_string) return string is
+--	function to_string (dir : in pac_library_directory.bounded_string) return string is
 --	begin
---		return type_library_directory.to_string (dir);
+--		return pac_library_directory.to_string (dir);
 --	end to_string;
 
 
@@ -1024,7 +1024,7 @@ package body et_kicad_libraries is
 
 
 	function full_library_name (
-		library_name	: in type_library_name.bounded_string; -- bel_logic
+		library_name	: in pac_library_name.bounded_string; -- bel_logic
 		package_name	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
 		return type_package_model_name
@@ -1045,17 +1045,17 @@ package body et_kicad_libraries is
 		unused_lib : type_package_model_name; -- to be returned
 
 		use et_import;
-		use type_project_lib_dirs;
+		use pac_project_lib_dirs;
 
 		-- V4:
-		dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
+		dir_cursor : pac_project_lib_dirs.cursor := search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
 		lib_cursor : pac_libraries.cursor;
 
 		-- V5:
 		use type_lib_table;
 		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
-		use type_library_name;
+		use pac_library_name;
 		full_library_name : type_package_model_name;
 		package_found : boolean := false;
 
@@ -1086,7 +1086,7 @@ package body et_kicad_libraries is
 
 				-- Loop in search_list_project_lib_dirs. Test if the given library
 				-- exists in the directory indicated by dir_cursor..
-				while dir_cursor /= type_project_lib_dirs.no_element loop
+				while dir_cursor /= pac_project_lib_dirs.no_element loop
 
 					-- Test if library exists. package_libraries hosts libraries by their full name.
 					-- So the library to test is formed by the current directory name, the given library name
@@ -3432,7 +3432,7 @@ package body et_kicad_libraries is
 	function to_package_variant (
 		component_library	: in type_device_model_name;	-- ../lbr/bel_logic.lib
 		generic_name		: in type_component_generic_name;				-- 7400
-		package_library	: in et_kicad_general.type_library_name.bounded_string;		-- bel_ic
+		package_library	: in et_kicad_general.pac_library_name.bounded_string;		-- bel_ic
 		package_name		: in type_package_name;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D

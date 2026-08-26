@@ -2637,8 +2637,8 @@ package body et_kicad_packages is
 		-- V4 RELATED ------------------------------------------------------------------------------------------
 		-- The directory search lists have been created on reading the project file.
 		-- Set lib_dir_cursor to first directory.
-		use type_project_lib_dirs;
-		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
+		use pac_project_lib_dirs;
+		lib_dir_cursor : pac_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
 
 		-- backup the directory of origin
 		origin_directory : constant type_directory_name :=
@@ -2764,7 +2764,7 @@ package body et_kicad_packages is
 			when KICAD_V4 =>
 
 				-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
-				while lib_dir_cursor /= type_project_lib_dirs.no_element loop
+				while lib_dir_cursor /= pac_project_lib_dirs.no_element loop
 
 					log (text => "in directory " & to_string (element (lib_dir_cursor)), level => log_threshold + 1);
 

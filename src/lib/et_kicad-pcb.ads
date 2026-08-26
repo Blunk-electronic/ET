@@ -770,7 +770,7 @@ package et_kicad.pcb is
 
 		-- V4 uses search lists:
 		-- The search list of project library directories and names:
-		search_list_library_dirs	: type_project_lib_dirs.list;	-- search list for library directories (active, passive, ...)
+		search_list_library_dirs	: pac_project_lib_dirs.list;	-- search list for library directories (active, passive, ...)
 		search_list_library_comps	: type_library_names.list;		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 
