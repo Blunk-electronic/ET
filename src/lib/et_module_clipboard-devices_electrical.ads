@@ -51,7 +51,8 @@ with et_logging;					use et_logging;
 
 package et_module_clipboard.devices_electrical is
 
-
+-- COPY:
+	
 	-- This procedure copies a given device and its unit
 	-- to the clipboard.
 	-- 1. If the device does not exist in the clipboard yet,
@@ -67,6 +68,29 @@ package et_module_clipboard.devices_electrical is
 		log_threshold	: in type_log_level);
 
 
+
+
+	-- This procedure copies selected units to
+	-- the clipboard:
+	procedure copy_selected_units_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		-- CS sheet : in type_sheet; -- to speed up the process ?
+		log_threshold	: in type_log_level);
+
+
+
+-- PASTE:
+	
+	-- This procedure copies units from the clipboard
+	-- to the given module. The units will be placed
+	-- by the given offset:
+	procedure paste_units_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_object_position_relative;
+		log_threshold	: in type_log_level);
+
+
+	
 
 end et_module_clipboard.devices_electrical;
 

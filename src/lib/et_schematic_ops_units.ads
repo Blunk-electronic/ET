@@ -686,24 +686,6 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies selected units to
-	-- the clipboard:
-	procedure copy_selected_units_to_clipboard (
-		module_cursor	: in pac_generic_modules.cursor;
-		-- CS sheet : in type_sheet; -- to speed up the process ?
-		log_threshold	: in type_log_level);
-
-
-	-- This procedure copies units from the clipboard
-	-- to the given module. The units will be placed
-	-- by the given offset:
-	procedure paste_units_from_clipboard (
-		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;
-		log_threshold	: in type_log_level);
-
-
-
 
 
 -- PLACEHOLDERS:

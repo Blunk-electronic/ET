@@ -46,6 +46,7 @@ with et_schematic_ops_netchangers;
 with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
 
 with et_module_clipboard.net_segments;
+with et_module_clipboard.devices_electrical;
 
 with et_modes.schematic;
 with et_undo_redo;
@@ -731,7 +732,7 @@ package body et_schematic_ops_groups is
 
 
 		procedure copy_units_to_clipboard is
-			use et_schematic_ops_units;
+			use et_module_clipboard.devices_electrical;
 		begin
 			log (text => "units",
 				 level => log_threshold + 1);
@@ -837,7 +838,7 @@ package body et_schematic_ops_groups is
 
 
 		procedure paste_units is
-			use et_schematic_ops_units;
+			use et_module_clipboard.devices_electrical;
 		begin
 			log (text => "units",
 				 level => log_threshold + 1);
