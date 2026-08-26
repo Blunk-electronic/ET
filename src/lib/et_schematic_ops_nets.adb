@@ -3109,7 +3109,7 @@ package body et_schematic_ops_nets is
 						log_indentation_up;
 
 						-- Paste the net segment:
-						insert_net_segment (
+						copy_net_segment (
 							module_cursor	=> module_cursor,
 							net_name		=> net_name,
 							segment			=> segment,
@@ -6624,7 +6624,7 @@ package body et_schematic_ops_nets is
 
 
 
-	procedure insert_net_segment (
+	procedure copy_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		segment			: in type_net_segment;
@@ -6633,28 +6633,71 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is
 
-		procedure move_segment is
-			segment_new : type_net_segment;
+		segment_new : type_net_segment;
 
-		begin
+		-- This procedure creates a copy of the
+		-- given segment and stores it in segment_new:
+		procedure make_new_segment is begin
 			copy_net_segment (
 				segment, segment_new, offset);
-		end move_segment;
+
+			log (text => "new segment: " & to_string (segment),
+				 level => log_threshold);
+			
+		end make_new_segment;
 
 
+		procedure insert_segment is
+			use pac_nets;
+			net_cursor : pac_nets.cursor;
+			created : boolean;
+		begin
+			-- The net can be in the module already.
+			-- Locate the requested net in the module.
+			-- If the net does not exist yet, then net_cursor will
+			-- be no_element and a new net be created:
+			net_cursor := locate_net (module_cursor, net_name);
+			
+			if not has_element (net_cursor) then
+				log (text => "Net " & to_string (net_name)
+					& " does not exist yet and will be created.",
+					level => log_threshold + 1);
+
+				create_net (
+					module_cursor	=> module_cursor,
+					net_name		=> net_name,
+					created			=> created,
+					net_cursor		=> net_cursor,
+					log_threshold	=> log_threshold + 2);
+			end if;
+
+			
+			-- Insert the net segment_new in the target net:
+			insert_net_segment (module_cursor, net_cursor,
+				sheet, segment_new, log_threshold + 2);
+
+			update_strand_positions (module_cursor, log_threshold + 2);
+
+			update_ratsnest (module_cursor, log_threshold + 2);			
+		end insert_segment;
+		
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " insert net segment " & to_string (segment)
+			& " copy net segment " & to_string (segment)
 			& " net " & to_string (net_name)
-			& " sheet " & to_string (sheet),
+			& " on sheet " & to_string (sheet)
+			& " offset " & to_string (offset),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		move_segment;
+		make_new_segment;
+
+		insert_segment;
 
 		log_indentation_down;
-	end insert_net_segment;
+	end copy_net_segment;
 
 
 

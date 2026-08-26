@@ -899,11 +899,11 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Inserts a net segment (along with its net labels and connectors)
-	-- in the given module. Creates the given net if not already
-	-- existing. The net segment will be placed by the given
-	-- offset on the given sheet:
-	procedure insert_net_segment (
+	-- Copies a net segment (along with its net labels and connectors)
+	-- and inserts it in the given module on the given sheet.
+	-- The net segment will be placed by the given offset.
+	-- Creates the given net if not already existing:
+	procedure copy_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		segment			: in type_net_segment;
