@@ -1140,7 +1140,7 @@ is
 
 				-- Store bare library name in the list sheet_header.libraries:
 				-- We use a doubly linked list because the order of the library names must be kept.
-				type_library_names.append (
+				pac_library_names.append (
 					container	=> sheet_header.libraries,
 					new_item	=> et_kicad_general.to_library_name (
 						get_field_from_line (f (element (line_cursor), 1), 2, latin_1.colon))
@@ -2316,15 +2316,15 @@ is
 			-- given generic component was found.
 			procedure query_components (
 				lib_name	: in type_device_model_name;
-				components	: in type_components_library.map)
+				components	: in pac_components_library.map)
 			is
 				pragma unreferenced (lib_name);
-				use type_components_library;
-				component_cursor : type_components_library.cursor := components.first;
+				use pac_components_library;
+				component_cursor : pac_components_library.cursor := components.first;
 				--use type_component_generic_name;
 			begin
 				log_indentation_up;
-				while component_cursor /= type_components_library.no_element loop
+				while component_cursor /= pac_components_library.no_element loop
 
 					log (text => to_string (key (component_cursor)), level => log_threshold + 2);
 
@@ -2407,10 +2407,10 @@ is
 			-- Seaches a component library for the given generic component.
 			procedure search_component (
 				lib_name	: in type_device_model_name;
-				lib			: in type_components_library.map)
+				lib			: in pac_components_library.map)
 			is
 				pragma unreferenced (lib_name);
-				use type_components_library;
+				use pac_components_library;
 			begin
 				if contains (lib, component) then
 					component_found := true;
@@ -2579,7 +2579,7 @@ is
 								-- (lots of) warnings.
 
 							-- properties of a real component (appears in schematic and layout);
-							datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
+							datasheet		=> pac_component_datasheet.to_bounded_string (content (field_datasheet)),
 
 							-- the package variant is determined by the package library and package name:
 							variant			=> to_package_variant (
@@ -3147,7 +3147,7 @@ is
 						field_datasheet := to_field;
 						check_datasheet_length (content (field_datasheet));
 						check_datasheet_characters (
-							datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
+							datasheet => pac_component_datasheet.to_bounded_string (content (field_datasheet)));
 
 					when others => null; -- ignore other fields
 				end case;

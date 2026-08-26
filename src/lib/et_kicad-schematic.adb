@@ -446,7 +446,7 @@ package body et_kicad.schematic is
 
 				-- datasheet
 				log (text => "datasheet "
-					 & type_component_datasheet.to_string (pac_components_schematic.element (component).datasheet),
+					 & pac_component_datasheet.to_string (pac_components_schematic.element (component).datasheet),
 					level => log_threshold);
 
 			when others => null; -- CS should never happen as virtual components do not have a package
@@ -1043,11 +1043,11 @@ package body et_kicad.schematic is
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
 			library_name	: in type_device_model_name;
-			components		: in out type_components_library.map)
+			components		: in out pac_components_library.map)
 		is
 			pragma unreferenced (library_name);
-			use type_components_library;
-			component_cursor : type_components_library.cursor; -- points to the generic component
+			use pac_components_library;
+			component_cursor : pac_components_library.cursor; -- points to the generic component
 
 
 			-- Queries the package variants of the generic component.
@@ -1175,12 +1175,12 @@ package body et_kicad.schematic is
 			-- If not found, search the component again with a tilde prepended to
 			-- to the generic name:
 			component_cursor := components.find (generic_name);
-			if component_cursor = type_components_library.no_element then
+			if component_cursor = pac_components_library.no_element then
 				component_cursor := components.find (prepend_tilde (generic_name));
 			end if;
 
 			-- query the package variants of the generic component
-			type_components_library.update_element (
+			pac_components_library.update_element (
 				container	=> components,
 				position	=> component_cursor,
 				process	=> query_variants'access);
@@ -2168,9 +2168,9 @@ package body et_kicad.schematic is
 				-- Tests if the libraries (listed in search_list_component_libraries) exist in the
 				-- directories listed in search_list_project_lib_dirs.
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
-					use type_library_names;
+					use pac_library_names;
 
-					search_list_library_cursor : type_library_names.cursor;
+					search_list_library_cursor : pac_library_names.cursor;
 					library_found		: boolean; -- true if library file exists
 
 					use pac_project_lib_dirs;
@@ -2182,7 +2182,7 @@ package body et_kicad.schematic is
 
 					-- loop in project_libraries (specified in the kicad project file)
 					search_list_library_cursor := search_list_component_libraries.first;
-					while search_list_library_cursor /= type_library_names.no_element loop
+					while search_list_library_cursor /= pac_library_names.no_element loop
 
 						-- library_cursor points to the current library
 						log (text => "library " & to_string (element (search_list_library_cursor)), level => log_threshold + 1);
@@ -2216,7 +2216,7 @@ package body et_kicad.schematic is
 										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 										extension				=> file_extension_schematic_lib)),
-									new_item	=> type_components_library.empty_map
+									new_item	=> pac_components_library.empty_map
 									--inserted	=> library_inserted,
 									--position	=> library_cursor
 									);
@@ -2256,7 +2256,7 @@ package body et_kicad.schematic is
 				-- Clear search list of project libraries from earlier projects that have been imported.
 				-- If we import only one project, this statement does not matter:
 				pac_project_lib_dirs.clear (search_list_project_lib_dirs);
-				type_library_names.clear (search_list_component_libraries);
+				pac_library_names.clear (search_list_component_libraries);
 
 				-- Open project file.
 				-- The file name is composed of project name and extension.
@@ -2322,11 +2322,11 @@ package body et_kicad.schematic is
 
 									-- The component library could have been referenced already. If so,
 									-- there is no need to append it again to search_list_component_libraries.
-									if not type_library_names.contains (
+									if not pac_library_names.contains (
 										container	=> search_list_component_libraries,
 										item		=> pac_library_name.to_bounded_string (f (line, 2))) then
 
-											type_library_names.append (
+											pac_library_names.append (
 												container	=> search_list_component_libraries,
 												new_item	=> pac_library_name.to_bounded_string (f (line, 2)));
 
@@ -2406,7 +2406,7 @@ package body et_kicad.schematic is
 							pac_device_libraries.insert (
 								container	=> tmp_component_libraries,
 								key		=> uri,
-								new_item	=> type_components_library.empty_map
+								new_item	=> pac_components_library.empty_map
 								);
 
 							-- CS library type, options and description not processed here.
@@ -3517,22 +3517,22 @@ package body et_kicad.schematic is
 
 
 	-- Returns the component power flag status.
-	function component_power_flag (cursor : in type_components_library.cursor)
+	function component_power_flag (cursor : in pac_components_library.cursor)
 		return type_power_flag
 	is
 		use et_kicad_libraries;
 	begin
 		-- Only vitual components have the power flag property.
 		-- For real components the return is always false;
---		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
+--		if et_libraries."=" (pac_components_library.element (cursor).appearance, et_libraries.SCH) then
+		if pac_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
 			--else
 			--	log (text => "power flag off");
 			--end if;
-			return type_components_library.element (cursor).power_flag;
+			return pac_components_library.element (cursor).power_flag;
 		else
 			--log (text => "real component");
 			return NO;
@@ -4188,20 +4188,20 @@ package body et_kicad.schematic is
 	function find_component (
 		library		: in type_device_model_name;
 		component	: in type_component_generic_name)
-		return type_components_library.cursor
+		return pac_components_library.cursor
 	is
 		use et_kicad_libraries;
 
 		lib_cursor	: pac_device_libraries.cursor;
 
-		use type_components_library;
-		comp_cursor	: type_components_library.cursor := no_element;
+		use pac_components_library;
+		comp_cursor	: pac_components_library.cursor := no_element;
 
 		use pac_device_libraries;
 
 		procedure locate (
 			library	: in type_device_model_name;
-			components	: in type_components_library.map) is
+			components	: in pac_components_library.map) is
 		pragma unreferenced (library);
 		begin
 			-- Generic names in library sometimes start with a tilde.
@@ -4211,7 +4211,7 @@ package body et_kicad.schematic is
 			comp_cursor := components.find (component); -- TRANSISTOR_NPN
 
 			-- CS: the follwing should be executed if the import format is kicad_v4:
-			if comp_cursor = type_components_library.no_element then
+			if comp_cursor = pac_components_library.no_element then
 				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
 				--CS: log ?
 			end if;
@@ -4300,8 +4300,8 @@ package body et_kicad.schematic is
 		component_reference	: type_device_name;
 
 		-- This component cursor points to the library component being processed.
-		use type_components_library;
-		component_cursor_lib : type_components_library.cursor;
+		use pac_components_library;
+		component_cursor_lib : pac_components_library.cursor;
 
 		-- CS: log_threshold for messages below
 
@@ -4733,7 +4733,7 @@ package body et_kicad.schematic is
 				library		=> element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
 				component	=> element (component_cursor_sch).generic_name); -- like TRANSISTOR_PNP
 
-			if component_cursor_lib = type_components_library.no_element then
+			if component_cursor_lib = pac_components_library.no_element then
 				-- component not found
 				no_generic_model_found (
 					reference => key (component_cursor_sch),
@@ -5021,11 +5021,11 @@ package body et_kicad.schematic is
 			procedure query_library_components (
 			-- Queries the generic models stored in the library.
 				library		: in type_device_model_name;
-				components	: in type_components_library.map)
+				components	: in pac_components_library.map)
 			is
 				pragma unreferenced (library);
-				use type_components_library;
-				component_lib : type_components_library.cursor := components.first;
+				use pac_components_library;
+				component_lib : pac_components_library.cursor := components.first;
 
 
 				procedure query_units_lib (
@@ -5145,7 +5145,7 @@ package body et_kicad.schematic is
 
 				log_indentation_up;
 
-				while component_lib /= type_components_library.no_element loop
+				while component_lib /= pac_components_library.no_element loop
 					-- component_lib points to the generic model in the library
 
 					-- Sometimes the generic name in the libarary starts with a tilde.
@@ -7246,11 +7246,11 @@ package body et_kicad.schematic is
 
 			procedure locate_component_in_library (
 				library_name	: in type_device_model_name;
-				components		: in type_components_library.map)
+				components		: in pac_components_library.map)
 			is
-				use type_components_library;
+				use pac_components_library;
 
-				component_cursor : type_components_library.cursor;
+				component_cursor : pac_components_library.cursor;
 
 
 				-- Looks up the list of variants of the component.
@@ -7313,7 +7313,7 @@ package body et_kicad.schematic is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = type_components_library.no_element then
+				if component_cursor = pac_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.KICAD_V4 =>
 							-- search for generic name ~NETCHANGER
@@ -7322,7 +7322,7 @@ package body et_kicad.schematic is
 					end case;
 				end if;
 
-				type_components_library.query_element (
+				pac_components_library.query_element (
 					position	=> component_cursor,
 					process		=> query_variants'access);
 
@@ -7413,11 +7413,11 @@ package body et_kicad.schematic is
 
 			procedure locate_component_in_library (
 				library_name	: in type_device_model_name;
-				components		: in type_components_library.map)
+				components		: in pac_components_library.map)
 			is
-				use type_components_library;
+				use pac_components_library;
 
-				component_cursor : type_components_library.cursor;
+				component_cursor : pac_components_library.cursor;
 
 
 				-- Looks up the list of variants of the component.
@@ -7486,7 +7486,7 @@ package body et_kicad.schematic is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = type_components_library.no_element then
+				if component_cursor = pac_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.kicad_v4 =>
 							-- search for generic name ~NETCHANGER
@@ -7495,7 +7495,7 @@ package body et_kicad.schematic is
 					end case;
 				end if;
 
-				type_components_library.query_element (
+				pac_components_library.query_element (
 					position	=> component_cursor,
 					process		=> query_variants'access);
 
@@ -7598,10 +7598,10 @@ package body et_kicad.schematic is
 			-- Locates the given component by its generic name in the library.
 			procedure locate_component_in_library (
 				library_name	: in type_device_model_name;
-				components		: in type_components_library.map)
+				components		: in pac_components_library.map)
 			is
-				use type_components_library;
-				component_cursor : type_components_library.cursor;
+				use pac_components_library;
+				component_cursor : pac_components_library.cursor;
 
 
 				-- Looks up the list of variants of the component.
@@ -7675,7 +7675,7 @@ package body et_kicad.schematic is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = type_components_library.no_element then
+				if component_cursor = pac_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.KICAD_V4 =>
 							-- search for generic name ~NETCHANGER
@@ -7684,9 +7684,9 @@ package body et_kicad.schematic is
 					end case;
 				end if;
 
-				if component_cursor /= type_components_library.no_element then
+				if component_cursor /= pac_components_library.no_element then
 					-- Query the variants of the component in the library.
-					type_components_library.query_element (
+					pac_components_library.query_element (
 						position	=> component_cursor,
 						process	=> query_variants'access);
 

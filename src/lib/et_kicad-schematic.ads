@@ -89,10 +89,16 @@ with et_mirroring;				use et_mirroring;
 
 package et_kicad.schematic is
 
-	package type_library_names				renames et_kicad_libraries.pac_library_names;
+	package pac_library_names				renames et_kicad_libraries.pac_library_names;
+	-- NOTE: NOT renamed to pac_alternative_reference_path -- that exact
+	-- name is already taken by this package's own, separate (and
+	-- structurally identical, likely historically duplicated)
+	-- doubly_linked_lists instantiation at line ~258; renaming this one
+	-- to match would collide as a duplicate declaration. Left type_-
+	-- prefixed until/unless that duplication gets consolidated.
 	package type_alternative_reference_path	renames et_kicad_libraries.pac_alternative_reference_path;
-	package type_component_datasheet		renames et_kicad_libraries.pac_component_datasheet;
-	package type_components_library			renames et_kicad_libraries.pac_components_library;
+	package pac_component_datasheet		renames et_kicad_libraries.pac_component_datasheet;
+	package pac_components_library			renames et_kicad_libraries.pac_components_library;
 
 	subtype type_text_basic					is et_kicad_libraries.type_text_basic;
 	subtype type_de_morgan_representation	is et_kicad_libraries.type_de_morgan_representation;
@@ -124,7 +130,7 @@ package et_kicad.schematic is
 	-- It contains a list of libraries used by a particular schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
     type type_sheet_header is record
-		libraries   : type_library_names.list; -- CS: probably not used by kicad, just information
+		libraries   : pac_library_names.list; -- CS: probably not used by kicad, just information
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;
@@ -280,7 +286,7 @@ package et_kicad.schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
-				datasheet			: type_component_datasheet.bounded_string;
+				datasheet			: pac_component_datasheet.bounded_string;
 				variant				: et_package_variant_name.type_package_variant_name; -- D, N
 
 				-- This is layout related. In the layout the package has a position
@@ -936,7 +942,7 @@ package et_kicad.schematic is
 		segment		: in type_net_segment_base'class)
 		return boolean;
 
-	function component_power_flag (cursor : in type_components_library.cursor)
+	function component_power_flag (cursor : in pac_components_library.cursor)
 	-- Returns the component power flag status.
 		return type_power_flag;
 
@@ -981,7 +987,7 @@ package et_kicad.schematic is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_device_model_name; -- incl. path and file name
 		component	: in type_component_generic_name)
-		return type_components_library.cursor;
+		return pac_components_library.cursor;
 
 	procedure reset_component_cursor (cursor : in out pac_components_schematic.cursor);
 	-- Resets the given component cursor to the begin of the component list
