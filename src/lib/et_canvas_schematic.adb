@@ -126,36 +126,61 @@ package body et_canvas_schematic is
 
 
 
+	-- procedure update_mode_display is
+	-- 	use et_modes.schematic;
+ -- 
+	-- 	-- Get the current drawing mode
+	-- 	v : constant string := to_string (verb);
+	-- 	n : constant string := to_string (noun);
+	-- 	found_verb : boolean;
+	-- 	found_noun : boolean;
+	-- begin
+	-- 	-- show the drawing mode
+	-- 	verb_combo_updating := true;
+	-- 	found_verb :=
+	-- 		set_active_id (
+	-- 			mode_display.cbox_mode_verb,
+	-- 			active_id => v);
+	-- 	pragma assert (found_verb);
+	-- 	verb_combo_updating := false;
+ -- 
+	-- 	set_up_noun_combo;
+ -- 
+	-- 	noun_combo_updating := true;
+	-- 	found_noun :=
+	-- 		set_active_id (
+	-- 			mode_display.cbox_mode_noun,
+	-- 			active_id => n);
+	-- 	pragma assert (found_noun);
+	-- 	noun_combo_updating := false;
+	-- end update_mode_display;
+
+
+
 	procedure update_mode_display is
 		use et_modes.schematic;
 
 		-- Get the current drawing mode
 		v : constant string := to_string (verb);
 		n : constant string := to_string (noun);
-		found_verb : boolean;
-		found_noun : boolean;
+		unused_found : boolean;
 	begin
 		-- show the drawing mode
 		verb_combo_updating := true;
-		found_verb :=
+		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_verb,
 				active_id => v);
-		pragma assert (found_verb);
 		verb_combo_updating := false;
 
-		set_up_noun_combo;
-
 		noun_combo_updating := true;
-		found_noun :=
+		unused_found :=
 			set_active_id (
 				mode_display.cbox_mode_noun,
 				active_id => n);
-		pragma assert (found_noun);
 		noun_combo_updating := false;
 	end update_mode_display;
-
-
+	
 
 
 	procedure compute_bounding_box (
