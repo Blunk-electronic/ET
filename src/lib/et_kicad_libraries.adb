@@ -1049,7 +1049,7 @@ package body et_kicad_libraries is
 
 		-- V4:
 		dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
-		lib_cursor : type_libraries.cursor;
+		lib_cursor : pac_libraries.cursor;
 
 		-- V5:
 		use type_lib_table;
@@ -1064,10 +1064,10 @@ package body et_kicad_libraries is
 		-- Sets the flag package_found if the library contains the given package.
 		procedure search_package (
 			lib_name	: in type_package_model_name;
-			library		: in type_packages_library.map) is
+			library		: in pac_packages_library.map) is
 		pragma unreferenced (lib_name);
 		begin
-			if type_packages_library.contains (
+			if pac_packages_library.contains (
 				container	=> library,
 				key			=> package_name) then
 
@@ -1098,16 +1098,16 @@ package body et_kicad_libraries is
 
 					log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 
-					lib_cursor := type_libraries.find (
+					lib_cursor := pac_libraries.find (
 						container	=> package_libraries,
 						key			=> full_library_name);
 
 					-- If library exists, lib_cursor will point to it. Then the library can be searched
 					-- for the given package.
-					if type_libraries."/=" (lib_cursor, type_libraries.no_element) then
+					if pac_libraries."/=" (lib_cursor, pac_libraries.no_element) then
 
 						-- search the library for the given package
-						type_libraries.query_element (
+						pac_libraries.query_element (
 							position	=> lib_cursor,
 							process		=> search_package'access);
 
@@ -1136,12 +1136,12 @@ package body et_kicad_libraries is
 						log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 
 						-- locate the library by full name (uri)
-						lib_cursor := type_libraries.find (
+						lib_cursor := pac_libraries.find (
 									container	=> package_libraries,
 									key			=> full_library_name);
 
 						-- Search in the library for the given package
-						type_libraries.query_element (
+						pac_libraries.query_element (
 							position	=> lib_cursor,
 							process		=> search_package'access);
 
@@ -1187,8 +1187,8 @@ package body et_kicad_libraries is
 		terminal_port_map	: in pac_terminal_port_map.map)
 		return boolean
 	is
-		use type_libraries;
-		library_cursor : type_libraries.cursor;
+		use pac_libraries;
+		library_cursor : pac_libraries.cursor;
 
 
 		-- Test if the terminals of the terminal_port_map are also in the given package.
@@ -1224,11 +1224,11 @@ package body et_kicad_libraries is
 		-- Locates the package by package_name in the given package library.
 		procedure locate_package (
 			library_name	: in type_package_model_name;
-			packages		: in type_packages_library.map)
+			packages		: in pac_packages_library.map)
 		is
-			package_cursor : type_packages_library.cursor;
+			package_cursor : pac_packages_library.cursor;
 
-			use type_packages_library;
+			use pac_packages_library;
 			use et_terminals.pac_terminals;
 			use pac_terminal_port_map;
 
@@ -1241,7 +1241,7 @@ package body et_kicad_libraries is
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
-				if package_cursor = type_packages_library.no_element then
+				if package_cursor = pac_packages_library.no_element then
 					log (SEVERITY_ERROR, "package " & to_string (package_name)
 						& " not found in library " & to_string (library_name)
 						& " !", console => true);
@@ -1271,7 +1271,7 @@ package body et_kicad_libraries is
 		if not is_empty (package_libraries) then
 			library_cursor := package_libraries.find (library_name);
 
-			if library_cursor = type_libraries.no_element then
+			if library_cursor = pac_libraries.no_element then
 				log (SEVERITY_ERROR, "package library " & to_string (library_name)
 					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
 					 & " not found"
