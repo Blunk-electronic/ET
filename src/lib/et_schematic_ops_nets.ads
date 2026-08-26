@@ -398,22 +398,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies selected net segments to
-	-- the clipboard:
-	procedure copy_selected_net_segments_to_clipboard (
-		module_cursor	: in pac_generic_modules.cursor;
-		-- CS sheet : in type_sheet; -- to speed up the process ?
-		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies net segments from the clipboard
-	-- to the given module. The segments will be placed
-	-- by the given offset:
-	procedure paste_net_segments_from_clipboard (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		offset			: in type_vector_model;
-		log_threshold	: in type_log_level);
 
 
 
@@ -899,17 +885,6 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Copies a net segment (along with its net labels and connectors)
-	-- and inserts it in the given module on the given sheet.
-	-- The net segment will be placed by the given offset.
-	-- Creates the given net if not already existing:
-	procedure copy_net_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		segment			: in type_net_segment;
-		sheet			: in type_sheet;
-		offset			: in type_vector_model;
-		log_threshold	: in type_log_level);
 
 
 	-- Copies a net segment (indicated by object_segment)

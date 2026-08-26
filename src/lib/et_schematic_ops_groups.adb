@@ -45,6 +45,8 @@ with et_schematic_ops_netchangers;
 
 with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
 
+with et_module_clipboard.net_segments;
+
 with et_modes.schematic;
 with et_undo_redo;
 with et_commit;
@@ -747,7 +749,7 @@ package body et_schematic_ops_groups is
 
 
 		procedure copy_net_segments_to_clipboard is
-			use et_schematic_ops_nets;
+			use et_module_clipboard.net_segments;
 		begin
 			log (text => "net segments",
 				 level => log_threshold + 1);
@@ -851,7 +853,7 @@ package body et_schematic_ops_groups is
 
 
 		procedure paste_net_segments is
-			use et_schematic_ops_nets;
+			use et_module_clipboard.net_segments;
 		begin
 			log (text => "net segments",
 				 level => log_threshold + 1);

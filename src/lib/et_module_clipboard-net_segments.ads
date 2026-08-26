@@ -42,7 +42,13 @@
 
 with et_module;
 with et_generic_modules;			use et_generic_modules;
+
+with et_sheets;						use et_sheets;
 with et_schematic_coordinates;		use et_schematic_coordinates;
+with et_schematic_geometry;			use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
+
+with et_net_names;					use et_net_names;
 with et_nets;						use et_nets;
 with et_net_segment;				use et_net_segment;
 with et_logging;					use et_logging;
@@ -52,6 +58,8 @@ with et_logging;					use et_logging;
 package et_module_clipboard.net_segments is
 
 
+-- COPY:
+	
 	-- This procedure copies a given net and net segment
 	-- to the clipboard.
 	-- 1. If the net does not exist in the clipboard yet,
@@ -69,6 +77,46 @@ package et_module_clipboard.net_segments is
 
 
 
+	-- This procedure copies selected net segments to
+	-- the clipboard:
+	procedure copy_selected_net_segments_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		-- CS sheet : in type_sheet; -- to speed up the process ?
+		log_threshold	: in type_log_level);
+
+
+
+
+
+	
+
+-- PASTE:
+
+	-- Copies a net segment (along with its net labels and connectors)
+	-- and inserts it in the given module on the given sheet.
+	-- The net segment will be placed by the given offset.
+	-- Creates the given net if not already existing:
+	procedure copy_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
+		segment			: in type_net_segment;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+
+	-- This procedure copies net segments from the clipboard
+	-- to the given module. The segments will be placed
+	-- by the given offset:
+	procedure paste_net_segments_from_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		offset			: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_module_clipboard.net_segments;
 
 -- Soli Deo Gloria
