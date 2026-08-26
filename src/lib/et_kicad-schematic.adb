@@ -1031,7 +1031,7 @@ package body et_kicad.schematic is
 		use et_kicad_libraries;
 		use ada.directories;
 
-		library_cursor : type_device_libraries.cursor; -- points to the component library
+		library_cursor : pac_device_libraries.cursor; -- points to the component library
 
 		use et_package_variant_name;
 		variant : type_package_variant_name; -- variant name to be returned
@@ -1216,11 +1216,11 @@ package body et_kicad.schematic is
 		library_cursor := tmp_component_libraries.find (component_library);
 
 		log (text => "component library is "
-			 & enclose_in_quotes (to_string (type_device_libraries.key (library_cursor))),
+			 & enclose_in_quotes (to_string (pac_device_libraries.key (library_cursor))),
 			 level => log_threshold + 1);
 
 		-- locate the given generic component
-		type_device_libraries.update_element (
+		pac_device_libraries.update_element (
 			container	=> tmp_component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
@@ -2210,7 +2210,7 @@ package body et_kicad.schematic is
 								library_found := true;
 
 								-- create empty component library
-								type_device_libraries.insert (
+								pac_device_libraries.insert (
 									container	=> tmp_component_libraries,
 									key			=> et_device_model_names.to_file_name (compose (
 										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
@@ -2379,23 +2379,23 @@ package body et_kicad.schematic is
 				lib_table_handle : ada.text_io.file_type;
 
 				-- After reading the local and global sym-lib-tables they are stored here:
-				sym_table_local, sym_table_global : type_lib_table.list;
+				sym_table_local, sym_table_global : pac_lib_table.list;
 
 				-- After reading the local and global fp-lib-tables they are stored here:
-				fp_table_local, fp_table_global : type_lib_table.list;
+				fp_table_local, fp_table_global : pac_lib_table.list;
 
 
 				procedure locate_component_libraries is
 				-- Tests if the libraries (listed in sym_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
-					lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
-					use type_lib_table;
+					lib_cursor : pac_lib_table.cursor := sym_lib_tables.first;
+					use pac_lib_table;
 					uri : type_device_model_name;
 				begin
 					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while lib_cursor /= type_lib_table.no_element loop
+					while lib_cursor /= pac_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_stm32.lib
 						log (text => to_string (uri), level => log_threshold + 2);
 
@@ -2403,7 +2403,7 @@ package body et_kicad.schematic is
 						if ada.directories.exists (to_string (uri)) then
 
 							-- create empty component library
-							type_device_libraries.insert (
+							pac_device_libraries.insert (
 								container	=> tmp_component_libraries,
 								key		=> uri,
 								new_item	=> type_components_library.empty_map
@@ -2428,8 +2428,8 @@ package body et_kicad.schematic is
 				-- Tests if the libraries (listed in fp_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container et_kicad_pcb.package_libraries.
 				procedure locate_package_libraries is
-					lib_cursor : type_lib_table.cursor := fp_lib_tables.first;
-					use type_lib_table;
+					lib_cursor : pac_lib_table.cursor := fp_lib_tables.first;
+					use pac_lib_table;
 
 					uri : type_device_model_name;
 					-- CS: not really correct. see spec for type_lib_table_entry
@@ -2438,7 +2438,7 @@ package body et_kicad.schematic is
 					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while lib_cursor /= type_lib_table.no_element loop
+					while lib_cursor /= pac_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_ic.pretty
 						log (text => to_string (uri), level => log_threshold + 2);
 
@@ -2470,8 +2470,8 @@ package body et_kicad.schematic is
 
 				-- Reads the file that contains a sym-lib-table or fp-lib-table. The current_input points to the particular file.
 				-- The file is read into container "lines" which is then parsed to obtain the table content.
-				function read_table return type_lib_table.list is
-					table : type_lib_table.list; -- to be returned
+				function read_table return pac_lib_table.list is
+					table : pac_lib_table.list; -- to be returned
 
 					line : type_fields_of_line; -- a line of the table
 					lines : pac_lines_of_file.list; -- all lines of the table
@@ -2831,7 +2831,7 @@ package body et_kicad.schematic is
 											 & to_string (lib_uri),
 											level => log_threshold + 2);
 
-										type_lib_table.append (
+										pac_lib_table.append (
 											container	=> table,
 											new_item	=> (
 												lib_name	=> lib_name,
@@ -2990,23 +2990,23 @@ package body et_kicad.schematic is
 
 				procedure concatenate_local_and_global_sym_tables is
 				-- Concatenates local and global sym-lib-tables so that global libraries come AFTER local libraries.
-					use type_lib_table;
-					cursor : type_lib_table.cursor := sym_table_global.first;
+					use pac_lib_table;
+					cursor : pac_lib_table.cursor := sym_table_global.first;
 				begin
 					log (text => "concatenating local and global symbol table ...", level => log_threshold + 1);
 
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
 					-- Loop in table_global and append element per element to table_local.
 					-- If an library entry already exists in the local table, issue a warning and skip it.
-					while cursor /= type_lib_table.no_element loop
+					while cursor /= pac_lib_table.no_element loop
 
 						-- Test if entry already in local table.
-						if not type_lib_table.contains (
+						if not pac_lib_table.contains (
 							container	=> sym_table_local,
 							item		=> element (cursor)) then
 
 							-- Library entry not in local table -> append it.
-							type_lib_table.append (
+							pac_lib_table.append (
 								container	=> sym_table_local,
 								new_item	=> element (cursor)); -- fetch element from global table
 
@@ -3027,23 +3027,23 @@ package body et_kicad.schematic is
 
 				procedure concatenate_local_and_global_fp_tables is
 				-- Concatenates local and global fp-lib-tables so that global libraries come AFTER local libraries.
-					use type_lib_table;
-					cursor : type_lib_table.cursor := fp_table_global.first;
+					use pac_lib_table;
+					cursor : pac_lib_table.cursor := fp_table_global.first;
 				begin
 					log (text => "concatenating local and global footprint table ...", level => log_threshold + 1);
 
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
 					-- Loop in table_global and append element per element to table_local.
 					-- If an library entry already exists in the local table, issue a warning and skip it.
-					while cursor /= type_lib_table.no_element loop
+					while cursor /= pac_lib_table.no_element loop
 
 						-- Test if entry already in local table.
-						if not type_lib_table.contains (
+						if not pac_lib_table.contains (
 							container	=> fp_table_local,
 							item		=> element (cursor)) then
 
 							-- Library entry not in local table -> append it.
-							type_lib_table.append (
+							pac_lib_table.append (
 								container	=> fp_table_local,
 								new_item	=> element (cursor)); -- fetch element from global table
 
@@ -3161,7 +3161,7 @@ package body et_kicad.schematic is
 
 			-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
 			-- If we import only one project, this statement does not matter:
-			type_device_libraries.clear (tmp_component_libraries);
+			pac_device_libraries.clear (tmp_component_libraries);
 
 			case cad_format is
 
@@ -3290,7 +3290,7 @@ package body et_kicad.schematic is
 						fp_lib_tables		=> fp_lib_tables, -- see function read_project_file
 
 						-- symbol/component libraries
-						component_libraries => type_device_libraries.empty_map,
+						component_libraries => pac_device_libraries.empty_map,
 
 						-- V5
 						-- package/footprint libraries
@@ -4192,12 +4192,12 @@ package body et_kicad.schematic is
 	is
 		use et_kicad_libraries;
 
-		lib_cursor	: type_device_libraries.cursor;
+		lib_cursor	: pac_device_libraries.cursor;
 
 		use type_components_library;
 		comp_cursor	: type_components_library.cursor := no_element;
 
-		use type_device_libraries;
+		use pac_device_libraries;
 
 		procedure locate (
 			library	: in type_device_model_name;
@@ -4222,7 +4222,7 @@ package body et_kicad.schematic is
 
 		-- If the given library exists, locate the given component therein.
 		-- Otherwise generate a warning.
-		if lib_cursor /= type_device_libraries.no_element then
+		if lib_cursor /= pac_device_libraries.no_element then
 			query_element (
 				position	=> lib_cursor,
 				process		=> locate'access);
@@ -4314,13 +4314,13 @@ package body et_kicad.schematic is
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
 		procedure extract_ports is
 			use et_kicad_libraries;
-			use type_ports_library;
+			use pac_ports_library;
 
 			-- The unit cursor of the component advances through the units stored in the library.
-			unit_cursor : type_units_library.cursor;
+			unit_cursor : pac_units_library.cursor;
 
 			-- The port cursor of the unit indicates the port of a unit.
-			port_cursor : type_ports_library.cursor;
+			port_cursor : pac_ports_library.cursor;
 
 			unit_name_lib : et_unit_name.type_unit_name; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
@@ -4517,12 +4517,12 @@ package body et_kicad.schematic is
 			-- with the "global" flag set.
 			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
 			procedure ports_of_global_unit is
-				unit_cursor : type_units_library.cursor;
-				use type_units_library;
+				unit_cursor : pac_units_library.cursor;
+				use pac_units_library;
 			begin
 				-- Loop in list of internal units:
 				unit_cursor := first_unit (component_cursor_lib);
-				while unit_cursor /= type_units_library.no_element loop
+				while unit_cursor /= pac_units_library.no_element loop
 					log_indentation_up;
 
 					if element (unit_cursor).global then
@@ -4536,7 +4536,7 @@ package body et_kicad.schematic is
 
 						-- Loop in port list of the unit:
 						port_cursor := first_port (unit_cursor); -- port in library
-						while port_cursor /= type_ports_library.no_element loop
+						while port_cursor /= pac_ports_library.no_element loop
 
 							--log (text => "port " & pac_port_name.to_string (key (port_cursor))
 							log (text => "port " & to_string (element (port_cursor).name),
@@ -4571,12 +4571,12 @@ package body et_kicad.schematic is
 			unit_cursor := first_unit (component_cursor_lib);
 
 			-- Loop in list of internal units:
-			--while unit_cursor_internal /= type_units_library.no_element loop
-			while type_units_library."/=" (unit_cursor, type_units_library.no_element) loop
+			--while unit_cursor_internal /= pac_units_library.no_element loop
+			while pac_units_library."/=" (unit_cursor, pac_units_library.no_element) loop
 				log_indentation_up;
 
 				-- get the unit name
-				unit_name_lib := type_units_library.key (unit_cursor);
+				unit_name_lib := pac_units_library.key (unit_cursor);
 
 				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
 				-- If the unit is deployed in the schematic, we load unit_position.
@@ -4595,7 +4595,7 @@ package body et_kicad.schematic is
 					port_cursor := first_port (unit_cursor); -- port in library
 
 					-- Loop in port list of the unit:
-					while port_cursor /= type_ports_library.no_element loop
+					while port_cursor /= pac_ports_library.no_element loop
 						log_indentation_up;
 						--log (text => "port " & pac_port_name.to_string (key (port_cursor))
 						log (text => "port " & to_string (element (port_cursor).name),
@@ -4627,7 +4627,7 @@ package body et_kicad.schematic is
 				end if;
 
 				log_indentation_down;
-				unit_cursor := type_units_library.next (unit_cursor);
+				unit_cursor := pac_units_library.next (unit_cursor);
 			end loop;
 
 		end extract_ports;
@@ -4807,11 +4807,11 @@ package body et_kicad.schematic is
 --					procedure query_no_connect_flags (
 --						module_name : in pac_submodule_name.bounded_string;
 --						module : in type_module) is
---						use type_no_connection_flags;
---						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+--						use pac_no_connection_flags;
+--						no_connection_flag_cursor : pac_no_connection_flags.cursor := module.no_connections.first;
 --					begin -- query_no_connect_flags
 --						log (text => "quering no_connection_flags ...", log_threshold + 1);
---						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+--						while no_connection_flag_cursor /= pac_no_connection_flags.no_element loop
 --
 --							-- Compare coordinates of port and no_connection_flag.
 --							-- On match exit prematurely.
@@ -5014,7 +5014,7 @@ package body et_kicad.schematic is
 
 			use pac_components_schematic;
 			component_sch : pac_components_schematic.cursor := module.components.first;
-			library_cursor : type_device_libraries.cursor;
+			library_cursor : pac_device_libraries.cursor;
 
 
 
@@ -5033,8 +5033,8 @@ package body et_kicad.schematic is
 					component		: in type_component_library)
 				is
 					pragma unreferenced (component_name);
-					use type_units_library;
-					unit : type_units_library.cursor := component.units.first;
+					use pac_units_library;
+					unit : pac_units_library.cursor := component.units.first;
 
 					use et_unit_name;
 
@@ -5116,7 +5116,7 @@ package body et_kicad.schematic is
 
 
 				begin -- query_units_lib
-					while unit /= type_units_library.no_element loop
+					while unit /= pac_units_library.no_element loop
 						log (text => "unit " & to_string (key (unit))
 							 --& et_libraries.to_string (element (unit).add_level), level => log_threshold + 2);
 							 , level => log_threshold + 2);
@@ -5183,12 +5183,12 @@ package body et_kicad.schematic is
 					& to_string (element (component_sch).library_name), level => log_threshold + 1);
 
 				-- Set library cursor so that it points to the library of the generic model.
-				library_cursor := type_device_libraries.find (
+				library_cursor := pac_device_libraries.find (
 					container	=> tmp_component_libraries, -- the collection of project libraries with generic models
 					key			=> element (component_sch).library_name); -- lib name provided by schematic component
 
 				-- Query the library components.
-				type_device_libraries.query_element (
+				pac_device_libraries.query_element (
 					position	=> library_cursor,
 					process		=> query_library_components'access);
 
@@ -7241,7 +7241,7 @@ package body et_kicad.schematic is
 			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
-			library_cursor	: type_device_libraries.cursor;
+			library_cursor	: pac_device_libraries.cursor;
 
 
 			procedure locate_component_in_library (
@@ -7345,7 +7345,7 @@ package body et_kicad.schematic is
 			-- set library cursor. NOTE: assumption is that there IS a library with this name
 			library_cursor := tmp_component_libraries.find (library_name);
 
-			type_device_libraries.query_element (
+			pac_device_libraries.query_element (
 				position	=> library_cursor,
 				process		=> locate_component_in_library'access);
 
@@ -7408,7 +7408,7 @@ package body et_kicad.schematic is
 			package_variant	: type_package_variant_name;
 
 			--use type_libraries;
-			library_cursor	: type_device_libraries.cursor;
+			library_cursor	: pac_device_libraries.cursor;
 
 
 			procedure locate_component_in_library (
@@ -7518,7 +7518,7 @@ package body et_kicad.schematic is
 			-- set library cursor. NOTE: assumption is that there IS a library with this name
 			library_cursor := tmp_component_libraries.find (library_name);
 
-			type_device_libraries.query_element (
+			pac_device_libraries.query_element (
 				position	=> library_cursor,
 				process		=> locate_component_in_library'access);
 
@@ -7592,7 +7592,7 @@ package body et_kicad.schematic is
 			generic_name	: type_component_generic_name;
 			package_variant	: type_package_variant_name;
 
-			library_cursor	: type_device_libraries.cursor;
+			library_cursor	: pac_device_libraries.cursor;
 
 
 			-- Locates the given component by its generic name in the library.
@@ -7715,8 +7715,8 @@ package body et_kicad.schematic is
 				-- CS: Otherwise an exception would occur here.
 				library_cursor := tmp_component_libraries.find (library_name);
 
-				if type_device_libraries."/=" (library_cursor, type_device_libraries.no_element) then
-					type_device_libraries.query_element (
+				if pac_device_libraries."/=" (library_cursor, pac_device_libraries.no_element) then
+					pac_device_libraries.query_element (
 						position	=> library_cursor,
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort
@@ -8184,18 +8184,18 @@ package body et_kicad.schematic is
 --			name	: in pac_submodule_name.bounded_string;
 --			module	: in type_module) is
 --
---			use type_portlists;
---			portlist : type_portlists.cursor := module.portlists.first;
+--			use pac_portlists;
+--			portlist : pac_portlists.cursor := module.portlists.first;
 --
 --			procedure count (
 --				component	: in type_device_name;
---				ports		: in type_ports.list) is
---				port : type_ports.cursor := ports.first;
---				use type_ports;
+--				ports		: in pac_ports.list) is
+--				port : pac_ports.cursor := ports.first;
+--				use pac_ports;
 --			begin
 --				-- loop through the ports of the given component
 --				-- and count those which are connected.
---				while port /= type_ports.no_element loop
+--				while port /= pac_ports.no_element loop
 --					--if et_schematic."=" (element (port).connected, et_schematic.YES) then
 --					if element (port).connected = YES then
 --						et_schematic.statistics_set (et_schematic.PORTS_TOTAL);
@@ -8206,7 +8206,7 @@ package body et_kicad.schematic is
 --			end count;
 --
 --		begin -- count_ports
---			while portlist /= type_portlists.no_element loop
+--			while portlist /= pac_portlists.no_element loop
 --				query_element (
 --					position	=> portlist,
 --					process		=> count'access);

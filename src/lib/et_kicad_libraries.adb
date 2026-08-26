@@ -336,34 +336,34 @@ package body et_kicad_libraries is
 
 
 	-- Returns the component appearance where cursor points to.
-	function component_appearance (cursor : in type_components_library.cursor)
+	function component_appearance (cursor : in pac_components_library.cursor)
 		return type_appearance
-	is (type_components_library.element (cursor).appearance);
+	is (pac_components_library.element (cursor).appearance);
 
 
 
 
 	function first_unit (
 	-- Returns the cursor to the first unit of the given component.
-		component_cursor : in type_components_library.cursor)
-		return type_units_library.cursor is
+		component_cursor : in pac_components_library.cursor)
+		return pac_units_library.cursor is
 
-		unit_cursor : type_units_library.cursor;
+		unit_cursor : pac_units_library.cursor;
 
 		procedure locate (
 			name		: in type_component_generic_name;
 			component	: in type_component_library) is
 				pragma unreferenced (name);
 
-			use type_units_library;
+			use pac_units_library;
 		begin
 			-- Set the unit cursor to the first unit of the component.
-			unit_cursor := type_units_library.first (component.units);
+			unit_cursor := pac_units_library.first (component.units);
 
 			-- In case the component has no units, abort.
-			if unit_cursor = type_units_library.no_element then
+			if unit_cursor = pac_units_library.no_element then
 				log (SEVERITY_ERROR, "generic component "
-						& to_string (type_components_library.key (component_cursor))
+						& to_string (pac_components_library.key (component_cursor))
 						& " has no units !",
 					console => true);
 				raise constraint_error;
@@ -372,7 +372,7 @@ package body et_kicad_libraries is
 
 	begin
 		-- locate the component by the given component cursor
-		type_components_library.query_element (component_cursor, locate'access);
+		pac_components_library.query_element (component_cursor, locate'access);
 
 		-- CS: do something if cursor invalid. via exception handler ?
 		return unit_cursor;
@@ -384,10 +384,10 @@ package body et_kicad_libraries is
 
 	-- Returns the cursor to the first port of the given unit
 	function first_port (
-		unit_cursor : in type_units_library.cursor)
-		return type_ports_library.cursor
+		unit_cursor : in pac_units_library.cursor)
+		return pac_ports_library.cursor
 	is
-		port_cursor : type_ports_library.cursor; -- to be returned
+		port_cursor : pac_ports_library.cursor; -- to be returned
 
 
 		procedure locate (
@@ -395,15 +395,15 @@ package body et_kicad_libraries is
 			unit : in type_unit_library)
 		is
 			pragma unreferenced (name);
-			use type_ports_library;
+			use pac_ports_library;
 		begin
 			-- Set the port cursor to the first port of the unit.
-			port_cursor := type_ports_library.first (unit.symbol.ports);
+			port_cursor := pac_ports_library.first (unit.symbol.ports);
 
 			-- In case the unit has no ports, abort.
-			if port_cursor = type_ports_library.no_element then
+			if port_cursor = pac_ports_library.no_element then
 				log (SEVERITY_WARNING, "generic unit "
-						& to_string (type_units_library.key (unit_cursor))
+						& to_string (pac_units_library.key (unit_cursor))
 						& " has no ports !");
 					--console => true);
 				--CS raise constraint_error;
@@ -412,7 +412,7 @@ package body et_kicad_libraries is
 
 
 	begin
-		type_units_library.query_element (unit_cursor, locate'access);
+		pac_units_library.query_element (unit_cursor, locate'access);
 
 		-- CS: do something if cursor invalid. via exception handler ?
 		return port_cursor;
@@ -436,11 +436,11 @@ package body et_kicad_libraries is
 
 
 	procedure check_datasheet_characters (
-		datasheet : in type_component_datasheet.bounded_string;
+		datasheet : in pac_component_datasheet.bounded_string;
 		characters : in character_set := component_datasheet_characters) is
 	-- Tests if the given URL contains only valid characters as specified
 	-- by given character set. Issues warning if invalid character found.
-		use type_component_datasheet;
+		use pac_component_datasheet;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -1052,8 +1052,8 @@ package body et_kicad_libraries is
 		lib_cursor : pac_libraries.cursor;
 
 		-- V5:
-		use type_lib_table;
-		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
+		use pac_lib_table;
+		fp_lib_table_cursor : pac_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
 		use pac_library_name;
 		full_library_name : type_package_model_name;
@@ -1126,7 +1126,7 @@ package body et_kicad_libraries is
 				-- The first matching entry in the table provides the full library name (uri).
 				-- Then search in that library for the given package_name. If the package is
 				-- not in the library, search for next matching entry in fp-lib-table ...
-				while fp_lib_table_cursor /= type_lib_table.no_element loop
+				while fp_lib_table_cursor /= pac_lib_table.no_element loop
 
 					-- On match, open the library (by its uri).
 					if element (fp_lib_table_cursor).lib_name = library_name then
@@ -1309,14 +1309,14 @@ package body et_kicad_libraries is
 	is
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
-		lib_cursor		: type_device_libraries.cursor;
+		lib_cursor		: pac_device_libraries.cursor;
 
 		-- This is the component cursor. It points to the component being processed.
-		comp_cursor		: type_components_library.cursor;
+		comp_cursor		: pac_components_library.cursor;
 		comp_inserted	: boolean; -- indicates whether a component has been inserted
 
 		-- This is the unit cursor. It points to the unit being processed.
-		unit_cursor		: type_units_library.cursor;
+		unit_cursor		: pac_units_library.cursor;
 		unit_inserted	: boolean; -- indicates whether a unit has been inserted
 
 
@@ -2103,7 +2103,7 @@ package body et_kicad_libraries is
 					when DATASHEET =>
 						check_datasheet_length (content (text));
 						check_datasheet_characters (
-							datasheet => type_component_datasheet.to_bounded_string (content (text)));
+							datasheet => pac_component_datasheet.to_bounded_string (content (text)));
 
 					when PACKGE =>
 						check_package_name_length (content (text));
@@ -2258,7 +2258,7 @@ package body et_kicad_libraries is
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
 				key			: in type_device_model_name;
-				components	: in out type_components_library.map)
+				components	: in out pac_components_library.map)
 			is
 				pragma unreferenced (key);
 			begin
@@ -2272,7 +2272,7 @@ package body et_kicad_libraries is
 					when APPEARANCE_VIRTUAL =>
 
 						-- we insert into the given components list a new component
-						type_components_library.insert (
+						pac_components_library.insert (
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like #PWR, #FLG
 							position	=> comp_cursor,
@@ -2297,14 +2297,14 @@ package body et_kicad_libraries is
 												-- character found. This was the design gets imported but with
 												-- (lots of) warnings.
 
-								units		=> type_units_library.empty_map
+								units		=> pac_units_library.empty_map
 								)
 							);
 
 					when APPEARANCE_PCB =>
 
 						-- we insert into the given components list a new component
-						type_components_library.insert (
+						pac_components_library.insert (
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like 74LS00
 							position	=> comp_cursor,
@@ -2313,10 +2313,10 @@ package body et_kicad_libraries is
 								appearance		=> APPEARANCE_PCB,
 								prefix			=> tmp_prefix,
 								value			=> to_value_with_check (content (field_value)),
-								units			=> type_units_library.empty_map,
+								units			=> pac_units_library.empty_map,
 
-								package_filter	=> type_package_filter.empty_set,
-								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
+								package_filter	=> pac_package_filter.empty_set,
+								datasheet		=> pac_component_datasheet.to_bounded_string (content (field_datasheet)),
 								variants		=> pac_package_variants.empty_map
 								)
 							);
@@ -2343,7 +2343,7 @@ package body et_kicad_libraries is
 			end insert_component;
 
 
-			procedure set_unit_cursor (libraries : in out type_device_libraries.map) is
+			procedure set_unit_cursor (libraries : in out pac_device_libraries.map) is
 			pragma unreferenced (libraries);
 			-- Sets the unit_cursor according to the current unit_id.
 			-- If the unit_id is 0, the unit_cursor is not changed.
@@ -2359,15 +2359,15 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 					key			: in type_device_model_name;
-					components	: in type_components_library.map) is
+					components	: in pac_components_library.map) is
 				pragma unreferenced (key, components);
 				begin
-					type_components_library.query_element (comp_cursor, locate_unit'access);
+					pac_components_library.query_element (comp_cursor, locate_unit'access);
 				end locate_component;
 
 			begin -- set_unit_cursor
 				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
-					type_device_libraries.query_element (lib_cursor, locate_component'access);
+					pac_device_libraries.query_element (lib_cursor, locate_component'access);
 				end if;
 
 			exception
@@ -2416,7 +2416,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 					key			: in type_device_model_name;
-					components	: in out type_components_library.map) is
+					components	: in out pac_components_library.map) is
 				pragma unreferenced (key);
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
@@ -2535,7 +2535,7 @@ package body et_kicad_libraries is
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
 					key			: in type_device_model_name;
-					components	: in out type_components_library.map) is
+					components	: in out pac_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -2623,7 +2623,7 @@ package body et_kicad_libraries is
 				procedure locate_component (
 				-- Locates the component indicated by comp_cursor.
 					key			: in type_device_model_name;
-					components	: in out type_components_library.map) is
+					components	: in out pac_components_library.map) is
 				pragma unreferenced (key);
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -2877,7 +2877,7 @@ package body et_kicad_libraries is
 
 			procedure add_footprint (line : in type_fields_of_line; log_threshold : in type_log_level) is
 			-- Reads the proposed footprint and adds it to the package filter of the current component.
-				fp : type_package_proposal.bounded_string;
+				fp : pac_package_proposal.bounded_string;
 
 				procedure do_it is
 				-- Adds the footprint finally.
@@ -2891,7 +2891,7 @@ package body et_kicad_libraries is
 
 					procedure locate_component (
 						key			: in type_device_model_name;
-						components	: in out type_components_library.map) is
+						components	: in out pac_components_library.map) is
 					pragma unreferenced (key);
 					begin
 						components.update_element (comp_cursor, insert_footprint'access);
@@ -2912,8 +2912,8 @@ package body et_kicad_libraries is
 	--			log (text => "footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
 
-				fp := type_package_proposal.to_bounded_string (f (line, 1));
-				log (text => type_package_proposal.to_string (fp), level => log_threshold);
+				fp := pac_package_proposal.to_bounded_string (f (line, 1));
+				log (text => pac_package_proposal.to_string (fp), level => log_threshold);
 
 				do_it;
 
@@ -2987,7 +2987,7 @@ package body et_kicad_libraries is
 
 				procedure locate_component (
 					lib_name	: in type_device_model_name;
-					components	: in out type_components_library.map)
+					components	: in out pac_components_library.map)
 				is
 					pragma unreferenced (lib_name);
 
@@ -3069,7 +3069,7 @@ package body et_kicad_libraries is
 				log (text => "building default package variant ...", level => log_threshold + 1);
 				log_indentation_up;
 
-				type_device_libraries.update_element (
+				pac_device_libraries.update_element (
 					container	=> tmp_component_libraries,
 					position	=> lib_cursor,
 					process		=> locate_component'access);
@@ -3236,7 +3236,7 @@ package body et_kicad_libraries is
 										if f (line, 1) = fplist then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
-											type_device_libraries.update_element (
+											pac_device_libraries.update_element (
 												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
@@ -3252,7 +3252,7 @@ package body et_kicad_libraries is
 										elsif f (line, 1) = et_kicad_libraries.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
-											type_device_libraries.update_element (
+											pac_device_libraries.update_element (
 												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
@@ -3352,20 +3352,20 @@ package body et_kicad_libraries is
 			when et_import.KICAD_V4 =>
 
 				-- If the search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
-				if not type_library_names.is_empty (search_list_component_libraries) then
+				if not pac_library_names.is_empty (search_list_component_libraries) then
 
 					-- Set lib_cursor to first library and loop in tmp_component_libraries.
 					lib_cursor := tmp_component_libraries.first;
-					while type_device_libraries."/=" (lib_cursor, type_device_libraries.no_element) loop
+					while pac_device_libraries."/=" (lib_cursor, pac_device_libraries.no_element) loop
 
 						-- log library file name
-						log (text => to_string (type_device_libraries.key (lib_cursor)), level => log_threshold + 1);
+						log (text => to_string (pac_device_libraries.key (lib_cursor)), level => log_threshold + 1);
 
 						-- open the same-named file and read it
 						open (
 							file => library_handle,
 							mode => in_file,
-							name => to_string (type_device_libraries.key (lib_cursor)));
+							name => to_string (pac_device_libraries.key (lib_cursor)));
 
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
@@ -3374,7 +3374,7 @@ package body et_kicad_libraries is
 
 						close (library_handle);
 
-						type_device_libraries.next (lib_cursor);
+						pac_device_libraries.next (lib_cursor);
 					end loop;
 
 				else
@@ -3386,20 +3386,20 @@ package body et_kicad_libraries is
 			when et_import.KICAD_V5 =>
 
 				-- If tmp_component_libraries is empty -> nothing to do
-				if not type_device_libraries.is_empty (tmp_component_libraries) then
+				if not pac_device_libraries.is_empty (tmp_component_libraries) then
 
 					-- Set lib_cursor to first library and loop in tmp_component_libraries.
 					lib_cursor := tmp_component_libraries.first;
-					while type_device_libraries."/=" (lib_cursor, type_device_libraries.no_element) loop
+					while pac_device_libraries."/=" (lib_cursor, pac_device_libraries.no_element) loop
 
 						-- log library file name
-						log (text => to_string (type_device_libraries.key (lib_cursor)), level => log_threshold + 1);
+						log (text => to_string (pac_device_libraries.key (lib_cursor)), level => log_threshold + 1);
 
 						-- open the same-named file and read it
 						open (
 							file => library_handle,
 							mode => in_file,
-							name => to_string (type_device_libraries.key (lib_cursor)));
+							name => to_string (pac_device_libraries.key (lib_cursor)));
 
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
@@ -3408,7 +3408,7 @@ package body et_kicad_libraries is
 
 						close (library_handle);
 
-						type_device_libraries.next (lib_cursor);
+						pac_device_libraries.next (lib_cursor);
 					end loop;
 
 				else
@@ -3437,7 +3437,7 @@ package body et_kicad_libraries is
 		log_threshold		: in type_log_level)
 		return type_package_variant_name -- D
 	is
-		library_cursor : type_device_libraries.cursor; -- points to the component library
+		library_cursor : pac_device_libraries.cursor; -- points to the component library
 
 		use et_package_variant_name;
 		variant : type_package_variant_name; -- variant name to be returned
@@ -3449,11 +3449,11 @@ package body et_kicad_libraries is
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
 			library_name	: in type_device_model_name;
-			components		: in out type_components_library.map)
+			components		: in out pac_components_library.map)
 		is
 			pragma unreferenced (library_name);
-			use type_components_library;
-			component_cursor : type_components_library.cursor; -- points to the generic component
+			use pac_components_library;
+			component_cursor : pac_components_library.cursor; -- points to the generic component
 
 
 			-- Queries the package variants of the generic component.
@@ -3584,12 +3584,12 @@ package body et_kicad_libraries is
 			-- If not found, search the component again with a tilde prepended to
 			-- to the generic name:
 			component_cursor := components.find (generic_name);
-			if component_cursor = type_components_library.no_element then
+			if component_cursor = pac_components_library.no_element then
 				component_cursor := components.find (prepend_tilde (generic_name));
 			end if;
 
 			-- query the package variants of the generic component
-			type_components_library.update_element (
+			pac_components_library.update_element (
 				container	=> components,
 				position	=> component_cursor,
 				process	=> query_variants'access);
@@ -3625,11 +3625,11 @@ package body et_kicad_libraries is
 		library_cursor := tmp_component_libraries.find (component_library);
 
 		log (text => "component library is "
-			 & enclose_in_quotes (to_string (type_device_libraries.key (library_cursor))),
+			 & enclose_in_quotes (to_string (pac_device_libraries.key (library_cursor))),
 			 level => log_threshold + 1);
 
 		-- locate the given generic component
-		type_device_libraries.update_element (
+		pac_device_libraries.update_element (
 			container	=> tmp_component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
@@ -3645,20 +3645,20 @@ package body et_kicad_libraries is
 
 
 	-- Returns the component power flag status.
-	function component_power_flag (cursor : in type_components_library.cursor)
+	function component_power_flag (cursor : in pac_components_library.cursor)
 		return type_power_flag is
 	begin
 		-- Only vitual components have the power flag property.
 		-- For real components the return is always false;
---		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
+--		if et_libraries."=" (pac_components_library.element (cursor).appearance, et_libraries.SCH) then
+		if pac_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
 			--else
 			--	log (text => "power flag off");
 			--end if;
-			return type_components_library.element (cursor).power_flag;
+			return pac_components_library.element (cursor).power_flag;
 		else
 			--log (text => "real component");
 			return NO;
@@ -3669,19 +3669,19 @@ package body et_kicad_libraries is
 
 
 	-- Returns a cursor pointing to the first port of a component in the portlists.
-	function first_port (component_cursor : in type_portlists.cursor) return type_ports.cursor is
-		port_cursor : type_ports.cursor;
+	function first_port (component_cursor : in pac_portlists.cursor) return pac_ports.cursor is
+		port_cursor : pac_ports.cursor;
 
 		procedure set_cursor (
 			name	: in type_device_name;
-			ports	: in type_ports.list) is
+			ports	: in pac_ports.list) is
 		pragma unreferenced (name);
 		begin
-			port_cursor := type_ports.first (ports);
+			port_cursor := pac_ports.first (ports);
 		end set_cursor;
 
 	begin -- first_port
-		type_portlists.query_element (
+		pac_portlists.query_element (
 			position	=> component_cursor,
 			process	=> set_cursor'access);
 
@@ -3695,17 +3695,17 @@ package body et_kicad_libraries is
 	function find_component (
 		library		: in type_device_model_name;
 		component	: in type_component_generic_name)
-		return type_components_library.cursor is
+		return pac_components_library.cursor is
 
-		lib_cursor	: type_device_libraries.cursor;
-		use type_components_library;
-		comp_cursor	: type_components_library.cursor := no_element;
+		lib_cursor	: pac_device_libraries.cursor;
+		use pac_components_library;
+		comp_cursor	: pac_components_library.cursor := no_element;
 
-		use type_device_libraries;
+		use pac_device_libraries;
 
 		procedure locate (
 			library	: in type_device_model_name;
-			components	: in type_components_library.map) is
+			components	: in pac_components_library.map) is
 		pragma unreferenced (library);
 		begin
 			-- Generic names in library sometimes start with a tilde.
@@ -3715,7 +3715,7 @@ package body et_kicad_libraries is
 			comp_cursor := components.find (component); -- TRANSISTOR_NPN
 
 			-- CS: the follwing should be executed if the import format is kicad_v4:
-			if comp_cursor = type_components_library.no_element then
+			if comp_cursor = pac_components_library.no_element then
 				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
 				--CS: log ?
 			end if;
@@ -3726,7 +3726,7 @@ package body et_kicad_libraries is
 
 		-- If the given library exists, locate the given component therein.
 		-- Otherwise generate a warning.
-		if lib_cursor /= type_device_libraries.no_element then
+		if lib_cursor /= pac_device_libraries.no_element then
 			query_element (
 				position	=> lib_cursor,
 				process		=> locate'access);

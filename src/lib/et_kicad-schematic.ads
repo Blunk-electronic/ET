@@ -89,10 +89,10 @@ with et_mirroring;				use et_mirroring;
 
 package et_kicad.schematic is
 
-	package type_library_names				renames et_kicad_libraries.type_library_names;
-	package type_alternative_reference_path	renames et_kicad_libraries.type_alternative_reference_path;
-	package type_component_datasheet		renames et_kicad_libraries.type_component_datasheet;
-	package type_components_library			renames et_kicad_libraries.type_components_library;
+	package type_library_names				renames et_kicad_libraries.pac_library_names;
+	package type_alternative_reference_path	renames et_kicad_libraries.pac_alternative_reference_path;
+	package type_component_datasheet		renames et_kicad_libraries.pac_component_datasheet;
+	package type_components_library			renames et_kicad_libraries.pac_components_library;
 
 	subtype type_text_basic					is et_kicad_libraries.type_text_basic;
 	subtype type_de_morgan_representation	is et_kicad_libraries.type_de_morgan_representation;

@@ -2310,38 +2310,38 @@ package body et_kicad_to_native is
 		native_shapes : et_symbol_shapes.type_shapes;
 
 
-		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
-			pac_symbol_lines.append (
+		procedure copy_line (cursor : in et_kicad_libraries.pac_symbol_lines.cursor) is begin
+			et_symbol_shapes.pac_symbol_lines.append (
 				container	=> native_shapes.lines,
-				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
+				new_item	=> et_kicad_libraries.pac_symbol_lines.element (cursor));
 		end copy_line;
 
 
-		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
-			pac_symbol_arcs.append (
+		procedure copy_arc (cursor : in et_kicad_libraries.pac_symbol_arcs.cursor) is begin
+			et_symbol_shapes.pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
-				new_item	=> et_symbol_shapes.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
+				new_item	=> et_symbol_shapes.type_symbol_arc (et_kicad_libraries.pac_symbol_arcs.element (cursor)));
 		end copy_arc;
 
 
-		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
-			pac_symbol_circles.append (
+		procedure copy_circle (cursor : in et_kicad_libraries.pac_symbol_circles.cursor) is begin
+			et_symbol_shapes.pac_symbol_circles.append (
 				container	=> native_shapes.circles,
 				new_item	=> (
-					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
+					type_circle_base (et_kicad_libraries.pac_symbol_circles.element (cursor))
 					with filled => NO));
 		end copy_circle;
 
 
 		-- Converts a polyline to single lines and appends them to native_shapes.lines.
-		procedure copy_polyline (cursor : in et_kicad_libraries.type_symbol_polylines.cursor) is
-			use type_symbol_points;
+		procedure copy_polyline (cursor : in et_kicad_libraries.pac_symbol_polylines.cursor) is
+			use pac_symbol_points;
 
 			-- This is the given kicad polyline:
-			polyline : constant type_symbol_polyline := type_symbol_polylines.element (cursor);
+			polyline : constant type_symbol_polyline := pac_symbol_polylines.element (cursor);
 
 			-- This cursor points to a particular point of the polyline:
-			point_cursor : type_symbol_points.cursor := polyline.points.first;
+			point_cursor : pac_symbol_points.cursor := polyline.points.first;
 
 			-- This is the native line that will be appended to native.shapes.lines:
 			line : type_symbol_line;
@@ -2353,12 +2353,12 @@ package body et_kicad_to_native is
 
 			-- Advance through points of polyline and assign line start and and points.
 			-- Then append the line to native.shapes.lines.
-			while point_cursor /= type_symbol_points.no_element loop
+			while point_cursor /= pac_symbol_points.no_element loop
 
 				case start is
 					when TRUE =>
 						-- The point is a start point if another point follows. Otherwise nothing happens.
-						if next (point_cursor) /= type_symbol_points.no_element then
+						if next (point_cursor) /= pac_symbol_points.no_element then
 							set_A (line, element (point_cursor)); -- start point
 							start := false; -- up next: end point
 						end if;
@@ -2384,11 +2384,11 @@ package body et_kicad_to_native is
 
 
 		-- Converts a rectangle to four lines and appends them to native_shapes.lines.
-		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
+		procedure copy_rectangle (cursor : in et_kicad_libraries.pac_symbol_rectangles.cursor) is
 			use et_schematic_geometry;
 
 			-- This is the given kicad rectangle:
-			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
+			rectangle : type_symbol_rectangle := pac_symbol_rectangles.element (cursor);
 
 			-- This is the native line that will be appended to native_shapes.lines:
 			line : type_symbol_line;
@@ -2486,19 +2486,19 @@ package body et_kicad_to_native is
 		log_indentation_up;
 
 		log (text => "lines ...", level => log_threshold + 1);
-		et_kicad_libraries.type_symbol_lines.iterate (shapes.lines, copy_line'access);
+		et_kicad_libraries.pac_symbol_lines.iterate (shapes.lines, copy_line'access);
 
 		log (text => "arcs ...", level => log_threshold + 1);
-		et_kicad_libraries.type_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
+		et_kicad_libraries.pac_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
 
 		log (text => "circles ...", level => log_threshold + 1);
-		et_kicad_libraries.type_symbol_circles.iterate (shapes.circles, copy_circle'access);
+		et_kicad_libraries.pac_symbol_circles.iterate (shapes.circles, copy_circle'access);
 
 		log (text => "polylines ...", level => log_threshold + 1);
-		et_kicad_libraries.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);
+		et_kicad_libraries.pac_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);
 
 		log (text => "rectangles ...", level => log_threshold + 1);
-		et_kicad_libraries.type_symbol_rectangles.iterate (shapes.rectangles, copy_rectangle'access);
+		et_kicad_libraries.pac_symbol_rectangles.iterate (shapes.rectangles, copy_rectangle'access);
 
 		log_indentation_down;
 		return native_shapes;
@@ -3321,8 +3321,8 @@ package body et_kicad_to_native is
 		is
 			pragma unreferenced (module_name);
 			-- This cursor points to the kicad component library being converted:
-			use et_kicad_libraries.type_device_libraries;
-			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
+			use et_kicad_libraries.pac_device_libraries;
+			component_library_cursor : et_kicad_libraries.pac_device_libraries.cursor := module.component_libraries.first;
 
 			component_library_name : type_device_model_name; -- lbr/logic.lib
 
@@ -3335,13 +3335,13 @@ package body et_kicad_to_native is
 
 			procedure query_components (
 				library_name	: in type_device_model_name; -- lbr/logic.lib
-				library			: in et_kicad_libraries.type_components_library.map)
+				library			: in et_kicad_libraries.pac_components_library.map)
 			is
 				pragma unreferenced (library_name);
 				use et_symbol_model;
 				use et_device_appearance;
-				use et_kicad_libraries.type_components_library;
-				component_cursor : et_kicad_libraries.type_components_library.cursor := library.first;
+				use et_kicad_libraries.pac_components_library;
+				component_cursor : et_kicad_libraries.pac_components_library.cursor := library.first;
 
 				use et_kicad_libraries.pac_component_generic_name;
 				generic_name : et_kicad_libraries.pac_component_generic_name.bounded_string; -- 7400
@@ -3361,14 +3361,14 @@ package body et_kicad_to_native is
 					use et_kicad_libraries;
 
 					-- Make a copy of the kicad units of the current kicad component:
-					units_kicad : constant et_kicad_libraries.type_units_library.map := element (component_cursor).units;
+					units_kicad : constant et_kicad_libraries.pac_units_library.map := element (component_cursor).units;
 
 					-- This cursor points to a kicad unit:
-					use et_kicad_libraries.type_units_library;
-					unit_cursor_kicad : et_kicad_libraries.type_units_library.cursor := units_kicad.first;
+					use et_kicad_libraries.pac_units_library;
+					unit_cursor_kicad : et_kicad_libraries.pac_units_library.cursor := units_kicad.first;
 
 					-- Here we store temporarily the ports of a kicad unit:
-					ports_kicad : et_kicad_libraries.type_ports_library.list;
+					ports_kicad : et_kicad_libraries.pac_ports_library.list;
 
 					-- This cursor points to a native ET unit.
 					unit_cursor : pac_units_internal.cursor;
@@ -3433,8 +3433,8 @@ package body et_kicad_to_native is
 
 						-- This cursor points to a port of a kicad unit. We initialize it so that
 						-- it points to the first port of the current unit.
-						use type_ports_library;
-						port_cursor_kicad : type_ports_library.cursor := ports_kicad.first;
+						use pac_ports_library;
+						port_cursor_kicad : pac_ports_library.cursor := ports_kicad.first;
 
 						port_inserted : boolean;
 						port_cursor : pac_symbol_ports.cursor;
@@ -3449,7 +3449,7 @@ package body et_kicad_to_native is
 						-- If the kicad component comes with multiple ports of the same name, only the first
 						-- port is copied. A symbol is an abstraction of a function block. There is no need for
 						-- multiple ports having the same name.
-						while port_cursor_kicad /= et_kicad_libraries.type_ports_library.no_element loop
+						while port_cursor_kicad /= et_kicad_libraries.pac_ports_library.no_element loop
 
 							case element (port_cursor_kicad).direction is
 								when PASSIVE | UNKNOWN =>
@@ -3646,7 +3646,7 @@ package body et_kicad_to_native is
 
 
 				begin -- copy_units
-					while unit_cursor_kicad /= et_kicad_libraries.type_units_library.no_element loop
+					while unit_cursor_kicad /= et_kicad_libraries.pac_units_library.no_element loop
 
 						log (text => "unit " & enclose_in_quotes (to_string (key (unit_cursor_kicad))),
 							 level => log_threshold + 4);
@@ -3782,7 +3782,7 @@ package body et_kicad_to_native is
 
 
 			begin -- query_components
-				while component_cursor /= et_kicad_libraries.type_components_library.no_element loop
+				while component_cursor /= et_kicad_libraries.pac_components_library.no_element loop
 					generic_name := et_kicad_libraries.strip_tilde (key (component_cursor));
 					--log (text => "device " & to_string (generic_name), level => log_threshold + 2);
 
@@ -3917,7 +3917,7 @@ package body et_kicad_to_native is
 		begin -- copy_libraries
 
 			-- Loop in kicad component libraries:
-			while component_library_cursor /= et_kicad_libraries.type_device_libraries.no_element loop
+			while component_library_cursor /= et_kicad_libraries.pac_device_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
 				log (text => "component library " & to_string (component_library_name), level => log_threshold + 2);
 

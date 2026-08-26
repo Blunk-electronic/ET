@@ -771,14 +771,14 @@ package et_kicad.pcb is
 		-- V4 uses search lists:
 		-- The search list of project library directories and names:
 		search_list_library_dirs	: pac_project_lib_dirs.list;	-- search list for library directories (active, passive, ...)
-		search_list_library_comps	: type_library_names.list;		-- search list for component libraries (bel_logic, bel_primitives, ...)
+		search_list_library_comps	: pac_library_names.list;		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 
 		-- V5 uses sym-lib-tables and fp-lib-tables to locate libraries:
-		sym_lib_tables		: type_lib_table.list; -- symbols
-		fp_lib_tables		: type_lib_table.list; -- footprints/packages
+		sym_lib_tables		: pac_lib_table.list; -- symbols
+		fp_lib_tables		: pac_lib_table.list; -- footprints/packages
 
-		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
+		component_libraries	: et_kicad_libraries.pac_device_libraries.map; -- V4 and V5
 		footprints			: et_kicad_packages.pac_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 
 		strands			: et_kicad.schematic.pac_strands.list;				-- the strands of the module (incl. net names and segments)

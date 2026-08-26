@@ -2303,12 +2303,12 @@ is
 			log_threshold	: in type_log_level)
 			return type_device_model_name -- the full library name like "../libraries/resistors.lib"
 		is
-			use type_device_libraries;
+			use pac_device_libraries;
 			-- use pac_device_model_file;
 
 			component_found : boolean := false; -- goes true once the given component was found in any library
 
-			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
+			lib_cursor : pac_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
 			unused_library : type_device_model_name; -- the full library name to be returned
 
 
@@ -2346,7 +2346,7 @@ is
 			log (text => "locating library containing generic component " & to_string (component) & " ...", level => log_threshold);
 
 			-- loop in libraries and exit prematurely once a library with the given component was found
-			while lib_cursor /= type_device_libraries.no_element loop
+			while lib_cursor /= pac_device_libraries.no_element loop
 				log_indentation_up;
 				log (text => "probing "
 						& to_string (key (lib_cursor))
@@ -2393,10 +2393,10 @@ is
 			log_threshold	: in type_log_level)
 			return type_device_model_name
 		is
-			use type_lib_table;
-			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
+			use pac_lib_table;
+			sym_lib_cursor : pac_lib_table.cursor := sym_lib_tables.first;
 
-			lib_cursor : type_device_libraries.cursor;
+			lib_cursor : pac_device_libraries.cursor;
 
 			use pac_library_name;
 
@@ -2424,15 +2424,15 @@ is
 					& to_string (component) & "' ...", level => log_threshold);
 
 			-- Search in the sym-lib-table for the first an entry having the component_library_name (uri)
-			while sym_lib_cursor /= type_lib_table.no_element loop
+			while sym_lib_cursor /= pac_lib_table.no_element loop
 				if element (sym_lib_cursor).lib_name = component_library_name then
 					full_name := element (sym_lib_cursor).lib_uri;
 
 					-- locate component library by full_name
-					lib_cursor := type_device_libraries.find (tmp_component_libraries, full_name);
+					lib_cursor := pac_device_libraries.find (tmp_component_libraries, full_name);
 
 					-- Test if library contains the given generic component.
-					type_device_libraries.query_element (
+					pac_device_libraries.query_element (
 						position	=> lib_cursor,
 						process		=> search_component'access);
 
