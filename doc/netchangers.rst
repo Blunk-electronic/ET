@@ -14,6 +14,8 @@ two nets meet, both in the schematic and in the board drawing.
 The transition
 point is defined in the schematic and in the board drawing.
 
+For details on netchangers and the related concept please read
+`The Article On Netchangers <http://www.blunk-electronic.de/pub/agile-hw/netchangers_en.pdf>`__.
 
 
 Schematic Editor

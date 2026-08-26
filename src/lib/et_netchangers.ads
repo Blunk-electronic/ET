@@ -39,6 +39,9 @@
 -- This package is about general properties
 -- and primitive operations of netchangers.
 --
+-- For details on netchangers and the related concept please see
+-- <http://www.blunk-electronic.de/pub/agile-hw/netchangers_en.pdf>
+--
 --
 --   history of changes:
 --
