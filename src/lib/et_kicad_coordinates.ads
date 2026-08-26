@@ -51,15 +51,15 @@ use et_schematic_geometry.pac_geometry_2;
 package et_kicad_coordinates is
 
 	schematic_file_name_length : constant positive := 100; -- includes extension
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length);
+	package pac_schematic_file_name is new generic_bounded_length (schematic_file_name_length);
 
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
-	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
+	function to_string (schematic : in pac_schematic_file_name.bounded_string) return string;
+	function to_schematic_file_name (file : in string) return pac_schematic_file_name.bounded_string;
 
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
 	submodule_name_length_max : constant positive := 100;
-	package type_submodule_name is new generic_bounded_length (submodule_name_length_max);
-	use type_submodule_name;
+	package pac_submodule_name is new generic_bounded_length (submodule_name_length_max);
+	use pac_submodule_name;
 
 --	procedure check_submodule_name_length (name : in string);
 --	-- Checks if the given submodule name is not longer than allowed.
@@ -68,7 +68,7 @@ package et_kicad_coordinates is
 		(ranges => (('a', 'z'), ('A', 'Z'), ('0', '9'))) or to_set ("-_");
 
 	procedure check_submodule_name_characters (
-		name		: in type_submodule_name.bounded_string;
+		name		: in pac_submodule_name.bounded_string;
 		characters	: in character_set := submodule_name_characters);
 	-- Checks for forbidden characters in submodule name.
 
@@ -76,11 +76,11 @@ package et_kicad_coordinates is
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver/counter/supply
     -- The first item in this list is the name of the top level module.
-    package type_path_to_submodule is new doubly_linked_lists (
-        element_type => type_submodule_name.bounded_string);
+    package pac_path_to_submodule is new doubly_linked_lists (
+        element_type => pac_submodule_name.bounded_string);
 
 	function to_string (
-		path		: in type_path_to_submodule.list;
+		path		: in pac_path_to_submodule.list;
 		top_module	: in boolean := true) return string;
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
@@ -119,14 +119,14 @@ package et_kicad_coordinates is
 		value		: in type_distance_model);
 
 
-	function path (position : in type_position) return type_path_to_submodule.list;
+	function path (position : in type_position) return pac_path_to_submodule.list;
 
-	procedure set_path (position : in out type_position; path : in type_path_to_submodule.list);
+	procedure set_path (position : in out type_position; path : in pac_path_to_submodule.list);
 	-- Sets the path in given position.
 
 
-	function to_string (submodule : in type_submodule_name.bounded_string) return string;
-	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
+	function to_string (submodule : in pac_submodule_name.bounded_string) return string;
+	function to_submodule_name (submodule : in string) return pac_submodule_name.bounded_string;
 
 
 	type type_scope is (
@@ -156,7 +156,7 @@ private
 	--type type_position is new type_vector_model with record
 	type type_position is record
 		point			: type_vector_model;
-		path            : type_path_to_submodule.list;
+		path            : pac_path_to_submodule.list;
 		sheet_number	: type_sheet := type_sheet'first;
 	end record;
 

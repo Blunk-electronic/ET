@@ -4824,7 +4824,7 @@ package body et_kicad.pcb is
 
 			-- Adds board objects to the schematic module.
 			procedure add_board_objects (
-				mod_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
+				mod_name : in et_kicad_coordinates.pac_submodule_name.bounded_string;
 				module   : in out type_module)
 			is
 				-- The nets of the module are copied here (in their present state):
@@ -5585,7 +5585,7 @@ package body et_kicad.pcb is
 
 
 		procedure set_board_available_flag (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 		pragma unreferenced (module_name);
 		begin

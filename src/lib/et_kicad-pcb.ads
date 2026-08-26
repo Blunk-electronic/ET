@@ -818,8 +818,8 @@ package et_kicad.pcb is
 	-- Therefore the collection contains only one module.
 	package type_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
-		key_type		=> type_submodule_name.bounded_string,
-		"<"			=> type_submodule_name."<",
+		key_type		=> pac_submodule_name.bounded_string,
+		"<"			=> pac_submodule_name."<",
 		element_type	=> type_module);
 
 	modules : type_modules.map;

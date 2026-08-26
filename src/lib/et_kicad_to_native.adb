@@ -138,7 +138,7 @@ package body et_kicad_to_native is
 		module_cursor : et_kicad.pcb.type_modules.cursor :=
 			et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
 
-		root : constant et_kicad_coordinates.type_path_to_submodule.list := et_kicad_coordinates.type_path_to_submodule.empty_list;
+		root : constant et_kicad_coordinates.pac_path_to_submodule.list := et_kicad_coordinates.pac_path_to_submodule.empty_list;
 --		before	: constant string := "position before";
 --		now		: constant string := "position now   ";
 		before	: constant string := "before";
@@ -378,7 +378,7 @@ package body et_kicad_to_native is
 
 		-- Changes the path and y position of text notes (in schematic):
 		procedure flatten_notes (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
@@ -424,7 +424,7 @@ package body et_kicad_to_native is
 
 
 		procedure flatten_frames (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
 		pragma unreferenced (module_name);
 		-- Changes the path of drawing frames (in schematic) to root path.
@@ -471,7 +471,7 @@ package body et_kicad_to_native is
 		-- Changes the path and y position of units of components (in schematic) to root path.
 		-- Moves the y position of components (in layout).
 		procedure flatten_components (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
@@ -577,7 +577,7 @@ package body et_kicad_to_native is
 
 
 		procedure flatten_nets (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 		pragma unreferenced (module_name);
@@ -922,7 +922,7 @@ package body et_kicad_to_native is
 
 		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
 		procedure move_general_board_stuff (
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
@@ -2130,7 +2130,7 @@ package body et_kicad_to_native is
 		procedure flatten_netlist (
 		-- Changes the path and y position of ports.
 		-- NOTE: The netlist contains nets with their connected ports.
-			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
@@ -3316,7 +3316,7 @@ package body et_kicad_to_native is
 
 
 		procedure copy_libraries (
-			module_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
+			module_name : in et_kicad_coordinates.pac_submodule_name.bounded_string;
 			module		: in et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);

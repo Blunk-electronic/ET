@@ -98,11 +98,11 @@ package body et_conventions is
 --		raise constraint_error;
 --	end to_submodule;
 
---	function to_abbreviation (module_name : in et_schematic_coordinates_2.type_submodule_name.bounded_string)
+--	function to_abbreviation (module_name : in et_schematic_coordinates_2.pac_submodule_name.bounded_string)
 --		return et_schematic_coordinates_2.type_submodule_abbreviation.bounded_string is
 --	-- Looks up the container import_modules for the given module name and returns the abbreviation.
 --	-- Raises alarm if no submodule could be found -> modue name invalid.
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use type_import_modules;
 --		module_cursor : type_import_modules.cursor := import_modules.first;
 --	begin
@@ -128,7 +128,7 @@ package body et_conventions is
 --		module_A, module_B : type_import_module;
 --
 --		procedure instance_invalid (
---			name : type_submodule_name.bounded_string;
+--			name : pac_submodule_name.bounded_string;
 --			instance_is, instance_max : type_submodule_instance) is
 --		begin
 --			log_indentation_reset;
@@ -157,7 +157,7 @@ package body et_conventions is
 --	-- Returns the reference (like X4) of the connector in the given generic module with
 --	-- given instance with the given purpose.
 --	-- Raises error if connector could be found.
---		generic_module_name	: in et_schematic_coordinates_2.type_submodule_name.bounded_string;		-- led_matrix
+--		generic_module_name	: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;		-- led_matrix
 --		instance			: in et_schematic_coordinates_2.type_submodule_instance;				-- 1
 --		purpose				: in et_libraries.type_component_purpose.bounded_string;	-- "PWR CTRL IN"
 --		log_threshold		: in type_log_level)
@@ -175,7 +175,7 @@ package body et_conventions is
 --		procedure locate_component (
 --		-- Searches the component list of the module for a connector with the given purpose.
 --		-- Exits on the first matching connector. There should not be any others.
---			module_name	: in type_submodule_name.bounded_string;
+--			module_name	: in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_components_schematic;
 --			use type_component_purpose;
@@ -226,7 +226,7 @@ package body et_conventions is
 --			log_indentation_down;
 --		end locate_component;
 --
---		use type_submodule_name;
+--		use pac_submodule_name;
 --
 --	begin -- to_connector_reference
 --		log ("locating module " & to_string (generic_module_name) & " in rig ...", log_threshold);
@@ -263,17 +263,17 @@ package body et_conventions is
 --	-- Compares the number of terminals of the given connectors.
 --	-- Raises error if numbers differ.
 --	-- CS: verificaton required
---		module_A		: in et_schematic_coordinates_2.type_submodule_name.bounded_string; -- generic name like nucleo_core
+--		module_A		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string; -- generic name like nucleo_core
 --		instance_A		: in et_schematic_coordinates_2.type_submodule_instance;			-- 1
 --		reference_A		: in et_libraries.type_device_name;				-- X46
---		module_B		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- generic name like motor_driver
+--		module_B		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- generic name like motor_driver
 --		instance_B		: in et_schematic_coordinates_2.type_submodule_instance;			-- 4
 --		reference_B		: in et_libraries.type_device_name;				-- X701
 --		log_threshold	: in type_log_level) is
 --
 --		use et_schematic_coordinates_2;
 --		--use et_schematic;
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use et_libraries;
 --		use et_kicad.type_rig;
 --
@@ -282,7 +282,7 @@ package body et_conventions is
 --		terminal_count_A, terminal_count_B : et_libraries.type_terminal_count;
 --
 --		procedure module_not_found (
---			name		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;
+--			name		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;
 --			instance	: in et_schematic_coordinates_2.type_submodule_instance) is
 --		begin
 --			log_indentation_reset;
@@ -392,10 +392,10 @@ package body et_conventions is
 --	-- CS: There could be a time saving approach via the portlists of the modules. The connectors
 --	-- ports and terminals could be tested for connected nets and compared ...
 --
---		module_A		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- nucleo_core
+--		module_A		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- nucleo_core
 --		instance_A		: in et_schematic_coordinates_2.type_submodule_instance;			-- 1
 --		reference_A		: in et_libraries.type_device_name;				-- X1
---		module_B		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- motor_driver
+--		module_B		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- motor_driver
 --		instance_B		: in et_schematic_coordinates_2.type_submodule_instance;			-- 4
 --		reference_B		: in et_libraries.type_device_name;				-- X701
 --		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
@@ -411,9 +411,9 @@ package body et_conventions is
 -- 		port_right, port_left : et_kicad.type_port_with_reference;	-- 4
 -- 		terminal_right, terminal_left : type_terminal;		-- 4, B3
 --
---		module_right : type_submodule_name.bounded_string := module_A;	-- nucleo_core
---		module_left : type_submodule_name.bounded_string := module_B;	-- motor_driver
---		module_swap : type_submodule_name.bounded_string;
+--		module_right : pac_submodule_name.bounded_string := module_A;	-- nucleo_core
+--		module_left : pac_submodule_name.bounded_string := module_B;	-- motor_driver
+--		module_swap : pac_submodule_name.bounded_string;
 --
 --		instance_right : type_submodule_instance := instance_A; -- 1
 --		instance_left : type_submodule_instance := instance_B; -- 4
@@ -424,7 +424,7 @@ package body et_conventions is
 --		reference_swap : type_device_name;
 --
 --		procedure query_nets_left (
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_netlist;
 --			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
@@ -530,7 +530,7 @@ package body et_conventions is
 --		end query_nets_left;
 --
 --		procedure query_nets_right (
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_netlist;
 --			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
@@ -593,7 +593,7 @@ package body et_conventions is
 --
 --
 --		procedure set_module_cursors is
---			use type_submodule_name;
+--			use pac_submodule_name;
 --		begin
 --			log ("module right " & to_string (module_right)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_right)
@@ -829,7 +829,7 @@ package body et_conventions is
 
 
 -- 	function ports_in_net (
--- 		module 			: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		module 			: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in type_log_level)
@@ -912,7 +912,7 @@ package body et_conventions is
 --		separator	: in character := '.') return string is
 --		-- Returns the given net as string. In a form like "led_matrix.master_clock"
 --
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use et_schematic.pac_net_name;
 --	begin
 --		if length (net.module) = 0 or length (net.net) = 0 then
@@ -928,14 +928,14 @@ package body et_conventions is
 --	-- in section MODULE_INTERCONNECTIONS.
 --	-- Returns true if the given reference in given module is part of any module interconnection.
 --	-- NOTE: The given module name is the GENERIC name of the module.
---		module			: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- nucleo_core, led_matrix
+--		module			: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- nucleo_core, led_matrix
 --		instance		: in et_schematic_coordinates_2.type_submodule_instance;			-- 2
 --		reference		: in et_libraries.type_device_name;				-- X701
 --		log_threshold	: in type_log_level
 --		) return boolean is
 --
 --		use et_libraries;
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use type_module_interconnections;
 --
 --		connection_cursor : type_module_interconnections.cursor;
@@ -1013,8 +1013,8 @@ package body et_conventions is
 -- 	-- If there are no module interactions declared at all, the returned list is empty.
 -- 	-- This requires to look up the interconnections declared in the configuration file.
 -- 	-- So the generic module name and the instance matter here.
--- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
--- 		generic_name 	: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix
+-- 		module 			: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- led_matrix_2
+-- 		generic_name 	: in et_schematic_coordinates.pac_submodule_name.bounded_string; -- led_matrix
 -- 		instance		: in et_schematic_coordinates.type_submodule_instance;			-- 2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		log_threshold	: in type_log_level)
@@ -1068,7 +1068,7 @@ package body et_conventions is
 
 --	function opposide_connector_port (
 --	-- Returns the counterpart of the given connector port on the opposide of the module interconnection.
---		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		module_name		: in et_schematic_coordinates.pac_submodule_name.bounded_string; -- led_matrix_2
 --		port			: in et_kicad.type_port_with_reference;
 --		log_threshold	: in type_log_level)
 --		return et_kicad.type_port_of_module is
@@ -1080,7 +1080,7 @@ package body et_conventions is
 --		module_cursor : et_kicad.type_rig.cursor;
 --		connector_found : boolean := false; -- goes true once the opposide connector has been found
 --
---		generic_module_name_opposide : et_schematic_coordinates.type_submodule_name.bounded_string; -- pwr_supply
+--		generic_module_name_opposide : et_schematic_coordinates.pac_submodule_name.bounded_string; -- pwr_supply
 --		reference_opposide : et_libraries.type_device_name; -- X45
 --
 --		use type_module_interconnections;
@@ -1214,7 +1214,7 @@ package body et_conventions is
 
 --	function compare_nets (left, right : in type_net) return boolean is
 --	-- Returns true if left net comes before right net.
---		use et_schematic_coordinates.type_submodule_name;
+--		use et_schematic_coordinates.pac_submodule_name;
 --		use et_schematic.pac_net_name;
 --	begin
 --		if left.module < right.module then
@@ -1280,7 +1280,7 @@ package body et_conventions is
 -- 		-- Insertes the net (if not already processed) in the current route.
 -- 		-- Locates netchanger and connector ports in the given net.
 -- 		-- Locates the nets connected with the netchangers and connectors and calls itself again.
--- 			module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- the module to search in
+-- 			module_name		: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- the module to search in
 -- 			net_name		: in et_schematic.type_net_name;			-- the net name
 -- 			log_threshold	: in type_log_level) is
 --
@@ -1492,7 +1492,7 @@ package body et_conventions is
 -- 		-- nets have been located. A new route starts if the loop below calls find_ports_by_net.
 -- 		-- Once find_ports_by_net finishes, the current route is complete. If more than one
 -- 		-- net is in the route, the route is appended to the global rig wide routing table.
--- 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
+-- 			module_name	: in pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 			module		: in et_kicad.type_module) is
 -- 			use et_kicad.type_netlist;
 -- 			netlist		: et_kicad.type_netlist.map := module.netlist;

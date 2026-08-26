@@ -61,7 +61,7 @@ function read (
 	return type_hierarchic_sheet_file_names_extended
 is
 	hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
-	unused_name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
+	unused_name_of_submodule_scratch : pac_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
 
 	use pac_lines_of_file;
 
@@ -69,7 +69,7 @@ is
 	lines		: pac_lines_of_file.list;
 	line_cursor	: pac_lines_of_file.cursor;
 
-	unused_sheet_file : type_schematic_file_name.bounded_string;
+	unused_sheet_file : pac_schematic_file_name.bounded_string;
 
 	net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
@@ -1373,7 +1373,7 @@ is
 		port_inserted	: boolean; -- used to detect multiple ports with the same name
 		port_cursor		: pac_hierarchic_sheet_ports.cursor; -- obligatory, but not read
 
-		use type_submodule_name;
+		use pac_submodule_name;
 		use et_conventions;
 
 		text_size : et_kicad_libraries.pac_text.type_text_size; -- temporarily storage of a text size before being checked
@@ -1672,7 +1672,7 @@ is
 
 		procedure append_junction (
 		-- add junction to module.junctions
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (module_name);
@@ -3226,7 +3226,7 @@ is
 		use type_modules;
 
 		procedure append_no_connect_flag (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
 			pragma unreferenced (module_name);
 			use pac_no_connection_flags;

@@ -104,7 +104,7 @@ package et_kicad.schematic is
 
 	-- CS: a lot of stuff should move from here to et_kicad_general
 
-	top_level_schematic	: type_schematic_file_name.bounded_string;
+	top_level_schematic	: pac_schematic_file_name.bounded_string;
 
 	schematic_handle : ada.text_io.file_type;
 
@@ -112,8 +112,8 @@ package et_kicad.schematic is
 	-- Sheet names may have the same length as schematic files.
 	package pac_sheet_name is new generic_bounded_length (schematic_file_name_length);
 
-	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
-		return type_submodule_name.bounded_string;
+	function to_submodule_name (file_name : in pac_schematic_file_name.bounded_string)
+		return pac_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
 
@@ -131,9 +131,9 @@ package et_kicad.schematic is
 
 	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
     package pac_sheet_headers is new ordered_maps (
-        key_type		=> type_schematic_file_name.bounded_string,
+        key_type		=> pac_schematic_file_name.bounded_string,
 		element_type	=> type_sheet_header,
-		"<"				=> type_schematic_file_name."<"
+		"<"				=> pac_schematic_file_name."<"
 		);
 
     sheet_comment_length : constant natural := 100;
@@ -151,15 +151,15 @@ package et_kicad.schematic is
 	-- to an object, the path_to_sheet is read.
 	-- So this list (from first to last) provides a full path that tells us
 	-- the exact location of the sheet within the design hierarchy.
-	path_to_sheet : type_path_to_submodule.list;
+	path_to_sheet : pac_path_to_submodule.list;
 
 	-- Here we append a sheet name to the path_to_sheet.
-	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string);
+	procedure append_sheet_name_to_path (sheet : in pac_submodule_name.bounded_string);
 
 	-- Here we remove the last submodule name form the path_to_sheet.
 	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
 
-	procedure module_not_found (module : in type_submodule_name.bounded_string);
+	procedure module_not_found (module : in pac_submodule_name.bounded_string);
 	-- Returns a message stating that the given module does not exist.
 
 
@@ -410,7 +410,7 @@ package et_kicad.schematic is
 	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
 		port			: in type_port_with_reference;
-		module			: in type_submodule_name.bounded_string; -- the name of the module
+		module			: in pac_submodule_name.bounded_string; -- the name of the module
 		log_threshold	: in type_log_level)
 		return et_package_variant.type_terminal;
 
@@ -422,7 +422,7 @@ package et_kicad.schematic is
 
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
-		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
+		module		: pac_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: type_device_name;		-- N409
 		name		: et_port_names.type_port_name;	-- 2
 	end record;
@@ -868,8 +868,8 @@ package et_kicad.schematic is
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record
-		file	: type_schematic_file_name.bounded_string; -- sensor.sch
-		name	: type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
+		file	: pac_schematic_file_name.bounded_string; -- sensor.sch
+		name	: pac_submodule_name.bounded_string := pac_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
 		-- "n/a" because the top level schematic never has a sheet name
 	end record;
 
@@ -909,7 +909,7 @@ package et_kicad.schematic is
 
 
 	type type_hierarchic_sheet_file_names_extended is record
-		parent_sheet	: type_submodule_name.bounded_string;
+		parent_sheet	: pac_submodule_name.bounded_string;
 		sheets			: pac_hierarchic_sheet_file_names.vector;
 		id				: positive; -- id of a sheet in the list
 	end record;
@@ -943,7 +943,7 @@ package et_kicad.schematic is
 --	function purpose ( -- CS move to et_schematic or et_project
 --	-- Returns the purpose of the given component in the given module.
 --	-- If no purpose specified for the component, an empty string is returned.
---		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		module_name		: in et_coordinates.pac_submodule_name.bounded_string; -- led_matrix_2
 --		reference		: in et_libraries.type_device_name; -- X701
 --		log_threshold	: in type_log_level)
 --		return et_libraries.type_component_purpose.bounded_string;
@@ -963,14 +963,14 @@ package et_kicad.schematic is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 
 	function components_in_net (
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in pac_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 
 	function real_components_in_net (
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in pac_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set;
@@ -1002,13 +1002,13 @@ package et_kicad.schematic is
 	-- Returns the number of modules available in container "modules".
 
 	procedure validate_module (
-		module_name : in type_submodule_name.bounded_string);
+		module_name : in pac_submodule_name.bounded_string);
 	-- Tests if the given module exists in container "modules". Raises error if not existent.
 
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in type_schematic_file_name.bounded_string);
+		sheet	: in pac_schematic_file_name.bounded_string);
 
 
 	--type type_frame is new et_schematic_sheets.pac_frames.type_frame with record
@@ -1075,7 +1075,7 @@ package et_kicad.schematic is
 
 	-- Returns the name of the net connected with the given component and terminal.
 	function connected_net ( -- CS rename to get_connected_net
-		module			: in type_submodule_name.bounded_string;	-- nucleo_core
+		module			: in pac_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in type_device_name;	-- IC45
 		terminal		: in type_terminal_name; -- E14
 		log_threshold	: in type_log_level)

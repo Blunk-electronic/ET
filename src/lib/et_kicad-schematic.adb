@@ -80,8 +80,8 @@ package body et_kicad.schematic is
 
 
 	-- Returns the base name of the given schematic file name as submodule name.
-	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
-		return type_submodule_name.bounded_string is
+	function to_submodule_name (file_name : in pac_schematic_file_name.bounded_string)
+		return pac_submodule_name.bounded_string is
 		use ada.directories;
 	begin
 		-- CS: test if given submodule has an extension. if not return
@@ -91,25 +91,25 @@ package body et_kicad.schematic is
 
 	-- Here we append a sheet name to the path_to_sheet.
 	-- CS: unify with procedure delete_last_module_name_from_path
-	--procedure append_name_of_parent_module_to_path (submodule : in et_schematic_coordinates.type_submodule_name.bounded_string) is
-	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string) is
-		--use type_submodule_name;
+	--procedure append_name_of_parent_module_to_path (submodule : in et_schematic_coordinates.pac_submodule_name.bounded_string) is
+	procedure append_sheet_name_to_path (sheet : in pac_submodule_name.bounded_string) is
+		--use pac_submodule_name;
 	begin
 		-- CS: limit path length !
 --		log (text => "append path_to_submodule "
---			& base_name (type_submodule_name.to_string (submodule)), level => 1);
+--			& base_name (pac_submodule_name.to_string (submodule)), level => 1);
 
-		type_path_to_submodule.append (path_to_sheet, sheet);
-			--to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
+		pac_path_to_submodule.append (path_to_sheet, sheet);
+			--to_bounded_string (base_name (pac_submodule_name.to_string (submodule))));
 
 	end append_sheet_name_to_path;
 
 	-- Here we remove the last submodule name form the path_to_sheet.
 	procedure delete_last_module_name_from_path is begin
-		type_path_to_submodule.delete_last (path_to_sheet);
+		pac_path_to_submodule.delete_last (path_to_sheet);
 	end delete_last_module_name_from_path;
 
-	procedure module_not_found (module : in type_submodule_name.bounded_string) is
+	procedure module_not_found (module : in pac_submodule_name.bounded_string) is
 	-- Returns a message stating that the given module does not exist.
 	begin
 		log (SEVERITY_ERROR, " module " & to_string (module) & " not found !");
@@ -1256,7 +1256,7 @@ package body et_kicad.schematic is
 		-- Creates a net with the name and the scope (local, global) of the current strand.
 		-- If strand is local, the net name is rendered to a full hierarchic name.
 		-- If the net existed already, then strand is appended to the strands of the net.
-			mod_name : in type_submodule_name.bounded_string;
+			mod_name : in pac_submodule_name.bounded_string;
 			module   : in out et_kicad.pcb.type_module) is
 				pragma unreferenced (mod_name);
 
@@ -1339,7 +1339,7 @@ package body et_kicad.schematic is
 --					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
-					if type_path_to_submodule.is_empty (path (element (strand).position)) then
+					if pac_path_to_submodule.is_empty (path (element (strand).position)) then
 						net_name := to_net_name (
 							et_schematic_coordinates.hierarchy_separator
 							& to_string (element (strand).name));
@@ -1405,7 +1405,7 @@ package body et_kicad.schematic is
 		cursor : pac_nets.cursor;
 
 		procedure set_cursor (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 		pragma unreferenced (mod_name);
 		begin
@@ -1438,7 +1438,7 @@ package body et_kicad.schematic is
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
 		type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
-			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
+			path        : pac_path_to_submodule.list := pac_path_to_submodule.empty_list;	-- the path of the submodule
 			name		: type_net_name := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
 		end record;
 
@@ -1474,7 +1474,7 @@ package body et_kicad.schematic is
 			use type_modules;
 
 			procedure query_gui_submodules (
-				mod_name	: in type_submodule_name.bounded_string;
+				mod_name	: in pac_submodule_name.bounded_string;
 				module		: in out type_module)
 			is
 				pragma unreferenced (mod_name);
@@ -1506,12 +1506,12 @@ package body et_kicad.schematic is
 					function append_submodule_to_path (
 					-- This function appends the name of a submodule to a path.
 					-- Required to form the full path to the submodule.
-						path_in		: in type_path_to_submodule.list;
+						path_in		: in pac_path_to_submodule.list;
 						submodule	: in type_hierarchic_sheet_name)
-						return type_path_to_submodule.list is
-						path_out : type_path_to_submodule.list := path_in;
+						return pac_path_to_submodule.list is
+						path_out : pac_path_to_submodule.list := path_in;
 					begin
-						type_path_to_submodule.append (
+						pac_path_to_submodule.append (
 							container	=> path_out,
 							new_item	=> submodule.name);
 						return path_out;
@@ -1601,7 +1601,7 @@ package body et_kicad.schematic is
 			-- Defaults to the first strand of the module (indicated by module_cursor):
 			h_strand : pac_strands.cursor := first_strand;
 			use pac_strands;
-			use type_path_to_submodule;
+			use pac_path_to_submodule;
 
 			-- This flag goes true once the given net has been found in the submodule.
 			-- It serves to warn the operator about a missing hierarchic net.
@@ -1762,7 +1762,7 @@ package body et_kicad.schematic is
 			use type_modules;
 
 			procedure locate_net (
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in out type_module
 				) is
 				pragma unreferenced (module_name);
@@ -1935,7 +1935,7 @@ package body et_kicad.schematic is
 
 
 		procedure query_net (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 			pragma unreferenced (mod_name);
 			net : pac_nets.cursor := module.nets.first;
@@ -2068,7 +2068,7 @@ package body et_kicad.schematic is
 
 
 		function read_project_file (log_threshold : in type_log_level)
-			return type_schematic_file_name.bounded_string is
+			return pac_schematic_file_name.bounded_string is
 		-- V4:
 		--	- Reads the project file (component libraries, library directories, ...)
 		--	- Returns the name of the top level schematic file.
@@ -3199,12 +3199,12 @@ package body et_kicad.schematic is
 --		function read_schematic (
 --		-- Reads the given schematic file. If it contains submodules (hierarchic sheets),
 --         -- they will be returned in hierarchic_sheet_file_names. Otherwise the returned list is empty.
---			--current_schematic	: in type_schematic_file_name.bounded_string;
+--			--current_schematic	: in pac_schematic_file_name.bounded_string;
 --			current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
 --			log_threshold		: in type_log_level)
 --			return type_hierarchic_sheet_file_names_extended is separate;
 
-		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
+		module_name : pac_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
 
@@ -3213,7 +3213,7 @@ package body et_kicad.schematic is
 
 			procedure save_components (
 			-- Saves the current tmp_component_libraries in the current module.
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in out et_kicad.pcb.type_module) is
 			pragma unreferenced (module_name);
 			begin
@@ -3222,7 +3222,7 @@ package body et_kicad.schematic is
 
 			-- Saves the package_libraries in the current module.
 			procedure save_packages (
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in out et_kicad.pcb.type_module)
 			is
 				pragma unreferenced (module_name);
@@ -3544,7 +3544,7 @@ package body et_kicad.schematic is
 --	function purpose ( -- CS move to et_schematic or et_project
 --	-- Returns the purpose of the given component in the given module.
 --	-- If no purpose specified for the component, an empty string is returned.
---		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		module_name		: in et_schematic_coordinates.pac_submodule_name.bounded_string; -- led_matrix_2
 --		reference		: in type_device_name; -- X701
 --		log_threshold	: in type_log_level)
 --		return et_libraries.type_component_purpose.bounded_string is
@@ -3558,7 +3558,7 @@ package body et_kicad.schematic is
 --
 --		procedure query_components (
 --		-- Searches the components of the module for the given reference.
---			module_name : in et_schematic_coordinates.type_submodule_name.bounded_string;
+--			module_name : in et_schematic_coordinates.pac_submodule_name.bounded_string;
 --			module		: in type_module) is
 --			use type_components_schematic;
 --			component_cursor : type_components_schematic.cursor := module.components.first;
@@ -3614,7 +3614,7 @@ package body et_kicad.schematic is
 		strand : in type_strand) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 		pragma unreferenced (mod_name);
 		begin
@@ -3641,7 +3641,7 @@ package body et_kicad.schematic is
 		cursor : pac_strands.cursor;
 
 		procedure set_cursor (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 		pragma unreferenced (mod_name);
 		begin
@@ -3698,7 +3698,7 @@ package body et_kicad.schematic is
 
 
 		procedure rename (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module)
 		is
 			pragma unreferenced (mod_name);
@@ -3796,7 +3796,7 @@ package body et_kicad.schematic is
 
 			procedure query_junctions (
 			-- Query junctions. Exits prematurely once a junction is found.
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in type_module)
 			is
 				pragma unreferenced (module_name);
@@ -3830,7 +3830,7 @@ package body et_kicad.schematic is
 
 			procedure query_strands (
 			-- Query net segments. Exits prematurely once a segment is found.
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in type_module)
 			is
 				pragma unreferenced (module_name);
@@ -4142,14 +4142,14 @@ package body et_kicad.schematic is
 
 
 		procedure query_strands (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (mod_name);
 
 			strand : pac_strands.cursor := module.strands.first;
 			use pac_strands;
-			use type_path_to_submodule;
+			use pac_path_to_submodule;
 		begin
 			if log_level >= log_threshold then
 				while strand /= pac_strands.no_element loop
@@ -4240,7 +4240,7 @@ package body et_kicad.schematic is
 	-- of the module indicated by module_cursor.
 	procedure reset_component_cursor (cursor : in out pac_components_schematic.cursor) is
 		procedure reset (
-			name	: in type_submodule_name.bounded_string;
+			name	: in pac_submodule_name.bounded_string;
 			module	: in type_module)
 		is
 			pragma unreferenced (name);
@@ -4354,7 +4354,7 @@ package body et_kicad.schematic is
 						port_open : type_port_open := false;
 
 						procedure query_no_connect_flags (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in pac_submodule_name.bounded_string;
 							module		: in et_kicad.pcb.type_module)
 						is
 							pragma unreferenced (module_name);
@@ -4659,7 +4659,7 @@ package body et_kicad.schematic is
 			use type_modules;
 
 			procedure save (
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in out type_module) is
 			pragma unreferenced (module_name);
 			begin
@@ -4779,7 +4779,7 @@ package body et_kicad.schematic is
 
 
 		procedure query_portlists (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -4805,7 +4805,7 @@ package body et_kicad.schematic is
 --					no_connection_flag_found : boolean := false;
 --
 --					procedure query_no_connect_flags (
---						module_name : in type_submodule_name.bounded_string;
+--						module_name : in pac_submodule_name.bounded_string;
 --						module : in type_module) is
 --						use type_no_connection_flags;
 --						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
@@ -4839,7 +4839,7 @@ package body et_kicad.schematic is
 --
 --					procedure query_strands (
 --					-- Query net segments. Exits prematurely once a segment is found.
---						module_name : in type_submodule_name.bounded_string;
+--						module_name : in pac_submodule_name.bounded_string;
 --						module : in type_module) is
 --						use type_strands;
 --						strand_cursor : type_strands.cursor := module.strands.first;
@@ -5007,7 +5007,7 @@ package body et_kicad.schematic is
 		-- Queries the schematic components one after another.
 		-- Opens the library where the generic model is stored.
 		-- The library name is provided by the schematic component.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -5230,7 +5230,7 @@ package body et_kicad.schematic is
 		count : count_type := 0;
 
 		procedure count_nets (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -5253,7 +5253,7 @@ package body et_kicad.schematic is
 		count : count_type := 0;
 
 		procedure count_junctions (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -5284,7 +5284,7 @@ package body et_kicad.schematic is
 
 
 	procedure validate_module (
-		module_name : in type_submodule_name.bounded_string) is
+		module_name : in pac_submodule_name.bounded_string) is
 	-- Tests if the given module exists. Raises error if not existent.
 		unused_module_cursor : type_modules.cursor;
 		use type_modules;
@@ -5302,8 +5302,8 @@ package body et_kicad.schematic is
 
 	function compare_hierarchic_sheets (left, right : in type_hierarchic_sheet_name) return boolean is
 	-- Returns true if left comes before right. If left equals right, the return is false.
-		use type_schematic_file_name;
-		use type_submodule_name;
+		use pac_schematic_file_name;
+		use pac_submodule_name;
 	begin
 		-- first compare file names
 		if left.file > right.file then
@@ -5332,7 +5332,7 @@ package body et_kicad.schematic is
 		gui_sub_mod	: in type_hierarchic_sheet) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 			pragma unreferenced (mod_name);
 
@@ -5373,10 +5373,10 @@ package body et_kicad.schematic is
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in type_schematic_file_name.bounded_string) is
+		sheet	: in pac_schematic_file_name.bounded_string) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 				pragma unreferenced (mod_name);
 
@@ -5420,7 +5420,7 @@ package body et_kicad.schematic is
 		frame : in type_frame) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 				pragma unreferenced (mod_name);
 
@@ -5447,7 +5447,7 @@ package body et_kicad.schematic is
 	-- As notes are collected in a simple list, the same note
 	-- can be added multiple times.
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 				pragma unreferenced (mod_name);
 
@@ -5477,7 +5477,7 @@ package body et_kicad.schematic is
 	is
 
 		procedure add (
-			name	: in type_submodule_name.bounded_string;
+			name	: in pac_submodule_name.bounded_string;
 			module	: in out type_module) is
 			pragma unreferenced (name);
 
@@ -5546,7 +5546,7 @@ package body et_kicad.schematic is
 
 
 		procedure locate_component (
-			name	: in type_submodule_name.bounded_string;
+			name	: in pac_submodule_name.bounded_string;
 			module	: in out type_module)
 		is
 			pragma unreferenced (name);
@@ -5580,7 +5580,7 @@ package body et_kicad.schematic is
 
 		procedure query_strands_prim (
 		-- Query strands of module.
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 			pragma unreferenced (module_name);
 			use pac_strands;
@@ -5704,7 +5704,7 @@ package body et_kicad.schematic is
 
 					procedure query_junctions (
 					-- Query junctions. Exits prematurely once a junction is found.
-						module_name : in type_submodule_name.bounded_string;
+						module_name : in pac_submodule_name.bounded_string;
 						module		: in type_module) is
 						pragma unreferenced (module_name);
 						use pac_junctions;
@@ -5812,7 +5812,7 @@ package body et_kicad.schematic is
 
 		procedure query_junctions (
 		-- Query junctions.
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 			pragma unreferenced (module_name);
 			use pac_junctions;
@@ -5825,7 +5825,7 @@ package body et_kicad.schematic is
 				procedure query_strands (
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in pac_submodule_name.bounded_string;
 					module		: in type_module)
 				is
 					pragma unreferenced (module_name);
@@ -5934,7 +5934,7 @@ package body et_kicad.schematic is
 
 		procedure query_junctions (
 		-- Query junctions and test net segments and ports at the junction coordinates.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module) is
 			pragma unreferenced (module_name);
 			use pac_junctions;
@@ -5947,7 +5947,7 @@ package body et_kicad.schematic is
 				procedure query_strands (
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in pac_submodule_name.bounded_string;
 					module		: in type_module)
 				is
 					pragma unreferenced (module_name);
@@ -6012,7 +6012,7 @@ package body et_kicad.schematic is
 
 				procedure query_portlists (
 				-- Query portlists. Exits prematurely once any port was found.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in pac_submodule_name.bounded_string;
 					module		: in type_module)
 				is
 					pragma unreferenced (module_name);
@@ -6116,7 +6116,7 @@ package body et_kicad.schematic is
 
 		procedure query_strands (
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -6134,7 +6134,7 @@ package body et_kicad.schematic is
 
 					procedure query_no_connect_flags (
 					-- Query junctions. Exits prematurely once a junction is found.
-						module_name : in type_submodule_name.bounded_string;
+						module_name : in pac_submodule_name.bounded_string;
 						module		: in type_module)
 					is
 						pragma unreferenced (module_name);
@@ -6266,7 +6266,7 @@ package body et_kicad.schematic is
 
 		-- Query junctions. Exits prematurely once a junction is found.
 		procedure query_no_connect_flags (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -6276,7 +6276,7 @@ package body et_kicad.schematic is
 
 			-- Query junctions. Exits prematurely once a junction is found.
 			procedure query_portlists (
-				module_name : in type_submodule_name.bounded_string;
+				module_name : in pac_submodule_name.bounded_string;
 				module		: in type_module)
 			is
 				pragma unreferenced (module_name);
@@ -6529,7 +6529,7 @@ package body et_kicad.schematic is
 		use type_modules;
 
 		procedure query_nets (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -6802,7 +6802,7 @@ package body et_kicad.schematic is
 
 
 		procedure query_nets (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			net_cursor	: pac_netlist.cursor;
@@ -6936,7 +6936,7 @@ package body et_kicad.schematic is
 			-- as the net being examined (type_module.nets).
 			-- Component ports connected with the net are collected in portlist of the
 			-- net being built (see procedure add_port below).
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in pac_submodule_name.bounded_string;
 				module		: in type_module)
 			is
 				pragma unreferenced (module_name);
@@ -6976,7 +6976,7 @@ package body et_kicad.schematic is
 
 								procedure locate_component (
 								-- Locates the component within the portlist of the submodule
-									module_name	: in type_submodule_name.bounded_string;
+									module_name	: in pac_submodule_name.bounded_string;
 									module		: in out type_module)
 								is
 									pragma unreferenced (module_name);
@@ -7178,7 +7178,7 @@ package body et_kicad.schematic is
 		end make_netlist;
 
 		procedure add_netlist (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in pac_submodule_name.bounded_string;
 			module		: in out type_module) is
 		pragma unreferenced (module_name);
 		begin
@@ -7228,7 +7228,7 @@ package body et_kicad.schematic is
 
 
 		procedure locate_component_in_schematic (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -7373,7 +7373,7 @@ package body et_kicad.schematic is
 	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
 		port			: in type_port_with_reference;
-		module			: in type_submodule_name.bounded_string; -- the name of the module
+		module			: in pac_submodule_name.bounded_string; -- the name of the module
 		log_threshold	: in type_log_level) -- see et_libraries spec
 		return et_package_variant.type_terminal
 	is
@@ -7396,7 +7396,7 @@ package body et_kicad.schematic is
 
 
 		procedure locate_component_in_schematic (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -7553,7 +7553,7 @@ package body et_kicad.schematic is
 
 
 	function connected_net (
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in pac_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_device_name;	-- IC45
 		terminal		: in type_terminal_name; -- E14
 		log_threshold	: in type_log_level)
@@ -7577,7 +7577,7 @@ package body et_kicad.schematic is
 
 		-- Searches the components of the module for the given reference.
 		procedure query_components (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			pragma unreferenced (module_name);
@@ -7766,7 +7766,7 @@ package body et_kicad.schematic is
 
 
 	function components_in_net (
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in pac_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
@@ -7782,7 +7782,7 @@ package body et_kicad.schematic is
 		-- Locates the given net in the netlist of the given module.
 		-- The ports connected with the net are copied to variable "ports".
 		procedure locate_net (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			net_cursor	: pac_netlist.cursor;
@@ -7879,7 +7879,7 @@ package body et_kicad.schematic is
 
 
 	function real_components_in_net ( -- CS rename to get_real_components_in_net
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in pac_submodule_name.bounded_string; -- nucleo_core
 		net				: in type_net_name; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
@@ -7894,7 +7894,7 @@ package body et_kicad.schematic is
 		-- Locates the given net in the netlist of the given module.
 		-- The ports connected with the net are copied to variable "ports".
 		procedure locate_net (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in pac_submodule_name.bounded_string;
 			module		: in type_module)
 		is
 			net_cursor	: pac_netlist.cursor;
@@ -7988,7 +7988,7 @@ package body et_kicad.schematic is
 --
 --		procedure locate_component (
 --		-- Searches the component list of the module for a connector with the given purpose.
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_components_schematic;
 --			use type_component_purpose;
@@ -8049,7 +8049,7 @@ package body et_kicad.schematic is
 --		procedure locate_component (
 --		-- Searches the component list of the module for a connector with the given purpose.
 --		-- Exits on the first matching connector. There should not be any others.
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_components_schematic;
 --			use type_component_purpose;
@@ -8111,7 +8111,7 @@ package body et_kicad.schematic is
 --		use et_string_processing;
 --
 --		procedure count_components (
---			name	: in type_submodule_name.bounded_string;
+--			name	: in pac_submodule_name.bounded_string;
 --			module	: in type_module) is
 --
 --			use type_components_schematic;
@@ -8181,7 +8181,7 @@ package body et_kicad.schematic is
 --		end count_components;
 --
 --		procedure count_ports (
---			name	: in type_submodule_name.bounded_string;
+--			name	: in pac_submodule_name.bounded_string;
 --			module	: in type_module) is
 --
 --			use type_portlists;

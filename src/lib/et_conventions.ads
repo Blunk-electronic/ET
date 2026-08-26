@@ -82,7 +82,7 @@ package et_conventions is
 --	-- Example: nucleo_core NCC kicad_v4 1
 --	-- We collect these modules in a simple list because the order must be kept.
 --	type type_import_module is record
---		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
+--		name		: et_coordinates.pac_submodule_name.bounded_string; -- MOTOR_DRIVER
 --		abbreviation	: et_coordinates.type_submodule_abbreviation.bounded_string; -- MOT
 --		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
 --		instances	: et_coordinates.type_submodule_instance; -- 4
@@ -189,7 +189,7 @@ package et_conventions is
 
 
 -- 	function ports_in_net (
--- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		module 			: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in type_log_level)
@@ -199,7 +199,7 @@ package et_conventions is
 
 -- 	-- Handling routing information requires this type:
 -- 	type type_net is record
--- 		module	: et_schematic_coordinates.type_submodule_name.bounded_string;
+-- 		module	: et_schematic_coordinates.pac_submodule_name.bounded_string;
 -- 		net		: et_schematic.type_net_name;
 -- 	end record;
 --
