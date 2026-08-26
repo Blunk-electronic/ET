@@ -1816,8 +1816,8 @@ package body et_conventions is
 		return type_component_requires_operator_interaction
 	is
 		cat : type_device_category;
-		use type_categories_with_operator_interacton;
-		cat_cursor : type_categories_with_operator_interacton.cursor;
+		use pac_categories_with_operator_interacton;
+		cat_cursor : pac_categories_with_operator_interacton.cursor;
 	begin
 		if component_prefixes_specified then
 
@@ -1828,7 +1828,7 @@ package body et_conventions is
 			-- category cat.
 			cat_cursor := component_categories_with_operator_interaction.find (cat);
 
-			if cat_cursor = type_categories_with_operator_interacton.no_element then
+			if cat_cursor = pac_categories_with_operator_interacton.no_element then
 				return NO; -- no operator interaction required
 			else
 				return YES; -- operator interaction required
@@ -1884,8 +1884,8 @@ package body et_conventions is
 	is
 		use et_schematic_geometry;
 		use pac_geometry_2;
-		use type_text_sizes_schematic;
-		cursor : type_text_sizes_schematic.cursor; -- points to a text size
+		use pac_text_sizes_schematic;
+		cursor : pac_text_sizes_schematic.cursor; -- points to a text size
 
 	begin -- check_schematic_text_size
 		-- nothing happens if no text sizes specified
@@ -1958,20 +1958,20 @@ package body et_conventions is
 
 
 
-	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string is
-	-- Converts a string to a type_partcode_keyword_argument.
+	function to_partcode_keyword_argument (argument : in string) return pac_partcode_keyword_argument.bounded_string is
+	-- Converts a string to a pac_partcode_keyword_argument.
 	begin
-		return type_partcode_keyword_argument.to_bounded_string (argument);
+		return pac_partcode_keyword_argument.to_bounded_string (argument);
 	end to_partcode_keyword_argument;
 
 
 
 
 
-	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string is
-	-- Converts a type_partcode_keyword_argument to a string.
+	function to_string (argument : in pac_partcode_keyword_argument.bounded_string) return string is
+	-- Converts a pac_partcode_keyword_argument to a string.
 	begin
-		return type_partcode_keyword_argument.to_string (argument);
+		return pac_partcode_keyword_argument.to_string (argument);
 	end to_string;
 
 
@@ -1979,10 +1979,10 @@ package body et_conventions is
 
 
 
-	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
-	-- Converts a type_partcode_keyword to a string.
+	function to_string (keyword : in pac_partcode_keyword.bounded_string) return string is
+	-- Converts a pac_partcode_keyword to a string.
 	begin
-		return type_partcode_keyword.to_string (keyword);
+		return pac_partcode_keyword.to_string (keyword);
 	end to_string;
 
 
@@ -2006,12 +2006,12 @@ package body et_conventions is
 
 
 	procedure check_partcode_keyword_characters (
-		keyword		: in type_partcode_keyword.bounded_string;
+		keyword		: in pac_partcode_keyword.bounded_string;
 		characters	: in character_set := partcode_keyword_characters) is
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-		use type_partcode_keyword;
+		use pac_partcode_keyword;
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given keyword and get position of possible invalid characters.
@@ -2037,16 +2037,16 @@ package body et_conventions is
 
 
 
-	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is
+	procedure validate_partcode_keyword (keyword : in pac_partcode_keyword.bounded_string) is
 	-- Checks whether given keyword is specified in
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
-		use type_partcode_keywords;
-		use type_partcode_keyword;
-		cursor : type_partcode_keywords.cursor := partcode_keywords.first;
+		use pac_partcode_keywords;
+		use pac_partcode_keyword;
+		cursor : pac_partcode_keywords.cursor := partcode_keywords.first;
 		valid : boolean := false;
 	begin
-		while cursor /= type_partcode_keywords.no_element loop
+		while cursor /= pac_partcode_keywords.no_element loop
 			if key (cursor) = keyword then
 				valid := true;
 				exit;
@@ -2058,7 +2058,7 @@ package body et_conventions is
 			log (SEVERITY_ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
 			log (text => "Available keywords are:");
 			cursor := partcode_keywords.first;
-			while cursor /= type_partcode_keywords.no_element loop
+			while cursor /= pac_partcode_keywords.no_element loop
 				log (text => "- " & to_string (key (cursor)));
 				next (cursor);
 			end loop;
@@ -2073,8 +2073,8 @@ package body et_conventions is
 
 
 	function to_partcode_keyword (keyword : in string)
-		return type_partcode_keyword.bounded_string
-	is (type_partcode_keyword.to_bounded_string (keyword));
+		return pac_partcode_keyword.bounded_string
+	is (pac_partcode_keyword.to_bounded_string (keyword));
 
 
 
@@ -2126,15 +2126,15 @@ package body et_conventions is
 
 		keyword_follows : boolean;	-- goes true if a keyword is expected next
 
-		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
+		keyword : pac_partcode_keyword.bounded_string;	-- the keyword being processed
 
 		argument_start : positive;
-		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
+		argument : pac_partcode_keyword_argument.bounded_string; -- the argument being processed
 
 
 		procedure validate_argument (
-			kw	: in type_partcode_keyword.bounded_string;
-			arg	: in type_partcode_keyword_argument.bounded_string) is
+			kw	: in pac_partcode_keyword.bounded_string;
+			arg	: in pac_partcode_keyword_argument.bounded_string) is
 		pragma unreferenced (arg);
 		begin
 			log (text => "keyword " & to_string (kw)
@@ -2325,7 +2325,7 @@ package body et_conventions is
 
 	function partcode_keywords_specified return boolean is
 	-- Returns true if any part code keywords are specified via configuration file.
-		use type_partcode_keywords;
+		use pac_partcode_keywords;
 	begin
 		if is_empty (partcode_keywords) then -- no keywords specified
 			return false;
@@ -2338,16 +2338,16 @@ package body et_conventions is
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
-		keyword : type_partcode_keyword.bounded_string;
-		use type_partcode_keywords;
-		cursor : type_partcode_keywords.cursor;
+		keyword : pac_partcode_keyword.bounded_string;
+		use pac_partcode_keywords;
+		cursor : pac_partcode_keywords.cursor;
 	begin
 		if partcode_keywords_specified then
 
 			-- Search in partcode_keywords the given section name and
 			-- load keyword.
 			cursor := partcode_keywords.first;
-			while cursor /= type_partcode_keywords.no_element loop
+			while cursor /= pac_partcode_keywords.no_element loop
 				if element (cursor) = section then -- MAXIMUM_POWER
 					keyword := key (cursor); -- PMAX
 					exit; -- no further search required
@@ -2356,7 +2356,7 @@ package body et_conventions is
 			end loop;
 
 		end if;
-		return type_partcode_keyword.to_string (keyword);
+		return pac_partcode_keyword.to_string (keyword);
 	end to_partcode_keyword;
 
 
@@ -2599,11 +2599,11 @@ package body et_conventions is
 		section_entered : type_section := NONE;
 
 		-- lines of the file are collected in a simple list:
-		package type_lines is new doubly_linked_lists (
+		package pac_lines is new doubly_linked_lists (
 			element_type	=> type_fields_of_line,
 			"="				=> lines_equally);
-		use type_lines;
-		lines : type_lines.list := type_lines.empty_list;
+		use pac_lines;
+		lines : pac_lines.list := pac_lines.empty_list;
 
 
 
@@ -2611,7 +2611,7 @@ package body et_conventions is
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
 		procedure process_previous_section is
-			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
+			line_cursor : pac_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : pac_device_prefixes.cursor; -- CS: rename to prefix_cursor
 			unit_cursor : pac_units_of_measurement.cursor;
 			inserted : boolean := false;
@@ -2646,7 +2646,7 @@ package body et_conventions is
 			text		: type_text_schematic;
 			size		: et_schematic_text.pac_text_schematic.type_text_size;
 
-			partcode_keyword	: type_partcode_keyword.bounded_string;
+			partcode_keyword	: pac_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;
 
 			-- CS: check field count in sections respectively. issue warning if too many fields.
@@ -2661,7 +2661,7 @@ package body et_conventions is
 					log (text => "device prefixes ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the prefix from field #1:
@@ -2700,7 +2700,7 @@ package body et_conventions is
 					log (text => "device units of measurement ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the unit abbreviation from field #1:
@@ -2747,14 +2747,14 @@ package body et_conventions is
 						log (SEVERITY_WARNING, "section " & section_components_with_operator_interaction & " without effect !");
 					end if;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the component category from field #1:
 						cat := to_category (get_field (element (line_cursor), 1));
 
 						-- insert the category in container component_categories_with_operator_interaction
-						type_categories_with_operator_interacton.insert (
+						pac_categories_with_operator_interacton.insert (
 							container => component_categories_with_operator_interaction,
 							new_item => cat);
 
@@ -2762,7 +2762,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no components specified:
-					if type_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
+					if pac_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
 						log (SEVERITY_WARNING, "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2772,7 +2772,7 @@ package body et_conventions is
 					log (text => "text sizes in schematic ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the text category from field #1:
@@ -2805,7 +2805,7 @@ package body et_conventions is
 						end case;
 
 						-- insert the text category and size in container text_sizes_schematic
-						type_text_sizes_schematic.insert (
+						pac_text_sizes_schematic.insert (
 							container	=> et_conventions.text_sizes_schematic,
 							key		=> text,
 							new_item	=> size);
@@ -2814,7 +2814,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no sizes specified:
-					if type_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
+					if pac_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
 						log (SEVERITY_WARNING, "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2824,7 +2824,7 @@ package body et_conventions is
 					log (text => "part code keywords ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
@@ -2836,7 +2836,7 @@ package body et_conventions is
 						partcode_section := to_partcode_section (get_field (element (line_cursor), 2));
 
 						-- insert the text category and size in container text_sizes_schematic
-						type_partcode_keywords.insert (
+						pac_partcode_keywords.insert (
 							container	=> et_conventions.partcode_keywords,
 							key		=> partcode_keyword,
 							new_item	=> partcode_section);
@@ -2845,7 +2845,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no keywrds specified:
-					if type_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
+					if pac_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
 						log (SEVERITY_WARNING, "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
