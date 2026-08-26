@@ -134,9 +134,9 @@ package body et_kicad_to_native is
 	--    CS: Native coordinates currently do not require the "path" selector. The change-path-stuff is thus not required.
 	-- 2. Moves schematic and layout objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
-		use et_kicad.pcb.type_modules;
-		module_cursor : et_kicad.pcb.type_modules.cursor :=
-			et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
+		use et_kicad.pcb.pac_modules;
+		module_cursor : et_kicad.pcb.pac_modules.cursor :=
+			et_kicad.pcb.pac_modules.first (et_kicad.pcb.modules);
 
 		root : constant et_kicad_coordinates.pac_path_to_submodule.list := et_kicad_coordinates.pac_path_to_submodule.empty_list;
 --		before	: constant string := "position before";
@@ -2214,7 +2214,7 @@ package body et_kicad_to_native is
 		log (text => "transposing coordinates of KiCad modules ...", level => log_threshold);
 		log_indentation_up;
 
-		while module_cursor /= et_kicad.pcb.type_modules.no_element loop
+		while module_cursor /= et_kicad.pcb.pac_modules.no_element loop
 			log (text => "module " & et_kicad_coordinates.to_string (key (module_cursor)), level => log_threshold + 1);
 			log_indentation_up;
 
@@ -2531,8 +2531,8 @@ package body et_kicad_to_native is
 		-- This flag goes true once V4 package libraries have been converted.
 		packages_v4_copied : boolean := false;
 
-		use et_kicad.pcb.type_modules;
-		module_cursor_kicad : et_kicad.pcb.type_modules.cursor := et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
+		use et_kicad.pcb.pac_modules;
+		module_cursor_kicad : et_kicad.pcb.pac_modules.cursor := et_kicad.pcb.pac_modules.first (et_kicad.pcb.modules);
 
 		-- This is a single native target module used as scratch.
 		module : type_generic_module;
@@ -4053,7 +4053,7 @@ package body et_kicad_to_native is
 		-- Now we copy content from the kicad modules to the same named native modules.
 		-- CS: currently there is only one kicad and only one native module.
 		-- So this loop will be executed only once:
-		while module_cursor_kicad /= et_kicad.pcb.type_modules.no_element loop
+		while module_cursor_kicad /= et_kicad.pcb.pac_modules.no_element loop
 
 			-- For each kicad design we create a native project.
 			et_project.create_project_directory (

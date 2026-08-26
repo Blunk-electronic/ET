@@ -95,12 +95,12 @@ package body et_kicad.pcb is
 
 
 	function to_plot_output_directory (directory : in string)
-		return type_plot_output_directory.bounded_string
-	is (type_plot_output_directory.to_bounded_string (directory));
+		return pac_plot_output_directory.bounded_string
+	is (pac_plot_output_directory.to_bounded_string (directory));
 
-	function to_string (directory : in type_plot_output_directory.bounded_string)
+	function to_string (directory : in pac_plot_output_directory.bounded_string)
 		return string
-	is (type_plot_output_directory.to_string (directory));
+	is (pac_plot_output_directory.to_string (directory));
 
 	function to_net_id (net_id : in string) return type_net_id is
 	-- returns the given net id as type_net_id
@@ -247,10 +247,10 @@ package body et_kicad.pcb is
 	end to_layer_id;
 
 
-	function to_layer_name (name : in string) return type_layer_name.bounded_string is
+	function to_layer_name (name : in string) return pac_layer_name.bounded_string is
 	-- converts a layer name given as string to a bounded string
 	begin
-		return type_layer_name.to_bounded_string (name);
+		return pac_layer_name.to_bounded_string (name);
 	end to_layer_name;
 
 
@@ -439,7 +439,7 @@ package body et_kicad.pcb is
 
 
 		argument_length_max : constant positive := 200; -- CS: could become an issue if long URLs used ...
-		package type_argument is new generic_bounded_length (argument_length_max);
+		package pac_argument is new generic_bounded_length (argument_length_max);
 
 		-- After a section name, arguments follow. For each section arguments are counted:
 		type type_argument_counter is range 0 .. 4;
@@ -702,9 +702,9 @@ package body et_kicad.pcb is
 		-- if neccessary.
 		-- The character_cursor points to the character being tested or processed in that line.
 		line_length_max : constant positive := 300;
-		package type_current_line is new generic_bounded_length (line_length_max);
-		use type_current_line;
-		current_line : type_current_line.bounded_string;
+		package pac_current_line is new generic_bounded_length (line_length_max);
+		use pac_current_line;
+		current_line : pac_current_line.bounded_string;
 		character_cursor : natural;
 
 		procedure get_next_line is
@@ -715,7 +715,7 @@ package body et_kicad.pcb is
 
 				-- Since a single line in container "lines" (where line_cursor points to) is a list
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
-				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+				current_line := pac_current_line.to_bounded_string (to_string (element (line_cursor)));
 				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
@@ -1004,9 +1004,9 @@ package body et_kicad.pcb is
 		-- the position of the trailing quotation.
 			end_of_arg : integer; -- may become negative if no terminating character present
 
-			use type_argument;
+			use pac_argument;
 
-			arg : type_argument.bounded_string; -- here the argument goes temporarily
+			arg : pac_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
 				log (SEVERITY_ERROR, "invalid layer " & to_string (arg), console => true);
@@ -2265,7 +2265,7 @@ package body et_kicad.pcb is
 						when SEC_LAYERSELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board.plot.layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
+								when 1 => board.plot.layer_selection := pac_plot_layer_selection_string.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -2837,7 +2837,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									via.status_kicad := type_via_status.to_bounded_string (to_string (arg));
+									via.status_kicad := pac_via_status.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -2910,7 +2910,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									segment.status_2 := type_segment_status.to_bounded_string (to_string (arg));
+									segment.status_2 := pac_segment_status.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -3174,7 +3174,7 @@ package body et_kicad.pcb is
 			procedure insert_package is
 
 				-- This cursor points to the last inserted package:
-				package_cursor : type_packages_board.cursor;
+				package_cursor : pac_packages_board.cursor;
 
 				-- This flag goes true once a package is to be inserted that already exists (by its reference).
 				package_inserted : boolean;
@@ -3327,7 +3327,7 @@ package body et_kicad.pcb is
 
 			-- Inserts the layer (when reading section "layers") in the temporarily container "layers".
 			procedure insert_layer is
-				layer_cursor : type_layers.cursor; -- mandatory, never read
+				layer_cursor : pac_layers.cursor; -- mandatory, never read
 				layer_inserted : boolean; -- goes true if layer id already used
 			begin -- insert_layer
 
@@ -3341,7 +3341,7 @@ package body et_kicad.pcb is
 				-- Abort if layer already in use. The criteria is the layer id.
 				if layer_inserted then
 					log (text => "layer id" & type_layer_id'image (layer_id)
-						 & " name " & type_layer_name.to_string (layer.name)
+						 & " name " & pac_layer_name.to_string (layer.name)
 						 & " meaning " & type_layer_meaning'image (layer.meaning), level => log_threshold + 2);
 				else
 					log (SEVERITY_ERROR, "layer id" & type_layer_id'image (layer_id) & " already used !",
@@ -3355,7 +3355,7 @@ package body et_kicad.pcb is
 			-- Inserts the net class in board
 			procedure insert_net_class is
 				net_class_inserted	: boolean := false;
-				net_class_cursor	: type_net_classes.cursor;
+				net_class_cursor	: pac_net_classes.cursor;
 			begin -- insert_net_class
 				-- calculate validate restring for regular and micro vias
 				net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2.0;
@@ -3391,10 +3391,10 @@ package body et_kicad.pcb is
 			procedure insert_net is
 			-- Inserts the net in the board
 				net_inserted	: boolean := false;
-				net_cursor		: type_netlist.cursor;
+				net_cursor		: pac_netlist.cursor;
 			begin
 
-				type_netlist.insert (
+				pac_netlist.insert (
 					container	=> board.netlist,
 					new_item	=> netlist_net,
 					position	=> net_cursor,
@@ -3468,7 +3468,7 @@ package body et_kicad.pcb is
 
 
 					when EDGE_CUTS =>
-						append (board.contour.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
+						pac_contours.pac_segments.append (board.contour.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
 						-- CS pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -3602,7 +3602,7 @@ package body et_kicad.pcb is
 
 
 					when EDGE_CUTS =>
-						append (board.contour.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
+						pac_contours.pac_segments.append (board.contour.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
 						-- CS pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 
 
@@ -3965,7 +3965,7 @@ package body et_kicad.pcb is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : constant pac_segments.list := to_pad_milling_contour (
+								lines : constant pac_contours.pac_segments.list := to_pad_milling_contour (
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
@@ -4328,7 +4328,7 @@ package body et_kicad.pcb is
 
 			procedure insert_segment is begin
 			-- inserts a segment in the list "segments"
-				type_segments.append (
+				pac_segments.append (
 					container	=> board.segments,
 					new_item	=> segment);
 
@@ -4336,7 +4336,7 @@ package body et_kicad.pcb is
 					 " width" & pac_geometry_2.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
-					 " status " & type_segment_status.to_string (segment.status_2),
+					 " status " & pac_segment_status.to_string (segment.status_2),
 					 -- CS status should be decoded and detailled output.
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					 level => log_threshold + 1);
@@ -4352,7 +4352,7 @@ package body et_kicad.pcb is
 					raise constraint_error;
 				end if;
 
-				type_vias.append (
+				pac_vias.append (
 					container	=> board.vias,
 					new_item	=> via);
 
@@ -4361,7 +4361,7 @@ package body et_kicad.pcb is
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
 					" net_id" & to_string (via.net_id) &
-					" status " & type_via_status.to_string (via.status_kicad),
+					" status " & pac_via_status.to_string (via.status_kicad),
 					 -- CS status should be decoded and detailled output.
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					level => log_threshold + 1);
@@ -4371,8 +4371,8 @@ package body et_kicad.pcb is
 
 			procedure add_polygon_corner_point is
 			-- adds the current polygon_point to the corner points of the current polygon
-				use type_polygon_points;
-				unused_point_cursor : type_polygon_points.cursor;
+				use pac_polygon_points;
+				unused_point_cursor : pac_polygon_points.cursor;
 			begin
 				if not contains (polygon.corners, polygon_point) then
 					log (text => "polygon corner point at" & to_string (polygon_point), level => log_threshold + 3);
@@ -4578,11 +4578,11 @@ package body et_kicad.pcb is
 		sections_stack.init;
 
 		-- get first line
-		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+		current_line := pac_current_line.to_bounded_string (to_string (element (line_cursor)));
 		log (text => "line " & to_string (current_line), level => log_threshold + 4);
 
 		-- get position of first opening bracket
-		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
+		character_cursor := pac_current_line.index (current_line, 1 * opening_bracket);
 
 		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 		init_terminal_net_name; -- in case the next terminal has no net connected
@@ -4667,15 +4667,15 @@ package body et_kicad.pcb is
 	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
-	function corners_to_lines (corners : type_polygon_points.list)
+	function corners_to_lines (corners : pac_polygon_points.list)
 		return pac_contours.pac_segments.list
 	is
-		use type_polygon_points;
-		corner : type_polygon_points.cursor := corners.first;
+		use pac_polygon_points;
+		corner : pac_polygon_points.cursor := corners.first;
 
-		use pac_segments;
+		use pac_contours.pac_segments;
 
-		lines : pac_segments.list; -- to be returned
+		lines : pac_contours.pac_segments.list; -- to be returned
 		l : pac_geometry_2.type_line;
 
 	begin
@@ -4724,7 +4724,7 @@ package body et_kicad.pcb is
 --		log (text => text_fill_zone_corner_points, level => log_threshold);
 --		points := element (cursor).corners;
 --		point_cursor := points.first;
---		while point_cursor /= type_polygon_points.no_element loop
+--		while point_cursor /= pac_polygon_points.no_element loop
 --			log (text => to_string (element (point_cursor)), level => log_threshold);
 --			next (point_cursor);
 --		end loop;
@@ -4779,8 +4779,8 @@ package body et_kicad.pcb is
 			is
 				net : type_net_name; -- to be returned
 
-				use type_packages_board;
-				package_cursor : type_packages_board.cursor;
+				use pac_packages_board;
+				package_cursor : pac_packages_board.cursor;
 
 				use pac_terminals;
 				terminals : pac_terminals.map;
@@ -4792,7 +4792,7 @@ package body et_kicad.pcb is
 				-- exist in the board -> raise alarm and abort.
 				package_cursor := board.packages.find (reference);
 
-				if package_cursor /= type_packages_board.no_element then
+				if package_cursor /= pac_packages_board.no_element then
 					-- The component exists. The package cursor points to given component package.
 					-- Load the terminals of the component package:
 					terminals := element (package_cursor).terminals;
@@ -4839,8 +4839,8 @@ package body et_kicad.pcb is
 				components			: constant pac_components_schematic.map := module.components;
 				component_cursor	: pac_components_schematic.cursor := components.first;
 
-				use type_packages_board;
-				package_cursor		: type_packages_board.cursor;
+				use pac_packages_board;
+				package_cursor		: pac_packages_board.cursor;
 				package_reference	: type_device_name;
 				package_position	: et_board_coordinates.type_package_position;
 
@@ -4852,8 +4852,8 @@ package body et_kicad.pcb is
 					name : in type_net_name)
 					return type_net_id
 				is
-					use type_netlist;
-					net_cursor : type_netlist.cursor := board.netlist.first;
+					use pac_netlist;
+					net_cursor : pac_netlist.cursor := board.netlist.first;
 					id : type_net_id; -- to be returned
 
 					use pac_ports_with_reference;
@@ -4868,7 +4868,7 @@ package body et_kicad.pcb is
 					if not anonymous (name) then -- net has an explicitely given name
 
 						-- search the given net name in the board netlist:
-						while net_cursor /= type_netlist.no_element loop
+						while net_cursor /= pac_netlist.no_element loop
 							if element (net_cursor).name = name then
 								id := element (net_cursor).id;
 								net_name_in_board := name;
@@ -4903,7 +4903,7 @@ package body et_kicad.pcb is
 						if length (net_name_in_board) > 0 then
 
 						-- From the net_name_in_board the net id follows as:
-							while net_cursor /= type_netlist.no_element loop
+							while net_cursor /= pac_netlist.no_element loop
 								if element (net_cursor).name = net_name_in_board then
 									id := element (net_cursor).id;
 									exit;
@@ -4925,17 +4925,17 @@ package body et_kicad.pcb is
 					return type_net_route
 				is
 					route : type_net_route; -- to be returned
-					use type_segments;
-					segment_cursor : type_segments.cursor := board.segments.first;
+					use pac_segments;
+					segment_cursor : pac_segments.cursor := board.segments.first;
 					line : type_conductor_line; -- an ET segment
 
-					use type_vias; -- kicad vias !
-					via_cursor : type_vias.cursor := board.vias.first;
+					use pac_vias; -- kicad vias !
+					via_cursor : pac_vias.cursor := board.vias.first;
 					via : et_vias.type_via := (category => THROUGH, others => <>); -- an ET via
 					restring : type_restring_width;
 
-					use type_polygons;
-					polygon_cursor : type_polygons.cursor := board.polygons.first;
+					use pac_polygons;
+					polygon_cursor : pac_polygons.cursor := board.polygons.first;
 
 				begin
 					log_indentation_up;
@@ -4944,7 +4944,7 @@ package body et_kicad.pcb is
 					-- Find all segments that have the given net_id.
 					-- Append segments to route.lines.
 					log_indentation_up;
-					while segment_cursor /= type_segments.no_element loop
+					while segment_cursor /= pac_segments.no_element loop
 						if element (segment_cursor).net_id = net_id then
 
 							-- copy start/end point and line width (by a conversion to the base type)
@@ -4976,7 +4976,7 @@ package body et_kicad.pcb is
 
 					-- Find all vias that have the given net_id.
 					-- Append vias to route.vias
-					while via_cursor /= type_vias.no_element loop
+					while via_cursor /= pac_vias.no_element loop
 						if element (via_cursor).net_id = net_id then
 
 							-- For converting a kicad via to an ET via, the restring must be calculated.
@@ -5026,7 +5026,7 @@ package body et_kicad.pcb is
 					end if;
 
 					-- Append fill zone to route.zones
-					while polygon_cursor /= type_polygons.no_element loop
+					while polygon_cursor /= pac_polygons.no_element loop
 						if element (polygon_cursor).net_id = net_id then
 						-- Transfer kicad polygon to native ET polygon.
 						-- The polygon is appended to route.polygons.
@@ -5247,12 +5247,12 @@ package body et_kicad.pcb is
 				-- whereas
 				-- an ET net class has a just a name. In the schematic a particular net has the
 				-- class name as a property.
-					use type_net_classes;
-					net_class_cursor_board	: type_net_classes.cursor;
+					use pac_net_classes;
+					net_class_cursor_board	: pac_net_classes.cursor;
 
-					use type_nets_of_class;
-					nets_of_class		: type_nets_of_class.list;
-					net_cursor_board	: type_nets_of_class.cursor;
+					use pac_nets_of_class;
+					nets_of_class		: pac_nets_of_class.list;
+					net_cursor_board	: pac_nets_of_class.cursor;
 
 					use schematic.pac_nets;
 					net_cursor_schematic : schematic.pac_nets.cursor;
@@ -5264,7 +5264,7 @@ package body et_kicad.pcb is
 					is
 						net_name_out : type_net_name; -- to be returned
 
-						package_cursor	: type_packages_board.cursor := board.packages.first;
+						package_cursor	: pac_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
 						terminal_found	: boolean := false;
 						terminal_name	: type_terminal_name;
@@ -5307,7 +5307,7 @@ package body et_kicad.pcb is
 							 level => log_threshold + 3);
 
 						-- Loop in packages until a suitable terminal has been found.
-						while package_cursor /= type_packages_board.no_element and not terminal_found loop
+						while package_cursor /= pac_packages_board.no_element and not terminal_found loop
 
 							-- Query terminals of current package (query_terminals sets the flag terminal_found so that
 							-- this loop ends prematurely once a suitable terminal has been found.
@@ -5352,7 +5352,7 @@ package body et_kicad.pcb is
 				begin -- transfer_net_classes
 					-- Copy the net class settings from kicad-board to the schematic module:
 					net_class_cursor_board := board.net_classes.first;
-					while net_class_cursor_board /= type_net_classes.no_element loop -- loop in net classes of board
+					while net_class_cursor_board /= pac_net_classes.no_element loop -- loop in net classes of board
 						log (text => "net class " & to_string (key (net_class_cursor_board)), level => log_threshold + 2);
 
 						-- copy net class name and its basic properties
@@ -5366,7 +5366,7 @@ package body et_kicad.pcb is
 						-- In the schematic module: Set the current net class for all
 						-- nets listed in nets_of_class:
 						net_cursor_board := nets_of_class.first;
-						while net_cursor_board /= type_nets_of_class.no_element loop -- loop in nets_of_class (in board)
+						while net_cursor_board /= pac_nets_of_class.no_element loop -- loop in nets_of_class (in board)
 
 							-- Locate the current net in the schematic module. Anonymous kicad names like
 							-- "Net-(IC2-Pad11)" do not exist in the schematic module. If such a name is given
@@ -5397,13 +5397,13 @@ package body et_kicad.pcb is
 				-- module (selector "board.conductors.polygons").
 				procedure transfer_floating_polygons is
 					use et_fill_zones.boards;
-					use type_polygons;
-					polygon_cursor : type_polygons.cursor := board.polygons.first;
+					use pac_polygons;
+					polygon_cursor : pac_polygons.cursor := board.polygons.first;
 
 					p : type_floating_solid;
 				begin
 					-- search polygons with a net_id of zero:
-					while polygon_cursor /= type_polygons.no_element loop
+					while polygon_cursor /= pac_polygons.no_element loop
 						if element (polygon_cursor).net_id = type_net_id'first then
 							-- Transfer kicad polygon to et polygon:
 
@@ -5511,7 +5511,7 @@ package body et_kicad.pcb is
 						-- If the package exists, get package_position, verify value
 						-- and update the schematic module with the package_position.
 						-- Otherwise the package does not exist in the board -> error and abort
-						if package_cursor /= type_packages_board.no_element then
+						if package_cursor /= pac_packages_board.no_element then
 
 							-- Make sure the value in schematic matches value in layout.
 							-- On mismatch -> error and abort
@@ -5651,7 +5651,7 @@ package body et_kicad.pcb is
 	procedure read_boards (log_threshold : in type_log_level) is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
-		use type_modules;
+		use pac_modules;
 		use ada.directories;
 	begin
 		-- We start with the first module of the modules.
@@ -5659,7 +5659,7 @@ package body et_kicad.pcb is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & enclose_in_quotes (et_kicad_coordinates.to_string (key (module_cursor))),
 				 level => log_threshold);
 			log_indentation_up;

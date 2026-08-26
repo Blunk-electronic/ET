@@ -1699,7 +1699,7 @@ is
 		pac_junctions.append (wild_junctions, junction);
 
 		-- add to module.junctions
-		type_modules.update_element (
+		pac_modules.update_element (
 			container	=> modules,
 			position	=> module_cursor,
 			process		=> append_junction'access);
@@ -3223,7 +3223,7 @@ is
 	-- A line that specifies such a flag loops like "NoConn ~ 5000 3900"
 		no_connection_flag : type_no_connection_flag;
 
-		use type_modules;
+		use pac_modules;
 
 		procedure append_no_connect_flag (
 			module_name	: in pac_submodule_name.bounded_string;

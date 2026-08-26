@@ -169,7 +169,7 @@ package et_kicad.pcb is
 	-- CS meaning not clear yet. for the time being we save the layerselection argument (like 0x00030_80000001)
 	-- in a bounded string.
 	plot_layer_selection_length_max : constant positive := 20;
-	package type_plot_layer_selection_string is new generic_bounded_length (plot_layer_selection_length_max);
+	package pac_plot_layer_selection_string is new generic_bounded_length (plot_layer_selection_length_max);
 
 	-- usergerberextensions
 	type type_plot_user_gerber_extensions is new boolean;
@@ -261,12 +261,12 @@ package et_kicad.pcb is
 
 	-- outputdirectory
 	plot_output_directory_length_max : constant positive := 200;
-	package type_plot_output_directory is new generic_bounded_length (plot_output_directory_length_max);
-	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string;
-	function to_string (directory : in type_plot_output_directory.bounded_string) return string;
+	package pac_plot_output_directory is new generic_bounded_length (plot_output_directory_length_max);
+	function to_plot_output_directory (directory : in string) return pac_plot_output_directory.bounded_string;
+	function to_string (directory : in pac_plot_output_directory.bounded_string) return string;
 
 	type type_plot_setup is record
-		layer_selection			: type_plot_layer_selection_string.bounded_string;
+		layer_selection			: pac_plot_layer_selection_string.bounded_string;
 		user_gerber_extensions	: type_plot_user_gerber_extensions;
 		exclude_edge_layer		: type_plot_exclude_edge_layer;
 		line_width				: type_distance_positive; -- for lines without given width
@@ -289,7 +289,7 @@ package et_kicad.pcb is
 		mirror					: type_plot_mirror;
 		drill_shape				: type_plot_drill_shape;
 		scale_selection			: type_plot_scale_selection;
-		output_directory		: type_plot_output_directory.bounded_string;
+		output_directory		: pac_plot_output_directory.bounded_string;
 	end record;
 
 
@@ -400,7 +400,7 @@ package et_kicad.pcb is
 
 
 	-- Nets are collected in an ordered set, that uses the aforementioned two functions:
-	package type_netlist is new ordered_sets (
+	package pac_netlist is new ordered_sets (
 		element_type	=> type_netlist_net,
 		"<"				=> right_net_before_left,
 		"="				=> right_net_equals_left);
@@ -462,18 +462,18 @@ package et_kicad.pcb is
 	-- NOTE: net class settings are directly imprinted in the board. There is no net class file.
 
 	-- KiCad keeps a list of net names which are in a certain net class.
-	package type_nets_of_class is new doubly_linked_lists (
+	package pac_nets_of_class is new doubly_linked_lists (
 		element_type	=> et_net_names.type_net_name,
 		"="				=> et_net_names."=");
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
 	type type_net_class_kicad is new et_net_class.type_net_class with record
-		net_names : type_nets_of_class.list;
+		net_names : pac_nets_of_class.list;
 	end record;
 
 	-- Since there are lots of net classes, they are stored in a map:
-	package type_net_classes is new ordered_maps (
+	package pac_net_classes is new ordered_maps (
 		key_type		=> type_net_class_name,
 		element_type	=> type_net_class_kicad,
 		"<"				=> et_net_class_name."<"
@@ -511,9 +511,9 @@ package et_kicad.pcb is
 
 
 	layer_name_length_max : constant positive := 9;
-	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
+	package pac_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
 
-	function to_layer_name (name : in string) return type_layer_name.bounded_string;
+	function to_layer_name (name : in string) return pac_layer_name.bounded_string;
 	-- converts a layer name given as string to a bounded string
 
 	type type_layer_meaning is (SIGNAL, USER);
@@ -521,11 +521,11 @@ package et_kicad.pcb is
 	-- converts a layer meaning given as string to a bounded string
 
 	type type_layer is record
-		name	: type_layer_name.bounded_string;
+		name	: pac_layer_name.bounded_string;
 		meaning	: type_layer_meaning;
 	end record;
 
-	package type_layers is new ordered_maps (
+	package pac_layers is new ordered_maps (
 		key_type		=> type_layer_id,
 		element_type	=> type_layer);
 
@@ -566,7 +566,7 @@ package et_kicad.pcb is
 	end record;
 
 	-- Lots of packages (in a board) can be collected in a map:
-	package type_packages_board is new indefinite_ordered_maps (
+	package pac_packages_board is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- IC46
 		element_type	=> type_package_board,
 		"<"				=> et_device_name."<");
@@ -593,7 +593,7 @@ package et_kicad.pcb is
 	-- This is a hex number for lock information or differential signals:
 	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	segment_status_length_max : constant positive := 8;
-	package type_segment_status is new generic_bounded_length (segment_status_length_max);
+	package pac_segment_status is new generic_bounded_length (segment_status_length_max);
 
 	-- CS function to_segment_status and to_string
 
@@ -601,28 +601,28 @@ package et_kicad.pcb is
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: type_timestamp;
-		status_2	: type_segment_status.bounded_string; -- holds lock status and differential status
+		status_2	: pac_segment_status.bounded_string; -- holds lock status and differential status
 	end record;
 
 	-- segments are stored in lists
-	package type_segments is new doubly_linked_lists (type_segment);
+	package pac_segments is new doubly_linked_lists (type_segment);
 
 
 	-- This is a hex number for lock information and other stuff:
 	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	via_status_length_max : constant positive := 8;
-	package type_via_status is new generic_bounded_length (via_status_length_max);
+	package pac_via_status is new generic_bounded_length (via_status_length_max);
 
 	type type_via is new type_drill with record
 		net_id			: type_net_id;
 		diameter_total	: type_distance_positive; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;
-		status_kicad	: type_via_status.bounded_string;  -- holds lock status and differential status
+		status_kicad	: pac_via_status.bounded_string;  -- holds lock status and differential status
 	end record;
 
 	-- vias are stored in lists
-	package type_vias is new doubly_linked_lists (type_via);
+	package pac_vias is new doubly_linked_lists (type_via);
 
 	-- The polygon hatch style does not have anything to do with real hatch fill patterns.
 	-- See <https://forum.kicad.info/t/can-i-do-a-hatched-polygon-on-kicad/2761/13>. It is
@@ -650,7 +650,7 @@ package et_kicad.pcb is
 -- FILL ZONES
 
 	-- Corner points are collected in a simple list.
-	package type_polygon_points is new doubly_linked_lists (type_vector_model);
+	package pac_polygon_points is new doubly_linked_lists (type_vector_model);
 
 	type type_fill_zone_pad_connection is (THERMAL, SOLID, NONE);
 
@@ -688,13 +688,13 @@ package et_kicad.pcb is
 		pad_connection		: type_fill_zone_pad_connection := type_fill_zone_pad_connection'first;
 		priority_level		: et_fill_zones.boards.type_priority := et_fill_zones.boards.type_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the fill_zone
-		corners				: type_polygon_points.list;
+		corners				: pac_polygon_points.list;
 		fill_style			: type_fill_style := SOLID; -- a fill_zone is always filled
 		hatching			: type_hatching;
 		easing				: et_fill_zones.type_easing;
 	end record;
 
-	package type_polygons is new doubly_linked_lists (type_polygon);
+	package pac_polygons is new doubly_linked_lists (type_polygon);
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
@@ -713,10 +713,10 @@ package et_kicad.pcb is
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)
 		paper_size	: et_drawing_frame.type_paper_size;
-		layers		: type_layers.map;
-		netlist		: type_netlist.set;
-		net_classes	: type_net_classes.map;
-		packages	: type_packages_board.map;
+		layers		: pac_layers.map;
+		netlist		: pac_netlist.set;
+		net_classes	: pac_net_classes.map;
+		packages	: pac_packages_board.map;
 
 		silk_screen	: type_silkscreen_both_sides; -- CS rename to silkscreen
 		assy_doc	: type_assy_doc_both_sides;
@@ -732,9 +732,9 @@ package et_kicad.pcb is
 
 		-- CS objects in other layers (user defined, glue, ...)
 
-		segments	: type_segments.list;
-		vias		: type_vias.list;
-		polygons	: type_polygons.list;
+		segments	: pac_segments.list;
+		vias		: pac_vias.list;
+		polygons	: pac_polygons.list;
 	end record;
 
 
@@ -785,7 +785,7 @@ package et_kicad.pcb is
 		junctions			: et_kicad.schematic.pac_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
 		components			: et_kicad.schematic.pac_components_schematic.map;	-- the components of the module
-		net_classes			: pac_net_classes.map;		-- the net classes
+		net_classes			: et_net_classes.pac_net_classes.map;		-- native net classes, not et_kicad.pcb's own (kicad-side) pac_net_classes
 		no_connections		: et_kicad.schematic.pac_no_connection_flags.list;	-- the list of no-connection-flags
 		portlists			: et_kicad.schematic.pac_portlists.map;				-- the portlists of the module (components with their ports)
 		netlist				: et_kicad.schematic.pac_netlist.map;					-- net names and connected component ports (incl. position of port)
@@ -816,14 +816,14 @@ package et_kicad.pcb is
 	-- A collection of modules.
 	-- CS: Currently kicad does not support multiple modules (so called multi-board support).
 	-- Therefore the collection contains only one module.
-	package type_modules is new ordered_maps (
+	package pac_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
 		key_type		=> pac_submodule_name.bounded_string,
 		"<"			=> pac_submodule_name."<",
 		element_type	=> type_module);
 
-	modules : type_modules.map;
-	module_cursor : type_modules.cursor;
+	modules : pac_modules.map;
+	module_cursor : pac_modules.cursor;
 
 end et_kicad.pcb;
 

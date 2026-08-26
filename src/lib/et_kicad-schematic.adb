@@ -1413,7 +1413,7 @@ package body et_kicad.schematic is
 		end set_cursor;
 
 	begin
-		type_modules.query_element (
+		pac_modules.query_element (
 			position	=> module_cursor,
 			process		=> set_cursor'access
 			);
@@ -1471,7 +1471,7 @@ package body et_kicad.schematic is
 		-- and tested if they are connected with the given segment.
 
 			net : type_hierachic_net;
-			use type_modules;
+			use pac_modules;
 
 			procedure query_gui_submodules (
 				mod_name	: in pac_submodule_name.bounded_string;
@@ -1759,7 +1759,7 @@ package body et_kicad.schematic is
 			strands		: in pac_strands.list)
 		is
 			pragma unreferenced (strands);
-			use type_modules;
+			use pac_modules;
 
 			procedure locate_net (
 				module_name	: in pac_submodule_name.bounded_string;
@@ -1955,7 +1955,7 @@ package body et_kicad.schematic is
 			log_indentation_down;
 		end query_net;
 
-		use type_modules;
+		use pac_modules;
 
 
 	begin -- write_nets
@@ -1964,7 +1964,7 @@ package body et_kicad.schematic is
 			log_indentation_up;
 
 			--first_module;
-			--while module_cursor /= type_modules.no_element loop
+			--while module_cursor /= pac_modules.no_element loop
 
 			--	log (text => "module " & to_string (key (module_cursor)));
 
@@ -3237,11 +3237,11 @@ package body et_kicad.schematic is
 			-- within the current module.
 			-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 			-- operations should access the component_libraries of a module directly.
-			type_modules.update_element (modules, module_cursor, save_components'access);
+			pac_modules.update_element (modules, module_cursor, save_components'access);
 
 			-- V5: et_kicad_pcb.package_libraries is a temparily storage place. It must be saved in module.footprints.
 			if cad_format = KICAD_V5 then
-				type_modules.update_element (modules, module_cursor, save_packages'access);
+				pac_modules.update_element (modules, module_cursor, save_packages'access);
 			end if;
 
 		end save_libraries;
@@ -3276,7 +3276,7 @@ package body et_kicad.schematic is
 					 level => log_threshold + 2);
 
 				-- create the module:
-				type_modules.insert (
+				pac_modules.insert (
 					container	=> modules,
 					key			=> module_name,
 					new_item	=> (
@@ -3299,7 +3299,7 @@ package body et_kicad.schematic is
 						strands				=> schematic.pac_strands.empty_list,
 						junctions			=> pac_junctions.empty_list,
 						nets				=> pac_nets.empty_map,
-						net_classes			=> pac_net_classes.empty_map, -- net classes are defined in the board file
+						net_classes			=> et_net_classes.pac_net_classes.empty_map, -- net classes are defined in the board file
 						components			=> pac_components_schematic.empty_map,
 						no_connections		=> pac_no_connection_flags.empty_list,
 						portlists			=> pac_portlists.empty_map,
@@ -3551,9 +3551,9 @@ package body et_kicad.schematic is
 --
 --		use et_string_processing;
 --		use et_libraries.type_component_purpose;
---		use type_modules;
+--		use pac_modules;
 --
---		module_cursor : type_modules.cursor;
+--		module_cursor : pac_modules.cursor;
 --		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
 --
 --		procedure query_components (
@@ -3590,7 +3590,7 @@ package body et_kicad.schematic is
 --		module_cursor := find (et_kicad.modules, module_name);
 --
 --		-- if module exists, query its component list
---		if module_cursor /= type_modules.no_element then
+--		if module_cursor /= pac_modules.no_element then
 --			query_element (
 --				position	=> module_cursor,
 --				process		=> query_components'access);
@@ -3649,7 +3649,7 @@ package body et_kicad.schematic is
 		end set_cursor;
 
 	begin
-		type_modules.query_element (
+		pac_modules.query_element (
 			position	=> module_cursor,
 			process		=> set_cursor'access
 			);
@@ -3817,7 +3817,7 @@ package body et_kicad.schematic is
 			end query_junctions;
 
 		begin -- junction_here
-			type_modules.query_element (
+			pac_modules.query_element (
 				position	=> module_cursor,
 				process	=> query_junctions'access);
 
@@ -3886,7 +3886,7 @@ package body et_kicad.schematic is
 		begin
 			--log (text => "probing for other segment at " & to_string (port.coordinates, et_schematic_coordinates.module));
 
-			type_modules.query_element (
+			pac_modules.query_element (
 				position	=> module_cursor,
 				process		=> query_strands'access);
 
@@ -4174,7 +4174,7 @@ package body et_kicad.schematic is
 		if log_level >= log_threshold then
 			log (text => "strands report");
 
-			type_modules.query_element (
+			pac_modules.query_element (
 				position	=> module_cursor,
 				process		=> query_strands'access);
 		end if;
@@ -4248,7 +4248,7 @@ package body et_kicad.schematic is
 			cursor := pac_components_schematic.first (module.components);
 		end reset;
 	begin
-		type_modules.query_element (
+		pac_modules.query_element (
 			position	=> module_cursor,
 			process		=> reset'access
 			);
@@ -4344,7 +4344,7 @@ package body et_kicad.schematic is
 					ports		: in out pac_ports.list)
 				is
 					pragma unreferenced (component);
-					use type_modules;
+					use pac_modules;
 
 					port_coordinates : et_kicad_coordinates.type_position;
 
@@ -4656,7 +4656,7 @@ package body et_kicad.schematic is
 		procedure save_portlists is
 		-- Save the portlists in the module (indicated by module_cursor).
 		-- module_cursor points already there.
-			use type_modules;
+			use pac_modules;
 
 			procedure save (
 				module_name	: in pac_submodule_name.bounded_string;
@@ -4775,7 +4775,7 @@ package body et_kicad.schematic is
 	-- Must be called AFTER make_netlists !
 	procedure check_open_ports (log_threshold : in type_log_level) is
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
 
 		procedure query_portlists (
@@ -4875,7 +4875,7 @@ package body et_kicad.schematic is
 --					end query_strands;
 --
 --				begin -- segment_here
---					type_modules.query_element (
+--					pac_modules.query_element (
 --						position => module_cursor,
 --						process => query_strands'access);
 --
@@ -4973,11 +4973,11 @@ package body et_kicad.schematic is
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
-		module_cursor := type_modules.first (modules);
+		module_cursor := pac_modules.first (modules);
 
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -5000,7 +5000,7 @@ package body et_kicad.schematic is
 	-- Warns about not deployed units and open ports thereof.
 	procedure check_non_deployed_units (log_threshold : in type_log_level) is
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
 
 		procedure query_schematic_components (
@@ -5202,11 +5202,11 @@ package body et_kicad.schematic is
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
-		module_cursor := type_modules.first (modules);
+		module_cursor := pac_modules.first (modules);
 
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -5238,7 +5238,7 @@ package body et_kicad.schematic is
 		end count_nets;
 
 	begin -- net_count
-		type_modules.query_element (
+		pac_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_nets'access);
 
@@ -5262,7 +5262,7 @@ package body et_kicad.schematic is
 
 
 	begin -- junction_count
-		type_modules.query_element (
+		pac_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_junctions'access);
 
@@ -5275,7 +5275,7 @@ package body et_kicad.schematic is
 
 	function module_count return natural is
 	-- Returns the number of modules in the module collection.
-		use type_modules;
+		use pac_modules;
 	begin
 		return natural (length (modules));
 	end module_count;
@@ -5286,10 +5286,10 @@ package body et_kicad.schematic is
 	procedure validate_module (
 		module_name : in pac_submodule_name.bounded_string) is
 	-- Tests if the given module exists. Raises error if not existent.
-		unused_module_cursor : type_modules.cursor;
-		use type_modules;
+		unused_module_cursor : pac_modules.cursor;
+		use pac_modules;
 	begin
-		if find (modules, module_name) = type_modules.no_element then
+		if find (modules, module_name) = pac_modules.no_element then
 			log (SEVERITY_ERROR, "module " & to_string (module_name)
 				 & " does not exist !",
 				console => true);
@@ -5576,7 +5576,7 @@ package body et_kicad.schematic is
 	-- Verifies that junctions are placed where net segments are connected with each other.
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 	-- Warns about orphaned junctions.
-		use type_modules;
+		use pac_modules;
 
 		procedure query_strands_prim (
 		-- Query strands of module.
@@ -5722,7 +5722,7 @@ package body et_kicad.schematic is
 					end query_junctions;
 
 				begin -- junction_here
-					type_modules.query_element (
+					pac_modules.query_element (
 						position	=> module_cursor,
 						process	=> query_junctions'access);
 
@@ -5787,7 +5787,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -5808,7 +5808,7 @@ package body et_kicad.schematic is
 
 	procedure check_orphaned_junctions (log_threshold : in type_log_level) is
 	-- Warns about orphaned junctions.
-		use type_modules;
+		use pac_modules;
 
 		procedure query_junctions (
 		-- Query junctions.
@@ -5878,7 +5878,7 @@ package body et_kicad.schematic is
 			begin -- segment_here
 				--log (text => "probing for other segment at " & to_string (port.coordinates, et_schematic_coordinates.module));
 
-				type_modules.query_element (
+				pac_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_strands'access);
 
@@ -5908,7 +5908,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 
 			-- query strands of current module
@@ -5930,7 +5930,7 @@ package body et_kicad.schematic is
 	-- - it is placed between two net segments where no port sits
 	-- - it is placed where no segment is (means somewhere in the void)
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
 		procedure query_junctions (
 		-- Query junctions and test net segments and ports at the junction coordinates.
@@ -5999,7 +5999,7 @@ package body et_kicad.schematic is
 				end query_strands;
 
 			begin -- segment_count_here
-				type_modules.query_element (
+				pac_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_strands'access);
 
@@ -6093,7 +6093,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 
 			-- query strands of current module
@@ -6112,7 +6112,7 @@ package body et_kicad.schematic is
 	procedure check_misplaced_no_connection_flags (log_threshold : in type_log_level) is
 	-- Warns about no_connection_flags placed at nets.
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
 		procedure query_strands (
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
@@ -6183,7 +6183,7 @@ package body et_kicad.schematic is
 
 					--log (text => "searching no_connection_flags ...", level => log_threshold + 3);
 					-- query no_connection_flags of the module
-					type_modules.query_element (
+					pac_modules.query_element (
 						position	=> module_cursor,
 						process	=> query_no_connect_flags'access);
 
@@ -6240,7 +6240,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -6262,7 +6262,7 @@ package body et_kicad.schematic is
 	-- Warns about orphaned no_connection_flags.
 	procedure check_orphaned_no_connection_flags (log_threshold : in type_log_level) is
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
 		-- Query junctions. Exits prematurely once a junction is found.
 		procedure query_no_connect_flags (
@@ -6355,7 +6355,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -6526,7 +6526,7 @@ package body et_kicad.schematic is
 	procedure net_test (log_threshold : in type_log_level) is
 		use et_kicad_libraries;
 		use et_port_names;
-		use type_modules;
+		use pac_modules;
 
 		procedure query_nets (
 			module_name : in pac_submodule_name.bounded_string;
@@ -6771,7 +6771,7 @@ package body et_kicad.schematic is
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 
 			-- query nets in netlist
@@ -6794,9 +6794,9 @@ package body et_kicad.schematic is
 		return type_net_name
 	is
 		use et_port_names;
-		use type_modules;
+		use pac_modules;
 
-		module_cursor : type_modules.cursor; -- points to the module being searched in
+		module_cursor : pac_modules.cursor; -- points to the module being searched in
 
 		net_name_to_return : type_net_name; -- to be returned
 
@@ -6892,7 +6892,7 @@ package body et_kicad.schematic is
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_modules.no_element then
 			--log (text => to_string (key (module_cursor)), level => log_threshold + 1);
 			query_element (
 				position	=> module_cursor,
@@ -6919,7 +6919,7 @@ package body et_kicad.schematic is
 	procedure make_netlists (log_threshold : in type_log_level) is
 		use et_kicad_libraries;
 		use et_port_names;
-		use type_modules;
+		use pac_modules;
 
 		function make_netlist return pac_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
@@ -7191,11 +7191,11 @@ package body et_kicad.schematic is
 
 		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := type_modules.first (modules);
+		module_cursor := pac_modules.first (modules);
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= pac_modules.no_element loop
 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
@@ -7222,7 +7222,7 @@ package body et_kicad.schematic is
 	is
 		use et_kicad_libraries;
 		use et_package_variant_name;
-		use type_modules;
+		use pac_modules;
 
 		terminals : natural; -- to be returned
 
@@ -7391,7 +7391,7 @@ package body et_kicad.schematic is
 		use et_kicad_libraries;
 		use et_port_names;
 		use et_package_variant_name;
-		use type_modules;
+		use pac_modules;
 		terminal : et_package_variant.type_terminal; -- to be returned
 
 
@@ -7570,9 +7570,9 @@ package body et_kicad.schematic is
 		-- Once the port name has been found, this variable is set (see procedure locate_terminal):
 		port : type_port_of_module;
 
-		use type_modules;
+		use pac_modules;
 
-		module_cursor : type_modules.cursor; -- points to the module being searched in
+		module_cursor : pac_modules.cursor; -- points to the module being searched in
 
 
 		-- Searches the components of the module for the given reference.
@@ -7742,7 +7742,7 @@ package body et_kicad.schematic is
 
 		-- If module exists, locate the given component in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_modules.no_element then
 
 			query_element (
 				position	=> module_cursor,
@@ -7772,9 +7772,9 @@ package body et_kicad.schematic is
 		return pac_ports_with_reference.set
 	is
 		use et_kicad_libraries;
-		use type_modules;
+		use pac_modules;
 
-		module_cursor : type_modules.cursor;
+		module_cursor : pac_modules.cursor;
 
 		ports : pac_ports_with_reference.set; -- to be returned
 
@@ -7862,7 +7862,7 @@ package body et_kicad.schematic is
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_modules.no_element then
 			query_element (
 				position	=> module_cursor,
 				process		=> locate_net'access);
@@ -7884,9 +7884,9 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level)
 		return pac_ports_with_reference.set
 	is
-		use type_modules;
+		use pac_modules;
 
-		module_cursor : type_modules.cursor;
+		module_cursor : pac_modules.cursor;
 
 		ports_real : pac_ports_with_reference.set; -- to be returned
 
@@ -7959,7 +7959,7 @@ package body et_kicad.schematic is
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_modules.no_element then
 			query_element (
 				position	=> module_cursor,
 				process		=> locate_net'access);
@@ -7983,7 +7983,7 @@ package body et_kicad.schematic is
 --
 --		use et_string_processing;
 --		use et_libraries;
---		use et_kicad.type_modules;
+--		use et_kicad.pac_modules;
 --		use et_conventions;
 --
 --		procedure locate_component (
@@ -8042,7 +8042,7 @@ package body et_kicad.schematic is
 --
 --		occurences : natural := 0; -- to be returned
 --
---		use et_kicad.type_modules;
+--		use et_kicad.pac_modules;
 --		use et_libraries;
 --		use et_conventions;
 --
@@ -8218,13 +8218,13 @@ package body et_kicad.schematic is
 --	begin -- make_statistics
 --
 --		-- count components
---		type_modules.query_element (
+--		pac_modules.query_element (
 --			position	=> module_cursor,
 --			process		=> count_components'access
 --			);
 --
 --		-- count ports
---		type_modules.query_element (
+--		pac_modules.query_element (
 --			position	=> module_cursor,
 --			process		=> count_ports'access
 --			);
@@ -8252,7 +8252,7 @@ package body et_kicad.schematic is
 --
 --		use ada.directories;
 --		use et_general;
---		use type_modules;
+--		use pac_modules;
 --		use et_string_processing;
 --		use et_export;
 --
@@ -8263,7 +8263,7 @@ package body et_kicad.schematic is
 --		log (text => "writing statistics ...", level => log_threshold);
 --		log_indentation_up;
 --
---		while module_cursor /= type_modules.no_element loop
+--		while module_cursor /= pac_modules.no_element loop
 --			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 --			log_indentation_up;
 --
