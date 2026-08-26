@@ -2446,10 +2446,10 @@ package body et_kicad.schematic is
 						if ada.directories.exists (to_string (uri)) then
 
 							-- create empty package/footprint library
-							type_libraries.insert (
+							pac_libraries.insert (
 								container	=> package_libraries,
 								key		=> to_package_model_name (to_string (uri)),
-								new_item	=> type_packages_library.empty_map
+								new_item	=> pac_packages_library.empty_map
 								);
 
 							-- CS library type, options and description not processed here.
@@ -3294,7 +3294,7 @@ package body et_kicad.schematic is
 
 						-- V5
 						-- package/footprint libraries
-						footprints			=> type_libraries.empty_map,
+						footprints			=> pac_libraries.empty_map,
 
 						strands				=> schematic.pac_strands.empty_list,
 						junctions			=> pac_junctions.empty_list,

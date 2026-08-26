@@ -779,7 +779,7 @@ package et_kicad.pcb is
 		fp_lib_tables		: type_lib_table.list; -- footprints/packages
 
 		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
-		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
+		footprints			: et_kicad_packages.pac_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 
 		strands			: et_kicad.schematic.pac_strands.list;				-- the strands of the module (incl. net names and segments)
 		junctions			: et_kicad.schematic.pac_junctions.list;				-- net junctions (for ERC, statistics, ...)

@@ -172,11 +172,13 @@ package et_kicad_packages is
 
 
 	package_tags_length_max : constant positive := 200;
-	package type_package_tags is new generic_bounded_length (package_tags_length_max);
+	package pac_package_tags is new generic_bounded_length (package_tags_length_max);
 
-	function to_string (tags : in type_package_tags.bounded_string) return string;
+	subtype type_package_tag_string is pac_package_tags.bounded_string;
 
-	function to_package_tags (tags : in string) return type_package_tags.bounded_string;
+	function to_string (tags : in type_package_tag_string) return string;
+
+	function to_package_tags (tags : in string) return type_package_tag_string;
 
 
 	function to_assembly_technology (
@@ -303,15 +305,15 @@ package et_kicad_packages is
 		log_threshold	: in type_log_level);
 
 	-- Lots of packages (in a library) can be collected in a map:
-	package type_packages_library is new indefinite_ordered_maps (
+	package pac_packages_library is new indefinite_ordered_maps (
 		key_type		=> type_package_name, -- S_SO14, T_0207
 		"<"				=> et_package_name."<",
 		element_type	=> type_package_library);
 
-	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
+	package pac_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
 		key_type		=> type_package_model_name, -- projects/lbr/smd_packages.pretty
-		element_type	=> type_packages_library.map,
-		"="				=> type_packages_library."=",
+		element_type	=> pac_packages_library.map,
+		"="				=> pac_packages_library."=",
 		"<"				=> et_package_model_name."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
@@ -322,7 +324,7 @@ package et_kicad_packages is
 	-- V5:
 	--	- After reading the sym-lib-tables and fp-lib-tables empty libraries are created here.
 	--	- Procedure read_libraries in turn fills the libraries with content.
-	package_libraries : type_libraries.map;
+	package_libraries : pac_libraries.map;
 
 
 

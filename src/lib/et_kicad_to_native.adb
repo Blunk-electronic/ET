@@ -3327,8 +3327,8 @@ package body et_kicad_to_native is
 			component_library_name : type_device_model_name; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:
-			use et_kicad_packages.type_libraries;
-			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
+			use et_kicad_packages.pac_libraries;
+			package_library_cursor : et_kicad_packages.pac_libraries.cursor := module.footprints.first;
 
 			-- use pac_package_model_file;
 
@@ -3869,11 +3869,11 @@ package body et_kicad_to_native is
 			-- Creates with the library name and package name new native package models.
 			procedure query_packages (
 				library_name	: in type_package_model_name; -- projects/lbr/smd_packages.pretty
-				library			: in et_kicad_packages.type_packages_library.map)
+				library			: in et_kicad_packages.pac_packages_library.map)
 			is
 
-				use et_kicad_packages.type_packages_library;
-				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
+				use et_kicad_packages.pac_packages_library;
+				package_cursor_kicad	: et_kicad_packages.pac_packages_library.cursor := library.first;
 				package_name			: type_package_name;
 				package_model			: type_package_model_name := library_name; -- projects/lbr/smd_packages.pretty
 
@@ -3881,7 +3881,7 @@ package body et_kicad_to_native is
 				inserted				: boolean;
 			begin
 				-- Loop in kicad packages (footprints) of the current library.
-				while package_cursor_kicad /= et_kicad_packages.type_packages_library.no_element loop
+				while package_cursor_kicad /= et_kicad_packages.pac_packages_library.no_element loop
 					package_name := key (package_cursor_kicad); -- S_0805
 					--log (text => "package name " & et_libraries.to_string (package_name), level => log_threshold + 2);
 
@@ -3944,7 +3944,7 @@ package body et_kicad_to_native is
 						package_library_cursor := et_kicad_packages.package_libraries.first;
 
 						-- Loop in footprint libraries:
-						while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
+						while package_library_cursor /= et_kicad_packages.pac_libraries.no_element loop
 							log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 							log_indentation_up;
@@ -3965,7 +3965,7 @@ package body et_kicad_to_native is
 				when et_import.KICAD_V5 =>
 
 					-- Loop in footprint libraries:
-					while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
+					while package_library_cursor /= et_kicad_packages.pac_libraries.no_element loop
 						log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 						log_indentation_up;
