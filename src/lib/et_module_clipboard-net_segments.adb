@@ -221,9 +221,7 @@ package body et_module_clipboard.net_segments is
 
 					procedure query_segment (
 						segment : in type_net_segment)
-					is
-						use et_module_clipboard.net_segments;
-					begin
+					is begin
 						if is_A_selected (segment)
 						or is_B_selected (segment) then
 

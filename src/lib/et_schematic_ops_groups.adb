@@ -47,6 +47,7 @@ with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
 
 with et_module_clipboard.net_segments;
 with et_module_clipboard.devices_electrical;
+with et_module_clipboard.netchangers;
 
 with et_modes.schematic;
 with et_undo_redo;
@@ -767,6 +768,25 @@ package body et_schematic_ops_groups is
 
 
 
+		procedure copy_netchangers_to_clipboard is
+			use et_module_clipboard.netchangers;
+		begin
+			log (text => "netchangerss",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+
+			copy_selected_netchangers_to_clipboard (
+				module_cursor, log_threshold + 2);
+			-- CS: to speed up the process, pass the sheet where the group is
+			-- using get_sheet (group_reference_point)
+
+			log_indentation_down;
+		end copy_netchangers_to_clipboard;
+
+
+		
+		
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
@@ -794,8 +814,10 @@ package body et_schematic_ops_groups is
 		-- Copy selected net segments to clipboard:
 		copy_net_segments_to_clipboard;
 
-
-		-- CS netchangers, texts
+		-- Copy selected netchangers to clipboard:
+		copy_netchangers_to_clipboard;
+		
+		-- CS texts
 
 		log_indentation_down;
 	end copy_group_to_clipboard;
@@ -872,6 +894,21 @@ package body et_schematic_ops_groups is
 
 
 
+		procedure paste_netchangers is
+			use et_module_clipboard.netchangers;
+		begin
+			log (text => "netchangers",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+
+			paste_netchangers_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+
+			log_indentation_down;
+		end paste_netchangers;
+
+		
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -898,8 +935,10 @@ package body et_schematic_ops_groups is
 
 		paste_net_segments;
 
-		-- CS
-		-- netchangers, texts
+		paste_netchangers;
+
+		
+		-- CS texts
 
 
 		-- Previously to commiting the design,

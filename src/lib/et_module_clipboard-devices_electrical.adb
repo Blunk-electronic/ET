@@ -71,10 +71,11 @@ package body et_module_clipboard.devices_electrical is
 		device_name : constant type_device_name :=
 			get_device_name (device_cursor);
 
-		-- Get the given
+		-- Get the given device:
 		device : constant type_device_electrical :=
 			element (device_cursor);
 
+		-- Get the name of the given unit:
 		unit_name : constant type_unit_name :=
 			get_unit_name (unit_cursor);
 
@@ -191,7 +192,6 @@ package body et_module_clipboard.devices_electrical is
 					unit_name	: in type_unit_name;
 					unit		: in type_unit)
 				is
-					use et_module_clipboard.devices_electrical;
 					use et_devices_electrical.units;
 				begin
 					if is_selected (unit) then
