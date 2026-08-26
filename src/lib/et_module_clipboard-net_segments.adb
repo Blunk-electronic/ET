@@ -287,7 +287,7 @@ package body et_module_clipboard.net_segments is
 
 -- PASTE:
 
-	procedure copy_net_segment (
+	procedure paste_net_segment_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		segment			: in type_net_segment;
@@ -349,7 +349,7 @@ package body et_module_clipboard.net_segments is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " copy net segment " & to_string (segment)
+			& " paste net segment " & to_string (segment)
 			& " net " & to_string (net_name)
 			& " on sheet " & to_string (sheet)
 			& " offset " & to_string (offset),
@@ -362,7 +362,7 @@ package body et_module_clipboard.net_segments is
 		insert_segment;
 
 		log_indentation_down;
-	end copy_net_segment;
+	end paste_net_segment_from_clipboard;
 
 
 
@@ -413,8 +413,8 @@ package body et_module_clipboard.net_segments is
 
 						log_indentation_up;
 
-						-- Paste the net segment:
-						copy_net_segment (
+						-- Paste the net segment candidate:
+						paste_net_segment_from_clipboard (
 							module_cursor	=> module_cursor,
 							net_name		=> net_name,
 							segment			=> segment,

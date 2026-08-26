@@ -96,7 +96,7 @@ package et_module_clipboard.net_segments is
 	-- and inserts it in the given module on the given sheet.
 	-- The net segment will be placed by the given offset.
 	-- Creates the given net if not already existing:
-	procedure copy_net_segment (
+	procedure paste_net_segment_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
 		segment			: in type_net_segment;
