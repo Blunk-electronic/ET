@@ -4828,16 +4828,16 @@ package body et_kicad.pcb is
 				module   : in out type_module)
 			is
 				-- The nets of the module are copied here (in their present state):
-				nets		: constant et_kicad.schematic.type_nets.map := module.nets;
-				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
+				nets		: constant et_kicad.schematic.pac_nets.map := module.nets;
+				net_cursor	: et_kicad.schematic.pac_nets.cursor := nets.first;
 
 				net_id		: type_net_id; -- the net id used by kicad
 
 				-- The components of the module are copied here (in their present state):
 				use schematic;
-				use schematic.type_components_schematic;
-				components			: constant type_components_schematic.map := module.components;
-				component_cursor	: type_components_schematic.cursor := components.first;
+				use schematic.pac_components_schematic;
+				components			: constant pac_components_schematic.map := module.components;
+				component_cursor	: pac_components_schematic.cursor := components.first;
 
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
@@ -5254,13 +5254,14 @@ package body et_kicad.pcb is
 					nets_of_class		: type_nets_of_class.list;
 					net_cursor_board	: type_nets_of_class.cursor;
 
-					use schematic.type_nets;
-					net_cursor_schematic : schematic.type_nets.cursor;
+					use schematic.pac_nets;
+					net_cursor_schematic : schematic.pac_nets.cursor;
 
 					function to_net_name (net_name_in : in type_net_name)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an
 					-- anonymous ET name like "N$45".
-						return type_net_name is
+						return type_net_name
+					is
 						net_name_out : type_net_name; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
@@ -5373,12 +5374,12 @@ package body et_kicad.pcb is
 							-- If it could not be found, it is an anonymous net. The name "Net-(IC2-Pad11)" must then
 							-- be translated to the anonymous ET net name like "N$45".
 							net_cursor_schematic := module.nets.find (element (net_cursor_board));
-							if net_cursor_schematic = schematic.type_nets.no_element then
+							if net_cursor_schematic = schematic.pac_nets.no_element then
 								-- anonymous net -> translate to ET notation
 								net_cursor_schematic := module.nets.find (to_net_name (element (net_cursor_board)));
 							end if;
 
-							schematic.type_nets.update_element (
+							schematic.pac_nets.update_element (
 								container	=> module.nets, -- the current schematic module
 								position	=> net_cursor_schematic, -- the current net
 								process		=> set_net_class'access); -- set the net class
@@ -5441,7 +5442,7 @@ package body et_kicad.pcb is
 				end transfer_floating_polygons;
 
 
-				use schematic.type_nets;
+				use schematic.pac_nets;
 				use et_device_appearance;
 
 
@@ -5459,7 +5460,7 @@ package body et_kicad.pcb is
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;
-				while net_cursor /= schematic.type_nets.no_element loop
+				while net_cursor /= schematic.pac_nets.no_element loop
 
 					-- We are interested in nets that have more than one terminal connected.
 					-- Nets with less than two terminals do not appear in a kicad board file and must be skipped here.
@@ -5479,7 +5480,7 @@ package body et_kicad.pcb is
 								 to_string (net_id), level => log_threshold + 2);
 
 							-- add route (segments and vias) to module.nets (see et_schematic type_module)
-							schematic.type_nets.update_element (
+							schematic.pac_nets.update_element (
 								container	=> module.nets,
 								position	=> find (module.nets, key (net_cursor)),
 								process		=> add_route'access);
@@ -5494,7 +5495,7 @@ package body et_kicad.pcb is
 
 
 				-- update package positions in schematic module
-				while component_cursor /= type_components_schematic.no_element loop -- (cursor points to schematic components)
+				while component_cursor /= pac_components_schematic.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
@@ -5529,7 +5530,7 @@ package body et_kicad.pcb is
 								text_placeholders := to_placeholders;
 
 								-- update component in schematic module
-								type_components_schematic.update_element (
+								pac_components_schematic.update_element (
 									container	=> module.components,
 									position	=> find (module.components, package_reference),
 									process		=> update_component_in_schematic'access);

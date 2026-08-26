@@ -781,31 +781,31 @@ package et_kicad.pcb is
 		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
 		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 
-		strands			: et_kicad.schematic.type_strands.list;				-- the strands of the module (incl. net names and segments)
-		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
+		strands			: et_kicad.schematic.pac_strands.list;				-- the strands of the module (incl. net names and segments)
+		junctions			: et_kicad.schematic.pac_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
-		components			: et_kicad.schematic.type_components_schematic.map;	-- the components of the module
+		components			: et_kicad.schematic.pac_components_schematic.map;	-- the components of the module
 		net_classes			: pac_net_classes.map;		-- the net classes
-		no_connections		: et_kicad.schematic.type_no_connection_flags.list;	-- the list of no-connection-flags
-		portlists			: et_kicad.schematic.type_portlists.map;				-- the portlists of the module (components with their ports)
-		netlist				: et_kicad.schematic.type_netlist.map;					-- net names and connected component ports (incl. position of port)
-		hierarchic_sheets	: et_kicad.schematic.type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
+		no_connections		: et_kicad.schematic.pac_no_connection_flags.list;	-- the list of no-connection-flags
+		portlists			: et_kicad.schematic.pac_portlists.map;				-- the portlists of the module (components with their ports)
+		netlist				: et_kicad.schematic.pac_netlist.map;					-- net names and connected component ports (incl. position of port)
+		hierarchic_sheets	: et_kicad.schematic.pac_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
 
 		-- CS Drawing frames: not completely modeled. Still under construction.
 		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
 		-- Layout also has a template.
 		-- So the name of the templates for schematic and layout should suffice.
-		frames		: et_kicad.schematic.type_frames.list;					-- schematic frames (of both schematic and layout)
+		frames		: et_kicad.schematic.pac_frames.list;					-- schematic frames (of both schematic and layout)
 
-		notes		: et_kicad.schematic.type_texts.list;					-- notes
+		notes		: et_kicad.schematic.pac_texts.list;					-- notes
 
-		sheet_headers		: et_kicad.schematic.type_sheet_headers.map;			-- the list of sheet headers
+		sheet_headers		: et_kicad.schematic.pac_sheet_headers.map;			-- the list of sheet headers
 		-- CS: images
 
 		-- The nets of the module: net names, class,
 		-- schematic related stuff: strands, segments, labels, junctions
 		-- board related stuff: lines, arcs, vias, polygons
-		nets		: et_kicad.schematic.type_nets.map;
+		nets		: et_kicad.schematic.pac_nets.map;
 
 		-- General non-component related board stuff:
 		-- paper size, silk screen, documentation, ...

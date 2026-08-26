@@ -78,10 +78,10 @@ is
 	-- and the total number of sheet of the design (7).
 	sheet_count_total : type_sheet;
 
-	wild_simple_labels	: type_simple_labels.list;
-	wild_tag_labels	: type_tag_labels.list;
-	wild_segments		: type_wild_segments.list;
-	wild_junctions		: type_junctions.list;
+	wild_simple_labels	: pac_simple_labels.list;
+	wild_tag_labels		: pac_tag_labels.list;
+	wild_segments		: pac_wild_segments.list;
+	wild_junctions		: pac_junctions.list;
 
 	-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 	-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -91,7 +91,7 @@ is
 
 	-- The list of anonymous strands. Procedure add_strand_to_anonymous_strands uses
 	-- this container for temporarily storage of anonymous strands.
-	anonymous_strands : type_anonymous_strands.list;
+	anonymous_strands : pac_anonymous_strands.list;
 
 	procedure error_in_schematic_file (line : in type_fields_of_line) is
 	begin
@@ -102,7 +102,7 @@ is
 			console => true);
 	end error_in_schematic_file;
 
-	procedure add_segment_to_anonymous_strand (segment_cursor : in type_wild_segments.cursor) is
+	procedure add_segment_to_anonymous_strand (segment_cursor : in pac_wild_segments.cursor) is
 	-- Adds a net segment (indicated by given cursor) to anonymous_strand.
 	-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
 	-- as indicator for a segment already added to the anonymous_strand.
@@ -117,7 +117,7 @@ is
 	begin
 		-- If segment already picked and added to anonymous_strand, do nothing with this segment.
 		-- Otherwise set the "picked" flag of that segment, output the coordinates of the segment, add it to anonymous net.
-		if type_wild_segments.element (segment_cursor).picked then
+		if pac_wild_segments.element (segment_cursor).picked then
 			null;
 			-- log (text => "  picked");
 		else
@@ -125,7 +125,7 @@ is
 			-- log (text => "segment" & positive'image(id) & ":");
 			-- log (text => "  segment" & positive'image(id) & ":");
 
-			type_wild_segments.update_element (
+			pac_wild_segments.update_element (
 				container	=> wild_segments,
 				position	=> segment_cursor,
 				process		=> set_picked'access);
@@ -134,12 +134,12 @@ is
 --						type_net_segment (type_wild_segments.element (segment_cursor)));
 
 			log (text => to_string (
-					segment	=> type_wild_segments.element (segment_cursor),
+					segment	=> pac_wild_segments.element (segment_cursor),
 					scope	=> et_kicad_coordinates.XY),
 					level => log_threshold + 1);
 
-			scratch := type_net_segment (type_wild_segments.element (segment_cursor));
-			type_net_segments.append (anonymous_strand.segments, scratch);
+			scratch := type_net_segment (pac_wild_segments.element (segment_cursor));
+			pac_net_segments.append (anonymous_strand.segments, scratch);
 		end if;
 	end add_segment_to_anonymous_strand;
 
@@ -149,11 +149,11 @@ is
 	-- In general untouched segments are preferred in the search. "Half" processed segments are of secondary relevance.
 	-- Once a suitable segment was found, sc is assigned with neccessary data to be returned to the parent unit. The search for
 	-- a suitable segment excludes fully processed segments and the given segment (id).
-		segment_cursor : in type_wild_segments.cursor;
+		segment_cursor : in pac_wild_segments.cursor;
 		seg_in : in type_wild_net_segment;
 		side : in type_segment_side)
-		return type_same_coord_result is
-
+		return type_same_coord_result
+	is
 		sc : type_same_coord_result;
 		line_start, line_end : et_kicad_coordinates.type_position;
 		s, e : boolean; -- indicate the end point, that has been processed already
@@ -163,8 +163,8 @@ is
 		procedure set_e (segment : in out type_wild_net_segment) is begin segment.e := true; end set_e;
 		procedure set_s (segment : in out type_wild_net_segment) is begin segment.s := true; end set_s;
 
-		use type_wild_segments;
-		cursor : type_wild_segments.cursor;
+		use pac_wild_segments;
+		cursor : pac_wild_segments.cursor;
 
 	begin -- search_for_same_coordinates
 		-- Set E/S flag:
@@ -177,7 +177,7 @@ is
 --							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
 --							 level => 1);
 
-				type_wild_segments.update_element (
+				pac_wild_segments.update_element (
 						container => wild_segments,
 						position => segment_cursor,
 						process => set_e'access);
@@ -188,7 +188,7 @@ is
 --							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
 --							 level => 1);
 
-				type_wild_segments.update_element (
+				pac_wild_segments.update_element (
 						container => wild_segments,
 						position => segment_cursor,
 						process => set_s'access);
@@ -199,12 +199,12 @@ is
 		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
 		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
 		cursor := wild_segments.first;
-		while cursor /= type_wild_segments.no_element loop
+		while cursor /= pac_wild_segments.no_element loop
 			if cursor /= segment_cursor then -- skip the given segment
-				line_start := type_wild_segments.element (cursor).coordinates_start;
-				line_end   := type_wild_segments.element (cursor).coordinates_end;
-				s  := type_wild_segments.element (cursor).s;
-				e  := type_wild_segments.element (cursor).e;
+				line_start := pac_wild_segments.element (cursor).coordinates_start;
+				line_end   := pac_wild_segments.element (cursor).coordinates_end;
+				s  := pac_wild_segments.element (cursor).s;
+				e  := pac_wild_segments.element (cursor).e;
 				untouched := not (s or e); -- neither s nor e set
 
 				if untouched then
@@ -259,12 +259,12 @@ is
 		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
 		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
 		cursor := wild_segments.first;
-		while cursor /= type_wild_segments.no_element loop
+		while cursor /= pac_wild_segments.no_element loop
 			if cursor /= segment_cursor then -- skip the given segment
-				line_start := type_wild_segments.element (cursor).coordinates_start;
-				line_end   := type_wild_segments.element (cursor).coordinates_end;
-				s  := type_wild_segments.element (cursor).s;
-				e  := type_wild_segments.element (cursor).e;
+				line_start := pac_wild_segments.element (cursor).coordinates_start;
+				line_end   := pac_wild_segments.element (cursor).coordinates_end;
+				s  := pac_wild_segments.element (cursor).s;
+				e  := pac_wild_segments.element (cursor).e;
 				half_processed := s xor e;
 
 				if half_processed then
@@ -345,8 +345,8 @@ is
 		unused_anon_strand_b : type_anonymous_strand;
 		--segment	: type_net_segment_base;
 		segment	: type_net_segment;
-		lls		: type_simple_labels.list;
-		llt		: type_tag_labels.list;
+		lls		: pac_simple_labels.list;
+		llt		: pac_tag_labels.list;
 
 		strand		: type_strand;
 		net_name	: type_net_name;
@@ -366,21 +366,21 @@ is
 		end label_sits_on_segment;
 
 
-		use type_net_segments;
+		use pac_net_segments;
 		-- the segment cursor points to the segment being processed
-		segment_cursor : type_net_segments.cursor;
+		segment_cursor : pac_net_segments.cursor;
 
-		use type_anonymous_strands;
+		use pac_anonymous_strands;
 
 		-- the strand cursor points to the anonymous strand being processed
-		strand_cursor	: type_anonymous_strands.cursor := anonymous_strands.first;
-		unused_strand_cursor_b	: type_anonymous_strands.cursor;
+		strand_cursor	: pac_anonymous_strands.cursor := anonymous_strands.first;
+		unused_strand_cursor_b	: pac_anonymous_strands.cursor;
 
-		use type_simple_labels;
-		simple_label_cursor	: type_simple_labels.cursor; -- points to the simple label being processed
+		use pac_simple_labels;
+		simple_label_cursor	: pac_simple_labels.cursor; -- points to the simple label being processed
 
-		use type_tag_labels;
-		tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
+		use pac_tag_labels;
+		tag_label_cursor	: pac_tag_labels.cursor; -- points to the tag label being processed
 
 
 		procedure output_net_label_conflict is begin
@@ -406,7 +406,7 @@ is
 			--  - Mark anonymous strand as processed. This indicates that the strand has got a name (given by a label).
 			--    Non-Processed strands are those without a label.
 			--  - update/replace anonymous strand in anonymous_strands
-			while strand_cursor /= type_anonymous_strands.no_element loop -- cursor already reset on declaration (see above)
+			while strand_cursor /= pac_anonymous_strands.no_element loop -- cursor already reset on declaration (see above)
 				anon_strand_a := element (strand_cursor); -- get anonymous strand
 
 				--put_line(et_import.report_handle,"anonymous net #" & trim(count_type'image(n),left) & ": "); -- CS: log ?
@@ -414,7 +414,7 @@ is
 
 					-- reset segment cursor to begin of segment list of the anonymous net
 					segment_cursor := anon_strand_a.segments.first;
-					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
+					while segment_cursor /= pac_net_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
 						segment := anon_strand_a.segments (segment_cursor);
 						--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 
@@ -423,7 +423,7 @@ is
 							--put_line(" simple labels ..."); -- CS: log ?
 
 							simple_label_cursor := wild_simple_labels.first; -- reset label cursor
-							while simple_label_cursor /= type_simple_labels.no_element loop
+							while simple_label_cursor /= pac_simple_labels.no_element loop
 								ls := element (simple_label_cursor); -- get simple label
 
 								if not ls.processed then
@@ -488,13 +488,13 @@ is
 
 										-- mark simple label as processed and update/replace it in wild_simple_labels
 										ls.processed := true;
-										type_simple_labels.replace_element (
+										pac_simple_labels.replace_element (
 											container => wild_simple_labels,
 											position => simple_label_cursor,
 											new_item => ls);
 
 										-- Collect simple label (ls) in temporarily list of simple labels (lls).
-										type_simple_labels.append (lls, ls);
+										pac_simple_labels.append (lls, ls);
 
 										-- Mark anonymous strand as processed.
 										anon_strand_a.processed := true;
@@ -508,16 +508,16 @@ is
 							segment.label_list_simple := lls;
 
 							-- Update/replace segment in current anonymous strand.
-							type_net_segments.replace_element (
+							pac_net_segments.replace_element (
 								container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 								position => segment_cursor,
 								new_item => segment); -- the updated segment
 
 							-- Clean up: Purge temporarily list of simple labels for next spin.
-							type_simple_labels.clear (lls);
+							pac_simple_labels.clear (lls);
 
 							-- Update/replace anonymous net in anonymous_nets.
-							type_anonymous_strands.replace_element (
+							pac_anonymous_strands.replace_element (
 								container => anonymous_strands, -- the list of anonymous strands
 								position => strand_cursor,
 								new_item => anon_strand_a); -- the updated anonymous net
@@ -528,7 +528,7 @@ is
 							--put_line(" hierarchic and global labels ...");	 -- CS: log ?
 
 							tag_label_cursor := wild_tag_labels.first; -- reset label cursor
-							while tag_label_cursor /= type_tag_labels.no_element loop
+							while tag_label_cursor /= pac_tag_labels.no_element loop
 								lt := element (tag_label_cursor); -- get tag label
 
 								if not lt.processed then
@@ -603,13 +603,13 @@ is
 
 										-- mark tag label as processed and update/replace it in wild_tag_labels
 										lt.processed := true;
-										type_tag_labels.replace_element (
+										pac_tag_labels.replace_element (
 											container => wild_tag_labels,
 											position => tag_label_cursor,
 											new_item => lt);
 
 										-- Collect tag label (lt) in temporarily list of simple labels (llt).
-										type_tag_labels.append (llt, lt);
+										pac_tag_labels.append (llt, lt);
 
 										-- Mark anonymous net as processed.
 										anon_strand_a.processed := true;
@@ -623,16 +623,16 @@ is
 							segment.label_list_tag := llt;
 
 							-- Update/replace segment in current anonymous net.
-							type_net_segments.replace_element (
+							pac_net_segments.replace_element (
 								container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 								position => segment_cursor,
 								new_item => segment); -- the updated segment
 
 							-- Clean up: Purge temporarily list of tag labels for next spin.
-							type_tag_labels.clear (llt);
+							pac_tag_labels.clear (llt);
 
 							-- Update/replace anonymous net in anonymous_nets.
-							type_anonymous_strands.replace_element (
+							pac_anonymous_strands.replace_element (
 								container => anonymous_strands, -- the list of anonymous strands
 								position => strand_cursor,
 								new_item => anon_strand_a); -- the updated anonymous net
@@ -659,7 +659,7 @@ is
 			log_indentation_up;
 
 			strand_cursor := anonymous_strands.first; -- reset strand cursor
-			while strand_cursor /= type_anonymous_strands.no_element loop
+			while strand_cursor /= pac_anonymous_strands.no_element loop
 				anon_strand_a := element (strand_cursor);  -- get anonymous strand
 
 				if not anon_strand_a.processed then
@@ -679,9 +679,9 @@ is
 
 					-- fetch net segments from anonymous strand and append them to the new name-less strand:
 					segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
+					while segment_cursor /= pac_net_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 						segment := element (segment_cursor); -- get segment
-						type_net_segments.append (container => strand.segments, new_item => segment);
+						pac_net_segments.append (container => strand.segments, new_item => segment);
 
 						if log_level >= 2 then
 							--write_coordinates_of_segment (segment => segment);
@@ -703,7 +703,7 @@ is
 					log (text => "inserting strand in module ...", level => log_threshold + 2);
 					add_strand (strand);
 
-					type_net_segments.clear (strand.segments);
+					pac_net_segments.clear (strand.segments);
 				end if;
 
 				next (strand_cursor); -- advance strand cursor
@@ -718,7 +718,7 @@ is
 			log_indentation_up;
 
 			strand_cursor := anonymous_strands.first; -- reset strand cursor
-			while strand_cursor /= type_anonymous_strands.no_element loop
+			while strand_cursor /= pac_anonymous_strands.no_element loop
 				anon_strand_a := element (strand_cursor);  -- get a strand
 
 				if anon_strand_a.processed then -- it must have a name
@@ -733,9 +733,9 @@ is
 
 					-- fetch net segments from anonymous strand and append them to the new named strand:
 					segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
-					while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous_strand "a"
+					while segment_cursor /= pac_net_segments.no_element loop -- loop for each segment of anonymous_strand "a"
 						segment := element (segment_cursor); -- get segment
-						type_net_segments.append (container => strand.segments, new_item => segment);
+						pac_net_segments.append (container => strand.segments, new_item => segment);
 
 						if log_level >= 2 then
 							--write_coordinates_of_segment (segment => segment);
@@ -754,7 +754,7 @@ is
 					-- insert strand in module, then purge strand.segments for next spin
 					log (text => "inserting strand in module ...", level => log_threshold + 2);
 					add_strand (strand);
-					type_net_segments.clear (strand.segments);
+					pac_net_segments.clear (strand.segments);
 
 				end if;
 
@@ -785,8 +785,8 @@ is
 		segment : type_wild_net_segment;
 		junction : type_net_junction;
 
-		use type_junctions;
-		junction_cursor : type_junctions.cursor; -- points to the junction being processed
+		use pac_junctions;
+		junction_cursor : pac_junctions.cursor; -- points to the junction being processed
 
 		procedure change_segment_start_coordinates (segment : in out type_wild_net_segment) is
 		begin
@@ -795,8 +795,8 @@ is
 
 		segment_smashed : boolean := true; -- indicates whether a segment has been broken down
 
-		use type_wild_segments;
-		segment_cursor : type_wild_segments.cursor; -- points to the current segment
+		use pac_wild_segments;
+		segment_cursor : pac_wild_segments.cursor; -- points to the current segment
 
 	begin -- process_junctions
 		log_indentation_up;
@@ -814,17 +814,17 @@ is
 
 				segment_cursor := wild_segments.first;
 				loop_s :
-				while segment_cursor /= type_wild_segments.no_element loop
+				while segment_cursor /= pac_wild_segments.no_element loop
 
-					segment := type_wild_segments.element (segment_cursor); -- get a segment
+					segment := pac_wild_segments.element (segment_cursor); -- get a segment
 					log (text => "probing segment" & to_string (segment => segment, scope => xy), level => log_threshold);
 
 					-- loop in wild junction list until a junction has been found that sits on the segment
 					junction_cursor := wild_junctions.first; -- reset junction cursor to begin of junction list
-					while junction_cursor /= type_junctions.no_element loop
+					while junction_cursor /= pac_junctions.no_element loop
 
 						-- fetch junction from current cursor position
-						junction := type_junctions.element (junction_cursor);
+						junction := pac_junctions.element (junction_cursor);
 
 						if junction_sits_on_segment (junction, type_net_segment_base (segment)) then -- match
 
@@ -836,7 +836,7 @@ is
 							-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 							-- move start coord. of the current segment to the position of the junction
-							type_wild_segments.update_element (
+							pac_wild_segments.update_element (
 								container	=> wild_segments,
 								position	=> segment_cursor,
 								process		=> change_segment_start_coordinates'access
@@ -849,14 +849,14 @@ is
 							-- append junction to the segment:
 							-- NOTE: junctions may be appended twice if they sit on net crossings.
 							-- For this reason we first test if the junction has already been appended.
-							if not type_junctions.contains (segment.junctions, junction) then
-								type_junctions.append (
+							if not pac_junctions.contains (segment.junctions, junction) then
+								pac_junctions.append (
 									container	=> segment.junctions,
 									new_item	=> junction);
 							end if;
 
 							-- append new segment to list of wild segments
-							type_wild_segments.append (
+							pac_wild_segments.append (
 								container	=> wild_segments,
 								new_item	=> segment
 								);
@@ -872,10 +872,10 @@ is
 
 				-- Test if segment_count has increased. If yes, set segment_smashed flag so that the wild_segments
 				-- can be searched again. Otherwise clear segment_smashed -> end of procedure.
-				if type_wild_segments.length (wild_segments) > segment_count then
+				if pac_wild_segments.length (wild_segments) > segment_count then
 					segment_smashed := true;
 					-- update segment_count (should increment by 1)
-					segment_count := type_wild_segments.length (wild_segments);
+					segment_count := pac_wild_segments.length (wild_segments);
 				else
 					segment_smashed := false;
 				end if;
@@ -897,14 +897,14 @@ is
 		-- Afterward the anonymous strand is deleted. It is a list of net segments which must be purged so that the list
 		-- "anonymous_strand" can be filled with net segments of the next anonymous strand.
 		begin
-			type_anonymous_strands.append (anonymous_strands, anonymous_strand);
-			type_net_segments.clear (anonymous_strand.segments);
+			pac_anonymous_strands.append (anonymous_strands, anonymous_strand);
+			pac_net_segments.clear (anonymous_strand.segments);
 		end add_strand_to_anonymous_strands;
 
-		use type_wild_segments;
+		use pac_wild_segments;
 
 		-- primary and secondary segment cursors.
-		segment_cursor_a, segment_cursor_b : type_wild_segments.cursor;
+		segment_cursor_a, segment_cursor_b : pac_wild_segments.cursor;
 
 		-- node of the segment (end or start point)
 		side : type_segment_side;
@@ -927,7 +927,7 @@ is
 
 		-- CS: handle circlular strands, currently they cause a forever-loop here
 
-		segment_count := type_wild_segments.length (wild_segments); -- get number of segments on the current sheet
+		segment_count := pac_wild_segments.length (wild_segments); -- get number of segments on the current sheet
 
 		log (text => "processing" & count_type'image (segment_count) & " net segments ...", level => log_threshold);
 
@@ -953,12 +953,12 @@ is
 
 			-- The primary segment cursor advances once an anonymous stand is complete (when all connected segments have been found).
 			-- Each time a connected segment has been found, the secondary segment cursor points to that segment.
-			while segment_cursor_a /= type_wild_segments.no_element loop
+			while segment_cursor_a /= pac_wild_segments.no_element loop
 				segment_cursor_b := segment_cursor_a;
 
 				-- Already processed segments are skipped. (Processed segments have the "s" and "e" flag set.)
-				if not type_wild_segments.element (segment_cursor_b).s and
-					not type_wild_segments.element (segment_cursor_b).e then
+				if not pac_wild_segments.element (segment_cursor_b).s and
+					not pac_wild_segments.element (segment_cursor_b).e then
 
 					-- We initiate a new strand and start looking for a matching segment on the B:
 					--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":");
@@ -981,7 +981,7 @@ is
 						-- on the opposide of the segment.
 						search_result := search_for_same_coordinates (
 							segment_cursor	=> segment_cursor_b,
-							seg_in			=> type_wild_segments.element (segment_cursor_b),
+							seg_in			=> pac_wild_segments.element (segment_cursor_b),
 							side			=> side);
 
 						if search_result.valid then
@@ -990,12 +990,12 @@ is
 						else
 							-- Toggle side_scratch depending on the e/s flag of the segment:
 							-- D
-							if type_wild_segments.element (segment_cursor_b).e then
+							if pac_wild_segments.element (segment_cursor_b).e then
 								-- put_line(et_import.report_handle,"  --> D1"); -- CS: log ?
 								side := A;
 							end if;
 
-							if type_wild_segments.element (segment_cursor_b).s then
+							if pac_wild_segments.element (segment_cursor_b).s then
 								-- put_line(et_import.report_handle,"  --> D2"); -- CS: log ?
 								side := B;
 							end if;
@@ -1012,7 +1012,7 @@ is
 							-- as complete -> cancel loop, advance to next segment ...
 							search_result := search_for_same_coordinates (
 								segment_cursor	=> segment_cursor_b,
-								seg_in			=> type_wild_segments.element (segment_cursor_b),
+								seg_in			=> pac_wild_segments.element (segment_cursor_b),
 								side			=> side);
 
 							if search_result.valid then
@@ -1371,7 +1371,7 @@ is
 		sheet_name	: type_hierarchic_sheet_name; -- incl. file name and sheet name
 
 		port_inserted	: boolean; -- used to detect multiple ports with the same name
-		port_cursor		: type_hierarchic_sheet_ports.cursor; -- obligatory, but not read
+		port_cursor		: pac_hierarchic_sheet_ports.cursor; -- obligatory, but not read
 
 		use type_submodule_name;
 		use et_conventions;
@@ -1383,6 +1383,8 @@ is
 		function to_direction (dir_in : in string)
 			return et_kicad_libraries.type_port_direction
 		is
+			use et_kicad_libraries;
+
 			result : et_kicad_libraries.type_port_direction;
 			dir : type_sheet_port_direction; -- see et_kicad.ads
 		begin
@@ -1501,7 +1503,7 @@ is
 			-- Append sheet file name to hierarchic_sheet_file_names.
 			-- This list will be returned by this function (we are in read_schematic) to the calling
 			-- parent unit (import_design).
-			type_hierarchic_sheet_file_names.append (
+			pac_hierarchic_sheet_file_names.append (
 				container	=> hierarchic_sheet_file_names.sheets,
 				new_item	=> (
 								sheet		=> sheet_name, -- incl. file name and sheet name
@@ -1530,7 +1532,7 @@ is
 				log (text => "port " & strip_quotes (f (element (line_cursor),  2)), level => log_threshold + 2);
 
 				-- add port
-				type_hierarchic_sheet_ports.insert (
+				pac_hierarchic_sheet_ports.insert (
 					container => sheet.ports,
 					key => to_net_name (f (element (line_cursor),  2)), -- port name
 					new_item => (
@@ -1629,7 +1631,7 @@ is
 			-- The net segments are to be collected in a wild list of segments for later sorting.
 			log (text => "net segment" & to_string (segment => segment, scope => xy), level => log_threshold);
 
-			type_wild_segments.append (wild_segments, segment);
+			pac_wild_segments.append (wild_segments, segment);
 		else -- segment has zero length
 			log (SEVERITY_WARNING, get_affected_line (line) & "Net segment with zero length found -> ignored !");
 		end if; -- length
@@ -1675,7 +1677,7 @@ is
 		is
 			pragma unreferenced (module_name);
 		begin
-			type_junctions.append (
+			pac_junctions.append (
 				container	=> module.junctions,
 				new_item	=> junction);
 		end append_junction;
@@ -1694,7 +1696,7 @@ is
 		log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
 
 		-- add to wild list of junctions
-		type_junctions.append (wild_junctions, junction);
+		pac_junctions.append (wild_junctions, junction);
 
 		-- add to module.junctions
 		type_modules.update_element (
@@ -1773,7 +1775,7 @@ is
 		-- CS: check label line width
 
 		-- The simple labels are to be collected in a wild list of simple labels.
-		type_simple_labels.append (wild_simple_labels, label);
+		pac_simple_labels.append (wild_simple_labels, label);
 
 		--log_indentation_down;
 	end make_simple_label;
@@ -1858,7 +1860,7 @@ is
 		-- CS: check style and line width
 
 		-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-		type_tag_labels.append (wild_tag_labels, label);
+		pac_tag_labels.append (wild_tag_labels, label);
 
 		--log_indentation_down;
 	end make_tag_label;
@@ -2000,6 +2002,7 @@ is
 		log_threshold	: in type_log_level)
 	is
 		use et_package_name;
+		use et_kicad_libraries;
 	-- Builds a unit or a component and inserts it in the component list of
 	-- current module. The information required to make a component is provided
 	-- in parameter "lines".
@@ -2043,7 +2046,7 @@ is
 		-- V5:
 		component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
 
-		alternative_references		: type_alternative_references.list;
+		alternative_references		: pac_alternative_references.list;
 		unit_name					: et_unit_name.type_unit_name; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
 		orientation					: et_schematic_geometry.type_rotation_model;
@@ -2147,8 +2150,8 @@ is
 			-- AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1"
 			-- The line with prenultimate timestamp (59F17FDE) that matches the current_schematic.timestamp
 			-- dictates the new component reference (RPH1).
-				use type_alternative_references;
-				alt_ref_cursor : type_alternative_references.cursor := alternative_references.first;
+				use pac_alternative_references;
+				alt_ref_cursor : pac_alternative_references.cursor := alternative_references.first;
 				suitable_reference_found : boolean := false;
 
 
@@ -2175,9 +2178,9 @@ is
 
 			begin -- process_alternative_references
 				-- loop in list of alternative references and exit once a suitable one was found.
-				while alt_ref_cursor /= type_alternative_references.no_element loop
+				while alt_ref_cursor /= pac_alternative_references.no_element loop
 
-					type_alternative_references.query_element (
+					pac_alternative_references.query_element (
 						position	=> alt_ref_cursor,
 						process		=> query_path'access);
 
@@ -2212,7 +2215,7 @@ is
 					-- P 4100 4000
 					-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 
-				if type_alternative_references.is_empty (alternative_references) then -- no alternative references
+				if pac_alternative_references.is_empty (alternative_references) then -- no alternative references
 					log (text => "reference " & to_string (reference), level => log_threshold + 1);
 
 					if to_string (reference) /= content (field_reference) then
@@ -2467,7 +2470,7 @@ is
 		-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 		-- The assumption is that their prefix always starts with a hash character.
 			type_device_name is
-			use pac_device_prefix;
+--			use pac_device_prefix;
 			reference_out : type_device_name := reference; -- to be returned -- like PWR04
 		begin
 			--log (text => "renaming " & to_string (reference_out));
@@ -2553,7 +2556,7 @@ is
 								-- (lots of) warnings.
 
 							-- At this stage we do not know if and how many units there are. So the unit list is empty.
-							units			=> type_units_schematic.empty_map),
+							units			=> pac_units_schematic.empty_map),
 						log_threshold => log_threshold + 2);
 
 
@@ -2591,7 +2594,7 @@ is
 							text_placeholders	=> (others => <>),  -- placeholders for reference, value, purpose in the layout
 
 							-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
-							units => type_units_schematic.empty_map),
+							units => pac_units_schematic.empty_map),
 
 						log_threshold => log_threshold + 2);
 
@@ -2948,7 +2951,7 @@ is
 
 			-- Now all components of the alternative reference are ready.
 			-- Append the new alternative reference to list alternative_references:
-			type_alternative_references.append (
+			pac_alternative_references.append (
 				container	=> alternative_references,
 				new_item	=> (
 								path		=> alt_ref_path,
@@ -3226,7 +3229,7 @@ is
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is
 			pragma unreferenced (module_name);
-			use type_no_connection_flags;
+			use pac_no_connection_flags;
 		begin
 			append (
 				container => module.no_connections,
