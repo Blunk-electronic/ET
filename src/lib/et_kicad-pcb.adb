@@ -550,7 +550,7 @@ package body et_kicad.pcb is
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
 		package_description	: et_package_description.type_package_description; -- temp. storage of package description
-		package_tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
+		package_tags		: pac_package_tags.bounded_string; -- temp. storage of package keywords
 
 		package_line		: et_kicad_packages.type_line;
 		package_arc			: et_kicad_packages.type_arc;
@@ -5685,20 +5685,20 @@ package body et_kicad.pcb is
 		library_name : type_package_model_name;
 		package_name : type_package_name;
 
-		use type_libraries;
+		use pac_libraries;
 
 		terminals : natural; -- to be returned
-		library_cursor : type_libraries.cursor; -- points to the library
+		library_cursor : pac_libraries.cursor; -- points to the library
 
 
 		procedure locate_package (
 			library_name	: in type_package_model_name;
-			packages		: in type_packages_library.map)
+			packages		: in pac_packages_library.map)
 		is
 			pragma unreferenced (library_name);
 			use et_terminals.pac_terminals;
-			use type_packages_library;
-			package_cursor : type_packages_library.cursor;
+			use pac_packages_library;
+			package_cursor : pac_packages_library.cursor;
 		begin
 			-- locate the package
 			package_cursor := packages.find (package_name);
@@ -5714,14 +5714,14 @@ package body et_kicad.pcb is
 		library_name := to_package_model_name (ada.directories.containing_directory (to_string (packge))); -- ../lbr/bel_ic.pretty
 
 		-- locate the library
-		library_cursor := type_libraries.find (package_libraries, library_name);
+		library_cursor := pac_libraries.find (package_libraries, library_name);
 
-		if library_cursor = type_libraries.no_element then
+		if library_cursor = pac_libraries.no_element then
 			log (SEVERITY_ERROR, to_string (library_name) & " not found !", console => true);
 			raise constraint_error;
 		else
 			-- query packages in library
-			type_libraries.query_element (library_cursor, locate_package'access);
+			pac_libraries.query_element (library_cursor, locate_package'access);
 		end if;
 
 		return terminals;
