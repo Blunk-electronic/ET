@@ -81,12 +81,6 @@ package et_assy_doc is
 	subtype type_doc_line_cursor	is pac_doc_lines.cursor;
 
 
-	-- Iterates the lines.
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		lines	: in type_doc_line_list;
-		process	: not null access procedure (position : in type_doc_line_cursor);
-		proceed	: not null access boolean);
 
 	-- CS likewise iteratator for circles
 
@@ -138,14 +132,6 @@ package et_assy_doc is
 
 	subtype type_doc_arc_list	is pac_doc_arcs.list;
 	subtype type_doc_arc_cursor	is pac_doc_arcs.cursor;
-
-
-	-- Iterates the arcs
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		arcs	: in type_doc_arc_list;
-		process	: not null access procedure (position : in type_doc_arc_cursor);
-		proceed	: not null access boolean);
 
 
 
@@ -291,15 +277,6 @@ package et_assy_doc is
 	function to_string (
 		text : in pac_doc_texts.cursor)
 		return string;
-
-
-	-- Iterates the texts.
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		texts	: in pac_doc_texts.list;
-		process	: not null access procedure (position : in pac_doc_texts.cursor);
-		proceed	: not null access boolean);
-
 
 
 	-- Mirrors a list of texts along the given axis:

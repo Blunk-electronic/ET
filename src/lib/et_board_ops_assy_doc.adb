@@ -39,6 +39,8 @@
 
 -- with ada.text_io;			use ada.text_io;
 with ada.containers.doubly_linked_lists;
+
+with et_help_doubly_linked_lists;
 with et_string_processing;				use et_string_processing;
 with et_text_content;
 with et_pcb_placeholders;
@@ -439,13 +441,15 @@ package body et_board_ops_assy_doc is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			proceed : aliased boolean := true;
 
 			top_items		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
 			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
 
-			procedure query_line (c : in pac_doc_lines.cursor) is begin
+			procedure query_line (c : in pac_doc_lines.cursor; proceed : out boolean) is
+			begin
+				proceed := true;
+
 				case flag is
 					when PROPOSED =>
 						if is_proposed (c) then
@@ -464,16 +468,20 @@ package body et_board_ops_assy_doc is
 				end case;
 			end query_line;
 
+			procedure iterate_query_line is
+			new et_help_doubly_linked_lists.iterate_with_proceed (
+				pac_list	=> pac_doc_lines,
+				process		=> query_line);
 
-
+			proceed : boolean;
 		begin
 			-- Query the lines in the top layer first:
-			iterate (top_items, query_line'access, proceed'access);
+			iterate_query_line (top_items, proceed);
 			result.face := top;
 
 			-- If nothing found, then query the bottom layer:
 			if proceed then
-				iterate (bottom_items, query_line'access, proceed'access);
+				iterate_query_line (bottom_items, proceed);
 				result.face := bottom;
 			end if;
 
@@ -1118,13 +1126,15 @@ package body et_board_ops_assy_doc is
 			module		: in type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			proceed : aliased boolean := true;
 
 			top_items		: pac_doc_arcs.list renames module.board.assy_doc.top.arcs;
 			bottom_items	: pac_doc_arcs.list renames module.board.assy_doc.bottom.arcs;
 
 
-			procedure query_arc (c : in pac_doc_arcs.cursor) is begin
+			procedure query_arc (c : in pac_doc_arcs.cursor; proceed : out boolean) is
+			begin
+				proceed := true;
+
 				case flag is
 					when PROPOSED =>
 						if is_proposed (c) then
@@ -1144,15 +1154,20 @@ package body et_board_ops_assy_doc is
 			end query_arc;
 
 
+			procedure iterate_query_arc is
+			new et_help_doubly_linked_lists.iterate_with_proceed (
+				pac_list	=> pac_doc_arcs,
+				process		=> query_arc);
 
+			proceed : boolean;
 		begin
 			-- Query the arcs in the top layer first:
-			iterate (top_items, query_arc'access, proceed'access);
+			iterate_query_arc (top_items, proceed);
 			result.face := top;
 
 			-- If nothing found, then query the bottom layer:
 			if proceed then
-				iterate (bottom_items, query_arc'access, proceed'access);
+				iterate_query_arc (bottom_items, proceed);
 				result.face := bottom;
 			end if;
 
@@ -2818,13 +2833,14 @@ package body et_board_ops_assy_doc is
 			pragma unreferenced (module_name);
 			use pac_doc_texts;
 
-			proceed : aliased boolean := true;
-
 			top_items		: pac_doc_texts.list renames module.board.assy_doc.top.texts;
 			bottom_items	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
 
 
-			procedure query_text (c : in pac_doc_texts.cursor) is begin
+			procedure query_text (c : in pac_doc_texts.cursor; proceed : out boolean) is
+			begin
+				proceed := true;
+
 				case flag is
 					when PROPOSED =>
 						if is_proposed (c) then
@@ -2843,15 +2859,20 @@ package body et_board_ops_assy_doc is
 				end case;
 			end query_text;
 
+			procedure iterate_query_text is
+			new et_help_doubly_linked_lists.iterate_with_proceed (
+				pac_list	=> pac_doc_texts,
+				process		=> query_text);
 
+			proceed : boolean;
 		begin
 			-- Query the texts in the top layer first:
-			iterate (top_items, query_text'access, proceed'access);
+			iterate_query_text (top_items, proceed);
 			result.face := top;
 
 			-- If nothing found, then query the bottom layer:
 			if proceed then
-				iterate (bottom_items, query_text'access, proceed'access);
+				iterate_query_text (bottom_items, proceed);
 				result.face := bottom;
 			end if;
 
