@@ -51,19 +51,19 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 package body et_kicad_coordinates is
 
 
-	function to_string (schematic : in type_schematic_file_name.bounded_string)
+	function to_string (schematic : in pac_schematic_file_name.bounded_string)
 		return string
-	is (type_schematic_file_name.to_string (schematic));
+	is (pac_schematic_file_name.to_string (schematic));
 
 
 	function to_schematic_file_name (file : in string)
-		return type_schematic_file_name.bounded_string
-	is (type_schematic_file_name.to_bounded_string (file));
+		return pac_schematic_file_name.bounded_string
+	is (pac_schematic_file_name.to_bounded_string (file));
 
 
 	procedure check_submodule_name_characters (
 	-- Checks for forbidden characters in submodule name.
-		name		: in type_submodule_name.bounded_string;
+		name		: in pac_submodule_name.bounded_string;
 		characters	: in character_set := submodule_name_characters) is
 		invalid_character_position : natural := 0;
 	begin
@@ -82,15 +82,15 @@ package body et_kicad_coordinates is
 
 
 	function to_string (
-		path		: in type_path_to_submodule.list;
+		path		: in pac_path_to_submodule.list;
 		top_module	: in boolean := true) return string is
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
 
-		use type_path_to_submodule;
+		use pac_path_to_submodule;
 		use ada.strings.unbounded;
 
-		submodule : type_path_to_submodule.cursor := path.first;
+		submodule : pac_path_to_submodule.cursor := path.first;
 		result : unbounded_string;
 	begin
 		-- If top_module is false, advance cursor right to next module.
@@ -102,7 +102,7 @@ package body et_kicad_coordinates is
 			result := to_unbounded_string (hierarchy_separator);
 		else
 			-- Loop through list of submodules and collect their names in "result".
-			while submodule /= type_path_to_submodule.no_element loop
+			while submodule /= pac_path_to_submodule.no_element loop
 				result := result & hierarchy_separator
 					& to_unbounded_string (to_string (element (submodule)));
 --					& hierarchy_separator;
@@ -178,13 +178,13 @@ package body et_kicad_coordinates is
 
 
 	function path (position : in type_position)
-		return type_path_to_submodule.list
+		return pac_path_to_submodule.list
 	is (position.path);
 
 
 	procedure set_path (
 		position	: in out type_position;
-		path		: in type_path_to_submodule.list) is
+		path		: in pac_path_to_submodule.list) is
 	begin
 		-- Sets the path in given position.
 		position.path := path;
@@ -205,7 +205,7 @@ package body et_kicad_coordinates is
 --
 --	procedure check_submodule_name_characters (
 --	-- Checks for forbidden characters in submodule name.
---		name : in type_submodule_name.bounded_string;
+--		name : in pac_submodule_name.bounded_string;
 --		characters : in character_set := submodule_name_characters) is
 --		use et_string_processing;
 --		invalid_character_position : natural := 0;
@@ -226,29 +226,29 @@ package body et_kicad_coordinates is
 --		end if;
 --	end check_submodule_name_characters;
 
-	function to_string (submodule : in type_submodule_name.bounded_string) return string is
+	function to_string (submodule : in pac_submodule_name.bounded_string) return string is
 	-- Returns the given submodule name as string.
 	begin
-		return type_submodule_name.to_string (submodule);
+		return pac_submodule_name.to_string (submodule);
 	end to_string;
 
-	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
-	-- Converts a string to type_submodule_name.
+	function to_submodule_name (submodule : in string) return pac_submodule_name.bounded_string is
+	-- Converts a string to pac_submodule_name.
 	begin
-		return type_submodule_name.to_bounded_string (submodule);
+		return pac_submodule_name.to_bounded_string (submodule);
 	end to_submodule_name;
 
 
 --	function to_string (
---		path : in type_path_to_submodule.list;
+--		path : in pac_path_to_submodule.list;
 --		top_module : in boolean := true) return string is
 --	-- Returns the given path as string with hierarchy_separator.
 --	-- If top_module = false, the name of the top module is omitted.
 --
---		use type_path_to_submodule;
+--		use pac_path_to_submodule;
 --		use ada.strings.unbounded;
 --
---		submodule : type_path_to_submodule.cursor := path.first;
+--		submodule : pac_path_to_submodule.cursor := path.first;
 --		result : unbounded_string;
 --	begin
 --		-- If top_module is false, advance cursor right to next module.
@@ -260,7 +260,7 @@ package body et_kicad_coordinates is
 --			result := to_unbounded_string (hierarchy_separator);
 --		else
 --			-- Loop through list of submodules and collect their names in "result".
---			while submodule /= type_path_to_submodule.no_element loop
+--			while submodule /= pac_path_to_submodule.no_element loop
 --				result := result & hierarchy_separator
 --					& to_unbounded_string (to_string (element (submodule)));
 -- --					& hierarchy_separator;
@@ -342,7 +342,7 @@ package body et_kicad_coordinates is
 	function same_path_and_sheet (left, right : in type_position) return boolean is
 	-- Returns true if the given coordinates have same path and sheet.
 		same : boolean := false;
-		use type_path_to_submodule;
+		use pac_path_to_submodule;
 	begin
 		-- We compare path and sheet. x/y are ignored
 		if path (left) = path (right) then

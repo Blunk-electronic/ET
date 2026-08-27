@@ -77,15 +77,15 @@ package body et_kicad_packages is
 	use pac_holes;
 
 
-	function to_string (tags : in type_package_tags.bounded_string)
+	function to_string (tags : in type_package_tag_string)
 		return string
-	is ("tags '" & type_package_tags.to_string (tags) & "'");
+	is ("tags '" & pac_package_tags.to_string (tags) & "'");
 
 
 
 	function to_package_tags (tags : in string)
-		return type_package_tags.bounded_string
-	is (type_package_tags.to_bounded_string (tags));
+		return type_package_tag_string
+	is (pac_package_tags.to_bounded_string (tags));
 
 
 
@@ -505,7 +505,7 @@ package body et_kicad_packages is
 			);
 
 		argument_length_max : constant positive := 200; -- CS: could become an issue if long URLs used ...
-		package type_argument is new generic_bounded_length (argument_length_max);
+		package pac_argument is new generic_bounded_length (argument_length_max);
 
 		-- After a section name, arguments follow. For each section arguments are counted:
 		type type_argument_counter is range 0 .. 3;
@@ -567,7 +567,7 @@ package body et_kicad_packages is
 
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		description	: type_package_description; -- temp. storage of package description
-		tags		: type_package_tags.bounded_string; -- temp. storage of package keywords
+		tags		: type_package_tag_string; -- temp. storage of package keywords
 
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology : type_assembly_technology := THT;
@@ -734,9 +734,11 @@ package body et_kicad_packages is
 		-- if neccessary.
 		-- The character_cursor points to the character being tested or processed in that line.
 		line_length_max : constant positive := 300;
-		package type_current_line is new generic_bounded_length (line_length_max);
-		use type_current_line;
-		current_line : type_current_line.bounded_string;
+		package pac_current_line is new generic_bounded_length (line_length_max);
+		use pac_current_line;
+--		subtype type_current_line_string is pac_current_line.bounded_string;
+
+		current_line : pac_current_line.bounded_string;
 		character_cursor : natural;
 
 		procedure get_next_line is
@@ -747,7 +749,7 @@ package body et_kicad_packages is
 
 				-- Since a single line in container "lines" (where line_cursor points to) is a list
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
-				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+				current_line := pac_current_line.to_bounded_string (to_string (element (line_cursor)));
 				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
@@ -894,10 +896,10 @@ package body et_kicad_packages is
 		procedure read_arg is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
-			use type_argument;
+			use pac_argument;
 			use et_pcb_sides;
 
-			arg : type_argument.bounded_string; -- here the argument goes temporarily
+			arg : pac_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
 				log (SEVERITY_ERROR, "invalid layer " & to_string (arg), console => true);
@@ -2465,11 +2467,11 @@ package body et_kicad_packages is
 		sections_stack.init;
 
 		-- get first line
-		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+		current_line := pac_current_line.to_bounded_string (to_string (element (line_cursor)));
 		log (text => "line " & to_string (current_line), level => log_threshold + 4);
 
 		-- get position of first opening bracket
-		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
+		character_cursor := pac_current_line.index (current_line, 1 * opening_bracket);
 
 		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 
@@ -2635,8 +2637,8 @@ package body et_kicad_packages is
 		-- V4 RELATED ------------------------------------------------------------------------------------------
 		-- The directory search lists have been created on reading the project file.
 		-- Set lib_dir_cursor to first directory.
-		use type_project_lib_dirs;
-		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
+		use pac_project_lib_dirs;
+		lib_dir_cursor : pac_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
 
 		-- backup the directory of origin
 		origin_directory : constant type_directory_name :=
@@ -2654,15 +2656,15 @@ package body et_kicad_packages is
 		--------------------------------------------------------------------------------------------------------
 
 		-- The library_cursor points to the library in the container package_libraries.
-		use type_libraries;
-		library_cursor : type_libraries.cursor;
+		use pac_libraries;
+		library_cursor : pac_libraries.cursor;
 
 
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 		procedure read_packages (
 			library_name	: in type_package_model_name;
-			packages		: in out type_packages_library.map)
+			packages		: in out pac_packages_library.map)
 		is
 			package_names : pac_directory_entries.list;
 			package_name_cursor : pac_directory_entries.cursor;
@@ -2723,7 +2725,7 @@ package body et_kicad_packages is
 
 				-- From the collected lines the package model can be built and inserted in the
 				-- package list right away:
-				type_packages_library.insert (
+				pac_packages_library.insert (
 					container	=> packages,
 					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
@@ -2762,7 +2764,7 @@ package body et_kicad_packages is
 			when KICAD_V4 =>
 
 				-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
-				while lib_dir_cursor /= type_project_lib_dirs.no_element loop
+				while lib_dir_cursor /= pac_project_lib_dirs.no_element loop
 
 					log (text => "in directory " & to_string (element (lib_dir_cursor)), level => log_threshold + 1);
 
@@ -2789,14 +2791,14 @@ package body et_kicad_packages is
 							log (text => "reading " & element (library_name_cursor) & " ...", level => log_threshold + 2);
 
 							-- create the (empty) library in container package_libraries
-							type_libraries.insert (
+							pac_libraries.insert (
 								container	=> package_libraries,
 								key			=> to_package_model_name (compose ( -- ../lbr/tht_packages/plcc.pretty
 										containing_directory	=> to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
 								inserted	=> library_inserted,
 								position	=> library_cursor,
-								new_item	=> type_packages_library.empty_map);
+								new_item	=> pac_packages_library.empty_map);
 
 							-- If library has been created already (by import of other project) then there
 							-- is no need to read it again.
@@ -2808,7 +2810,7 @@ package body et_kicad_packages is
 
 								-- Read the library contents and store them in package_libraries where
 								-- library_cursor is pointing to:
-								type_libraries.update_element (
+								pac_libraries.update_element (
 									container	=> package_libraries,
 									position	=> library_cursor,
 									process		=> read_packages'access);
@@ -2835,11 +2837,11 @@ package body et_kicad_packages is
 				-- Loop in list package_libraries and fill one library after another:
 				library_cursor := package_libraries.first;
 
-				while library_cursor /= type_libraries.no_element loop
+				while library_cursor /= pac_libraries.no_element loop
 					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
 					set_directory (to_string (key (library_cursor)));
 
-					type_libraries.update_element (
+					pac_libraries.update_element (
 						container	=> package_libraries,
 						position	=> library_cursor,
 						process		=> read_packages'access);

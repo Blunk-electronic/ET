@@ -98,30 +98,30 @@ package et_kicad_general is
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 
 	-- For storing BARE library names like "bel_primitives" we use this bounded string:
-	package type_library_name is new generic_bounded_length (library_name_length_max);
+	package pac_library_name is new generic_bounded_length (library_name_length_max);
 
-	function to_library_name (library_name : in string) return type_library_name.bounded_string;
-	-- converts a string to a type_library_name
+	function to_library_name (library_name : in string) return pac_library_name.bounded_string;
+	-- converts a string to a pac_library_name
 
-	-- CS: for type_library_name: character set, check characters, check length
+	-- CS: for pac_library_name: character set, check characters, check length
 
-	function to_string (library_name : in type_library_name.bounded_string) return string;
+	function to_string (library_name : in pac_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 
 
 
 	-- Libraries are stored in directories:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+	package pac_library_directory is new generic_bounded_length (library_directory_length_max);
 
-	function to_string (dir : in type_library_directory.bounded_string) return string;
+	function to_string (dir : in pac_library_directory.bounded_string) return string;
 
 	-- Search list for library directories.
 	-- This list applies for both component and package search operations.
-	package type_project_lib_dirs is new doubly_linked_lists (
-		element_type	=> type_library_directory.bounded_string,
-		"="			=> type_library_directory."=");
-	search_list_project_lib_dirs : type_project_lib_dirs.list;
+	package pac_project_lib_dirs is new doubly_linked_lists (
+		element_type	=> pac_library_directory.bounded_string,
+		"="			=> pac_library_directory."=");
+	search_list_project_lib_dirs : pac_project_lib_dirs.list;
 
 
 

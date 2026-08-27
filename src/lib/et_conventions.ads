@@ -82,7 +82,7 @@ package et_conventions is
 --	-- Example: nucleo_core NCC kicad_v4 1
 --	-- We collect these modules in a simple list because the order must be kept.
 --	type type_import_module is record
---		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
+--		name		: et_coordinates.pac_submodule_name.bounded_string; -- MOTOR_DRIVER
 --		abbreviation	: et_coordinates.type_submodule_abbreviation.bounded_string; -- MOT
 --		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
 --		instances	: et_coordinates.type_submodule_instance; -- 4
@@ -189,7 +189,7 @@ package et_conventions is
 
 
 -- 	function ports_in_net (
--- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		module 			: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in type_log_level)
@@ -199,7 +199,7 @@ package et_conventions is
 
 -- 	-- Handling routing information requires this type:
 -- 	type type_net is record
--- 		module	: et_schematic_coordinates.type_submodule_name.bounded_string;
+-- 		module	: et_schematic_coordinates.pac_submodule_name.bounded_string;
 -- 		net		: et_schematic.type_net_name;
 -- 	end record;
 --
@@ -266,12 +266,12 @@ package et_conventions is
 
 
 	-- Component categories that requires operator interaction are stored in a set.
-	package type_categories_with_operator_interacton is new ordered_sets (
+	package pac_categories_with_operator_interacton is new ordered_sets (
 		element_type => type_device_category);
 
 
 	-- After reading the conventions, we store them here:
-	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
+	component_categories_with_operator_interaction : pac_categories_with_operator_interacton.set;
 
 
 
@@ -306,14 +306,14 @@ package et_conventions is
 
 
 	-- Text sizes of various categories are collected in a map:
-	package type_text_sizes_schematic is new ordered_maps (
+	package pac_text_sizes_schematic is new ordered_maps (
 		key_type		=> type_text_schematic,
 		element_type	=> et_schematic_geometry.pac_geometry_2.type_distance_positive,
 		"="				=> et_schematic_geometry."=");
 
 
 	-- After reading the conventions file, text sizes are collected here:
-	text_sizes_schematic : type_text_sizes_schematic.map;
+	text_sizes_schematic : pac_text_sizes_schematic.map;
 
 
 	-- returns the given text type as string.
@@ -342,22 +342,22 @@ package et_conventions is
 
 	partcode_keyword_length_max : constant positive := 5;
 	partcode_keyword_characters : character_set := to_set (span => ('A', 'Z'));
-	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
+	package pac_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
 
 	partcode_keyword_argument_lenght_max : constant positive := 10;
-	package type_partcode_keyword_argument is new generic_bounded_length (partcode_keyword_argument_lenght_max);
+	package pac_partcode_keyword_argument is new generic_bounded_length (partcode_keyword_argument_lenght_max);
 
 
-	-- Converts a string to a type_partcode_keyword_argument.
-	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string;
+	-- Converts a string to a pac_partcode_keyword_argument.
+	function to_partcode_keyword_argument (argument : in string) return pac_partcode_keyword_argument.bounded_string;
 
 
-	-- Converts a type_partcode_keyword_argument to a string.
-	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string;
+	-- Converts a pac_partcode_keyword_argument to a string.
+	function to_string (argument : in pac_partcode_keyword_argument.bounded_string) return string;
 
 
-	-- Converts a type_partcode_keyword to a string.
-	function to_string (keyword : in type_partcode_keyword.bounded_string) return string;
+	-- Converts a pac_partcode_keyword to a string.
+	function to_string (keyword : in pac_partcode_keyword.bounded_string) return string;
 
 
 	-- Tests if the given partcode keyword is longer than allowed.
@@ -368,24 +368,24 @@ package et_conventions is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 	procedure check_partcode_keyword_characters (
-		keyword		: in type_partcode_keyword.bounded_string;
+		keyword		: in pac_partcode_keyword.bounded_string;
 		characters	: in character_set := partcode_keyword_characters);
 
 
 	-- Checks whehter given keyword is specified in
 	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
-	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string);
+	procedure validate_partcode_keyword (keyword : in pac_partcode_keyword.bounded_string);
 
 
-	-- Converts a string to a type_partcode_keyword.
-	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string;
+	-- Converts a string to a pac_partcode_keyword.
+	function to_partcode_keyword (keyword : in string) return pac_partcode_keyword.bounded_string;
 
 
-	package type_partcode_keywords is new ordered_maps (
-		key_type => type_partcode_keyword.bounded_string, -- VMAX, PMAX, TOL
+	package pac_partcode_keywords is new ordered_maps (
+		key_type => pac_partcode_keyword.bounded_string, -- VMAX, PMAX, TOL
 		element_type => type_partcode_section, -- MAXIMUM_VOLTAGE, MAXIMUM_POWER, ...
-		"<" => type_partcode_keyword."<");
+		"<" => pac_partcode_keyword."<");
 
 	partcode_keyword_separator : constant character := '_';
 
@@ -397,7 +397,7 @@ package et_conventions is
 	-- Converts a type_partcode_section to a string:
 	function to_string (partcode_section : in type_partcode_section) return string;
 
-	partcode_keywords : type_partcode_keywords.map;
+	partcode_keywords : pac_partcode_keywords.map;
 
 	-- Returns true if any part code keywords are specified via conventions file.
 	function partcode_keywords_specified return boolean;

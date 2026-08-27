@@ -58,12 +58,14 @@ package et_material is
 
 	-- Whenever we deal with BOM files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
-	package type_file_name is new generic_bounded_length (file_name_length_max);
+	package pac_file_name is new generic_bounded_length (file_name_length_max);
+
+	subtype type_file_name is pac_file_name.bounded_string;
 
 	extension_bom : constant string := "csv";
 
-	function to_string (name : in type_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return type_file_name.bounded_string;
+	function to_string (name : in type_file_name) return string;
+	function to_file_name (name : in string) return type_file_name;
 
 	type type_bom_device is record
 		value		: type_device_value;	-- 7400

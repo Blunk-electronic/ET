@@ -289,10 +289,11 @@ package body et_string_processing is
 		text_scratch : constant string (1 .. text_in'length) := text_in;
 
 		universal_string_length_max	: constant natural := 1000;
-		package type_universal_string is new generic_bounded_length (universal_string_length_max);
-		use type_universal_string;
+		package pac_universal_string is new generic_bounded_length (universal_string_length_max);
+		use pac_universal_string;
+		subtype type_universal_string is pac_universal_string.bounded_string;
 
-		s : type_universal_string.bounded_string; -- CS: might be not sufficient ! use type_long_string instead
+		s : type_universal_string; -- CS: might be not sufficient ! use type_long_string instead
 
 		l : constant natural := text_scratch'length;
 		sc : natural := natural'first;

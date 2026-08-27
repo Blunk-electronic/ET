@@ -98,11 +98,11 @@ package body et_conventions is
 --		raise constraint_error;
 --	end to_submodule;
 
---	function to_abbreviation (module_name : in et_schematic_coordinates_2.type_submodule_name.bounded_string)
+--	function to_abbreviation (module_name : in et_schematic_coordinates_2.pac_submodule_name.bounded_string)
 --		return et_schematic_coordinates_2.type_submodule_abbreviation.bounded_string is
 --	-- Looks up the container import_modules for the given module name and returns the abbreviation.
 --	-- Raises alarm if no submodule could be found -> modue name invalid.
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use type_import_modules;
 --		module_cursor : type_import_modules.cursor := import_modules.first;
 --	begin
@@ -128,7 +128,7 @@ package body et_conventions is
 --		module_A, module_B : type_import_module;
 --
 --		procedure instance_invalid (
---			name : type_submodule_name.bounded_string;
+--			name : pac_submodule_name.bounded_string;
 --			instance_is, instance_max : type_submodule_instance) is
 --		begin
 --			log_indentation_reset;
@@ -157,7 +157,7 @@ package body et_conventions is
 --	-- Returns the reference (like X4) of the connector in the given generic module with
 --	-- given instance with the given purpose.
 --	-- Raises error if connector could be found.
---		generic_module_name	: in et_schematic_coordinates_2.type_submodule_name.bounded_string;		-- led_matrix
+--		generic_module_name	: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;		-- led_matrix
 --		instance			: in et_schematic_coordinates_2.type_submodule_instance;				-- 1
 --		purpose				: in et_libraries.type_component_purpose.bounded_string;	-- "PWR CTRL IN"
 --		log_threshold		: in type_log_level)
@@ -175,7 +175,7 @@ package body et_conventions is
 --		procedure locate_component (
 --		-- Searches the component list of the module for a connector with the given purpose.
 --		-- Exits on the first matching connector. There should not be any others.
---			module_name	: in type_submodule_name.bounded_string;
+--			module_name	: in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_components_schematic;
 --			use type_component_purpose;
@@ -226,7 +226,7 @@ package body et_conventions is
 --			log_indentation_down;
 --		end locate_component;
 --
---		use type_submodule_name;
+--		use pac_submodule_name;
 --
 --	begin -- to_connector_reference
 --		log ("locating module " & to_string (generic_module_name) & " in rig ...", log_threshold);
@@ -263,17 +263,17 @@ package body et_conventions is
 --	-- Compares the number of terminals of the given connectors.
 --	-- Raises error if numbers differ.
 --	-- CS: verificaton required
---		module_A		: in et_schematic_coordinates_2.type_submodule_name.bounded_string; -- generic name like nucleo_core
+--		module_A		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string; -- generic name like nucleo_core
 --		instance_A		: in et_schematic_coordinates_2.type_submodule_instance;			-- 1
 --		reference_A		: in et_libraries.type_device_name;				-- X46
---		module_B		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- generic name like motor_driver
+--		module_B		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- generic name like motor_driver
 --		instance_B		: in et_schematic_coordinates_2.type_submodule_instance;			-- 4
 --		reference_B		: in et_libraries.type_device_name;				-- X701
 --		log_threshold	: in type_log_level) is
 --
 --		use et_schematic_coordinates_2;
 --		--use et_schematic;
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use et_libraries;
 --		use et_kicad.type_rig;
 --
@@ -282,7 +282,7 @@ package body et_conventions is
 --		terminal_count_A, terminal_count_B : et_libraries.type_terminal_count;
 --
 --		procedure module_not_found (
---			name		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;
+--			name		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;
 --			instance	: in et_schematic_coordinates_2.type_submodule_instance) is
 --		begin
 --			log_indentation_reset;
@@ -392,10 +392,10 @@ package body et_conventions is
 --	-- CS: There could be a time saving approach via the portlists of the modules. The connectors
 --	-- ports and terminals could be tested for connected nets and compared ...
 --
---		module_A		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- nucleo_core
+--		module_A		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- nucleo_core
 --		instance_A		: in et_schematic_coordinates_2.type_submodule_instance;			-- 1
 --		reference_A		: in et_libraries.type_device_name;				-- X1
---		module_B		: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- motor_driver
+--		module_B		: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- motor_driver
 --		instance_B		: in et_schematic_coordinates_2.type_submodule_instance;			-- 4
 --		reference_B		: in et_libraries.type_device_name;				-- X701
 --		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
@@ -411,9 +411,9 @@ package body et_conventions is
 -- 		port_right, port_left : et_kicad.type_port_with_reference;	-- 4
 -- 		terminal_right, terminal_left : type_terminal;		-- 4, B3
 --
---		module_right : type_submodule_name.bounded_string := module_A;	-- nucleo_core
---		module_left : type_submodule_name.bounded_string := module_B;	-- motor_driver
---		module_swap : type_submodule_name.bounded_string;
+--		module_right : pac_submodule_name.bounded_string := module_A;	-- nucleo_core
+--		module_left : pac_submodule_name.bounded_string := module_B;	-- motor_driver
+--		module_swap : pac_submodule_name.bounded_string;
 --
 --		instance_right : type_submodule_instance := instance_A; -- 1
 --		instance_left : type_submodule_instance := instance_B; -- 4
@@ -424,7 +424,7 @@ package body et_conventions is
 --		reference_swap : type_device_name;
 --
 --		procedure query_nets_left (
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_netlist;
 --			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
@@ -530,7 +530,7 @@ package body et_conventions is
 --		end query_nets_left;
 --
 --		procedure query_nets_right (
---			module_name : in type_submodule_name.bounded_string;
+--			module_name : in pac_submodule_name.bounded_string;
 --			module		: in et_kicad.type_module) is
 --			use et_kicad.type_netlist;
 --			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
@@ -593,7 +593,7 @@ package body et_conventions is
 --
 --
 --		procedure set_module_cursors is
---			use type_submodule_name;
+--			use pac_submodule_name;
 --		begin
 --			log ("module right " & to_string (module_right)
 --				& " instance " & et_schematic_coordinates_2.to_string (instance_right)
@@ -829,7 +829,7 @@ package body et_conventions is
 
 
 -- 	function ports_in_net (
--- 		module 			: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		module 			: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in type_log_level)
@@ -912,7 +912,7 @@ package body et_conventions is
 --		separator	: in character := '.') return string is
 --		-- Returns the given net as string. In a form like "led_matrix.master_clock"
 --
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use et_schematic.pac_net_name;
 --	begin
 --		if length (net.module) = 0 or length (net.net) = 0 then
@@ -928,14 +928,14 @@ package body et_conventions is
 --	-- in section MODULE_INTERCONNECTIONS.
 --	-- Returns true if the given reference in given module is part of any module interconnection.
 --	-- NOTE: The given module name is the GENERIC name of the module.
---		module			: in et_schematic_coordinates_2.type_submodule_name.bounded_string;	-- nucleo_core, led_matrix
+--		module			: in et_schematic_coordinates_2.pac_submodule_name.bounded_string;	-- nucleo_core, led_matrix
 --		instance		: in et_schematic_coordinates_2.type_submodule_instance;			-- 2
 --		reference		: in et_libraries.type_device_name;				-- X701
 --		log_threshold	: in type_log_level
 --		) return boolean is
 --
 --		use et_libraries;
---		use et_schematic_coordinates_2.type_submodule_name;
+--		use et_schematic_coordinates_2.pac_submodule_name;
 --		use type_module_interconnections;
 --
 --		connection_cursor : type_module_interconnections.cursor;
@@ -1013,8 +1013,8 @@ package body et_conventions is
 -- 	-- If there are no module interactions declared at all, the returned list is empty.
 -- 	-- This requires to look up the interconnections declared in the configuration file.
 -- 	-- So the generic module name and the instance matter here.
--- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
--- 		generic_name 	: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix
+-- 		module 			: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- led_matrix_2
+-- 		generic_name 	: in et_schematic_coordinates.pac_submodule_name.bounded_string; -- led_matrix
 -- 		instance		: in et_schematic_coordinates.type_submodule_instance;			-- 2
 -- 		net				: in et_schematic.type_net_name;			-- motor_on_off
 -- 		log_threshold	: in type_log_level)
@@ -1068,7 +1068,7 @@ package body et_conventions is
 
 --	function opposide_connector_port (
 --	-- Returns the counterpart of the given connector port on the opposide of the module interconnection.
---		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+--		module_name		: in et_schematic_coordinates.pac_submodule_name.bounded_string; -- led_matrix_2
 --		port			: in et_kicad.type_port_with_reference;
 --		log_threshold	: in type_log_level)
 --		return et_kicad.type_port_of_module is
@@ -1080,7 +1080,7 @@ package body et_conventions is
 --		module_cursor : et_kicad.type_rig.cursor;
 --		connector_found : boolean := false; -- goes true once the opposide connector has been found
 --
---		generic_module_name_opposide : et_schematic_coordinates.type_submodule_name.bounded_string; -- pwr_supply
+--		generic_module_name_opposide : et_schematic_coordinates.pac_submodule_name.bounded_string; -- pwr_supply
 --		reference_opposide : et_libraries.type_device_name; -- X45
 --
 --		use type_module_interconnections;
@@ -1214,7 +1214,7 @@ package body et_conventions is
 
 --	function compare_nets (left, right : in type_net) return boolean is
 --	-- Returns true if left net comes before right net.
---		use et_schematic_coordinates.type_submodule_name;
+--		use et_schematic_coordinates.pac_submodule_name;
 --		use et_schematic.pac_net_name;
 --	begin
 --		if left.module < right.module then
@@ -1280,7 +1280,7 @@ package body et_conventions is
 -- 		-- Insertes the net (if not already processed) in the current route.
 -- 		-- Locates netchanger and connector ports in the given net.
 -- 		-- Locates the nets connected with the netchangers and connectors and calls itself again.
--- 			module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- the module to search in
+-- 			module_name		: in et_schematic_coordinates.pac_submodule_name.bounded_string;	-- the module to search in
 -- 			net_name		: in et_schematic.type_net_name;			-- the net name
 -- 			log_threshold	: in type_log_level) is
 --
@@ -1492,7 +1492,7 @@ package body et_conventions is
 -- 		-- nets have been located. A new route starts if the loop below calls find_ports_by_net.
 -- 		-- Once find_ports_by_net finishes, the current route is complete. If more than one
 -- 		-- net is in the route, the route is appended to the global rig wide routing table.
--- 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
+-- 			module_name	: in pac_submodule_name.bounded_string;	-- led_matrix_2
 -- 			module		: in et_kicad.type_module) is
 -- 			use et_kicad.type_netlist;
 -- 			netlist		: et_kicad.type_netlist.map := module.netlist;
@@ -1816,8 +1816,8 @@ package body et_conventions is
 		return type_component_requires_operator_interaction
 	is
 		cat : type_device_category;
-		use type_categories_with_operator_interacton;
-		cat_cursor : type_categories_with_operator_interacton.cursor;
+		use pac_categories_with_operator_interacton;
+		cat_cursor : pac_categories_with_operator_interacton.cursor;
 	begin
 		if component_prefixes_specified then
 
@@ -1828,7 +1828,7 @@ package body et_conventions is
 			-- category cat.
 			cat_cursor := component_categories_with_operator_interaction.find (cat);
 
-			if cat_cursor = type_categories_with_operator_interacton.no_element then
+			if cat_cursor = pac_categories_with_operator_interacton.no_element then
 				return NO; -- no operator interaction required
 			else
 				return YES; -- operator interaction required
@@ -1884,8 +1884,8 @@ package body et_conventions is
 	is
 		use et_schematic_geometry;
 		use pac_geometry_2;
-		use type_text_sizes_schematic;
-		cursor : type_text_sizes_schematic.cursor; -- points to a text size
+		use pac_text_sizes_schematic;
+		cursor : pac_text_sizes_schematic.cursor; -- points to a text size
 
 	begin -- check_schematic_text_size
 		-- nothing happens if no text sizes specified
@@ -1958,20 +1958,20 @@ package body et_conventions is
 
 
 
-	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string is
-	-- Converts a string to a type_partcode_keyword_argument.
+	function to_partcode_keyword_argument (argument : in string) return pac_partcode_keyword_argument.bounded_string is
+	-- Converts a string to a pac_partcode_keyword_argument.
 	begin
-		return type_partcode_keyword_argument.to_bounded_string (argument);
+		return pac_partcode_keyword_argument.to_bounded_string (argument);
 	end to_partcode_keyword_argument;
 
 
 
 
 
-	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string is
-	-- Converts a type_partcode_keyword_argument to a string.
+	function to_string (argument : in pac_partcode_keyword_argument.bounded_string) return string is
+	-- Converts a pac_partcode_keyword_argument to a string.
 	begin
-		return type_partcode_keyword_argument.to_string (argument);
+		return pac_partcode_keyword_argument.to_string (argument);
 	end to_string;
 
 
@@ -1979,10 +1979,10 @@ package body et_conventions is
 
 
 
-	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
-	-- Converts a type_partcode_keyword to a string.
+	function to_string (keyword : in pac_partcode_keyword.bounded_string) return string is
+	-- Converts a pac_partcode_keyword to a string.
 	begin
-		return type_partcode_keyword.to_string (keyword);
+		return pac_partcode_keyword.to_string (keyword);
 	end to_string;
 
 
@@ -2006,12 +2006,12 @@ package body et_conventions is
 
 
 	procedure check_partcode_keyword_characters (
-		keyword		: in type_partcode_keyword.bounded_string;
+		keyword		: in pac_partcode_keyword.bounded_string;
 		characters	: in character_set := partcode_keyword_characters) is
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-		use type_partcode_keyword;
+		use pac_partcode_keyword;
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given keyword and get position of possible invalid characters.
@@ -2037,16 +2037,16 @@ package body et_conventions is
 
 
 
-	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is
+	procedure validate_partcode_keyword (keyword : in pac_partcode_keyword.bounded_string) is
 	-- Checks whether given keyword is specified in
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
-		use type_partcode_keywords;
-		use type_partcode_keyword;
-		cursor : type_partcode_keywords.cursor := partcode_keywords.first;
+		use pac_partcode_keywords;
+		use pac_partcode_keyword;
+		cursor : pac_partcode_keywords.cursor := partcode_keywords.first;
 		valid : boolean := false;
 	begin
-		while cursor /= type_partcode_keywords.no_element loop
+		while cursor /= pac_partcode_keywords.no_element loop
 			if key (cursor) = keyword then
 				valid := true;
 				exit;
@@ -2058,7 +2058,7 @@ package body et_conventions is
 			log (SEVERITY_ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
 			log (text => "Available keywords are:");
 			cursor := partcode_keywords.first;
-			while cursor /= type_partcode_keywords.no_element loop
+			while cursor /= pac_partcode_keywords.no_element loop
 				log (text => "- " & to_string (key (cursor)));
 				next (cursor);
 			end loop;
@@ -2073,8 +2073,8 @@ package body et_conventions is
 
 
 	function to_partcode_keyword (keyword : in string)
-		return type_partcode_keyword.bounded_string
-	is (type_partcode_keyword.to_bounded_string (keyword));
+		return pac_partcode_keyword.bounded_string
+	is (pac_partcode_keyword.to_bounded_string (keyword));
 
 
 
@@ -2126,15 +2126,15 @@ package body et_conventions is
 
 		keyword_follows : boolean;	-- goes true if a keyword is expected next
 
-		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
+		keyword : pac_partcode_keyword.bounded_string;	-- the keyword being processed
 
 		argument_start : positive;
-		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
+		argument : pac_partcode_keyword_argument.bounded_string; -- the argument being processed
 
 
 		procedure validate_argument (
-			kw	: in type_partcode_keyword.bounded_string;
-			arg	: in type_partcode_keyword_argument.bounded_string) is
+			kw	: in pac_partcode_keyword.bounded_string;
+			arg	: in pac_partcode_keyword_argument.bounded_string) is
 		pragma unreferenced (arg);
 		begin
 			log (text => "keyword " & to_string (kw)
@@ -2325,7 +2325,7 @@ package body et_conventions is
 
 	function partcode_keywords_specified return boolean is
 	-- Returns true if any part code keywords are specified via configuration file.
-		use type_partcode_keywords;
+		use pac_partcode_keywords;
 	begin
 		if is_empty (partcode_keywords) then -- no keywords specified
 			return false;
@@ -2338,16 +2338,16 @@ package body et_conventions is
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
-		keyword : type_partcode_keyword.bounded_string;
-		use type_partcode_keywords;
-		cursor : type_partcode_keywords.cursor;
+		keyword : pac_partcode_keyword.bounded_string;
+		use pac_partcode_keywords;
+		cursor : pac_partcode_keywords.cursor;
 	begin
 		if partcode_keywords_specified then
 
 			-- Search in partcode_keywords the given section name and
 			-- load keyword.
 			cursor := partcode_keywords.first;
-			while cursor /= type_partcode_keywords.no_element loop
+			while cursor /= pac_partcode_keywords.no_element loop
 				if element (cursor) = section then -- MAXIMUM_POWER
 					keyword := key (cursor); -- PMAX
 					exit; -- no further search required
@@ -2356,7 +2356,7 @@ package body et_conventions is
 			end loop;
 
 		end if;
-		return type_partcode_keyword.to_string (keyword);
+		return pac_partcode_keyword.to_string (keyword);
 	end to_partcode_keyword;
 
 
@@ -2599,11 +2599,11 @@ package body et_conventions is
 		section_entered : type_section := NONE;
 
 		-- lines of the file are collected in a simple list:
-		package type_lines is new doubly_linked_lists (
+		package pac_lines is new doubly_linked_lists (
 			element_type	=> type_fields_of_line,
 			"="				=> lines_equally);
-		use type_lines;
-		lines : type_lines.list := type_lines.empty_list;
+		use pac_lines;
+		lines : pac_lines.list := pac_lines.empty_list;
 
 
 
@@ -2611,7 +2611,7 @@ package body et_conventions is
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
 		procedure process_previous_section is
-			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
+			line_cursor : pac_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : pac_device_prefixes.cursor; -- CS: rename to prefix_cursor
 			unit_cursor : pac_units_of_measurement.cursor;
 			inserted : boolean := false;
@@ -2646,7 +2646,7 @@ package body et_conventions is
 			text		: type_text_schematic;
 			size		: et_schematic_text.pac_text_schematic.type_text_size;
 
-			partcode_keyword	: type_partcode_keyword.bounded_string;
+			partcode_keyword	: pac_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;
 
 			-- CS: check field count in sections respectively. issue warning if too many fields.
@@ -2661,7 +2661,7 @@ package body et_conventions is
 					log (text => "device prefixes ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the prefix from field #1:
@@ -2700,7 +2700,7 @@ package body et_conventions is
 					log (text => "device units of measurement ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the unit abbreviation from field #1:
@@ -2747,14 +2747,14 @@ package body et_conventions is
 						log (SEVERITY_WARNING, "section " & section_components_with_operator_interaction & " without effect !");
 					end if;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the component category from field #1:
 						cat := to_category (get_field (element (line_cursor), 1));
 
 						-- insert the category in container component_categories_with_operator_interaction
-						type_categories_with_operator_interacton.insert (
+						pac_categories_with_operator_interacton.insert (
 							container => component_categories_with_operator_interaction,
 							new_item => cat);
 
@@ -2762,7 +2762,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no components specified:
-					if type_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
+					if pac_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
 						log (SEVERITY_WARNING, "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2772,7 +2772,7 @@ package body et_conventions is
 					log (text => "text sizes in schematic ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the text category from field #1:
@@ -2805,7 +2805,7 @@ package body et_conventions is
 						end case;
 
 						-- insert the text category and size in container text_sizes_schematic
-						type_text_sizes_schematic.insert (
+						pac_text_sizes_schematic.insert (
 							container	=> et_conventions.text_sizes_schematic,
 							key		=> text,
 							new_item	=> size);
@@ -2814,7 +2814,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no sizes specified:
-					if type_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
+					if pac_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
 						log (SEVERITY_WARNING, "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2824,7 +2824,7 @@ package body et_conventions is
 					log (text => "part code keywords ...", level => log_threshold + 1);
 					log_indentation_up;
 
-					while line_cursor /= type_lines.no_element loop
+					while line_cursor /= pac_lines.no_element loop
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
@@ -2836,7 +2836,7 @@ package body et_conventions is
 						partcode_section := to_partcode_section (get_field (element (line_cursor), 2));
 
 						-- insert the text category and size in container text_sizes_schematic
-						type_partcode_keywords.insert (
+						pac_partcode_keywords.insert (
 							container	=> et_conventions.partcode_keywords,
 							key		=> partcode_keyword,
 							new_item	=> partcode_section);
@@ -2845,7 +2845,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no keywrds specified:
-					if type_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
+					if pac_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
 						log (SEVERITY_WARNING, "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;

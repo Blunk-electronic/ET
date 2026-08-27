@@ -158,11 +158,11 @@ package et_kicad_libraries is
 	-- COMPONENT PACKAGE FILTER
 	-- If certain packages are to be proposed they are collected in a so called "package filter"
 	package_proposal_length_max : constant positive := 100;
-	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
-	package type_package_filter is new ordered_sets (
-		element_type	=> type_package_proposal.bounded_string,
-		"="				=> type_package_proposal."=",
-		"<"				=> type_package_proposal."<");
+	package pac_package_proposal is new generic_bounded_length (package_proposal_length_max);
+	package pac_package_filter is new ordered_sets (
+		element_type	=> pac_package_proposal.bounded_string,
+		"="				=> pac_package_proposal."=",
+		"<"				=> pac_package_proposal."<");
 
 	type type_port_style is (
 		NONE,
@@ -221,7 +221,7 @@ package et_kicad_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports_library is new doubly_linked_lists (type_port_library);
+	package pac_ports_library is new doubly_linked_lists (type_port_library);
 
 	-- fill
 	type type_fill_border is (VISIBLE, INVISIBLE);
@@ -234,7 +234,7 @@ package et_kicad_libraries is
 	function to_string (fill : in type_fill) return string;
 
 	-- lines of a symbol:
-	package type_symbol_lines is new doubly_linked_lists (
+	package pac_symbol_lines is new doubly_linked_lists (
 		element_type	=> et_symbol_shapes.type_symbol_line,
 		"="				=> et_symbol_shapes."=");
 
@@ -243,17 +243,17 @@ package et_kicad_libraries is
 	-- Filling can be done even if start and end point do not meet. In this case a virtual line
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
-	package type_symbol_points is new doubly_linked_lists (
+	package pac_symbol_points is new doubly_linked_lists (
 		element_type	=> type_vector_model,
 		"="				=> "=");
 
 	type type_symbol_polyline is record
 		width	: type_distance_positive;
 		fill	: type_fill;
-		points	: type_symbol_points.list;
+		points	: pac_symbol_points.list;
 	end record;
 
-	package type_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
+	package pac_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
 
 
 	-- rectangles of a symbol:
@@ -265,7 +265,7 @@ package et_kicad_libraries is
 		fill		: type_fill;
 	end record;
 
-	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);
+	package pac_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);
 
 
 	-- arcs of a symbol:
@@ -276,7 +276,7 @@ package et_kicad_libraries is
 		fill			: type_fill;
 	end record;
 
-	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
+	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 
 
 	-- circles of a symbol:
@@ -284,16 +284,16 @@ package et_kicad_libraries is
 		fill			: type_fill;
 	end record;
 
-	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
+	package pac_symbol_circles is new doubly_linked_lists (type_symbol_circle);
 
 
 	-- Shapes are wrapped in a composite:
 	type type_symbol_shapes is record
-		lines		: type_symbol_lines.list		:= type_symbol_lines.empty_list;
-		arcs		: type_symbol_arcs.list			:= type_symbol_arcs.empty_list;
-		circles		: type_symbol_circles.list		:= type_symbol_circles.empty_list;
-		rectangles	: type_symbol_rectangles.list	:= type_symbol_rectangles.empty_list;
-		polylines	: type_symbol_polylines.list	:= type_symbol_polylines.empty_list;
+		lines		: pac_symbol_lines.list		:= pac_symbol_lines.empty_list;
+		arcs		: pac_symbol_arcs.list			:= pac_symbol_arcs.empty_list;
+		circles		: pac_symbol_circles.list		:= pac_symbol_circles.empty_list;
+		rectangles	: pac_symbol_rectangles.list	:= pac_symbol_rectangles.empty_list;
+		polylines	: pac_symbol_polylines.list	:= pac_symbol_polylines.empty_list;
 	end record;
 
 
@@ -306,7 +306,7 @@ package et_kicad_libraries is
 	type type_symbol is new et_symbol_model.type_symbol_base with record
 		appearance	: type_appearance;
 		shapes		: type_symbol_shapes; -- the collection of shapes
-		ports		: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
+		ports		: pac_ports_library.list := pac_ports_library.empty_list; -- the ports of the symbol
 
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
 		-- We use the native type for a text placeholder here.
@@ -327,7 +327,7 @@ package et_kicad_libraries is
 	end record;
 
 
-	package type_units_library is new indefinite_ordered_maps (
+	package pac_units_library is new indefinite_ordered_maps (
 		key_type		=> type_unit_name, -- like "I/O-Bank 3" "A" or "B"
 		"<"				=> et_unit_name."<",
 		element_type	=> type_unit_library);
@@ -337,13 +337,13 @@ package et_kicad_libraries is
 	component_datasheet_characters : character_set :=
 		to_set (ranges => (('A', 'Z'), ('a', 'z'), ('0', '9'))) or to_set (":/._-&");
 	component_datasheet_length_max : constant positive := 500;
-	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
+	package pac_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 
 	procedure check_datasheet_length (datasheet : in string);
 	-- Tests if the given datasheet is longer than allowed.
 
 	procedure check_datasheet_characters (
-		datasheet	: in type_component_datasheet.bounded_string;
+		datasheet	: in pac_component_datasheet.bounded_string;
 		characters	: in character_set := component_datasheet_characters);
 	-- Tests if the given URL contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
@@ -356,7 +356,7 @@ package et_kicad_libraries is
 	type type_component_library (appearance : type_appearance) is record
 		prefix			: type_device_prefix; -- R, C, IC, ...
 		value			: type_device_value; -- 74LS00
-		units			: type_units_library.map := type_units_library.empty_map;
+		units			: pac_units_library.map := pac_units_library.empty_map;
 
 		case appearance is
 
@@ -372,8 +372,8 @@ package et_kicad_libraries is
 			-- If a component appears in both schematic and layout it comes
 			-- with at least one package/footprint variant. We store variants in a map.
 			when APPEARANCE_PCB =>
-				package_filter	: type_package_filter.set := type_package_filter.empty_set;
-				datasheet		: type_component_datasheet.bounded_string;
+				package_filter	: pac_package_filter.set := pac_package_filter.empty_set;
+				datasheet		: pac_component_datasheet.bounded_string;
 				variants		: pac_package_variants.map;
 
 		end case;
@@ -409,20 +409,20 @@ package et_kicad_libraries is
 
 	-- Library components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
-	package type_components_library is new indefinite_ordered_maps (
+	package pac_components_library is new indefinite_ordered_maps (
 		key_type		=> type_component_generic_name, -- example: "TRANSISTOR_PNP"
 		"<"				=> pac_component_generic_name."<",
 		element_type	=> type_component_library);
 
 	function first_unit (
 	-- Returns the cursor to the first unit of the given component
-		component_cursor : in type_components_library.cursor)
-		return type_units_library.cursor;
+		component_cursor : in pac_components_library.cursor)
+		return pac_units_library.cursor;
 
 	function first_port (
 	-- Returns the cursor to the first port of the given unit
-		unit_cursor : in type_units_library.cursor)
-		return type_ports_library.cursor;
+		unit_cursor : in pac_units_library.cursor)
+		return pac_ports_library.cursor;
 
 
 
@@ -433,7 +433,7 @@ package et_kicad_libraries is
 
 
 	-- Returns the component appearance where cursor points to.
-	function component_appearance (cursor : in type_components_library.cursor)
+	function component_appearance (cursor : in pac_components_library.cursor)
 		return type_appearance;
 
 
@@ -447,18 +447,18 @@ package et_kicad_libraries is
 
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1"
-	package type_alternative_reference_path is new doubly_linked_lists (
+	package pac_alternative_reference_path is new doubly_linked_lists (
 		element_type => et_kicad_general.type_timestamp); -- 5A991D18
 
 
 	type type_alternative_reference is record
-		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
+		path		: pac_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: type_device_name; -- R452
 		part		: type_unit_name; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 
-	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
+	package pac_alternative_references is new doubly_linked_lists (type_alternative_reference);
 
 
 	function to_component_reference (
@@ -480,7 +480,7 @@ package et_kicad_libraries is
 	end record;
 
 	-- No-connection-flags can be stored in a simple list:
-	package type_no_connection_flags is new doubly_linked_lists (type_no_connection_flag);
+	package pac_no_connection_flags is new doubly_linked_lists (type_no_connection_flag);
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
@@ -503,17 +503,17 @@ package et_kicad_libraries is
 	end record;
 
 	-- Ports can be collected in a simple list:
-	package type_ports is new doubly_linked_lists (type_port);
-	--use type_ports;
+	package pac_ports is new doubly_linked_lists (type_port);
+	--use pac_ports;
 
 
 
 	-- The components with their ports are collected in a map with the component reference as key:
-	package type_portlists is new ordered_maps (
+	package pac_portlists is new ordered_maps (
 		key_type		=> type_device_name,
-		element_type	=> type_ports.list,
+		element_type	=> pac_ports.list,
 		"<"				=> et_device_name."<",
-		"="				=> type_ports."=");
+		"="				=> pac_ports."=");
 
 
 	-- If component ports are to be listed,
@@ -537,16 +537,16 @@ package et_kicad_libraries is
 
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_full_library_names is new doubly_linked_lists ( -- CS remove
+    package pac_full_library_names is new doubly_linked_lists ( -- CS remove
 		element_type	=> type_device_model_name,
 		"="				=> et_device_model_names."=");
 
-	package type_device_libraries is new ordered_maps (
+	package pac_device_libraries is new ordered_maps (
 		key_type		=> type_device_model_name, -- ../../lbr/passive/capacitors.lib
 		"<"				=> et_device_model_names."<",
-		element_type	=> type_components_library.map,
-		"="				=> type_components_library."=");
-	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
+		element_type	=> pac_components_library.map,
+		"="				=> pac_components_library."=");
+	-- CS the element could be a record consisting of pac_components_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 
 	-- All component models of a project/module are collected here temporarily.
@@ -555,7 +555,7 @@ package et_kicad_libraries is
 	-- within the current module.
 	-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 	-- operations should access the component_libraries of a module directly (see type_module).
-	tmp_component_libraries : type_device_libraries.map;
+	tmp_component_libraries : pac_device_libraries.map;
 
 
 	-- LIBRARY SEARCH LISTS ------------------------------------------------------------------
@@ -570,25 +570,25 @@ package et_kicad_libraries is
 	-- Bare library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters
 	-- in V4 and must be kept.
-	package type_library_names is new doubly_linked_lists (
-		element_type	=> type_library_name.bounded_string, -- bel_logic, bel_primitives
-		"="				=> type_library_name."=");
+	package pac_library_names is new doubly_linked_lists (
+		element_type	=> pac_library_name.bounded_string, -- bel_logic, bel_primitives
+		"="				=> pac_library_name."=");
 
 	-- search list for component library names
-	search_list_component_libraries : type_library_names.list; -- bel_logic, bel_primitives, ...
+	search_list_component_libraries : pac_library_names.list; -- bel_logic, bel_primitives, ...
 
 --	-- Libraries are stored in directories:
 --	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
---	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+--	package pac_library_directory is new generic_bounded_length (library_directory_length_max);
 --
---	function to_string (dir : in type_library_directory.bounded_string) return string;
+--	function to_string (dir : in pac_library_directory.bounded_string) return string;
 
 --	-- Search list for library directories.
 --	-- This list applies for both component and package search operations.
---	package type_project_lib_dirs is new doubly_linked_lists (
---		element_type	=> type_library_directory.bounded_string,
---		"="			=> type_library_directory."=");
---	search_list_project_lib_dirs : type_project_lib_dirs.list;
+--	package pac_project_lib_dirs is new doubly_linked_lists (
+--		element_type	=> pac_library_directory.bounded_string,
+--		"="			=> pac_library_directory."=");
+--	search_list_project_lib_dirs : pac_project_lib_dirs.list;
 
 	-- SYMBOL-LIBRARY-TABLES AND FOOTPRINT-LIBRARY-TABLES--------------------------
 	-- Relevant for V5:
@@ -598,7 +598,7 @@ package et_kicad_libraries is
 		); -- CS: others ?
 
 	type type_lib_table_entry is record
-		lib_name	: type_library_name.bounded_string;
+		lib_name	: pac_library_name.bounded_string;
 		lib_type	: type_lib_type;
 		lib_uri		: type_device_model_name;
 		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
@@ -608,13 +608,13 @@ package et_kicad_libraries is
 		-- CS description
 	end record;
 
-	package type_lib_table is new doubly_linked_lists (type_lib_table_entry);
+	package pac_lib_table is new doubly_linked_lists (type_lib_table_entry);
 
 	-- After reading the sym-lib-tables (local and global) they are stored here temporarily.
-	sym_lib_tables : type_lib_table.list;
+	sym_lib_tables : pac_lib_table.list;
 
 	-- After reading the fp-lib-tables (local and global) they are stored here temporarily.
-	fp_lib_tables : type_lib_table.list;
+	fp_lib_tables : pac_lib_table.list;
 	-------------------------------------------------------------------------------
 
 
@@ -788,7 +788,7 @@ package et_kicad_libraries is
 
 
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
-	function library_name (text : in string) return type_library_name.bounded_string;
+	function library_name (text : in string) return pac_library_name.bounded_string;
 	-- CS rename to get_library_name
 
 
@@ -797,7 +797,7 @@ package et_kicad_libraries is
 	-- CS rename to get_package_name
 
 
-	function component_power_flag (cursor : in type_components_library.cursor)
+	function component_power_flag (cursor : in pac_components_library.cursor)
 	-- Returns the component power flag status.
 		return type_power_flag;
 
@@ -806,7 +806,7 @@ package et_kicad_libraries is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_device_model_name; -- incl. path and file name
 		component	: in type_component_generic_name)
-		return type_components_library.cursor;
+		return pac_components_library.cursor;
 
 
 	procedure write_note_properties (
@@ -814,7 +814,7 @@ package et_kicad_libraries is
 		log_threshold	: in type_log_level := 0);
 	-- Writes the properties of the given note
 
-	package type_texts is new doubly_linked_lists (type_text);
+	package pac_texts is new doubly_linked_lists (type_text);
 
 
 	-- Units may have alternative representations such as de_Morgan
@@ -833,7 +833,7 @@ package et_kicad_libraries is
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
 	-- contains the given package library with the given package.
 	function full_library_name ( -- CS rename to get_full_library_name
-		library_name	: in type_library_name.bounded_string; -- bel_logic
+		library_name	: in pac_library_name.bounded_string; -- bel_logic
 		package_name	: in type_package_name; -- S_SO14
 		log_threshold	: in type_log_level)
 		return type_package_model_name;

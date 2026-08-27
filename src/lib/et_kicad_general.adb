@@ -45,21 +45,21 @@ package body et_kicad_general is
 		null; -- CS
 	end check_timestamp;
 
-	function to_library_name (library_name : in string) return type_library_name.bounded_string is
-	-- converts a string to a type_library_name
+	function to_library_name (library_name : in string) return pac_library_name.bounded_string is
+	-- converts a string to a pac_library_name
 	begin
-		return type_library_name.to_bounded_string (library_name);
+		return pac_library_name.to_bounded_string (library_name);
 	end to_library_name;
 
-	function to_string (library_name : in type_library_name.bounded_string) return string is
+	function to_string (library_name : in pac_library_name.bounded_string) return string is
 	-- Returns the given library name as string.
 	begin
-		return type_library_name.to_string (library_name);
+		return pac_library_name.to_string (library_name);
 	end to_string;
 
-	function to_string (dir : in type_library_directory.bounded_string)
+	function to_string (dir : in pac_library_directory.bounded_string)
 		return string
-	is (type_library_directory.to_string (dir));
+	is (pac_library_directory.to_string (dir));
 
 
 end et_kicad_general;
