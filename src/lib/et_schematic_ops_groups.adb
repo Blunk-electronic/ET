@@ -718,7 +718,7 @@ package body et_schematic_ops_groups is
 					sheet			=> get_sheet (group_reference_point),
 					log_threshold	=> log_threshold + 1);
 
-				log (text => "center " & to_string (center),
+				log (text => "center of group " & to_string (center),
 					level => log_threshold + 1);
 
 				-- Set x/y of group_reference_point by

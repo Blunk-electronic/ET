@@ -71,9 +71,9 @@ package et_module_clipboard.net_segments is
 	--    anew.
 	-- 3. The given segment is added to the net.
 	procedure copy_net_segment_to_clipboard (
-		net_cursor		: in pac_nets.cursor;
-		segment			: in type_net_segment;
-		log_threshold	: in type_log_level);
+		source_net_cursor	: in pac_nets.cursor;
+		segment				: in type_net_segment;
+		log_threshold		: in type_log_level);
 
 
 

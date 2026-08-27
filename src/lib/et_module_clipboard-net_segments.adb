@@ -35,7 +35,7 @@
 --
 --   history of changes:
 --
---  ToDo:
+--  To Do:
 --
 
 
@@ -58,11 +58,13 @@ package body et_module_clipboard.net_segments is
 
 	
 	procedure copy_net_segment_to_clipboard (
-		net_cursor		: in pac_nets.cursor;
-		segment			: in type_net_segment;
-		log_threshold	: in type_log_level)
+		source_net_cursor	: in pac_nets.cursor;
+		segment				: in type_net_segment;
+		log_threshold		: in type_log_level)
 	is
-		net_name : constant type_net_name := get_net_name (net_cursor);
+		-- From the given source net we only need the name:
+		net_name : constant type_net_name := 
+			get_net_name (source_net_cursor);
 
 
 		procedure insert_net_and_segment is
@@ -77,16 +79,18 @@ package body et_module_clipboard.net_segments is
 			procedure create_net is
 				inserted : boolean;
 
-				-- Create a bare copy of the given net.
+				-- Create a bare copy of the given source net.
 				-- The copy has a single empty strand.
 				-- Later we will store all net segments
 				-- of the given net in that strand:
 				net_new : type_net := copy_bare_net (
-					net_in			=> element (net_cursor),
+					net_in			=> element (source_net_cursor),
 					create_strand	=> true);
 			begin
 				-- Net does not exist yet. Create
-				-- a bare copy of the given net:
+				-- a bare copy of the given net.
+				-- Afterwards net_cursor points to the
+				-- new created net:
 				clipboard.nets.insert (
 					key			=> net_name,
 					new_item	=> net_new,
@@ -225,7 +229,8 @@ package body et_module_clipboard.net_segments is
 						if is_A_selected (segment)
 						or is_B_selected (segment) then
 
-							-- CS log net name, strand pos and segment ?
+							log (text => "segment " & to_string (segment),
+								level => log_threshold + 1);
 
 							log_indentation_up;
 
