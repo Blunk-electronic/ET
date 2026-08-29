@@ -82,7 +82,7 @@ package body et_cp_schematic_sheet is
 
 
 	begin
-		log (text => "show sheet" & to_string (sheet),
+		log (text => "show sheet",
 			 level => log_threshold);
 
 		case cmd_field_count is
