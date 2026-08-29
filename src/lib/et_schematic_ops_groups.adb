@@ -785,8 +785,8 @@ package body et_schematic_ops_groups is
 		end copy_netchangers_to_clipboard;
 
 
-		
-		
+
+
 	begin
 		if auto_center then
 			log (text => "module " & to_string (module_cursor)
@@ -816,7 +816,7 @@ package body et_schematic_ops_groups is
 
 		-- Copy selected netchangers to clipboard:
 		copy_netchangers_to_clipboard;
-		
+
 		-- CS texts
 
 		log_indentation_down;
@@ -908,7 +908,7 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end paste_netchangers;
 
-		
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -937,7 +937,7 @@ package body et_schematic_ops_groups is
 
 		paste_netchangers;
 
-		
+
 		-- CS texts
 
 

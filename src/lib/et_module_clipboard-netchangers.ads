@@ -52,7 +52,7 @@ with et_logging;					use et_logging;
 package et_module_clipboard.netchangers is
 
 -- COPY:
-	
+
 	-- This procedure copies a given netchanger
 	-- to the clipboard:
 	procedure copy_netchanger_to_clipboard (
@@ -82,7 +82,7 @@ package et_module_clipboard.netchangers is
 		log_threshold	: in type_log_level);
 
 
-	
+
 
 end et_module_clipboard.netchangers;
 

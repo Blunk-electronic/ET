@@ -52,7 +52,7 @@ package body et_module_clipboard.netchangers is
 
 
 -- COPY:
-	
+
 
 	procedure copy_netchanger_to_clipboard (
 		netchanger_cursor	: in pac_netchangers.cursor;
@@ -60,7 +60,7 @@ package body et_module_clipboard.netchangers is
 	is
 		use pac_netchangers;
 
-		
+
 		-- Get the index of the given netchanger:
 		index : constant type_netchanger_id :=
 			get_netchanger_id (netchanger_cursor);
@@ -68,15 +68,17 @@ package body et_module_clipboard.netchangers is
 		-- Get the given netchanger:
 		netchanger : constant type_netchanger :=
 			element (netchanger_cursor);
-		
+
 
 		procedure insert_netchanger is
 		begin
-			null;
-			-- CS
+			clipboard.netchangers.insert (
+				key			=> index,
+				new_item	=> netchanger);
+
 		end insert_netchanger;
-		
-		
+
+
 	begin
 		log (text => "copy netchanger " & to_string (index)
 			& " to clipboard.",
@@ -95,7 +97,7 @@ package body et_module_clipboard.netchangers is
 
 
 
-	
+
 
 
 	procedure copy_selected_netchangers_to_clipboard (
@@ -119,7 +121,7 @@ package body et_module_clipboard.netchangers is
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in type_netchanger)
-			is 
+			is
 				use et_netchangers.schematic;
 			begin
 				if is_selected (netchanger) then
@@ -162,9 +164,9 @@ package body et_module_clipboard.netchangers is
 	end copy_selected_netchangers_to_clipboard;
 
 
-	
 
-	
+
+
 
 
 
@@ -199,7 +201,6 @@ package body et_module_clipboard.netchangers is
 
 
 
-	
 
 end et_module_clipboard.netchangers;
 
