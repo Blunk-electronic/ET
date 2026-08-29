@@ -3,7 +3,10 @@ HOW TO BUILD ET
 
 1. via the classical make
 -------------------------
-run in this directory:
+This is only intended to test subprograms in
+non-graphical mode. See the Makefile for configuration.
+
+Run in this directory:
 
 make 
 
@@ -18,9 +21,6 @@ make -j4
 Object files are generated and placed in this directory.
 The executable is placed in $HOME/bin.
 
-NOTE: Currently gtkada is not included. So compiling with make builds
-ET without GUI.
-
 To clean up run:
 
 make clean
@@ -28,12 +28,6 @@ make clean
 
 2. via gprbuild
 ---------------
-
-gprbuild is a great invention. But it does not come with every Linux distro.
-You have install gprbuild first.
-The "makefile" et.gpr includes the gtkada library. You must also install gtkada.
-See <https://github.com/Blunk-electronic/M-1/blob/master/gtkada_install.txt>
-Building with gprbuild builds ET with a GUI.
 
 Build with command:
 

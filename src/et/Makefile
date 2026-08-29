@@ -3,45 +3,12 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
-	et_meta.o \
-	et_general.o \
-	et_coordinates.o \
-	et_frames.o \
-	frame_rw.o \
-	et_text.o \
-	et_geometry.o \
-	et_devices.o \
-	et_symbols.o \
-	et_schematic.o \
-	netlists.o \
-	numbering.o \
-	assembly_variants.o \
-	submodules.o \
-	scripting.o \
-	schematic_ops.o \
-	board_ops.o \
-	general_rw.o \
-	device_rw.o \
-	symbol_rw.o \
-	schematic_rw.o \
-	pcb_rw.o \
-	et_pcb_coordinates.o \
-	et_pcb_stack.o \
-	et_packages.o \
-	et_pcb.o \
-	pick_and_place.o \
-	material.o \
-	et_project.o \
-	et_import.o et_export.o \
-	et_kicad_general.o \
-	et_kicad_to_native.o \
-	kicad_coordinates.o \
-	et_kicad.o \
-	et_kicad_pcb.o \
-	conventions.o \
-	et_csv.o \
-	et_string_processing.o
+	et_geometry_1.o \
+	et_geometry_2a.o \
+# add more object file names if required here
 
+
+# The destination of the executable binary file:
 PREFIX = $(HOME)
 BINDIR = $(PREFIX)/bin
 
