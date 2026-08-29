@@ -47,6 +47,9 @@
 with et_module_names;
 with et_netchangers.schematic;
 
+with et_schematic_ops_netchangers;
+
+
 
 package body et_module_clipboard.netchangers is
 
@@ -182,9 +185,44 @@ package body et_module_clipboard.netchangers is
 
 		procedure do_paste is
 			use et_module_clipboard;
+			use pac_netchangers;
+
+			netchanger_cursor : pac_netchangers.cursor :=
+				clipboard.netchangers.first;
+
+
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in type_netchanger)
+			is
+				use et_schematic_ops_netchangers;
+				index_new : type_netchanger_id;
+
+				netchanger_new : type_netchanger;
+			begin
+				log (text => "original netchanger " & to_string (index),
+					level => log_threshold + 1);
+
+				-- Get the next available index to be used
+				-- for the new netchanger:
+				index_new := get_next_netchanger_index (module_cursor);
+
+				log (text => "new netchanger " & to_string (index_new),
+					 level => log_threshold + 1);
+
+				copy_netchanger_with_offset (
+					netchanger_in	=> netchanger,
+					offset			=> offset,
+					netchanger_out	=> netchanger_new);							
+												
+			end query_netchanger;
+
+
 		begin
-			null;
-			-- CS
+			while has_element (netchanger_cursor) loop
+				query_element (netchanger_cursor, query_netchanger'access);
+				next (netchanger_cursor);
+			end loop;
 		end do_paste;
 
 

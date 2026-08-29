@@ -72,7 +72,7 @@ package et_module_clipboard.netchangers is
 
 
 -- PASTE:
-	
+
 	-- This procedure copies netchangers from the clipboard
 	-- to the given module. The netchangers will be placed
 	-- by the given offset:

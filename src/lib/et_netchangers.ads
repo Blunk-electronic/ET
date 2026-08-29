@@ -54,6 +54,7 @@ with ada.containers.ordered_maps;
 with ada.containers.doubly_linked_lists;
 
 with et_schematic_geometry;
+with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_sheets;
 
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
@@ -208,6 +209,17 @@ package et_netchangers is
 	procedure reset_netchanger (
 		netchanger : in out type_netchanger);
 
+
+
+	-- Copies a netchanger with all its properties
+	-- except status flags and the x/y-position in
+	-- the board drawing. The x/y-position assumes origin (0/0).
+	-- The new schematic position will be offset by
+	-- the given offset:
+	procedure copy_netchanger_with_offset (
+		netchanger_in	: in type_netchanger;
+		offset			: in type_object_position_relative;
+		netchanger_out	: out type_netchanger);
 
 
 
