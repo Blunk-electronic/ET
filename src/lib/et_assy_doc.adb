@@ -63,23 +63,6 @@ package body et_assy_doc is
 
 
 
-	procedure iterate (
-		lines	: in type_doc_line_list;
-		process	: not null access procedure (position : in type_doc_line_cursor);
-		proceed	: not null access boolean)
-	is
-		use pac_doc_lines;
-
-		c : type_doc_line_cursor := lines.first;
-	begin
-		while c /= pac_doc_lines.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-
-
 	function is_proposed (
 		line_cursor	: in type_doc_line_cursor)
 		return boolean
@@ -185,25 +168,6 @@ package body et_assy_doc is
 		reset_arc (type_arc (arc));
 		arc.width := linewidth_default;
 	end reset_arc;
-
-
-
-	procedure iterate (
-		arcs	: in type_doc_arc_list;
-		process	: not null access procedure (position : in type_doc_arc_cursor);
-		proceed	: not null access boolean)
-	is
-		use pac_doc_arcs;
-
-		c : type_doc_arc_cursor := arcs.first;
-	begin
-		while c /= pac_doc_arcs.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-
 
 
 
@@ -510,22 +474,6 @@ package body et_assy_doc is
 		return string
 	is (to_string (element (text)));
 
-
-
-
-
-	procedure iterate (
-		texts	: in pac_doc_texts.list;
-		process	: not null access procedure (position : in pac_doc_texts.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_doc_texts.cursor := texts.first;
-	begin
-		while c /= pac_doc_texts.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
 
 
 
