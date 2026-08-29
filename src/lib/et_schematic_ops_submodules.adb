@@ -4061,6 +4061,9 @@ package body et_schematic_ops_submodules is
 					pac_renumber_modules.insert_child (
 						container	=> submod_tree,
 						parent		=> tree_cursor,
+						-- CS: overlaps with actual for position (see below)
+						-- and causes a warning (-gnatw.i).
+
 						before		=> pac_renumber_modules.no_element,
 						new_item	=> (
 								name				=> submod_name,
