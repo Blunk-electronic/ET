@@ -4,11 +4,25 @@ project et is
 
 	for Create_Missing_Dirs use "true";
 
-	for exec_dir use "../../bin/";
+	-- This is the destination of the
+	-- executable binary file:
+
+	-- This requires adjustment of environment
+	-- variable $PATH:
+	--for exec_dir use "../../bin/";
+
+	-- This places the executable in $HOME/bin
+	-- which should exist in all Linux distros:	
+	for exec_dir use external ("HOME") & "/bin";
+
+
+	-- Object and source files:
 	for object_dir use "obj/";
 	for source_dirs use (
 		"./" ,
 		"../lib/");
+
+	-- The name of the executable binary file:
  	for main use ("et");
 
 	Warning_Checks := ("-gnatwaRU");
