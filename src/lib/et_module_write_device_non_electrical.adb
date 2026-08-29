@@ -174,6 +174,8 @@ package body et_module_write_device_non_electrical is
 			write (keyword => keyword_position, parameters =>
 				to_string (get_position (device), FORMAT_2));
 
+			-- Write the relative path to the package model like
+			-- "model fiducials/crosshair.pac"
 			write (keyword => keyword_model,
 				parameters => get_package_model_name (device));
 

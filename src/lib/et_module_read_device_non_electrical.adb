@@ -123,8 +123,10 @@ package body et_module_read_device_non_electrical is
 			device_position := to_position (line, 2);
 
 
-		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
+		elsif kw = keyword_model then -- model fiducials/crosshair.pac
 			expect_field_count (line, 2);
+
+			-- Read the relative path to the package model:
 			package_model_name := to_package_model_name (f (line, 2));
 
 		else

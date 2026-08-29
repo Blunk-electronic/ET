@@ -168,8 +168,10 @@ package body et_module_read_device_electrical is
 			-- validate value
 			device_value := to_value_with_check (f (line, 2));
 
-		elsif kw = keyword_model then -- model /models/capacitor.dev
+		elsif kw = keyword_model then -- model passive/capacitors/capacitor.dev
 			expect_field_count (line, 2);
+
+			-- Read the relative path to the device model:
 			device_model_name := to_file_name (f (line, 2));
 
 		elsif kw = keyword_variant then -- variant S_0805, N, D

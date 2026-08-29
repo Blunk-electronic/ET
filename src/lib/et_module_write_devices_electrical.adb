@@ -282,6 +282,8 @@ package body et_module_write_devices_electrical is
 			write (keyword => keyword_name, parameters => to_string (key (d)));
 			write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
 
+			-- Write the relative path to the device model like
+			-- "model passive/capacitors/capacitor.dev"
 			write (keyword => keyword_model,
 				parameters => get_device_model_name (device));
 
