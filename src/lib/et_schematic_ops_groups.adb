@@ -222,6 +222,9 @@ package body et_schematic_ops_groups is
 			unit_positions := get_group_unit_positions (
 				module_cursor, sheet, log_threshold + 2);
 
+			log (text => "collected unit positions " & get_length (unit_positions),
+				 level => log_threshold + 2);
+
 			log_indentation_down;
 		end query_units;
 
@@ -250,7 +253,7 @@ package body et_schematic_ops_groups is
 		query_units;
 		-- CS: query net segments, texts
 
-		-- Merge unit positions, net segment positions,
+		-- Merge unit positions, netchangers, net segment positions,
 		-- text positons, ...
 		merge_positions;
 

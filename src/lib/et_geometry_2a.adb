@@ -1188,6 +1188,18 @@ package body et_geometry_2a is
 
 
 
+	function get_length (
+		points : in pac_points.list)
+		return string
+	is
+		total :  constant natural := get_length (points);
+	begin
+		return natural'image (total);
+	end get_length;
+
+
+
+
 
 	procedure move_points (
 		points	: in out pac_points.list;

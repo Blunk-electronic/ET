@@ -593,10 +593,19 @@ package et_geometry_2a is
 
 
 
-	-- Returns the number of points that the given list contains:
-	function get_length (
+	-- Returns the total of points that the
+	-- given list contains as natural:
+	function get_length ( -- CS rename to get_total or get_count
 		points : in pac_points.list)
 		return natural;
+
+
+	-- Returns the total of points that the
+	-- given list contains as string:
+	function get_length ( -- CS rename to get_total or get_count
+		points : in pac_points.list)
+		return string;
+
 
 
 	procedure move_points (

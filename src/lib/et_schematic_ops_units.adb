@@ -3516,12 +3516,18 @@ package body et_schematic_ops_units is
 						log (text => to_string (device_name, unit_name),
 							level => log_threshold + 1);
 
+						log_indentation_up;
+
 						-- Get x/y position of the unit candidate:
 						place := get_place (unit);
 
-						-- Append the unit position to
-						-- the result:
+						log (text => "position " & to_string (place),
+							 level => log_threshold + 2);
+
+						-- Append the unit position to the result:
 						result.append (place);
+
+						log_indentation_down;
 					end if;
 				end query_unit;
 
