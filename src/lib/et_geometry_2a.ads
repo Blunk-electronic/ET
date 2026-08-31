@@ -584,6 +584,38 @@ package et_geometry_2a is
 
 
 
+
+	-- Returns from the given list of points
+	-- the smallest occuring x value:
+	function get_smallest_x (
+		points	: in pac_points.list)
+		return type_distance;
+
+
+	-- Returns from the given list of points
+	-- the greatest occuring x value:
+	function get_greatest_x (
+		points	: in pac_points.list)
+		return type_distance;
+
+
+	-- Returns from the given list of points
+	-- the smallest occuring y value:
+	function get_smallest_y (
+		points	: in pac_points.list)
+		return type_distance;
+
+
+	-- Returns from the given list of points
+	-- the greatest occuring y value:
+	function get_greatest_y (
+		points	: in pac_points.list)
+		return type_distance;
+
+
+
+
+
 	-- Sorts points by their distance to the reference point:
 	procedure sort_by_distance (
 		points		: in out pac_points.list;
@@ -768,6 +800,11 @@ package et_geometry_2a is
 		valid	: out boolean);
 
 
+
+	-- Converts a cloud of points to an area:
+	function to_area (
+		points	: in pac_points.list)
+		return type_area;
 
 
 

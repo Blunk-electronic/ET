@@ -1157,6 +1157,118 @@ package body et_geometry_2a is
 
 
 
+
+
+	function get_smallest_x (
+		points	: in pac_points.list)
+		return type_distance
+	is
+		result : type_distance := type_distance_positive'last;
+
+		procedure query_point (c : in pac_points.cursor) is
+			use pac_points;
+			p : type_vector_model renames element (c);
+			x : type_distance;
+		begin
+			x := get_x (p);
+
+			if x < result then
+				result := x;
+			end if;
+		end query_point;
+
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_smallest_x;
+
+
+
+
+	function get_greatest_x (
+		points	: in pac_points.list)
+		return type_distance
+	is
+		result : type_distance := type_distance'first;
+
+		procedure query_point (c : in pac_points.cursor) is
+			use pac_points;
+			p : type_vector_model renames element (c);
+			x : type_distance;
+		begin
+			x := get_x (p);
+
+			if x > result then
+				result := x;
+			end if;
+		end query_point;
+
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_greatest_x;
+
+
+
+
+	function get_smallest_y (
+		points	: in pac_points.list)
+		return type_distance
+	is
+		result : type_distance := type_distance_positive'last;
+
+		procedure query_point (c : in pac_points.cursor) is
+			use pac_points;
+			p : type_vector_model renames element (c);
+			y : type_distance;
+		begin
+			y := get_y (p);
+
+			if y < result then
+				result := y;
+			end if;
+		end query_point;
+
+
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_smallest_y;
+
+
+
+
+	function get_greatest_y (
+		points	: in pac_points.list)
+		return type_distance
+	is
+		result : type_distance := type_distance'first;
+
+		procedure query_point (c : in pac_points.cursor) is
+			use pac_points;
+			p : type_vector_model renames element (c);
+			y : type_distance;
+		begin
+			y := get_y (p);
+
+			if y > result then
+				result := y;
+			end if;
+		end query_point;
+
+
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_greatest_y;
+
+
+
+
+
+
+
+
 	procedure sort_by_distance (
 		points		: in out pac_points.list;
 		reference	: in type_vector_model;
@@ -1394,9 +1506,10 @@ package body et_geometry_2a is
 
 
 
-		procedure more_than_two_points is begin
-			null;
-			-- CS
+		procedure more_than_two_points is
+			area : constant type_area := to_area (points);
+		begin
+			result := get_center (area);
 		end more_than_two_points;
 
 
@@ -1412,6 +1525,8 @@ package body et_geometry_2a is
 			when 2 =>
 				-- Compute the point between the two points:
 				two_points;
+				-- CS more_than_two_points could solve
+				-- the problem as well ?
 
 			when others =>
 				-- Form a rectangle and compute the center:
@@ -1720,6 +1835,35 @@ package body et_geometry_2a is
 
 
 
+
+
+
+	function to_area (
+		points	: in pac_points.list)
+		return type_area
+	is
+		sx, gx, sy, gy : type_distance;
+
+		area : type_area; -- to be returned
+	begin
+		sx := get_smallest_x (points);
+		gx := get_greatest_x (points);
+
+		sy := get_smallest_y (points);
+		gy := get_greatest_y (points);
+
+
+		-- Set the position of the area which
+		-- is the lower left corner:
+		area.position.x := sx;
+		area.position.y := sy;
+
+		-- Set the width and height of the area:
+		area.width := gx - sx;
+		area.height := gy - sy;
+
+		return area;
+	end to_area;
 
 
 
