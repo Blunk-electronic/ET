@@ -617,8 +617,8 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- Returns a list of he positions of all units
-	-- of the group. The group can be only on one sheet.
+	-- Returns a list of the positions of all units
+	-- in the group. The group can be only on one sheet.
 	-- In order to speed up the process, the affected
 	-- sheet number must also be specified:
 	function get_group_unit_positions (

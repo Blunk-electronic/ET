@@ -207,9 +207,11 @@ package body et_schematic_ops_groups is
 		all_positions : pac_points.list;
 
 		unit_positions : pac_points.list;
+		segment_positions : pac_points.list;
+
 		-- CS
 		-- text_positions : pac_points.list;
-		-- segment_positions : pac_points.list;
+
 
 		procedure query_units is
 			use et_schematic_ops_units;
@@ -227,6 +229,25 @@ package body et_schematic_ops_groups is
 
 			log_indentation_down;
 		end query_units;
+
+
+		procedure query_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "query net segments", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the positions of the A or
+			-- B ends (x/y) of the segments of the group:
+			segment_positions := get_group_segment_positions (
+				module_cursor, sheet, log_threshold + 2);
+
+			log (text => "collected segment end points (A/B) " & get_length (segment_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_net_segments;
+
 
 
 		procedure merge_positions is
@@ -250,8 +271,12 @@ package body et_schematic_ops_groups is
 
 		log_indentation_up;
 
+		-- Collect the positions of units, netchangers,
+		-- net segment ends, texts:
 		query_units;
-		-- CS: query net segments, texts
+		query_net_segments;
+		
+		-- CS: query netchangers, texts
 
 		-- Merge unit positions, netchangers, net segment positions,
 		-- text positons, ...

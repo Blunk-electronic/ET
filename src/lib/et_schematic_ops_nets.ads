@@ -350,6 +350,18 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns a list of the positions of all segment ends (A/B)
+	-- in the group. The group can be only on one sheet.
+	-- In order to speed up the process, the affected
+	-- sheet number must also be specified:
+	function get_group_segment_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_points.list;
+
+
+
 	-- Deletes all segments which are in the current
 	-- group. This affects all segments which have the
 	-- "selected"-flag set.
