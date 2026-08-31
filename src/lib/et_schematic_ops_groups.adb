@@ -257,7 +257,8 @@ package body et_schematic_ops_groups is
 		-- text positons, ...
 		merge_positions;
 
-
+		-- Now we have a cloud of points of which
+		-- the geometrical center is to be found:
 		result := get_center (all_positions);
 
 		log_indentation_down;
