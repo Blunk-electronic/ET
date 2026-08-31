@@ -187,19 +187,26 @@ package body et_module_clipboard.netchangers is
 			use et_module_clipboard;
 			use pac_netchangers;
 
+			-- Points to the netchanger candidate
+			-- in the clipboard:
 			netchanger_cursor : pac_netchangers.cursor :=
 				clipboard.netchangers.first;
 
 
+			-- This procedure copies a given netchanger candidate,
+			-- moves it by the given offset and adds it to the module:
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in type_netchanger)
 			is
 				use et_netchangers.schematic;
 				use et_schematic_ops_netchangers;
+
+				-- The new netchanger will have a new index:
 				index_new : type_netchanger_id;
 
-				netchanger_new : type_netchanger;
+				-- The new netchanger to be added:
+				netchanger_new : type_netchanger;				
 			begin
 				log (text => "original netchanger " & to_string (index),
 					level => log_threshold + 1);
@@ -211,15 +218,30 @@ package body et_module_clipboard.netchangers is
 				log (text => "new netchanger " & to_string (index_new),
 					 level => log_threshold + 1);
 
+				log_indentation_up;
+
+				-- Create a copy of the given netchanger candidate
+				-- and move it by the given offset:
 				copy_netchanger_with_offset (
 					netchanger_in	=> netchanger,
 					offset			=> offset,
 					netchanger_out	=> netchanger_new);
 
+				-- Insert the new netchanger in the module:
+				add_netchanger (
+					module_cursor	=> module_cursor,
+					place			=> get_object_position (netchanger),
+					index			=> index_new,
+					netchanger		=> netchanger,
+					log_threshold	=> log_threshold + 2);
+
+				log_indentation_down;
 			end query_netchanger;
 
 
 		begin
+			-- Iterate through all netchangers that 
+			-- are in the clipboard:
 			while has_element (netchanger_cursor) loop
 				query_element (netchanger_cursor, query_netchanger'access);
 				next (netchanger_cursor);
@@ -233,6 +255,7 @@ package body et_module_clipboard.netchangers is
 			 level => log_threshold);
 
 		log_indentation_up;
+
 		do_paste;
 
 		log_indentation_down;

@@ -280,10 +280,20 @@ package body et_netchangers.schematic is
 
 
 
+	function get_object_position (
+		netchanger : in type_netchanger)
+		return type_object_position
+	is (to_object_position (netchanger.position_sch));
+
+
+
+
 	function get_position (
 		netchanger : in type_netchanger)
 		return type_netchanger_position_schematic
 	is (netchanger.position_sch);
+
+
 
 
 
@@ -665,7 +675,7 @@ package body et_netchangers.schematic is
 		netchanger_out := netchanger_in;
 
 		-- Now reset or clear some things of the copy.
-		
+
 		-- Reset board position to default:
 		reset_board_position;
 

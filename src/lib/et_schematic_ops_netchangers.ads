@@ -193,15 +193,26 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- Adds a netchanger to the schematic.
+	-- Adds a netchanger to the given module.
 	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y -- CS: rename to position
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
+	-- Adds an explicitly given netchanger to the given module:
+	procedure add_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position; -- sheet/x/y -- CS: rename to position
+		index			: in type_netchanger_id;
+		netchanger		: in type_netchanger;
+		--commit_design	: in type_commit_design := NO_COMMIT;
+		-- CS useful ? default must be NO_COMMIT as this procedure
+		-- is currently only called on pasting netchangers from
+		-- the clipboard.
+		log_threshold	: in type_log_level);
 
 
 	-- Tests whether the given netchanger ports of

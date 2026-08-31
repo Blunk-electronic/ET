@@ -1088,7 +1088,6 @@ package body et_schematic_ops_netchangers is
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y/rotation
-		-- CS rename to position
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1175,6 +1174,101 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_down;
 	end add_netchanger;
+
+
+
+
+
+
+
+
+
+
+	procedure add_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position; -- sheet/x/y
+		index			: in type_netchanger_id;
+		netchanger		: in type_netchanger;
+		log_threshold	: in type_log_level)
+	is
+		use et_board_ops_ratsnest;
+		-- use et_commit;
+		-- use et_undo_redo;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			cursor : pac_netchangers.cursor;
+
+			inserted : boolean;
+			ports : type_netchanger_ports;
+
+			use pac_netchangers;
+		begin
+			-- Insert the given netchanger
+			-- with the given index in the module:
+			insert (
+				container	=> module.netchangers,
+				key			=> index,
+				new_item	=> netchanger,
+				position	=> cursor,
+				inserted	=> inserted);
+				-- CS The inserted flag is not further evaluated.
+				-- It should always be true.
+
+			-- Get the absolute positions of the netchanger
+			-- ports according to
+			-- location and rotation in schematic.
+			ports := get_netchanger_ports (cursor);
+
+			-- Inserts the given netchanger ports in the net segments.
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				ports			=> ports,
+				sheet			=> get_sheet (place),
+				log_threshold	=> log_threshold + 1);
+
+		end query_module;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " add netchanger " & to_string (index)
+			 -- CS log more properties
+			 & " at " & to_string (place)
+			 & " rotation " & to_string (get_rotation (place)),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- if commit_design = DO_COMMIT then
+		-- 	-- Commit the current state of the design:
+		-- 	commit (PRE, verb, noun, log_threshold);
+		-- end if;
+
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+
+		-- if commit_design = DO_COMMIT then
+		-- 	-- Commit the new state of the design:
+		-- 	commit (POST, verb, noun, log_threshold);
+		-- end if;
+
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end add_netchanger;
+
 
 
 

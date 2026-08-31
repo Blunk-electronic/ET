@@ -188,6 +188,8 @@ package et_netchangers.schematic is
 		return type_netchanger_position_schematic;
 
 
+
+
 	procedure set_position (
 		netchanger	: in out type_netchanger;
 		position	: in type_netchanger_position_schematic);
@@ -247,7 +249,9 @@ package et_netchangers.schematic is
 		return string;
 
 
-
+	function get_object_position (
+		netchanger : in type_netchanger)
+		return type_object_position;
 
 
 
