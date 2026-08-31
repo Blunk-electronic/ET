@@ -159,10 +159,21 @@ package et_netchangers.schematic is
 		return type_sheet;
 
 
+
+
+	-- Moves the netchanger by the given x/y-offset
+	procedure move_netchanger ( -- CS rename to move_netchanger_relative ?
+		netchanger	: in out type_netchanger;
+		offset		: in type_vector_model);
+
+
 	-- Moves the netchanger by the given number of sheets:
-	procedure move_netchanger (
+	procedure move_netchanger ( -- CS rename to move_netchanger_relative ?
 		netchanger	: in out type_netchanger;
 		offset		: in type_sheet_relative);
+
+
+
 
 
 	function get_rotation (
@@ -370,6 +381,23 @@ package et_netchangers.schematic is
 	-- and board symbol:
 	procedure reset_status (
 		netchanger	: in out type_netchanger);
+
+
+
+
+
+-- COPY:
+
+	-- Copies a netchanger with all its properties
+	-- except status flags and the x/y-position in
+	-- the board drawing. The x/y-position assumes origin (0/0).
+	-- The new schematic position will be offset by
+	-- the given offset:
+	procedure copy_netchanger_with_offset (
+		netchanger_in	: in type_netchanger;
+		offset			: in type_object_position_relative;
+		netchanger_out	: out type_netchanger);
+
 
 
 end et_netchangers.schematic;

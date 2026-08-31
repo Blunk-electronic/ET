@@ -197,12 +197,25 @@ package body et_netchangers.schematic is
 
 
 
+
+
+
+	procedure move_netchanger (
+		netchanger	: in out type_netchanger;
+		offset		: in type_vector_model)
+	is begin
+		move_by (netchanger.position_sch, offset);
+	end move_netchanger;
+
+
 	procedure move_netchanger (
 		netchanger	: in out type_netchanger;
 		offset		: in type_sheet_relative)
 	is begin
 		add (netchanger.position_sch.sheet, offset);
 	end move_netchanger;
+
+
 
 
 
@@ -613,6 +626,56 @@ package body et_netchangers.schematic is
 		reset_status (netchanger.status_sch);
 		reset_status (netchanger.status_brd);
 	end reset_status;
+
+
+
+
+
+
+
+
+	procedure copy_netchanger_with_offset (
+		netchanger_in	: in type_netchanger;
+		offset			: in type_object_position_relative;
+		netchanger_out	: out type_netchanger)
+	is
+		procedure reset_board_position is
+		begin
+			netchanger_out.position_brd.place :=
+				netchanger_default_place;
+		end reset_board_position;
+
+
+		-- Moves netchanger_out by the given offset:
+		-- - sheet
+		-- - x/y position
+		procedure set_schematic_position is
+			use et_sheets;
+		begin
+			-- sheet:
+			move_netchanger (netchanger_out, get_sheet (offset));
+
+			-- place (x/y):
+			move_netchanger (netchanger_out, get_place (offset));
+		end set_schematic_position;
+
+
+	begin
+		-- Make a full copy of the given netchanger:
+		netchanger_out := netchanger_in;
+
+		-- Now reset or clear some things of the copy.
+		
+		-- Reset board position to default:
+		reset_board_position;
+
+		-- Reset status flags:
+		reset_status (netchanger_out.status_sch);
+		reset_status (netchanger_out.status_brd);
+
+		-- Set the schematic position:
+		set_schematic_position;
+	end copy_netchanger_with_offset;
 
 
 

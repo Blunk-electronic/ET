@@ -191,6 +191,9 @@ package et_netchangers is
 	end record;
 
 
+	netchanger_default_place : constant 
+		et_board_geometry.pac_geometry_2.type_vector_model :=
+		et_board_geometry.pac_geometry_2.origin;
 
 
 
@@ -211,15 +214,6 @@ package et_netchangers is
 
 
 
-	-- Copies a netchanger with all its properties
-	-- except status flags and the x/y-position in
-	-- the board drawing. The x/y-position assumes origin (0/0).
-	-- The new schematic position will be offset by
-	-- the given offset:
-	procedure copy_netchanger_with_offset (
-		netchanger_in	: in type_netchanger;
-		offset			: in type_object_position_relative;
-		netchanger_out	: out type_netchanger);
 
 
 

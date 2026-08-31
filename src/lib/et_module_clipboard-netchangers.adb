@@ -195,6 +195,7 @@ package body et_module_clipboard.netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in type_netchanger)
 			is
+				use et_netchangers.schematic;
 				use et_schematic_ops_netchangers;
 				index_new : type_netchanger_id;
 
@@ -213,8 +214,8 @@ package body et_module_clipboard.netchangers is
 				copy_netchanger_with_offset (
 					netchanger_in	=> netchanger,
 					offset			=> offset,
-					netchanger_out	=> netchanger_new);							
-												
+					netchanger_out	=> netchanger_new);
+
 			end query_netchanger;
 
 
