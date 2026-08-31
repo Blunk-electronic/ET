@@ -200,6 +200,11 @@ package et_netchangers.schematic is
 		place		: in type_vector_model);
 
 
+	function get_place (
+		netchanger	: in type_netchanger)
+		return type_vector_model;
+
+
 
 	function get_rotation (
 		netchanger	: in type_netchanger)
@@ -386,6 +391,14 @@ package et_netchangers.schematic is
 	procedure reset_status (
 		netchanger	: in out type_netchanger);
 
+
+
+	-- Returns true if the given netchanger
+	-- is on the given sheet and if it is selected:
+	function on_sheet_and_selected (
+		netchanger	: in type_netchanger;
+		sheet		: in type_sheet)
+		return boolean;
 
 
 

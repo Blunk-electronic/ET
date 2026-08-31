@@ -3117,6 +3117,85 @@ package body et_schematic_ops_netchangers is
 
 
 
+	function get_group_netchanger_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in type_netchanger)
+			is
+				pragma unreferenced (index);
+				place : type_vector_model;
+			begin
+				-- Filter out only selected netchangers and
+				-- those which are on the given sheet:
+				if on_sheet_and_selected (netchanger, sheet) then
+					-- CS: log the full name like N2
+
+					place := get_place (netchanger);
+
+					-- Append the netchanger position to the result:
+					result.append (place);
+				end if;
+			end query_netchanger;
+
+
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+
+				query_element (
+					netchanger_cursor, query_netchanger'access);
+
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get netchanger positions of group on sheet " & to_string (sheet),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_group_netchanger_positions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	procedure delete_netchangers_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)

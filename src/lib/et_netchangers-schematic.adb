@@ -315,6 +315,15 @@ package body et_netchangers.schematic is
 
 
 
+	function get_place (
+		netchanger	: in type_netchanger)
+		return type_vector_model
+	is begin
+		return netchanger.position_sch.place;
+	end get_place;
+
+
+
 
 	function get_position_schematic (
 		netchanger_cursor : in pac_netchangers.cursor)
@@ -637,6 +646,25 @@ package body et_netchangers.schematic is
 		reset_status (netchanger.status_brd);
 	end reset_status;
 
+
+
+
+
+
+
+
+	function on_sheet_and_selected (
+		netchanger	: in type_netchanger;
+		sheet		: in type_sheet)
+		return boolean
+	is begin
+		if get_sheet (netchanger) = sheet
+		and is_selected (netchanger) then
+			return true;
+		else
+			return false;
+		end if;
+	end on_sheet_and_selected;
 
 
 

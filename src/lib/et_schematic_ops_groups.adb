@@ -202,15 +202,23 @@ package body et_schematic_ops_groups is
 		log_threshold	: in type_log_level)
 		return type_vector_model
 	is
-		result : type_vector_model;
+		result : type_vector_model; -- the center of the group
 
-		all_positions : pac_points.list;
-
+		-- Places where units are:
 		unit_positions : pac_points.list;
+
+		-- Places where net segments start or end (A/B):
 		segment_positions : pac_points.list;
+
+		-- Places where netchangers are:
+		netchanger_positions : pac_points.list;
 
 		-- CS
 		-- text_positions : pac_points.list;
+
+		-- All places:
+		all_positions : pac_points.list;
+
 
 
 		procedure query_units is
@@ -224,11 +232,13 @@ package body et_schematic_ops_groups is
 			unit_positions := get_group_unit_positions (
 				module_cursor, sheet, log_threshold + 2);
 
-			log (text => "collected unit positions " & get_length (unit_positions),
+			log (text => "collected unit positions "
+				 & get_length (unit_positions),
 				 level => log_threshold + 2);
 
 			log_indentation_down;
 		end query_units;
+
 
 
 		procedure query_net_segments is
@@ -242,11 +252,32 @@ package body et_schematic_ops_groups is
 			segment_positions := get_group_segment_positions (
 				module_cursor, sheet, log_threshold + 2);
 
-			log (text => "collected segment end points (A/B) " & get_length (segment_positions),
+			log (text => "collected segment end points (A/B) "
+				 & get_length (segment_positions),
 				 level => log_threshold + 2);
 
 			log_indentation_down;
 		end query_net_segments;
+
+
+
+		procedure query_netchangers is
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "query netchangers", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the positions of netchangers
+			-- of the group:
+			netchanger_positions := get_group_netchanger_positions (
+				module_cursor, sheet, log_threshold + 2);
+
+			log (text => "collected netchangers positions "
+				 & get_length (netchanger_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_netchangers;
 
 
 
@@ -260,7 +291,19 @@ package body et_schematic_ops_groups is
 				before	=> c,
 				source	=> unit_positions);
 
-			-- CS: segment, net positions
+			-- The ends of net segments:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> segment_positions);
+
+			-- Netchanger positions:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> netchanger_positions);
+
+			-- CS log total positions ?
 		end merge_positions;
 
 
@@ -275,8 +318,9 @@ package body et_schematic_ops_groups is
 		-- net segment ends, texts:
 		query_units;
 		query_net_segments;
-		
-		-- CS: query netchangers, texts
+		query_netchangers;
+
+		-- CS: query texts
 
 		-- Merge unit positions, netchangers, net segment positions,
 		-- text positons, ...
