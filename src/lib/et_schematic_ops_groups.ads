@@ -154,8 +154,9 @@ package et_schematic_ops_groups is
 	-- into the clipboard.
 	-- 1. If auto_center is true, then
 	--    the center of the group is used as reference point.
+	--    The argument reference_point is then ignored.
 	-- 2. If auto_center is false, then the explicitly given
-	--    reference_point is used.
+	--    reference_point is used. 
 	-- 3. The x/y component of the global group_reference_point
 	--    is set according to the specified reference_point
 	--    or as the auto genereated center of the group.
