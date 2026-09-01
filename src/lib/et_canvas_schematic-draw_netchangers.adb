@@ -621,15 +621,93 @@ procedure draw_netchangers is
 
 
 
+
+
+	procedure draw_netchangers_being_pasted is
+		use et_module_clipboard;
+
+		use pac_netchangers;
+		netchanger_cursor : pac_netchangers.cursor :=
+			clipboard.netchangers.first;
+
+
+		-- This procedure queries a netchanger:
+		procedure query_netchanger (
+			index		: in type_netchanger_id;
+			netchanger	: in type_netchanger)
+		is
+			use et_schematic_ops_groups;
+
+			-- Get the position of the unit candidate as it is
+			-- in the clipboard:
+			position : type_position := to_position (netchanger.position_sch);
+
+
+			-- This procedure draws the components of
+			-- the netchanger candidate (body, ports, name):
+			procedure draw_netchanger is begin
+				-- Draw the body of the netchanger:
+				draw_body (position);
+
+				-- Draw the ports of the netchanger:
+				draw_ports (position, get_direction (netchanger));
+
+				-- Draw the name of the netchanger (like N33):
+				draw_name (index => index, position => position);
+
+				-- Draw the origin of the netchanger:
+				set_color_origin (brightness);
+				draw_origin ((get_place (position), 0.0));
+				-- NOTE: The origin is never rotated.
+			end draw_netchanger;
+
+
+			offset : type_vector_model;
+		begin
+			-- Compute the offset by which the netchanger
+			-- is to be drawn away from the group_reference_point;
+			offset := get_primary_tool_position - get_place (group_reference_point);
+
+			-- Move the netchanger by the offset:
+			move_by (position.place, offset);
+
+			-- Draw the netchanger:
+			draw_netchanger;
+		end query_netchanger;
+
+
+	begin
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- All netchangers will be drawn highlighted:
+			brightness := BRIGHT;
+
+			-- Iterate through the netchangers in the clipboard:
+			while has_element (netchanger_cursor) loop
+				query_element (netchanger_cursor, query_netchanger'access);
+				next (netchanger_cursor);
+			end loop;
+
+			brightness := NORMAL;
+		end if;
+	end draw_netchangers_being_pasted;
+
+
+
 begin
---	put_line ("draw netchangers (schematic)");
+	-- put_line ("draw netchangers (schematic)");
 
+	-- Draw netchangers:
+	query_element (active_module, query_module'access);
 
-	pac_generic_modules.query_element (
-		position	=> active_module,
-		process		=> query_module'access);
-
+	-- Draw the netchanger being added. If no netchanger is
+	-- being added, then nothing happens here:
 	draw_netchanger_being_added;
+
+	-- Draw netchangers being pasted from clipboard.
+	-- If no group is being pasted, then nothing happens here:
+	draw_netchangers_being_pasted;
 
 end draw_netchangers;
 

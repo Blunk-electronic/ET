@@ -1424,9 +1424,6 @@ procedure draw_units is
 				-- Get the rotation of the unit
 				unit_rotation := get_rotation (unit_position);
 
-				-- The whole unit will be drawn highlighted:
-				brightness := BRIGHT;
-
 				-- Compute the offset by which the unit
 				-- is to be drawn away from the group_reference_point;
 				offset := get_primary_tool_position - get_place (group_reference_point);
@@ -1436,8 +1433,6 @@ procedure draw_units is
 
 				-- Draw the copy of the unit:
 				draw_unit (unit_cursors);
-
-				brightness := NORMAL;
 			end query_unit;
 
 
@@ -1463,11 +1458,16 @@ procedure draw_units is
 		-- Draw only if a group is being pasted:
 		if group_is_being_pasted then
 
+			-- All units will be drawn highlighted:
+			brightness := BRIGHT;
+
 			-- Iterate through the devices in the clipboard:
 			while has_element (device_cursor) loop
 				query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
+
+			brightness := NORMAL;
 		end if;
 	end draw_units_being_pasted;
 
@@ -1476,6 +1476,8 @@ procedure draw_units is
 
 begin
 	-- put_line ("draw units ...");
+
+	-- Draw units:
 	query_element (active_module, query_module'access);
 
 	-- Draw the unit being added. If no unit is being added,
