@@ -202,10 +202,11 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-	-- Adds an explicitly given netchanger to the given module:
+	-- Adds an explicitly given netchanger to the given module.
+	-- The position of the netchanger is included in the given
+	-- netchanger itself:
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y -- CS: rename to position
 		index			: in type_netchanger_id;
 		netchanger		: in type_netchanger;
 		--commit_design	: in type_commit_design := NO_COMMIT;
@@ -505,7 +506,7 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 		return pac_points.list;
 
-	
+
 	-- Deletes all netchangers which are in the current
 	-- group. This affects all netchangers which have the
 	-- "selected"-flag set.

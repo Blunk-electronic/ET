@@ -1186,7 +1186,6 @@ package body et_schematic_ops_netchangers is
 
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
 		index			: in type_netchanger_id;
 		netchanger		: in type_netchanger;
 		log_threshold	: in type_log_level)
@@ -1194,6 +1193,10 @@ package body et_schematic_ops_netchangers is
 		use et_board_ops_ratsnest;
 		-- use et_commit;
 		-- use et_undo_redo;
+
+		-- Get the position of the given netchanger:
+		position : constant type_object_position :=
+			get_object_position (netchanger);
 
 
 		procedure query_module (
@@ -1229,7 +1232,7 @@ package body et_schematic_ops_netchangers is
 				module_cursor	=> module_cursor,
 				index			=> index,
 				ports			=> ports,
-				sheet			=> get_sheet (place),
+				sheet			=> get_sheet (position),
 				log_threshold	=> log_threshold + 1);
 
 		end query_module;
@@ -1239,9 +1242,9 @@ package body et_schematic_ops_netchangers is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " add netchanger " & to_string (index)
-			 -- CS log more properties
-			 & " at " & to_string (place)
-			 & " rotation " & to_string (get_rotation (place)),
+			 & " at " & to_string (position)
+			 & " rotation " & to_string (get_rotation (position)),
+			 -- CS & " direction " & to_string (get_direction (netchanger)),
 			level => log_threshold);
 
 		log_indentation_up;

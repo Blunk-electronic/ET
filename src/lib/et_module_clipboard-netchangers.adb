@@ -230,7 +230,6 @@ package body et_module_clipboard.netchangers is
 				-- Insert the new netchanger in the module:
 				add_netchanger (
 					module_cursor	=> module_cursor,
-					place			=> get_object_position (netchanger_new),
 					index			=> index_new,
 					netchanger		=> netchanger_new,
 					log_threshold	=> log_threshold + 2);
