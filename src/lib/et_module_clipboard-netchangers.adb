@@ -206,16 +206,16 @@ package body et_module_clipboard.netchangers is
 				index_new : type_netchanger_id;
 
 				-- The new netchanger to be added:
-				netchanger_new : type_netchanger;				
+				netchanger_new : type_netchanger;
 			begin
-				log (text => "original netchanger " & to_string (index),
+				log (text => "original netchanger index " & to_string (index),
 					level => log_threshold + 1);
 
 				-- Get the next available index to be used
 				-- for the new netchanger:
 				index_new := get_next_netchanger_index (module_cursor);
 
-				log (text => "new netchanger " & to_string (index_new),
+				log (text => "new netchanger index " & to_string (index_new),
 					 level => log_threshold + 1);
 
 				log_indentation_up;
@@ -230,9 +230,9 @@ package body et_module_clipboard.netchangers is
 				-- Insert the new netchanger in the module:
 				add_netchanger (
 					module_cursor	=> module_cursor,
-					place			=> get_object_position (netchanger),
+					place			=> get_object_position (netchanger_new),
 					index			=> index_new,
-					netchanger		=> netchanger,
+					netchanger		=> netchanger_new,
 					log_threshold	=> log_threshold + 2);
 
 				log_indentation_down;
@@ -240,7 +240,7 @@ package body et_module_clipboard.netchangers is
 
 
 		begin
-			-- Iterate through all netchangers that 
+			-- Iterate through all netchangers that
 			-- are in the clipboard:
 			while has_element (netchanger_cursor) loop
 				query_element (netchanger_cursor, query_netchanger'access);

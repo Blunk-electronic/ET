@@ -2306,7 +2306,7 @@ package body et_schematic_ops_nets is
 							log_indentation_up;
 
 							log (text => "net " & to_string (net_name)
-								& " segment end "
+								& " segment " & to_string (AB_end) & " end "
 								& to_string (get_end_point (segment, AB_end)),
 							 level => log_threshold + 2);
 
