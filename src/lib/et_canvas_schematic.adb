@@ -128,7 +128,7 @@ package body et_canvas_schematic is
 
 	-- procedure update_mode_display is
 	-- 	use et_modes.schematic;
- -- 
+	--
 	-- 	-- Get the current drawing mode
 	-- 	v : constant string := to_string (verb);
 	-- 	n : constant string := to_string (noun);
@@ -143,9 +143,9 @@ package body et_canvas_schematic is
 	-- 			active_id => v);
 	-- 	pragma assert (found_verb);
 	-- 	verb_combo_updating := false;
- -- 
+	--
 	-- 	set_up_noun_combo;
- -- 
+	--
 	-- 	noun_combo_updating := true;
 	-- 	found_noun :=
 	-- 		set_active_id (
@@ -180,7 +180,7 @@ package body et_canvas_schematic is
 				active_id => n);
 		noun_combo_updating := false;
 	end update_mode_display;
-	
+
 
 
 	procedure compute_bounding_box (
@@ -715,6 +715,7 @@ package body et_canvas_schematic is
 
 
 			set_group_not_being_copied;
+			set_group_not_being_pasted;
 
 			pac_device_ops.reset_window_open_flags;
 
