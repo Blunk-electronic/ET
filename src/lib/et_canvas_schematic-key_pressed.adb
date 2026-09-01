@@ -1012,8 +1012,10 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 
+						-- Paste the group with its reference point
+						-- at the cursor position:
 						et_canvas_schematic_group.paste_group (
-							KEYBOARD, get_cursor_position);
+							get_cursor_position);
 
 
 					when others => null;

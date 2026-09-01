@@ -253,8 +253,9 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 
-						et_canvas_schematic_group.paste_group (
-							MOUSE, get_cursor_position);
+						-- Paste the group with its reference point
+						-- at the mouse position:
+						et_canvas_schematic_group.paste_group (snap_point);
 
 					when others => null;
 				end case;

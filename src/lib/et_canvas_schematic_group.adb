@@ -226,23 +226,17 @@ package body et_canvas_schematic_group is
 
 
 	procedure paste_group (
-		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
 
 		procedure finalize is
 			use et_cmd_origin_to_commit;
 		begin
-			-- For the subprograms that draw objects
-			-- of a group being pasted:
-			set_group_not_being_pasted;
-
 			-- Do the final pasting with the group:
 			paste_group (
 				module_cursor	=> active_module,
 				sheet			=> active_sheet, -- we stay on the current sheet
 				place			=> point,
-
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
 
@@ -252,11 +246,7 @@ package body et_canvas_schematic_group is
 
 
 	begin
-		-- Set the tool being used:
-		object_tool := tool;
-
 		finalize;
-
 	end paste_group;
 
 

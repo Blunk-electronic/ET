@@ -715,7 +715,29 @@ package body et_canvas_schematic is
 
 
 			set_group_not_being_copied;
-			set_group_not_being_pasted;
+
+
+			-- Depending on the current verb and noun
+			-- specific reset actions are required:
+			-- CS: Move other actions of this procedure
+			-- to the case construct below:
+			case verb is
+				when VERB_PASTE =>
+
+					case noun is
+						when NOUN_GROUP =>
+							set_group_not_being_pasted;
+							reset_verb_and_noun;
+							update_mode_display;
+
+						when others =>
+							null; -- CS
+					end case;
+
+				when others =>
+					null; -- CS
+			end case;
+
 
 			pac_device_ops.reset_window_open_flags;
 

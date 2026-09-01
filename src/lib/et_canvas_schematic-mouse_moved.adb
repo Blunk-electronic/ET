@@ -125,9 +125,7 @@ begin
 		when VERB_PASTE =>
 			case noun is
 				when NOUN_GROUP =>
-					if edit_process_running then
-						redraw;
-					end if;
+					redraw;
 
 				when others => null;
 			end case;

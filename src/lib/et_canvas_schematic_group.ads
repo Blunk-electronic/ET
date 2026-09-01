@@ -120,8 +120,10 @@ package et_canvas_schematic_group is
 		& status_hint_for_abort;
 
 
+	-- This procedure pastes the group
+	-- with its reference point at the
+	-- given point:
 	procedure paste_group (
-		tool	: in type_tool;
 		point	: in type_vector_model);
 
 

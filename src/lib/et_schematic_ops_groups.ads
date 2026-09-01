@@ -174,7 +174,8 @@ package et_schematic_ops_groups is
 	-- The global group_reference_point (set by procedures
 	-- define_group_rectangular and copy_group_to_clipboard)
 	-- is used to compute the offset by which the group is
-	-- to be pasted:
+	-- to be pasted.
+	-- The status of all objects is reset before commit:
 	procedure paste_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
