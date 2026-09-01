@@ -126,10 +126,10 @@ is
 
 						if copy_to_clipboard then
 							et_canvas_schematic_group.copy_group_to_clipboard (
-								get_cursor_position);
+								snap_point);
 						else
 							et_canvas_schematic_group.copy_group (
-								MOUSE, get_cursor_position);
+								MOUSE, snap_point);
 						end if;
 
 
@@ -175,7 +175,7 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_group.drag_group (
-							MOUSE, get_cursor_position);
+							MOUSE, snap_point);
 
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
