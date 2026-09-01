@@ -1000,6 +1000,10 @@ is
 				reset_grid_and_cursor;
 
 
+				-- For the subprograms that draw objects
+				-- of a group being pasted:
+				set_group_being_pasted;
+
 
 			-- If space pressed, then the operator wishes to operate via keyboard:
 			when key_space =>

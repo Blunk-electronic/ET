@@ -237,7 +237,6 @@ package body et_canvas_schematic_group is
 			-- of a group being pasted:
 			set_group_not_being_pasted;
 
-
 			-- Do the final pasting with the group:
 			paste_group (
 				module_cursor	=> active_module,
@@ -247,35 +246,17 @@ package body et_canvas_schematic_group is
 				commit_design	=> DO_COMMIT,
 				log_threshold	=> log_threshold);
 
-			-- Prepare for a new editing process;
-			reset_editing_process;
-
 			-- Clear the status bar:
 			status_clear;
 		end finalize;
 
 
 	begin
-		-- Initially the editing process is not running:
-		if not edit_process_running then
+		-- Set the tool being used:
+		object_tool := tool;
 
-			-- So this branch is executed on the
-			-- first call of this procedure:
+		finalize;
 
-			-- Set the tool being used:
-			object_tool := tool;
-
-			-- For the subprograms that draw objects
-			-- of a group being pasted:
-			set_group_being_pasted;
-
-			set_edit_process_running;
-
-		else
-			-- On the second call of this procedure,
-			-- we finalize the drag-group operation:
-			finalize;
-		end if;
 	end paste_group;
 
 
