@@ -79,6 +79,8 @@ with et_display.schematic;				use et_display.schematic;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
+with et_module_clipboard;
+
 
 separate (et_canvas_schematic)
 
@@ -1095,7 +1097,7 @@ procedure draw_units is
 						--    of a group. In this case the unit
 						--    is moved by the current group offset.
 						-- 2. The unit is being moved alone.
-						--    Then we must draw the unit a the
+						--    Then we must draw the unit at the
 						--    place where the current tool points to.
 						if is_moving (unit) then
 
@@ -1329,6 +1331,149 @@ procedure draw_units is
 
 
 
+
+
+
+	procedure draw_units_being_pasted is
+		use et_module_clipboard;
+
+		use pac_devices_electrical;
+		device_cursor : pac_devices_electrical.cursor :=
+			clipboard.devices.first;
+
+
+		-- This procedure draws the units of the candidate device:
+		procedure query_device (
+			device_name	: in type_device_name;
+			device		: in type_device_electrical)
+		is
+			use pac_units;
+			unit_cursor : pac_units.cursor := device.units.first;
+
+			-- Get the device model of the candidate device:
+			device_cursor_lib : constant pac_device_models.cursor :=
+				get_device_model (device);
+
+			-- The number of units provided by the current device:
+			unit_count : constant type_unit_count :=
+				get_unit_count (device_cursor_lib);
+
+
+			-- The name, value and purpose of the candidate device if it is real:
+			device_value : type_device_value; -- like 100R or TL084
+			device_purpose : type_device_purpose; -- like "brightness control"
+
+
+
+			-- This procedure queries a unit:
+			procedure query_unit (
+				unit_name	: in type_unit_name;
+				unit		: in type_unit)
+			is
+				use et_schematic_ops_groups;
+				
+				-- Get the position of the unit candidate as it is
+				-- in the clipboard:
+				unit_position : constant type_object_position :=
+					get_position (unit);
+
+				unit_place : type_vector_model; -- x/y
+				unit_rotation : type_rotation;
+
+				unit_cursors : constant type_unit_cursors :=
+					locate_unit (device_cursor_lib, unit_name);
+
+
+				-- This procedure maps from the given unit cursor
+				-- to the actual symbol and draws the symbol:
+				procedure draw_unit (
+					unit_cursor : in type_unit_cursors)
+				is begin
+					draw_unit (
+						symbol			=> get_symbol (unit_cursor),
+
+						device_name		=> device_name,
+						device_value	=> device_value,
+						device_purpose	=> device_purpose,
+
+						unit_name		=> unit_name,
+						unit_count		=> unit_count,
+
+						unit_place			=> unit_place,
+						unit_rotation		=> unit_rotation,
+						unit_mirror_status	=> get_mirror_status (unit),
+
+						-- Get the placeholders (for name, value, purpose)
+						-- of the unit as defined in the schematic.
+						-- (If the unit is virtual, then default
+						-- placeholders are returned and later ignored when the
+						-- unit is drawn):
+						placeholders	=> get_placeholders (unit));
+				end draw_unit;
+
+
+				offset : type_vector_model;
+			begin
+				-- put_line ("unit " & to_string (unit_name));
+
+				-- Get the place of the original unit.
+				-- This value will later be overwritten
+				-- because the group is being pasted (it is floating):
+				unit_place := get_place (unit_position);
+
+				-- Get the rotation of the unit
+				unit_rotation := get_rotation (unit_position);
+
+				-- The whole unit will be drawn highlighted:
+				brightness := BRIGHT;
+
+				-- Compute the offset by which the unit
+				-- is to be drawn away from the group_reference_point;
+				offset := get_primary_tool_position - get_place (group_reference_point);
+				
+				-- Move the unit by the offset:
+				move_by (unit_place, offset);
+
+				-- Draw the copy of the unit:
+				draw_unit (unit_cursors);
+
+				brightness := NORMAL;
+			end query_unit;
+
+
+		begin
+			-- put_line ("paste device " & to_string (device_name));
+
+			-- If the candidate device is real, then fetch its
+			-- value and purpose:
+			if is_real (device) then
+				device_value := device.value; -- like 100R or TL084
+				device_purpose := device.purpose; -- like "brightness control"
+			end if;
+
+			-- Iterate through the units of the candidate device:
+			while has_element (unit_cursor) loop
+				query_element (unit_cursor, query_unit'access);
+				next (unit_cursor);
+			end loop;
+		end query_device;
+
+
+	begin
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- Iterate through the devices in the clipboard:
+			while has_element (device_cursor) loop
+				query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end if;
+	end draw_units_being_pasted;
+
+
+
+
 begin
 	-- put_line ("draw units ...");
 	query_element (active_module, query_module'access);
@@ -1340,6 +1485,10 @@ begin
 	-- Draw the unit being fetched. If no unit is being fetched,
 	-- then nothing happens here:
 	draw_unit_being_fetched;
+
+	-- Draw units being pasted from clipboard. If no group
+	-- is being pasted, then nothing happens here:
+	draw_units_being_pasted;
 
 end draw_units;
 
