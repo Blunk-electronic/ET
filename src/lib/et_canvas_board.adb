@@ -136,7 +136,7 @@ package body et_canvas_board is
 
 	-- procedure update_mode_display is
 	-- 	use et_modes.board;
- -- 
+	--
 	-- 	-- Get the current drawing mode
 	-- 	v : constant string := to_string (verb);
 	-- 	n : constant string := to_string (noun);
@@ -151,9 +151,9 @@ package body et_canvas_board is
 	-- 			active_id => v);
 	-- 	pragma assert (found_verb);
 	-- 	verb_combo_updating := false;
- -- 
+	--
 	-- 	set_up_noun_combo;
- -- 
+	--
 	-- 	noun_combo_updating := true;
 	-- 	found_noun :=
 	-- 		set_active_id (
@@ -188,7 +188,7 @@ package body et_canvas_board is
 		noun_combo_updating := false;
 	end update_mode_display;
 
-	
+
 
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;
