@@ -859,7 +859,7 @@ is
 
 						if copy_to_clipboard then
 							et_canvas_schematic_group.copy_group_to_clipboard (
-								KEYBOARD, get_cursor_position);
+								get_cursor_position);
 						else
 							et_canvas_schematic_group.copy_group (
 								KEYBOARD, get_cursor_position);

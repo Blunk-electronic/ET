@@ -104,8 +104,11 @@ package et_canvas_schematic_group is
 		point	: in type_vector_model);
 
 
+	-- Copies the object of the current group
+	-- to the clipboard.
+	-- Sets the reference point of the group
+	-- as specified by the given point:
 	procedure copy_group_to_clipboard (
-		tool	: in type_tool;
 		point	: in type_vector_model);
 
 

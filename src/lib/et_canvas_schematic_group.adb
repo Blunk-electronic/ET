@@ -199,15 +199,8 @@ package body et_canvas_schematic_group is
 
 
 	procedure copy_group_to_clipboard (
-		tool	: in type_tool;
 		point	: in type_vector_model)
-	is
-
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-
-
+	is begin
 		copy_group_to_clipboard (
 			module_cursor	=> active_module,
 			auto_center		=> false,
