@@ -999,7 +999,6 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-
 				-- For the subprograms that draw objects
 				-- of a group being pasted:
 				set_group_being_pasted;
