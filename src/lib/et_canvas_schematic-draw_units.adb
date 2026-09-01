@@ -1371,7 +1371,7 @@ procedure draw_units is
 				unit		: in type_unit)
 			is
 				use et_schematic_ops_groups;
-				
+
 				-- Get the position of the unit candidate as it is
 				-- in the clipboard:
 				unit_position : constant type_object_position :=
@@ -1430,7 +1430,7 @@ procedure draw_units is
 				-- Compute the offset by which the unit
 				-- is to be drawn away from the group_reference_point;
 				offset := get_primary_tool_position - get_place (group_reference_point);
-				
+
 				-- Move the unit by the offset:
 				move_by (unit_place, offset);
 
