@@ -949,7 +949,7 @@ package body et_schematic_ops_units is
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor;
 		sheet			: in type_sheet_relative;
-		destination		: in type_vector_model;
+		offset			: in type_vector_model;
 		target_device	: in type_device_name := device_name_default;
 		device_created	: out type_device_name;
 		log_threshold	: in type_log_level) is separate;
@@ -4125,7 +4125,7 @@ package body et_schematic_ops_units is
 				device_cursor	=> device_cursor_old,
 				unit_cursor		=> unit_cursor_old,
 				sheet			=> sheet,
-				destination		=> offset,
+				offset			=> offset,
 				target_device	=> device_created,
 				device_created	=> device_created,
 				log_threshold	=> log_threshold + 1);
@@ -4148,7 +4148,7 @@ package body et_schematic_ops_units is
 				device_cursor	=> device_cursor_old,
 				unit_cursor		=> unit_cursor_old,
 				sheet			=> sheet,
-				destination		=> offset,
+				offset			=> offset,
 				device_created	=> device_created,
 				log_threshold	=> log_threshold + 1);
 

@@ -89,7 +89,7 @@ package body et_cp_schematic_netchanger is
 			when 8 =>
 				add_netchanger (
 					module_cursor	=> module,
-					place			=> to_position (
+					position		=> to_position (
 						sheet => to_sheet (get_field (cmd, 5)),
 						point => set
 									(

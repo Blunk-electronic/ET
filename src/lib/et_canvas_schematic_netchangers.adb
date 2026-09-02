@@ -982,7 +982,7 @@ package body et_canvas_schematic_netchangers is
 
 		add_netchanger (
 			module_cursor	=> active_module,
-			place			=> to_position (place, active_sheet, netchanger_add.rotation),
+			position		=> to_position (place, active_sheet, netchanger_add.rotation),
 			log_threshold	=> log_threshold + 1);
 
 		status_clear;

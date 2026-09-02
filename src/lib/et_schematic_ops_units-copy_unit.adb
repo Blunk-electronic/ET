@@ -49,7 +49,7 @@ procedure copy_unit (
 	device_cursor	: in pac_devices_electrical.cursor;
 	unit_cursor		: in pac_units.cursor;
 	sheet			: in type_sheet_relative;
-	destination		: in type_vector_model;
+	offset			: in type_vector_model;
 	target_device	: in type_device_name := device_name_default;
 	device_created	: out type_device_name;
 	log_threshold	: in type_log_level)
@@ -81,10 +81,8 @@ is
 		-- relative sheet offset:
 		move_by_sheets (position_new, sheet);
 
-		-- Regard the given "destination" as offset.
-		-- Move the original position by
-		-- the given "destination":
-		move_by (position_new, destination);
+		-- Move the original position by the given offset:
+		move_by (position_new, offset);
 
 		-- Now the absolute position of
 		-- the new unit is complete and
@@ -127,7 +125,7 @@ is
 
 				-- Copy the unit into the target device:
 				copy_unit_to_device (
-					unit_cursor, sheet, destination, device);
+					unit_cursor, sheet, offset, device);
 
 				-- Get the ports with their original positions
 				-- as they are defined in the device model:
@@ -180,7 +178,7 @@ begin
 		& " device " & get_device_name (device_cursor)
 		& " copy unit " & to_string (unit_name)
 		& " by sheet(s) " & relative_to_string (sheet)
-		& " offset " & to_string (destination),
+		& " offset " & to_string (offset),
 		level => log_threshold);
 
 	log_indentation_up;

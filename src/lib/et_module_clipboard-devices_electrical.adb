@@ -303,7 +303,7 @@ package body et_module_clipboard.devices_electrical is
 							device_cursor	=> device_cursor,
 							unit_cursor		=> unit_cursor,
 							sheet			=> get_sheet (offset),
-							destination		=> get_place (offset),
+							offset			=> get_place (offset),
 							target_device	=> device_created,
 							device_created	=> device_created,
 							log_threshold	=> log_threshold + 4);
@@ -322,7 +322,7 @@ package body et_module_clipboard.devices_electrical is
 							device_cursor	=> device_cursor,
 							unit_cursor		=> unit_cursor,
 							sheet			=> get_sheet (offset),
-							destination		=> get_place (offset),
+							offset			=> get_place (offset),
 							device_created	=> device_created,
 							log_threshold	=> log_threshold + 4);
 
