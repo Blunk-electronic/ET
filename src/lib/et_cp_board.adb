@@ -73,6 +73,7 @@ with et_cp_board_material_bom;		use et_cp_board_material_bom;
 with et_cp_board_netchanger;		use et_cp_board_netchanger;
 with et_cp_board_script;			use et_cp_board_script;
 with et_cp_board_libraries;			use et_cp_board_libraries;
+with et_cp_board_group;				use et_cp_board_group;
 
 
 package body et_cp_board is
@@ -192,6 +193,9 @@ package body et_cp_board is
 
 				when VERB_CLEAR =>
 					case noun is
+						when NOUN_GROUP =>
+							clear_group (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_ZONE =>
 							clear_zones (module_cursor, cmd, log_threshold + 1);
 
@@ -201,6 +205,9 @@ package body et_cp_board is
 
 				when VERB_COPY =>
 					case noun is
+						when NOUN_GROUP =>
+							copy_group (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_DEVICE =>
 							copy_device (module_cursor, cmd, log_threshold + 1);
 
@@ -211,7 +218,7 @@ package body et_cp_board is
 				when VERB_DEFINE =>
 					case noun is
 						when NOUN_GROUP =>
-							null; -- CS
+							define_group (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -223,7 +230,7 @@ package body et_cp_board is
 							delete_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_GROUP =>
-							null; -- CS
+							delete_group (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_LAYER =>
 							delete_signal_layer (module_cursor, cmd, log_threshold + 1);
@@ -376,6 +383,9 @@ package body et_cp_board is
 
 				when VERB_MOVE =>
 					case noun is
+						when NOUN_GROUP =>
+							move_group (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_FRAME =>
 							move_drawing_frame (module_cursor, cmd, log_threshold + 1);
 
@@ -398,6 +408,15 @@ package body et_cp_board is
 							move_via (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
+					end case;
+
+
+				when VERB_PASTE =>
+					case noun is
+						when NOUN_GROUP =>
+							paste_group (module_cursor, cmd, log_threshold + 1);
+
+						when others	=> invalid_noun (to_string (noun));
 					end case;
 
 

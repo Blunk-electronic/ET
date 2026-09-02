@@ -62,6 +62,7 @@ package et_modes.board is
 		VERB_MAKE, -- CS alternatively VERB_EXPORT ?
 		VERB_MOVE,
 
+		VERB_PASTE,
 		VERB_PLACE,
 
 		VERB_QUIT,
@@ -209,6 +210,7 @@ package et_modes.board is
 		VERB_MOVE		=> (NOUN_FRAME | NOUN_CURSOR | NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE
 							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_VIA => true,
 							others => false),
+		VERB_PASTE		=> (NOUN_GROUP => true,	others => false),
 		VERB_PLACE		=> (NOUN_VIA | NOUN_TEXT | NOUN_PLACEHOLDER => true,	others => false),
 		VERB_QUIT		=> (NOUN_NONE => true,								others => false),
 		VERB_REMOVE		=> (NOUN_LIBRARY => true,							others => false),
@@ -241,6 +243,7 @@ package et_modes.board is
 		VERB_FLIP		=> NOUN_DEVICE,
 		VERB_MAKE		=> NOUN_BOM,
 		VERB_MOVE		=> NOUN_FRAME,
+		VERB_PASTE		=> NOUN_GROUP,
 		VERB_PLACE		=> NOUN_VIA,
 		VERB_QUIT		=> NOUN_NONE,
 		VERB_REMOVE		=> NOUN_LIBRARY,
