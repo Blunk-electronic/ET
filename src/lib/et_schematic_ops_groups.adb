@@ -878,6 +878,9 @@ package body et_schematic_ops_groups is
 
 		log_indentation_up;
 
+		-- Clean up clipboard:
+		et_module_clipboard.clear_clipboard;
+
 		set_group_reference_point;
 
 
@@ -989,43 +992,51 @@ package body et_schematic_ops_groups is
 			& " place " & to_string (place),
 			level => log_threshold);
 
-
 		log_indentation_up;
 
+		-- The clipboard might be empty. In this case there is
+		-- nothing to do:
+		if et_module_clipboard.clipboard_is_empty then
+			log (text => "clipboard is empty -> nothing to do !",
+				 level => log_threshold);
+		else
+		-- Start paste operations:
 
-		if commit_design = DO_COMMIT then
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold);
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+
+			compute_offset;
+
+
+			-- Transfer objects from clipboard to the
+			-- given module:
+			paste_units;
+
+			paste_net_segments;
+
+			paste_netchangers;
+
+
+			-- CS texts
+
+
+			-- Previously to commiting the design,
+			-- the status of all objects must be reset:
+			reset_objects (module_cursor, log_threshold + 1);
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+
+
+			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 
-
-		compute_offset;
-
-
-		-- Transfer objects from clipboard to the
-		-- given module:
-		paste_units;
-
-		paste_net_segments;
-
-		paste_netchangers;
-
-
-		-- CS texts
-
-
-		-- Previously to commiting the design,
-		-- the status of all objects must be reset:
-		reset_objects (module_cursor, log_threshold + 1);
-
-
-		if commit_design = DO_COMMIT then
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold);
-		end if;
-
-
-		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
 	end paste_group;

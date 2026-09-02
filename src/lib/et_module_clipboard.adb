@@ -52,6 +52,17 @@ package body et_module_clipboard is
 
 
 
+	function clipboard_is_empty
+		return boolean
+	is begin
+		if clipboard = empty_clipboard then
+			return true;
+		else
+			return false;
+		end if;
+	end clipboard_is_empty;
+
+
 
 	procedure toggle_copy_to_clipboard is begin
 		if copy_to_clipboard then

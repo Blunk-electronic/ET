@@ -43,20 +43,39 @@ with et_module;						use et_module;
 package et_module_clipboard is
 
 
-
+	-- The clipboard:
 	clipboard : type_clipboard;
 
+
+	empty_clipboard : constant type_clipboard := (others => <>);
+
+
+
+	-- Clears the clipboard:
 	procedure clear_clipboard;
 
 
+	-- Returns true if the clipboard is empty:
+	function clipboard_is_empty
+		return boolean;
 
+
+
+	-- This flag indicates that selected objects
+	-- are to be copied to the clipboard:
 	copy_to_clipboard : boolean := false;
 
+
+	-- Toggles the flag copy_to_clipboard:
 	procedure toggle_copy_to_clipboard;
 
 
+	-- Clears the flag copy_to_clipboard:
 	procedure reset_copy_to_clipboard;
 
+
+	-- Returns true if the flag copy_to_clipboard
+	-- is set:
 	function copy_to_clipboard_enabled
 		return boolean;
 

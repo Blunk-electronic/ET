@@ -162,6 +162,7 @@ package et_schematic_ops_groups is
 	--    or as the auto genereated center of the group.
 	-- 4. The sheet where the group is, can be taken from
 	--    the group_reference_point.
+	-- 5. Clears the clipboard before copying objects.
 	procedure copy_group_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
 		auto_center		: in boolean := true;
@@ -176,7 +177,8 @@ package et_schematic_ops_groups is
 	-- define_group_rectangular and copy_group_to_clipboard)
 	-- is used to compute the offset by which the group is
 	-- to be pasted.
-	-- The status of all objects is reset before commit:
+	-- The status of all objects is reset before commit.
+	-- If the clipboard is empty, then nothing happens:
 	procedure paste_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
