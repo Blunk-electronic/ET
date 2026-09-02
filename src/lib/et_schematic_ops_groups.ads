@@ -62,7 +62,11 @@ package et_schematic_ops_groups is
 
 
 
-	-- This procedure resets nets, devices and units:
+	-- This procedure resets the status flags of
+	-- all objects: nets, devices and units, texts, ...
+	-- CS: texts are under construction.
+	-- Use this procedure to de-select or to ungroup
+	-- objects:
 	procedure reset_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

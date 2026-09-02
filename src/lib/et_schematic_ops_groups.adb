@@ -170,6 +170,9 @@ package body et_schematic_ops_groups is
 
 		log_indentation_up;
 
+		-- Ungroup/deselect previous objects:
+		reset_objects (module_cursor, log_threshold + 1);
+
 		-- Set the sheet of the reference point.
 		-- This is only relevant if the clipboard is used:
 		set_sheet (group_reference_point, sheet);
