@@ -758,7 +758,6 @@ package body et_canvas_schematic is
 			update_mode_display;
 
 			reset_copy_to_clipboard;
-			clear_clipboard;
 
 			reset_group_area_mouse; -- abort a define-group operation
 

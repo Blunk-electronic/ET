@@ -169,7 +169,8 @@ Multiple Copy
 
 	|VNS| P g
 
-
+	The content of the clipboard can be pasted any time. It will
+	be overwritten only on a new copy-to-clipboard operation.
 
 
 ..
