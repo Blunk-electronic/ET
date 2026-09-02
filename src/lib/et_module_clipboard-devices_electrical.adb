@@ -56,7 +56,7 @@ package body et_module_clipboard.devices_electrical is
 
 
 -- COPY:
-	
+
 
 	procedure copy_unit_to_clipboard (
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -158,7 +158,7 @@ package body et_module_clipboard.devices_electrical is
 
 
 
-	
+
 
 
 	procedure copy_selected_units_to_clipboard (
@@ -167,7 +167,7 @@ package body et_module_clipboard.devices_electrical is
 	is
 		use pac_generic_modules;
 		use et_module_names;
-		
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -244,7 +244,7 @@ package body et_module_clipboard.devices_electrical is
 
 
 
-	
+
 
 
 
@@ -394,7 +394,7 @@ package body et_module_clipboard.devices_electrical is
 
 
 
-	
+
 
 end et_module_clipboard.devices_electrical;
 
