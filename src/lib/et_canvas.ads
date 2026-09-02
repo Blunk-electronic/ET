@@ -626,7 +626,7 @@ package et_canvas is
 	-- This function returns the offset by
 	-- which a group is being moved or copied.
 	-- It returns the this value:
-	-- result = (position of the current tool)
+	-- result = (position of the current object tool)
 	-- - (the value of object_point_of_attack):
 	function get_group_offset
 		return type_vector_model;
