@@ -203,11 +203,39 @@ package body et_cp_board_group is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
+
+		procedure do_it is
+			offset : type_vector_model;
+		begin
+			offset := to_vector_model (
+				x => get_field (cmd, 5),
+				y => get_field (cmd, 6));
+
+			-- move_group (
+			-- 	module_cursor	=> module,
+			-- 	offset			=> offset,
+			--
+			-- 	-- Depending on the origin of the command,
+			-- 	-- the design state is to be commited or not:
+			-- 	commit_design	=> to_commit_design (cmd),
+			--
+			-- 	log_threshold	=> log_threshold + 1);
+		end do_it;
+
+
 	begin
-		log (text => "copy group", level => log_threshold);
+		log (text => "move group", level => log_threshold);
 		log_indentation_up;
 
-		-- CS
+		case cmd_field_count is
+			when 6 =>
+				do_it;
+
+			when 7 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+
+			when others => command_incomplete (cmd);
+		end case;
 
 		log_indentation_down;
 	end move_group;
