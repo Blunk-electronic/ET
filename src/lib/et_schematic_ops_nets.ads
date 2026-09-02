@@ -1056,7 +1056,7 @@ package et_schematic_ops_nets is
 	-- Modifies the status flag of a tag net label:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector; -- CS rename to connector
+		connector		: in type_object_net_connector;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 

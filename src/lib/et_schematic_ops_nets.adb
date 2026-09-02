@@ -8014,7 +8014,7 @@ package body et_schematic_ops_nets is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector;
+		connector		: in type_object_net_connector;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -8034,7 +8034,7 @@ package body et_schematic_ops_nets is
 				procedure query_strand (strand : in out type_strand) is
 
 					procedure query_segment (segment : in out type_net_segment) is begin
-						case label.start_end is
+						case connector.start_end is
 							when A =>
 								modify_status (segment.connectors.A, operation);
 
@@ -8044,21 +8044,21 @@ package body et_schematic_ops_nets is
 					end query_segment;
 
 				begin
-					strand.segments.update_element (label.segment_cursor, query_segment'access);
+					strand.segments.update_element (connector.segment_cursor, query_segment'access);
 				end query_strand;
 
 			begin
-				net.strands.update_element (label.strand_cursor, query_strand'access);
+				net.strands.update_element (connector.strand_cursor, query_strand'access);
 			end query_net;
 
 		begin
-			module.nets.update_element (label.net_cursor, query_net'access);
+			module.nets.update_element (connector.net_cursor, query_net'access);
 		end query_module;
 
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modify status of " & to_string (label)
+			& " modify status of " & to_string (connector)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
