@@ -533,7 +533,7 @@ package et_canvas is
 		-- to be defined:
 		area			: in out type_select_area_keyboard;
 
-		-- If a useful area could be computed then, this
+		-- If a useful area has been computed, then this
 		-- flag indicates that the computation was successful:
 		ready			: out boolean;
 

@@ -707,6 +707,7 @@ package body et_canvas is
 				log (text => "area selected: " & to_string (area.area),
 					level => log_threshold + 1);
 
+				-- The area is ready now:
 				ready := true;
 			else
 				-- Abort the process and reset "area":
@@ -714,6 +715,9 @@ package body et_canvas is
 					level => log_threshold + 1);
 
 				area := (others => <>);
+
+				-- The area is not ready:
+				ready := false;
 			end if;
 		end compute_area;
 
@@ -744,6 +748,9 @@ package body et_canvas is
 				-- constantly overwritten (see procedure move_cursor):
 				area.k2 := point;
 
+				-- The area is not ready yet:
+				ready := false;
+
 				log (text => "corner 1: " & to_string (area.k1),
 					level => log_threshold + 1);
 
@@ -766,6 +773,8 @@ package body et_canvas is
 
 			when 0 =>
 				raise constraint_error; -- CS should never happen
+				-- CS: Instead of an exception:
+				-- ready := false;
 		end case;
 
 		log_indentation_down;

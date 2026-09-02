@@ -189,7 +189,7 @@ is
 		-- operation for further actions down the chain:
 		procedure define_group_keyboard is
 			use et_schematic_ops_groups;
-			ready : boolean;
+			ready : boolean := false;
 		begin
 			-- Evaluate the cursor position (twice) and
 			-- store it in group_area_keyboard.
