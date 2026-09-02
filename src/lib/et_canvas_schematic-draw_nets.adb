@@ -641,20 +641,110 @@ procedure draw_nets is
 
 
 
+
+
+
+
+
+	procedure draw_net_segments_being_pasted is
+		use et_colors;
+		use et_colors.schematic;
+		use et_module_clipboard;
+
+		use pac_nets;
+		net_cursor : pac_nets.cursor := clipboard.nets.first;
+
+
+		procedure query_net (
+			net_name	: in type_net_name;
+			net			: in type_net)
+		is
+			-- A net in the clipboard has only one strand:
+			strand_cursor : constant pac_strands.cursor :=
+				net.strands.first;
+
+
+			procedure query_strand (strand : in type_strand) is
+				segment_cursor : pac_net_segments.cursor :=
+					strand.segments.first;
+
+
+				-- This procedure draws a single net segment,
+				-- its net labels and net connectors:
+				procedure query_segment (
+					segment : in type_net_segment)
+				is
+					use et_schematic_ops_groups;
+					segment_copy : type_net_segment;
+					offset : type_vector_model;
+				begin
+					-- Compute the offset by which the segment
+					-- is to be drawn away from the group_reference_point;
+					offset := get_primary_tool_position - get_place (group_reference_point);
+
+					copy_net_segment (segment, segment_copy, offset);
+					-- put_line ("segment copy: " & to_string (segment_copy));
+
+					draw_segment (segment_copy);
+					draw_labels (net_name, segment_copy);
+
+					-- NOTE: segment_copy does not have junctions.
+					-- They have been removed by procedure copy_net_segment
+					-- because it is not clear what connections with
+					-- other net segments might result from the paste
+					-- operation.
+
+					draw_net_connectors (net_name, segment_copy);
+				end query_segment;
+
+
+			begin
+				-- Iterate through the segments of the strand:
+				while has_element (segment_cursor) loop
+					query_element (segment_cursor, query_segment'access);
+					next (segment_cursor);
+				end loop;
+			end query_strand;
+
+		begin
+			-- There is only one strand in the clipboard,
+			-- so no iterator is required:
+			query_element (strand_cursor, query_strand'access);
+		end query_net;
+
+
+	begin
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- All nets segments will be drawn highlighted:
+			set_color_nets (BRIGHT);
+
+			-- Iterate through the nets in the clipboard:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+
+			set_color_nets (NORMAL);
+		end if;
+	end draw_net_segments_being_pasted;
+
+
+
 begin
---	put_line ("draw nets ...");
---	put_line (to_string (in_area));
+	--	put_line ("draw nets ...");
 
-	-- draw the nets
-	pac_generic_modules.query_element (
-		position	=> active_module,
-		process		=> query_module'access);
-
+	-- Draw the nets:
+	query_element (active_module, query_module'access);
 
 	-- Draw a net that is being drawn. If no net is being drawn,
 	-- then nothing happens here:
 	draw_path;
 
+	-- Draw the net segments being pasted from clipboard.
+	-- If no group is being pasted, then nothing happens here:
+	draw_net_segments_being_pasted;
 
 end draw_nets;
 
