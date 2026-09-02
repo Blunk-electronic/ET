@@ -35,9 +35,7 @@ Define a Group
 .. Additional parameters to specify a layer ?
 .. define a circular group ?
 
-	Objects inside a group are highlighted. As long as
-	the group mode is active, further areas can be selected
-	and thus added to an existing group.
+	Objects inside a group are highlighted.
 
 	Objects of a group are copied to the clipboard
 	so that they can be pasted multiple times using the
@@ -58,8 +56,6 @@ Clear a Group
 
 	|VNS| l g
 
-	Additionally, on pressing the ESC-Key, the existing
-	group can be cleared.
 
 
 
@@ -171,6 +167,8 @@ Multiple Copy
 
 	The content of the clipboard can be pasted any time. It will
 	be overwritten only on a new copy-to-clipboard operation.
+
+
 
 
 ..
