@@ -630,6 +630,11 @@ procedure draw_netchangers is
 		netchanger_cursor : pac_netchangers.cursor :=
 			clipboard.netchangers.first;
 
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
+
 
 		-- This procedure queries a netchanger:
 		procedure query_netchanger (
@@ -662,12 +667,7 @@ procedure draw_netchangers is
 			end draw_netchanger;
 
 
-			offset : type_vector_model;
 		begin
-			-- Compute the offset by which the netchanger
-			-- is to be drawn away from the group_reference_point;
-			offset := get_primary_tool_position - get_place (group_reference_point);
-
 			-- Move the netchanger by the offset:
 			move_by (position.place, offset);
 

@@ -1334,12 +1334,18 @@ procedure draw_units is
 
 
 
+
 	procedure draw_units_being_pasted is
 		use et_module_clipboard;
 
 		use pac_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor :=
 			clipboard.devices.first;
+
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
 
 
 		-- This procedure draws the units of the candidate device:
@@ -1412,7 +1418,6 @@ procedure draw_units is
 				end draw_unit;
 
 
-				offset : type_vector_model;
 			begin
 				-- put_line ("unit " & to_string (unit_name));
 
@@ -1423,10 +1428,6 @@ procedure draw_units is
 
 				-- Get the rotation of the unit
 				unit_rotation := get_rotation (unit_position);
-
-				-- Compute the offset by which the unit
-				-- is to be drawn away from the group_reference_point;
-				offset := get_primary_tool_position - get_place (group_reference_point);
 
 				-- Move the unit by the offset:
 				move_by (unit_place, offset);

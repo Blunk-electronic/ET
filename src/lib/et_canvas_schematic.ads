@@ -401,6 +401,21 @@ package et_canvas_schematic is
 		module	: in type_module_name); -- motor_driver
 
 
+
+
+
+	-- This function returns the offset by
+	-- which a group is being pasted relative to
+	-- the group_reference_point.
+	-- It returns the this value:
+	-- result = (position of the current
+	-- primary tool (mouse/keybord)
+	-- - (the value of group_reference_point):
+	function get_group_offset_on_paste
+		return pac_geometry.type_vector_model;
+
+
+
 end et_canvas_schematic;
 
 -- Soli Deo Gloria

@@ -654,6 +654,11 @@ procedure draw_nets is
 		use pac_nets;
 		net_cursor : pac_nets.cursor := clipboard.nets.first;
 
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
+
 
 		procedure query_net (
 			net_name	: in type_net_name;
@@ -676,12 +681,8 @@ procedure draw_nets is
 				is
 					use et_schematic_ops_groups;
 					segment_copy : type_net_segment;
-					offset : type_vector_model;
 				begin
-					-- Compute the offset by which the segment
-					-- is to be drawn away from the group_reference_point;
-					offset := get_primary_tool_position - get_place (group_reference_point);
-
+					-- Copy the segment away from the origina by offset:
 					copy_net_segment (segment, segment_copy, offset);
 					-- put_line ("segment copy: " & to_string (segment_copy));
 

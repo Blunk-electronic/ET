@@ -1526,6 +1526,17 @@ package body et_canvas_schematic is
 
 
 
+
+	function get_group_offset_on_paste
+		return pac_geometry.type_vector_model
+	is
+		use et_schematic_ops_groups;
+	begin
+		return (get_primary_tool_position
+			- get_place (group_reference_point));
+	end get_group_offset_on_paste;
+
+
 end et_canvas_schematic;
 
 -- Soli Deo Gloria
