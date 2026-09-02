@@ -197,7 +197,7 @@ package et_schematic_ops_netchangers is
 	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y -- CS: rename to position
+		position		: in type_object_position; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
