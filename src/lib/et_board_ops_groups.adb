@@ -1153,6 +1153,36 @@ package body et_board_ops_groups is
 
 
 
+		procedure paste_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "devices (non-electrical)", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end paste_devices;
+
+
+
+		procedure paste_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end paste_vias;
+
+
+
+		procedure paste_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end paste_tracks;
 
 
 
@@ -1182,6 +1212,10 @@ package body et_board_ops_groups is
 
 			-- Transfer objects from clipboard to the
 			-- given module:
+			paste_devices; -- non-electrical only
+			paste_vias;
+			paste_tracks;
+			-- CS others
 
 
 			-- Previously to commiting the design,
