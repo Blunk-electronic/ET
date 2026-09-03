@@ -35,11 +35,18 @@
 --
 --   history of changes:
 --
---   ToDo:
+--   To Do:
+--
+--
+--
 
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+-- with et_board_coordinates;				use et_board_coordinates;
 
 with et_generic_modules;				use et_generic_modules;
 with et_logging;						use et_logging;
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package et_board_ops_groups is
@@ -52,6 +59,111 @@ package et_board_ops_groups is
 	procedure reset_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
+
+
+	-- When a group is copy/pasted then this is the
+	-- place at which a group is grabbed:
+	group_reference_point : type_vector_model;
+
+
+
+
+	-- This procedure:
+	-- 1. sets the "selected"-flag of all
+	--    objects which are inside the given zone.
+	procedure define_group_rectangular (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the geometrical center of a group.
+	-- It iterates through all selected objects:
+	function get_center_of_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_vector_model;
+
+
+
+	-- This deletes all objects which are in the
+	-- current group. This affects all objects whose
+	-- "selected"-flag is set:
+	procedure delete_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure moves a group of objects by the
+	-- given offset.
+	-- This is a relative movement.
+	-- This affects all objects whose "selected"-flag is set:
+	procedure move_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure sets the "moving" flag of all
+	-- objects which are selected (which are in the group):
+	procedure set_group_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure clears the "moving" flag of all
+	-- objects (regardless whether they are selcted or not):
+	procedure set_group_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure copies a group of objects
+	-- This affects all objects whose "selected"-flag is set:
+	procedure copy_group_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure copies the current group of objects
+	-- into the clipboard.
+	-- 1. If auto_center is true, then
+	--    the center of the group is used as reference point.
+	--    The argument reference_point is then ignored.
+	-- 2. If auto_center is false, then the explicitly given
+	--    reference_point is used.
+	-- 3. The x/y component of the global group_reference_point
+	--    is set according to the specified reference_point
+	--    or as the auto genereated center of the group.
+	-- 4. Clears the clipboard before copying objects.
+	procedure copy_group_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		auto_center		: in boolean := true;
+		reference_point	: in type_vector_model := origin;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure pastes the content of the clipboard
+	-- at the given place.
+	-- The global group_reference_point (set by procedure
+	-- copy_group_to_clipboard)
+	-- is used to compute the offset by which the group is
+	-- to be pasted.
+	-- The status of all objects is reset before commit.
+	-- If the clipboard is empty, then nothing happens:
+	procedure paste_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
 
 
 

@@ -51,7 +51,14 @@ with et_board_ops_conductors;
 with et_board_ops_vias;
 
 with et_ripup;
-with et_board_ops_ratsnest;
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
+
+with et_module_clipboard;
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_board_ops_groups is
@@ -132,6 +139,447 @@ package body et_board_ops_groups is
 		log_indentation_down;
 	end reset_objects;
 
+
+
+
+
+
+
+
+
+
+
+	procedure define_group_rectangular (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " define rectangular group (board)",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Ungroup/deselect previous objects:
+		reset_objects (module_cursor, log_threshold + 1);
+
+		-- CS: this should be depended on
+		-- the currently displayed layers:
+
+
+
+		log_indentation_down;
+	end define_group_rectangular;
+
+
+
+
+
+
+
+
+
+
+	function get_center_of_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_vector_model
+	is
+		result : type_vector_model; -- the center of the group
+
+		-- All places:
+		all_positions : pac_points.list;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get center of group (board)",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Now we have a cloud of points of which
+		-- the geometrical center is to be found:
+		result := get_center (all_positions);
+
+		log_indentation_down;
+
+		return result;
+	end get_center_of_group;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure delete_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete group (board)",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		log_indentation_down;
+	end delete_group;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure move_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " move group (board)",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+
+
+		-- Previously to commiting the design,
+		-- the status of all objects must be reset.
+		-- This is important for the "moving" flags.
+		reset_objects (module_cursor, log_threshold + 1);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end move_group;
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure set_group_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " set group as moving",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		log_indentation_down;
+	end set_group_as_moving;
+
+
+
+
+
+
+
+
+
+
+
+	procedure set_group_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " set group as NOT moving",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		log_indentation_down;
+	end set_group_as_not_moving;
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure copy_group_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " simple copy group by offset "
+			 & to_string (offset),
+			level => log_threshold);
+
+
+		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+
+
+		-- Previously to commiting the design,
+		-- the status of all objects must be reset:
+		reset_objects (module_cursor, log_threshold + 1);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end copy_group_simple;
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure copy_group_to_clipboard (
+		module_cursor	: in pac_generic_modules.cursor;
+		auto_center		: in boolean := true;
+		reference_point	: in type_vector_model := origin;
+		log_threshold	: in type_log_level)
+	is
+
+		-- This procedure sets the group_reference_point
+		-- according to the mode specified by argument auto_center.
+		-- If auto_center is true then the geometrical center
+		-- of the group is assigned to group_reference_point.
+		-- If auto_center is false, then the given reference_point
+		-- is assigned to group_reference_point:
+		procedure set_group_reference_point is
+			center : type_vector_model;
+		begin
+			if auto_center then
+
+				-- Compute the center of the group:
+				center := get_center_of_group (
+					module_cursor	=> module_cursor,
+					log_threshold	=> log_threshold + 1);
+
+				log (text => "center of group " & to_string (center),
+					level => log_threshold + 1);
+
+				-- Set x/y of group_reference_point by
+				-- the center of the group:
+				group_reference_point := center;
+
+			else
+				group_reference_point := reference_point;
+			end if;
+		end set_group_reference_point;
+
+
+
+
+	begin
+		if auto_center then
+			log (text => "module " & to_string (module_cursor)
+				& " copy group to clipboard."
+				& " reference point: auto center.",
+				level => log_threshold);
+
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " copy group to clipboard."
+				& " reference point: " & to_string (reference_point),
+				level => log_threshold);
+
+		end if;
+
+
+		log_indentation_up;
+
+		-- Clean up clipboard:
+		et_module_clipboard.clear_clipboard;
+
+		set_group_reference_point;
+
+
+
+		log_indentation_down;
+	end copy_group_to_clipboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	procedure paste_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		offset : type_vector_model;
+
+
+
+		procedure compute_offset is
+		begin
+			offset := place - group_reference_point;
+
+			log (text => "group offset " & to_string (offset),
+				 level => log_threshold + 1);
+		end compute_offset;
+
+
+
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " paste group at place " & to_string (place),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- The clipboard might be empty. In this case there is
+		-- nothing to do:
+		if et_module_clipboard.clipboard_is_empty then
+			log (text => "clipboard is empty -> nothing to do !",
+				 level => log_threshold);
+		else
+		-- Start paste operations:
+
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+
+			compute_offset;
+
+
+			-- Transfer objects from clipboard to the
+			-- given module:
+
+
+			-- Previously to commiting the design,
+			-- the status of all objects must be reset:
+			reset_objects (module_cursor, log_threshold + 1);
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+
+
+			update_ratsnest (module_cursor, log_threshold + 1);
+		end if;
+
+
+		log_indentation_down;
+	end paste_group;
 
 
 end et_board_ops_groups;

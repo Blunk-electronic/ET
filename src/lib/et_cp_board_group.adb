@@ -84,8 +84,8 @@ package body et_cp_board_group is
 			set_height (area,
 				to_distance (get_field (cmd, 8)));
 
-			-- define_group_rectangular (
-			-- 	module, area, log_threshold + 1);
+			define_group_rectangular (
+				module, area, log_threshold + 1);
 
 		end rectangular_group;
 
@@ -152,6 +152,7 @@ package body et_cp_board_group is
 
 
 
+
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
@@ -168,13 +169,13 @@ package body et_cp_board_group is
 		case cmd_field_count is
 			when 4 =>
 				null;
-				-- delete_group (
-				-- 	module_cursor	=> module,
-				--
-				-- 	-- Depending on the origin of the command,
-				-- 	-- the design state is to be commited or not:
-				-- 	commit_design	=> to_commit_design (cmd),
-				-- 	log_threshold	=> log_threshold + 1);
+				delete_group (
+					module_cursor	=> module,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -211,15 +212,15 @@ package body et_cp_board_group is
 				x => get_field (cmd, 5),
 				y => get_field (cmd, 6));
 
-			-- move_group (
-			-- 	module_cursor	=> module,
-			-- 	offset			=> offset,
-			--
-			-- 	-- Depending on the origin of the command,
-			-- 	-- the design state is to be commited or not:
-			-- 	commit_design	=> to_commit_design (cmd),
-			--
-			-- 	log_threshold	=> log_threshold + 1);
+			move_group (
+				module_cursor	=> module,
+				offset			=> offset,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+
+				log_threshold	=> log_threshold + 1);
 		end do_it;
 
 
@@ -247,6 +248,7 @@ package body et_cp_board_group is
 
 
 
+
 	procedure copy_group (
 		module			: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
@@ -266,15 +268,14 @@ package body et_cp_board_group is
 				y => get_field (cmd, 6));
 
 
-			-- copy_group_simple (
-			-- 	module_cursor	=> module,
-			-- 	sheet			=> sheet,
-			-- 	offset			=> offset,
-			--
-			-- 	-- Depending on the origin of the command,
-			-- 	-- the design state is to be commited or not:
-			-- 	commit_design	=> to_commit_design (cmd),
-			-- 	log_threshold	=> log_threshold + 1);
+			copy_group_simple (
+				module_cursor	=> module,
+				offset			=> offset,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 
 		end do_simple_copy;
 
@@ -284,10 +285,10 @@ package body et_cp_board_group is
 		-- the clipboard with the center of the group
 		-- as reference point:
 		procedure copy_to_clipboard_center is begin
-			null;
-			-- copy_group_to_clipboard (
-			-- 	module_cursor	=> module,
-			-- 	log_threshold	=> log_threshold + 2);
+
+			copy_group_to_clipboard (
+				module_cursor	=> module,
+				log_threshold	=> log_threshold + 2);
 
 		end copy_to_clipboard_center;
 
@@ -302,11 +303,11 @@ package body et_cp_board_group is
 				x => get_field (cmd, 5),
 				y => get_field (cmd, 6));
 
-			-- copy_group_to_clipboard (
-			-- 	module_cursor	=> module,
-			-- 	auto_center		=> false,
-			-- 	reference_point	=> reference_point,
-			-- 	log_threshold	=> log_threshold + 2);
+			copy_group_to_clipboard (
+				module_cursor	=> module,
+				auto_center		=> false,
+				reference_point	=> reference_point,
+				log_threshold	=> log_threshold + 2);
 
 		end copy_to_clipboard_ref_point;
 
@@ -363,15 +364,14 @@ package body et_cp_board_group is
 				y => get_field (cmd, 6));
 
 
-			-- paste_group (
-			-- 	module_cursor	=> module,
-			-- 	sheet			=> sheet,
-			-- 	place			=> place,
-			--
-			-- 	-- Depending on the origin of the command,
-			-- 	-- the design state is to be commited or not:
-			-- 	commit_design	=> to_commit_design (cmd),
-			-- 	log_threshold	=> log_threshold + 1);
+			paste_group (
+				module_cursor	=> module,
+				place			=> place,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 
 		end do_it;
 
