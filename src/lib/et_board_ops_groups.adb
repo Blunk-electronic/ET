@@ -403,8 +403,135 @@ package body et_board_ops_groups is
 	is
 		result : type_vector_model; -- the center of the group
 
+		-- electrical and non-electrical devices:
+		device_positions : pac_points.list;
+
+		-- netchangers
+		netchanger_positions : pac_points.list;
+
+		-- vias:
+		via_positions : pac_points.list;
+
+		-- track segments (lines, arcs):
+		segment_positions : pac_points.list;
+
+		-- CS: silkscreen_positions, assy_doc_positions, ...
+		-- incl. texts
+
 		-- All places:
 		all_positions : pac_points.list;
+
+
+
+		procedure query_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "query devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the positions (x/y) of the devices
+			-- of the group:
+			-- CS
+
+			log (text => "collected device positions "
+				 & get_length (device_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_devices;
+
+
+
+		procedure query_netchangers is
+			use et_board_ops_netchangers;
+		begin
+			log (text => "query netchangers", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the positions (x/y) of the netchangers
+			-- of the group:
+			-- CS
+
+			log (text => "collected netchanger positions "
+				 & get_length (netchanger_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_netchangers;
+
+
+
+		procedure query_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "query vias", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Get the positions (x/y) of the vias
+			-- of the group:
+			-- CS
+
+			log (text => "collected via positions "
+				 & get_length (via_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_vias;
+
+
+
+		procedure query_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "query track segments", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- CS: mind freetracks also
+
+			-- Get the positions (x/y) of the track ends
+			-- of the group:
+			-- CS
+
+			log (text => "collected track segment positions "
+				 & get_length (segment_positions),
+				 level => log_threshold + 2);
+
+			log_indentation_down;
+		end query_tracks;
+
+
+
+		procedure merge_positions is
+			use pac_points;
+			c : pac_points.cursor;
+		begin
+			-- device positions:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> device_positions);
+
+			-- netchangers:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> netchanger_positions);
+
+			-- vias:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> via_positions);
+
+			-- tracks:
+			splice (
+				target	=> all_positions,
+				before	=> c,
+				source	=> segment_positions);
+
+			-- CS log total positions ?
+		end merge_positions;
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -412,6 +539,22 @@ package body et_board_ops_groups is
 			level => log_threshold);
 
 		log_indentation_up;
+
+		-- Collect the positions of devices, netchangers,
+		-- track segment ends, ...:
+		query_devices;
+		query_netchangers;
+		query_vias;
+		query_tracks;
+		
+		-- CS: It could be useful to query only those objects
+		-- which are displayed (via their layer).
+
+		-- CS other stuff (silkscreen, assy doc, keepout, ...)
+
+		-- Merge device positions, netchangers,
+		-- track segment positions, ...
+		merge_positions;
 
 		-- Now we have a cloud of points of which
 		-- the geometrical center is to be found:
