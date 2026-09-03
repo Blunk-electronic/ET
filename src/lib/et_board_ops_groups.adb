@@ -546,7 +546,7 @@ package body et_board_ops_groups is
 		query_netchangers;
 		query_vias;
 		query_tracks;
-		
+
 		-- CS: It could be useful to query only those objects
 		-- which are displayed (via their layer).
 
@@ -587,6 +587,48 @@ package body et_board_ops_groups is
 		use et_modes.board;
 
 
+		procedure delete_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "devices", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end delete_devices;
+
+
+
+		procedure delete_netchangers is
+			use et_board_ops_devices;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end delete_netchangers;
+
+
+
+		procedure delete_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end delete_vias;
+
+
+
+		procedure delete_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end delete_tracks;
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -600,6 +642,13 @@ package body et_board_ops_groups is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
+
+		delete_devices;
+		delete_netchangers;
+		delete_vias;
+		delete_tracks;
+
+		-- CS others
 
 
 		if commit_design = DO_COMMIT then
