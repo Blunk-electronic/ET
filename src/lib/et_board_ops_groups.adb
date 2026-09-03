@@ -778,6 +778,48 @@ package body et_board_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure set_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "devices", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_devices;
+
+
+
+		procedure set_netchangers is
+			use et_board_ops_devices;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_netchangers;
+
+
+
+		procedure set_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_vias;
+
+
+
+		procedure set_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_tracks;
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -785,6 +827,12 @@ package body et_board_ops_groups is
 			 level => log_threshold);
 
 		log_indentation_up;
+
+		set_devices;
+		set_netchangers;
+		set_vias;
+		set_tracks;
+		-- CS set others
 
 		log_indentation_down;
 	end set_group_as_moving;
@@ -804,12 +852,61 @@ package body et_board_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure set_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "devices", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_devices;
+
+
+
+		procedure set_netchangers is
+			use et_board_ops_devices;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_netchangers;
+
+
+
+		procedure set_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_vias;
+
+
+
+		procedure set_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end set_tracks;
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " set group as NOT moving",
 			 level => log_threshold);
 
 		log_indentation_up;
+
+		set_devices;
+		set_netchangers;
+		set_vias;
+		set_tracks;
+		-- CS set others
 
 		log_indentation_down;
 	end set_group_as_not_moving;
