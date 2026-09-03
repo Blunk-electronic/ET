@@ -682,6 +682,48 @@ package body et_board_ops_groups is
 		use et_modes.board;
 
 
+		procedure move_devices is
+			use et_board_ops_devices;
+		begin
+			log (text => "devices", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end move_devices;
+
+
+
+		procedure move_netchangers is
+			use et_board_ops_devices;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end move_netchangers;
+
+
+
+		procedure move_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end move_vias;
+
+
+
+		procedure move_tracks is
+			use et_board_ops_conductors;
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end move_tracks;
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -696,7 +738,12 @@ package body et_board_ops_groups is
 		end if;
 
 
+		move_devices;
+		move_netchangers;
+		move_vias;
+		move_tracks;
 
+		-- CS move others
 
 		-- Previously to commiting the design,
 		-- the status of all objects must be reset.
