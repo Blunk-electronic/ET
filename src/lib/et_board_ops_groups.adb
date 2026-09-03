@@ -245,6 +245,116 @@ package body et_board_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure group_devices is
+		begin
+			log (text => "devices (electrical and non-electrical)",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_devices;
+
+
+		procedure group_netchangers is
+		begin
+			log (text => "netchangers",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_netchangers;
+
+
+		procedure group_conductors is
+		begin
+			log (text => "conductors",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_conductors;
+
+
+		procedure group_assy_doc is
+		begin
+			log (text => "assembly documentation",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_assy_doc;
+
+
+		procedure group_silkscreen is
+		begin
+			log (text => "silkscreen",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_silkscreen;
+
+
+		procedure group_stencil is
+		begin
+			log (text => "stencil",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_stencil;
+
+
+		procedure group_stopmask is
+		begin
+			log (text => "stopmask",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_stopmask;
+
+
+		procedure group_keepout is
+		begin
+			log (text => "keepout",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_keepout;
+
+
+		procedure group_outline is
+		begin
+			log (text => "outline",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_outline;
+
+
+		procedure group_vias is
+		begin
+			log (text => "vias",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				-- CS
+			log_indentation_down;
+		end group_vias;
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " define rectangular group (board)",
@@ -257,8 +367,22 @@ package body et_board_ops_groups is
 
 		-- CS: this should be depended on
 		-- the currently displayed layers:
+		group_devices;
 
+		group_netchangers;
+		group_conductors;
 
+		group_assy_doc;
+		group_silkscreen;
+		group_stencil;
+		group_stopmask;
+		group_keepout;
+		group_outline;
+		group_vias;
+
+		-- CS ? group_airwires;
+
+		-- CS reset board placeholders, texts, ... ?
 
 		log_indentation_down;
 	end define_group_rectangular;
