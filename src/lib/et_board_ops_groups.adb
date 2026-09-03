@@ -69,7 +69,6 @@ package body et_board_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
-
 		procedure reset_conductors is
 			use et_board_ops_conductors;
 		begin
@@ -80,7 +79,6 @@ package body et_board_ops_groups is
 			reset_status_objects (active_module, log_threshold + 1);
 			log_indentation_down;
 		end reset_conductors;
-
 
 
 		procedure reset_devices is
@@ -95,6 +93,18 @@ package body et_board_ops_groups is
 		end reset_devices;
 
 
+		procedure reset_netchangers is
+			use et_board_ops_netchangers;
+		begin
+			log (text => "netchangers",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_status_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_netchangers;
+
+
 		procedure reset_assy_doc is
 			use et_board_ops_assy_doc;
 		begin
@@ -106,8 +116,90 @@ package body et_board_ops_groups is
 			log_indentation_down;
 		end reset_assy_doc;
 
-		-- CS:
-		-- Make separate procedures as in package et_schematic_ops_groups
+
+		procedure reset_silkscreen is
+			use et_board_ops_silkscreen;
+		begin
+			log (text => "silkscreen",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_silkscreen;
+
+
+		procedure reset_stencil is
+			use et_board_ops_stencil;
+		begin
+			log (text => "stencil",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_stencil;
+
+
+		procedure reset_stopmask is
+			use et_board_ops_stopmask;
+		begin
+			log (text => "stopmask",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_stopmask;
+
+
+		procedure reset_keepout is
+			use et_board_ops_keepout;
+		begin
+			log (text => "keepout",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_keepout;
+
+
+		procedure reset_outline is
+			use et_board_ops_outline;
+		begin
+			log (text => "outline",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_outline;
+
+
+		procedure reset_vias is
+			use et_board_ops_vias;
+		begin
+			log (text => "vias",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_vias (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_vias;
+
+
+		procedure reset_airwires is
+			use et_board_ops_ratsnest;
+		begin
+			log (text => "ratsnest",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+				reset_proposed_airwires (active_module, log_threshold + 1);
+			log_indentation_down;
+		end reset_airwires;
+
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -117,20 +209,18 @@ package body et_board_ops_groups is
 		log_indentation_up;
 
 		reset_devices;
+		reset_netchangers;
 		reset_conductors;
 
 		reset_assy_doc;
+		reset_silkscreen;
+		reset_stencil;
+		reset_stopmask;
+		reset_keepout;
+		reset_outline;
+		reset_vias;
 
-
-		et_board_ops_silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_stopmask.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_stencil.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_keepout.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_outline.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_vias.reset_proposed_vias (active_module, log_threshold + 1);
-
-		et_board_ops_netchangers.reset_status_objects (active_module, log_threshold + 1);
-		et_board_ops_ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
+		reset_airwires;
 
 		-- CS reset board placeholders, texts, ... ?
 
