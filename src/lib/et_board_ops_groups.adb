@@ -1051,6 +1051,34 @@ package body et_board_ops_groups is
 
 
 
+		procedure copy_devices is
+		begin
+			log (text => "devices (non-electrical)", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end copy_devices;
+
+
+
+		procedure copy_vias is
+		begin
+			log (text => "vias", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end copy_vias;
+
+
+
+		procedure copy_tracks is
+		begin
+			log (text => "track segments", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end copy_tracks;
+
 
 	begin
 		if auto_center then
@@ -1075,6 +1103,15 @@ package body et_board_ops_groups is
 
 		set_group_reference_point;
 
+
+
+		-- NOTE: electrical devices and netchangers can
+		-- only be copied in the schematic editor !
+
+		copy_devices; -- non-electrical devices only !
+		copy_vias;
+		copy_tracks;
+		-- CS others
 
 
 		log_indentation_down;
