@@ -371,6 +371,19 @@ package et_board_ops_devices is
 
 
 
+-- GROUPS:
+
+	-- Sets "selected" flag of all devices (electrical and
+	-- non-electrical) that are in the given area and on
+	-- the given face of the board:
+	procedure group_devices_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+
 -- PLACEHOLDERS:
 
 	-- Resets the positions of placeholders back to the

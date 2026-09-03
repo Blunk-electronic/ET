@@ -1629,6 +1629,31 @@ package body et_board_ops_devices is
 
 
 
+
+	procedure group_devices_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " group devices in rectangular area "
+			 & to_string (area),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- generic_modules.update_element (module_cursor, query_module'access);
+		-- CS
+
+		log_indentation_down;
+	end group_devices_in_rectangular_area;
+
+
+
+
+
 -- PLACEHOLDERS:
 
 

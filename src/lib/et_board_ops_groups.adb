@@ -39,6 +39,8 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+
+with et_pcb_sides;
 with et_board_ops_devices;
 with et_board_ops_netchangers;
 with et_board_ops_assy_doc;
@@ -246,14 +248,23 @@ package body et_board_ops_groups is
 	is
 
 		procedure group_devices is
+			use et_board_ops_devices;
+			use et_pcb_sides;
+			face : constant type_face := TOP;
+			-- CS: the face should depend on which
+			-- layer is displayed.
 		begin
 			log (text => "devices (electrical and non-electrical)",
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-				-- CS
+
+			group_devices_in_rectangular_area (
+				module_cursor, area, face, log_threshold + 2);
+
 			log_indentation_down;
 		end group_devices;
+
 
 
 		procedure group_netchangers is
