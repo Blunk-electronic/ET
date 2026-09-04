@@ -450,7 +450,8 @@ package body et_board_ops_groups is
 
 			-- Get the positions (x/y) of the devices
 			-- of the group:
-			-- CS
+			device_positions := get_group_device_positions (
+				module_cursor, log_threshold + 2);
 
 			log (text => "collected device positions "
 				 & get_length (device_positions),

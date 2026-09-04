@@ -1732,6 +1732,138 @@ package body et_board_ops_devices is
 
 
 
+
+
+	function get_group_device_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			device_electrical : pac_devices_electrical.cursor :=
+				module.devices.first;
+
+			device_non_electrical : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in type_device_electrical)
+			is
+				place : type_vector_model;
+			begin
+				if is_selected (device) then
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					log_indentation_up;
+
+					-- Get x/y position of the device candidate:
+					place := get_place (device);
+
+					-- Log the position of the device:
+					log (text => "position " & to_string (place),
+						 level => log_threshold + 3);
+
+					-- Append the position to the result:
+					result.append (place);
+
+					log_indentation_down;
+				end if;
+			end query_electrical_device;
+
+
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in type_device_non_electrical)
+			is
+				place : type_vector_model;
+			begin
+				if is_selected (device) then
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					log_indentation_up;
+
+					-- Get x/y position of the device candidate:
+					place := get_place (device);
+
+					-- Log the position of the device:
+					log (text => "position " & to_string (place),
+						 level => log_threshold + 3);
+
+					-- Append the position to the result:
+					result.append (place);
+
+					log_indentation_down;
+				end if;
+			end query_non_electrical_device;
+
+
+		begin
+			-- Iterate through the electrical devices:
+			log (text => "electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_electrical) loop
+				query_element (device_electrical,
+					query_electrical_device'access);
+
+				next (device_electrical);
+			end loop;
+
+			log_indentation_down;
+			---------------------
+
+			-- Iterate through the non-electrical devices:
+			log (text => "non-electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_non_electrical) loop
+				query_element (device_non_electrical,
+					query_non_electrical_device'access);
+
+				next (device_non_electrical);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get device positions of group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_group_device_positions;
+
+
+
+
+
+
+
+
+
 -- PLACEHOLDERS:
 
 
