@@ -228,6 +228,27 @@ package et_devices_non_electrical is
 
 
 
+	-- Returns true if the given device is in the
+	-- given area:
+	function in_area (
+		device	: in type_device_non_electrical;
+		area	: in type_area)
+		return boolean;
+
+
+	-- Returns true if the given device meets the
+	-- following criteria:
+	-- 1. is mounted on the given face
+	-- 2. is in the given area
+	function on_face_and_in_area (
+		device	: in type_device_non_electrical;
+		face	: in type_face;
+		area	: in type_area)
+		return boolean;
+
+
+
+
 
 -- VALUE:
 

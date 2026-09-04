@@ -330,6 +330,27 @@ package et_devices_electrical.packages is
 		return type_face; -- top/bottom
 
 
+	-- Returns true if the given device is in the
+	-- given area.
+	-- The device must be real. Otherwise an exception
+	-- will be raised:
+	function in_area (
+		device	: in type_device_electrical;
+		area	: in type_area)
+		return boolean;
+
+
+	-- Returns true if the given device meets the
+	-- following criteria:
+	-- 1. is real (means it has a representation in the board)
+	-- 2. is mounted on the given face
+	-- 3. is in the given area
+	function on_face_and_in_area (
+		device	: in type_device_electrical;
+		face	: in type_face;
+		area	: in type_area)
+		return boolean;
+
 
 
 

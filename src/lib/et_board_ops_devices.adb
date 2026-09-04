@@ -1636,6 +1636,82 @@ package body et_board_ops_devices is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		use pac_devices_electrical;
+		use pac_devices_non_electrical;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			device_electrical : pac_devices_electrical.cursor :=
+				module.devices.first;
+
+			device_non_electrical : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			-- Sets the given electrical device as selected
+			-- if it is on the given face and in the given area:
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is begin
+				if on_face_and_in_area (device, face, area) then
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					set_selected (device);
+				end if;
+			end query_electrical_device;
+
+
+			-- Sets the given non-electrical device as selected
+			-- if it is on the given face and in the given area:
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				if on_face_and_in_area (device, face, area) then
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					set_selected (device);
+				end if;
+			end query_non_electrical_device;
+
+
+		begin
+			-- Iterate through the electrical devices:
+			log (text => "electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_electrical) loop
+				module.devices.update_element (device_electrical,
+					query_electrical_device'access);
+
+				next (device_electrical);
+			end loop;
+
+			log_indentation_down;
+			---------------------
+
+			-- Iterate through the non-electrical devices:
+			log (text => "non-electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_non_electrical) loop
+				module.devices_non_electric.update_element (device_non_electrical,
+					query_non_electrical_device'access);
+
+				next (device_non_electrical);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " group devices in rectangular area "
@@ -1644,11 +1720,13 @@ package body et_board_ops_devices is
 
 		log_indentation_up;
 
-		-- generic_modules.update_element (module_cursor, query_module'access);
-		-- CS
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end group_devices_in_rectangular_area;
+
+
+
 
 
 

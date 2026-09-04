@@ -89,6 +89,8 @@ package body et_devices_electrical is
 
 
 
+
+
 	function get_device_model_file (
 		device : type_device_electrical)
 		return type_device_model_name

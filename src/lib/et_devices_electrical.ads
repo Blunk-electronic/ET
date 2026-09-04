@@ -49,10 +49,6 @@ with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-
-
-
-
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
@@ -163,6 +159,10 @@ package et_devices_electrical is
 	function get_position (
 		device : in type_device_electrical)
 		return et_board_coordinates.type_package_position;
+
+
+
+
 
 
 

@@ -222,6 +222,35 @@ package body et_devices_non_electrical is
 
 
 
+	function in_area (
+		device	: in type_device_non_electrical;
+		area	: in type_area)
+		return boolean
+	is (in_area (get_place (device), area));
+
+
+
+
+	function on_face_and_in_area (
+		device	: in type_device_non_electrical;
+		face	: in type_face;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_face (device) = face
+		and in_area (device, area) then
+			result := true;
+		end if;
+
+		return result;
+	end on_face_and_in_area;
+
+
+
+
+
 
 -- VALUE:
 
