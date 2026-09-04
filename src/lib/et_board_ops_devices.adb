@@ -1987,18 +1987,14 @@ package body et_board_ops_devices is
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
-			is
-			begin
+			is begin
 				if is_selected (device) then
 
 					-- Log device name:
 					log (text => to_string (device_name),
 						level => log_threshold + 2);
 
-					log_indentation_up;
-
-
-					log_indentation_down;
+					set_place_relative (device, offset);
 				end if;
 			end query_electrical_device;
 
@@ -2007,18 +2003,14 @@ package body et_board_ops_devices is
 			procedure query_non_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical)
-			is
-			begin
+			is begin
 				if is_selected (device) then
 
 					-- Log device name:
 					log (text => to_string (device_name),
 						level => log_threshold + 2);
 
-					log_indentation_up;
-
-
-					log_indentation_down;
+					set_place_relative (device, offset);
 				end if;
 			end query_non_electrical_device;
 

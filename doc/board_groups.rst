@@ -75,6 +75,21 @@ Delete a Group
 
 
 
+Move a Group
+^^^^^^^^^^^^
+
+	A group of objects can be moved by a given offset.
+	The coordinates to be provided
+	are relative. So in the example below, the group
+	will be dragged by x 100mm and y 20mm:
+
+	.. code-block::
+	
+		move group 100 20
+
+	|VNS| m g
+
+
 
 
 Copy Group
