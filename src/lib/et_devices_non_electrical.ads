@@ -211,7 +211,7 @@ package et_devices_non_electrical is
 
 
 	-- Moves the device by the given offset:
-	procedure set_place_relative (
+	procedure set_place_relative ( -- CS rename to move_device_by ?
 		device	: in out type_device_non_electrical;
 		offset	: in type_vector_model);
 
