@@ -403,6 +403,16 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure moves selected devices by the
+	-- given offset.
+	-- This is a relative movement by the given offset:
+	procedure move_selected_devices (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+
 
 
 

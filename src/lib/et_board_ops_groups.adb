@@ -701,7 +701,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "devices", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			move_selected_devices (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
 		end move_devices;
 
