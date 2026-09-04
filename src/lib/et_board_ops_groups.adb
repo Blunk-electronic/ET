@@ -610,22 +610,13 @@ package body et_board_ops_groups is
 		procedure delete_devices is
 			use et_board_ops_devices;
 		begin
-			log (text => "devices", level => log_threshold + 1);
+			log (text => "devices (non-electrical only)",
+				 level => log_threshold + 1);
+
 			log_indentation_up;
-			-- CS
+			delete_non_electrical_devices_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end delete_devices;
-
-
-
-		procedure delete_netchangers is
-			use et_board_ops_devices;
-		begin
-			log (text => "netchangers", level => log_threshold + 1);
-			log_indentation_up;
-			-- CS
-			log_indentation_down;
-		end delete_netchangers;
 
 
 
@@ -663,8 +654,11 @@ package body et_board_ops_groups is
 		end if;
 
 
-		delete_devices;
-		delete_netchangers;
+		delete_devices; -- non-electrical only
+
+		-- NOTE: electrical devices and netchangers
+		-- can only be deleted in the schematic domain.
+
 		delete_vias;
 		delete_tracks;
 

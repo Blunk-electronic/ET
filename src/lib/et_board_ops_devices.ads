@@ -391,6 +391,18 @@ package et_board_ops_devices is
 		return pac_points.list;
 
 
+	-- Deletes all non-electrical devices which are in the current
+	-- group. This affects all devices which have the
+	-- "selected"-flag set:
+	-- This procedure does not do any commit operations,
+	-- because this is part of a group call.
+	-- It is up to the caller of this procedure to care for
+	-- the commit actions:
+	procedure delete_non_electrical_devices_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
 
 
 

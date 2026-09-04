@@ -1864,6 +1864,103 @@ package body et_board_ops_devices is
 
 
 
+
+
+	procedure delete_non_electrical_devices_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		device_found : boolean := false;
+
+		-- Here we store the device name
+		-- of a selected device:
+		d_name : type_device_name;
+
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_devices_non_electrical;
+			device_cursor : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_non_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 1);
+
+					-- Backup the device name:
+					d_name := device_name;
+
+					-- Abort the iterator for the devices:
+					device_found := true;
+				end if;
+			end query_device;
+
+
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) and not device_found loop
+
+				query_element (
+					device_cursor, query_device'access);
+
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete non-electrical devices in group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Search for the first selected device in the group:
+		query_element (module_cursor, query_module'access);
+
+		-- If a device has been found, then the flag "device_found"
+		-- is set. This starts the following loop where
+		-- the affected device will be deleted.
+
+		-- This loop will be executed as long as selected
+		-- devices exist:
+		while device_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total device count of the design ?
+		-- CS: log the nunmber of deleted devices.
+
+			delete_non_electrical_device (
+				module_cursor, d_name,
+				NO_COMMIT, log_threshold + 1);
+
+			-- Restart the search for a selected device:
+			device_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
+
+		log_indentation_down;
+	end delete_non_electrical_devices_in_group;
+
+
+
+
+
+
+
+
+
 -- PLACEHOLDERS:
 
 

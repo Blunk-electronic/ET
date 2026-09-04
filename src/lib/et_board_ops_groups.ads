@@ -89,7 +89,10 @@ package et_board_ops_groups is
 
 	-- This deletes all objects which are in the
 	-- current group. This affects all objects whose
-	-- "selected"-flag is set:
+	-- "selected"-flag is set.
+	-- NOTE: Does not delete electrical devices and
+	-- netchangers as these components can only be deleted
+	-- in the schematic domain:
 	procedure delete_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		commit_design	: in type_commit_design := DO_COMMIT;
