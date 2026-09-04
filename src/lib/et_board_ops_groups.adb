@@ -961,7 +961,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "devices (non-electrical)", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_non_electrical_devices (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
 		end copy_devices;
 

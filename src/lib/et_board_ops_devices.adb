@@ -2273,6 +2273,29 @@ package body et_board_ops_devices is
 
 
 
+	procedure copy_selected_non_electrical_devices (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " copy selected devices by "
+			& " offset " & to_string (offset),
+			level => log_threshold);
+
+
+		log_indentation_up;
+
+
+		log_indentation_down;
+	end copy_selected_non_electrical_devices;
+
+
+
+
+
+
 
 
 -- PLACEHOLDERS:
