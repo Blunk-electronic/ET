@@ -2066,6 +2066,215 @@ package body et_board_ops_devices is
 
 
 
+
+	procedure set_selected_devices_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_devices_electrical;
+			device_electrical : pac_devices_electrical.cursor :=
+				module.devices.first;
+
+			use pac_devices_non_electrical;
+			device_non_electrical : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			-- Set electrical device:
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					set_moving (device);
+				end if;
+			end query_electrical_device;
+
+
+			-- Set non-electrical device:
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					set_moving (device);
+				end if;
+			end query_non_electrical_device;
+
+
+		begin
+			-- Iterate through the electrical devices:
+			log (text => "electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_electrical) loop
+				module.devices.update_element (
+					device_electrical, query_electrical_device'access);
+
+				next (device_electrical);
+			end loop;
+
+			log_indentation_down;
+			---------------------
+
+			-- Iterate through the non-electrical devices:
+			log (text => "non-electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_non_electrical) loop
+				module.devices_non_electric.update_element (
+					device_non_electrical, query_non_electrical_device'access);
+
+				next (device_non_electrical);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set selected devices as moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end set_selected_devices_as_moving;
+
+
+
+
+
+
+
+
+
+	procedure set_selected_devices_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_devices_electrical;
+			device_electrical : pac_devices_electrical.cursor :=
+				module.devices.first;
+
+			use pac_devices_non_electrical;
+			device_non_electrical : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			-- Set electrical device:
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					clear_moving (device);
+				end if;
+			end query_electrical_device;
+
+
+			-- Set non-electrical device:
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 2);
+
+					clear_moving (device);
+				end if;
+			end query_non_electrical_device;
+
+
+		begin
+			-- Iterate through the electrical devices:
+			log (text => "electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_electrical) loop
+				module.devices.update_element (
+					device_electrical, query_electrical_device'access);
+
+				next (device_electrical);
+			end loop;
+
+			log_indentation_down;
+			---------------------
+
+			-- Iterate through the non-electrical devices:
+			log (text => "non-electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+
+			while has_element (device_non_electrical) loop
+				module.devices_non_electric.update_element (
+					device_non_electrical, query_non_electrical_device'access);
+
+				next (device_non_electrical);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set selected devices as NOT moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end set_selected_devices_as_not_moving;
+
+
+
+
+
+
+
+
+
+
+
 -- PLACEHOLDERS:
 
 

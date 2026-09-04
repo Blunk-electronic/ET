@@ -800,7 +800,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "devices", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_devices_as_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_devices;
 
@@ -874,7 +877,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "devices", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_devices_as_not_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_devices;
 

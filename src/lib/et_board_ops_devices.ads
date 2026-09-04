@@ -412,6 +412,17 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 
+	-- Sets the "moving" flag of all selected devices:
+	procedure set_selected_devices_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	procedure set_selected_devices_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
 
 
 
