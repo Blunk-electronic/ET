@@ -432,10 +432,10 @@ package body et_devices_electrical.packages is
 	is
 		result : boolean := false;
 	begin
-		if is_real (device)
-		and get_face (device) = face
-		and in_area (device, area) then
-			result := true;
+		if is_real (device) and then
+			get_face (device) = face and then
+				in_area (device, area) then
+					result := true;
 		end if;
 
 		return result;

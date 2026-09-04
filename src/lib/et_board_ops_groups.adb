@@ -278,6 +278,7 @@ package body et_board_ops_groups is
 		end group_netchangers;
 
 
+
 		procedure group_conductors is
 		begin
 			log (text => "conductors",
@@ -287,6 +288,7 @@ package body et_board_ops_groups is
 				-- CS
 			log_indentation_down;
 		end group_conductors;
+
 
 
 		procedure group_assy_doc is
@@ -300,6 +302,7 @@ package body et_board_ops_groups is
 		end group_assy_doc;
 
 
+
 		procedure group_silkscreen is
 		begin
 			log (text => "silkscreen",
@@ -309,6 +312,7 @@ package body et_board_ops_groups is
 				-- CS
 			log_indentation_down;
 		end group_silkscreen;
+
 
 
 		procedure group_stencil is
@@ -322,6 +326,7 @@ package body et_board_ops_groups is
 		end group_stencil;
 
 
+
 		procedure group_stopmask is
 		begin
 			log (text => "stopmask",
@@ -331,6 +336,7 @@ package body et_board_ops_groups is
 				-- CS
 			log_indentation_down;
 		end group_stopmask;
+
 
 
 		procedure group_keepout is
@@ -344,6 +350,7 @@ package body et_board_ops_groups is
 		end group_keepout;
 
 
+
 		procedure group_outline is
 		begin
 			log (text => "outline",
@@ -353,6 +360,7 @@ package body et_board_ops_groups is
 				-- CS
 			log_indentation_down;
 		end group_outline;
+
 
 
 		procedure group_vias is
