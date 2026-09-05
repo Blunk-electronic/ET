@@ -56,6 +56,7 @@ with et_ripup;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_module_clipboard;
+with et_module_clipboard.devices_non_electrical;
 
 with et_modes.board;
 with et_undo_redo;
@@ -1078,10 +1079,14 @@ package body et_board_ops_groups is
 
 
 		procedure copy_devices is
+			use et_module_clipboard.devices_non_electrical;
 		begin
 			log (text => "devices (non-electrical)", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_devices_to_clipboard (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
 		end copy_devices;
 
@@ -1180,11 +1185,14 @@ package body et_board_ops_groups is
 
 
 		procedure paste_devices is
-			use et_board_ops_devices;
+			use et_module_clipboard.devices_non_electrical;
 		begin
 			log (text => "devices (non-electrical)", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			paste_devices_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+
 			log_indentation_down;
 		end paste_devices;
 
