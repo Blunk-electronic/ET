@@ -539,6 +539,10 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- CS: Merge this procedure with procedure
+	-- set_selected_netchangers_as_moving and add a
+	-- parameter that indicates whether is is a
+	-- "set moving" or "set not moving" action.
 	procedure set_selected_netchangers_as_not_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
