@@ -108,7 +108,7 @@ Single Copy
 
 	.. code-block::
 	
-		copy group 10 20
+		copy group single 10 20
 
 	|VNS| c g
 
@@ -126,7 +126,7 @@ Multiple Copy
 
 	.. code-block::
 	
-		copy group
+		copy group clipboard
 
 	Via the short cut keys:
 
@@ -144,7 +144,7 @@ Multiple Copy
 
 	.. code-block::
 	
-		copy group 54 30
+		copy group clipboard 54 30
 
 
 

@@ -265,17 +265,21 @@ package body et_cp_schematic_group is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- This procedure makes a simple copy
+		keyword_single_copy		: constant string := "single";
+		keyword_clipboard_copy	: constant string := "clipboard";
+
+
+		-- This procedure makes a single copy
 		-- of the current group:
-		procedure do_simple_copy is
-			sheet		: type_sheet_relative;
-			offset		: type_vector_model;
+		procedure do_single_copy is
+			sheet	: type_sheet_relative;
+			offset	: type_vector_model;
 		begin
-			sheet := to_sheet_relative (get_field (cmd, 5));
+			sheet := to_sheet_relative (get_field (cmd, 6));
 
 			offset := to_vector_model (
-				x => get_field (cmd, 6),
-				y => get_field (cmd, 7));
+				x => get_field (cmd, 7),
+				y => get_field (cmd, 8));
 
 
 			copy_group_simple (
@@ -288,7 +292,7 @@ package body et_cp_schematic_group is
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
-		end do_simple_copy;
+		end do_single_copy;
 
 
 
@@ -311,8 +315,8 @@ package body et_cp_schematic_group is
 			reference_point	: type_vector_model;
 		begin
 			reference_point := to_vector_model (
-				x => get_field (cmd, 5),
-				y => get_field (cmd, 6));
+				x => get_field (cmd, 6),
+				y => get_field (cmd, 7));
 
 			copy_group_to_clipboard (
 				module_cursor	=> module,
@@ -327,18 +331,43 @@ package body et_cp_schematic_group is
 		log (text => "copy group", level => log_threshold);
 		log_indentation_up;
 
+		-- CS: optimize code below. clean up:
 
 		case cmd_field_count is
-			when 4 =>
-				copy_to_clipboard_center;
+			when 5 =>
+				if get_field (cmd, 5) = keyword_clipboard_copy then
+					copy_to_clipboard_center;
+				else
+					log (SEVERITY_ERROR, "missing keyword");
+					-- CS more details
 
-			when 6 =>
-				copy_to_clipboard_ref_point;
+					-- CS set command status ?
+				end if;
+
 
 			when 7 =>
-				do_simple_copy;
+				if get_field (cmd, 5) = keyword_clipboard_copy then
+					copy_to_clipboard_ref_point;
+				else
+					log (SEVERITY_ERROR, "missing keyword");
+					-- CS more details
 
-			when 8 .. type_field_count'last =>
+					-- CS set command status ?
+				end if;
+
+
+			when 8 =>
+				if get_field (cmd, 5) = keyword_single_copy then
+					do_single_copy;
+				else
+					log (SEVERITY_ERROR, "missing keyword");
+					-- CS more details
+
+					-- CS set command status ?
+				end if;
+
+
+			when 6 | 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 
 			when others => command_incomplete (cmd);

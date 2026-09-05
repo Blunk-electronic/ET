@@ -258,14 +258,18 @@ package body et_cp_board_group is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- This procedure makes a simple copy
+		keyword_single_copy		: constant string := "single";
+		keyword_clipboard_copy	: constant string := "clipboard";
+
+
+		-- This procedure makes a single copy
 		-- of the current group:
-		procedure do_simple_copy is
+		procedure do_single_copy is
 			offset	: type_vector_model;
 		begin
 			offset := to_vector_model (
-				x => get_field (cmd, 5),
-				y => get_field (cmd, 6));
+				x => get_field (cmd, 6),
+				y => get_field (cmd, 7));
 
 
 			copy_group_simple (
@@ -277,7 +281,7 @@ package body et_cp_board_group is
 				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
-		end do_simple_copy;
+		end do_single_copy;
 
 
 
@@ -300,8 +304,8 @@ package body et_cp_board_group is
 			reference_point	: type_vector_model;
 		begin
 			reference_point := to_vector_model (
-				x => get_field (cmd, 5),
-				y => get_field (cmd, 6));
+				x => get_field (cmd, 6),
+				y => get_field (cmd, 7));
 
 			copy_group_to_clipboard (
 				module_cursor	=> module,
@@ -318,16 +322,28 @@ package body et_cp_board_group is
 
 
 		case cmd_field_count is
-			when 4 =>
+			when 5 =>
 				copy_to_clipboard_center;
 
-			when 6 =>
-				copy_to_clipboard_ref_point;
-
 			when 7 =>
-				do_simple_copy;
+				-- The 5th field is a keyword that determines
+				-- whether a single copy is made or the group
+				-- is to be copied to the clipboard:
+				if get_field (cmd, 5) = keyword_single_copy then
+					do_single_copy;
 
-			when 8 .. type_field_count'last =>
+				elsif get_field (cmd, 5) = keyword_clipboard_copy then
+					copy_to_clipboard_ref_point;
+
+				else
+					log (SEVERITY_ERROR, "missing keyword");
+					-- CS more details
+
+					-- CS set command status ?
+				end if;
+
+
+			when 6 | 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 
 			when others => command_incomplete (cmd);
