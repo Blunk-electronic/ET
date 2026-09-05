@@ -334,6 +334,7 @@ package et_board_ops_devices is
 	-- CS procedure add_device with explicit device name like MH1
 
 
+
 	-- Copies a non-electrical device to the given destination.
 	-- Assumes that the specified device exists. Otherwise
 	-- an exception is raised:
@@ -343,6 +344,17 @@ package et_board_ops_devices is
 		destination		: in type_vector_model; -- x,y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+
+
+	-- Copies a non-electrical device by given offset.
+	-- Assumes that the specified device exists. Otherwise
+	-- an exception is raised:
+	procedure copy_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
+		offset			: in type_vector_model; -- x,y
+		log_threshold	: in type_log_level);
+
 
 
 

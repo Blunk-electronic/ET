@@ -1445,6 +1445,64 @@ package body et_board_ops_devices is
 
 
 
+	procedure copy_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
+		offset			: in type_vector_model; -- x,y
+		log_threshold	: in type_log_level)
+	is
+		use pac_devices_non_electrical;
+
+		original_name : constant type_device_name :=
+			get_device_name (device_cursor); -- FD1
+
+		-- The next available device name:
+		next_name : type_device_name; -- FD2
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			-- Take a copy of the original device:
+			new_device : type_device_non_electrical :=
+				element (device_cursor);
+		begin
+			-- Move the new device by the given offset:
+			set_place_relative (new_device, offset);
+
+			-- Insert the new device in the module:
+			module.devices_non_electric.insert (next_name, new_device);
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " copy non-electrical device "
+			 & get_device_name (device_cursor)
+			 & " by offset " & to_string (offset),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Build the next available device name:
+		next_name := get_next_available_device_name (
+			module_cursor, get_prefix (original_name),
+			log_threshold + 1); -- FD2
+
+		generic_modules.update_element (module_cursor,
+			query_module'access);
+
+		log_indentation_down;
+	end copy_non_electrical_device;
+
+
+
+
+
+
 
 
 
@@ -2278,15 +2336,122 @@ package body et_board_ops_devices is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure selected
+		-- devices are searched for. Once a device
+		-- has been found, this flag is set:
+		device_found : boolean := false;
+
+		-- Once a selected device has been found, we
+		-- store its cursor here:
+		device_cursor_old : pac_devices_non_electrical.cursor;
+
+		-- This procedure searches for a selected unit.
+		-- The search is aborted if a unit has been found.
+		-- It sets the cursors device_cursor_old and
+		-- unit_cursor_old.
+		-- It sets the flag unit_found:
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_devices_non_electrical;
+			device_cursor : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				if is_selected (device) then
+
+					-- Log device name:
+					log (text => to_string (device_name),
+						level => log_threshold + 1);
+
+					-- We have a selected device.
+					-- The search must be aborted by setting
+					-- this flag:
+					device_found := true;
+
+					-- Backup the cursor to the original device:
+					device_cursor_old := device_cursor;
+
+					-- Deselect the original device.
+					-- This has the important effect, that the
+					-- same device is not found over and over
+					-- again (which would cause a forever-loop):
+					clear_selected (device);
+				end if;
+			end query_device;
+
+
+		begin
+			-- Iterate through the devices and abort
+			-- as soon as a selected device has been found:
+			while has_element (device_cursor)
+			and not device_found loop
+				module.devices_non_electric.update_element (
+					device_cursor, query_device'access);
+
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+
+
+		procedure copy_device is begin
+			log (text => "copy device",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+
+			copy_non_electrical_device (
+				module_cursor	=> module_cursor,
+				device_cursor	=> device_cursor_old,
+				offset			=> offset,
+				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end copy_device;
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " copy selected devices by "
+			& " copy selected non-electrical devices by "
 			& " offset " & to_string (offset),
 			level => log_threshold);
 
-
 		log_indentation_up;
 
+		-- Search for the first selected device in the group.
+		-- Each device that has been found, will be deselected:
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+
+		-- If a device has been found, then the
+		-- flag "device_found" is set.
+		-- This starts the following loop where
+		-- the affected device will be copied.
+
+		-- This loop will be executed as long as selected
+		-- devices exist:
+		while device_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total non-electrical device count of the design ?
+		-- CS: log the nunmber of devices copied
+
+			copy_device;
+
+			-- Restart the search for a selected device:
+			device_found := false;
+
+			-- Restart the search for a selected device:
+			generic_modules.update_element (
+				module_cursor, query_module'access);
+		end loop;
 
 		log_indentation_down;
 	end copy_selected_non_electrical_devices;
