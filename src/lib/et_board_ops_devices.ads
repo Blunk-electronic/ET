@@ -429,12 +429,17 @@ package et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-
+	-- CS: Merge this procedure with procedure
+	-- set_selected_devices_as_moving and add a
+	-- parameter that indicates whether is is a
+	-- "set moving" or "set not moving" action.
 	procedure set_selected_devices_as_not_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
+	-- Copies selected non-electrical devices by the
+	-- given offset:
 	procedure copy_selected_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		offset			: in type_vector_model; -- x/y
