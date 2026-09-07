@@ -86,6 +86,7 @@ with et_canvas_board_keepout;
 with et_canvas_board_tracks;
 with et_canvas_board_conductors;
 with et_canvas_board_netchangers;
+with et_canvas_board_group;
 
 with et_canvas_board_preliminary_object;
 with et_cmd_sts;

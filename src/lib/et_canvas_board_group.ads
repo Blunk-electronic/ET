@@ -1,0 +1,134 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                              SYSTEM ET                                   --
+--                                                                          --
+--                          CANVAS BOARD GROUP                              --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+-- Copyright (C) 2017 - 2026                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+--                                                                          --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
+--                                                                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your editor to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+-- DESCRIPTION:
+--
+
+
+
+
+with et_canvas_tool;				use et_canvas_tool;
+with et_canvas_messages;			use et_canvas_messages;
+with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+
+package et_canvas_board_group is
+
+-- MOVE:
+
+	status_move_group : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to move the group."
+		& status_hint_for_abort;
+
+
+
+	-- This procedure is to be called twice:
+	-- 1. When the operator sets that point at which
+	--    the group is being attacked.
+	-- 2. When the operator sets the point at
+	--    which the group is to be dropped.
+	-- From the point-of-attack to the drop-point
+	-- we calculate the offset by which the group
+	-- is to be moved:
+	procedure move_group (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+
+-- COPY:
+
+	status_copy_group : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to set reference point of group."
+		& status_hint_for_abort;
+
+
+
+	-- This procedure is to be called twice:
+	-- 1. When the operator sets that point at which
+	--    the group is being attacked.
+	-- 2. When the operator sets the point at
+	--    which the copy of the group is to be dropped.
+	-- From the point-of-attack to the drop-point
+	-- we calculate the offset by which the copy
+	-- of the group is to be dropped:
+	procedure copy_group (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+	-- Copies the object of the current group
+	-- to the clipboard.
+	-- Sets the reference point of the group
+	-- as specified by the given point:
+	procedure copy_group_to_clipboard (
+		point	: in type_vector_model);
+
+
+
+-- PASTE:
+
+	status_paste_group : constant string :=
+		status_click_left
+		& "or "
+		& status_press_space
+		& "to paste the group."
+		& status_hint_for_abort;
+
+
+	-- This procedure pastes the group
+	-- with its reference point at the
+	-- given point:
+	procedure paste_group (
+		point	: in type_vector_model);
+
+
+end et_canvas_board_group;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave
+-- his one and only Son, that whoever believes in him
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

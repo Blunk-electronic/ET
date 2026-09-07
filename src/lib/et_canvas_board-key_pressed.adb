@@ -127,7 +127,106 @@ is
 
 
 
-	procedure clear is
+
+	procedure clear_group is
+		use et_board_ops_groups;
+	begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+				-- CS set_status
+				reset_objects (active_module, log_threshold + 1);
+
+			when others => null;
+		end case;
+	end clear_group;
+
+
+
+
+
+
+
+
+	procedure define_group is
+		-- This procedure is called each time the operator presses
+		-- the space-key. How often the key is pressed is counted
+		-- in variable group_area_keyboard.key_counter. After the
+		-- second key-press event, the group_area_keyboard should
+		-- be valid and will be passed to the actual define-group
+		-- operation for further actions down the chain:
+		procedure define_group_keyboard is
+			use et_board_ops_groups;
+			ready : boolean := false;
+		begin
+			-- Evaluate the cursor position (twice) and
+			-- store it in group_area_keyboard.
+			set_select_area_keyboard (point, group_area_keyboard,
+				ready, log_threshold + 1);
+
+			-- If a useful area is the result, then the ready-flag
+			-- is set so that the group area can be passed on
+			-- to further operations down the chain:
+			if ready then
+				define_group_rectangular (
+					module_cursor	=> active_module,
+					area			=> group_area_keyboard.area,
+					log_threshold	=> log_threshold + 1);
+
+			end if;
+		end define_group_keyboard;
+
+
+	begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+				-- CS set_status (hints on how to define the group
+				-- via mouse or keyboard)
+
+				-- This signals the subprograms
+				-- that handle mouse-button-press/release
+				-- events that a group is being defined:
+				group_area_mouse.active := true;
+
+
+			-- If space pressed, then the operator wishes
+			-- to operate via keyboard:
+			when key_space =>
+				case noun is
+					when NOUN_GROUP =>
+						-- When a group is defined via cursor and
+						-- keyboard, then the first corner
+						-- of the group area is set on pressing
+						-- the space-key 1st. Then the operator
+						-- moves the cursor to the second corner
+						-- of the area and presses space again.
+						-- So this call is executed twice:
+						define_group_keyboard;
+						-- NOTE: This is not about visualizing the
+						-- group-area while it is being set on the
+						-- canvas. The visualizing mechanism can be
+						-- found in the generic package et_canvas
+						-- procedures move_cursor and draw_group_area.
+
+					when others => null;
+				end case;
+
+
+			when others => null;
+		end case;
+	end define_group;
+
+
+
+
+
+
+
+
+	procedure clear_zones is
 		use et_board_ops_fill_zones;
 	begin
 		case key is
@@ -139,13 +238,26 @@ is
 
 			when others => status_noun_invalid;
 		end case;
-	end clear;
+	end clear_zones;
 
 
 
 
-	procedure copy is begin
+
+
+	procedure copy is
+		use et_module_clipboard;
+	begin
 		case key is
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+				set_status (et_canvas_board_group.status_copy_group);
+
+				-- When copying groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+
 			when key_noun_device =>
 				set_noun (NOUN_DEVICE);
 				set_status (et_canvas_board_devices.status_copy);
@@ -155,8 +267,40 @@ is
 			-- operate by keyboard:
 			when key_space =>
 				case noun is
+					when NOUN_GROUP =>
+						-- When copying a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+
+						if copy_to_clipboard then
+							et_canvas_board_group.copy_group_to_clipboard (
+								get_cursor_position);
+						else
+							et_canvas_board_group.copy_group (
+								KEYBOARD, get_cursor_position);
+						end if;
+
+
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.copy_object (KEYBOARD, point);
+
+					when others => null;
+				end case;
+
+
+			-- If the operator wants to use the
+			-- clipboard for copying a group:
+			when key_to_clipboard =>
+				case noun is
+					when NOUN_GROUP =>
+						toggle_copy_to_clipboard;
+
+						-- CS: move this stuff to toggle_copy_to_clipboard ?:
+						if copy_to_clipboard_enabled then
+							set_status ("copy to clipboard");
+						else
+							status_clear;
+						end if;
 
 					when others => null;
 				end case;
@@ -181,10 +325,19 @@ is
 
 
 
+
+
 	procedure delete is
 		use et_ripup;
 	begin
 		case key is
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+				-- CS set_status
+				et_board_ops_groups.delete_group (
+					module_cursor	=> active_module,
+					log_threshold	=> log_threshold + 1);
+
 			when key_noun_assy =>
 				set_noun (NOUN_ASSY);
 				set_status (et_canvas_board_assy_doc.status_delete_object);
@@ -362,6 +515,8 @@ is
 
 
 
+
+
 	procedure fill is
 		use et_board_ops_fill_zones;
 	begin
@@ -375,6 +530,8 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end fill;
+
+
 
 
 
@@ -415,8 +572,18 @@ is
 
 
 
+
+
 	procedure move is begin
 		case key is
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+				set_status (et_canvas_board_group.status_move_group);
+
+				-- When dragging groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
 			when key_noun_assy =>
 				set_noun (NOUN_ASSY);
 				set_status (et_canvas_board_assy_doc.status_move_object);
@@ -478,6 +645,13 @@ is
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when key_space =>
 				case noun is
+					when NOUN_GROUP =>
+						-- When moving a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_board_group.move_group (
+							KEYBOARD, get_cursor_position);
+
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
 
@@ -616,6 +790,8 @@ is
 
 
 
+
+
 	procedure draw is
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
@@ -662,6 +838,50 @@ is
 
 
 
+
+
+	procedure paste is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				set_noun (NOUN_GROUP);
+
+				set_status (et_canvas_board_group.status_paste_group);
+
+				-- When copying groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+				-- For the subprograms that draw objects
+				-- of a group being pasted:
+				set_group_being_pasted;
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:
+			when key_space =>
+				case noun is
+					when NOUN_GROUP =>
+						-- When copying a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+
+						-- Paste the group with its reference point
+						-- at the cursor position:
+						et_canvas_board_group.paste_group (
+							get_cursor_position);
+
+
+					when others => null;
+				end case;
+
+			when others => null;
+		end case;
+	end paste;
+
+
+
+
+
 	procedure place is
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;
@@ -693,6 +913,8 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end place;
+
+
 
 
 
@@ -728,6 +950,7 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end rename;
+
 
 
 
@@ -974,6 +1197,10 @@ begin -- key_pressed
 								set_verb (VERB_COPY);
 								status_enter_noun;
 
+							when key_verb_define =>
+								set_verb (VERB_DEFINE);
+								status_enter_noun;
+
 							when key_verb_delete =>
 								set_verb (VERB_DELETE);
 								status_enter_noun;
@@ -992,6 +1219,10 @@ begin -- key_pressed
 
 							when key_verb_move =>
 								set_verb (VERB_MOVE);
+								status_enter_noun;
+
+							when key_verb_paste =>
+								set_verb (VERB_PASTE);
 								status_enter_noun;
 
 							when key_verb_place =>
@@ -1044,13 +1275,15 @@ begin -- key_pressed
 
 						case verb is
 							when VERB_ADD		=> add;
-							when VERB_CLEAR		=> clear;
+							when VERB_CLEAR		=> clear_zones;
 							when VERB_COPY		=> copy;
+							when VERB_DEFINE	=> define_group;
 							when VERB_DELETE	=> delete;
 							when VERB_DRAW		=> draw;
 							when VERB_FILL		=> fill;
 							when VERB_FLIP		=> flip;
 							when VERB_MOVE		=> move;
+							when VERB_PASTE		=> paste;
 							when VERB_PLACE		=> place;
 							when VERB_RENAME	=> rename;
 							when VERB_ROTATE	=> rotate;

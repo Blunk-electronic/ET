@@ -67,7 +67,7 @@ is
 	-- CS global variable for the tool KEYBOARD
 
 
-	procedure clear is
+	procedure clear_group is
 		use et_schematic_ops_groups;
 	begin
 		case key is
@@ -79,7 +79,7 @@ is
 
 			when others => null;
 		end case;
-	end clear;
+	end clear_group;
 
 
 
@@ -180,7 +180,8 @@ is
 
 
 
-	procedure define is
+
+	procedure define_group is
 		-- This procedure is called each time the operator presses
 		-- the space-key. How often the key is pressed is counted
 		-- in variable group_area_keyboard.key_counter. After the
@@ -249,7 +250,7 @@ is
 
 			when others => null;
 		end case;
-	end define;
+	end define_group;
 
 
 
@@ -849,7 +850,8 @@ is
 				reset_grid_and_cursor;
 
 
-			-- If space pressed, then the operator wishes to operate via keyboard:
+			-- If space pressed, then the operator wishes to
+			-- operate via keyboard:
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
@@ -1385,9 +1387,9 @@ begin -- key_pressed
 						case verb is
 							when VERB_ADD		=> add;
 							when VERB_COPY		=> copy;
-							when VERB_CLEAR		=> clear;
+							when VERB_CLEAR		=> clear_group;
 							when VERB_DELETE	=> delete;
-							when VERB_DEFINE	=> define;
+							when VERB_DEFINE	=> define_group;
 							when VERB_DISSOLVE	=> dissolve;
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;
