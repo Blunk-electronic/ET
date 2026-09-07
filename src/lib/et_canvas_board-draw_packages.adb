@@ -1018,6 +1018,23 @@ procedure draw_packages is
 
 
 
+
+
+
+	procedure draw_non_electrical_devices_being_pasted is
+		use et_module_clipboard;
+
+		use pac_devices_non_electrical;
+		device_cursor : pac_devices_non_electrical.cursor :=
+			clipboard.devices_non_electric.first;
+
+	begin
+		null;
+		-- CS
+	end draw_non_electrical_devices_being_pasted;
+
+
+
 begin
 --	put_line ("draw packages ...");
 
@@ -1030,6 +1047,12 @@ begin
 	-- Draw the non-electrical device being added.
 	-- If no device is being added, then nothing happens here:
 	draw_device_being_added;
+
+
+	-- Draw non-electrical devices being pasted from clipboard.
+	-- If no group is being pasted, then nothing happens here:
+	draw_non_electrical_devices_being_pasted;
+
 
 end draw_packages;
 
