@@ -71,7 +71,7 @@ with et_board_ops_grid;
 
 with et_schematic_ops_groups;
 with et_board_ops_groups;
-
+with et_module_clipboard;
 
 with et_canvas_board_lines;
 with et_canvas_board_outline;
@@ -1011,6 +1011,11 @@ package body et_canvas_board is
 
 
 
+
+
+
+
+
 -- RESET:
 
 	procedure reset is
@@ -1047,20 +1052,60 @@ package body et_canvas_board is
 
 			reset_preliminary_text; -- after placing a text
 
-			reset_zoom_area; -- abort zoom-to-area operation
+			-- Abort area and group select operations:
+			reset_zoom_area;
+			reset_group_area_keyboard;
+
+
+			set_group_not_moving;
+
+			-- Clear all "moving"-flags:
+			et_board_ops_groups.set_group_as_not_moving (
+				active_module, log_threshold);
+
+
+			set_group_not_being_copied;
+
+			-- Depending on the current verb and noun
+			-- specific reset actions are required:
+			-- CS: Move other actions of this procedure
+			-- to the case construct below:
+			case verb is
+				when VERB_PASTE =>
+
+					case noun is
+						when NOUN_GROUP =>
+							set_group_not_being_pasted;
+							reset_verb_and_noun;
+							update_mode_display;
+
+						when others =>
+							null; -- CS
+					end case;
+
+				when others =>
+					null; -- CS
+			end case;
+
 
 			pac_device_ops.reset_window_open_flags;
 		end level_1;
 
 
+
 		-- Do a level 2 reset. This is a full reset:
-		procedure level_2 is begin
+		procedure level_2 is
+			use et_module_clipboard;
+		begin
 			log (text => "level 2", level => log_threshold + 1);
 
 			level_1;
 
 			reset_verb_and_noun;
 			update_mode_display;
+
+			reset_copy_to_clipboard;
+			reset_group_area_mouse; -- abort a define-group operation
 
 			status_enter_verb;
 			clear_out_properties_box;
