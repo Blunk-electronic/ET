@@ -66,6 +66,8 @@ Delete a Group
 
 	Deleting a group means to delete the objects which
 	are in the current group.
+	NOTE: Electrical device are not affected. They must
+	be deleted in the schematic editor.
 
 	.. code-block::
 	
@@ -102,6 +104,8 @@ Single Copy
 	A group can be copied to a given place.
 	The copy is placed with an offset relative
 	to the original group.
+	NOTE: Electrical device are not affected. They must
+	be copied in the schematic editor.
 
 	This example command copies the group
 	relative by an x/y offset of 10/20:
@@ -119,6 +123,9 @@ Multiple Copy
 
 	If a group is to be copied multiple times then
 	the clipboard must be used.
+	NOTE: Electrical device are not affected. They must
+	be copyied in the schematic editor.
+
 	These commands copy the current group into the clipboard.
 
 	Without arguments the center of the current

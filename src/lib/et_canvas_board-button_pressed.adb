@@ -58,6 +58,8 @@ is
 
 
 	procedure left_button is
+		use et_module_clipboard;
+
 
 		procedure add_device is
 			use et_canvas_board_devices;
@@ -92,6 +94,20 @@ is
 
 			when VERB_COPY =>
 				case noun is
+					when NOUN_GROUP =>
+						-- When copying a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+
+						if copy_to_clipboard then
+							et_canvas_board_group.copy_group_to_clipboard (
+								snap_point);
+						else
+							et_canvas_board_group.copy_group (
+								MOUSE, snap_point);
+						end if;
+
+
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.copy_object (MOUSE, snap_point);
 
@@ -111,6 +127,10 @@ is
 
 			when VERB_MOVE =>
 				case noun is
+					when NOUN_GROUP =>
+						et_canvas_board_group.move_group (
+							MOUSE, snap_point);
+
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (MOUSE, snap_point);
 
@@ -246,6 +266,19 @@ is
 				end case;
 
 
+
+			when VERB_PASTE =>
+				case noun is
+					when NOUN_GROUP =>
+						-- Paste the group with its reference point
+						-- at the mouse position:
+						et_canvas_board_group.paste_group (snap_point);
+
+					when others => null;
+				end case;
+
+
+
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -270,6 +303,9 @@ is
 
 
 
+
+	-- If right button clicked, then the operator is clarifying:
+	-- CS: Rotate objects (while adding, copying, ...)
 	procedure right_button is
 		use et_ripup;
 	begin

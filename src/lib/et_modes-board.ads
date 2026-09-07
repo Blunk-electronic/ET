@@ -190,7 +190,7 @@ package et_modes.board is
 		VERB_NONE		=> (NOUN_NONE => true,								others => false),
 		VERB_ADD		=> (NOUN_DEVICE | NOUN_LAYER | NOUN_LIBRARY => true,	others => false),
 		VERB_CLEAR		=> (NOUN_ZONE => true,								others => false),
-		VERB_COPY		=> (NOUN_DEVICE => true,							others => false),
+		VERB_COPY		=> (NOUN_DEVICE | NOUN_GROUP => true,							others => false),
 		VERB_DELETE		=> (NOUN_DEVICE | NOUN_GROUP | NOUN_LAYER | NOUN_HOLE | NOUN_OUTLINE | NOUN_SILKSCREEN
 							| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STENCIL | NOUN_STOPMASK | NOUN_VIA
 							| NOUN_ROUTE_RESTRICT | NOUN_VIA_RESTRICT | NOUN_FREETRACK | NOUN_TRACK => true,
@@ -208,7 +208,7 @@ package et_modes.board is
 		VERB_FLIP		=> (NOUN_DEVICE => true,							others => false),
 		VERB_MAKE		=> (NOUN_BOM | NOUN_PNP => true,					others => false),
 		VERB_MOVE		=> (NOUN_FRAME | NOUN_CURSOR | NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE
-							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_VIA => true,
+							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_VIA | NOUN_GROUP => true,
 							others => false),
 		VERB_PASTE		=> (NOUN_GROUP => true,	others => false),
 		VERB_PLACE		=> (NOUN_VIA | NOUN_TEXT | NOUN_PLACEHOLDER => true,	others => false),

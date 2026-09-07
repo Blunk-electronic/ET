@@ -63,7 +63,7 @@ begin
 
 		when VERB_COPY =>
 			case noun is
-				when NOUN_DEVICE =>
+				when NOUN_DEVICE | NOUN_GROUP =>
 					if edit_process_running then
 						redraw_board;
 					end if;
@@ -115,6 +115,11 @@ begin
 						redraw_board;
 					end if;
 
+				when NOUN_GROUP =>
+					if edit_process_running then
+						redraw_board;
+					end if;
+
 				when NOUN_TRACK =>
 					if edit_process_running then
 						redraw_board;
@@ -154,6 +159,15 @@ begin
 					if edit_process_running then
 						redraw_board;
 					end if;
+
+				when others => null;
+			end case;
+
+
+		when VERB_PASTE =>
+			case noun is
+				when NOUN_GROUP =>
+					redraw_board;
 
 				when others => null;
 			end case;

@@ -356,6 +356,9 @@ is
 
 
 
+
+
+
 	-- If right button clicked, then the operator is clarifying:
 	-- CS: Rotate objects (while adding, copying, fetching, ...)
 	procedure right_button is

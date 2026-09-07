@@ -125,7 +125,7 @@ begin
 		when VERB_PASTE =>
 			case noun is
 				when NOUN_GROUP =>
-					redraw;
+					redraw; -- schematic and board
 
 				when others => null;
 			end case;

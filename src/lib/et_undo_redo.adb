@@ -339,6 +339,19 @@ package body et_undo_redo is
 				 level => lth + 1);
 
 			case noun is
+				when NOUN_GROUP =>
+					case verb is
+						when VERB_COPY | VERB_PASTE | VERB_DELETE | VERB_MOVE =>
+							commit_devices;
+							commit_nets;
+							commit_netchangers;
+							commit_non_electrical_devices;
+							commit_board;
+
+						when others => null;
+					end case;
+
+
 				when NOUN_NET =>
 					case verb is
 						when VERB_ROUTE =>
