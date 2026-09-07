@@ -47,8 +47,9 @@ package et_board_verb_noun_keys is
 -- VERBS:
 
 	key_verb_add		: constant gdk_key_type := GDK_LC_a;
-	key_verb_clear		: constant gdk_key_type := GDK_LC_e;
+	key_verb_clear		: constant gdk_key_type := GDK_C;
 	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
+	key_verb_define		: constant gdk_key_type := GDK_D;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
 	key_verb_fill		: constant gdk_key_type := GDK_LC_f;
@@ -71,6 +72,7 @@ package et_board_verb_noun_keys is
 	key_noun_arc		: constant gdk_key_type := GDK_LC_a;
 	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
+	key_noun_group		: constant gdk_key_type := GDK_LC_g;
 	key_noun_netchanger	: constant gdk_key_type := GDK_LC_e;
 	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;
 	key_noun_line		: constant gdk_key_type := GDK_LC_l;
@@ -105,6 +107,7 @@ package et_board_verb_noun_keys is
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
 	key_clarify			: constant gdk_key_type := GDK_page_down;
+	key_to_clipboard	: constant gdk_key_type := GDK_LC_l;
 
 end et_board_verb_noun_keys;
 

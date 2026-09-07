@@ -50,10 +50,10 @@ package et_schematic_verb_noun_keys is
 -- VERBS:
 
 	key_verb_add		: constant gdk_key_type := GDK_LC_a;
-	key_verb_clear		: constant gdk_key_type := GDK_LC_l;
+	key_verb_clear		: constant gdk_key_type := GDK_C;
 	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;
-	key_verb_define		: constant gdk_key_type := GDK_LC_e;
+	key_verb_define		: constant gdk_key_type := GDK_D;
 	key_verb_direction	: constant gdk_key_type := GDK_LC_t;
 	key_verb_drag		: constant gdk_key_type := GDK_LC_g;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;

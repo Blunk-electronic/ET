@@ -12,7 +12,7 @@ Define a Group
 	The easiest way to group objects is to type
 	the verb noun sequence
 
-	|VNS| e g
+	|VNS| D g
 
 	then move the pointer to one corner of the area of
 	interest, keep the left mouse button pressed, move to
@@ -54,7 +54,7 @@ Clear a Group
 	
 		clear group
 
-	|VNS| l g
+	|VNS| C g
 
 
 
