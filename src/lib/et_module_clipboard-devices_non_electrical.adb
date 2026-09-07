@@ -46,7 +46,7 @@
 
 with et_module_names;
 with et_device_name;
-
+with et_board_ops_devices;
 
 
 package body et_module_clipboard.devices_non_electrical is
@@ -193,13 +193,18 @@ package body et_module_clipboard.devices_non_electrical is
 				device_name	: in type_device_name;
 				device		: in type_device_non_electrical)
 			is
-
+				use et_board_ops_devices;
 			begin
 				log (text => "device " & to_string (device_name),
 					level => log_threshold + 1);
 
 				log_indentation_up;
 
+				copy_non_electrical_device (
+					module_cursor	=> module_cursor,
+					device_cursor	=> device_cursor,
+					offset			=> offset,
+					log_threshold	=> log_threshold + 2);
 
 				log_indentation_down;
 			end query_device;
