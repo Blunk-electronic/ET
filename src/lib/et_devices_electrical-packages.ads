@@ -218,30 +218,30 @@ package et_devices_electrical.packages is
 	-- The targeted device must be real. Otherwise an exception is raised:
 
 	-- Sets the position of the package in the board drawing.
-	procedure set_position (
+	procedure set_position ( -- CS rename to set_package_position
 		device		: in out type_device_electrical;
 		position	: in type_package_position);
 
 
 	-- Returns the position of the package in the board drawing.
-	function get_position (
+	function get_position ( -- CS rename to get_package_position
 		device : in type_device_electrical)
 		return type_package_position;
 
 
 	-- Returns the position of the package in the board drawing.
-	function get_position (
+	function get_position ( -- CS rename to get_package_position
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
 
-	function get_rotation (
+	function get_rotation ( -- CS rename to get_package_rotation
 		device	: in out type_device_electrical)
 		return type_rotation_model;
 
 
-	procedure set_rotation (
+	procedure set_rotation ( -- CS rename to set_package_rotation
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model);
 
