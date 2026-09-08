@@ -127,7 +127,7 @@ procedure draw_netchangers is
 			origin		=> false, -- no origin required
 			rotation	=> 0.0, -- never rotated
 			alignment	=> (ALIGN_LEFT, ALIGN_CENTER));
-		null;
+
 	end draw_layer;
 
 
@@ -184,6 +184,52 @@ procedure draw_netchangers is
 
 
 
+
+
+
+
+
+
+	procedure draw_netchangers_being_pasted is
+		use et_module_clipboard;
+
+		use pac_netchangers;
+		netchanger_cursor : pac_netchangers.cursor :=
+			clipboard.netchangers.first;
+
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
+
+
+		procedure query_netchanger (
+			index		: in type_netchanger_id;
+			netchanger	: in type_netchanger)
+		is
+		begin
+			null;
+		end query_netchanger;
+
+
+	begin
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- All netchangers will be drawn highlighted:
+			brightness := BRIGHT;
+
+			-- Iterate through the netchangers in the clipboard:
+			while has_element (netchanger_cursor) loop
+				query_element (netchanger_cursor, query_netchanger'access);
+				next (netchanger_cursor);
+			end loop;
+
+			brightness := NORMAL;
+		end if;
+	end draw_netchangers_being_pasted;
+
+
 begin
 --	put_line ("draw netchangers (board)");
 
@@ -191,6 +237,12 @@ begin
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_module'access);
+
+
+	-- Draw netchanger being pasted from clipboard.
+	-- If no group is being pasted, then nothing happens here:
+	draw_netchangers_being_pasted;
+
 
 
 end draw_netchangers;
