@@ -100,6 +100,26 @@ package body et_netchangers.board is
 
 
 
+	function in_layer_and_in_area (
+		netchanger	: in type_netchanger;
+		layer		: in type_signal_layer;
+		area		: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_layer (netchanger) = layer and then
+		in_area (get_place (netchanger), area) then
+			result := true;
+		end if;
+
+		return result;
+	end in_layer_and_in_area;
+
+
+
+
+
 
 -- CATCH ZONE:
 

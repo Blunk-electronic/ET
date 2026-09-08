@@ -589,6 +589,68 @@ package body et_board_ops_netchangers is
 
 
 
+-- GROUPS:
+
+	procedure group_netchangers_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		layer			: in type_signal_layer;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor :=
+				module.netchangers.first;
+
+
+			-- Sets the given netchanger as "selected" if
+			-- it is in the given layer and in the given area:
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if in_layer_and_in_area (netchanger, layer, area) then
+					log (text => to_string (name),
+						 level => log_threshold + 1);
+
+					set_selected (netchanger);
+				end if;
+			end query_netchanger;
+
+
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (netchanger_cursor,
+					query_netchanger'access);
+
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " group netchangers in rectangular area "
+			 & to_string (area)
+			 & " signal layer " & to_string (layer),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end group_netchangers_in_rectangular_area;
+
+
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:

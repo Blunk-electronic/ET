@@ -83,6 +83,17 @@ package et_netchangers.board is
 
 
 
+	-- Returns true if the given netchanger
+	-- in the given signal layer and in the
+	-- given area:
+	function in_layer_and_in_area (
+		netchanger	: in type_netchanger;
+		layer		: in type_signal_layer;
+		area		: in type_area)
+		return boolean;
+
+
+
 
 -- CATCH ZONE:
 

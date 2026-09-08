@@ -41,6 +41,7 @@
 -- with ada.text_io;			use ada.text_io;
 
 with et_pcb_sides;
+with et_pcb_signal_layers;
 with et_board_ops_devices;
 with et_board_ops_netchangers;
 with et_board_ops_assy_doc;
@@ -269,12 +270,20 @@ package body et_board_ops_groups is
 
 
 		procedure group_netchangers is
+			use et_board_ops_netchangers;
+			use et_pcb_signal_layers;
+			layer : type_signal_layer := 1;
+			-- CS: the layer should depend on which
+			-- signal layer is displayed.
 		begin
 			log (text => "netchangers",
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-				-- CS
+
+			group_netchangers_in_rectangular_area (
+				module_cursor, area, layer, log_threshold + 2);
+
 			log_indentation_down;
 		end group_netchangers;
 

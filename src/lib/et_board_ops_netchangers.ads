@@ -163,6 +163,22 @@ package et_board_ops_netchangers is
 
 
 
+-- GROUPS:
+
+	-- Sets "selected" flag of all netchangers
+	-- that are in the given area and in
+	-- the given signal layer:
+	procedure group_netchangers_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		layer			: in type_signal_layer;
+		log_threshold	: in type_log_level);
+
+
+
+
+
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
