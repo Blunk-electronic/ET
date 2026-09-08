@@ -628,7 +628,10 @@ package body et_board_ops_groups is
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-			delete_non_electrical_devices_in_group (module_cursor, log_threshold + 2);
+
+			delete_non_electrical_devices_in_group (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
 		end delete_devices;
 
@@ -725,11 +728,14 @@ package body et_board_ops_groups is
 
 
 		procedure move_netchangers is
-			use et_board_ops_devices;
+			use et_board_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			move_selected_netchangers (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
 		end move_netchangers;
 

@@ -64,6 +64,10 @@ package et_netchangers.board is
 		return type_vector_model;
 
 
+	procedure set_place_relative (
+		netchanger	: in out type_netchanger;
+		offset		: in type_vector_model);
+
 
 	procedure set_layer (
 		netchanger	: in out type_netchanger;

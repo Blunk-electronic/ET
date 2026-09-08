@@ -68,10 +68,28 @@ package body et_netchangers.board is
 
 
 
+
 	function get_place (
 		netchanger	: in type_netchanger)
 		return type_vector_model
 	is (netchanger.position_brd.place);
+
+
+
+
+
+	procedure set_place_relative (
+		netchanger	: in out type_netchanger;
+		offset		: in type_vector_model)
+	is
+		place : type_vector_model;
+	begin
+		place := get_place (netchanger);
+		move_by (place, offset);
+		set_place (netchanger, place);
+	end set_place_relative;
+
+
 
 
 
