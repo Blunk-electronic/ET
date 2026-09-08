@@ -801,6 +801,126 @@ package body et_board_ops_netchangers is
 
 
 
+
+	procedure set_selected_netchangers_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor :=
+				module.netchangers.first;
+
+
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if is_selected (netchanger) then
+
+					log (text => to_string (name),
+						 level => log_threshold + 1);
+
+					set_moving (netchanger);
+				end if;
+			end query_netchanger;
+
+
+		begin
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+
+				next (netchanger_cursor);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set selected netchangers as moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end set_selected_netchangers_as_moving;
+
+
+
+
+
+
+
+
+	procedure set_selected_netchangers_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor :=
+				module.netchangers.first;
+
+
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if is_selected (netchanger) then
+
+					log (text => to_string (name),
+						 level => log_threshold + 1);
+
+					clear_moving (netchanger);
+				end if;
+			end query_netchanger;
+
+
+		begin
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+
+				next (netchanger_cursor);
+			end loop;
+
+			log_indentation_down;
+		end query_module;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set selected netchangers as NOT moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end set_selected_netchangers_as_not_moving;
+
+
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:

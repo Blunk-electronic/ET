@@ -139,6 +139,14 @@ package et_netchangers.board is
 		netchanger : in out type_netchanger);
 
 
+	procedure set_moving (
+		netchanger : in out type_netchanger);
+
+
+	procedure clear_moving (
+		netchanger : in out type_netchanger);
+
+
 	procedure modify_status (
 		netchanger	: in out type_netchanger;
 		operation	: in type_status_operation);

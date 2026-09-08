@@ -207,6 +207,19 @@ package body et_netchangers.board is
 	end set_selected;
 
 
+	procedure set_moving (
+		netchanger : in out type_netchanger)
+	is begin
+		set_moving (netchanger.status_brd);
+	end set_moving;
+
+
+	procedure clear_moving (
+		netchanger : in out type_netchanger)
+	is begin
+		clear_moving (netchanger.status_brd);
+	end clear_moving;
+
 
 	procedure modify_status (
 		netchanger	: in out type_netchanger;

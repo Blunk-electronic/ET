@@ -830,11 +830,14 @@ package body et_board_ops_groups is
 
 
 		procedure set_netchangers is
-			use et_board_ops_devices;
+			use et_board_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_netchangers_as_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_netchangers;
 
@@ -907,11 +910,14 @@ package body et_board_ops_groups is
 
 
 		procedure set_netchangers is
-			use et_board_ops_devices;
+			use et_board_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_netchangers_as_not_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_netchangers;
 
