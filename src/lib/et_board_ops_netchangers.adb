@@ -651,6 +651,84 @@ package body et_board_ops_netchangers is
 
 
 
+
+
+
+
+
+	function get_group_netchanger_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		use pac_netchangers;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			netchanger_cursor : pac_netchangers.cursor :=
+				module.netchangers.first;
+
+
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in type_netchanger)
+			is
+				place : type_vector_model;
+			begin
+				if is_selected (netchanger) then
+					log (text => to_string (name),
+						 level => log_threshold + 1);
+
+					log_indentation_up;
+
+					-- Get x/y position of the netchanger candidate:
+					place := get_place (netchanger);
+
+					-- Log the position of the netchanger:
+					log (text => "position " & to_string (place),
+						 level => log_threshold + 2);
+
+					-- Append the position to the result:
+					result.append (place);
+
+					log_indentation_down;
+				end if;
+			end query_netchanger;
+
+
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				query_element (netchanger_cursor, query_netchanger'access);
+
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get netchanger positions of group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_group_netchanger_positions;
+
+
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:

@@ -272,9 +272,10 @@ package body et_board_ops_groups is
 		procedure group_netchangers is
 			use et_board_ops_netchangers;
 			use et_pcb_signal_layers;
-			layer : type_signal_layer := 1;
+			layer : constant type_signal_layer := 1;
 			-- CS: the layer should depend on which
-			-- signal layer is displayed.
+			-- signal layers are displayed.
+			-- Use a layer range like (1..4) instead.
 		begin
 			log (text => "netchangers",
 				 level => log_threshold + 1);
@@ -283,6 +284,8 @@ package body et_board_ops_groups is
 
 			group_netchangers_in_rectangular_area (
 				module_cursor, area, layer, log_threshold + 2);
+
+			-- CS iterate through the signal layers
 
 			log_indentation_down;
 		end group_netchangers;
@@ -480,7 +483,8 @@ package body et_board_ops_groups is
 
 			-- Get the positions (x/y) of the netchangers
 			-- of the group:
-			-- CS
+			netchanger_positions := get_group_netchanger_positions (
+				module_cursor, log_threshold + 2);
 
 			log (text => "collected netchanger positions "
 				 & get_length (netchanger_positions),

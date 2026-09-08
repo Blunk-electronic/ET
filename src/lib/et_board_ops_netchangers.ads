@@ -175,6 +175,12 @@ package et_board_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns a list of the positions of all netchangers
+	-- in the group:
+	function get_group_netchanger_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list;
 
 
 
