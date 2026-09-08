@@ -1648,6 +1648,20 @@ package body et_canvas_board is
 
 
 
+
+
+-- GROUP OFFSET:
+
+	function get_group_offset_on_paste
+		return pac_geometry.type_vector_model
+	is
+		use et_board_ops_groups;
+	begin
+		return (get_primary_tool_position
+			- group_reference_point);
+	end get_group_offset_on_paste;
+
+
 end et_canvas_board;
 
 -- Soli Deo Gloria

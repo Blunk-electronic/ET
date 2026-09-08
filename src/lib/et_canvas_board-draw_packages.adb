@@ -1066,6 +1066,7 @@ procedure draw_packages is
 
 
 
+
 	procedure draw_non_electrical_devices_being_pasted is
 		use et_module_clipboard;
 
@@ -1073,16 +1074,62 @@ procedure draw_packages is
 		device_cursor : pac_devices_non_electrical.cursor :=
 			clipboard.devices_non_electric.first;
 
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
+
+
+		-- This procedure draws the units of the candidate device:
+		procedure query_device (
+			name	: in type_device_name;
+			device	: in type_device_non_electrical)
+		is
+			use pac_package_models;
+		begin
+			-- put_line ("paste device " & to_string (device_name));
+
+			-- Get the device properties:
+			device_name := name;
+			device_value := device.value;
+			device_purpose := device.purpose;
+			device_placeholders := device.placeholders;
+
+			-- Fetch the complete position of the device
+			-- (incl. x/y/rotaton/face) from the database:
+			package_position := get_position (device);
+			-- CS get_package_position
+
+			-- Move the package position by the offset:
+			move_by (package_position.place, offset);
+			-- CS set_place_relative (package_position, offset);
+
+			-- Draw the package:
+			draw_package (element (device.model_cursor));
+		end query_device;
+
+
 	begin
-		null;
-		-- CS
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- All packages will be drawn highlighted:
+			brightness := BRIGHT;
+
+			-- Iterate through the devices in the clipboard:
+			while has_element (device_cursor) loop
+				query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+
+			brightness := NORMAL;
+		end if;
 	end draw_non_electrical_devices_being_pasted;
 
 
 
 begin
 --	put_line ("draw packages ...");
-
 
 	pac_generic_modules.query_element (
 		position	=> active_module,

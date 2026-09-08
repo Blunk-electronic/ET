@@ -1527,6 +1527,9 @@ package body et_canvas_schematic is
 
 
 
+
+-- GROUP OFFSET:
+
 	function get_group_offset_on_paste
 		return pac_geometry.type_vector_model
 	is
