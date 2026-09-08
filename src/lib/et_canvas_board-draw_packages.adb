@@ -104,10 +104,16 @@ separate (et_canvas_board)
 
 procedure draw_packages is
 
+	-- The position of the device package being drawn.
+	-- It can assume the value as defined in the database
+	-- or it can be changed if a package is being moved
+	-- or copied:
 	package_position : type_package_position;
 
+	-- The brightness a package is drawn with:
 	brightness : type_brightness := NORMAL;
 
+	-- Properties of the device candidate being drawn:
 	device_name	: et_device_name.type_device_name;
 	device_value	: et_device_value.type_device_value;
 	device_purpose	: et_device_purpose.type_device_purpose;
