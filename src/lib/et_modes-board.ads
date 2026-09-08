@@ -189,7 +189,7 @@ package et_modes.board is
 	show_nouns_for_verb : constant array (type_verb) of type_noun_array_of_boolean := (
 		VERB_NONE		=> (NOUN_NONE => true,								others => false),
 		VERB_ADD		=> (NOUN_DEVICE | NOUN_LAYER | NOUN_LIBRARY => true,	others => false),
-		VERB_CLEAR		=> (NOUN_ZONE => true,								others => false),
+		VERB_CLEAR		=> (NOUN_GROUP | NOUN_ZONE => true,								others => false),
 		VERB_COPY		=> (NOUN_DEVICE | NOUN_GROUP => true,							others => false),
 		VERB_DELETE		=> (NOUN_DEVICE | NOUN_GROUP | NOUN_LAYER | NOUN_HOLE | NOUN_OUTLINE | NOUN_SILKSCREEN
 							| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STENCIL | NOUN_STOPMASK | NOUN_VIA

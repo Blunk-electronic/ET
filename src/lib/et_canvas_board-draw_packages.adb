@@ -877,24 +877,6 @@ procedure draw_packages is
 		-- a physical representation in the board):
 		if is_real (device) then
 
-			-- If the device is selected then draw it highlighted:
-			if is_selected (device) then
-				brightness := BRIGHT;
-			else
-				brightness := NORMAL;
-			end if;
-
-
-			-- Fetch the complete position of the device
-			-- (incl. x/y/rotaton/face) from the database:
-			package_position := et_devices_electrical.packages.get_position (device);
-
-			if is_moving (device) then
-				-- Override package position by tool position:
-				package_position.place := get_object_tool_position;
-			end if;
-
-
 			device_name := name;
 			device_value := device.value;
 			device_purpose := device.purpose;
@@ -905,12 +887,45 @@ procedure draw_packages is
 			package_model_name := get_package_model (
 				device.model_cursor, device.variant);
 
-			-- Send the actual package model to the draw procedure:
-			draw_package (element (
-				package_library, package_model_name));
+			-- Get the original package position from the database.
+			-- This is the place where the original package
+			-- will be drawn.
+			-- If the package is being moved or copied then
+			-- the x/y component of the position will be
+			-- overwritten later:
+			package_position := et_devices_electrical.packages.get_position (device);
+			-- CS get_package_position
+
+			brightness := NORMAL;
+
+			-- Draw the device candidate highlighted if
+			-- it is selected:
+			if is_selected (device) then
+				brightness := BRIGHT;
+
+				-- NOTE: Since electrical devices can not be
+				-- copied in the board editor, there is no
+				-- handling of devices being copied here.
+
+				-- Overwrite the position if the device package
+				-- 1. alone is being moved or
+				-- 2. if a whole group is being moved:
+				if is_moving (device) then
+					if group_is_moving then
+						move_by (package_position.place, get_group_offset);
+						-- CS set_place_relative (package_position, get_group_offset);
+					else
+						set_place (package_position, get_object_tool_position);
+					end if;
+				end if;
+			end if;
+
+			-- Draw the package:
+			draw_package (element (package_library, package_model_name));
 
 		end if;
 	end query_electrical_device;
+
 
 
 
@@ -926,31 +941,61 @@ procedure draw_packages is
 	begin
 		-- put_line ("device " & to_string (name));
 
-		-- If the device is selected then draw it highlighted:
-		if is_selected (device) then
-			brightness := BRIGHT;
-		else
-			brightness := NORMAL;
-		end if;
-
-		-- Fetch the complete position of the device
-		-- (incl. x/y/rotaton/face) from the database:
-		package_position := get_position (device);
-
-		if is_moving (device) then
-			-- Override package position by tool position:
-			package_position.place := get_object_tool_position;
-		end if;
-
-
 		device_name := name;
 		device_value := device.value;
 		device_purpose := device.purpose;
 		device_placeholders := device.placeholders;
 
-		-- Send the actual package model to the draw procedure:
+		-- Fetch the complete position of the device
+		-- (incl. x/y/rotaton/face) from the database:
+		package_position := get_position (device);
+		-- CS get_package_position
+
+		brightness := NORMAL;
+
+		-- If the device is selected then draw it highlighted:
+		if is_selected (device) then
+			brightness := BRIGHT;
+
+			-- If a group is being copied and the
+			-- device is member of the group, then
+			-- we compute the position of the device candidate
+			-- here and call procedure draw_package:
+			if group_is_being_copied then
+
+				-- Move the device by the current group offset.
+				-- So this is the position where the copy of the
+				-- device package wiil be drawn:
+				move_by (package_position.place, get_group_offset);
+				-- CS set_place_relative (package_position, get_group_offset);
+
+				-- Draw the package:
+				draw_package (element (device.model_cursor));
+
+				-- Restore the position of the original device
+				-- because the original will be drawn later:
+				package_position := get_position (device);
+			end if;
+
+
+			-- Overwrite the position if the device package
+			-- 1. alone is being moved or
+			-- 2. if a whole group is being moved:
+			if is_moving (device) then
+				if group_is_moving then
+					move_by (package_position.place, get_group_offset);
+					-- CS set_place_relative (package_position, get_group_offset);
+				else
+					set_place (package_position, get_object_tool_position);
+				end if;
+			end if;
+		end if;
+
+		-- Draw the package:
 		draw_package (element (device.model_cursor));
+
 	end query_non_electrical_device;
+
 
 
 
