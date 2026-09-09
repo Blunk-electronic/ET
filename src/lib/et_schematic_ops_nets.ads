@@ -375,8 +375,9 @@ package et_schematic_ops_nets is
 
 
 
-	-- Moves all selected net segments by the
-	-- given offset.
+	-- Drags all selected net segments by the
+	-- given offset. Connected segments are dragged along
+	-- as far as possible.
 	-- This is a relative movement by the given offset:
 	procedure drag_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
