@@ -405,7 +405,7 @@ package et_canvas_schematic is
 
 
 -- GROUP OFFSET:
-	
+
 	-- This function returns the offset by
 	-- which a group is being pasted relative to
 	-- the group_reference_point.
