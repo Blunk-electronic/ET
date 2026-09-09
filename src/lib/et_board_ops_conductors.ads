@@ -930,6 +930,8 @@ package et_board_ops_conductors is
 
 	-- This procedure moves selected conductor objects
 	-- by the given offset.
+	-- Start and end points (A/B) of lines (CS: arcs ?) are
+	-- dragged separately depending which end is selected.
 	-- This is a relative movement by the given offset:
 	procedure move_selected_conductors (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -937,7 +939,9 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	-- Sets the "moving" flag of all selected conductor objects:
+	-- Sets the "moving" flag of all selected conductor objects.
+	-- Start and end points (A/B) of lines (CS: arcs ?) are set
+	-- separately depending which end is selected:
 	procedure set_selected_conductors_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

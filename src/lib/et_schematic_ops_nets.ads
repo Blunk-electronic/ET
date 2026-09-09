@@ -376,7 +376,9 @@ package et_schematic_ops_nets is
 
 
 	-- Drags all selected net segments by the
-	-- given offset. Connected segments are dragged along
+	-- given offset. Start and end points (A/B) are
+	-- dragged separately depending which end is selected.
+	-- Connected segments are dragged along
 	-- as far as possible.
 	-- This is a relative movement by the given offset:
 	procedure drag_selected_net_segments (
@@ -385,7 +387,9 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Sets the "moving" flag of all selected segments:
+	-- Sets the "moving" flag of all selected segments.
+	-- Start and end points (A/B) are set
+	-- separately depending which end is selected.
 	procedure set_selected_net_segments_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
