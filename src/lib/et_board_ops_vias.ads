@@ -44,6 +44,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_generic_modules;				use et_generic_modules;
 with et_vias;							use et_vias;
 with et_net_names;						use et_net_names;
@@ -115,6 +116,77 @@ package et_board_ops_vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+
+
+
+-- GROUPS:
+
+	-- Sets "selected" flag of all vias
+	-- that are in the given area and in the
+	-- given signal layer:
+	procedure group_vias_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		layer			: in type_signal_layer;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns a list of the positions of all vias
+	-- in the group:
+	function get_group_via_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list;
+
+
+
+	-- Deletes all vias which are in the current
+	-- group. This affects all vias which have the
+	-- "selected"-flag set:
+	-- This procedure does not do any commit operations,
+	-- because this is part of a group call.
+	-- It is up to the caller of this procedure to care for
+	-- the commit actions:
+	procedure delete_vias_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure moves selected vias by the
+	-- given offset.
+	-- This is a relative movement by the given offset:
+	procedure move_selected_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the "moving" flag of all selected vias:
+	procedure set_selected_vias_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	-- CS: Merge this procedure with procedure
+	-- set_selected_vias_as_moving and add a
+	-- parameter that indicates whether is is a
+	-- "set moving" or "set not moving" action.
+	procedure set_selected_vias_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	-- Copies selected vias devices by the
+	-- given offset:
+	procedure copy_selected_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+---------------------------------------------------------------------------
 
 	type type_object_via is record
 		via_cursor	: pac_vias.cursor;

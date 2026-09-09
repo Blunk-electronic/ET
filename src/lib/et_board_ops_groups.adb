@@ -59,6 +59,7 @@ with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_module_clipboard;
 with et_module_clipboard.devices_non_electrical;
 with et_module_clipboard.conductors;
+with et_module_clipboard.vias;
 
 with et_modes.board;
 with et_undo_redo;
@@ -389,12 +390,23 @@ package body et_board_ops_groups is
 
 
 		procedure group_vias is
+			use et_board_ops_vias;
+			use et_pcb_signal_layers;
+			layer : constant type_signal_layer := 1;
+			-- CS: the layer should depend on which
+			-- signal layers are displayed.
+			-- Use a layer range like (1..4) instead.
 		begin
 			log (text => "vias",
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-				-- CS
+
+			group_vias_in_rectangular_area (
+				module_cursor, area, layer, log_threshold + 2);
+
+			-- CS iterate through the displayed signal layers
+
 			log_indentation_down;
 		end group_vias;
 
@@ -515,7 +527,8 @@ package body et_board_ops_groups is
 
 			-- Get the positions (x/y) of the vias
 			-- of the group:
-			-- CS
+			via_positions := get_group_via_positions (
+				module_cursor, log_threshold + 2);
 
 			log (text => "collected via positions "
 				 & get_length (via_positions),
@@ -653,7 +666,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			delete_vias_in_group (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
 		end delete_vias;
 
@@ -760,7 +776,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			move_selected_vias (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
 		end move_vias;
 
@@ -865,7 +884,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_vias_as_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_vias;
 
@@ -948,7 +970,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_vias_as_not_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
 		end set_vias;
 
@@ -1023,7 +1048,10 @@ package body et_board_ops_groups is
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_vias (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
 		end copy_vias;
 
@@ -1144,10 +1172,14 @@ package body et_board_ops_groups is
 
 
 		procedure copy_vias is
+			use et_module_clipboard.vias;
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_vias_to_clipboard (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
 		end copy_vias;
 
@@ -1254,11 +1286,14 @@ package body et_board_ops_groups is
 
 
 		procedure paste_vias is
-			-- use et_module_clipboard.vias;
+			use et_module_clipboard.vias;
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			paste_vias_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+
 			log_indentation_down;
 		end paste_vias;
 

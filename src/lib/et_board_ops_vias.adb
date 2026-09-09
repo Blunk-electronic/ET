@@ -330,6 +330,106 @@ package body et_board_ops_vias is
 
 
 
+
+-- GROUPS:
+
+	procedure group_vias_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		layer			: in type_signal_layer;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end group_vias_in_rectangular_area;
+
+
+
+
+
+
+	function get_group_via_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		result : pac_points.list;
+	begin
+
+		-- CS
+		return result;
+	end get_group_via_positions;
+
+
+
+
+
+
+	procedure delete_vias_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end delete_vias_in_group;
+
+
+
+
+
+	procedure move_selected_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end move_selected_vias;
+
+
+
+
+
+	procedure set_selected_vias_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end set_selected_vias_as_moving;
+
+
+
+	procedure set_selected_vias_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end set_selected_vias_as_not_moving;
+
+
+
+
+	procedure copy_selected_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end copy_selected_vias;
+
+
+
+
+--------------------------------------------------------------------------------
 	function get_net_name (
 		object : in pac_objects.cursor)
 		return type_net_name
