@@ -63,6 +63,8 @@ with et_board_outline;					use et_board_outline;
 with et_conductors_floating_board;		use et_conductors_floating_board;
 with et_module_board_user_settings;		use et_module_board_user_settings;
 
+-- CS with et_display.board;
+
 with et_commit;
 
 
@@ -78,7 +80,7 @@ package et_module_board is
 	type type_board is tagged record
 		frame			: et_drawing_frame.board.type_frame_pcb; -- incl. template name
 		grid			: pac_grid.type_grid;  -- the drawing grid of the board
-		stack			: type_stack;	-- the layer stack
+		stack			: type_stack;	-- the signal layer stack
 		silkscreen		: type_silkscreen_both_sides;
 		assy_doc		: type_assy_doc_both_sides;
 		stencil			: type_stencil_both_sides;
@@ -94,6 +96,8 @@ package et_module_board is
 		board_contour	: type_board_outline; -- outer and inner edges
 
 		user_settings	: type_user_settings;
+
+		-- CS displayed_layers	: et_display.board.type_layers;
 	end record;
 
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -90,12 +90,19 @@ package et_display.board is
 		via_restrict	: type_via_restrict := (others => OFF);
 	end record;
 
-	layers : type_layers;
+
+
+	layers : type_layers; -- CS rename to type_displayed_layers
+	-- CS: This should be an element of a generic module.
 
 
 
 -- BOARD OUTLINE:
 
+	-- CS: The follwing subprograms should be extended
+	-- so that they take a type_displayed_layers as
+	-- in/out parameter.
+	
 	function board_contour_enabled return boolean;
 
 	procedure enable_board_contour;

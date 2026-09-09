@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- To Do:
---
+-- - Make package et_board_ops_display and move stuff there.
 --
 --
 
@@ -61,6 +61,7 @@ package body et_cp_board_display is
 
 
 	procedure display_outline (
+		-- CS: module : in pac_generic_module.cursor
 		cmd			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
@@ -86,6 +87,15 @@ package body et_cp_board_display is
 					level => log_threshold + 1);
 
 			layers.outline := ls;
+
+			-- CS: call instead something like
+
+			-- display_outline (
+			-- 	module_cursor, ON/OFF, log_threshold + x);
+
+			-- that modifies
+			-- module.board.displayed_layers
+
 
 			-- CS exception handler if status is invalid
 		end display;

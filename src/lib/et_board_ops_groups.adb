@@ -311,6 +311,8 @@ package body et_board_ops_groups is
 				module_cursor, area, layer, log_threshold + 2);
 
 			-- CS iterate through the displayed signal layers
+			-- call et_board_ops_display.get_enabled_signal_layers
+			--
 
 			log_indentation_down;
 		end group_conductors;
