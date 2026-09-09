@@ -146,6 +146,10 @@ procedure draw_netchangers is
 			index		: in type_netchanger_id;
 			netchanger	: in type_netchanger)
 		is
+			-- Get the original position of the netchanger
+			-- as it is in the database. If the netchanger
+			-- is being moved then the position will be overwritten
+			-- later:
 			position : type_vector_model := get_place (netchanger);
 		begin
 			-- The default brightness is NORMAL.
@@ -156,22 +160,29 @@ procedure draw_netchangers is
 			-- Draw the netchanger candidate highlighted if
 			-- it is selected:
 			if is_selected (netchanger) then
-
 				brightness := BRIGHT;
 
-				-- overwrite position if netchanger is moving:
+				-- NOTE: Since netchangers can not be
+				-- copied in the board editor, there is no
+				-- handling of netchangers being copied here.
+
+				-- Overwrite the position if then netchanger
+				-- 1. alone is being moved or
+				-- 2. if a group is being moved:
 				if is_moving (netchanger) then
-					position := get_object_tool_position;
+					if group_is_moving then
+						move_by (position, get_group_offset);
+					else
+						position := get_object_tool_position;
+					end if;
 				end if;
 			end if;
 
+			-- Draw the netchanger symbol, name and signal layer:
 			draw_body (position);
-
 			draw_name (position, index);
-
 			draw_layer (position, get_layer (netchanger));
 		end query_netchanger;
-
 
 
 	begin
