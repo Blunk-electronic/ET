@@ -58,6 +58,7 @@ with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_module_clipboard;
 with et_module_clipboard.devices_non_electrical;
+with et_module_clipboard.conductors;
 
 with et_modes.board;
 with et_undo_redo;
@@ -1153,10 +1154,14 @@ package body et_board_ops_groups is
 
 
 		procedure copy_conductors is
+			use et_module_clipboard.conductors;
 		begin
 			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_conductors_to_clipboard (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
 		end copy_conductors;
 
@@ -1249,7 +1254,7 @@ package body et_board_ops_groups is
 
 
 		procedure paste_vias is
-			use et_board_ops_vias;
+			-- use et_module_clipboard.vias;
 		begin
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
@@ -1259,14 +1264,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure paste_tracks is
-			use et_board_ops_conductors;
+		procedure paste_conductors is
+			use et_module_clipboard.conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			paste_conductors_from_clipboard (
+				module_cursor, offset, log_threshold + 2);
+
 			log_indentation_down;
-		end paste_tracks;
+		end paste_conductors;
 
 
 
@@ -1298,7 +1306,7 @@ package body et_board_ops_groups is
 			-- given module:
 			paste_devices; -- non-electrical only
 			paste_vias;
-			paste_tracks;
+			paste_conductors;
 			-- CS others
 
 
