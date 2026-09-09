@@ -407,7 +407,8 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies selected net segments:
+	-- This procedure copies selected net segments
+	-- by the given sheet numbers and the given offset:
 	procedure copy_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;
