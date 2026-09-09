@@ -5640,6 +5640,102 @@ package body et_board_ops_conductors is
 
 
 
+
+-- GROUPS:
+
+
+	procedure group_conductors_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		area			: in type_area;
+		layer			: in type_signal_layer;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end group_conductors_in_rectangular_area;
+
+
+
+
+	function get_group_conductor_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_points.list
+	is
+		result : pac_points.list;
+	begin
+		null;
+		-- CS
+
+		return result;
+	end get_group_conductor_positions;
+
+
+
+
+	procedure delete_conductors_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end delete_conductors_in_group;
+
+
+
+
+	procedure move_selected_conductors (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end move_selected_conductors;
+
+
+
+
+	procedure set_selected_conductors_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end set_selected_conductors_as_moving;
+
+
+
+
+	procedure set_selected_conductors_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end set_selected_conductors_as_not_moving;
+
+
+
+
+	procedure copy_selected_conductors (
+		module_cursor	: in pac_generic_modules.cursor;
+		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end copy_selected_conductors;
+
+
+-----------------------------------------------------------------------------
+
 -- OBJECTS:
 
 

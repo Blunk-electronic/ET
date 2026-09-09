@@ -285,7 +285,7 @@ package body et_board_ops_groups is
 			group_netchangers_in_rectangular_area (
 				module_cursor, area, layer, log_threshold + 2);
 
-			-- CS iterate through the signal layers
+			-- CS iterate through the displayed signal layers
 
 			log_indentation_down;
 		end group_netchangers;
@@ -293,12 +293,23 @@ package body et_board_ops_groups is
 
 
 		procedure group_conductors is
+			use et_board_ops_conductors;
+			use et_pcb_signal_layers;
+			layer : constant type_signal_layer := 1;
+			-- CS: the layer should depend on which
+			-- signal layers are displayed.
+			-- Use a layer range like (1..4) instead.
 		begin
 			log (text => "conductors",
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-				-- CS
+
+			group_conductors_in_rectangular_area (
+				module_cursor, area, layer, log_threshold + 2);
+
+			-- CS iterate through the displayed signal layers
+
 			log_indentation_down;
 		end group_conductors;
 
@@ -444,8 +455,8 @@ package body et_board_ops_groups is
 		-- vias:
 		via_positions : pac_points.list;
 
-		-- track segments (lines, arcs):
-		segment_positions : pac_points.list;
+		-- conductor objects (lines, arcs, texts, placeholders):
+		conductor_positions : pac_points.list;
 
 		-- CS: silkscreen_positions, assy_doc_positions, ...
 		-- incl. texts
@@ -514,24 +525,23 @@ package body et_board_ops_groups is
 
 
 
-		procedure query_tracks is
+		procedure query_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "query track segments", level => log_threshold + 1);
+			log (text => "query conductors", level => log_threshold + 1);
 			log_indentation_up;
 
-			-- CS: mind freetracks also
+			-- Get the positions (x/y) of the conductor
+			-- objects of the group:
+			conductor_positions := get_group_conductor_positions (
+				module_cursor, log_threshold + 2);
 
-			-- Get the positions (x/y) of the track ends
-			-- of the group:
-			-- CS
-
-			log (text => "collected track segment positions "
-				 & get_length (segment_positions),
+			log (text => "collected conductor positions "
+				 & get_length (conductor_positions),
 				 level => log_threshold + 2);
 
 			log_indentation_down;
-		end query_tracks;
+		end query_conductors;
 
 
 
@@ -561,7 +571,7 @@ package body et_board_ops_groups is
 			splice (
 				target	=> all_positions,
 				before	=> c,
-				source	=> segment_positions);
+				source	=> conductor_positions);
 
 			-- CS log total positions ?
 		end merge_positions;
@@ -575,11 +585,11 @@ package body et_board_ops_groups is
 		log_indentation_up;
 
 		-- Collect the positions of devices, netchangers,
-		-- track segment ends, ...:
+		-- conductor objects, ...:
 		query_devices;
 		query_netchangers;
 		query_vias;
-		query_tracks;
+		query_conductors;
 
 		-- CS: It could be useful to query only those objects
 		-- which are displayed (via their layer).
@@ -648,14 +658,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure delete_tracks is
+		procedure delete_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			delete_conductors_in_group (
+				module_cursor, log_threshold + 2);
+
 			log_indentation_down;
-		end delete_tracks;
+		end delete_conductors;
 
 
 	begin
@@ -677,7 +690,7 @@ package body et_board_ops_groups is
 		-- can only be deleted in the schematic domain.
 
 		delete_vias;
-		delete_tracks;
+		delete_conductors;
 
 		-- CS others
 
@@ -752,14 +765,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure move_tracks is
+		procedure move_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			move_selected_conductors (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
-		end move_tracks;
+		end move_conductors;
 
 
 	begin
@@ -778,7 +794,7 @@ package body et_board_ops_groups is
 		move_devices;
 		move_netchangers;
 		move_vias;
-		move_tracks;
+		move_conductors;
 
 		-- CS move others
 
@@ -854,14 +870,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure set_tracks is
+		procedure set_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_conductors_as_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
-		end set_tracks;
+		end set_conductors;
 
 
 	begin
@@ -874,7 +893,7 @@ package body et_board_ops_groups is
 		set_devices;
 		set_netchangers;
 		set_vias;
-		set_tracks;
+		set_conductors;
 		-- CS set others
 
 		log_indentation_down;
@@ -934,14 +953,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure set_tracks is
+		procedure set_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			set_selected_conductors_as_not_moving (module_cursor,
+				log_threshold + 2);
+
 			log_indentation_down;
-		end set_tracks;
+		end set_conductors;
 
 
 	begin
@@ -954,7 +976,7 @@ package body et_board_ops_groups is
 		set_devices;
 		set_netchangers;
 		set_vias;
-		set_tracks;
+		set_conductors;
 		-- CS set others
 
 		log_indentation_down;
@@ -1006,14 +1028,17 @@ package body et_board_ops_groups is
 
 
 
-		procedure copy_tracks is
+		procedure copy_conductors is
 			use et_board_ops_conductors;
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+
+			copy_selected_conductors (module_cursor,
+				offset, log_threshold + 2);
+
 			log_indentation_down;
-		end copy_tracks;
+		end copy_conductors;
 
 
 	begin
@@ -1036,7 +1061,7 @@ package body et_board_ops_groups is
 
 		copy_devices; -- non-electrical devices only !
 		copy_vias;
-		copy_tracks;
+		copy_conductors;
 		-- CS others
 
 		-- Previously to commiting the design,
@@ -1127,13 +1152,13 @@ package body et_board_ops_groups is
 
 
 
-		procedure copy_tracks is
+		procedure copy_conductors is
 		begin
-			log (text => "track segments", level => log_threshold + 1);
+			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
 			-- CS
 			log_indentation_down;
-		end copy_tracks;
+		end copy_conductors;
 
 
 	begin
@@ -1166,7 +1191,7 @@ package body et_board_ops_groups is
 
 		copy_devices; -- non-electrical devices only !
 		copy_vias;
-		copy_tracks;
+		copy_conductors;
 		-- CS others
 
 
