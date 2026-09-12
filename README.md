@@ -90,7 +90,7 @@ The debug and messages log can be found in file ET/reports/messages.log.
 The greater the log level, the more messages will the log file contain.
 
 Useful for testing is the feature to execute a script right away on opening
-the project:
+the project like:
 
 ```sh
 et --open-project demo --log-level 4 --script demo/test_schematic_group.scr 
