@@ -897,7 +897,12 @@ package et_board_ops_conductors is
 
 	-- Sets "selected" flag of all conducting objects
 	-- that are in the given area and in
-	-- the given signal layer:
+	-- the given signal layer.
+	-- Targeted objects are:
+	-- - line and arc segments of tracks
+	-- - line and arc segments of freetracks
+	-- - texts and global placeholders
+	-- - CS: fill zone segments
 	procedure group_conductors_in_rectangular_area (
 		module_cursor	: in pac_generic_modules.cursor;
 		area			: in type_area;
