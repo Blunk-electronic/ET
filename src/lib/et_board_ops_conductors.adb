@@ -6073,6 +6073,15 @@ package body et_board_ops_conductors is
 		use pac_nets;
 		segment_found : boolean := false;
 
+		-- Here we store the selected segment
+		-- of conductor tracks and freetracks::
+		object_line_net : type_object_line_net;
+		object_arc_net : type_object_arc_net;
+
+		object_line_floating : type_object_line_floating;
+		object_arc_floating : type_object_arc_floating;
+		-- CS object_circle_floating : type_object_circle_floating;
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -6080,31 +6089,6 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 			net_cursor : pac_nets.cursor := module.nets.first;
-
-
-
-			procedure query_line (
-				line : in type_conductor_line)
-			is begin
-				null;
-
-					-- Abort all iterators:
-					segment_found := true;
-			end query_line;
-
-
-			procedure query_arc (
-				arc : in type_conductor_arc)
-			is begin
-				null;
-			end query_arc;
-
-
-			procedure query_circle (
-				circle : in type_conductor_circle)
-			is begin
-				null; -- CS
-			end query_circle;
 
 
 			procedure query_nets is
@@ -6125,6 +6109,35 @@ package body et_board_ops_conductors is
 					use pac_conductor_arcs;
 					arc_cursor : pac_conductor_arcs.cursor :=
 						route.arcs.first;
+
+
+					procedure query_line (
+						line : in type_conductor_line)
+					is begin
+						if is_selected (line) then
+							-- CS: log the line
+							object_line_net := (
+								net_cursor, line_cursor);
+
+							-- Abort all iterators:
+							segment_found := true;
+						end if;
+					end query_line;
+
+
+					procedure query_arc (
+						arc : in type_conductor_arc)
+					is begin
+						if is_selected (arc) then
+							-- CS: log the arc
+							object_arc_net := (
+								net_cursor, arc_cursor);
+
+							-- Abort all iterators:
+							segment_found := true;
+						end if;
+					end query_arc;
+
 
 				begin
 					-- Iterate through the line track segments:
@@ -6179,6 +6192,43 @@ package body et_board_ops_conductors is
 				use pac_conductor_circles;
 				circle_cursor : pac_conductor_circles.cursor :=
 					conductors.circles.first;
+
+
+				procedure query_line (
+					line : in type_conductor_line)
+				is begin
+					if is_selected (line) then
+						-- CS: log the line
+						object_line_floating := (
+							line_cursor => line_cursor);
+
+						-- Abort all iterators:
+						segment_found := true;
+					end if;
+				end query_line;
+
+
+				procedure query_arc (
+					arc : in type_conductor_arc)
+				is begin
+					if is_selected (arc) then
+						-- CS: log the arc
+						object_arc_floating := (
+							arc_cursor => arc_cursor);
+
+						-- Abort all iterators:
+						segment_found := true;
+					end if;
+				end query_arc;
+
+
+				procedure query_circle (
+					circle : in type_conductor_circle)
+				is begin
+					null; -- CS
+				end query_circle;
+
+
 			begin
 				log (text => "freetracks", level => log_threshold + 1);
 				log_indentation_up;
@@ -6258,7 +6308,7 @@ package body et_board_ops_conductors is
 		-- CS: log the nunmber of deleted segments.
 
 			-- delete_segment (
-			-- 	module_cursor, object_segment,
+			-- 	module_cursor, object_line_net,
 			-- 	NO_COMMIT, log_threshold + 1);
 
 			-- Restart the search for a selected segment:
