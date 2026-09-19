@@ -2421,7 +2421,7 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment	: in type_net_segment)
 					is begin
-						if is_selected (segment) then
+						if is_selected_2 (segment) then
 							-- CS: log segment and net name ?
 							object_segment := (
 								net_cursor, strand_cursor, segment_cursor);

@@ -6114,7 +6114,7 @@ package body et_board_ops_conductors is
 					procedure query_line (
 						line : in type_conductor_line)
 					is begin
-						if is_selected (line) then
+						if is_selected_2 (line) then
 							-- CS: log the line
 							object_line_net := (
 								net_cursor, line_cursor);
@@ -6197,7 +6197,7 @@ package body et_board_ops_conductors is
 				procedure query_line (
 					line : in type_conductor_line)
 				is begin
-					if is_selected (line) then
+					if is_selected_2 (line) then
 						-- CS: log the line
 						object_line_floating := (
 							line_cursor => line_cursor);

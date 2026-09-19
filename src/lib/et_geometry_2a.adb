@@ -2358,6 +2358,20 @@ package body et_geometry_2a is
 	is (is_B_selected (line.status_AB));
 
 
+	function is_selected_2 (
+		line : in type_line)
+		return boolean
+	is begin
+		if is_A_selected (line)
+		or is_B_selected (line)
+		or is_selected (line) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected_2;
+
+
 	procedure set_A_selected (
 		line : in out type_line)
 	is begin

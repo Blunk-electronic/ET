@@ -1096,6 +1096,14 @@ package et_geometry_2a is
 		return boolean;
 
 
+	-- Returns true if the given line is selected.
+	-- If either the A or B end or the whole line
+	-- is set as selected:
+	function is_selected_2 (
+		line : in type_line)
+		return boolean;
+
+
 	procedure set_A_selected (
 		line : in out type_line);
 

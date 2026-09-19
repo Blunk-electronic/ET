@@ -459,9 +459,7 @@ procedure draw_nets is
 
 			begin
 				-- Increase brightness if segment is selected::
-				if is_selected (segment)
-				or is_A_selected (segment)
-				or is_B_selected (segment) then
+				if is_selected_2 (segment) then
 					segment_is_selected := true;
 					set_color_nets (BRIGHT);
 				end if;
