@@ -915,8 +915,9 @@ package et_board_ops_conductors is
 	-- Returns a list of the positions of conducting
 	-- objects in the group.
 	-- 1. Start and end points (A/B) of segments (lines and arcs)
-	-- 2. Anchor points of texts and global placeholders
-	-- 3. Corners of fill zones (CS: currently ignored)
+	-- 2. Center of circles (of freetracks)
+	-- 3. Anchor points of texts and global placeholders
+	-- 4. Corners of fill zones (CS: currently ignored)
 	function get_group_conductor_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
