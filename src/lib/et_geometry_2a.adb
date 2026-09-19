@@ -3790,6 +3790,32 @@ package body et_geometry_2a is
 
 
 
+	function in_area (
+		arc		: in type_arc;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- We regard the arc as "in the area" if
+		-- its start point or its end point lies in
+		-- the given area:
+		if in_area (get_A (arc), area)
+		or in_area (get_B (arc), area) then
+			result := true;
+		else
+			result := false;
+		end if;
+
+		return result;
+	end in_area;
+
+
+
+
+
+
+
 -- CIRCLE:
 
 
@@ -4070,6 +4096,29 @@ package body et_geometry_2a is
 
 		return result;
 	end get_bounding_box;
+
+
+
+
+	function in_area (
+		circle	: in type_circle;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- We regard the circle as "in the area" if
+		-- its center lies in
+		-- the given area:
+		if in_area (get_center (circle), area) then
+			result := true;
+		else
+			result := false;
+		end if;
+
+		return result;
+	end in_area;
+
 
 
 

@@ -900,7 +900,9 @@ package et_board_ops_conductors is
 	-- the given signal layer.
 	-- Targeted objects are:
 	-- - line and arc segments of tracks
-	-- - line and arc segments of freetracks
+	-- - line, arc and circular segments of freetracks
+	-- - "selected" flags of A/B ends of lines and arcs are
+	--   set separately depending on which end is affected.
 	-- - texts and global placeholders
 	-- - CS: fill zone segments
 	procedure group_conductors_in_rectangular_area (

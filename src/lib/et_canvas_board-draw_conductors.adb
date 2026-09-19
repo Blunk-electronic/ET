@@ -203,7 +203,9 @@ procedure draw_conductors is
 
 				-- If the segment is selected,
 				-- then it must be drawn highlighted:
-				if is_selected (line) then
+				if is_selected (line)
+				or is_A_selected (line)
+				or is_B_selected (line) then
 					set_highlight_brightness;
 					draw;
 					set_default_brightness;

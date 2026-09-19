@@ -128,6 +128,26 @@ package body et_conductor_segment.boards is
 
 
 
+	function in_layer_and_in_area (
+		line	: in type_conductor_line;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_layer (line) = layer and then
+			in_area (line, area) then
+				result := true;
+		end if;
+
+		return result;
+	end in_layer_and_in_area;
+
+
+
+
+
 	function get_A (
 		line : in pac_conductor_lines.cursor)
 		return type_vector_model
@@ -254,6 +274,11 @@ package body et_conductor_segment.boards is
 
 
 
+
+
+
+
+
 -- ARCS:
 
 
@@ -296,6 +321,27 @@ package body et_conductor_segment.boards is
 			return text;
 		end if;
 	end to_string;
+
+
+
+
+	function in_layer_and_in_area (
+		arc		: in type_conductor_arc;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_layer (arc) = layer and then
+			in_area (arc, area) then
+				result := true;
+		end if;
+
+		return result;
+	end in_layer_and_in_area;
+
+
 
 
 
@@ -437,6 +483,26 @@ package body et_conductor_segment.boards is
 			return text;
 		end if;
 	end to_string;
+
+
+
+
+	function in_layer_and_in_area (
+		circle	: in type_conductor_circle;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_layer (circle) = layer and then
+			in_area (circle, area) then
+				result := true;
+		end if;
+
+		return result;
+	end in_layer_and_in_area;
+
 
 
 

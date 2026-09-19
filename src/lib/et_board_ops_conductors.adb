@@ -52,6 +52,7 @@ with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 with et_devices_electrical;
 with et_conductors_floating_board;	use et_conductors_floating_board;
+with et_route;
 
 with et_text_content;
 with et_pcb_placeholders;
@@ -5660,26 +5661,38 @@ package body et_board_ops_conductors is
 
 
 			procedure query_line (
-				line : in type_conductor_line)
-			is
-			begin
-				null; -- CS
+				line : in out type_conductor_line)
+			is begin
+				if in_layer_and_in_area (line, layer, area) then
+					log (text => to_string (line),
+						level => log_threshold + 2);
+
+					set_selected (line, area);
+				end if;
 			end query_line;
 
 
 			procedure query_arc (
-				arc : in type_conductor_arc)
-			is
-			begin
-				null; -- CS
+				arc : in out type_conductor_arc)
+			is begin
+				if in_layer_and_in_area (arc, layer, area) then
+					log (text => to_string (arc),
+						level => log_threshold + 2);
+
+					-- CS: set_selected (arc, area);
+				end if;
 			end query_arc;
 
 
 			procedure query_circle (
-				circle : in type_conductor_circle)
-			is
-			begin
-				null; -- CS
+				circle : in out type_conductor_circle)
+			is begin
+				if in_layer_and_in_area (circle, layer, area) then
+					log (text => to_string (circle),
+						level => log_threshold + 2);
+
+					-- CS: set_selected (circle, area);
+				end if;
 			end query_circle;
 
 
@@ -5692,26 +5705,29 @@ package body et_board_ops_conductors is
 
 				procedure query_net (
 					net_name	: in type_net_name;
-					net			: in type_net)
+					net			: in out type_net)
 				is
+					use et_route;
+					route : type_net_route renames net.route;
+
 					use pac_conductor_lines;
 					line_cursor : pac_conductor_lines.cursor :=
-						net.route.lines.first;
+						route.lines.first;
 
 					use pac_conductor_arcs;
 					arc_cursor : pac_conductor_arcs.cursor :=
-						net.route.arcs.first;
+						route.arcs.first;
 
 				begin
 					-- Iterate through the line track segments:
 					while has_element (line_cursor) loop
-						query_element (line_cursor, query_line'access);
+						route.lines.update_element (line_cursor, query_line'access);
 						next (line_cursor);
 					end loop;
 
 					-- Iterate through the arc track segments:
 					while has_element (arc_cursor) loop
-						query_element (arc_cursor, query_arc'access);
+						route.arcs.update_element (arc_cursor, query_arc'access);
 						next (arc_cursor);
 					end loop;
 
@@ -5727,7 +5743,7 @@ package body et_board_ops_conductors is
 
 				-- Iterate through the nets:
 				while has_element (net_cursor) loop
-					query_element (net_cursor, query_net'access);
+					module.nets.update_element (net_cursor, query_net'access);
 					next (net_cursor);
 				end loop;
 
@@ -5737,36 +5753,39 @@ package body et_board_ops_conductors is
 
 			-- This procedure queries segments of freetracks:
 			procedure query_freetracks is
+				conductors : type_conductors_floating renames
+					module.board.conductors_floating;
+
 				use pac_conductor_lines;
 				line_cursor : pac_conductor_lines.cursor :=
-					module.board.conductors_floating.lines.first;
+					conductors.lines.first;
 
 				use pac_conductor_arcs;
 				arc_cursor : pac_conductor_arcs.cursor :=
-					module.board.conductors_floating.arcs.first;
+					conductors.arcs.first;
 
 				use pac_conductor_circles;
 				circle_cursor : pac_conductor_circles.cursor :=
-					module.board.conductors_floating.circles.first;
+					conductors.circles.first;
 			begin
 				log (text => "freetracks", level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate though the lines:
 				while has_element (line_cursor) loop
-					query_element (line_cursor, query_line'access);
+					 conductors.lines.update_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
 
 				-- Iterate though the arcs:
 				while has_element (arc_cursor) loop
-					query_element (arc_cursor, query_arc'access);
+					conductors.arcs.update_element (arc_cursor, query_arc'access);
 					next (arc_cursor);
 				end loop;
 
 				-- Iterate though the circles:
 				while has_element (circle_cursor) loop
-					query_element (circle_cursor, query_circle'access);
+					conductors.circles.update_element (circle_cursor, query_circle'access);
 					next (circle_cursor);
 				end loop;
 

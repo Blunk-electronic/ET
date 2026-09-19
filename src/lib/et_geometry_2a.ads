@@ -1767,6 +1767,20 @@ package et_geometry_2a is
 		return type_area;
 
 
+	-- This function returns true if the given arc
+	-- is in the given area.
+	-- "In the area" means: Either start or end of the
+	-- arc (or both) are in the area:
+	function in_area (
+		arc		: in type_arc;
+		area	: in type_area)
+		return boolean;
+	-- CS: an additional parameter could be used
+	-- to test if the arc crosses the area
+
+
+
+
 
 
 -- CIRCLE
@@ -1935,6 +1949,20 @@ package et_geometry_2a is
 		circle	: in type_circle;
 		width	: in type_distance_positive)
 		return type_area;
+
+
+	-- This function returns true if the given circle
+	-- is in the given area.
+	-- "In the area" means: The center of the
+	-- circel is in the area:
+	function in_area (
+		circle	: in type_circle;
+		area	: in type_area)
+		return boolean;
+	-- CS: an additional parameter could be used
+	-- to test if the circle circumfence crosses the area
+
+
 
 
 

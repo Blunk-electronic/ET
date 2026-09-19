@@ -93,6 +93,16 @@ package et_conductor_segment.boards is
 		return boolean;
 
 
+	-- Returns true if the given line is in the
+	-- given signal layer and in the given area:
+	function in_layer_and_in_area (
+		line	: in type_conductor_line;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean;
+
+
+
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 
@@ -156,6 +166,7 @@ package et_conductor_segment.boards is
 		return pac_conductor_lines.list;
 
 
+
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
@@ -171,6 +182,9 @@ package et_conductor_segment.boards is
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor)
 		return boolean;
+
+
+
 
 
 
@@ -199,6 +213,17 @@ package et_conductor_segment.boards is
 		arc		: in type_conductor_arc;
 		width	: in boolean)
 		return string;
+
+
+
+	-- Returns true if the given arc is in the
+	-- given signal layer and in the given area:
+	function in_layer_and_in_area (
+		arc		: in type_conductor_arc;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean;
+
 
 
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
@@ -295,6 +320,16 @@ package et_conductor_segment.boards is
 		circle	: in type_conductor_circle;
 		width	: in boolean)
 		return string;
+
+
+	-- Returns true if the given circle is in the
+	-- given signal layer and in the given area:
+	function in_layer_and_in_area (
+		circle	: in type_conductor_circle;
+		layer	: in type_signal_layer;
+		area	: in type_area)
+		return boolean;
+
 
 
 
