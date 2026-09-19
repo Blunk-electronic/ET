@@ -6064,14 +6064,212 @@ package body et_board_ops_conductors is
 
 
 
+
 	procedure delete_conductors_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use et_nets;
+		use pac_nets;
+		segment_found : boolean := false;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+
+			procedure query_line (
+				line : in type_conductor_line)
+			is begin
+				null;
+
+					-- Abort all iterators:
+					segment_found := true;
+			end query_line;
+
+
+			procedure query_arc (
+				arc : in type_conductor_arc)
+			is begin
+				null;
+			end query_arc;
+
+
+			procedure query_circle (
+				circle : in type_conductor_circle)
+			is begin
+				null; -- CS
+			end query_circle;
+
+
+			procedure query_nets is
+
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in type_net)
+				is
+					pragma unreferenced (net_name);
+
+					use et_route;
+					route : type_net_route renames net.route;
+
+					use pac_conductor_lines;
+					line_cursor : pac_conductor_lines.cursor :=
+						route.lines.first;
+
+					use pac_conductor_arcs;
+					arc_cursor : pac_conductor_arcs.cursor :=
+						route.arcs.first;
+
+				begin
+					-- Iterate through the line track segments:
+					while has_element (line_cursor)
+					and not segment_found loop
+						query_element (line_cursor, query_line'access);
+						next (line_cursor);
+					end loop;
+
+					-- Iterate through the arc track segments:
+					while has_element (arc_cursor)
+					and not segment_found loop
+						query_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+
+					-- NOTE: Nets do not have circular conductor segments.
+
+					-- CS: fill zone segments
+				end query_net;
+
+
+			begin
+				log (text => "segments of nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the nets:
+				while has_element (net_cursor)
+				and not segment_found loop
+					query_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_nets;
+
+
+
+			-- This procedure queries segments of freetracks:
+			procedure query_freetracks is
+				conductors : type_conductors_floating renames
+					module.board.conductors_floating;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor :=
+					conductors.lines.first;
+
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor :=
+					conductors.arcs.first;
+
+				use pac_conductor_circles;
+				circle_cursor : pac_conductor_circles.cursor :=
+					conductors.circles.first;
+			begin
+				log (text => "freetracks", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate though the lines:
+				while has_element (line_cursor) loop
+					 query_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+				-- Iterate though the arcs:
+				while has_element (arc_cursor) loop
+					query_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+
+				-- Iterate though the circles:
+				while has_element (circle_cursor) loop
+					query_element (circle_cursor, query_circle'access);
+					next (circle_cursor);
+				end loop;
+
+				-- CS fill zone segments
+
+				log_indentation_down;
+			end query_freetracks;
+
+
+			-- This procedure queries texts:
+			procedure query_texts is
+				use pac_conductor_texts_board;
+			begin
+				log (text => "texts", level => log_threshold + 1);
+				log_indentation_up;
+				null; -- CS
+				log_indentation_down;
+			end query_texts;
+
+
+			-- This procedure queries text placeholders:
+			procedure query_placeholders is
+				use pac_placeholders_conductor;
+			begin
+				log (text => "text placeholders", level => log_threshold + 1);
+				log_indentation_up;
+				null; -- CS
+				log_indentation_down;
+			end query_placeholders;
+
+
+		begin
+			query_nets;
+			query_freetracks;
+			query_texts;
+			query_placeholders;
+		end query_module;
+
+
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			 & " delete conductors in group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Search for the first selected conductor segment in the group:
+		query_element (module_cursor, query_module'access);
+
+		-- If a segment has been found, then the flag "segment_found"
+		-- is set. This starts the following loop where
+		-- the affected conductor segment will be deleted.
+
+		-- This loop will be executed as long as selected
+		-- conductor segments exist:
+		while segment_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- CS: log the nunmber of deleted segments.
+
+			-- delete_segment (
+			-- 	module_cursor, object_segment,
+			-- 	NO_COMMIT, log_threshold + 1);
+
+			-- Restart the search for a selected segment:
+			segment_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
+
+		log_indentation_down;
 	end delete_conductors_in_group;
+
+
 
 
 
