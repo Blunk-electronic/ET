@@ -748,6 +748,54 @@ package body et_board_ops_conductors is
 
 
 
+	function has_elements (
+		line : in type_object_line_net)
+		return boolean
+	is (line = object_line_net_default);
+
+
+	procedure reset_object (
+		line : in out type_object_line_net)
+	is begin
+		line := object_line_net_default;
+	end reset_object;
+
+
+	function get_net_name (
+		line : in type_object_line_net)
+		return type_net_name
+	is
+		use et_nets;
+	begin
+		return get_net_name (line.net_cursor);
+	end get_net_name;
+
+
+	function get_conductor_line (
+		line : in type_object_line_net)
+		return type_conductor_line
+	is
+		use pac_conductor_lines;
+	begin
+		return element (line.line_cursor);
+		-- CS use function get_conductor_line (line)
+	end get_conductor_line;
+
+
+
+	function has_elements (
+		line : in type_object_line_floating)
+		return boolean
+	is (line = object_line_floating_default);
+
+
+	procedure reset_object (
+		line : in out type_object_line_floating)
+	is begin
+		line := object_line_floating_default;
+	end reset_object;
+
+
 
 
 
@@ -2003,6 +2051,35 @@ package body et_board_ops_conductors is
 
 
 -- ARCS:
+
+
+	function has_elements (
+		arc : in type_object_arc_net)
+		return boolean
+	is (arc = object_arc_net_default);
+
+
+	procedure reset_object (
+		arc : in out type_object_arc_net)
+	is begin
+		arc := object_arc_net_default;
+	end reset_object;
+
+
+
+	function has_elements (
+		arc : in type_object_arc_floating)
+		return boolean
+	is (arc = object_arc_floating_default);
+
+
+	procedure reset_object (
+		arc : in out type_object_arc_floating)
+	is begin
+		arc := object_arc_floating_default;
+	end reset_object;
+
+
 
 
 	procedure add_arc (
@@ -6211,7 +6288,7 @@ package body et_board_ops_conductors is
 				procedure query_arc (
 					arc : in type_conductor_arc)
 				is begin
-					if is_selected (arc) then
+					if is_selected_2 (arc) then
 						-- CS: log the arc
 						object_arc_floating := (
 							arc_cursor => arc_cursor);
@@ -6234,19 +6311,22 @@ package body et_board_ops_conductors is
 				log_indentation_up;
 
 				-- Iterate though the lines:
-				while has_element (line_cursor) loop
-					 query_element (line_cursor, query_line'access);
+				while has_element (line_cursor)
+				and not segment_found loop
+					query_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
 
 				-- Iterate though the arcs:
-				while has_element (arc_cursor) loop
+				while has_element (arc_cursor)
+				and not segment_found loop
 					query_element (arc_cursor, query_arc'access);
 					next (arc_cursor);
 				end loop;
 
 				-- Iterate though the circles:
-				while has_element (circle_cursor) loop
+				while has_element (circle_cursor)
+				and not segment_found loop
 					query_element (circle_cursor, query_circle'access);
 					next (circle_cursor);
 				end loop;
@@ -6280,10 +6360,27 @@ package body et_board_ops_conductors is
 
 
 		begin
+			-- At first, query the track segments
+			-- of nets:
 			query_nets;
-			query_freetracks;
-			query_texts;
-			query_placeholders;
+
+			-- If nothing found among the nets,
+			-- query the freetracks:
+			if not segment_found then
+				query_freetracks;
+			end if;
+
+			-- If nothing found among the nets,
+			-- query the texts:
+			if not segment_found then
+				query_texts;
+			end if;
+
+			-- If nothing found among the nets,
+			-- query the placeholders:
+			if not segment_found then
+				query_placeholders;
+			end if;
 		end query_module;
 
 
@@ -6297,19 +6394,46 @@ package body et_board_ops_conductors is
 		-- Search for the first selected conductor segment in the group:
 		query_element (module_cursor, query_module'access);
 
-		-- If a segment has been found, then the flag "segment_found"
+		-- If a conductor object has been found, then the flag "segment_found"
 		-- is set. This starts the following loop where
-		-- the affected conductor segment will be deleted.
+		-- the affected conductor object will be deleted.
 
 		-- This loop will be executed as long as selected
-		-- conductor segments exist:
+		-- conductor objects exist:
 		while segment_found loop
 		-- CS: safety measure to avoid forever-loop
-		-- CS: log the nunmber of deleted segments.
+		-- CS: log the nunmber of deleted conductor objects.
 
-			-- delete_segment (
-			-- 	module_cursor, object_line_net,
-			-- 	NO_COMMIT, log_threshold + 1);
+			if has_elements (object_line_net) then
+
+				delete_line_net (
+					module_cursor	=> module_cursor,
+					net_name		=> get_net_name (object_line_net),
+					line			=> get_conductor_line (object_line_net),
+					commit_design	=> NO_COMMIT,
+					log_threshold	=> log_threshold + 1);
+
+				reset_object (object_line_net);
+			end if;
+
+
+			if has_elements (object_arc_net) then
+				null;
+				reset_object (object_arc_net);
+			end if;
+
+
+			if has_elements (object_line_floating) then
+				null;
+				reset_object (object_line_floating);
+			end if;
+
+
+			if has_elements (object_arc_floating) then
+				null;
+				reset_object (object_arc_floating);
+			end if;
+
 
 			-- Restart the search for a selected segment:
 			segment_found := false;

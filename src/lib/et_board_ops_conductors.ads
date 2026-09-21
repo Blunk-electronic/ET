@@ -47,7 +47,7 @@ use et_board_geometry.pac_geometry_2;
 with et_primitive_objects;				use et_primitive_objects;
 with et_generic_modules;				use et_generic_modules;
 with et_axes;							use et_axes;
-with et_board_text;				use et_board_text;
+with et_board_text;						use et_board_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;
@@ -204,8 +204,36 @@ package et_board_ops_conductors is
 	end record;
 
 
+	-- Per default the cursors point
+	-- to no_element:
+	object_line_net_default : constant type_object_line_net := (others => <>);
 
-	-- CS do the same for lines, arcs, circles of freetracks
+
+	-- Resets the given object so that it
+	-- assumes default values:
+	procedure reset_object (
+		line : in out type_object_line_net);
+
+
+	-- Returns true if the given object points
+	-- to nowhere (if it has default values):
+	function has_elements (
+		line : in type_object_line_net)
+		return boolean;
+
+
+	function get_net_name (
+		line : in type_object_line_net)
+		return type_net_name;
+
+
+	function get_conductor_line (
+		line : in type_object_line_net)
+		return type_conductor_line;
+
+
+
+	-- CS do the same for arcs, circles of freetracks
 
 	-- If floating line segments (of a freetrack) are searched,
 	-- then they can be identified by a cursor:
@@ -214,8 +242,26 @@ package et_board_ops_conductors is
 	end record;
 
 
+	-- Per default the cursors point
+	-- to no_element:
+	object_line_floating_default : constant type_object_line_floating := (others => <>);
+
+	-- Returns true if the given object points
+	-- to nowhere (if it has default values):
+	function has_elements (
+		line : in type_object_line_floating)
+		return boolean;
+
+
+	-- Resets the given object so that it
+	-- assumes default values:
+	procedure reset_object (
+		line : in out type_object_line_floating);
+
 
 	package pac_object_lines is new doubly_linked_lists (type_object_line_net);
+
+
 
 
 	-- Modifies the status flag of a line of a net:
@@ -368,12 +414,14 @@ package et_board_ops_conductors is
 	-- Deletes the given line segment in the given net.
 	-- It is assumed that the given net exists. Otherwise
 	-- an exception will be raised:
-	procedure delete_line_net (
+	procedure delete_line_net ( -- CS: rename to ripup_line_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+	-- CS: rework so that only a type_object_line_net is
+	-- taken instead of net_name and line.
 
 
 	-- Deletes the given freetrack line.
@@ -410,11 +458,49 @@ package et_board_ops_conductors is
 	end record;
 
 
+	-- Per default the cursors point
+	-- to no_element:
+	object_arc_net_default : constant type_object_arc_net := (others => <>);
+
+	-- Returns true if the given object points
+	-- to nowhere (if it has default values):
+	function has_elements (
+		arc : in type_object_arc_net)
+		return boolean;
+
+
+	-- Resets the given object so that it
+	-- assumes default values:
+	procedure reset_object (
+		arc : in out type_object_arc_net);
+
+
 	-- If arc segments (of a freetrack) are searched, then they can be
 	-- identified by a cursor:
 	type type_object_arc_floating is record
 		arc_cursor	: pac_conductor_arcs.cursor;
 	end record;
+
+
+	-- Per default the cursors point
+	-- to no_element:
+	object_arc_floating_default : constant type_object_arc_floating := (others => <>);
+
+	-- Returns true if the given object points
+	-- to nowhere (if it has default values):
+	function has_elements (
+		arc : in type_object_arc_floating)
+		return boolean;
+
+
+	-- Resets the given object so that it
+	-- assumes default values:
+	procedure reset_object (
+		arc : in out type_object_arc_floating);
+
+
+
+
 
 
 
@@ -510,12 +596,14 @@ package et_board_ops_conductors is
 	-- Deletes the given arc segment in the given net.
 	-- Assumes that the targeted net exists. Otherwise an exception
 	-- will be raised:
-	procedure delete_arc_net (
+	procedure delete_arc_net ( -- CS: rename to ripup_arc_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+	-- CS: rework so that only a type_object_arc_net is
+	-- taken instead of net_name and arc.
 
 
 	-- Deletes the given freetrack arc.
@@ -931,6 +1019,7 @@ package et_board_ops_conductors is
 	-- because this is part of a group call.
 	-- It is up to the caller of this procedure to care for
 	-- the commit actions:
+	-- CS: incomplete ! Does not process circles and fill zones.
 	procedure delete_conductors_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

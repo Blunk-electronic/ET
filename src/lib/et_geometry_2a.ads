@@ -1621,6 +1621,15 @@ package et_geometry_2a is
 		arc : in out type_arc);
 
 
+	-- Returns true if the given arc is selected.
+	-- If either the A or B end or the whole arc
+	-- is set as selected:
+	-- CS: not complete. returns always false
+	function is_selected_2 (
+		arc : in type_arc)
+		return boolean;
+
+
 
 	function is_proposed (
 		arc : in type_arc)

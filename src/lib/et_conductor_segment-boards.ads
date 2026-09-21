@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,11 @@
 --
 --   history of changes:
 --
---   to do:
+-- To Do:
+-- - rename this package to et_track_segment. The package should no longer
+--   be a child package of et_conductor_segment.
+--
+--
 
 with ada.containers;
 
@@ -52,6 +56,7 @@ package et_conductor_segment.boards is
 	type type_conductor_line is new et_conductor_segment.type_conductor_line with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
+	-- CS: rename to type_track_line ?
 
 
 	-- CS procedure to set linewidth and layer
@@ -106,6 +111,13 @@ package et_conductor_segment.boards is
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 
+
+	-- function get_conductor_line (
+	-- 	line_cursor : in pac_conductor_lines.cursor)
+	-- 	return type_conductor_line;
+-- CS: Does not compile. Primitive operation declared to late.
+-- Move stuff related to pac_conductor_lines to separate package
+-- et_track_segments ?
 
 	function get_A (
 		line : in pac_conductor_lines.cursor)

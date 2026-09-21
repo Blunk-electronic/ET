@@ -3415,6 +3415,15 @@ package body et_geometry_2a is
 	end clear_selected;
 
 
+	function is_selected_2 (
+		arc : in type_arc)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- CS
+		return result;
+	end is_selected_2;
 
 
 	function is_proposed (

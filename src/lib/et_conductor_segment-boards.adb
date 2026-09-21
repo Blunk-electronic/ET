@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -144,6 +144,16 @@ package body et_conductor_segment.boards is
 		return result;
 	end in_layer_and_in_area;
 
+
+
+
+
+	-- function get_conductor_line (
+	-- 	line_cursor : in pac_conductor_lines.cursor)
+	-- 	return type_conductor_line
+	-- is begin
+	-- 	return element (line_cursor);
+	-- end get_conductor_line;
 
 
 
