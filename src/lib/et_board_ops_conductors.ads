@@ -259,6 +259,12 @@ package et_board_ops_conductors is
 		line : in out type_object_line_floating);
 
 
+	function get_conductor_line (
+		line : in type_object_line_floating)
+		return type_conductor_line;
+
+
+
 	package pac_object_lines is new doubly_linked_lists (type_object_line_net);
 
 
@@ -432,6 +438,8 @@ package et_board_ops_conductors is
 		line			: in type_conductor_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+	-- CS: rework so that only a type_object_line_floating is
+	-- taken instead of line.
 
 
 
@@ -614,6 +622,8 @@ package et_board_ops_conductors is
 		arc				: in type_conductor_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+	-- CS: rework so that only a type_object_arc_floating is
+	-- taken instead of arc.
 
 
 

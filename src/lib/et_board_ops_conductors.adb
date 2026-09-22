@@ -796,6 +796,16 @@ package body et_board_ops_conductors is
 	end reset_object;
 
 
+	function get_conductor_line (
+		line : in type_object_line_floating)
+		return type_conductor_line
+	is
+		use pac_conductor_lines;
+	begin
+		return element (line.line_cursor);
+		-- CS use function get_conductor_line (line)
+	end get_conductor_line;
+
 
 
 
@@ -6404,6 +6414,8 @@ package body et_board_ops_conductors is
 		-- CS: safety measure to avoid forever-loop
 		-- CS: log the nunmber of deleted conductor objects.
 
+			-- If a conductor line segment of a track has
+			-- been found, then rip up the segment:
 			if has_elements (object_line_net) then
 
 				delete_line_net (
@@ -6417,20 +6429,32 @@ package body et_board_ops_conductors is
 			end if;
 
 
+			-- If a conductor arc segment of a track has
+			-- been found, then rip up the segment:
 			if has_elements (object_arc_net) then
-				null;
+				-- CS
 				reset_object (object_arc_net);
 			end if;
 
 
+			-- If a conductor line segment of a freetrack has
+			-- been found, then rip up the segment:
 			if has_elements (object_line_floating) then
-				null;
+
+				delete_line_floating (
+					module_cursor	=> module_cursor,
+					line			=> get_conductor_line (object_line_floating),
+					commit_design	=> NO_COMMIT,
+					log_threshold	=> log_threshold + 1);
+
 				reset_object (object_line_floating);
 			end if;
 
 
+			-- If a conductor arc segment of a freetrack has
+			-- been found, then rip up the segment:
 			if has_elements (object_arc_floating) then
-				null;
+				-- CS
 				reset_object (object_arc_floating);
 			end if;
 
