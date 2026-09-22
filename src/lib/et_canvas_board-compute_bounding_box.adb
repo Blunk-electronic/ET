@@ -60,7 +60,7 @@ with et_package_library;
 with et_assembly_technology;
 with et_terminals;
 with et_conductor_segment;
-with et_conductor_segment.boards;
+with et_track_segment;
 with et_conductor_text.packages;
 
 with et_board_holes;
@@ -648,7 +648,7 @@ is
 				-- use et_conductor_text.packages;
 				-- use pac_conductor_texts;
 				-- use et_conductor_segment;
-				use et_conductor_segment.boards;
+				use et_track_segment;
 				use pac_conductor_lines;
 				use pac_conductor_arcs;
 				use pac_conductor_circles;
@@ -1741,7 +1741,7 @@ is
 					route : type_net_route renames element (c).route;
 
 					-------------------------------
-					use et_conductor_segment.boards;
+					use et_track_segment;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
 

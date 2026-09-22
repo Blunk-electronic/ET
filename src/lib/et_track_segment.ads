@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                     CONDUCTOR SEGMENT IN BOARD                           --
+--                           TRACK SEGMENT                                  --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,19 +36,25 @@
 --   history of changes:
 --
 -- To Do:
--- - rename this package to et_track_segment. The package should no longer
---   be a child package of et_conductor_segment.
+--
 --
 --
 
-with ada.containers;
+with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
+with et_board_geometry;			use et_board_geometry;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
+with et_conductor_segment;
 
 
-package et_conductor_segment.boards is
+package et_track_segment is
+
+	use pac_geometry_2;
+
+
+
 
 	-- In a pcb drawing, objects in conductor layers can be placed
 	-- in various layers.
@@ -379,7 +385,7 @@ package et_conductor_segment.boards is
 
 
 
-end et_conductor_segment.boards;
+end et_track_segment;
 
 -- Soli Deo Gloria
 

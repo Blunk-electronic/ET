@@ -50,7 +50,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 -- with et_primitive_objects;			use et_primitive_objects;
 with et_directions;					use et_directions;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_track_segment;				use et_track_segment;
 
 with et_module_read_nets;
 

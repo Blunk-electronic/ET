@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                     CONDUCTOR SEGMENT IN BOARD                           --
+--                           TRACK SEGMENT                                  --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -42,12 +42,14 @@ with et_design_rules_board;
 with et_directions;
 
 
-package body et_conductor_segment.boards is
+package body et_track_segment is
 
 
 	procedure reset_line (
 		line : in out type_conductor_line)
-	is begin
+	is
+		use et_design_rules_board;
+	begin
 		set_A (line, origin);
 		set_B (line, origin);
 
@@ -296,6 +298,7 @@ package body et_conductor_segment.boards is
 		arc : in out type_conductor_arc)
 	is
 		use et_directions;
+		use et_design_rules_board;
 	begin
 		set_A (arc, origin);
 		set_B (arc, origin);
@@ -554,7 +557,7 @@ package body et_conductor_segment.boards is
 
 
 
-end et_conductor_segment.boards;
+end et_track_segment;
 
 -- Soli Deo Gloria
 

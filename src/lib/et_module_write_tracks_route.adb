@@ -52,7 +52,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
-with et_conductor_segment.boards;
+with et_track_segment;
 with et_vias;
 with et_thermal_relief;
 with et_fill_zones;
@@ -79,7 +79,7 @@ package body et_module_write_tracks_route is
 		use et_board_geometry;
 		use pac_contours;
 
-		use et_conductor_segment.boards;
+		use et_track_segment;
 
 		use et_fill_zones;
 		use et_fill_zones.boards;

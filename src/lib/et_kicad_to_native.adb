@@ -114,7 +114,7 @@ with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;
 with et_conductor_text;				use et_conductor_text;
 with et_conductor_text.boards;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
+with et_track_segment;				use et_track_segment;
 with et_stopmask;
 with et_stencil;
 with et_silkscreen;					use et_silkscreen;

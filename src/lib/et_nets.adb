@@ -38,7 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_conductor_segment.boards;
+with et_track_segment;
 with et_fill_zones.boards;
 with et_vias;
 
@@ -507,7 +507,7 @@ package body et_nets is
 		target	: in out type_net;
 		source	: in out type_net)
 	is
-		use et_conductor_segment.boards;
+		use et_track_segment;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 
