@@ -39,6 +39,8 @@
 --
 
 with et_track_segment;					use et_track_segment;
+with et_track_segment.lines;			use et_track_segment.lines;
+
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;

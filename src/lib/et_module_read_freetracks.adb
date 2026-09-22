@@ -51,6 +51,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_track_segment;				use et_track_segment;
+with et_track_segment.lines;		use et_track_segment.lines;
 
 
 

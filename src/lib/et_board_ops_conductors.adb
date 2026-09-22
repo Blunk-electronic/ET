@@ -774,11 +774,8 @@ package body et_board_ops_conductors is
 	function get_conductor_line (
 		line : in type_object_line_net)
 		return type_conductor_line
-	is
-		use pac_conductor_lines;
-	begin
-		return element (line.line_cursor);
-		-- CS use function get_conductor_line (line)
+	is begin
+		return get_conductor_line (line.line_cursor);
 	end get_conductor_line;
 
 
@@ -799,11 +796,8 @@ package body et_board_ops_conductors is
 	function get_conductor_line (
 		line : in type_object_line_floating)
 		return type_conductor_line
-	is
-		use pac_conductor_lines;
-	begin
-		return element (line.line_cursor);
-		-- CS use function get_conductor_line (line)
+	is begin
+		return get_conductor_line (line.line_cursor);
 	end get_conductor_line;
 
 

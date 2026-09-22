@@ -43,6 +43,7 @@ with et_module_names;				use et_module_names;
 with ada.exceptions;
 
 with et_track_segment;
+with et_track_segment.lines;
 with et_board_ops_devices;				use et_board_ops_devices;
 with et_board_ops_vias;					use et_board_ops_vias;
 
@@ -58,6 +59,7 @@ package body et_board_ops_ratsnest is
 	is
 		use pac_nets;
 		use et_track_segment;
+		use et_track_segment.lines;
 		use pac_points;
 		result : pac_points.list;
 

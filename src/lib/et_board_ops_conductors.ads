@@ -49,6 +49,7 @@ with et_generic_modules;				use et_generic_modules;
 with et_axes;							use et_axes;
 with et_board_text;						use et_board_text;
 with et_track_segment;					use et_track_segment;
+with et_track_segment.lines;			use et_track_segment.lines;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;

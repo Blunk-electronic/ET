@@ -48,6 +48,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_conductor_text;
 with et_conductor_text.boards;
 with et_track_segment;				use et_track_segment;
+with et_track_segment.lines;		use et_track_segment.lines;
 with et_stopmask.packages;
 with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;

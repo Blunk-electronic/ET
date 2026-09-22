@@ -53,6 +53,7 @@ with et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_track_segment;
+with et_track_segment.lines;
 with et_vias;
 with et_thermal_relief;
 with et_fill_zones;
@@ -80,6 +81,7 @@ package body et_module_write_tracks_route is
 		use pac_contours;
 
 		use et_track_segment;
+		use et_track_segment.lines;
 
 		use et_fill_zones;
 		use et_fill_zones.boards;

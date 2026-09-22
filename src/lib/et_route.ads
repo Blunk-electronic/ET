@@ -45,6 +45,7 @@ with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_track_segment;					use et_track_segment;
+with et_track_segment.lines;			use et_track_segment.lines;
 
 with et_board_geometry;					use et_board_geometry;
 
