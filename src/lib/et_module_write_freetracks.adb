@@ -100,7 +100,7 @@ package body et_module_write_freetracks is
 				parameters => to_string (arc.width));
 
 			write (keyword => keyword_layer, parameters => to_string (arc.layer));
-			section_mark (section_arc , FOOTER);
+			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 

@@ -33,7 +33,20 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
---   history of changes:
+--
+-- DESCRIPTION:
+-- 
+-- This package is about basic objects that are used to make
+-- tracks (or traces) where current flows. Basic elements are
+-- lines, arcs and circles.
+-- A track can be part of a net or it can be so called freetrack.
+-- A freetrack is not connected to a net but can carry current nevertheless.
+-- A track or a freetrack segment can exist in any signal layer.
+--
+--
+-- history of changes:
+--
+--
 --
 -- To Do:
 --
