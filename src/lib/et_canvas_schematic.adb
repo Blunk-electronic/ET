@@ -512,7 +512,7 @@ package body et_canvas_schematic is
 		end if;
 
 
-		-- CS if submodules_enables ?
+		-- CS if submodules_enabled ?
 		draw_submodules;
 
 

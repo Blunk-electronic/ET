@@ -881,10 +881,17 @@ package body et_canvas_board is
 		draw_board;
 
 		draw_cursor;
+
+		-- In case a zoom-area or a group-area
+		-- is being defined, then draw it:
 		draw_zoom_area;
+		draw_group_area;
 
 		return event_handled;
 	end cb_draw;
+
+
+
 
 
 
@@ -909,6 +916,8 @@ package body et_canvas_board is
 		set_up_noun_combo;
 	end cb_verb_changed;
 
+
+
 	procedure set_up_verb_combo is
 		use et_modes.board;
 		use pac_canvas;
@@ -925,6 +934,8 @@ package body et_canvas_board is
 	end set_up_verb_combo;
 
 
+
+
 	procedure cb_noun_changed (
 		self : access gtk.combo_box.gtk_combo_box_record'class)
 	is
@@ -937,6 +948,9 @@ package body et_canvas_board is
 		put_line ("cb_noun_changed");
 		set_noun (to_noun (self.get_active_id));
 	end cb_noun_changed;
+
+
+
 
 	procedure set_up_noun_combo is
 		use et_modes.board;
@@ -977,6 +991,8 @@ package body et_canvas_board is
 			noun_handler_connected := true;
 		end if;
 	end set_up_noun_combo;
+
+
 
 
 
@@ -1273,6 +1289,9 @@ package body et_canvas_board is
 
 
 
+
+
+
 -- MOUSE BUTTON PRESSED
 
 	procedure button_pressed (
@@ -1320,12 +1339,45 @@ package body et_canvas_board is
 		unused_mouse_event : type_mouse_event;
 
 		unused_debug : boolean := false;
+
+
+		-- This procedure is called if a define-group-operation
+		-- is in progress:
+		procedure handle_group_operation is
+			use et_modes;
+			use et_modes.board;
+			use et_board_ops_groups;
+		begin
+			-- If a group is being defined, then
+			-- the release of the button finishes the group
+			-- operation. The variable group_area provides
+			-- the selected area:
+			if verb = VERB_DEFINE and noun = NOUN_GROUP then
+
+				-- Define the group according to the
+				-- variable group_area:
+				define_group_rectangular (active_module,
+					group_area_mouse.area, log_threshold);
+
+				reset_group_area_mouse; -- clean up
+
+				-- Once the group has been defined,
+				-- the verb-noun mechanism must be reset:
+				expect_entry := expect_entry_default; -- expect a verb
+				reset_verb_and_noun;
+				update_mode_display;
+			end if;
+		end handle_group_operation;
+
+
 	begin
 		-- put_line ("cb_canvas_button_released (board)");
 
 		unused_mouse_event := get_mouse_button_released_event (event);
 
-		 -- CS button_released (mouse_event);
+		-- CS button_released (mouse_event);
+
+		handle_group_operation;
 
 		return event_handled;
 	end cb_canvas_button_released;
