@@ -1056,13 +1056,18 @@ package body et_canvas_board is
 
 			status_clear;
 
-			-- Reset the status of objects in schematic
-			-- and board editor:
-			et_schematic_ops_groups.reset_objects (
-				active_module, log_threshold + 1);
-
-			et_board_ops_groups.reset_objects (
-				active_module, log_threshold + 1);
+			-- CS; It seems to be correct not to
+			-- clear existing groups here. This way a group
+			-- remains active so that further operations
+			-- like dragging are possible. This assumption
+			-- must be verified:
+			-- -- Reset the status of objects in schematic
+			-- -- and board editor:
+			-- et_schematic_ops_groups.reset_objects (
+			-- 	active_module, log_threshold + 1);
+			--
+			-- et_board_ops_groups.reset_objects (
+			-- 	active_module, log_threshold + 1);
 
 
 			device_add.valid := false;
@@ -1122,6 +1127,7 @@ package body et_canvas_board is
 			update_mode_display;
 
 			reset_copy_to_clipboard;
+
 			reset_group_area_mouse; -- abort a define-group operation
 
 			status_enter_verb;
@@ -1171,10 +1177,14 @@ package body et_canvas_board is
 
 
 
+
+
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
 	is separate;
+
+
 
 
 
@@ -1292,6 +1302,8 @@ package body et_canvas_board is
 
 
 
+
+
 -- MOUSE BUTTON PRESSED
 
 	procedure button_pressed (
@@ -1317,6 +1329,10 @@ package body et_canvas_board is
 
 		return event_handled;
 	end cb_canvas_button_pressed;
+
+
+
+
 
 
 
@@ -1381,6 +1397,10 @@ package body et_canvas_board is
 
 		return event_handled;
 	end cb_canvas_button_released;
+
+
+
+
 
 
 
