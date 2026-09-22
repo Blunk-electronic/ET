@@ -40,6 +40,8 @@ with ada.text_io;				use ada.text_io;
 
 with et_track_segment;
 with et_track_segment.lines;
+with et_track_segment.arcs;
+
 with et_fill_zones.boards;
 with et_vias;
 
@@ -510,6 +512,7 @@ package body et_nets is
 	is
 		use et_track_segment;
 		use et_track_segment.lines;
+		use et_track_segment.arcs;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 

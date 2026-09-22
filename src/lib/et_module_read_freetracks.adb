@@ -52,7 +52,7 @@ with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
-
+with et_track_segment.arcs;			use et_track_segment.arcs;
 
 
 package body et_module_read_freetracks is

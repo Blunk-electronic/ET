@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              ROUTE                                       --
+--                        TRACK SEGMENT ARCS                                --
 --                                                                          --
---                             S p e c                                      --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,80 +36,127 @@
 --   history of changes:
 --
 --   to do:
---
 
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_vias;							use et_vias;
-
-with et_fill_zones;						use et_fill_zones;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_route_restrict.boards;			use et_route_restrict.boards;
-with et_track_segment;					use et_track_segment;
-with et_track_segment.lines;			use et_track_segment.lines;
-with et_track_segment.arcs;				use et_track_segment.arcs;
-
-with et_board_geometry;					use et_board_geometry;
-
-with et_ratsnest;
+-- with ada.text_io;			use ada.text_io;
+with et_design_rules_board;
+with et_directions;
 
 
-package et_route is
-
-	use pac_polygons;
+package body et_track_segment.arcs is
 
 
-	-- A complete net may consist of these conductor objects.
-	-- Everything that is a conducting object is called a "route":
-
-	type type_net_route is record
-		airwires	: et_ratsnest.type_airwires;
-
-		lines		: pac_conductor_lines.list;
-		arcs		: pac_conductor_arcs.list;
-		-- CS: circles ?
-		vias		: pac_vias.list;
-
-		-- fill zones:
-		zones		: boards.type_route;
-
-		-- user defined restrictions. currently not supported. CS
-		restrict	: et_route_restrict.boards.type_route_restrict;
-	end record;
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is (get_A (element (arc)));
 
 
-	-- Use this constant when all routed stuff of a net
-	-- is to be removed:
-	no_route : constant type_net_route := (others => <>);
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is (get_B (element (arc)));
 
 
 
 
-	procedure add_line (
-		route	: in out type_net_route;
-		line	: in type_conductor_line);
 
-
-	procedure add_arc (
-		route	: in out type_net_route;
-		arc		: in type_conductor_arc);
+	function to_string (
+		arc		: in pac_conductor_arcs.cursor;
+		width	: in boolean)
+		return string
+	is (to_string (element (arc), width));
 
 
 
 
-	-- Iterates the track segments and vias of the
-	-- given route and converts them to polygons:
-	function get_polygons (
-		route			: in type_net_route;
-		layer_category	: in type_signal_layer_category;
-		layer			: in type_signal_layer;
-		bottom_layer	: in type_signal_layer)
-		return pac_polygon_list.list;
+	function get_layer (
+		arc : in pac_conductor_arcs.cursor)
+		return type_signal_layer
+	is (element (arc).layer);
 
 
 
-end et_route;
+	function is_proposed (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean
+	is (is_proposed (element (arc)));
 
 
+
+
+	function is_selected (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean
+	is (is_selected (element (arc)));
+
+
+
+
+
+	function get_arcs_by_layer (
+		arcs	: in pac_conductor_arcs.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_arcs.list
+	is
+		result : pac_conductor_arcs.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is
+			arc : type_conductor_arc renames element (c);
+		begin
+			if arc.layer = layer then
+				result.append (arc);
+			end if;
+		end query_arc;
+
+	begin
+		arcs.iterate (query_arc'access);
+		return result;
+	end get_arcs_by_layer;
+
+
+
+
+
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_conductor_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+
+	function on_segment (
+		point		: in type_vector_model; -- x/y
+		layer		: in type_signal_layer;
+		arc			: in pac_conductor_arcs.cursor)
+		return boolean
+	is
+		pragma unreferenced (point);
+		result : boolean := false; -- to be returned
+	begin
+		if element (arc).layer = layer then
+			-- CS use
+			--segment_arc := to_arc_segment (arc);
+			--distance := get_shortest_distance (point, segment_arc);
+
+			result := true; -- CS
+		else
+			result := false;
+		end if;
+
+		return result;
+	end on_segment;
+
+
+
+end et_track_segment.arcs;
 
 -- Soli Deo Gloria
 

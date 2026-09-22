@@ -49,8 +49,11 @@ with et_keywords;					use et_keywords;
 with et_module;						use et_module;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
+
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
+with et_track_segment.arcs;			use et_track_segment.arcs;
+
 with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_file_write;					use et_file_write;
 with et_file_sections;				use et_file_sections;

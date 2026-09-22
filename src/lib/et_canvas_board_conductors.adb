@@ -42,8 +42,10 @@
 with et_generic_modules;					use et_generic_modules;
 with et_canvas_board;
 with et_conductor_text.boards;
+
 with et_track_segment;						use et_track_segment;
 with et_track_segment.lines;				use et_track_segment.lines;
+with et_track_segment.arcs;					use et_track_segment.arcs;
 
 with et_board_ops_conductors;				use et_board_ops_conductors;
 with et_board_ops_signal_layers;			use et_board_ops_signal_layers;

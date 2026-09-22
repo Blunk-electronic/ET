@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              ROUTE                                       --
+--                        TRACK SEGMENT ARCS                                --
 --                                                                          --
---                             S p e c                                      --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -33,83 +33,110 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
---   history of changes:
 --
---   to do:
+-- DESCRIPTION:
+--
+--
+--
+-- history of changes:
+--
+--
+--
+-- To Do:
+--
+--
 --
 
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_vias;							use et_vias;
+with ada.containers;			use ada.containers;
 
-with et_fill_zones;						use et_fill_zones;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_route_restrict.boards;			use et_route_restrict.boards;
-with et_track_segment;					use et_track_segment;
-with et_track_segment.lines;			use et_track_segment.lines;
-with et_track_segment.arcs;				use et_track_segment.arcs;
+with ada.containers.doubly_linked_lists;
 
-with et_board_geometry;					use et_board_geometry;
-
-with et_ratsnest;
+with et_board_geometry;			use et_board_geometry;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
+with et_conductor_segment;
 
 
-package et_route is
+package et_track_segment.arcs is
 
-	use pac_polygons;
-
-
-	-- A complete net may consist of these conductor objects.
-	-- Everything that is a conducting object is called a "route":
-
-	type type_net_route is record
-		airwires	: et_ratsnest.type_airwires;
-
-		lines		: pac_conductor_lines.list;
-		arcs		: pac_conductor_arcs.list;
-		-- CS: circles ?
-		vias		: pac_vias.list;
-
-		-- fill zones:
-		zones		: boards.type_route;
-
-		-- user defined restrictions. currently not supported. CS
-		restrict	: et_route_restrict.boards.type_route_restrict;
-	end record;
+	use pac_geometry_2;
 
 
-	-- Use this constant when all routed stuff of a net
-	-- is to be removed:
-	no_route : constant type_net_route := (others => <>);
+	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
+	use pac_conductor_arcs;
+
+
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
 
 
 
-
-	procedure add_line (
-		route	: in out type_net_route;
-		line	: in type_conductor_line);
-
-
-	procedure add_arc (
-		route	: in out type_net_route;
-		arc		: in type_conductor_arc);
+	-- Returns the start/end point, center and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		arc		: in pac_conductor_arcs.cursor;
+		width	: in boolean)
+		return string;
 
 
 
-
-	-- Iterates the track segments and vias of the
-	-- given route and converts them to polygons:
-	function get_polygons (
-		route			: in type_net_route;
-		layer_category	: in type_signal_layer_category;
-		layer			: in type_signal_layer;
-		bottom_layer	: in type_signal_layer)
-		return pac_polygon_list.list;
+	-- Returns the signal layer of the given arc:
+	function get_layer (
+		arc : in pac_conductor_arcs.cursor)
+		return type_signal_layer;
 
 
+	-- Returns true if the status flag "proposed"
+	-- of a conductor arc is set:
+	function is_proposed (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean;
 
-end et_route;
+
+	-- Returns true if the status flag "selected"
+	-- of a conductor arc is set:
+	function is_selected (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean;
 
 
+
+
+
+	-- Extracts those arcs which are in the given layer:
+	function get_arcs_by_layer (
+		arcs	: in pac_conductor_arcs.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_arcs.list;
+
+
+
+
+	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+
+
+	-- Returns true if the given point sits on the given arc.
+	function on_segment (
+		point		: in type_vector_model; -- x/y
+		layer		: in type_signal_layer;
+		arc			: in pac_conductor_arcs.cursor)
+		return boolean;
+
+
+
+
+end et_track_segment.arcs;
 
 -- Soli Deo Gloria
 

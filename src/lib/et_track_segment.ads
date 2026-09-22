@@ -132,7 +132,6 @@ package et_track_segment is
 
 
 
--- ARCS:
 
 	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
@@ -169,78 +168,6 @@ package et_track_segment is
 		return boolean;
 
 
-
-	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
-	use pac_conductor_arcs;
-
-
-	function get_A (
-		arc : in pac_conductor_arcs.cursor)
-		return type_vector_model;
-
-
-	function get_B (
-		arc : in pac_conductor_arcs.cursor)
-		return type_vector_model;
-
-
-
-	-- Returns the start/end point, center and layer as string.
-	-- If "width" is true, then the segment width is also output:
-	function to_string (
-		arc		: in pac_conductor_arcs.cursor;
-		width	: in boolean)
-		return string;
-
-
-
-	-- Returns the signal layer of the given arc:
-	function get_layer (
-		arc : in pac_conductor_arcs.cursor)
-		return type_signal_layer;
-
-
-	-- Returns true if the status flag "proposed"
-	-- of a conductor arc is set:
-	function is_proposed (
-		arc : in pac_conductor_arcs.cursor)
-		return boolean;
-
-
-	-- Returns true if the status flag "selected"
-	-- of a conductor arc is set:
-	function is_selected (
-		arc : in pac_conductor_arcs.cursor)
-		return boolean;
-
-
-
-
-
-	-- Extracts those arcs which are in the given layer:
-	function get_arcs_by_layer (
-		arcs	: in pac_conductor_arcs.list;
-		layer	: in type_signal_layer)
-		return pac_conductor_arcs.list;
-
-
-
-
-	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		arcs	: in pac_conductor_arcs.list;
-		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
-		proceed	: not null access boolean);
-
-
-
-
-	-- Returns true if the given point sits on the given arc.
-	function on_segment (
-		point		: in type_vector_model; -- x/y
-		layer		: in type_signal_layer;
-		arc			: in pac_conductor_arcs.cursor)
-		return boolean;
 
 
 

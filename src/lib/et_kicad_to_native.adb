@@ -116,6 +116,7 @@ with et_conductor_text;				use et_conductor_text;
 with et_conductor_text.boards;
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;
+with et_track_segment.arcs;
 with et_stopmask;
 with et_stencil;
 with et_silkscreen;					use et_silkscreen;
@@ -753,6 +754,7 @@ package body et_kicad_to_native is
 				procedure move_route is
 				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
 					use et_track_segment.lines;
+					use et_track_segment.arcs;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
 
@@ -1902,6 +1904,8 @@ package body et_kicad_to_native is
 
 			procedure move_copper is
 				use et_track_segment.lines;
+				use et_track_segment.arcs;
+				
 				use pac_conductor_lines;
 				lines_cursor : pac_conductor_lines.cursor;
 

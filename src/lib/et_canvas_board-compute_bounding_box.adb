@@ -59,9 +59,12 @@ with et_package_model;				use et_package_model;
 with et_package_library;
 with et_assembly_technology;
 with et_terminals;
+
 with et_conductor_segment;
 with et_track_segment;
 with et_track_segment.lines;
+with et_track_segment.arcs;
+
 with et_conductor_text.packages;
 
 with et_board_holes;
@@ -651,6 +654,7 @@ is
 				-- use et_conductor_segment;
 				use et_track_segment;
 				use et_track_segment.lines;
+				use et_track_segment.arcs;
 				use pac_conductor_lines;
 				use pac_conductor_arcs;
 				use pac_conductor_circles;
@@ -1745,6 +1749,7 @@ is
 					-------------------------------
 					use et_track_segment;
 					use et_track_segment.lines;
+					use et_track_segment.arcs;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
 
