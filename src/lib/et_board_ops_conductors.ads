@@ -216,7 +216,7 @@ package et_board_ops_conductors is
 
 
 	-- Returns true if the given object points
-	-- to nowhere (if it has default values):
+	-- to somewhere (if it does not have default values):
 	function has_elements (
 		line : in type_object_line_net)
 		return boolean;
@@ -247,7 +247,7 @@ package et_board_ops_conductors is
 	object_line_floating_default : constant type_object_line_floating := (others => <>);
 
 	-- Returns true if the given object points
-	-- to nowhere (if it has default values):
+	-- to somewhere (if it does not have default values):
 	function has_elements (
 		line : in type_object_line_floating)
 		return boolean;
@@ -463,7 +463,7 @@ package et_board_ops_conductors is
 	object_arc_net_default : constant type_object_arc_net := (others => <>);
 
 	-- Returns true if the given object points
-	-- to nowhere (if it has default values):
+	-- to somewhere (if it does not have default values):
 	function has_elements (
 		arc : in type_object_arc_net)
 		return boolean;
@@ -487,7 +487,7 @@ package et_board_ops_conductors is
 	object_arc_floating_default : constant type_object_arc_floating := (others => <>);
 
 	-- Returns true if the given object points
-	-- to nowhere (if it has default values):
+	-- to somewhere (if it does not have default values):
 	function has_elements (
 		arc : in type_object_arc_floating)
 		return boolean;

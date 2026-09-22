@@ -751,7 +751,7 @@ package body et_board_ops_conductors is
 	function has_elements (
 		line : in type_object_line_net)
 		return boolean
-	is (line = object_line_net_default);
+	is (line /= object_line_net_default);
 
 
 	procedure reset_object (
@@ -786,7 +786,7 @@ package body et_board_ops_conductors is
 	function has_elements (
 		line : in type_object_line_floating)
 		return boolean
-	is (line = object_line_floating_default);
+	is (line /= object_line_floating_default);
 
 
 	procedure reset_object (
@@ -2056,7 +2056,7 @@ package body et_board_ops_conductors is
 	function has_elements (
 		arc : in type_object_arc_net)
 		return boolean
-	is (arc = object_arc_net_default);
+	is (arc /= object_arc_net_default);
 
 
 	procedure reset_object (
@@ -2070,7 +2070,7 @@ package body et_board_ops_conductors is
 	function has_elements (
 		arc : in type_object_arc_floating)
 		return boolean
-	is (arc = object_arc_floating_default);
+	is (arc /= object_arc_floating_default);
 
 
 	procedure reset_object (
