@@ -270,44 +270,6 @@ package body et_track_segment is
 
 
 
-
-	procedure iterate (
-		circles	: in pac_conductor_circles.list;
-		process	: not null access procedure (position : in pac_conductor_circles.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_conductor_circles.cursor := circles.first;
-	begin
-		while c /= pac_conductor_circles.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-
-
-	function get_layer (
-		circle : in pac_conductor_circles.cursor)
-		return type_signal_layer
-	is (element (circle).layer);
-
-
-
-	function is_proposed (
-		circle : in pac_conductor_circles.cursor)
-		return boolean
-	is (is_proposed (element (circle)));
-
-
-
-
-	function is_selected (
-		circle : in pac_conductor_circles.cursor)
-		return boolean
-	is (is_selected (element (circle)));
-
-
-
 end et_track_segment;
 
 -- Soli Deo Gloria

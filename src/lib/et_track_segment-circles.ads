@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    FLOATING CONDUCTORS / BOARD                           --
+--                       TRACK SEGMENT CIRCLES                              --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -33,50 +33,68 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
---   history of changes:
 --
---   to do:
+-- DESCRIPTION:
+--
+--
+--
+-- history of changes:
+--
+--
+--
+-- To Do:
+--
+--
 --
 
-with et_track_segment;					use et_track_segment;
-with et_track_segment.lines;			use et_track_segment.lines;
-with et_track_segment.arcs;				use et_track_segment.arcs;
-with et_track_segment.circles;			use et_track_segment.circles;
+with ada.containers;			use ada.containers;
 
-with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
+with ada.containers.doubly_linked_lists;
 
-
-package et_conductors_floating_board is
+with et_board_geometry;			use et_board_geometry;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
+with et_conductor_segment;
 
 
-	-- Type for NON ELECTRIC !! conductor objects.
-	-- All these objects are not connected to any net,
-	-- means they are floating.
-	-- NON ELECTRIC conductor objects of a pcb may also
-	-- include text placeholders:
-	type type_conductors_floating is record
-		lines			: pac_conductor_lines.list;
-		arcs			: pac_conductor_arcs.list;
-		circles			: pac_conductor_circles.list;
+package et_track_segment.circles is
 
-		-- floating fill zones:
-		zones			: type_floating;
-		-- Useful to catch the liquid solder during wave soldering ?
-
-		-- global cutout areas:
-		cutouts			: pac_cutouts.list;
-
-		texts			: pac_conductor_texts_board.list;
-		placeholders	: pac_placeholders_conductor.list;
-	end record;
+	use pac_geometry_2;
 
 
-	-- CS procedures add_line, add_arc, add_circle, add_zone, add_text, add_placeholder
+	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
+	use pac_conductor_circles;
 
 
-end et_conductors_floating_board;
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean);
+
+
+	-- Returns the signal layer of the given circle:
+	function get_layer (
+		circle : in pac_conductor_circles.cursor)
+		return type_signal_layer;
+
+
+	-- Returns true if the status flag "proposed"
+	-- of a conductor circle is set:
+	function is_proposed (
+		circle : in pac_conductor_circles.cursor)
+		return boolean;
+
+
+	-- Returns true if the status flag "selected"
+	-- of a conductor circle is set:
+	function is_selected (
+		circle : in pac_conductor_circles.cursor)
+		return boolean;
+
+
+
+end et_track_segment.circles;
 
 -- Soli Deo Gloria
 

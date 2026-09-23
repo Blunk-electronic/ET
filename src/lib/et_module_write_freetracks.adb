@@ -53,6 +53,7 @@ with et_board_geometry;				use et_board_geometry;
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
 with et_track_segment.arcs;			use et_track_segment.arcs;
+with et_track_segment.circles;		use et_track_segment.circles;
 
 with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_file_write;					use et_file_write;

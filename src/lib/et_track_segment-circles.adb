@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    FLOATING CONDUCTORS / BOARD                           --
+--                        TRACK SEGMENT CIRCLES                             --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,47 +36,51 @@
 --   history of changes:
 --
 --   to do:
---
 
-with et_track_segment;					use et_track_segment;
-with et_track_segment.lines;			use et_track_segment.lines;
-with et_track_segment.arcs;				use et_track_segment.arcs;
-with et_track_segment.circles;			use et_track_segment.circles;
-
-with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
+-- with ada.text_io;			use ada.text_io;
+with et_design_rules_board;
+with et_directions;
 
 
-package et_conductors_floating_board is
+package body et_track_segment.circles is
+
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_circles.cursor := circles.first;
+	begin
+		while c /= pac_conductor_circles.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
 
-	-- Type for NON ELECTRIC !! conductor objects.
-	-- All these objects are not connected to any net,
-	-- means they are floating.
-	-- NON ELECTRIC conductor objects of a pcb may also
-	-- include text placeholders:
-	type type_conductors_floating is record
-		lines			: pac_conductor_lines.list;
-		arcs			: pac_conductor_arcs.list;
-		circles			: pac_conductor_circles.list;
 
-		-- floating fill zones:
-		zones			: type_floating;
-		-- Useful to catch the liquid solder during wave soldering ?
-
-		-- global cutout areas:
-		cutouts			: pac_cutouts.list;
-
-		texts			: pac_conductor_texts_board.list;
-		placeholders	: pac_placeholders_conductor.list;
-	end record;
+	function get_layer (
+		circle : in pac_conductor_circles.cursor)
+		return type_signal_layer
+	is (element (circle).layer);
 
 
-	-- CS procedures add_line, add_arc, add_circle, add_zone, add_text, add_placeholder
+
+	function is_proposed (
+		circle : in pac_conductor_circles.cursor)
+		return boolean
+	is (is_proposed (element (circle)));
 
 
-end et_conductors_floating_board;
+
+
+	function is_selected (
+		circle : in pac_conductor_circles.cursor)
+		return boolean
+	is (is_selected (element (circle)));
+
+
+end et_track_segment.circles;
 
 -- Soli Deo Gloria
 

@@ -203,41 +203,6 @@ package et_track_segment is
 
 
 
-
-	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
-	use pac_conductor_circles;
-
-
-	-- Iterates the circles.
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		circles	: in pac_conductor_circles.list;
-		process	: not null access procedure (position : in pac_conductor_circles.cursor);
-		proceed	: not null access boolean);
-
-
-	-- Returns the signal layer of the given circle:
-	function get_layer (
-		circle : in pac_conductor_circles.cursor)
-		return type_signal_layer;
-
-
-	-- Returns true if the status flag "proposed"
-	-- of a conductor circle is set:
-	function is_proposed (
-		circle : in pac_conductor_circles.cursor)
-		return boolean;
-
-
-	-- Returns true if the status flag "selected"
-	-- of a conductor circle is set:
-	function is_selected (
-		circle : in pac_conductor_circles.cursor)
-		return boolean;
-
-
-
-
 end et_track_segment;
 
 -- Soli Deo Gloria

@@ -64,6 +64,7 @@ with et_conductor_segment;
 with et_track_segment;
 with et_track_segment.lines;
 with et_track_segment.arcs;
+with et_track_segment.circles;
 
 with et_conductor_text.packages;
 
@@ -655,6 +656,7 @@ is
 				use et_track_segment;
 				use et_track_segment.lines;
 				use et_track_segment.arcs;
+				use et_track_segment.circles;
 				use pac_conductor_lines;
 				use pac_conductor_arcs;
 				use pac_conductor_circles;

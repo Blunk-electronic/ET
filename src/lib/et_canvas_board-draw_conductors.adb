@@ -45,6 +45,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
 with et_track_segment.arcs;			use et_track_segment.arcs;
+with et_track_segment.circles;		use et_track_segment.circles;
 
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;

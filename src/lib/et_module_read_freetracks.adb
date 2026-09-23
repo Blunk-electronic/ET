@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -50,10 +50,11 @@ with et_keywords;					use et_keywords;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
+
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
 with et_track_segment.arcs;			use et_track_segment.arcs;
-
+with et_track_segment.circles;		use et_track_segment.circles;
 
 package body et_module_read_freetracks is
 

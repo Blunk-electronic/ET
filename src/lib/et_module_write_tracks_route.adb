@@ -52,9 +52,12 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
+
 with et_track_segment;
 with et_track_segment.lines;
 with et_track_segment.arcs;
+with et_track_segment.circles;
+
 with et_vias;
 with et_thermal_relief;
 with et_fill_zones;
