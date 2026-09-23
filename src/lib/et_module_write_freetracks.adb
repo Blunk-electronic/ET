@@ -80,7 +80,7 @@ package body et_module_write_freetracks is
 		procedure write_line (
 			c : in pac_conductor_lines.cursor)
 		is
-			line : type_conductor_line renames element (c);
+			line : type_track_line renames element (c);
 		begin
 			section_mark (section_line, HEADER);
 			write_line (line);

@@ -62,13 +62,13 @@ package et_track_segment.lines is
 
 
 
-	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
+	package pac_conductor_lines is new doubly_linked_lists (type_track_line);
 	use pac_conductor_lines;
 
 
 	function get_conductor_line (
 		line_cursor : in pac_conductor_lines.cursor)
-		return type_conductor_line;
+		return type_track_line;
 
 
 

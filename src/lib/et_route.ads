@@ -86,7 +86,7 @@ package et_route is
 
 	procedure add_line (
 		route	: in out type_net_route;
-		line	: in type_conductor_line);
+		line	: in type_track_line);
 
 
 	procedure add_arc (

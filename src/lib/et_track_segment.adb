@@ -46,7 +46,7 @@ package body et_track_segment is
 
 
 	procedure reset_line (
-		line : in out type_conductor_line)
+		line : in out type_track_line)
 	is
 		use et_design_rules_board;
 	begin
@@ -61,7 +61,7 @@ package body et_track_segment is
 
 
 	function get_layer (
-		line : in type_conductor_line)
+		line : in type_track_line)
 		return type_signal_layer
 	is (line.layer);
 
@@ -69,11 +69,11 @@ package body et_track_segment is
 
 
 	function to_string (
-		line	: in type_conductor_line;
+		line	: in type_track_line;
 		width	: in boolean)
 		return string
 	is
-		l : type_conductor_line renames line;
+		l : type_track_line renames line;
 
 		text : constant string := to_string (pac_geometry_2.type_line (l))
 				& "/ ly " & to_string (l.layer);
@@ -89,7 +89,7 @@ package body et_track_segment is
 
 
 	function are_connected (
-		line_1, line_2	: in type_conductor_line;
+		line_1, line_2	: in type_track_line;
 		observe_layer	: in boolean := true)
 		return boolean
 	is
@@ -131,7 +131,7 @@ package body et_track_segment is
 
 
 	function in_layer_and_in_area (
-		line	: in type_conductor_line;
+		line	: in type_track_line;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean

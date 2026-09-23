@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -136,7 +136,7 @@ package body et_ratsnest is
 		-- Returns true if the given conductor line
 		-- is connected with the current strand:
 		function is_connected_with_strand (
-			line_in	: in type_conductor_line)
+			line_in	: in type_track_line)
 			return boolean
 		is
 			use pac_conductor_lines;
@@ -144,7 +144,7 @@ package body et_ratsnest is
 			proceed : aliased boolean := true;
 
 			procedure query_line (c : in pac_conductor_lines.cursor) is
-				candidate : type_conductor_line renames element (c);
+				candidate : type_track_line renames element (c);
 			begin
 				-- if line_in.layer = candidate.layer then
 				if are_connected (

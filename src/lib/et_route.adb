@@ -47,7 +47,7 @@ package body et_route is
 
 	procedure add_line (
 		route	: in out type_net_route;
-		line	: in type_conductor_line)
+		line	: in type_track_line)
 	is begin
 		route.lines.append (line);
 	end add_line;
@@ -77,7 +77,7 @@ package body et_route is
 		-- to a polygon and appends it to the result:
 		procedure query_line (l : in pac_conductor_lines.cursor) is
 			use pac_conductor_lines;
-			line : type_conductor_line renames element (l);
+			line : type_track_line renames element (l);
 		begin
 			if line.layer = layer then
 				-- log (text => "line: " & to_string (line), level => log_threshold + 2);

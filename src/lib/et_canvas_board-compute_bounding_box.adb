@@ -665,7 +665,7 @@ is
 
 
 				procedure query_line (c : in pac_conductor_lines.cursor) is
-					line : type_conductor_line renames element (c);
+					line : type_track_line renames element (c);
 				begin
 					b := get_bounding_box (line, line.width);
 					merge_areas (bbox_new, b);
@@ -1756,7 +1756,7 @@ is
 					use pac_conductor_arcs;
 
 					procedure query_line (c : in pac_conductor_lines.cursor) is
-						line : type_conductor_line renames element (c);
+						line : type_track_line renames element (c);
 					begin
 						b := get_bounding_box (line, line.width);
 						merge_areas (bbox_new, b);

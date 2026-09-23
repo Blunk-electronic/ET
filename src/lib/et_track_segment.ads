@@ -35,7 +35,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This package is about basic objects that are used to make
 -- tracks (or traces) where current flows. Basic elements are
 -- lines, arcs and circles.
@@ -67,27 +67,26 @@ package et_track_segment is
 	use pac_geometry_2;
 
 
-
-
-	-- In a pcb drawing, objects in conductor layers can be placed
-	-- in various layers.
+	-- In the board drawing, objects in conductor
+	-- layers can be placed in various layers.
 	-- This requires a layer id for the object.
-	type type_conductor_line is new et_conductor_segment.type_conductor_line with record
+
+	type type_track_line is new et_conductor_segment.type_conductor_line with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
-	-- CS: rename to type_track_line ?
+
 
 
 	-- CS procedure to set linewidth and layer
 
 	-- Resets A, B, width and layer to default:
 	procedure reset_line (
-		line : in out type_conductor_line);
+		line : in out type_track_line);
 
 
 	-- Returns the signal layer of the given line:
 	function get_layer (
-		line : in type_conductor_line)
+		line : in type_track_line)
 		return type_signal_layer;
 
 
@@ -95,7 +94,7 @@ package et_track_segment is
 	-- Returns the start/end point and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (
-		line	: in type_conductor_line;
+		line	: in type_track_line;
 		width	: in boolean)
 		return string;
 
@@ -112,7 +111,7 @@ package et_track_segment is
 	-- If "observe_layer" is false, then the layer is ignored. This
 	-- option is useful when computing the ratsnest (or airwires):
 	function are_connected (
-		line_1, line_2	: in type_conductor_line;
+		line_1, line_2	: in type_track_line;
 		observe_layer	: in boolean := true)
 		return boolean;
 
@@ -120,7 +119,7 @@ package et_track_segment is
 	-- Returns true if the given line is in the
 	-- given signal layer and in the given area:
 	function in_layer_and_in_area (
-		line	: in type_conductor_line;
+		line	: in type_track_line;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean;

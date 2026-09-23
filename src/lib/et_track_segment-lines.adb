@@ -48,7 +48,7 @@ package body et_track_segment.lines is
 
 	function get_conductor_line (
 		line_cursor : in pac_conductor_lines.cursor)
-		return type_conductor_line
+		return type_track_line
 	is begin
 		return element (line_cursor);
 	end get_conductor_line;
@@ -125,7 +125,7 @@ package body et_track_segment.lines is
 		result : pac_conductor_lines.list;
 
 		procedure query_line (c : in pac_conductor_lines.cursor) is
-			line : type_conductor_line renames element (c);
+			line : type_track_line renames element (c);
 		begin
 			if line.layer = layer then
 				result.append (line);

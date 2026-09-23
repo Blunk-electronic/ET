@@ -773,7 +773,7 @@ package body et_kicad_to_native is
 					board_track : constant string := "board track ";
 
 
-					procedure move_line (line : in out type_conductor_line) is
+					procedure move_line (line : in out type_track_line) is
 						p_scratch : et_board_geometry.pac_geometry_2.type_vector_model;
 					begin
 						log (text => board_track & "line", level => log_threshold + 4);
@@ -1934,7 +1934,7 @@ package body et_kicad_to_native is
 				board_copper : constant string := "board copper ";
 
 
-				procedure move_line (line : in out type_conductor_line) is
+				procedure move_line (line : in out type_track_line) is
 					p_scratch : et_board_geometry.pac_geometry_2.type_vector_model;
 				begin
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);

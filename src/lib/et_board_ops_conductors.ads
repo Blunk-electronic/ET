@@ -93,7 +93,7 @@ package et_board_ops_conductors is
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -106,7 +106,7 @@ package et_board_ops_conductors is
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name := et_net_names.no_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -116,7 +116,7 @@ package et_board_ops_conductors is
 	--procedure add_line (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
-		--line			: in type_conductor_line;
+		--line			: in type_track_line;
 		--log_threshold	: in type_log_level);
 
 
@@ -234,7 +234,7 @@ package et_board_ops_conductors is
 
 	function get_conductor_line (
 		line : in type_object_line_net)
-		return type_conductor_line;
+		return type_track_line;
 
 
 
@@ -266,7 +266,7 @@ package et_board_ops_conductors is
 
 	function get_conductor_line (
 		line : in type_object_line_floating)
-		return type_conductor_line;
+		return type_track_line;
 
 
 
@@ -428,7 +428,7 @@ package et_board_ops_conductors is
 	procedure delete_line_net ( -- CS: rename to ripup_line_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	-- CS: rework so that only a type_object_line_net is
@@ -440,7 +440,7 @@ package et_board_ops_conductors is
 	-- nothing happens:
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	-- CS: rework so that only a type_object_line_floating is

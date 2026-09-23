@@ -163,7 +163,7 @@ package body et_board_ops_conductors is
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -251,7 +251,7 @@ package body et_board_ops_conductors is
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name := et_net_names.no_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -323,7 +323,7 @@ package body et_board_ops_conductors is
 	--procedure add_line (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--net_cursor		: in pac_nets.cursor; -- reset_n
-		--line			: in type_conductor_line;
+		--line			: in type_track_line;
 		--log_threshold	: in type_log_level)
 	--is
 
@@ -383,7 +383,7 @@ package body et_board_ops_conductors is
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_conductor_line;
+		line : type_track_line;
 
 		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
@@ -485,7 +485,7 @@ package body et_board_ops_conductors is
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_conductor_line;
+		line : type_track_line;
 
 		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
@@ -582,7 +582,7 @@ package body et_board_ops_conductors is
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_conductor_line;
+		line : type_track_line;
 
 		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
@@ -676,7 +676,7 @@ package body et_board_ops_conductors is
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_conductor_line;
+		line : type_track_line;
 
 		use et_devices_electrical;
 		device_cursor : pac_devices_electrical.cursor;
@@ -773,7 +773,7 @@ package body et_board_ops_conductors is
 
 	function get_conductor_line (
 		line : in type_object_line_net)
-		return type_conductor_line
+		return type_track_line
 	is begin
 		return get_conductor_line (line.line_cursor);
 	end get_conductor_line;
@@ -795,7 +795,7 @@ package body et_board_ops_conductors is
 
 	function get_conductor_line (
 		line : in type_object_line_floating)
-		return type_conductor_line
+		return type_track_line
 	is begin
 		return get_conductor_line (line.line_cursor);
 	end get_conductor_line;
@@ -826,7 +826,7 @@ package body et_board_ops_conductors is
 			is
 				pragma unreferenced (net_name);
 
-				procedure query_line (l : in out type_conductor_line) is begin
+				procedure query_line (l : in out type_track_line) is begin
 					modify_status (l, operation);
 				end query_line;
 
@@ -878,7 +878,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 
-			procedure query_line (l : in out type_conductor_line) is begin
+			procedure query_line (l : in out type_track_line) is begin
 				modify_status (l, operation);
 			end query_line;
 
@@ -942,7 +942,7 @@ package body et_board_ops_conductors is
 				use pac_conductor_lines;
 				lc : constant pac_conductor_lines.cursor := net.route.lines.first;
 
-				procedure query_line (line : in type_conductor_line) is begin
+				procedure query_line (line : in type_track_line) is begin
 					if line.layer = layer then
 						if in_catch_zone (
 							zone	=> catch_zone,
@@ -1014,7 +1014,7 @@ package body et_board_ops_conductors is
 
 			procedure query_line (c : in pac_conductor_lines.cursor) is
 				use pac_conductor_lines;
-				line : type_conductor_line renames element (c);
+				line : type_track_line renames element (c);
 			begin
 				if line.layer = layer then
 					if in_catch_zone (
@@ -1083,7 +1083,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_line (
-				line : in out type_conductor_line)
+				line : in out type_track_line)
 			is begin
 				modify_status (line, operation);
 			end query_line;
@@ -1187,7 +1187,7 @@ package body et_board_ops_conductors is
 			use pac_conductor_lines;
 
 			procedure query_line (
-				line : in out type_conductor_line)
+				line : in out type_track_line)
 			is begin
 				if line.layer = layer then
 					if in_catch_zone (
@@ -1293,7 +1293,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_line (
-				line : in out type_conductor_line)
+				line : in out type_track_line)
 			is
 			begin
 				reset_status (line);
@@ -1512,7 +1512,7 @@ package body et_board_ops_conductors is
 			conductors : type_conductors_floating renames module.board.conductors_floating;
 
 			procedure query_line (l : in pac_conductor_lines.cursor) is
-				line : type_conductor_line renames element (l);
+				line : type_track_line renames element (l);
 			begin
 				case flag is
 					when PROPOSED =>
@@ -1783,7 +1783,7 @@ package body et_board_ops_conductors is
 				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
-				procedure move (line : in out type_conductor_line) is begin
+				procedure move (line : in out type_track_line) is begin
 					attack (line, point_of_attack, destination);
 				end move;
 
@@ -1856,7 +1856,7 @@ package body et_board_ops_conductors is
 
 			use pac_conductor_lines;
 
-			procedure move (line : in out type_conductor_line) is begin
+			procedure move (line : in out type_track_line) is begin
 				attack (line, point_of_attack, destination);
 				log (text => (to_string (line, true)), level => log_threshold + 1);
 			end move;
@@ -1905,7 +1905,7 @@ package body et_board_ops_conductors is
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1992,7 +1992,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -5742,7 +5742,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_line (
-				line : in out type_conductor_line)
+				line : in out type_track_line)
 			is begin
 				if in_layer_and_in_area (line, layer, area) then
 					log (text => to_string (line),
@@ -5946,7 +5946,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_line (
-				line : in type_conductor_line)
+				line : in type_track_line)
 			is begin
 				-- Test which end of the candidate
 				-- line is selected:
@@ -6193,7 +6193,7 @@ package body et_board_ops_conductors is
 
 
 					procedure query_line (
-						line : in type_conductor_line)
+						line : in type_track_line)
 					is begin
 						if is_selected_2 (line) then
 							-- CS: log the line
@@ -6276,7 +6276,7 @@ package body et_board_ops_conductors is
 
 
 				procedure query_line (
-					line : in type_conductor_line)
+					line : in type_track_line)
 				is begin
 					if is_selected_2 (line) then
 						-- CS: log the line

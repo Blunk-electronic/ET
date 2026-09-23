@@ -186,7 +186,7 @@ procedure draw_conductors is
 
 
 	procedure draw_line (
-		line			: in type_conductor_line;
+		line			: in type_track_line;
 		force_highlight	: in boolean := false)
 	is
 
@@ -1300,7 +1300,7 @@ procedure draw_conductors is
 				zone_hatched_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 				-- CS: cutout_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
-				procedure query_line (line : in type_conductor_line) is begin
+				procedure query_line (line : in type_track_line) is begin
 					draw_line (line, draw_all_highlighted);
 				end query_line;
 
@@ -1376,7 +1376,7 @@ procedure draw_conductors is
 			text_cursor			: pac_conductor_texts_board.cursor	:= objects.texts.first;
 
 
-			procedure query_line (line : in type_conductor_line) is begin
+			procedure query_line (line : in type_track_line) is begin
 				draw_line (line);
 			end query_line;
 

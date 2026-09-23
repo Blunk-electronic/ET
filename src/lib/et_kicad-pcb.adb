@@ -4928,7 +4928,7 @@ package body et_kicad.pcb is
 					route : type_net_route; -- to be returned
 					use pac_segments;
 					segment_cursor : pac_segments.cursor := board.segments.first;
-					line : type_conductor_line; -- an ET segment
+					line : type_track_line; -- an ET segment
 
 					use pac_vias; -- kicad vias !
 					via_cursor : pac_vias.cursor := board.vias.first;
