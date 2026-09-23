@@ -800,7 +800,7 @@ package body et_kicad_to_native is
 					end move_line;
 
 
-					procedure move_arc (arc : in out type_conductor_arc) is begin
+					procedure move_arc (arc : in out type_track_arc) is begin
 						log (text => board_track & "arc", level => log_threshold + 4);
 						log_indentation_up;
 
@@ -1961,7 +1961,7 @@ package body et_kicad_to_native is
 				end move_line;
 
 
-				procedure move_arc (arc : in out type_conductor_arc) is begin
+				procedure move_arc (arc : in out type_track_arc) is begin
 					log (text => board_copper & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 

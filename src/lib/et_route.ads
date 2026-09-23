@@ -91,7 +91,7 @@ package et_route is
 
 	procedure add_arc (
 		route	: in out type_net_route;
-		arc		: in type_conductor_arc);
+		arc		: in type_track_arc);
 
 
 

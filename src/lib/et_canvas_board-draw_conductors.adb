@@ -230,7 +230,7 @@ procedure draw_conductors is
 
 
 	procedure draw_arc (
-		arc			: in type_conductor_arc;
+		arc			: in type_track_arc;
 		force_highlight	: in boolean := false)
 	is
 
@@ -1305,7 +1305,7 @@ procedure draw_conductors is
 				end query_line;
 
 
-				procedure query_arc (arc : in type_conductor_arc) is begin
+				procedure query_arc (arc : in type_track_arc) is begin
 					draw_arc (arc, draw_all_highlighted);
 				end query_arc;
 
@@ -1380,7 +1380,7 @@ procedure draw_conductors is
 				draw_line (line);
 			end query_line;
 
-			procedure query_arc (arc : in type_conductor_arc) is begin
+			procedure query_arc (arc : in type_track_arc) is begin
 				draw_arc (arc);
 			end query_arc;
 

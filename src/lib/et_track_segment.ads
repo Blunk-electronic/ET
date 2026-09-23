@@ -132,27 +132,27 @@ package et_track_segment is
 
 
 
-	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
+	type type_track_arc is new et_conductor_segment.type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
 
 	-- Resets A, B, center, width and layer to default:
 	procedure reset_arc (
-		arc : in out type_conductor_arc);
+		arc : in out type_track_arc);
 
 
 
 	-- Returns the signal layer of the given arc:
 	function get_layer (
-		arc : in type_conductor_arc)
+		arc : in type_track_arc)
 		return type_signal_layer;
 
 
 	-- Returns the start/end point, center and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (
-		arc		: in type_conductor_arc;
+		arc		: in type_track_arc;
 		width	: in boolean)
 		return string;
 
@@ -161,7 +161,7 @@ package et_track_segment is
 	-- Returns true if the given arc is in the
 	-- given signal layer and in the given area:
 	function in_layer_and_in_area (
-		arc		: in type_conductor_arc;
+		arc		: in type_track_arc;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean;

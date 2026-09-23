@@ -61,7 +61,7 @@ package body et_module_read_freetracks is
 	use pac_geometry_2;
 
 	track_line : type_track_line;
-	track_arc : type_conductor_arc;
+	track_arc : type_track_arc;
 	track_circle : type_conductor_circle;
 
 

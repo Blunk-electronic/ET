@@ -56,7 +56,7 @@ package body et_route is
 
 	procedure add_arc (
 		route	: in out type_net_route;
-		arc		: in type_conductor_arc)
+		arc		: in type_track_arc)
 	is begin
 		route.arcs.append (arc);
 	end add_arc;
@@ -91,7 +91,7 @@ package body et_route is
 		-- to a polygon and appends it to the result:
 		procedure query_arc (a : in pac_conductor_arcs.cursor) is
 			use pac_conductor_arcs;
-			arc : type_conductor_arc renames element (a);
+			arc : type_track_arc renames element (a);
 		begin
 			if arc.layer = layer then
 				-- log (text => "arc: " & to_string (arc), level => log_threshold + 2);

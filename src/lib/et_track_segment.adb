@@ -155,7 +155,7 @@ package body et_track_segment is
 
 
 	procedure reset_arc (
-		arc : in out type_conductor_arc)
+		arc : in out type_track_arc)
 	is
 		use et_directions;
 		use et_design_rules_board;
@@ -172,18 +172,18 @@ package body et_track_segment is
 
 
 	function get_layer (
-		arc : in type_conductor_arc)
+		arc : in type_track_arc)
 		return type_signal_layer
 	is (arc.layer);
 
 
 
 	function to_string (
-		arc		: in type_conductor_arc;
+		arc		: in type_track_arc;
 		width	: in boolean)
 		return string
 	is
-		a : type_conductor_arc renames arc;
+		a : type_track_arc renames arc;
 
 		text : constant string := to_string (pac_geometry_2.type_arc (a))
 				& "/ ly " & to_string (a.layer);
@@ -199,7 +199,7 @@ package body et_track_segment is
 
 
 	function in_layer_and_in_area (
-		arc		: in type_conductor_arc;
+		arc		: in type_track_arc;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean

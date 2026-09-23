@@ -96,7 +96,7 @@ package body et_module_write_freetracks is
 		procedure write_arc (
 			c : in pac_conductor_arcs.cursor)
 		is
-			arc : type_conductor_arc renames element (c);
+			arc : type_track_arc renames element (c);
 		begin
 			section_mark (section_arc, HEADER);
 			write_arc (arc);

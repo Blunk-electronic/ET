@@ -2089,7 +2089,7 @@ package body et_board_ops_conductors is
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2220,7 +2220,7 @@ package body et_board_ops_conductors is
 			is
 				pragma unreferenced (net_name);
 
-				procedure query_arc (l : in out type_conductor_arc) is begin
+				procedure query_arc (l : in out type_track_arc) is begin
 					modify_status (l, operation);
 				end query_arc;
 
@@ -2274,7 +2274,7 @@ package body et_board_ops_conductors is
 		is
 			pragma unreferenced (module_name);
 
-			procedure query_arc (l : in out type_conductor_arc) is begin
+			procedure query_arc (l : in out type_track_arc) is begin
 				modify_status (l, operation);
 			end query_arc;
 
@@ -2328,7 +2328,7 @@ package body et_board_ops_conductors is
 			use pac_conductor_arcs;
 
 			procedure query_arc (
-				arc : in out type_conductor_arc)
+				arc : in out type_track_arc)
 			is begin
 				if arc.layer = layer then
 					if in_catch_zone (
@@ -2436,7 +2436,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_arc (
-				arc : in out type_conductor_arc)
+				arc : in out type_track_arc)
 			is
 			begin
 				reset_status (arc);
@@ -2643,7 +2643,7 @@ package body et_board_ops_conductors is
 			conductors : type_conductors_floating renames module.board.conductors_floating;
 
 			procedure query_arc (l : in pac_conductor_arcs.cursor) is
-				arc : type_conductor_arc renames element (l);
+				arc : type_track_arc renames element (l);
 			begin
 				case flag is
 					when PROPOSED =>
@@ -2723,7 +2723,7 @@ package body et_board_ops_conductors is
 				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
-				procedure move (arc : in out type_conductor_arc) is begin
+				procedure move (arc : in out type_track_arc) is begin
 					attack (arc, point_of_attack, destination);
 				end move;
 
@@ -2794,7 +2794,7 @@ package body et_board_ops_conductors is
 
 			use pac_conductor_arcs;
 
-			procedure move (arc : in out type_conductor_arc) is begin
+			procedure move (arc : in out type_track_arc) is begin
 				attack (arc, point_of_attack, destination);
 				log (text => (to_string (arc, true)), level => log_threshold + 1);
 			end move;
@@ -2842,7 +2842,7 @@ package body et_board_ops_conductors is
 	procedure delete_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2926,7 +2926,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -5754,7 +5754,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_arc (
-				arc : in out type_conductor_arc)
+				arc : in out type_track_arc)
 			is begin
 				if in_layer_and_in_area (arc, layer, area) then
 					log (text => to_string (arc),
@@ -5967,7 +5967,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_arc (
-				arc : in type_conductor_arc)
+				arc : in type_track_arc)
 			is begin
 				-- CS: Test which end of the candidate
 				-- arc is selected:
@@ -6207,7 +6207,7 @@ package body et_board_ops_conductors is
 
 
 					procedure query_arc (
-						arc : in type_conductor_arc)
+						arc : in type_track_arc)
 					is begin
 						if is_selected (arc) then
 							-- CS: log the arc
@@ -6290,7 +6290,7 @@ package body et_board_ops_conductors is
 
 
 				procedure query_arc (
-					arc : in type_conductor_arc)
+					arc : in type_track_arc)
 				is begin
 					if is_selected_2 (arc) then
 						-- CS: log the arc

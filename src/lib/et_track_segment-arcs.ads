@@ -61,7 +61,7 @@ package et_track_segment.arcs is
 	use pac_geometry_2;
 
 
-	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
+	package pac_conductor_arcs is new doubly_linked_lists (type_track_arc);
 	use pac_conductor_arcs;
 
 

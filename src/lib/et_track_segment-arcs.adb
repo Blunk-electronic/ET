@@ -101,7 +101,7 @@ package body et_track_segment.arcs is
 		result : pac_conductor_arcs.list;
 
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is
-			arc : type_conductor_arc renames element (c);
+			arc : type_track_arc renames element (c);
 		begin
 			if arc.layer = layer then
 				result.append (arc);

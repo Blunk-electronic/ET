@@ -458,7 +458,7 @@ package et_board_ops_conductors is
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -612,7 +612,7 @@ package et_board_ops_conductors is
 	procedure delete_arc_net ( -- CS: rename to ripup_arc_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	-- CS: rework so that only a type_object_arc_net is
@@ -624,7 +624,7 @@ package et_board_ops_conductors is
 	-- nothing happens:
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		arc				: in type_conductor_arc;
+		arc				: in type_track_arc;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	-- CS: rework so that only a type_object_arc_floating is
