@@ -56,7 +56,6 @@ with ada.containers;			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_design_rules_board;		use et_design_rules_board;
 with et_logging;				use et_logging;
@@ -161,13 +160,6 @@ package et_conductor_segment is
 		return pac_polygon_list.list;
 
 
-	-- Logs the properties of the given line:
-	procedure line_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_lines.cursor;
-		log_threshold	: in type_log_level);
-
-
 
 
 
@@ -251,11 +243,6 @@ package et_conductor_segment is
 		return pac_polygon_list.list;
 
 
-	-- Logs the properties of the given arc:
-	procedure arc_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold	: in type_log_level);
 
 
 
@@ -329,14 +316,6 @@ package et_conductor_segment is
 		circles		: in pac_conductor_circles.list;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
-
-
-	-- Logs the properties of the given circle:
-	procedure circle_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_circles.cursor;
-		log_threshold	: in type_log_level);
-
 
 
 end et_conductor_segment;

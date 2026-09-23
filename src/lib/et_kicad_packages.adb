@@ -1773,11 +1773,9 @@ package body et_kicad_packages is
 
 					when TOP_COPPER =>
 						copper.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
-						-- CS arc_conductor_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER =>
 						copper.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
-						-- CS arc_conductor_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_STOP =>
@@ -1847,13 +1845,10 @@ package body et_kicad_packages is
 						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							width => circle.width));
 
-						-- CS circle_conductor_properties (TOP, copper.top.circles.last, log_threshold + 1);
-
 					when BOT_COPPER =>
 						copper.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							width => circle.width));
 
-						-- CS circle_conductor_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 
 
 					when TOP_STOP =>
@@ -1911,11 +1906,9 @@ package body et_kicad_packages is
 
 					when TOP_COPPER =>
 						copper.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
-						-- CS line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER =>
 						copper.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
-						-- CS line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_STOP =>

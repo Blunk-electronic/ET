@@ -3716,11 +3716,9 @@ package body et_kicad.pcb is
 
 					when TOP_COPPER =>
 						package_copper.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						-- CS arc_conductor_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER =>
 						package_copper.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						-- CS arc_conductor_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_STOP =>
@@ -3794,13 +3792,10 @@ package body et_kicad.pcb is
 						package_copper.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width));
 
-						-- CS circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
-
 					when BOT_COPPER =>
 						package_copper.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width));
 
-						-- CS circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 
 
 					when TOP_STOP =>
@@ -3871,13 +3866,10 @@ package body et_kicad.pcb is
 						package_copper.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						-- CS line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
-
 					when BOT_COPPER =>
 						package_copper.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						-- CS line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_STOP =>
