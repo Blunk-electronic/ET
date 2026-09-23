@@ -681,7 +681,7 @@ is
 
 
 				procedure query_circle (c : in pac_conductor_circles.cursor) is
-					circle : type_conductor_circle renames element (c);
+					circle : type_track_circle renames element (c);
 				begin
 					b := get_bounding_box (circle, circle.width);
 					merge_areas (bbox_new, b);

@@ -62,7 +62,7 @@ package body et_module_read_freetracks is
 
 	track_line : type_track_line;
 	track_arc : type_track_arc;
-	track_circle : type_conductor_circle;
+	track_circle : type_track_circle;
 
 
 

@@ -225,18 +225,18 @@ package body et_track_segment is
 -- CIRCLES:
 
 	function get_layer (
-		circle : in type_conductor_circle)
+		circle : in type_track_circle)
 		return type_signal_layer
 	is (circle.layer);
 
 
 
 	function to_string (
-		circle	: in type_conductor_circle;
+		circle	: in type_track_circle;
 		width	: in boolean)
 		return string
 	is
-		c : type_conductor_circle renames circle;
+		c : type_track_circle renames circle;
 
 		text : constant string := to_string (pac_geometry_2.type_circle (c))
 				& "/ ly " & to_string (c.layer);
@@ -252,7 +252,7 @@ package body et_track_segment is
 
 
 	function in_layer_and_in_area (
-		circle	: in type_conductor_circle;
+		circle	: in type_track_circle;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean

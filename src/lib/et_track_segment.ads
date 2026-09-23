@@ -173,21 +173,21 @@ package et_track_segment is
 
 -- CIRCLES:
 
-	type type_conductor_circle is new et_conductor_segment.type_conductor_circle with record
+	type type_track_circle is new et_conductor_segment.type_conductor_circle with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
 
 	-- Returns the signal layer of the given circle:
 	function get_layer (
-		circle : in type_conductor_circle)
+		circle : in type_track_circle)
 		return type_signal_layer;
 
 
 	-- Returns the center, radius and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (
-		circle	: in type_conductor_circle;
+		circle	: in type_track_circle;
 		width	: in boolean)
 		return string;
 
@@ -195,7 +195,7 @@ package et_track_segment is
 	-- Returns true if the given circle is in the
 	-- given signal layer and in the given area:
 	function in_layer_and_in_area (
-		circle	: in type_conductor_circle;
+		circle	: in type_track_circle;
 		layer	: in type_signal_layer;
 		area	: in type_area)
 		return boolean;

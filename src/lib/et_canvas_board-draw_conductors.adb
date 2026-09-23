@@ -268,7 +268,7 @@ procedure draw_conductors is
 
 
 	procedure draw_circle (
-		circle			: in type_conductor_circle;
+		circle			: in type_track_circle;
 		force_highlight	: in boolean := false)
 	is
 
@@ -1384,7 +1384,7 @@ procedure draw_conductors is
 				draw_arc (arc);
 			end query_arc;
 
-			procedure query_circle (circle : in type_conductor_circle) is begin
+			procedure query_circle (circle : in type_track_circle) is begin
 				draw_circle (circle);
 			end query_circle;
 

@@ -61,7 +61,7 @@ package et_track_segment.circles is
 	use pac_geometry_2;
 
 
-	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
+	package pac_conductor_circles is new doubly_linked_lists (type_track_circle);
 	use pac_conductor_circles;
 
 

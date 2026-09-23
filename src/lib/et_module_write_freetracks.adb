@@ -112,7 +112,7 @@ package body et_module_write_freetracks is
 		procedure write_circle (
 			c : in pac_conductor_circles.cursor)
 		is
-			circle : type_conductor_circle renames element (c);
+			circle : type_track_circle renames element (c);
 		begin
 			section_mark (section_circle, HEADER);
 			write_circle (circle);

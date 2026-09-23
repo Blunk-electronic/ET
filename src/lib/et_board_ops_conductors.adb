@@ -5766,7 +5766,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_circle (
-				circle : in out type_conductor_circle)
+				circle : in out type_track_circle)
 			is begin
 				if in_layer_and_in_area (circle, layer, area) then
 					log (text => to_string (circle),
@@ -5989,7 +5989,7 @@ package body et_board_ops_conductors is
 
 
 			procedure query_circle (
-				circle : in type_conductor_circle)
+				circle : in type_track_circle)
 			is begin
 				null; -- CS
 			end query_circle;
@@ -6304,7 +6304,7 @@ package body et_board_ops_conductors is
 
 
 				procedure query_circle (
-					circle : in type_conductor_circle)
+					circle : in type_track_circle)
 				is begin
 					null; -- CS
 				end query_circle;

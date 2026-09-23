@@ -1975,7 +1975,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 
-				procedure move_circle (circle : in out type_conductor_circle) is
+				procedure move_circle (circle : in out type_track_circle) is
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
