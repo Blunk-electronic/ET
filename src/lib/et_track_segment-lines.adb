@@ -38,8 +38,6 @@
 --   to do:
 
 -- with ada.text_io;			use ada.text_io;
-with et_design_rules_board;
-with et_directions;
 
 
 package body et_track_segment.lines is

@@ -35,7 +35,7 @@
 --
 --
 -- DESCRIPTION:
--- 
+--
 -- This package is about basic objects that are conductive
 -- such as lines, arcs and circles.
 --

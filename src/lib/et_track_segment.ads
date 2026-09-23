@@ -53,13 +53,9 @@
 --
 --
 
-with ada.containers;			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
-with et_conductor_segment;
+with et_conductor_segment;		use et_conductor_segment;
 
 
 package et_track_segment is
@@ -71,7 +67,7 @@ package et_track_segment is
 	-- layers can be placed in various layers.
 	-- This requires a layer id for the object.
 
-	type type_track_line is new et_conductor_segment.type_conductor_line with record
+	type type_track_line is new type_conductor_line with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
@@ -132,7 +128,7 @@ package et_track_segment is
 
 
 
-	type type_track_arc is new et_conductor_segment.type_conductor_arc with record
+	type type_track_arc is new type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
@@ -173,7 +169,7 @@ package et_track_segment is
 
 -- CIRCLES:
 
-	type type_track_circle is new et_conductor_segment.type_conductor_circle with record
+	type type_track_circle is new type_conductor_circle with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
