@@ -6774,10 +6774,232 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+
+			procedure query_nets is
+				use et_nets;
+				use pac_nets;
+				net_cursor : pac_nets.cursor := module.nets.first;
+
+
+				-- This procedure moves segments of nets:
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in out type_net)
+				is
+					use et_route;
+					route : type_net_route renames net.route;
+
+					use pac_conductor_lines;
+					line_cursor : pac_conductor_lines.cursor :=
+						route.lines.first;
+
+					use pac_conductor_arcs;
+					arc_cursor : pac_conductor_arcs.cursor :=
+						route.arcs.first;
+
+
+					procedure query_line (
+						line : in out type_track_line)
+					is begin
+						log (text => "line " & to_string (line),
+							level => log_threshold + 3);
+
+						-- If the A-end of the line is selected,
+						-- then set it as moving:
+						if is_A_selected (line) then
+							set_A_moving (line);
+						end if;
+
+						-- If the B-end of the line is selected,
+						-- then set it as moving:
+						if is_B_selected (line) then
+							set_B_moving (line);
+						end if;
+					end query_line;
+
+
+					procedure query_arc (
+						arc : in out type_track_arc)
+					is begin
+						null;
+						-- CS: Set arc end (A/B) moving ?
+					end query_arc;
+
+
+				begin
+					log (text => "net " & to_string (net_name),
+						level => log_threshold + 2);
+
+					log_indentation_up;
+
+					-- Iterate through the line track segments:
+					while has_element (line_cursor) loop
+						route.lines.update_element (line_cursor, query_line'access);
+						next (line_cursor);
+					end loop;
+
+					-- Iterate through the arc track segments:
+					while has_element (arc_cursor) loop
+						route.arcs.update_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+
+					-- NOTE: Nets do not have circular conductor segments.
+
+					-- CS: fill zone segments
+
+					log_indentation_down;
+				end query_net;
+
+
+			begin
+				log (text => "segments of nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the nets:
+				while has_element (net_cursor) loop
+					module.nets.update_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_nets;
+
+
+
+			-- This procedure moves segments of freetracks:
+			procedure query_freetracks is
+				conductors : type_conductors_floating renames
+					module.board.conductors_floating;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor :=
+					conductors.lines.first;
+
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor :=
+					conductors.arcs.first;
+
+				use pac_conductor_circles;
+				circle_cursor : pac_conductor_circles.cursor :=
+					conductors.circles.first;
+
+
+				procedure query_line (
+					line : in out type_track_line)
+				is begin
+					log (text => "line " & to_string (line),
+						level => log_threshold + 2);
+
+					-- If the A-end of the line is selected,
+					-- then set it as moving:
+					if is_A_selected (line) then
+						set_A_moving (line);
+					end if;
+
+					-- If the B-end of the line is selected,
+					-- then set it as moving:
+					if is_B_selected (line) then
+						set_B_moving (line);
+					end if;
+				end query_line;
+
+
+				procedure query_arc (
+					arc : in out type_track_arc)
+				is begin
+					null;
+					-- CS: Set arc end (A/B) moving ?
+				end query_arc;
+
+
+				procedure query_circle (
+					circle : in out type_track_circle)
+				is begin
+					null; -- CS
+				end query_circle;
+
+
+			begin
+				log (text => "freetracks", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate though the lines:
+				while has_element (line_cursor) loop
+					conductors.lines.update_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+				-- Iterate though the arcs:
+				while has_element (arc_cursor) loop
+					conductors.arcs.update_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+
+				-- Iterate though the circles:
+				while has_element (circle_cursor) loop
+					conductors.circles.update_element (circle_cursor, query_circle'access);
+					next (circle_cursor);
+				end loop;
+
+				-- CS fill zone segments
+
+				log_indentation_down;
+			end query_freetracks;
+
+
+			-- This procedure moves texts:
+			procedure query_texts is
+				use pac_conductor_texts_board;
+			begin
+				log (text => "texts", level => log_threshold + 1);
+				log_indentation_up;
+				-- CS
+				log_indentation_down;
+			end query_texts;
+
+
+			-- This procedure moves text placeholders:
+			procedure query_placeholders is
+				use pac_placeholders_conductor;
+			begin
+				log (text => "text placeholders", level => log_threshold + 1);
+				log_indentation_up;
+				-- CS
+				log_indentation_down;
+			end query_placeholders;
+
+
+		begin
+			query_nets;
+			query_freetracks;
+			query_texts;
+			query_placeholders;
+		end query_module;
+
+
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " set selected conductors as moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
 	end set_selected_conductors_as_moving;
+
+
+
+
 
 
 
