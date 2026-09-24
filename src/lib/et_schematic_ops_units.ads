@@ -662,6 +662,8 @@ package et_schematic_ops_units is
 	-- set_selected_units_as_moving and add a
 	-- parameter that indicates whether is is a
 	-- "set moving" or "set not moving" action.
+	-- CS: See procedure set_selected_conductors_as_moving in
+	-- et_board_ops_conductors for example.
 	procedure set_selected_units_as_not_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
