@@ -1051,21 +1051,15 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	-- Sets the "moving" flag of all selected conductor objects.
+	-- Sets the "moving" flag of all selected conductor objects
+	-- if "invert" is false (default).
+	-- Clears the "moving" flag of all selected conductor objects
+	-- if "invert" is true.
 	-- Start and end points (A/B) of lines (CS: arcs ?) are set
 	-- separately depending which end is selected:
 	procedure set_selected_conductors_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-
-
-	-- Clears the "moving" flag of all selected conductor objects.
-	-- CS: Merge this procedure with procedure
-	-- set_selected_conductors_as_moving and add a
-	-- parameter that indicates whether is is a
-	-- "set moving" or "set not moving" action.
-	procedure set_selected_conductors_as_not_moving (
-		module_cursor	: in pac_generic_modules.cursor;
+		invert			: in boolean := false;
 		log_threshold	: in type_log_level);
 
 

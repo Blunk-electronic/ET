@@ -901,8 +901,9 @@ package body et_board_ops_groups is
 			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
 
-			set_selected_conductors_as_moving (module_cursor,
-				log_threshold + 2);
+			set_selected_conductors_as_moving (
+				module_cursor	=> module_cursor,
+				log_threshold	=> log_threshold + 2);
 
 			log_indentation_down;
 		end set_conductors;
@@ -987,8 +988,10 @@ package body et_board_ops_groups is
 			log (text => "conductors", level => log_threshold + 1);
 			log_indentation_up;
 
-			set_selected_conductors_as_not_moving (module_cursor,
-				log_threshold + 2);
+			set_selected_conductors_as_moving (
+				module_cursor	=> module_cursor,
+				invert			=> true,
+				log_threshold	=> log_threshold + 2);
 
 			log_indentation_down;
 		end set_conductors;

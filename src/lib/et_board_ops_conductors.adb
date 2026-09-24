@@ -6772,6 +6772,7 @@ package body et_board_ops_conductors is
 
 	procedure set_selected_conductors_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
+		invert			: in boolean := false;
 		log_threshold	: in type_log_level)
 	is
 
@@ -6788,7 +6789,8 @@ package body et_board_ops_conductors is
 				net_cursor : pac_nets.cursor := module.nets.first;
 
 
-				-- This procedure moves segments of nets:
+				-- This procedure sets the segments of nets
+				-- as moving:
 				procedure query_net (
 					net_name	: in type_net_name;
 					net			: in out type_net)
@@ -6811,16 +6813,30 @@ package body et_board_ops_conductors is
 						log (text => "line " & to_string (line),
 							level => log_threshold + 3);
 
-						-- If the A-end of the line is selected,
-						-- then set it as moving:
-						if is_A_selected (line) then
-							set_A_moving (line);
-						end if;
+						if not invert then -- default
+							-- If the A-end of the line is selected,
+							-- then set it as moving:
+							if is_A_selected (line) then
+								set_A_moving (line);
+							end if;
 
-						-- If the B-end of the line is selected,
-						-- then set it as moving:
-						if is_B_selected (line) then
-							set_B_moving (line);
+							-- If the B-end of the line is selected,
+							-- then set it as moving:
+							if is_B_selected (line) then
+								set_B_moving (line);
+							end if;
+						else
+							-- If the A-end of the line is selected,
+							-- then set it as NOT moving:
+							if is_A_selected (line) then
+								clear_A_moving (line);
+							end if;
+
+							-- If the B-end of the line is selected,
+							-- then set it as NOT moving:
+							if is_B_selected (line) then
+								clear_B_moving (line);
+							end if;
 						end if;
 					end query_line;
 
@@ -6874,7 +6890,8 @@ package body et_board_ops_conductors is
 
 
 
-			-- This procedure moves segments of freetracks:
+			-- This procedure sets the segments of freetracks
+			-- as moving:
 			procedure query_freetracks is
 				conductors : type_conductors_floating renames
 					module.board.conductors_floating;
@@ -6898,16 +6915,30 @@ package body et_board_ops_conductors is
 					log (text => "line " & to_string (line),
 						level => log_threshold + 2);
 
-					-- If the A-end of the line is selected,
-					-- then set it as moving:
-					if is_A_selected (line) then
-						set_A_moving (line);
-					end if;
+					if not invert then -- default
+						-- If the A-end of the line is selected,
+						-- then set it as moving:
+						if is_A_selected (line) then
+							set_A_moving (line);
+						end if;
 
-					-- If the B-end of the line is selected,
-					-- then set it as moving:
-					if is_B_selected (line) then
-						set_B_moving (line);
+						-- If the B-end of the line is selected,
+						-- then set it as moving:
+						if is_B_selected (line) then
+							set_B_moving (line);
+						end if;
+					else
+						-- If the A-end of the line is selected,
+						-- then set it as NOT moving:
+						if is_A_selected (line) then
+							clear_A_moving (line);
+						end if;
+
+						-- If the B-end of the line is selected,
+						-- then set it as NOT moving:
+						if is_B_selected (line) then
+							clear_B_moving (line);
+						end if;
 					end if;
 				end query_line;
 
@@ -6955,7 +6986,7 @@ package body et_board_ops_conductors is
 			end query_freetracks;
 
 
-			-- This procedure moves texts:
+			-- This procedure sets the texts as moving:
 			procedure query_texts is
 				use pac_conductor_texts_board;
 			begin
@@ -6966,7 +6997,7 @@ package body et_board_ops_conductors is
 			end query_texts;
 
 
-			-- This procedure moves text placeholders:
+			-- This procedure sets the text placeholders as moving:
 			procedure query_placeholders is
 				use pac_placeholders_conductor;
 			begin
@@ -6986,9 +7017,15 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "module " & to_string (module_cursor)
-			& " set selected conductors as moving",
-			level => log_threshold);
+		if not invert then
+			log (text => "module " & to_string (module_cursor)
+				& " set selected conductors as moving",
+				level => log_threshold);
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " set selected conductors as NOT moving",
+				level => log_threshold);
+		end if;
 
 		log_indentation_up;
 
@@ -7001,17 +7038,6 @@ package body et_board_ops_conductors is
 
 
 
-
-
-
-	procedure set_selected_conductors_as_not_moving (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is
-	begin
-		null;
-		-- CS
-	end set_selected_conductors_as_not_moving;
 
 
 
