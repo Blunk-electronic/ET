@@ -6486,6 +6486,8 @@ package body et_board_ops_conductors is
 				use pac_nets;
 				net_cursor : pac_nets.cursor := module.nets.first;
 
+				object_line_net : type_object_line_net;
+
 
 				-- This procedure moves segments of nets:
 				procedure query_net (
@@ -6506,14 +6508,52 @@ package body et_board_ops_conductors is
 
 					procedure query_line (
 						line : in out type_track_line)
-					is begin
+					is
+						old_A : constant type_vector_model := get_A (line);
+						old_B : constant type_vector_model := get_B (line);
+
+						destination : type_vector_model;
+					begin
+						log (text => "line " & to_string (line),
+							level => log_threshold + 3);
+
+						log_indentation_up;
+
+						object_line_net := (net_cursor, line_cursor);
+
+						-- If the A-end of the line is selected,
+						-- then move the A-end only:
 						if is_A_selected (line) then
-							null; -- CS
+							destination := old_A + offset;
+
+							-- Move the line candidate:
+							move_line_net (
+								module_cursor		=> module_cursor,
+								line				=> object_line_net,
+								point_of_attack		=> get_A (line),
+								destination			=> destination,
+								commit_design		=> NO_COMMIT,
+								log_threshold		=> log_threshold + 4);
+
 						end if;
 
+						-- If the B-end of the line is selected,
+						-- then move the A-end only:
 						if is_B_selected (line) then
-							null; -- CS
+							destination := old_B + offset;
+
+							-- Move the line candidate:
+							move_line_net (
+								module_cursor		=> module_cursor,
+								line				=> object_line_net,
+								point_of_attack		=> get_B (line),
+								destination			=> destination,
+								commit_design		=> NO_COMMIT,
+								log_threshold		=> log_threshold + 4);
+
 						end if;
+
+						log_indentation_down;
 					end query_line;
 
 
@@ -6526,6 +6566,11 @@ package body et_board_ops_conductors is
 
 
 				begin
+					log (text => "net " & to_string (net_name),
+						level => log_threshold + 2);
+
+					log_indentation_up;
+
 					-- Iterate through the line track segments:
 					while has_element (line_cursor) loop
 						route.lines.update_element (line_cursor, query_line'access);
@@ -6541,6 +6586,8 @@ package body et_board_ops_conductors is
 					-- NOTE: Nets do not have circular conductor segments.
 
 					-- CS: fill zone segments
+
+					log_indentation_down;
 				end query_net;
 
 
@@ -6579,14 +6626,53 @@ package body et_board_ops_conductors is
 
 				procedure query_line (
 					line : in out type_track_line)
-				is begin
+				is
+					object_line_floating : constant type_object_line_floating :=
+						(line_cursor => line_cursor);
+
+					old_A : constant type_vector_model := get_A (line);
+					old_B : constant type_vector_model := get_B (line);
+
+					destination : type_vector_model;
+				begin
+					log (text => "line " & to_string (line),
+						level => log_threshold + 2);
+
+					log_indentation_up;
+
+					-- If the A-end of the line is selected,
+					-- then move the A-end only:
 					if is_A_selected (line) then
-						null; -- CS
+						destination := old_A + offset;
+
+						-- Move the line candidate:
+						move_line_floating (
+							module_cursor		=> module_cursor,
+							line				=> object_line_floating,
+							point_of_attack		=> get_A (line),
+							destination			=> destination,
+							commit_design		=> NO_COMMIT,
+							log_threshold		=> log_threshold + 4);
+
 					end if;
 
+					-- If the B-end of the line is selected,
+					-- then move the B-end only:
 					if is_B_selected (line) then
-						null; -- CS
+						destination := old_B + offset;
+
+						-- Move the line candidate:
+						move_line_floating (
+							module_cursor		=> module_cursor,
+							line				=> object_line_floating,
+							point_of_attack		=> get_B (line),
+							destination			=> destination,
+							commit_design		=> NO_COMMIT,
+							log_threshold		=> log_threshold + 4);
+
 					end if;
+
+					log_indentation_down;
 				end query_line;
 
 
@@ -6634,12 +6720,33 @@ package body et_board_ops_conductors is
 			end query_freetracks;
 
 
+			-- This procedure moves texts:
+			procedure query_texts is
+				use pac_conductor_texts_board;
+			begin
+				log (text => "texts", level => log_threshold + 1);
+				log_indentation_up;
+				-- CS
+				log_indentation_down;
+			end query_texts;
+
+
+			-- This procedure moves text placeholders:
+			procedure query_placeholders is
+				use pac_placeholders_conductor;
+			begin
+				log (text => "text placeholders", level => log_threshold + 1);
+				log_indentation_up;
+				-- CS
+				log_indentation_down;
+			end query_placeholders;
+
+
 		begin
 			query_nets;
 			query_freetracks;
-			-- CS query_texts;
-			-- CS query_placeholders;
-
+			query_texts;
+			query_placeholders;
 		end query_module;
 
 
