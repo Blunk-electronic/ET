@@ -2054,6 +2054,140 @@ package body et_board_ops_conductors is
 
 
 
+	procedure copy_line_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_net;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		use et_nets;
+		use et_nets.pac_nets;
+
+		net_name : constant type_net_name := get_net_name (line);
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in out type_net)
+			is
+				pragma unreferenced (net_name);
+				--use pac_conductor_lines;
+			begin
+				null;
+				-- CS
+			end query_net;
+
+
+		begin
+			module.nets.update_element (line.net_cursor, query_net'access);
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (net_name)
+			& " copy track segment", -- CS & to_string (line), -- log linewidth
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end copy_line_net;
+
+
+
+
+
+
+
+
+	procedure copy_line_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_floating;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			conductors : type_conductors_floating renames
+				module.board.conductors_floating;
+
+		begin
+			-- conductors.update_element (line.segment_cursor, query_net'access);
+			null;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" delete freetrack segment", -- CS & to_string (line, true), -- log linewidth
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		log_indentation_down;
+	end copy_line_floating;
+
+
+
+
+
+
+
+
+
 -- ARCS:
 
 
@@ -7056,6 +7190,22 @@ package body et_board_ops_conductors is
 						log (text => "line " & to_string (line),
 							level => log_threshold + 3);
 
+						if is_selected_2 (line) then
+							-- We have a selected track segment.
+							-- The search must be aborted by setting
+							-- this flag:
+							segment_found := true;
+
+							-- Deselect the original segment.
+							-- This has the important effect, that the
+							-- same segment is not found over and over
+							-- again (which would cause a forever-loop):
+							clear_selected_2 (line);
+
+							-- Backup the cursor of the net
+							-- and the line segment itself:
+							object_line_net := (net_cursor, line_cursor);
+						end if;
 					end query_line;
 
 
@@ -7136,6 +7286,21 @@ package body et_board_ops_conductors is
 					log (text => "line " & to_string (line),
 						level => log_threshold + 2);
 
+					if is_selected_2 (line) then
+						-- We have a selected track segment.
+						-- The search must be aborted by setting
+						-- this flag:
+						segment_found := true;
+
+						-- Deselect the original segment.
+						-- This has the important effect, that the
+						-- same segment is not found over and over
+						-- again (which would cause a forever-loop):
+						clear_selected_2 (line);
+
+						-- Backup the cursor line segment:
+						object_line_floating := (line_cursor => line_cursor);
+					end if;
 				end query_line;
 
 
@@ -7240,11 +7405,49 @@ package body et_board_ops_conductors is
 		-- CS: log the number of segments copied
 
 
+			-- If a conductor line segment of a track has
+			-- been found, then copy the segment:
+			if has_elements (object_line_net) then
+
+				copy_line_net (module_cursor, object_line_net,
+					offset, NO_COMMIT, log_threshold + 1);
+
+				reset_object (object_line_net);
+			end if;
+
+
+			-- If a conductor arc segment of a track has
+			-- been found, then copy the segment:
+			if has_elements (object_arc_net) then
+				-- CS
+				reset_object (object_arc_net);
+			end if;
+
+
+			-- If a conductor line segment of a freetrack has
+			-- been found, then copy the segment:
+			if has_elements (object_line_floating) then
+
+				copy_line_floating (module_cursor, object_line_floating,
+					offset, NO_COMMIT, log_threshold + 1);
+
+				reset_object (object_line_floating);
+			end if;
+
+
+			-- If a conductor arc segment of a freetrack has
+			-- been found, then rip up the segment:
+			if has_elements (object_arc_floating) then
+				-- CS
+				reset_object (object_arc_floating);
+			end if;
+
+
 			-- Restart the search for a selected segment:
 			segment_found := false;
 
-			-- generic_modules.update_element (
-			-- 	module_cursor, query_module'access);
+			generic_modules.update_element (
+				module_cursor, query_module'access);
 		end loop;
 
 

@@ -1069,16 +1069,21 @@ package et_geometry_2a is
 
 
 
+	-- Tests if the general "selected" flag
+	-- of the line is set:
 	function is_selected (
 		line : in type_line)
 		return boolean;
 
+	-- Sets the general "selected" flag
+	-- of the line:
 	procedure set_selected (
 		line : in out type_line);
 
+	-- Clears the general "selected" flag
+	-- of the line:
 	procedure clear_selected (
 		line : in out type_line);
-
 
 
 
@@ -1097,7 +1102,7 @@ package et_geometry_2a is
 
 
 	-- Returns true if the given line is selected.
-	-- If either the A or B end or the whole line
+	-- If either the A or B end or the whole line (in general)
 	-- is set as selected:
 	function is_selected_2 (
 		line : in type_line)
@@ -1116,6 +1121,14 @@ package et_geometry_2a is
 
 	procedure clear_B_selected (
 		line	: in out type_line);
+
+
+	-- Clears the general "selected" flag
+	-- and the "selected" flags of the A and B
+	-- end of the line:
+	procedure clear_selected_2 (
+		line : in out type_line);
+
 
 
 	function is_proposed (
@@ -1179,6 +1192,13 @@ package et_geometry_2a is
 
 	procedure clear_B_moving (
 		line	: in out type_line);
+
+
+	-- Clears the general "moving" flag
+	-- and the "moving" flags of the A and B
+	-- end of the line:
+	procedure clear_moving_2 (
+		line : in out type_line);
 
 
 	-- Sets the "moving-flag" of the

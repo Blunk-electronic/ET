@@ -2346,6 +2346,7 @@ package body et_geometry_2a is
 
 
 
+
 	function is_A_selected (
 		line : in type_line)
 		return boolean
@@ -2398,6 +2399,15 @@ package body et_geometry_2a is
 	is begin
 		clear_B_selected (line.status_AB);
 	end clear_B_selected;
+
+
+	procedure clear_selected_2 (
+		line : in out type_line)
+	is begin
+		clear_selected (line.status);
+		clear_A_selected (line.status_AB);
+		clear_B_selected (line.status_AB);
+	end clear_selected_2;
 
 
 
@@ -2500,6 +2510,17 @@ package body et_geometry_2a is
 	is begin
 		clear_B_moving (line.status_AB);
 	end clear_B_moving;
+
+
+
+
+	procedure clear_moving_2 (
+		line : in out type_line)
+	is begin
+		clear_moving (line.status);
+		clear_A_moving (line.status_AB);
+		clear_B_moving (line.status_AB);
+	end clear_moving_2;
 
 
 

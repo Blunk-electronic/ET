@@ -450,6 +450,29 @@ package et_board_ops_conductors is
 
 
 
+	-- Copies a line of a net by the given x/y offset:
+	procedure copy_line_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_net;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Copies a line of a freetrack by the given x/y offset:
+	procedure copy_line_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_floating;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
+
+
+
+
 -- ARCS:
 
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.

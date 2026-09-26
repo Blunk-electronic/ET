@@ -2782,9 +2782,7 @@ package body et_schematic_ops_nets is
 					is begin
 						-- CS: log segment and net name ?
 
-						clear_A_moving (segment);
-						clear_B_moving (segment);
-						clear_moving (segment);
+						clear_moving_2 (segment);
 					end query_segment;
 
 
@@ -2871,7 +2869,6 @@ package body et_schematic_ops_nets is
 				net_name	: in type_net_name;
 				net		: in out type_net)
 			is
-				pragma unreferenced (net_name);
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 
@@ -2885,13 +2882,10 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment	: in out type_net_segment)
 					is begin
-						-- CS: log segment and net name ?
+						log (text => to_string (segment),
+							 level => log_threshold + 2);
 
-						-- If the A-end of the segment is selected,
-						-- then move the A-end only:
-						if is_A_selected (segment) or
-						   is_B_selected (segment) then
-
+						if is_selected_2 (segment) then
 							-- We have a selected net segment.
 							-- The search must be aborted by setting
 							-- this flag:
@@ -2901,9 +2895,7 @@ package body et_schematic_ops_nets is
 							-- This has the important effect, that the
 							-- same segment is not found over and over
 							-- again (which would cause a forever-loop):
-							clear_selected (segment);
-							clear_A_selected (segment);
-							clear_B_selected (segment);
+							clear_selected_2 (segment);
 
 							-- Backup the cursor of the net,
 							-- strand and the segment itself:
@@ -2929,6 +2921,11 @@ package body et_schematic_ops_nets is
 
 
 			begin
+				log (text => "net " & to_string (net_name),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+
 				-- Iterate through the strands. Abort once
 				-- a selected net segment has been found:
 				while has_element (strand_cursor)
@@ -2936,6 +2933,8 @@ package body et_schematic_ops_nets is
 					net.strands.update_element (strand_cursor, query_strand'access);
 					next (strand_cursor);
 				end loop;
+
+				log_indentation_down;
 			end query_net;
 
 
@@ -2993,23 +2992,6 @@ package body et_schematic_ops_nets is
 
 		log_indentation_down;
 	end copy_selected_net_segments;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
