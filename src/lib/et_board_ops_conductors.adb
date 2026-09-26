@@ -1992,7 +1992,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_track_line;
+		line			: in type_object_line_floating;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2000,29 +2000,29 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
+		line_original : constant type_track_line :=
+			get_freetrack_line (line);
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			conductors : type_conductors_floating renames module.board.conductors_floating;
-			use pac_conductor_lines;
-			l : pac_conductor_lines.cursor;
-		begin
-			-- Locate the line:
-			l := find (conductors.lines, line);
 
-			-- If the line exists, then delete it:
-			if l /= pac_conductor_lines.no_element then
-				delete (conductors.lines, l);
-			end if;
+			conductors : type_conductors_floating renames
+				module.board.conductors_floating;
+
+			use pac_conductor_lines;
+			c : pac_conductor_lines.cursor := line.line_cursor;
+		begin
+			conductors.lines.delete (c);
 		end query_module;
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" delete segment" & to_string (line, true), -- log linewidth
+		log (text => "module " & to_string (module_cursor)
+			& " delete segment " & to_string (line_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2038,6 +2038,7 @@ package body et_board_ops_conductors is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 
 		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
@@ -6585,7 +6586,7 @@ package body et_board_ops_conductors is
 
 				delete_line_floating (
 					module_cursor	=> module_cursor,
-					line			=> get_freetrack_line (object_line_floating),
+					line			=> object_line_floating,
 					commit_design	=> NO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
@@ -8510,7 +8511,7 @@ package body et_board_ops_conductors is
 
 				delete_line_floating (
 					module_cursor	=> module_cursor,
-					line			=> element (object.line_floating.line_cursor),
+					line			=> object.line_floating,
 					log_threshold	=> log_threshold + 1);
 
 

@@ -422,9 +422,7 @@ package et_board_ops_conductors is
 
 
 
-	-- Deletes/rips up the given line segment in the given net.
-	-- It is assumed that the given net exists. Otherwise
-	-- an exception will be raised:
+	-- Deletes/rips up the given line segment in the given net:
 	procedure ripup_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line_net;
@@ -433,16 +431,12 @@ package et_board_ops_conductors is
 
 
 
-	-- Deletes the given freetrack line.
-	-- If the line does not exist then
-	-- nothing happens:
+	-- Deletes the given freetrack line:
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_track_line;
+		line			: in type_object_line_floating;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	-- CS: rework so that only a type_object_line_floating is
-	-- taken instead of line.
 
 
 
