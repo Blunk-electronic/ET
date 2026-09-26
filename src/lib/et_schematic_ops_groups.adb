@@ -567,8 +567,10 @@ package body et_schematic_ops_groups is
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
 
-			set_selected_net_segments_as_moving (module_cursor,
-				log_threshold + 2);
+			set_selected_net_segments_as_moving (
+				module_cursor	=> module_cursor,
+				invert			=> false,
+				log_threshold	=> log_threshold + 2);
 
 			log_indentation_down;
 		end set_net_segments;
