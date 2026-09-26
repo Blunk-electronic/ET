@@ -1181,6 +1181,14 @@ package et_geometry_2a is
 		line	: in out type_line);
 
 
+	-- Sets the "moving-flag" of the
+	-- ends of the given line depending on which
+	-- end is selected. If invert is true, then
+	-- the "moving-flag" is reset:
+	procedure set_selected_end_moving (
+		line	: in out type_line;
+		invert	: in boolean);
+
 
 	-- Sets the "selected"-flags of a line
 	-- depending on the area it is crossing.

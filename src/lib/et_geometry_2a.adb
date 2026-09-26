@@ -2503,6 +2503,41 @@ package body et_geometry_2a is
 
 
 
+
+	procedure set_selected_end_moving (
+		line	: in out type_line;
+		invert	: in boolean)
+	is begin
+		if not invert then
+			-- If the A-end of the line is selected,
+			-- then set it as moving:
+			if is_A_selected (line) then
+				set_A_moving (line);
+			end if;
+
+			-- If the B-end of the line is selected,
+			-- then set it as moving:
+			if is_B_selected (line) then
+				set_B_moving (line);
+			end if;
+		else
+			-- If the A-end of the line is selected,
+			-- then set it as NOT moving:
+			if is_A_selected (line) then
+				clear_A_moving (line);
+			end if;
+
+			-- If the B-end of the line is selected,
+			-- then set it as NOT moving:
+			if is_B_selected (line) then
+				clear_B_moving (line);
+			end if;
+		end if;
+	end set_selected_end_moving;
+
+
+
+
 	procedure set_selected (
 		line	: in out type_line;
 		area	: in type_area)

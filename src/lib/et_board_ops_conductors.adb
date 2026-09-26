@@ -6813,31 +6813,7 @@ package body et_board_ops_conductors is
 						log (text => "line " & to_string (line),
 							level => log_threshold + 3);
 
-						if not invert then -- default
-							-- If the A-end of the line is selected,
-							-- then set it as moving:
-							if is_A_selected (line) then
-								set_A_moving (line);
-							end if;
-
-							-- If the B-end of the line is selected,
-							-- then set it as moving:
-							if is_B_selected (line) then
-								set_B_moving (line);
-							end if;
-						else
-							-- If the A-end of the line is selected,
-							-- then set it as NOT moving:
-							if is_A_selected (line) then
-								clear_A_moving (line);
-							end if;
-
-							-- If the B-end of the line is selected,
-							-- then set it as NOT moving:
-							if is_B_selected (line) then
-								clear_B_moving (line);
-							end if;
-						end if;
+						set_selected_end_moving (line, invert);
 					end query_line;
 
 
@@ -6915,31 +6891,7 @@ package body et_board_ops_conductors is
 					log (text => "line " & to_string (line),
 						level => log_threshold + 2);
 
-					if not invert then -- default
-						-- If the A-end of the line is selected,
-						-- then set it as moving:
-						if is_A_selected (line) then
-							set_A_moving (line);
-						end if;
-
-						-- If the B-end of the line is selected,
-						-- then set it as moving:
-						if is_B_selected (line) then
-							set_B_moving (line);
-						end if;
-					else
-						-- If the A-end of the line is selected,
-						-- then set it as NOT moving:
-						if is_A_selected (line) then
-							clear_A_moving (line);
-						end if;
-
-						-- If the B-end of the line is selected,
-						-- then set it as NOT moving:
-						if is_B_selected (line) then
-							clear_B_moving (line);
-						end if;
-					end if;
+					set_selected_end_moving (line, invert);
 				end query_line;
 
 
