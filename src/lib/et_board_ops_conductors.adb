@@ -1902,10 +1902,9 @@ package body et_board_ops_conductors is
 
 
 
-	procedure delete_line_net (
+	procedure ripup_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name; -- reset_n
-		line			: in type_track_line;
+		line			: in type_object_line_net;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1914,6 +1913,12 @@ package body et_board_ops_conductors is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
+
+		net_name : constant type_net_name :=
+			get_net_name (line);
+
+		line_original : constant type_track_line :=
+			get_track_line (line);
 
 
 		procedure query_module (
@@ -1924,20 +1929,17 @@ package body et_board_ops_conductors is
 			-- Locate the given net in the given module::
 			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
+
 			procedure query_net (
 				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				-- Locate the given segment in the given net:
+
 				use pac_conductor_lines;
-				line_cursor : pac_conductor_lines.cursor := net.route.lines.find (line);
+				c : pac_conductor_lines.cursor := line.line_cursor;
 			begin
-				if line_cursor /= pac_conductor_lines.no_element then
-					delete (net.route.lines, line_cursor);
-				else
-					null; -- CS message "segment not found" ?
-				end if;
+				net.route.lines.delete (c);
 			end query_net;
 
 
@@ -1953,7 +1955,7 @@ package body et_board_ops_conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " net " & to_string (net_name)
-			& " delete segment" & to_string (line, true), -- log linewidth
+			& " ripup segment " & to_string (line_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1979,7 +1981,7 @@ package body et_board_ops_conductors is
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
-	end delete_line_net;
+	end ripup_line_net;
 
 
 
@@ -6561,10 +6563,9 @@ package body et_board_ops_conductors is
 			-- been found, then rip up the segment:
 			if has_elements (object_line_net) then
 
-				delete_line_net (
+				ripup_line_net (
 					module_cursor	=> module_cursor,
-					net_name		=> get_net_name (object_line_net),
-					line			=> get_track_line (object_line_net),
+					line			=> object_line_net,
 					commit_design	=> NO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
@@ -8472,10 +8473,9 @@ package body et_board_ops_conductors is
 
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
-						delete_line_net (
+						ripup_line_net (
 							module_cursor	=> module_cursor,
-							net_name		=> key (object.line_net.net_cursor),
-							line			=> element (object.line_net.line_cursor),
+							line			=> object.line_net,
 							log_threshold	=> log_threshold + 1);
 
 					when WHOLE_NET =>
