@@ -232,7 +232,7 @@ package et_board_ops_conductors is
 		return type_net_name;
 
 
-	function get_conductor_line ( -- CS rename to get_track_line ?
+	function get_track_line (
 		line : in type_object_line_net)
 		return type_track_line;
 
@@ -264,7 +264,7 @@ package et_board_ops_conductors is
 		line : in out type_object_line_floating);
 
 
-	function get_conductor_line ( -- CS rename to get_freetrack_line ?
+	function get_freetrack_line (
 		line : in type_object_line_floating)
 		return type_track_line;
 

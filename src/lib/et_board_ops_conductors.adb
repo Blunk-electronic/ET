@@ -771,12 +771,12 @@ package body et_board_ops_conductors is
 	end get_net_name;
 
 
-	function get_conductor_line (
+	function get_track_line (
 		line : in type_object_line_net)
 		return type_track_line
 	is begin
 		return get_conductor_line (line.line_cursor);
-	end get_conductor_line;
+	end get_track_line;
 
 
 
@@ -793,12 +793,12 @@ package body et_board_ops_conductors is
 	end reset_object;
 
 
-	function get_conductor_line (
+	function get_freetrack_line (
 		line : in type_object_line_floating)
 		return type_track_line
 	is begin
 		return get_conductor_line (line.line_cursor);
-	end get_conductor_line;
+	end get_freetrack_line;
 
 
 
@@ -2071,7 +2071,7 @@ package body et_board_ops_conductors is
 		net_name : constant type_net_name := get_net_name (line);
 
 		-- Get the original line to be copied:
-		line_original : type_track_line := get_conductor_line (line);
+		line_original : type_track_line := get_track_line (line);
 
 
 		procedure query_module (
@@ -2146,7 +2146,7 @@ package body et_board_ops_conductors is
 		use et_commit;
 
 		-- Get the original line to be copied:
-		line_original : type_track_line := get_conductor_line (line);
+		line_original : type_track_line := get_freetrack_line (line);
 
 
 		procedure query_module (
@@ -6564,7 +6564,7 @@ package body et_board_ops_conductors is
 				delete_line_net (
 					module_cursor	=> module_cursor,
 					net_name		=> get_net_name (object_line_net),
-					line			=> get_conductor_line (object_line_net),
+					line			=> get_track_line (object_line_net),
 					commit_design	=> NO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
@@ -6581,12 +6581,12 @@ package body et_board_ops_conductors is
 
 
 			-- If a conductor line segment of a freetrack has
-			-- been found, then rip up the segment:
+			-- been found, then delete the segment:
 			if has_elements (object_line_floating) then
 
 				delete_line_floating (
 					module_cursor	=> module_cursor,
-					line			=> get_conductor_line (object_line_floating),
+					line			=> get_freetrack_line (object_line_floating),
 					commit_design	=> NO_COMMIT,
 					log_threshold	=> log_threshold + 1);
 
@@ -6595,7 +6595,7 @@ package body et_board_ops_conductors is
 
 
 			-- If a conductor arc segment of a freetrack has
-			-- been found, then rip up the segment:
+			-- been found, then delete the segment:
 			if has_elements (object_arc_floating) then
 				-- CS
 				reset_object (object_arc_floating);
