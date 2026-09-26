@@ -2070,6 +2070,9 @@ package body et_board_ops_conductors is
 
 		net_name : constant type_net_name := get_net_name (line);
 
+		-- Get the original line to be copied:
+		line_original : type_track_line := get_conductor_line (line);
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2083,10 +2086,12 @@ package body et_board_ops_conductors is
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				--use pac_conductor_lines;
 			begin
-				null;
-				-- CS
+				-- Move the original line by the given offset
+				-- and append it to the lines of the net:
+				move_by (line_original, offset);
+
+				net.route.lines.append (line_original);
 			end query_net;
 
 
@@ -2098,7 +2103,7 @@ package body et_board_ops_conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " net " & to_string (net_name)
-			& " copy track segment", -- CS & to_string (line), -- log linewidth
+			& " copy track line " & to_string (line_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2140,6 +2145,9 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
+		-- Get the original line to be copied:
+		line_original : type_track_line := get_conductor_line (line);
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -2151,14 +2159,17 @@ package body et_board_ops_conductors is
 				module.board.conductors_floating;
 
 		begin
-			-- conductors.update_element (line.segment_cursor, query_net'access);
-			null;
+			-- Move the original line by the given offset
+			-- and append it to the freetracks of the module:
+			move_by (line_original, offset);
+
+			conductors.lines.append (line_original);
 		end query_module;
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" delete freetrack segment", -- CS & to_string (line, true), -- log linewidth
+		log (text => "module " & to_string (module_cursor)
+			& " delete freetrack segment " & to_string (line_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
