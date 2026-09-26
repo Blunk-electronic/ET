@@ -570,7 +570,7 @@ package et_board_ops_conductors is
 	--    In order to reset the whole net use procedure reset_status_objects
 	--    in package et_schematic_ops_nets.
 	-- 2. If freetracks is true, then only freetracks are adressed:
-	procedure reset_proposed_arcs ( -- CS rename to reset_status_arcs
+	procedure reset_status_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level);

@@ -1361,8 +1361,9 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "reset status lines",
-			 level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			& " reset status lines",
+			level => log_threshold);
 
 		log_indentation_up;
 
@@ -2565,7 +2566,7 @@ package body et_board_ops_conductors is
 
 
 
-	procedure reset_proposed_arcs (
+	procedure reset_status_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
@@ -2637,8 +2638,9 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "resetting proposed arcs",
-			 level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			& " reset status arcs",
+			level => log_threshold);
 
 		log_indentation_up;
 
@@ -2647,7 +2649,7 @@ package body et_board_ops_conductors is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_arcs;
+	end reset_status_arcs;
 
 
 
@@ -8589,7 +8591,7 @@ package body et_board_ops_conductors is
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 
-		reset_proposed_arcs (
+		reset_status_arcs (
 			module_cursor	=> active_module,
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
@@ -8602,7 +8604,7 @@ package body et_board_ops_conductors is
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
 
-		reset_proposed_arcs (
+		reset_status_arcs (
 			module_cursor	=> active_module,
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
