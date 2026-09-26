@@ -2217,6 +2217,25 @@ package body et_board_ops_conductors is
 	end reset_object;
 
 
+	function get_net_name (
+		arc : in type_object_arc_net)
+		return type_net_name
+	is
+		use et_nets;
+	begin
+		return get_net_name (arc.net_cursor);
+	end get_net_name;
+
+
+	function get_track_arc (
+		arc : in type_object_arc_net)
+		return type_track_arc
+	is begin
+		return get_conductor_arc (arc.arc_cursor);
+	end get_track_arc;
+
+
+
 
 	function has_elements (
 		arc : in type_object_arc_floating)
@@ -2987,10 +3006,9 @@ package body et_board_ops_conductors is
 
 
 
-	procedure delete_arc_net (
+	procedure ripup_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name; -- reset_n
-		arc				: in type_track_arc;
+		arc				: in type_object_arc_net;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3000,45 +3018,44 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
+		net_name : constant type_net_name := get_net_name (arc);
+
+		arc_original : constant type_track_arc := get_track_arc (arc);
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			-- Locate the given net in the given module::
-			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
+
 
 			procedure query_net (
 				net_name	: in type_net_name;
 				net			: in out type_net)
 			is
 				pragma unreferenced (net_name);
-				-- Locate the given segment in the given net:
+
 				use pac_conductor_arcs;
-				arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.find (arc);
+				c : pac_conductor_arcs.cursor := arc.arc_cursor;
 			begin
-				if arc_cursor /= pac_conductor_arcs.no_element then
-					delete (net.route.arcs, arc_cursor);
-				else
-					null; -- CS message "segment not found" ?
-				end if;
+				net.route.arcs.delete (c);
 			end query_net;
 
 
 		begin
 			pac_nets.update_element (
 				container	=> module.nets,
-				position	=> net_cursor,
+				position	=> arc.net_cursor,
 				process		=> query_net'access);
 
 		end query_module;
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" net " & to_string (net_name) &
-			" delete segment" & to_string (arc, true), -- log linewidth
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (net_name)
+			& " ripup segment " & to_string (arc_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3063,7 +3080,7 @@ package body et_board_ops_conductors is
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
-	end delete_arc_net;
+	end ripup_arc_net;
 
 
 
@@ -8492,10 +8509,9 @@ package body et_board_ops_conductors is
 
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
-						delete_arc_net (
+						ripup_arc_net (
 							module_cursor	=> module_cursor,
-							net_name		=> key (object.arc_net.net_cursor),
-							arc				=> element (object.arc_net.arc_cursor),
+							arc				=> object.arc_net,
 							log_threshold	=> log_threshold + 1);
 
 					when WHOLE_NET =>

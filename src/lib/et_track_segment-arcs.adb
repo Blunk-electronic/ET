@@ -44,6 +44,15 @@ with et_directions;
 package body et_track_segment.arcs is
 
 
+	function get_conductor_arc (
+		arc_cursor : in pac_conductor_arcs.cursor)
+		return type_track_arc
+	is begin
+		return element (arc_cursor);
+	end get_conductor_arc;
+
+
+
 	function get_A (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model

@@ -66,6 +66,12 @@ package et_track_segment.arcs is
 	-- CS: rename to pac_track_arcs
 
 
+
+	function get_conductor_arc (
+		arc_cursor : in pac_conductor_arcs.cursor)
+		return type_track_arc;
+
+
 	function get_A (
 		arc : in pac_conductor_arcs.cursor)
 		return type_vector_model;
