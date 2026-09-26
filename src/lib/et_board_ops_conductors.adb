@@ -2250,6 +2250,16 @@ package body et_board_ops_conductors is
 	end reset_object;
 
 
+	function get_freetrack_arc (
+		arc : in type_object_arc_floating)
+		return type_track_arc
+	is begin
+		return get_conductor_arc (arc.arc_cursor);
+	end get_freetrack_arc;
+
+
+
+
 
 
 	procedure add_arc (
@@ -3091,7 +3101,7 @@ package body et_board_ops_conductors is
 
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		arc				: in type_track_arc;
+		arc				: in type_object_arc_floating;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -3099,29 +3109,29 @@ package body et_board_ops_conductors is
 		use et_undo_redo;
 		use et_commit;
 
+		arc_original : constant type_track_arc :=
+			get_freetrack_arc (arc);
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			conductors : type_conductors_floating renames module.board.conductors_floating;
-			use pac_conductor_arcs;
-			l : pac_conductor_arcs.cursor;
-		begin
-			-- Locate the arc:
-			l := find (conductors.arcs, arc);
 
-			-- If the arc exists, then delete it:
-			if l /= pac_conductor_arcs.no_element then
-				delete (conductors.arcs, l);
-			end if;
+			conductors : type_conductors_floating renames
+				module.board.conductors_floating;
+
+			use pac_conductor_arcs;
+			c : pac_conductor_arcs.cursor := arc.arc_cursor;
+		begin
+			conductors.arcs.delete (c);
 		end query_module;
 
 
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" delete segment" & to_string (arc, true), -- log linewidth
+		log (text => "module " & to_string (module_cursor)
+			& " delete freetrack segment " & to_string (arc_original, true), -- log linewidth
 			level => log_threshold);
 
 		log_indentation_up;
@@ -8538,7 +8548,7 @@ package body et_board_ops_conductors is
 
 				delete_arc_floating (
 					module_cursor	=> module_cursor,
-					arc				=> element (object.arc_floating.arc_cursor),
+					arc				=> object.arc_floating,
 					log_threshold	=> log_threshold + 1);
 
 

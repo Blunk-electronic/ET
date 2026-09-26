@@ -514,6 +514,8 @@ package et_board_ops_conductors is
 
 
 
+
+
 	-- If arc segments (of a freetrack) are searched, then they can be
 	-- identified by a cursor:
 	type type_object_arc_floating is record
@@ -538,6 +540,9 @@ package et_board_ops_conductors is
 		arc : in out type_object_arc_floating);
 
 
+	function get_freetrack_arc (
+		arc : in type_object_arc_floating)
+		return type_track_arc;
 
 
 
@@ -640,16 +645,15 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes the given freetrack arc.
-	-- If the arc does not exist then
-	-- nothing happens:
+	-- Deletes the given freetrack arc:
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		arc				: in type_track_arc;
+		arc				: in type_object_arc_floating;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
-	-- CS: rework so that only a type_object_arc_floating is
-	-- taken instead of arc.
+
+
+
 
 
 
