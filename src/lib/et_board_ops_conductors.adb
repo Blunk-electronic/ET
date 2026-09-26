@@ -1926,8 +1926,6 @@ package body et_board_ops_conductors is
 			module		: in out type_generic_module)
 		is
 			pragma unreferenced (module_name);
-			-- Locate the given net in the given module::
-			net_cursor : constant pac_nets.cursor := find (module.nets, net_name);
 
 
 			procedure query_net (
@@ -1946,7 +1944,7 @@ package body et_board_ops_conductors is
 		begin
 			pac_nets.update_element (
 				container	=> module.nets,
-				position	=> net_cursor,
+				position	=> line.net_cursor,
 				process		=> query_net'access);
 
 		end query_module;
