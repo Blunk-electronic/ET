@@ -64,6 +64,7 @@ package et_track_segment.lines is
 
 	package pac_conductor_lines is new doubly_linked_lists (type_track_line);
 	use pac_conductor_lines;
+	-- CS: rename to pac_track_lines
 
 
 	function get_conductor_line (

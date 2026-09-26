@@ -63,7 +63,8 @@ package et_track_segment.circles is
 
 	package pac_conductor_circles is new doubly_linked_lists (type_track_circle);
 	use pac_conductor_circles;
-
+	-- CS: rename to pac_track_circles
+	
 
 	-- Iterates the circles.
 	-- Aborts the process when the proceed-flag goes false:

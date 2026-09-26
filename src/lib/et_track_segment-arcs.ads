@@ -63,6 +63,7 @@ package et_track_segment.arcs is
 
 	package pac_conductor_arcs is new doubly_linked_lists (type_track_arc);
 	use pac_conductor_arcs;
+	-- CS: rename to pac_track_arcs
 
 
 	function get_A (
