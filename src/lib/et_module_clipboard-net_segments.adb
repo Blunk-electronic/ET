@@ -56,14 +56,14 @@ package body et_module_clipboard.net_segments is
 
 -- COPY:
 
-	
+
 	procedure copy_net_segment_to_clipboard (
 		source_net_cursor	: in pac_nets.cursor;
 		segment				: in type_net_segment;
 		log_threshold		: in type_log_level)
 	is
 		-- From the given source net we only need the name:
-		net_name : constant type_net_name := 
+		net_name : constant type_net_name :=
 			get_net_name (source_net_cursor);
 
 
@@ -186,7 +186,7 @@ package body et_module_clipboard.net_segments is
 
 
 
-	
+
 
 	procedure copy_selected_net_segments_to_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -194,7 +194,7 @@ package body et_module_clipboard.net_segments is
 	is
 		use pac_generic_modules;
 
-		
+
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in type_generic_module)
@@ -228,6 +228,7 @@ package body et_module_clipboard.net_segments is
 					is begin
 						if is_A_selected (segment)
 						or is_B_selected (segment) then
+						-- CS: use is_selected_2 ?
 
 							log (text => "segment " & to_string (segment),
 								level => log_threshold + 1);
@@ -286,7 +287,7 @@ package body et_module_clipboard.net_segments is
 
 
 
-	
+
 
 -- PASTE:
 

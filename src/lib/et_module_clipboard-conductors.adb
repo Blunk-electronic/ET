@@ -74,12 +74,172 @@ package body et_module_clipboard.conductors is
 		is
 			pragma unreferenced (module_name);
 
+
+			procedure query_line (
+				line : in type_track_line)
+			is begin
+				if is_selected_2 (line) then
+					log (text => to_string (line),
+						level => log_threshold + 2);
+
+					-- CS
+				end if;
+			end query_line;
+
+
+			procedure query_arc (
+				arc : in type_track_arc)
+			is begin
+				if is_selected_2 (arc) then
+					log (text => to_string (arc),
+						level => log_threshold + 2);
+				
+					-- CS
+				end if;
+			end query_arc;
+
+
+			procedure query_circle (
+				circle : in type_track_circle)
+			is begin
+				if is_selected_2 (circle) then
+					log (text => to_string (circle),
+						level => log_threshold + 2);
+				
+					-- CS
+				end if;
+			end query_circle;
+
+
+
+			-- This procedure queries segments of nets:
+			procedure query_nets is
+				use et_nets;
+				use pac_nets;
+				net_cursor : pac_nets.cursor := module.nets.first;
+
+
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in type_net)
+				is
+					use et_route;
+					route : type_net_route renames net.route;
+
+					use pac_conductor_lines;
+					line_cursor : pac_conductor_lines.cursor :=
+						route.lines.first;
+
+					use pac_conductor_arcs;
+					arc_cursor : pac_conductor_arcs.cursor :=
+						route.arcs.first;
+
+				begin
+					-- Iterate through the line track segments:
+					while has_element (line_cursor) loop
+						query_element (line_cursor, query_line'access);
+						next (line_cursor);
+					end loop;
+
+					-- Iterate through the arc track segments:
+					while has_element (arc_cursor) loop
+						query_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+
+					-- NOTE: Nets do not have circular conductor segments.
+
+					-- CS: fill zone segments
+				end query_net;
+
+
+			begin
+				log (text => "segments of nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the nets:
+				while has_element (net_cursor) loop
+					query_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_nets;
+
+
+			-- This procedure queries segments of freetracks:
+			procedure query_freetracks is
+				conductors : type_conductors_floating renames
+					module.board.conductors_floating;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor :=
+					conductors.lines.first;
+
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor :=
+					conductors.arcs.first;
+
+				use pac_conductor_circles;
+				circle_cursor : pac_conductor_circles.cursor :=
+					conductors.circles.first;
+			begin
+				log (text => "freetracks", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate though the lines:
+				while has_element (line_cursor) loop
+					 query_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+				-- Iterate though the arcs:
+				while has_element (arc_cursor) loop
+					query_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+
+				-- Iterate though the circles:
+				while has_element (circle_cursor) loop
+					query_element (circle_cursor, query_circle'access);
+					next (circle_cursor);
+				end loop;
+
+				-- CS fill zone segments
+
+				log_indentation_down;
+			end query_freetracks;
+
+
+			-- This procedure queries texts:
+			procedure query_texts is
+				use pac_conductor_texts_board;
+			begin
+				log (text => "texts", level => log_threshold + 1);
+				log_indentation_up;
+				null; -- CS
+				log_indentation_down;
+			end query_texts;
+
+
+			-- This procedure queries text placeholders:
+			procedure query_placeholders is
+				use pac_placeholders_conductor;
+			begin
+				log (text => "text placeholders", level => log_threshold + 1);
+				log_indentation_up;
+				null; -- CS
+				log_indentation_down;
+			end query_placeholders;
+
+
 		begin
-			null;
-			-- CS iterate though nets, freetracks, texts,
-			-- placeholders, ...
-			-- and copy each one to clipboard
+			query_nets;
+			query_freetracks;
+			query_texts;
+			query_placeholders;
 		end query_module;
+
 
 
 	begin
