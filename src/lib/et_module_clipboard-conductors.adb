@@ -41,6 +41,12 @@
 
 -- with ada.text_io;			use ada.text_io;
 
+with et_net_names;
+with et_nets;
+with et_route;
+with et_conductors_floating_board;
+with et_conductor_text.boards;
+with et_pcb_placeholders.conductor;
 with et_module_names;
 
 
@@ -93,7 +99,7 @@ package body et_module_clipboard.conductors is
 				if is_selected_2 (arc) then
 					log (text => to_string (arc),
 						level => log_threshold + 2);
-				
+
 					-- CS
 				end if;
 			end query_arc;
@@ -102,10 +108,10 @@ package body et_module_clipboard.conductors is
 			procedure query_circle (
 				circle : in type_track_circle)
 			is begin
-				if is_selected_2 (circle) then
+				if is_selected (circle) then
 					log (text => to_string (circle),
-						level => log_threshold + 2);
-				
+						 level => log_threshold + 2);
+
 					-- CS
 				end if;
 			end query_circle;
@@ -114,6 +120,7 @@ package body et_module_clipboard.conductors is
 
 			-- This procedure queries segments of nets:
 			procedure query_nets is
+				use et_net_names;
 				use et_nets;
 				use pac_nets;
 				net_cursor : pac_nets.cursor := module.nets.first;
@@ -169,6 +176,8 @@ package body et_module_clipboard.conductors is
 
 			-- This procedure queries segments of freetracks:
 			procedure query_freetracks is
+				use et_conductors_floating_board;
+
 				conductors : type_conductors_floating renames
 					module.board.conductors_floating;
 
@@ -213,6 +222,7 @@ package body et_module_clipboard.conductors is
 
 			-- This procedure queries texts:
 			procedure query_texts is
+				use et_conductor_text.boards;
 				use pac_conductor_texts_board;
 			begin
 				log (text => "texts", level => log_threshold + 1);
@@ -224,6 +234,7 @@ package body et_module_clipboard.conductors is
 
 			-- This procedure queries text placeholders:
 			procedure query_placeholders is
+				use et_pcb_placeholders.conductor;
 				use pac_placeholders_conductor;
 			begin
 				log (text => "text placeholders", level => log_threshold + 1);
