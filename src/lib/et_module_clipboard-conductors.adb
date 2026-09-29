@@ -42,7 +42,6 @@
 -- with ada.text_io;			use ada.text_io;
 
 with et_net_names;
-with et_nets;
 with et_route;
 with et_conductors_floating_board;
 with et_conductor_text.boards;
@@ -56,9 +55,107 @@ package body et_module_clipboard.conductors is
 -- COPY:
 
 
-	-- CS procedure copy a single line, arc, text, placeholder, ...
+
+	procedure copy_net_line_to_clipboard (
+		source_net_cursor	: in pac_nets.cursor;
+		line				: in type_track_line;
+		log_threshold		: in type_log_level)
+	is
+		use et_net_names;
+		use et_nets;
+		use pac_nets;
+
+		-- From the given source net we only need the name:
+		net_name : constant type_net_name :=
+			get_net_name (source_net_cursor);
 
 
+		procedure insert_net_and_line is
+			use pac_nets;
+			net_cursor : pac_nets.cursor;
+
+
+			-- Creates a new net in the clipboard.
+			-- Sets cursor net_cursor so that it points
+			-- to the new net:
+			procedure create_net is
+				inserted : boolean;
+
+				-- Create a bare copy of the given source net.
+				net_new : constant type_net := copy_bare_net (
+					net_in			=> element (source_net_cursor),
+					create_strand	=> false);
+			begin
+				-- Net does not exist yet. Create
+				-- a bare copy of the given net.
+				-- Afterwards net_cursor points to the
+				-- new created net:
+				clipboard.nets.insert (
+					key			=> net_name,
+					new_item	=> net_new,
+					position	=> net_cursor,
+					inserted	=> inserted);
+
+			end create_net;
+
+
+
+			-- Appends the given conductor line to
+			-- the route of the targeted net.
+			procedure add_line is
+
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in out type_net)
+				is
+					pragma unreferenced (net_name);
+				begin
+					net.route.lines.append (line);
+				end query_net;
+
+			begin
+				clipboard.nets.update_element (
+					net_cursor, query_net'access);
+			end add_line;
+
+
+		begin
+			net_cursor := clipboard.nets.find (net_name);
+
+			if has_element (net_cursor) then
+				log (text => "net " & to_string (net_name)
+					& " already in clipboard",
+					level => log_threshold + 1);
+
+			else
+				log (text => "create net " & to_string (net_name)
+					& " in clipboard",
+					level => log_threshold + 1);
+
+				create_net;
+			end if;
+
+			-- Now net_cursor points to the target net
+			-- in the clipboard.
+			-- Add the given conductor line to the
+			-- route of the net:
+			add_line;
+
+		end insert_net_and_line;
+
+
+
+	begin
+		log (text => "copy net " & to_string (net_name)
+			& " line " & to_string (line),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		insert_net_and_line;
+
+		log_indentation_down;
+	end copy_net_line_to_clipboard;
 
 
 

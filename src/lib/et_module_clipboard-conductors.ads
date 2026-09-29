@@ -43,6 +43,7 @@ with et_board_geometry;				use et_board_geometry;
 with et_module;
 with et_generic_modules;			use et_generic_modules;
 
+with et_nets;						use et_nets;
 with et_track_segment;				use et_track_segment;
 with et_track_segment.lines;		use et_track_segment.lines;
 with et_track_segment.arcs;			use et_track_segment.arcs;
@@ -59,8 +60,22 @@ package et_module_clipboard.conductors is
 
 -- COPY:
 
-	-- CS procedure copy a single line, arc, text, placeholder, ...
+	-- CS procedure copy a single arc, text, placeholder, ...
 
+
+	-- This procedure copies a given conductor line of
+	-- a net to the clipboard.
+	-- 1. If the net does not exist in the clipboard yet,
+	--    then it will be created there with the same properties
+	--    as the given net (like scope or net class). Net segments
+	--    of the schematic and fill zones are not copied.
+	-- 2. If the net does exist, then it will not be created
+	--    anew.
+	-- 3. The given conductor line is added to the route of the net.
+	procedure copy_net_line_to_clipboard (
+		source_net_cursor	: in pac_nets.cursor;
+		line				: in type_track_line;
+		log_threshold		: in type_log_level);
 
 
 
