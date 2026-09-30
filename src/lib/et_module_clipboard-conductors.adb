@@ -178,43 +178,6 @@ package body et_module_clipboard.conductors is
 			pragma unreferenced (module_name);
 
 
-			procedure query_line (
-				line : in type_track_line)
-			is begin
-				if is_selected_2 (line) then
-					log (text => to_string (line),
-						level => log_threshold + 2);
-
-					-- CS
-				end if;
-			end query_line;
-
-
-			procedure query_arc (
-				arc : in type_track_arc)
-			is begin
-				if is_selected_2 (arc) then
-					log (text => to_string (arc),
-						level => log_threshold + 2);
-
-					-- CS
-				end if;
-			end query_arc;
-
-
-			procedure query_circle (
-				circle : in type_track_circle)
-			is begin
-				if is_selected (circle) then
-					log (text => to_string (circle),
-						 level => log_threshold + 2);
-
-					-- CS
-				end if;
-			end query_circle;
-
-
-
 			-- This procedure queries segments of nets:
 			procedure query_nets is
 				use et_net_names;
@@ -238,7 +201,42 @@ package body et_module_clipboard.conductors is
 					arc_cursor : pac_conductor_arcs.cursor :=
 						route.arcs.first;
 
+
+					procedure query_line (
+						line : in type_track_line)
+					is begin
+						if is_selected_2 (line) then
+							log (text => to_string (line),
+								level => log_threshold + 3);
+
+							log_indentation_up;
+
+							copy_net_line_to_clipboard (
+								net_cursor, line, log_threshold + 4);
+
+							log_indentation_down;
+						end if;
+					end query_line;
+
+
+					procedure query_arc (
+						arc : in type_track_arc)
+					is begin
+						if is_selected_2 (arc) then
+							log (text => to_string (arc),
+								level => log_threshold + 3);
+
+							-- CS
+						end if;
+					end query_arc;
+
+
 				begin
+					log (text => "net " & to_string (net_name),
+						 level => log_threshold + 2);
+
+					log_indentation_up;
+
 					-- Iterate through the line track segments:
 					while has_element (line_cursor) loop
 						query_element (line_cursor, query_line'access);
@@ -254,6 +252,7 @@ package body et_module_clipboard.conductors is
 					-- NOTE: Nets do not have circular conductor segments.
 
 					-- CS: fill zone segments
+					log_indentation_down;
 				end query_net;
 
 
@@ -289,13 +288,51 @@ package body et_module_clipboard.conductors is
 				use pac_conductor_circles;
 				circle_cursor : pac_conductor_circles.cursor :=
 					conductors.circles.first;
+
+
+				procedure query_line (
+					line : in type_track_line)
+				is begin
+					if is_selected_2 (line) then
+						log (text => to_string (line),
+							level => log_threshold + 2);
+
+						-- CS
+					end if;
+				end query_line;
+
+
+				procedure query_arc (
+					arc : in type_track_arc)
+				is begin
+					if is_selected_2 (arc) then
+						log (text => to_string (arc),
+							level => log_threshold + 2);
+
+						-- CS
+					end if;
+				end query_arc;
+
+
+				procedure query_circle (
+					circle : in type_track_circle)
+				is begin
+					if is_selected (circle) then
+						log (text => to_string (circle),
+							level => log_threshold + 2);
+
+						-- CS
+					end if;
+				end query_circle;
+
+
 			begin
 				log (text => "freetracks", level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate though the lines:
 				while has_element (line_cursor) loop
-					 query_element (line_cursor, query_line'access);
+					query_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
 
