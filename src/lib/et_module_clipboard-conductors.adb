@@ -427,10 +427,38 @@ package body et_module_clipboard.conductors is
 		procedure do_paste is
 			use et_module_clipboard;
 
+			use et_net_names;
+			use pac_nets;
+
+			net_cursor : pac_nets.cursor := clipboard.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor :=
+					route.lines.first;
+
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor :=
+					route.arcs.first;
+
+			begin
+				null;
+			end query_net;
+
 
 		begin
-			null;
-			-- CS
+			-- Iterate through the nets in the clipboard:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end do_paste;
 
 
