@@ -270,24 +270,31 @@ package body et_module_clipboard.conductors is
 			end query_nets;
 
 
-			-- This procedure queries segments of freetracks:
+			-- This procedure queries segments of freetracks.
+			-- If a segment (line, arc or circle) is selected,
+			-- then it is added to the clipboard:
 			procedure query_freetracks is
 				use et_conductors_floating_board;
 
-				conductors : type_conductors_floating renames
+				-- The segments of freetracks in the module:
+				conductors_module : type_conductors_floating renames
 					module.board.conductors_floating;
 
 				use pac_conductor_lines;
 				line_cursor : pac_conductor_lines.cursor :=
-					conductors.lines.first;
+					conductors_module.lines.first;
 
 				use pac_conductor_arcs;
 				arc_cursor : pac_conductor_arcs.cursor :=
-					conductors.arcs.first;
+					conductors_module.arcs.first;
 
 				use pac_conductor_circles;
 				circle_cursor : pac_conductor_circles.cursor :=
-					conductors.circles.first;
+					conductors_module.circles.first;
+
+				-- The destination of the copies:
+				conductors_clipboard : type_conductors_floating renames
+					clipboard.board.conductors_floating;
 
 
 				procedure query_line (
@@ -297,7 +304,7 @@ package body et_module_clipboard.conductors is
 						log (text => to_string (line),
 							level => log_threshold + 2);
 
-						-- CS
+						conductors_clipboard.lines.append (line);
 					end if;
 				end query_line;
 
@@ -309,7 +316,7 @@ package body et_module_clipboard.conductors is
 						log (text => to_string (arc),
 							level => log_threshold + 2);
 
-						-- CS
+						conductors_clipboard.arcs.append (arc);
 					end if;
 				end query_arc;
 
@@ -321,7 +328,7 @@ package body et_module_clipboard.conductors is
 						log (text => to_string (circle),
 							level => log_threshold + 2);
 
-						-- CS
+						conductors_clipboard.circles.append (circle);
 					end if;
 				end query_circle;
 
