@@ -1793,6 +1793,51 @@ procedure draw_conductors is
 		end draw_nets;
 
 
+
+		-- This procedure draws the vias of nets:
+		procedure draw_vias is
+			net_cursor : pac_nets.cursor;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				pragma unreferenced (net_name);
+				via_cursor : pac_vias.cursor := net.route.vias.first;
+
+				procedure draw_via (
+					via : in type_via)
+				is
+					via_new : type_via := via;
+				begin
+					null;
+					-- CS: move_by (via_new, offset);
+					-- draw_via (via, true);
+				end draw_via;
+
+
+			begin
+				-- Iterate through the vias of the candidate net:
+				while has_element (via_cursor) loop
+					query_element (via_cursor, draw_via'access);
+					next (via_cursor);
+				end loop;
+			end query_net;
+
+
+		begin
+			-- Iterate through the nets:
+			net_cursor := clipboard.nets.first;
+
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end draw_vias;
+
+
+
 		procedure draw_freetracks is
 		begin
 			null;
@@ -1825,6 +1870,8 @@ procedure draw_conductors is
 				end if;
 			end loop;
 
+
+			draw_vias;
 		end if;
 	end draw_conductors_being_pasted;
 
