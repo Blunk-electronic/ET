@@ -47,6 +47,8 @@ with et_conductors_floating_board;
 with et_conductor_text.boards;
 with et_pcb_placeholders.conductor;
 with et_module_names;
+with et_board_ops_conductors;
+with et_cmd_origin_to_commit;
 
 
 package body et_module_clipboard.conductors is
@@ -427,38 +429,188 @@ package body et_module_clipboard.conductors is
 		procedure do_paste is
 			use et_module_clipboard;
 
-			use et_net_names;
-			use pac_nets;
 
-			net_cursor : pac_nets.cursor := clipboard.nets.first;
+			-- This procedure copies the conductor segments
+			-- of nets from the clipboard to the target module:
+			procedure paste_nets is
+				use et_net_names;
+				use pac_nets;
+
+				-- The source to copy from:
+				net_cursor : pac_nets.cursor := clipboard.nets.first;
 
 
-			procedure query_net (
-				net_name	: in type_net_name;
-				net			: in type_net)
-			is
-				use et_route;
-				route : type_net_route renames net.route;
+				procedure query_net (
+					net_name	: in type_net_name;
+					net			: in type_net)
+				is
+					use et_route;
+					route : type_net_route renames net.route;
+
+					use pac_conductor_lines;
+					line_cursor : pac_conductor_lines.cursor :=
+						route.lines.first;
+
+					use pac_conductor_arcs;
+					arc_cursor : pac_conductor_arcs.cursor :=
+						route.arcs.first;
+
+					use et_board_ops_conductors;
+					use et_cmd_origin_to_commit;
+
+
+					procedure query_line (
+						line : in type_track_line)
+					is
+						line_new : type_track_line := line;
+					begin
+						move_by (line_new, offset);
+
+						add_line (
+							module_cursor	=> module_cursor,
+							net_name		=> net_name,
+							line			=> line_new,
+							commit_design	=> NO_COMMIT,
+							log_threshold	=> log_threshold + 3);
+					end query_line;
+
+
+					procedure query_arc (
+						arc : in type_track_arc)
+					is begin
+						null; -- CS
+					end query_arc;
+
+
+				begin
+					log (text => "net " & to_string (net_name),
+						 level => log_threshold + 2);
+
+					log_indentation_up;
+
+					-- Iterate through the lines:
+					while has_element (line_cursor) loop
+						query_element (line_cursor, query_line'access);
+						next (line_cursor);
+					end loop;
+
+
+					-- Iterate through the arcs:
+					while has_element (arc_cursor) loop
+						query_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+
+					-- CS: zone segments
+
+					log_indentation_down;
+				end query_net;
+
+
+			begin
+				log (text => "nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the nets in the clipboard:
+				while has_element (net_cursor) loop
+					query_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end paste_nets;
+
+
+
+			-- This procedure copies conductor segments of
+			-- freetracks from the clipboard to the target module:
+			procedure paste_freetracks is
+				use et_conductors_floating_board;
+
+				-- The source to copy from:
+				conductors : type_conductors_floating renames
+					clipboard.board.conductors_floating;
 
 				use pac_conductor_lines;
 				line_cursor : pac_conductor_lines.cursor :=
-					route.lines.first;
+					conductors.lines.first;
 
 				use pac_conductor_arcs;
 				arc_cursor : pac_conductor_arcs.cursor :=
-					route.arcs.first;
+					conductors.arcs.first;
+
+				use pac_conductor_circles;
+				circle_cursor : pac_conductor_circles.cursor :=
+					conductors.circles.first;
+
+				use et_board_ops_conductors;
+				use et_cmd_origin_to_commit;
+
+
+				procedure query_line (
+					line : in type_track_line)
+				is
+					line_new : type_track_line := line;
+				begin
+					move_by (line_new, offset);
+
+					add_line (
+						module_cursor	=> module_cursor,
+						line			=> line_new,
+						commit_design	=> NO_COMMIT,
+						log_threshold	=> log_threshold + 2);
+
+				end query_line;
+
+
+				procedure query_arc (
+					arc : in type_track_arc)
+				is begin
+					null; -- CS
+				end query_arc;
+
+
+				procedure query_circle (
+					circle : in type_track_circle)
+				is begin
+					null; -- CS
+				end query_circle;
+
 
 			begin
-				null;
-			end query_net;
+				log (text => "freetracks", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the lines:
+				while has_element (line_cursor) loop
+					query_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+
+				-- Iterate through the arcs:
+				while has_element (arc_cursor) loop
+					query_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+
+
+				-- Iterate through the circles:
+				while has_element (circle_cursor) loop
+					query_element (circle_cursor, query_circle'access);
+					next (circle_cursor);
+				end loop;
+
+				-- CS: zone segments
+
+				log_indentation_down;
+			end paste_freetracks;
 
 
 		begin
-			-- Iterate through the nets in the clipboard:
-			while has_element (net_cursor) loop
-				query_element (net_cursor, query_net'access);
-				next (net_cursor);
-			end loop;
+			paste_nets;
+			paste_freetracks;
+			-- CS: paste texts and text placeholders
 		end do_paste;
 
 
