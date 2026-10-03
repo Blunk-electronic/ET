@@ -303,6 +303,13 @@ package body et_board_ops_conductors is
 		else
 			add_line_to_net (module_cursor,
 				net_name, line, NO_COMMIT, log_threshold + 1);
+
+			-- CS:
+			-- locate the given net:
+			-- net_cursor := find (module.nets, net_name);
+
+			-- add_line_to_net (module_cursor,
+			-- 	net_cursor, line, NO_COMMIT, log_threshold + 1);
 		end if;
 
 

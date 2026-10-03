@@ -88,8 +88,12 @@ package et_board_ops_conductors is
 
 -- LINES:
 
-	-- Adds a line track segment to the given net in the given module.
-	-- Assumes that the given net exists. Otherwise an exception will be raised:
+	-- Adds a line track segment to the
+	-- given net in the given module.
+	-- Assumes that the given net exists.
+	-- Otherwise an exception will be raised.
+	-- CS; pass a cursor to the target net instead
+	-- of the net name.
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- reset_n

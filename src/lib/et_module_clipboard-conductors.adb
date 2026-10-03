@@ -466,7 +466,7 @@ package body et_module_clipboard.conductors is
 					begin
 						move_by (line_new, offset);
 
-						add_line (
+						add_line_to_net (
 							module_cursor	=> module_cursor,
 							net_name		=> net_name,
 							line			=> line_new,
