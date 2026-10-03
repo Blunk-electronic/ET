@@ -440,6 +440,10 @@ procedure draw_nets is
 
 				procedure draw_segment_being_copied is
 					segment_copy : type_net_segment := segment;
+					-- CS: The segment_copy should come to existence
+					-- only if it is indeed being copied. Currently
+					-- the copy is made for each segment which is
+					-- a waste of time.
 				begin
 					-- If the segment is member of a group and the
 					-- group is being copied, then a copy of the segment
