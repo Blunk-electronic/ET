@@ -66,9 +66,24 @@ package et_drills is
 	function to_string (drill : in type_drill) return string;
 
 
+
+
 	function get_position (
 		drill : in type_drill)
 		return type_vector_model;
+
+
+	procedure set_position (
+		drill		: in out type_drill;
+		position	: in type_vector_model);
+
+
+	procedure move_by (
+		drill		: in out type_drill;
+		offset		: in type_vector_model);
+
+
+
 
 
 	-- Returns true if the drill is inside the given zone:

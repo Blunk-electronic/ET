@@ -1811,8 +1811,9 @@ procedure draw_conductors is
 				is
 					via_new : type_via := via;
 				begin
-					null;
-					-- CS: move_by (via_new, offset);
+					move_by (via_new, offset);
+
+					-- CS:
 					-- draw_via (via, true);
 				end draw_via;
 

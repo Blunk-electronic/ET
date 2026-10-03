@@ -60,10 +60,32 @@ package body et_drills is
 
 
 
+
+
 	function get_position (
 		drill : in type_drill)
 		return type_vector_model
 	is (drill.position);
+
+
+
+	procedure set_position (
+		drill		: in out type_drill;
+		position	: in type_vector_model)
+	is begin
+		drill.position := position;
+	end set_position;
+
+
+	procedure move_by (
+		drill		: in out type_drill;
+		offset		: in type_vector_model)
+	is begin
+		move_by (drill.position, offset);
+	end move_by;
+
+
+
 
 
 

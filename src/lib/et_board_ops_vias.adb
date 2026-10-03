@@ -938,7 +938,7 @@ package body et_board_ops_vias is
 				pragma unreferenced (net_name);
 
 				procedure query_via (v : in out type_via) is begin
-					v.position := new_position;
+					set_position (v, new_position);
 				end query_via;
 
 			begin
