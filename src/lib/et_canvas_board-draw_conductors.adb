@@ -54,6 +54,7 @@ with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
 with et_nets;						use et_nets;
+with et_route;
 
 with et_thermal_relief;				use et_thermal_relief;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
@@ -182,7 +183,7 @@ procedure draw_conductors is
 
 
 
--- DRAWI LINES, ARCS, CIRCLES:
+-- DRAW LINES, ARCS, CIRCLES:
 
 
 	procedure draw_line (
@@ -191,9 +192,24 @@ procedure draw_conductors is
 	is
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width,
-					   stroke => DO_STROKE);
+			draw_line (
+				line	=> line,
+				width	=> line.width,
+				stroke	=> DO_STROKE);
 		end draw;
+
+
+		procedure draw_line_being_copied is
+			line_copy : type_track_line := line;
+		begin
+			move_by (line_copy, get_group_offset);
+
+			draw_line (
+				line	=> line_copy,
+				width	=> line_copy.width,
+				stroke	=> DO_STROKE);
+		end draw_line_being_copied;
+
 
 	begin
 		-- Draw the line if it is in the current layer:
@@ -207,11 +223,19 @@ procedure draw_conductors is
 
 				-- If the segment is selected,
 				-- then it must be drawn highlighted:
-				if is_selected (line)
-				or is_A_selected (line)
-				or is_B_selected (line) then
+				if is_selected_2 (line) then
 					set_highlight_brightness;
+
+					-- Draw the original line:
 					draw;
+
+					-- If the line is member of a group
+					-- being copied, then draw a copy
+					-- of the line:
+					if group_is_being_copied then
+						draw_line_being_copied;
+					end if;
+
 					set_default_brightness;
 				else
 					draw;
@@ -1116,8 +1140,11 @@ procedure draw_conductors is
 
 
 
-	-- Draws the tracks, vias and texts in conductor layers:
-	procedure query_items (
+	-- Draws the tracks, vias, zones and texts in signal
+	-- layers as they are in the database.
+	-- Draws track segments (lines, arcs, circles), vias, texts
+	-- and zones being copied:
+	procedure query_module (
 		module_name	: in type_module_name;
 		module		: in type_generic_module)
 	is
@@ -1453,11 +1480,9 @@ procedure draw_conductors is
 		end draw_non_electrical_objects;
 
 
-
-	begin -- query_items
-
-		-- Iterate all conductor layers starting at the bottom layer and ending
-		-- with the top layer:
+	begin
+		-- Iterate all conductor layers starting at the
+		-- bottom layer and ending with the top layer:
 		for ly in reverse top_layer .. bottom_layer loop
 
 			-- Draw the layer only if it is enabled. Otherwise skip the layer:
@@ -1487,7 +1512,7 @@ procedure draw_conductors is
 		-- Draw the vias that exist in the nets:
 		draw_vias;
 
-	end query_items;
+	end query_module;
 
 
 
@@ -1672,6 +1697,139 @@ procedure draw_conductors is
 
 
 
+
+
+	-- This procedure draws clipboard objects which are
+	-- being pasted:
+	procedure draw_conductors_being_pasted is
+		use et_colors;
+		use et_colors.board;
+		use et_module_clipboard;
+
+		-- This is the offset by which everything is drawn
+		-- away from the group_reference_point while the group
+		-- is floating along with the cursor or the mouse pointer:
+		offset : constant type_vector_model := get_group_offset_on_paste;
+
+
+		procedure draw_line (line : type_track_line) is
+		begin
+			-- Draw the line if it is in the current layer:
+			if get_layer (line) = current_layer then
+
+				declare
+					line_new : type_track_line := line;
+				begin
+					move_by (line_new, offset);
+
+					draw_line (
+						line	=> line_new,
+						width	=> line_new.width,
+						stroke	=> DO_STROKE);
+				end;
+			end if;
+		end draw_line;
+
+
+		procedure draw_nets is
+			use pac_nets;
+			net_cursor : pac_nets.cursor := clipboard.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor :=
+					route.lines.first;
+
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor :=
+					route.arcs.first;
+
+
+				procedure query_line (
+					line : in type_track_line)
+				is begin
+					draw_conductors_being_pasted.draw_line (line);
+				end query_line;
+
+
+				procedure query_arc (
+					arc : in type_track_arc)
+				is begin
+					null; -- CS
+				end query_arc;
+
+
+			begin
+				-- Iterate through the lines:
+				while has_element (line_cursor) loop
+					query_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+
+				-- Iterate through the arcs:
+				while has_element (arc_cursor) loop
+					query_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+
+				-- CS: zone segments
+			end query_net;
+
+
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end draw_nets;
+
+
+		procedure draw_freetracks is
+		begin
+			null;
+			-- CS
+		end draw_freetracks;
+
+
+	begin
+		-- Draw only if a group is being pasted:
+		if group_is_being_pasted then
+
+			-- Iterate all conductor layers starting at the
+			-- bottom layer and ending with the top layer:
+			for ly in reverse top_layer .. bottom_layer loop
+
+				-- Draw the layer only if it is enabled. Otherwise skip the layer:
+				if conductor_enabled (ly) then
+
+					-- Set the layer being drawn:
+					current_layer := ly;
+
+					-- Set the color according to the current signal layer.
+					-- The whole group being pasted is to be drawn highlighted:
+					set_highlight_brightness;
+
+					draw_nets;
+					draw_freetracks;
+					-- CS draw texts, placeholders, zones
+
+				end if;
+			end loop;
+
+		end if;
+	end draw_conductors_being_pasted;
+
+
+
 begin
 	-- put_line ("draw conductors ...");
 
@@ -1679,7 +1837,7 @@ begin
 	-- database, such as tracks, vias, airwires:
 	pac_generic_modules.query_element (
 		position	=> active_module,
-		process		=> query_items'access);
+		process		=> query_module'access);
 
 
 	-- Draw a via that is being placed.
@@ -1698,6 +1856,13 @@ begin
 	-- If none is being drawn, nothing happens.
 	-- This is about a track that is connected to a net:
 	draw_track;
+
+
+	-- Draw the conductor objects being
+	-- pasted from the clipboard.
+	-- If no group is being pasted, then nothing happens here:
+	draw_conductors_being_pasted;
+
 
 end draw_conductors;
 
