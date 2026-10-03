@@ -112,7 +112,7 @@ package et_board_ops_vias is
 
 
 	-- Clears the proposed-flag and the selected-flag of all vias:
-	procedure reset_proposed_vias ( -- CS rename to reset_status_vias
+	procedure reset_status_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 

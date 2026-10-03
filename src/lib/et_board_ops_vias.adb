@@ -261,7 +261,7 @@ package body et_board_ops_vias is
 
 
 
-	procedure reset_proposed_vias (
+	procedure reset_status_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -312,7 +312,7 @@ package body et_board_ops_vias is
 
 
 	begin
-		log (text => "resetting proposed vias",
+		log (text => "reset status of all vias",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -322,7 +322,7 @@ package body et_board_ops_vias is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_vias;
+	end reset_status_vias;
 
 
 

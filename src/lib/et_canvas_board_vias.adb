@@ -1118,7 +1118,7 @@ package body et_canvas_board_vias is
 			-- we do the actual finalizing:
 			if has_element (object.via_cursor) then
 
-				reset_proposed_vias (active_module, log_threshold + 1);
+				reset_status_vias (active_module, log_threshold + 1);
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1211,7 +1211,7 @@ package body et_canvas_board_vias is
 			-- we do the actual finalizing:
 			if has_element (object.via_cursor) then
 
-				reset_proposed_vias (active_module, log_threshold + 1);
+				reset_status_vias (active_module, log_threshold + 1);
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);

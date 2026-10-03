@@ -190,7 +190,9 @@ package body et_board_ops_groups is
 				 level => log_threshold + 1);
 
 			log_indentation_up;
-				reset_proposed_vias (active_module, log_threshold + 1);
+
+			reset_status_vias (active_module, log_threshold + 1);
+
 			log_indentation_down;
 		end reset_vias;
 
