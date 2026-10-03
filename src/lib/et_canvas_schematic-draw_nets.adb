@@ -647,7 +647,8 @@ procedure draw_nets is
 
 
 
-
+	-- This procedure draws clipboard objects which are
+	-- being pasted:
 	procedure draw_net_segments_being_pasted is
 		use et_colors;
 		use et_colors.schematic;
