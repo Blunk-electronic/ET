@@ -100,6 +100,12 @@ package body et_vias is
 
 
 
+	function get_category (
+		via : in type_via)
+		return type_via_category
+	is (via.category);
+
+
 
 	function buried_via_uses_layer (
 		via		: in type_via;
@@ -156,6 +162,54 @@ package body et_vias is
 
 
 
+	function in_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		case get_category (via) is
+			when THROUGH =>
+				-- A through via is connected with
+				-- every signal layer:
+				result := true;
+
+			when BLIND_DRILLED_FROM_TOP | BLIND_DRILLED_FROM_BOTTOM =>
+				if blind_via_uses_layer (via, layer, bottom) then
+					result := true;
+				end if;
+
+			when BURIED =>
+				if buried_via_uses_layer (via, layer) then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end in_layer;
+
+
+
+	function in_area_and_in_layer (
+		via		: in type_via;
+		area	: in type_area;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer)
+		return boolean
+	is begin
+		if in_area (via, area) and then
+			in_layer (via, layer, bottom) then
+			return true;
+		else
+			return false;
+		end if;
+	end in_area_and_in_layer;
+
+
+
+
 	function to_string (
 		via : in pac_vias.cursor)
 		return string
@@ -167,6 +221,7 @@ package body et_vias is
 		via : in pac_vias.cursor)
 		return type_vector_model
 	is (get_position (element (via)));
+
 
 
 

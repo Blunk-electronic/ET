@@ -86,6 +86,11 @@ package body et_drills is
 
 
 
+	function in_area (
+		drill	: in type_drill;
+		area	: in type_area)
+		return boolean
+	is (in_area (drill.position, area));
 
 
 

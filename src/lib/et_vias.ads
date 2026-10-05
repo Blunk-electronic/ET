@@ -163,6 +163,10 @@ package et_vias is
 		return type_area;
 
 
+	function get_category (
+		via : in type_via)
+		return type_via_category;
+
 
 
 	-- Returns true if the given buried via uses the given layer.
@@ -188,6 +192,31 @@ package et_vias is
 		return boolean;
 
 
+	-- Returns true if the given via is connected
+	-- with the given signal layer.
+	-- The bottom layer must be provided in case the via is a
+	-- BLIND_DRILLED_FROM_BOTTOM:
+	function in_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer)
+		return boolean;
+
+
+	-- Returns true if the via (center) is in the
+	-- given area and if it is connected with the given signal layer:
+	-- The bottom layer must be provided in case the via is a
+	-- BLIND_DRILLED_FROM_BOTTOM:
+	function in_area_and_in_layer (
+		via		: in type_via;
+		area	: in type_area;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer)
+		return boolean;
+
+
+
+
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 	use pac_vias;
@@ -202,6 +231,9 @@ package et_vias is
 	function get_position (
 		via : in pac_vias.cursor)
 		return type_vector_model;
+
+
+
 
 
 	function is_selected (
