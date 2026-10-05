@@ -42,8 +42,7 @@ with ada.strings;					use ada.strings;
 with et_module_names;					use et_module_names;
 with et_route;
 
-
-
+with et_board_ops_signal_layers;
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
@@ -341,6 +340,7 @@ package body et_board_ops_vias is
 		log_threshold	: in type_log_level)
 	is
 
+
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
@@ -348,6 +348,11 @@ package body et_board_ops_vias is
 			pragma unreferenced (module_name);
 
 			net_cursor : pac_nets.cursor := module.nets.first;
+
+			-- The deepest signal layer of the module:
+			bottom_layer : constant type_signal_layer :=
+				et_board_ops_signal_layers.get_deepest_conductor_layer (
+				module_cursor);
 
 
 			procedure query_net (
@@ -364,7 +369,7 @@ package body et_board_ops_vias is
 				procedure query_via (
 					via : in out type_via)
 				is begin
-					if in_area_and_in_layer (via, area, layer, 6) then
+					if in_area_and_in_layer (via, area, layer, bottom_layer) then
 						set_selected (via);
 					end if;
 				end query_via;
