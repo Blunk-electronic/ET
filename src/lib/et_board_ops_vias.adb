@@ -460,6 +460,7 @@ package body et_board_ops_vias is
 						log (text => to_string (position),
 							level => log_threshold + 2);
 
+						-- Add the via position to the result:
 						result.append (position);
 					end if;
 				end query_via;
@@ -509,14 +510,112 @@ package body et_board_ops_vias is
 
 
 
+
+
+
 	procedure delete_vias_in_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure selected
+		-- vias are searched for. Once a via
+		-- has been found, this flag is set:
+		via_found : boolean := false;
+
+		-- Here we store the selected via:
+		object_via : type_object_via;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_vias;
+				via_cursor : pac_vias.cursor := route.vias.first;
+
+
+				procedure query_via (
+					via : in type_via)
+				is begin
+					if is_selected (via) then
+						object_via := (via_cursor, net_cursor);
+
+						-- Abort all iterators:
+						via_found := true;
+					end if;
+				end query_via;
+
+
+			begin
+				log (text => "net " & to_string (net_name),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+
+				while has_element (via_cursor)
+				and not via_found loop
+					query_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+		begin
+			while has_element (net_cursor)
+			and not via_found loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+
 	begin
-		-- CS
-		null;
+		log (text => "module " & to_string (module_cursor)
+			 & " delete vias in group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Search for the first selected via in the group:
+		query_element (module_cursor, query_module'access);
+
+		-- If a via has been found, then the flag "via_found"
+		-- is set. This starts the following loop where
+		-- the affected via will be deleted.
+
+		-- This loop will be executed as long as
+		-- selected vias exist:
+		while via_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- CS: log the nunmber of deleted vias
+
+			-- If a selected via has been found, then delete it:
+			delete_object (module_cursor, object_via, log_threshold + 1);
+
+			-- Restart the search for a selected via:
+			via_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
+
+		log_indentation_down;
 	end delete_vias_in_group;
+
+
+
 
 
 

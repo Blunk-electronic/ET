@@ -6341,7 +6341,7 @@ package body et_board_ops_conductors is
 		segment_found : boolean := false;
 
 		-- Here we store the selected segment
-		-- of conductor tracks and freetracks::
+		-- of conductor tracks and freetracks:
 		object_line_net : type_object_line_net;
 		object_arc_net : type_object_arc_net;
 
