@@ -417,15 +417,90 @@ package body et_board_ops_vias is
 
 
 
+
+
 	function get_group_via_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return pac_points.list
 	is
 		result : pac_points.list;
-	begin
 
-		-- CS
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			use et_nets;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_vias;
+				via_cursor : pac_vias.cursor := route.vias.first;
+
+
+				procedure query_via (
+					via : in type_via)
+				is
+					position : type_vector_model;
+				begin
+					if is_selected (via) then
+						position := get_position (via);
+
+						log (text => to_string (position),
+							level => log_threshold + 2);
+
+						result.append (position);
+					end if;
+				end query_via;
+
+
+			begin
+				log (text => "net " & to_string (net_name),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+
+				-- Iterate through the vias:
+				while has_element (via_cursor) loop
+					query_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " get via positions of group",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+
 		return result;
 	end get_group_via_positions;
 
