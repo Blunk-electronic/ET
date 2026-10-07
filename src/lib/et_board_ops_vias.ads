@@ -135,19 +135,13 @@ package et_board_ops_vias is
 		log_threshold	: in type_log_level);
 
 
-	-- Sets the "moving" flag of all selected vias:
+	-- Sets the "moving" flag of all selected vias
+	-- if "invert" is false (default).
+	-- Clears the "moving" flag of all selected vias
+	-- if "invert" is true:
 	procedure set_selected_vias_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-
-	-- CS: Merge this procedure with procedure
-	-- set_selected_vias_as_moving and add a
-	-- parameter that indicates whether is is a
-	-- "set moving" or "set not moving" action.
-	-- CS: See procedure set_selected_conductors_as_moving in
-	-- et_board_ops_conductors for example.
-	procedure set_selected_vias_as_not_moving (
-		module_cursor	: in pac_generic_modules.cursor;
+		invert			: in boolean := false;
 		log_threshold	: in type_log_level);
 
 

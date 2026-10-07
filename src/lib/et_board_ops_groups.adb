@@ -889,7 +889,7 @@ package body et_board_ops_groups is
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
 
-			set_selected_vias_as_moving (module_cursor,
+			set_selected_vias_as_moving (module_cursor, false,
 				log_threshold + 2);
 
 			log_indentation_down;
@@ -976,7 +976,7 @@ package body et_board_ops_groups is
 			log (text => "vias", level => log_threshold + 1);
 			log_indentation_up;
 
-			set_selected_vias_as_not_moving (module_cursor,
+			set_selected_vias_as_moving (module_cursor, true,
 				log_threshold + 2);
 
 			log_indentation_down;
