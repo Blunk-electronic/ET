@@ -456,6 +456,9 @@ package body et_board_ops_vias is
 					if is_selected (via) then
 						object_via := (via_cursor, net_cursor);
 
+						log (text => to_string (get_position (via)),
+							level => log_threshold + 2);
+
 						-- Abort all iterators:
 						via_found := true;
 					end if;
@@ -530,10 +533,78 @@ package body et_board_ops_vias is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in out type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_vias;
+				via_cursor : pac_vias.cursor := route.vias.first;
+
+
+				procedure query_via (
+					via : in out type_via)
+				is begin
+					if is_selected (via) then
+
+						log (text => to_string (get_position (via)),
+							level => log_threshold + 2);
+
+						move_by (via, offset);
+					end if;
+				end query_via;
+
+
+			begin
+				log (text => "net " & to_string (net_name),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+
+				while has_element (via_cursor) loop
+					route.vias.update_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+		begin
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+
 	begin
-		-- CS
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " move selected vias by "
+			& to_string (offset),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
 	end move_selected_vias;
+
+
 
 
 
