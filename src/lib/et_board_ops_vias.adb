@@ -646,7 +646,11 @@ package body et_board_ops_vias is
 						log (text => to_string (get_position (via)),
 							level => log_threshold + 2);
 
-						-- CS
+						if invert then
+							clear_moving (via);
+						else
+							set_moving (via);
+						end if;
 					end if;
 				end query_via;
 
