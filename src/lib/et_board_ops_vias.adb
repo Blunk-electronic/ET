@@ -708,9 +708,120 @@ package body et_board_ops_vias is
 		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure selected
+		-- vias are searched for. Once a via
+		-- has been found, this flag is set:
+		via_found : boolean := false;
+
+		-- Here we store the selected via:
+		object_via : type_object_via;
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in out type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_vias;
+				via_cursor : pac_vias.cursor := route.vias.first;
+
+
+				procedure query_via (
+					via : in out type_via)
+				is begin
+					if is_selected (via) then
+
+						log (text => to_string (get_position (via)),
+							level => log_threshold + 2);
+
+						-- We have a selected via.
+						-- The search must be aborted by setting
+						-- this flag:
+						via_found := true;
+
+						-- Deselect the original via.
+						-- This has the important effect, that the
+						-- same via is not found over and over
+						-- again (which would cause a forever-loop):
+						clear_selected (via);
+
+						-- Backup the cursor of the net
+						-- and the via itself:
+						object_via := (via_cursor, net_cursor);
+					end if;
+				end query_via;
+
+
+			begin
+				log (text => "net " & to_string (net_name),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+
+				while has_element (via_cursor) and not via_found loop
+					route.vias.update_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+		begin
+			while has_element (net_cursor) and not via_found loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+
 	begin
-		-- CS
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " copy selected vias by offset "
+			& to_string (offset),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Search for the first selected via in the group.
+		-- Each via that has been found, will be deselected:
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+
+		-- If a via has been found, then the
+		-- flag "via_found" is set.
+		-- This starts the following loop where
+		-- the affected via will be copied.
+
+		-- This loop will be executed as long as selected
+		-- viass exist:
+		while via_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- CS: log the number of vias copied
+
+
+			-- CS: copy via
+
+			-- Restart the search for a selected via:
+			via_found := false;
+
+			generic_modules.update_element (
+				module_cursor, query_module'access);
+		end loop;
+
+
+		log_indentation_down;
 	end copy_selected_vias;
 
 
