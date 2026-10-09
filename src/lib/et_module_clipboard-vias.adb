@@ -193,7 +193,16 @@ package body et_module_clipboard.vias is
 				procedure query_via (
 					via : in type_via)
 				is begin
-					copy_via_to_clipboard (net_cursor, via, log_threshold + 2);
+					if is_selected (via) then
+						log (text => "position " & to_string (get_position (via)),
+							 level => log_threshold + 2);
+
+						log_indentation_up;
+
+						copy_via_to_clipboard (net_cursor, via, log_threshold + 3);
+
+						log_indentation_down;
+					end if;
 				end query_via;
 
 
@@ -254,11 +263,57 @@ package body et_module_clipboard.vias is
 
 		procedure do_paste is
 			use et_module_clipboard;
+			use et_net_names;
+			use pac_nets;
+
+			-- The source to copy from:
+			net_cursor : pac_nets.cursor := clipboard.nets.first;
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in type_net)
+			is
+				use et_route;
+				route : type_net_route renames net.route;
+
+				use pac_vias;
+				via_cursor : pac_vias.cursor := route.vias.first;
+
+
+				procedure query_via (
+					via : in type_via)
+				is
+					via_new : type_via := via;
+				begin
+					move_by (via_new, offset);
+
+					null;
+				end query_via;
+
+
+			begin
+				log (text => "net " & to_string (net_name),
+					level => log_threshold + 1);
+
+				log_indentation_up;
+
+				-- Iterate through the vias:
+				while has_element (via_cursor) loop
+					query_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
 
 
 		begin
-			null;
-			-- CS
+			-- Iterate through the nets in the clipboard:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end do_paste;
 
 
