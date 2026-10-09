@@ -284,11 +284,20 @@ package body et_module_clipboard.vias is
 				procedure query_via (
 					via : in type_via)
 				is
+					use et_board_ops_vias;
+					use et_cmd_origin_to_commit;
+
 					via_new : type_via := via;
 				begin
 					move_by (via_new, offset);
 
-					null;
+					place_via (
+						module_cursor	=> module_cursor,
+						net_name		=> net_name,
+						via				=> via_new,
+						commit_design	=> NO_COMMIT,
+						log_threshold	=> log_threshold + 2);
+
 				end query_via;
 
 
