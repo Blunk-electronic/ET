@@ -42,7 +42,8 @@
 with et_board_geometry;				use et_board_geometry;
 with et_module;
 with et_generic_modules;			use et_generic_modules;
-
+with et_nets;						use et_nets;
+with et_vias;						use et_vias;
 with et_logging;					use et_logging;
 
 
@@ -54,7 +55,20 @@ package et_module_clipboard.vias is
 
 -- COPY:
 
-	-- CS procedure copy a single via
+
+	-- This procedure copies a given via of
+	-- a net to the clipboard.
+	-- 1. If the net does not exist in the clipboard yet,
+	--    then it will be created there with the same properties
+	--    as the given net (like scope or net class). Net segments
+	--    of the schematic and fill zones are not copied.
+	-- 2. If the net does exist, then it will not be created
+	--    anew.
+	-- 3. The given via is added to the route of the net.
+	procedure copy_via_to_clipboard (
+		source_net_cursor	: in pac_nets.cursor;
+		via					: in type_via;
+		log_threshold		: in type_log_level);
 
 
 
