@@ -810,8 +810,8 @@ package body et_board_ops_vias is
 		-- CS: safety measure to avoid forever-loop
 		-- CS: log the number of vias copied
 
-
-			-- CS: copy via
+			copy_via (module_cursor, object_via,
+				offset, NO_COMMIT, log_threshold + 1);
 
 			-- Restart the search for a selected via:
 			via_found := false;
@@ -828,6 +828,26 @@ package body et_board_ops_vias is
 
 
 --------------------------------------------------------------------------------
+
+	function get_net_name (
+		via	: in type_object_via)
+		return type_net_name
+	is begin
+		return get_net_name (via.net_cursor);
+	end get_net_name;
+
+
+
+	function get_via (
+		via	: in type_object_via)
+		return type_via
+	is begin
+		return pac_vias.element (via.via_cursor);
+	end get_via;
+
+
+
+
 	function get_net_name (
 		object : in pac_objects.cursor)
 		return type_net_name
@@ -1308,6 +1328,91 @@ package body et_board_ops_vias is
 		iterate (module.nets, query_net'access, proceed'access);
 		return result;
 	end get_net;
+
+
+
+
+
+
+
+
+
+	procedure copy_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via				: in type_object_via;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		use et_nets;
+		use et_nets.pac_nets;
+
+		net_name : constant type_net_name := get_net_name (via);
+
+		-- Get the original via to be copied:
+		via_original : type_via := get_via (via);
+
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+
+
+			procedure query_net (
+				net_name	: in type_net_name;
+				net			: in out type_net)
+			is
+				pragma unreferenced (net_name);
+			begin
+				-- Move the original via by the given offset
+				-- and append it to the vias of the net:
+				move_by (via_original, offset);
+
+				net.route.vias.append (via_original);
+			end query_net;
+
+
+		begin
+			module.nets.update_element (via.net_cursor, query_net'access);
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (net_name)
+			& " copy via " & to_string (get_position (via_original)),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end copy_via;
+
+
+
+
 
 
 

@@ -160,6 +160,20 @@ package et_board_ops_vias is
 		net_cursor	: pac_nets.cursor;
 	end record;
 
+
+
+	function get_net_name (
+		via	: in type_object_via)
+		return type_net_name;
+
+
+
+	function get_via (
+		via	: in type_object_via)
+		return type_via;
+
+
+
 	package pac_objects is new doubly_linked_lists (type_object_via);
 
 
@@ -230,6 +244,15 @@ package et_board_ops_vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_via)
 		return type_net_name;
+
+
+	-- Copies a via of a net by the given x/y offset:
+	procedure copy_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via				: in type_object_via;
+		offset			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
 
 
 	-- Moves an object:
