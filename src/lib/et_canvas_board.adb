@@ -101,6 +101,8 @@ with et_board_ops_signal_layers;
 with et_pcb_signal_layers;
 with et_terminal_name;
 with et_terminals;
+with et_vias;
+with et_net_names;
 with et_colors;
 with et_mirroring;
 
@@ -709,7 +711,18 @@ package body et_canvas_board is
 
 
 
+	-- Draws the given via. For details see body:
+	procedure draw_via (
+		via				: in et_vias.type_via;
+		net_name		: in et_net_names.type_net_name;
+		group			: in boolean := false;
+		force_highlight	: in boolean := false)
+		is separate;
+
 	procedure draw_conductors is separate;
+
+
+
 	procedure draw_netchangers is separate;
 	procedure draw_route_restrict is separate;
 	procedure draw_via_restrict is separate;
