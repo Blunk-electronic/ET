@@ -4246,9 +4246,7 @@ package body et_canvas is
 		b : type_area;
 
 
-		procedure mirror_line is
-			use et_mirroring;
-		begin
+		procedure mirror_line is begin
 			-- Mirror the line:
 			case mirror is
 				when MIRROR_NO => null;
@@ -4416,10 +4414,32 @@ package body et_canvas is
 		-- Make a copy of the given circle:
 		c : type_circle'class := circle;
 
-
 		-- The bounding-box of the circle. It is required
 		-- for the area and size check:
 		b : type_area;
+
+
+		procedure mirror_circle is begin
+			-- Mirror the circle:
+			case mirror is
+				when MIRROR_NO => null;
+				when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
+				when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
+			end case;
+		end mirror_circle;
+
+
+		procedure modify_position is begin
+			if group_is_moving then
+				if is_moving (c) then
+					move_by (c, get_group_offset);
+				end if;
+			else
+				if is_moving (c) then
+					set_center (c, get_object_tool_position);
+				end if;
+			end if;
+		end modify_position;
 
 
 		procedure do_draw is
@@ -4475,18 +4495,22 @@ package body et_canvas is
 
 
 	begin
-		-- Rotate the center of the circle by pos.rotation:
+		-- Rotate the center of the circle
+		-- by the rotation
+		-- of the parent object:
 		rotate_circle_by (c, pos.rotation);
 
-		-- Mirror the circle:
-		case mirror is
-			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
-		end case;
+		-- Mirror the circle according to the
+		-- mirror mode of the parent object:
+		mirror_circle;
 
-		-- Move the circle to the given position:
+		-- Move the line by the position of the
+		-- parent object:
 		move_by (c, (pos.place.x, pos.place.y));
+
+		-- Modify the position of the circle center
+		-- according to the current active move operation:
+		-- modify_position;
 
 
 		-- DRAW ------------------------------------
