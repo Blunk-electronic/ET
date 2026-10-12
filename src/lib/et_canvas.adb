@@ -4510,7 +4510,7 @@ package body et_canvas is
 
 		-- Modify the position of the circle center
 		-- according to the current active move operation:
-		-- modify_position;
+		modify_position;
 
 
 		-- DRAW ------------------------------------

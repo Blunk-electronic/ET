@@ -4053,6 +4053,13 @@ package body et_geometry_2a is
 	end clear_moving;
 
 
+	procedure set_status (
+		circle		: in out type_circle;
+		status		: in type_object_status)
+	is begin
+		circle.status := status;
+	end set_status;
+
 
 	procedure modify_status (
 		circle		: in out type_circle;

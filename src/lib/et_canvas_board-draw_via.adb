@@ -90,6 +90,7 @@ is
 	-- If the via is being moved, then the center will
 	-- be overwritten by the tool position:
 	circle : type_circle;
+
 	linewidth : type_distance_positive;
 
 	radius_base : type_distance_positive;
@@ -409,9 +410,9 @@ is
 				-- A selected via must be highlighted:
 				brightness := BRIGHT;
 
-				if is_moving (via) then
-					set_center (circle, get_object_tool_position);
-				end if;
+				-- if is_moving (via) then
+				-- 	set_center (circle, get_object_tool_position);
+				-- end if;
 			end if;
 		end if;
 	end set_brightness_and_position;
@@ -451,6 +452,9 @@ is
 
 
 begin
+	-- Copy the status of the given via:
+	set_status (circle, via.status);
+
 	-- Set the radius and the center of the circle:
 	radius_base := via.diameter / 2.0;
 	set_center (circle, via.position);

@@ -1932,6 +1932,10 @@ package et_geometry_2a is
 		circle : in out type_circle);
 
 
+	procedure set_status (
+		circle		: in out type_circle;
+		status		: in type_object_status);
+
 
 	procedure modify_status (
 		circle		: in out type_circle;
