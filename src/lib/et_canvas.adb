@@ -4355,6 +4355,8 @@ package body et_canvas is
 		end if;
 
 
+		-- DRAW ------------------------------------
+
 		-- If the force-flag is set, then the line will
 		-- be drawn regardless of its bounding box and size:
 		if force = DO_FORCE then
@@ -4395,53 +4397,24 @@ package body et_canvas is
 		stroke		: in type_stroke := NO_STROKE)
 	is
 		pragma unreferenced (style);
-		-- CS move the actual drawing to a procedure as in draw_line
-
-		use cairo;
 
 		-- Make a copy of the given circle:
 		c : type_circle'class := circle;
 
-		-- When the circle is drawn, we need a canvas point
-		-- for the center:
-		m : type_logical_pixels_vector;
-
-		r : type_logical_pixels_positive;
 
 		-- The bounding-box of the circle. It is required
 		-- for the area and size check:
 		b : type_area;
 
-	begin
-		-- Rotate the center of the circle by pos.rotation:
-		rotate_circle_by (c, pos.rotation);
 
-		-- Mirror the circle:
-		case mirror is
-			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
-		end case;
+		procedure do_draw is
+			use cairo;
+			-- When the circle is drawn, we need a canvas point
+			-- for the center:
+			m : type_logical_pixels_vector;
 
-		-- Move the circle to the given position:
-		move_by (c, (pos.place.x, pos.place.y));
-
-		-- Get the bounding-box of circle:
-		b := get_bounding_box (c, width);
-		-- put_line ("b " & to_string (b));
-
-		-- Do the area check. If the bounding-box of the circle
-		-- is inside the visible area then draw the circle. Otherwise
-		-- nothing will be drawn:
-		if areas_overlap (visible_area, b) and then
-
-			-- Do the size check. If the bounding-box is greater
-			-- (either in width or heigth) than the visiblity threshold
-			-- then draw the circle. Otherwise nothing will be drawn:
-			above_visibility_threshold (b) then
-
-			-- put_line ("draw_circle");
-
+			r : type_logical_pixels_positive;
+		begin
 			-- If an individual stroke is requested for
 			-- the given circle, then set the linewidth of the
 			-- circumfence:
@@ -4482,8 +4455,42 @@ package body et_canvas is
 				cairo.stroke (context);
 			end if;
 
-
 			-- CS: use OpenGL ?
+		end do_draw;
+
+
+	begin
+		-- Rotate the center of the circle by pos.rotation:
+		rotate_circle_by (c, pos.rotation);
+
+		-- Mirror the circle:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
+		end case;
+
+		-- Move the circle to the given position:
+		move_by (c, (pos.place.x, pos.place.y));
+
+
+		-- DRAW ------------------------------------
+
+		-- Get the bounding-box of circle:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+
+		-- Do the area check. If the bounding-box of the circle
+		-- is inside the visible area then draw the circle. Otherwise
+		-- nothing will be drawn:
+		if areas_overlap (visible_area, b) and then
+
+			-- Do the size check. If the bounding-box is greater
+			-- (either in width or heigth) than the visiblity threshold
+			-- then draw the circle. Otherwise nothing will be drawn:
+			above_visibility_threshold (b) then
+
+			do_draw;
 		end if;
 	end draw_circle;
 
