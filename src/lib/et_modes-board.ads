@@ -207,9 +207,13 @@ package et_modes.board is
 		VERB_FILL		=> (NOUN_ZONE => true,								others => false),
 		VERB_FLIP		=> (NOUN_DEVICE => true,							others => false),
 		VERB_MAKE		=> (NOUN_BOM | NOUN_PNP => true,					others => false),
-		VERB_MOVE		=> (NOUN_FRAME | NOUN_CURSOR | NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE
-							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE | NOUN_VIA | NOUN_GROUP => true,
+
+		VERB_MOVE		=> (NOUN_FRAME | NOUN_CONDUCTORS | NOUN_CURSOR 
+							| NOUN_DEVICE | NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE
+							| NOUN_PURPOSE | NOUN_NETCHANGER | NOUN_SUBMODULE 
+							| NOUN_VIA | NOUN_GROUP => true,
 							others => false),
+
 		VERB_PASTE		=> (NOUN_GROUP => true,	others => false),
 		VERB_PLACE		=> (NOUN_VIA | NOUN_TEXT | NOUN_PLACEHOLDER => true,	others => false),
 		VERB_QUIT		=> (NOUN_NONE => true,								others => false),
