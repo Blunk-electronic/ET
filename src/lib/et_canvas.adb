@@ -4237,13 +4237,68 @@ package body et_canvas is
 		force		: in type_force := NO_FORCE)
 	is
 		pragma unreferenced (style);
+
 		-- Make a copy of the given line:
 		l : type_line'class := line;
-
 
 		-- The bounding-box of the line. It is required
 		-- for the area and size check:
 		b : type_area;
+
+
+		procedure mirror_line is
+			use et_mirroring;
+		begin
+			-- Mirror the line:
+			case mirror is
+				when MIRROR_NO => null;
+				when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
+				when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
+			end case;
+		end mirror_line;
+
+
+		procedure modify_position is begin
+		-- Here we modify the line in case it is being moved:
+		--
+		-- If the line is set as "moving", then
+		-- its position will be modified according to the
+		-- object_point_of_attack and the current tool position.
+		-- Otherwise, if the start/end point of the line is moving
+		-- or begin dragged, then the line start/end points (A/B) will be moved
+		-- either by:
+		-- 1. current object_displacement. If object_displacement
+		--    is zero, then the line will be drawn as it is:
+		-- 2. the offset by by which the group is being dragged.
+		--
+			if is_moving (l) then -- case A
+				attack (l, object_point_of_attack, get_object_tool_position);
+			else
+				-- If a group is being moved (or dragged):
+				if group_is_moving then -- case B
+					-- Move start/end point by global group offset:
+					if is_A_moving (l) then
+						move_A_by (l, get_group_offset);
+					end if;
+
+					if is_B_moving (l) then
+						move_B_by (l, get_group_offset);
+					end if;
+
+				-- If the line is being dragged along with
+				-- another object:
+				else -- case C
+					-- Move start/end point by global object_displacement:
+					if is_A_moving (l) then
+						move_A_by (l, object_displacement);
+					end if;
+
+					if is_B_moving (l) then
+						move_B_by (l, object_displacement);
+					end if;
+				end if;
+			end if;
+		end modify_position;
 
 
 		procedure do_draw is
@@ -4298,62 +4353,22 @@ package body et_canvas is
 		end do_draw;
 
 
-
-		use et_mirroring;
 	begin
-		-- Rotate the line by pos.rotation
+		-- Rotate the line by the rotation
+		-- of the parent object:
 		rotate_line_by (l, pos.rotation);
 
-		-- Mirror the line:
-		case mirror is
-			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
-		end case;
+		-- Mirror the line according to the
+		-- mirror mode of the parent object:
+		mirror_line;
 
-		-- Move the line to the given position:
+		-- Move the line by the position of the
+		-- parent object:
 		move_by (l, (pos.place.x, pos.place.y));
 
-		-- Here we modify the line in case it is being moved:
-		--
-		-- If the line is set as "moving", then
-		-- its position will be modified according to the
-		-- object_point_of_attack and the current tool position.
-		-- Otherwise, if the start/end point of the line is moving
-		-- or begin dragged, then the line start/end points (A/B) will be moved
-		-- either by:
-		-- 1. current object_displacement. If object_displacement
-		--    is zero, then the line will be drawn as it is:
-		-- 2. the offset by by which the group is being dragged.
-		--
-		if is_moving (l) then
-			attack (l, object_point_of_attack, get_object_tool_position);
-		else
-			-- If a group is being moved (or dragged):
-			if group_is_moving then
-				-- Move start/end point by global group offset:
-				if is_A_moving (l) then
-					move_A_by (l, get_group_offset);
-				end if;
-
-				if is_B_moving (l) then
-					move_B_by (l, get_group_offset);
-				end if;
-
-			-- If the line is being dragged along with
-			-- another object:
-			else
-				-- Move start/end point by global object_displacement:
-				if is_A_moving (l) then
-					move_A_by (l, object_displacement);
-				end if;
-
-				if is_B_moving (l) then
-					move_B_by (l, object_displacement);
-				end if;
-			end if;
-		end if;
-
+		-- Modify the position of the start, end or both
+		-- according to the current active move operation:
+		modify_position;
 
 		-- DRAW ------------------------------------
 

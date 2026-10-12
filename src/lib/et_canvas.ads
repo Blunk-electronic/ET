@@ -1598,6 +1598,7 @@ package et_canvas is
 	-- In case there is no parent object then the pos argument
 	-- can be omitted which results in a default of (0;0) and 0 degree.
 	-- Regarding the argument 'stroke' there are two modes:
+	--
 	-- 1. If the argument 'stroke' is NO_STROKE (default) then
 	--  no setting of linewidth and no stroking will be done. In this
 	--  case it is assumed that the caller has already set a linewidth
@@ -1606,17 +1607,29 @@ package et_canvas is
 	--  requires less time for drawing the line than with DO_STROKE
 	--  and should be used when many lines of same linewidth have to be drawn.
 	--  An explicit call of the stroke procedure is required finally.
+	--
 	-- 2. If 'stroke' is DO_STROKE, then the given linewidth is applied,
 	--  the color previously set by the caller is applied,
 	--  the line drawn and finally a stroke command executed.
 	--  If the given linewidth is zero, then a minimum linewidth is
 	--  ensured internally that is independed of the zoom-factor.
+	--
 	-- 3. If force is DO_FORCE, then the line will be drawn independed
 	--  of its bounding-box (area check) and size. This mode is required
 	--  if the line is part of a contour or a zone (or a path).
-	-- 4. If the line is being moved by the
-	--  operator then it gets drawn according to the current
-	--  point_of_attack and object_tool:
+	--
+	-- 4. If the line is being moved or attacked then these mechanisms apply:
+	--  A) The operator is attacking the line at its center, end or its
+	--     start: The line is drawn according to the current
+	--     point_of_attack and object_tool.
+	--  B) A group is being moved: The line is moved either by its
+	--     end, start or both.
+	--  C) The line is dragged along with other objects: In this
+	--     case start, end or both is moved by the object_displacement.
+	--
+	-- 5. The mirror argument tells the procedure if the complex parent
+	--   object is mirrored along the x or y axis. Depending on that the
+	--   line is drawn mirrored.
 	--
 	-- NOTE: The path argument is a makeshift as long as there
 	-- in no procedure to draw a path. If 'path' is DRAW_PATH, then
