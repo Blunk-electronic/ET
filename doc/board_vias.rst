@@ -97,7 +97,24 @@ Moving Vias
 
 	|VNS| m v
 
-	
+	This example moves a the via that is at
+	x/y location 40/11 in the catch zone of 2mmm
+	by an offset of 0/1:
+
+	.. code-block::
+
+		move via 40 11 2 relative 0 1
+
+
+	This example moves a the via that is at
+	x/y location 40/11 in the catch zone of 2mmm
+	to a destination 41/10:
+
+	.. code-block::
+
+		move via 40 11 2 absolute 41 10
+
+
 	
 Deleting Vias
 ^^^^^^^^^^^^^
