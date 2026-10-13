@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -79,6 +79,45 @@ package body et_board_ops_vias is
 		return result;
 	end get_via_positions;
 
+
+
+
+
+
+
+
+	procedure move_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in type_module_name;
+			module		: in out type_generic_module)
+		is
+			pragma unreferenced (module_name);
+		begin
+			-- CS
+			null;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " move via",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+
+		log_indentation_down;
+	end move_via;
 
 
 

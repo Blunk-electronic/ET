@@ -71,6 +71,18 @@ package et_board_ops_vias is
 		return pac_points.list;
 
 
+	-- Moves a via that is in the given catch zone.
+	-- Argument coordinates determines whether to move
+	-- absolute or relative as given by argument point:
+	procedure move_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+
 
 	-- Sets the proposed-flag of all vias which are
 	-- in the given zone around the given place

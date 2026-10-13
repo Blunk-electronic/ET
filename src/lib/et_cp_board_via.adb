@@ -41,10 +41,10 @@
 --
 
 -- with ada.text_io;			use ada.text_io;
-with et_string_processing;		use et_string_processing;
-with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 with ada.characters.handling;			use ada.characters.handling;
 
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 with et_modes.board;					use et_modes.board;
 with et_module;							use et_module;
@@ -59,7 +59,7 @@ with et_net_names;
 with et_drills;
 with et_design_rules_board;
 with et_vias;
-
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_via is
@@ -71,7 +71,7 @@ package body et_cp_board_via is
 
 	procedure set_via_properties (
 		module			: in pac_generic_modules.cursor;
-		cmd			: in out type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -241,7 +241,7 @@ package body et_cp_board_via is
 
 	procedure place_via (
 		module			: in pac_generic_modules.cursor;
-		cmd			: in out type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -485,12 +485,63 @@ package body et_cp_board_via is
 
 	procedure move_via (
 		module			: in pac_generic_modules.cursor;
-		cmd			: in out type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is begin
-		null;
-		-- CS
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
+		procedure do_it is
+			use et_board_ops_vias;
+			destination_or_offset : type_vector_model;
+			coordinates	: type_coordinates;
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
+				radius	=> to_zone_radius (get_field (cmd, 7)));
+
+			-- relative/absolute:
+			coordinates := to_coordinates (get_field (cmd, 8));
+
+			destination_or_offset := to_vector_model (
+				get_field (cmd, 9), get_field (cmd, 10));
+
+
+			move_via (
+				module_cursor	=> module,
+				catch_zone		=> catch_zone,
+				coordinates		=> coordinates,
+				point			=> destination_or_offset,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
+
+	begin
+		log (text => "move via", level => log_threshold);
+		log_indentation_up;
+
+		case cmd_field_count is
+			when 10 =>
+				do_it;
+
+			when 11 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+
+			when others =>
+				command_incomplete (cmd);
+		end case;
+
+		log_indentation_down;
 	end move_via;
+
+
 
 
 
@@ -498,7 +549,7 @@ package body et_cp_board_via is
 
 	procedure delete_via (
 		module			: in pac_generic_modules.cursor;
-		cmd			: in out type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is begin
 		null;
