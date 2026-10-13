@@ -66,17 +66,13 @@ with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 separate (et_canvas_board)
 
 -- Draws a given via.
--- 1. If group is true, then the via is not highlighted
---    and its position not modified.
+-- 1. If the via is selected then it will be highlighted.
 -- 2. If force_highlight is true, then the via will be
 --    drawn highlighted in any case.
--- CS: This scheme seems complicated and should probably
--- be reworked.
 
 procedure draw_via (
 	via				: in type_via;
 	net_name		: in type_net_name; -- CS: pass a cursor to a net instead ?
-	group			: in boolean := false;
 	force_highlight	: in boolean := false)
 is
 	-- By default the via is drawn with normal brightness.
@@ -394,28 +390,12 @@ is
 
 
 
-	-- If the via is member of a group being pasted,
-	-- then nothing happens here. Otherwise:
-	-- 1. If the via is selected, then it gets highlighted.
-	-- 2. If the via is moving, then its position is set
-	--    according to the tool being used.
-	procedure set_brightness_and_position is
-	begin
-		if not group then
-
-			-- Overwrite the via position (circle.center) if the
-			-- via is selected and being moved:
-			if is_selected (via) then
-
-				-- A selected via must be highlighted:
-				brightness := BRIGHT;
-
-				-- if is_moving (via) then
-				-- 	set_center (circle, get_object_tool_position);
-				-- end if;
-			end if;
+	-- If the via is selected, then it gets highlighted.
+	procedure set_brightness is begin
+		if is_selected (via) then
+			brightness := BRIGHT;
 		end if;
-	end set_brightness_and_position;
+	end set_brightness;
 
 
 
@@ -454,12 +434,14 @@ is
 begin
 	-- Copy the status of the given via:
 	set_status (circle, via.status);
+	-- CS: This is a makeshift. Once type_via is derived
+	-- from type_circle this is no longer necessary.
 
 	-- Set the radius and the center of the circle:
 	radius_base := via.diameter / 2.0;
 	set_center (circle, via.position);
 
-	set_brightness_and_position;
+	set_brightness;
 
 	-- Override the brightness if the caller requested so:
 	if force_highlight then

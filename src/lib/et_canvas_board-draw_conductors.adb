@@ -865,23 +865,45 @@ procedure draw_conductors is
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				-- If the whole net is selected, then
-				-- this flag should improve perfomance.
-				-- It indicates that individual vias
-				-- are not to be tested whether they are selected:
+				-- this flag is set so that all vias are highlighted:
 				draw_all_highlighted : boolean := false;
 
 
-				procedure draw_via (via : in type_via) is begin
+				procedure draw_via (
+					via : in type_via)
+				is begin
+					-- Draw the original via as it is. If the
+					-- via is selected, then the following procedue
+					-- cares about highlighting the via.
+					-- If the whole net is selected, then the via
+					-- will be highlighted in any case via the
+					-- flag draw_all_highlighted:
 					draw_via (
 						via				=> via,
 						net_name		=> net_name,
-						group			=> false,
 						force_highlight	=> draw_all_highlighted);
 
+					-- If a group is being copied and the via is
+					-- inside the group, then draw a copy of the original
+					-- via offset by the group offset:
+					if group_is_being_copied and then
+					is_selected (via) then
+						declare
+							via_copy : type_via := via;
+						begin
+							move_by (via_copy, get_group_offset);
+
+							draw_via (
+								via			=> via_copy,
+								net_name	=> net_name);
+						end;
+					end if;
 				end draw_via;
 
 
 			begin
+				-- If the whole net is selected, then all
+				-- vias must be highlighted:
 				if is_selected (net) then
 					draw_all_highlighted := true;
 				end if;
@@ -1146,8 +1168,7 @@ procedure draw_conductors is
 		begin
 			draw_via (
 				via			=> via,
-				net_name	=> net_name,
-				group		=> false);
+				net_name	=> net_name);
 
 		end build_via_through;
 
@@ -1164,8 +1185,7 @@ procedure draw_conductors is
 		begin
 			draw_via (
 				via			=> via,
-				net_name	=> net_name,
-				group		=> false);
+				net_name	=> net_name);
 
 		end build_via_drilled_from_top;
 
@@ -1182,8 +1202,7 @@ procedure draw_conductors is
 		begin
 			draw_via (
 				via			=> via,
-				net_name	=> net_name,
-				group		=> false);
+				net_name	=> net_name);
 
 		end build_via_drilled_from_bottom;
 
@@ -1199,8 +1218,7 @@ procedure draw_conductors is
 		begin
 			draw_via (
 				via			=> via,
-				net_name	=> net_name,
-				group		=> false);
+				net_name	=> net_name);
 
 		end build_via_buried;
 
@@ -1435,12 +1453,11 @@ procedure draw_conductors is
 				begin
 					move_by (via_new, offset);
 
-					-- The via is member of a group
-					-- and must be drawn highlighted:
+					-- The via is member of a group,
+					-- and therefore it must be highlighted:
 					draw_via (
 						via				=> via_new,
 						net_name		=> net_name,
-						group			=> true,
 						force_highlight	=> true);
 
 				end draw_via;

@@ -4430,11 +4430,16 @@ package body et_canvas is
 
 
 		procedure modify_position is begin
+			-- If the circle is being moved inside a group,
+			-- then it must be moved by the group offset:
 			if group_is_moving then
 				if is_moving (c) then
 					move_by (c, get_group_offset);
 				end if;
 			else
+			-- If the circle is being moved alone,
+			-- then it must be moved where the tool
+			-- is pointing to:
 				if is_moving (c) then
 					set_center (c, get_object_tool_position);
 				end if;

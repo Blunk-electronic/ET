@@ -715,7 +715,6 @@ package body et_canvas_board is
 	procedure draw_via (
 		via				: in et_vias.type_via;
 		net_name		: in et_net_names.type_net_name;
-		group			: in boolean := false;
 		force_highlight	: in boolean := false)
 		is separate;
 
