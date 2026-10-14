@@ -90,12 +90,17 @@ with et_text_vectorized;
 with et_mirroring;				use et_mirroring;
 with et_colors;					use et_colors;
 
+with et_basic_objects;
 
 
 generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	with package pac_geometry is new et_geometry_2a (<>);
+
+	with package pac_basic_objects is new et_basic_objects (
+		pac_geometry => pac_geometry);
+
 	with package pac_grid is new pac_geometry.grid;
 	with package pac_path is new pac_geometry.path;
 

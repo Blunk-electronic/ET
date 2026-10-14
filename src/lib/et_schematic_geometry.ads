@@ -46,6 +46,8 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
+with et_basic_objects;
+
 with et_geometry_2_file_rw;
 
 -- with system.assertions;
@@ -114,6 +116,12 @@ package et_schematic_geometry is
 		);
 
 	use pac_geometry_2;
+
+
+
+	package pac_basic_objects is new et_basic_objects (
+		pac_geometry	=> pac_geometry_2);
+
 
 
 	package pac_grid is new pac_geometry_2.grid;

@@ -71,10 +71,10 @@ package et_basic_objects is
 	end record;
 
 
-	type type_circle is new type_object with record
+	type type_circle_2 is new type_object with record
 		radius : type_distance_positive := 0.0;
 	end record;
-	
+
 
 	a : natural := 0;
 
