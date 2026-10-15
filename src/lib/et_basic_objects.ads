@@ -40,21 +40,12 @@
 --
 --
 
-
-with ada.containers;				use ada.containers;
-with ada.containers.doubly_linked_lists;
-
-
-
 with et_axes;						use et_axes;
 with et_geometry_2a;
 
-with et_string_processing;			use et_string_processing;
 with et_object_status;				use et_object_status;
 with et_mirroring;					use et_mirroring;
-with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_directions;					use et_directions;
-
+-- with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 generic
@@ -169,10 +160,6 @@ package et_basic_objects is
 
 
 
-
-	type type_circle_2 is new type_object with record
-		radius : type_distance_positive := 0.0;
-	end record;
 
 
 	type type_object_with_rotation is new type_object with record
