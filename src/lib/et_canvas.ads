@@ -91,6 +91,8 @@ with et_mirroring;				use et_mirroring;
 with et_colors;					use et_colors;
 
 with et_basic_objects;
+with et_basic_objects.circle;
+with et_contours;
 
 
 generic
@@ -100,6 +102,12 @@ generic
 
 	with package pac_basic_objects is new et_basic_objects (
 		pac_geometry => pac_geometry);
+
+	with package pac_basic_objects_circle is new pac_basic_objects.circle;
+
+	with package pac_contours_2 is new et_contours (
+		pac_objects	=> pac_basic_objects,
+		pac_circle	=> pac_basic_objects_circle);
 
 	with package pac_grid is new pac_geometry.grid;
 	with package pac_path is new pac_geometry.path;

@@ -110,6 +110,8 @@ package et_canvas_schematic is
 		canvas_name			=> "schematic", -- CS provide domain name like scripting.type_domain
 		pac_geometry		=> et_schematic_geometry.pac_geometry_2,
 		pac_basic_objects	=> et_schematic_geometry.pac_basic_objects,
+		pac_basic_objects_circle => et_schematic_geometry.pac_basic_objects_circle,
+		pac_contours_2		=> et_schematic_geometry.pac_contours_2,
 		pac_grid			=> et_schematic_geometry.pac_grid,
 		pac_path			=> et_schematic_geometry.pac_path_and_bend,
 		pac_offsetting		=> et_schematic_geometry.pac_polygon_offsetting,

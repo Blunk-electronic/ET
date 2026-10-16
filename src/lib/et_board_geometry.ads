@@ -49,6 +49,8 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 
 with et_basic_objects;
+with et_basic_objects.circle;
+with et_contours;
 
 with et_geometry_2_file_rw;
 
@@ -136,6 +138,17 @@ package et_board_geometry is
 
 	package pac_basic_objects is new et_basic_objects (
 		pac_geometry	=> pac_geometry_2);
+
+	-- use pac_basic_objects;
+
+
+	package pac_basic_objects_circle is new pac_basic_objects.circle;
+
+	package pac_contours_2 is new et_contours (
+		pac_objects	=> pac_basic_objects,
+		pac_circle	=> pac_basic_objects_circle);
+
+
 
 
 
