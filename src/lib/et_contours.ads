@@ -43,12 +43,14 @@
 -- with et_primitive_objects;		use et_primitive_objects;
 with et_basic_objects;
 with et_basic_objects.circle;
+with et_basic_objects.arc;
 
 
 generic
 
 	with package pac_objects is new et_basic_objects (<>);
 	with package pac_circle is new pac_objects.circle;
+	with package pac_arc is new pac_objects.arc;
 
 package et_contours is
 	use pac_objects;

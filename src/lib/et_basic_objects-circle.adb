@@ -43,6 +43,17 @@
 
 package body et_basic_objects.circle is
 
+	function to_radius (
+		r : in string)
+		return type_distance_positive
+	is (type_distance_positive'value (r));
+
+
+	function to_radius (
+		r : in type_distance_positive)
+		return type_float_positive
+	is (type_float_positive (r));
+
 
 	function get_radius (
 		circle : in type_circle)
@@ -56,6 +67,111 @@ package body et_basic_objects.circle is
 	is begin
 		circle.radius := radius;
 	end set_radius;
+
+
+
+
+	function to_circle (
+		center	: in type_vector_model;
+		radius	: in type_distance_positive)
+		return type_circle'class
+	is
+		circle : type_circle;
+	begin
+		circle.place := center;
+		circle.radius := radius;
+
+		return circle;
+	end to_circle;
+
+
+
+	procedure reset_circle (
+		c : in out type_circle)
+	is begin
+		c := (others => <>);
+	end reset_circle;
+
+
+	function to_circle_fine (
+		circle : in type_circle)
+		return type_circle_fine
+	is
+		c : type_circle_fine;
+	begin
+		set_center (c, to_vector (get_place (circle)));
+		set_radius (c, type_float_positive (get_radius (circle)));
+
+		return c;
+	end to_circle_fine;
+
+
+
+	function to_string (
+		circle : in type_circle)
+		return string
+	is ("C: " & to_string (get_place (circle))
+		& " R: " & to_string (get_radius (circle)));
+
+
+
+	function get_intersection (
+		circle	: in type_circle;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle
+	is
+		C : constant type_circle_fine := to_circle_fine (circle);
+	begin
+		return get_intersection (C, line);
+	end get_intersection;
+
+
+
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector_model)
+		return type_distance_polar
+	is
+		C : constant type_circle_fine := to_circle_fine (circle);
+		P : constant type_vector := to_vector (point);
+	begin
+		return get_shortest_distance (C, P);
+	end get_shortest_distance;
+
+
+
+
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector)
+		return type_float_positive
+	is
+		C : constant type_circle_fine := to_circle_fine (circle);
+		P : type_vector renames point;
+	begin
+		return get_absolute (get_shortest_distance (C, P));
+	end get_shortest_distance;
+
+
+
+	function in_area (
+		circle	: in type_circle;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- We regard the circle as "in the area" if
+		-- its center lies in
+		-- the given area:
+		if in_area (get_place (circle), area) then
+			result := true;
+		else
+			result := false;
+		end if;
+
+		return result;
+	end in_area;
 
 
 end et_basic_objects.circle;

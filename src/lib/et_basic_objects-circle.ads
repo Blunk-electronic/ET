@@ -56,7 +56,34 @@ package et_basic_objects.circle is
 	end record;
 
 
+	-- Mirrors the center of a circle along the given axis.
+	-- CS: no need. use inherited mirror_along_axis
+	procedure mirror_circle (
+		circle		: in out type_circle;
+		axis		: in type_mirror)
+		renames mirror_along_axis;
+
+
+	-- Rotates the center of acirlce about the origin:
+	-- CS: no need. use inherited rotate_about_origin
+	procedure rotate_circle_by (
+		circle		: in out type_circle;
+		rotation	: in type_rotation)
+		renames rotate_about_origin;
+
+
+
 -- RADIUS:
+
+	function to_radius (
+		r : in string)
+		return type_distance_positive;
+
+
+	function to_radius (
+		r : in type_distance_positive)
+		return type_float_positive;
+
 
 	function get_radius (
 		circle : in type_circle)
@@ -66,6 +93,65 @@ package et_basic_objects.circle is
 	procedure set_radius (
 		circle	: in out type_circle;
 		radius	: in type_distance_positive);
+
+
+	function to_circle (
+		center	: in type_vector_model;
+		radius	: in type_distance_positive)
+		return type_circle'class;
+
+
+	-- Resets the center to origin
+	-- and radius to zero:
+	procedure reset_circle (
+		c : in out type_circle);
+
+
+	function to_circle_fine (
+		circle : in type_circle)
+		return type_circle_fine;
+
+
+
+	-- Returns the center and radius of the given circle as string
+	-- in the form "C: x/y R: r". C is the center, R is the radius:
+	function to_string (
+		circle : in type_circle)
+		-- CS: parameter for format
+		return string;
+
+
+	function get_intersection (
+		circle	: in type_circle;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle;
+
+
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector_model)
+		return type_distance_polar;
+
+
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector)
+		return type_float_positive;
+
+
+
+	-- This function returns true if the given circle
+	-- is in the given area.
+	-- "In the area" means: The center of the
+	-- circle is in the area:
+	function in_area (
+		circle	: in type_circle;
+		area	: in type_area)
+		return boolean;
+	-- CS: an additional parameter could be used
+	-- to test if the circle circumfence crosses the area
+
+
 
 end et_basic_objects.circle;
 

@@ -54,6 +54,7 @@ generic
 
 package et_basic_objects is
 	use pac_geometry;
+	use pac_geometry.pac_geometry_1;
 
 
 	type type_object is abstract tagged record
@@ -72,6 +73,12 @@ package et_basic_objects is
 	procedure move_to (
 		object	: in out type_object;
 		place	: in type_vector_model);
+
+	procedure set_place (
+		object	: in out type_object;
+		place	: in type_vector_model)
+		renames move_to;
+
 
 	procedure move_by (
 		object	: in out type_object;

@@ -114,7 +114,8 @@ package et_canvas_board is
 		canvas_name			=> "board", -- CS provide domain name like scripting.type_domain
 		pac_geometry		=> et_board_geometry.pac_geometry_2,
 		pac_basic_objects	=> et_board_geometry.pac_basic_objects,
-		pac_basic_objects_circle => et_board_geometry.pac_basic_objects_circle,
+		pac_basic_objects_circle	=> et_board_geometry.pac_basic_objects_circle,
+		pac_basic_objects_arc		=> et_board_geometry.pac_basic_objects_arc,
 		pac_contours_2		=> et_board_geometry.pac_contours_2,
 		pac_grid			=> et_board_geometry.pac_grid,
 		pac_path			=> et_board_geometry.pac_path_and_bend,

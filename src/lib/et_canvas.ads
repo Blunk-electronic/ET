@@ -92,6 +92,7 @@ with et_colors;					use et_colors;
 
 with et_basic_objects;
 with et_basic_objects.circle;
+with et_basic_objects.arc;
 with et_contours;
 
 
@@ -104,10 +105,12 @@ generic
 		pac_geometry => pac_geometry);
 
 	with package pac_basic_objects_circle is new pac_basic_objects.circle;
+	with package pac_basic_objects_arc is new pac_basic_objects.arc;
 
 	with package pac_contours_2 is new et_contours (
 		pac_objects	=> pac_basic_objects,
-		pac_circle	=> pac_basic_objects_circle);
+		pac_circle	=> pac_basic_objects_circle,
+		pac_arc		=> pac_basic_objects_arc);
 
 	with package pac_grid is new pac_geometry.grid;
 	with package pac_path is new pac_geometry.path;
