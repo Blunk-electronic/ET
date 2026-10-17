@@ -586,7 +586,7 @@ package body et_contours is
 		is (to_lower (get_field (arguments, place)));
 
 		l : type_line;
-		a : pac_arc.type_arc;
+		a : type_arc;
 		c : pac_circle.type_circle;
 
 		-- The shape of the segment being processed:
@@ -1961,7 +1961,7 @@ package body et_contours is
 
 
 		function crosses_threshold (
-			arc			: in pac_arc.type_arc;
+			arc			: in type_arc;
 			y_threshold	: in type_float)
 			return boolean
 		is begin
@@ -2041,8 +2041,8 @@ package body et_contours is
 
 
 
-		procedure query_arc (a : in pac_arc.type_arc) is
-			a_norm : constant pac_arc.type_arc := pac_arc.type_arc (normalize_arc (a));
+		procedure query_arc (a : in type_arc) is
+			a_norm : constant type_arc := type_arc (normalize_arc (a));
 
 			-- the radius of the arc:
 			unused_radius : constant type_float_positive := get_radius_start (a_norm);

@@ -173,6 +173,18 @@ package et_basic_objects.arc is
 
 
 
+	-- Moves an arc by the given offset.
+	overriding procedure move_by (
+		arc		: in out type_arc;
+		offset	: in type_vector_model);
+
+
+	-- Moves an arc to the given position.
+	overriding procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector_model);
+
+
 
 
 	-- Mirrors an arc along the given axis.

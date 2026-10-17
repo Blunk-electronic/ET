@@ -244,6 +244,36 @@ package body et_basic_objects.arc is
 
 
 
+	procedure move_by (
+		arc		: in out type_arc;
+		offset	: in type_vector_model)
+	is begin
+		move_by (point => arc.place, offset => offset);
+		move_by (point => arc.A, offset => offset);
+		move_by (point => arc.B, offset => offset);
+	end move_by;
+
+
+
+	procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector_model)
+	is
+		offset : constant type_vector_model :=
+			get_distance_relative (arc.place, position);
+	begin
+		-- move the center of the arc to the given position
+		move_to (arc.place, position);
+
+		-- move start and end point of the arc by the computed offset
+		move_by (point => arc.A, offset => offset);
+		move_by (point => arc.B, offset => offset);
+	end move_to;
+
+
+
+
+
 	procedure mirror_arc (
 		arc			: in out type_arc;
 		axis		: in type_mirror)
