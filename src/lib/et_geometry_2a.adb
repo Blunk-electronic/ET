@@ -3475,7 +3475,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return boolean
 	is
-		result : boolean := false;
+		result : constant boolean := false;
 	begin
 		-- CS
 		return result;

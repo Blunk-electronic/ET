@@ -61,10 +61,12 @@ generic
 	with package pac_geometry_1 is new et_geometry_1 (<>);
 
 	type type_distance is delta <> digits <>;
+	-- CS rename to type_distance_in ?
 
 	axis_min, axis_max : type_distance;
 
 	type type_rotation is delta <> digits <>;
+	-- CS rename to type_rotation_in ?
 
 
 package et_geometry_2a is
@@ -219,6 +221,8 @@ package et_geometry_2a is
 
 
 -- ROTATION / ANGLE:
+
+	subtype type_rotation_2 is type_rotation; -- CS see header
 
 	zero_rotation : constant type_rotation := 0.0;
 
@@ -1390,6 +1394,7 @@ package et_geometry_2a is
 		line	: in type_line;
 		width	: in type_distance_positive)
 		return type_area;
+	-- CS: move to et_bounding_box
 
 
 
@@ -2321,6 +2326,7 @@ package et_geometry_2a is
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
+	-- CS: move to et_bounding_box
 
 
 	-- Computes the bounding-box of a given arc

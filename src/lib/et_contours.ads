@@ -36,11 +36,12 @@
 --   history of changes:
 --
 
--- with ada.containers;			use ada.containers;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers;			use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 
--- with et_primitive_objects;		use et_primitive_objects;
+with et_primitive_objects;		use et_primitive_objects;
+
 with et_basic_objects;
 with et_basic_objects.circle;
 with et_basic_objects.arc;

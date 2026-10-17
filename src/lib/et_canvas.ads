@@ -94,6 +94,7 @@ with et_basic_objects;
 with et_basic_objects.circle;
 with et_basic_objects.arc;
 with et_contours;
+with et_bounding_box;
 
 
 generic
@@ -108,6 +109,11 @@ generic
 	with package pac_basic_objects_arc is new pac_basic_objects.arc;
 
 	with package pac_contours_2 is new et_contours (
+		pac_objects	=> pac_basic_objects,
+		pac_circle	=> pac_basic_objects_circle,
+		pac_arc		=> pac_basic_objects_arc);
+
+	with package pac_bounding_box is new et_bounding_box (
 		pac_objects	=> pac_basic_objects,
 		pac_circle	=> pac_basic_objects_circle,
 		pac_arc		=> pac_basic_objects_arc);
