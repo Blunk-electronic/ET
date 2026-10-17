@@ -44,7 +44,7 @@ with et_geometry_1.et_polygons.offsetting;
 with et_geometry_2a;
 with et_geometry_2a.grid;
 with et_geometry_2a.path;
-with et_geometry_2a.contours;
+-- with et_geometry_2a.contours;
 
 with et_basic_objects;
 with et_basic_objects.circle;
@@ -138,7 +138,7 @@ package et_schematic_geometry is
 		pac_arc		=> pac_basic_objects_arc);
 
 
-	package pac_contours_2 is new et_contours (
+	package pac_contours is new et_contours (
 		pac_objects			=> pac_basic_objects,
 		pac_circle			=> pac_basic_objects_circle,
 		pac_arc				=> pac_basic_objects_arc,
@@ -151,7 +151,7 @@ package et_schematic_geometry is
 
 	-- These packages are never used in schematic but are
 	-- required for instantiation of some generic packages:
-	package pac_contours is new pac_geometry_2.contours;
+	-- package pac_contours is new pac_geometry_2.contours;
 	package pac_polygons is new pac_geometry_1.et_polygons;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 

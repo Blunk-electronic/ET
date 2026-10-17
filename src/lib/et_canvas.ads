@@ -84,7 +84,7 @@ with et_logging;				use et_logging;
 
 with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
-with et_geometry_2a.contours;
+-- with et_geometry_2a.contours;
 with et_text;
 with et_text_vectorized;
 with et_mirroring;				use et_mirroring;
@@ -113,7 +113,7 @@ generic
 		pac_circle	=> pac_basic_objects_circle,
 		pac_arc		=> pac_basic_objects_arc);
 
-	with package pac_contours_2 is new et_contours (
+	with package pac_contours is new et_contours (
 		pac_objects			=> pac_basic_objects,
 		pac_circle			=> pac_basic_objects_circle,
 		pac_arc				=> pac_basic_objects_arc,
@@ -124,7 +124,7 @@ generic
 
 	with package pac_polygons is new pac_geometry.pac_geometry_1.et_polygons;
 	with package pac_offsetting is new pac_polygons.offsetting;
-	with package pac_contours is new pac_geometry.contours;
+	-- with package pac_contours is new pac_geometry.contours;
 
 	with package pac_text is new et_text.generic_pac_text (
 		-- The  package must have been instantiated with these packages:
