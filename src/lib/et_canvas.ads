@@ -145,6 +145,8 @@ generic
 package et_canvas is
 	use pac_geometry;
 	use pac_grid;
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 	-- This variable serves for logging debug messages an other stuff.

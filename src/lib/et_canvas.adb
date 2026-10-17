@@ -4410,9 +4410,11 @@ package body et_canvas is
 		stroke		: in type_stroke := NO_STROKE)
 	is
 		pragma unreferenced (style);
+		use pac_bounding_box;
 
 		-- Make a copy of the given circle:
-		c : type_circle'class := circle;
+		-- c : type_circle'class := circle;
+		c : type_circle := type_circle (circle);
 
 		-- The bounding-box of the circle. It is required
 		-- for the area and size check:
@@ -4441,7 +4443,7 @@ package body et_canvas is
 			-- then it must be moved where the tool
 			-- is pointing to:
 				if is_moving (c) then
-					set_center (c, get_object_tool_position);
+					set_place (c, get_object_tool_position);
 				end if;
 			end if;
 		end modify_position;
@@ -4471,7 +4473,7 @@ package body et_canvas is
 			end if;
 
 
-			m := real_to_canvas (get_center (c), S);
+			m := real_to_canvas (get_place (c), S);
 			r := to_distance (get_radius (c));
 
 			-- required to suppress an initial line:
@@ -4556,6 +4558,8 @@ package body et_canvas is
 		force		: in type_force := NO_FORCE)
 	is
 		pragma unreferenced (style, force);
+		use pac_bounding_box;
+
 		-- CS:
 		-- handle the force-flag as in procedure draw_line
 		-- move the actual drawing to a procedure as in draw_line
@@ -4565,7 +4569,7 @@ package body et_canvas is
 		use pac_geometry_1;
 
 		-- Make a copy of the given arc:
-		c : type_arc'class := arc;
+		c : type_arc := type_arc (arc);
 
 		-- When the arc is drawn, we need a canvas point
 		-- for the center:
@@ -4640,7 +4644,7 @@ package body et_canvas is
 
 			r := to_distance (type_distance_positive (get_radius (a)));
 
-			m := real_to_canvas (get_center (c), S);
+			m := real_to_canvas (get_place (c), S);
 
 			-- If we are drawing a single arc (means no path),
 			-- then a so called new subpath must be started

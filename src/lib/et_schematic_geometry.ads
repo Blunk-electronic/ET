@@ -158,7 +158,6 @@ package et_schematic_geometry is
 
 	-- For operations that write liness and circles in a file:
 	package pac_file_rw is new et_geometry_2_file_rw (
-		pac_geometry	=> pac_geometry_2,
 		pac_contours	=> pac_contours);
 	-- CS use it when saving the module in a file
 	-- CS use it when saving symbols in a file

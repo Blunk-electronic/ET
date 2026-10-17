@@ -58,7 +58,7 @@ package body et_geometry_2_file_rw is
 
 
 	procedure write_arc (arc : in type_arc'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (arc), FORMAT_2));
+		write (keyword => keyword_center, parameters => to_string (get_place (arc), FORMAT_2));
 		write (keyword => keyword_start, parameters => to_string (get_A (arc), FORMAT_2));
 		write (keyword => keyword_end, parameters => to_string (get_B (arc), FORMAT_2));
 		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
@@ -66,7 +66,7 @@ package body et_geometry_2_file_rw is
 
 
 	procedure write_circle (circle : in type_circle'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (circle), FORMAT_2));
+		write (keyword => keyword_center, parameters => to_string (get_place (circle), FORMAT_2));
 		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
 	end write_circle;
 

@@ -36,20 +36,20 @@
 --   history of changes:
 --
 
-
-
-with et_geometry_2a;
-with et_geometry_2a.contours;
+with et_contours;
 
 
 generic
-	with package pac_geometry is new et_geometry_2a (<>);
-	with package pac_contours is new pac_geometry.contours;
+	with package pac_contours is new et_contours (<>);
+
 
 package et_geometry_2_file_rw is
 
-	use pac_geometry;
 	use pac_contours;
+	use pac_objects;
+	use pac_geometry;
+	use pac_arc;
+	use pac_circle;
 
 
 
