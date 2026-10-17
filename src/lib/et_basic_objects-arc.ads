@@ -271,5 +271,18 @@ package et_basic_objects.arc is
 	-- CS: an additional parameter could be used
 	-- to test if the arc crosses the area
 
+
+
+	-- Returns true if the given arc is in the given catch zone.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account. If a linewidth greater zero
+	-- is given, then we assume, that the arc has round caps:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		arc		: in type_arc;
+		width	: in type_distance_positive := 0.0)
+		return boolean;
+
+
 end et_basic_objects.arc;
 

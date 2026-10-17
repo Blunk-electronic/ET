@@ -40,6 +40,7 @@
 --
 --
 
+with ada.text_io;						use ada.text_io;
 
 
 package body et_basic_objects.arc is
@@ -491,6 +492,40 @@ package body et_basic_objects.arc is
 	end in_area;
 
 
+
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		arc		: in type_arc;
+		width	: in type_distance_positive := 0.0)
+		return boolean
+	is
+		-- debug : boolean := true;
+		debug : constant boolean := false;
+
+		distance : type_float;
+		distance_polar : type_distance_polar;
+	begin
+		distance_polar := get_shortest_distance (
+			to_arc_fine (arc), to_vector (get_center (zone)));
+
+		if debug then
+			put_line ("in_catch_zone arc");
+			put_line ("dp " & to_string (distance_polar));
+		end if;
+
+		distance := get_absolute (distance_polar);
+
+		distance := distance - type_float_positive (width);
+		-- Due to the linewidth, the distance can also
+		-- assume a negative value.
+
+		if distance <= get_radius (zone) then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
 
 
 

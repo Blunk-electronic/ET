@@ -36,11 +36,12 @@
 --   history of changes:
 --
 
-with ada.containers;			use ada.containers;
+with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_primitive_objects;		use et_primitive_objects;
+with et_object_status;				use et_object_status;
+with et_primitive_objects;			use et_primitive_objects;
 
 with et_basic_objects;
 with et_basic_objects.circle;
@@ -57,9 +58,147 @@ package et_contours is
 	use pac_objects;
 	use pac_geometry;
 
-	a : natural := 0;
+	use pac_arc;
+	-- use pac_circle;
 
-	l : type_line;
+
+-- SEGMENTS:
+
+	-- A contour is a list of lines, arcs or a single circle that form a path.
+	-- If a contour consist of just a single circle then no other
+	-- segments are allowed.
+	-- On the other hand, a contour may consist of lines and arcs. In that
+	-- case no circle is allowed:
+	type type_segment_shape is (LINE, ARC);
+	-- CS rename to segment_shape_line, segment_shape_arc
+
+
+	type type_segment (shape : type_segment_shape) is record -- CS rename to type_contour_segment
+		case shape is
+			when LINE	=> segment_line : type_line; -- CS rename segment_line to line
+			when ARC	=> segment_arc  : pac_arc.type_arc;
+		end case;
+	end record;
+
+
+
+	function to_string (
+		segment	: in type_segment)
+		return string;
+
+
+	-- Converts a single line to a line segment:
+	function to_segment (
+		line : in type_line)
+		return type_segment;
+
+
+	-- CS: There should not be a regulation on the winding of a contour path.
+	-- It can be CW or CCW.
+	-- Currently it MUST be CCW !
+	package pac_segments is new indefinite_doubly_linked_lists (type_segment);
+	use pac_segments;
+
+
+	function to_string (
+		segment	: in pac_segments.cursor)
+		return string;
+
+
+
+
+
+
+	function is_proposed (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	function is_proposed (
+		segment : in type_segment)
+		return boolean;
+
+
+	procedure set_proposed (
+		segment : in out type_segment);
+
+
+	procedure clear_proposed (
+		segment : in out type_segment);
+
+
+	function is_selected (
+		segment	: in type_segment)
+		return boolean;
+
+
+	function is_selected (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	procedure set_selected (
+		segment : in out type_segment);
+
+
+	procedure clear_selected (
+		segment : in out type_segment);
+
+
+
+	function is_moving (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	procedure set_moving (
+		segment : in out type_segment);
+
+
+	procedure clear_moving (
+		segment : in out type_segment);
+
+
+
+	procedure modify_status (
+		segment	: in out type_segment;
+		operation	: in type_status_operation);
+
+
+	procedure reset_status (
+		segment	: in out type_segment);
+
+
+
+
+
+
+	function get_shape (
+		segment	: in type_segment)
+		return type_segment_shape;
+
+
+	function get_shape (
+		segment	: in pac_segments.cursor)
+		return type_segment_shape;
+
+
+
+	-- Returns true if the given segment
+	-- is in the given catch zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in type_segment)
+		return boolean;
+
+
+	-- Returns true if the given segment
+	-- is in the given catch zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in pac_segments.cursor)
+		return boolean;
+
 
 end et_contours;
 

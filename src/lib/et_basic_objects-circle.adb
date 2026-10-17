@@ -40,6 +40,9 @@
 --
 --
 
+with ada.text_io;						use ada.text_io;
+
+
 
 package body et_basic_objects.circle is
 
@@ -172,6 +175,27 @@ package body et_basic_objects.circle is
 
 		return result;
 	end in_area;
+
+
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		circle	: in type_circle;
+		width	: in type_distance_positive := 0.0)
+		return boolean
+	is
+		distance : type_distance;
+	begin
+		distance := get_distance (circle.place, get_center (zone));
+		distance := distance - circle.radius - width;
+
+		if distance <= type_distance_positive (get_radius (zone)) then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
+
 
 
 end et_basic_objects.circle;

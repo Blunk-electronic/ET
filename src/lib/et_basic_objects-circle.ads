@@ -153,5 +153,15 @@ package et_basic_objects.circle is
 
 
 
+	-- Returns true if the given circle is in the given catch zone.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		circle	: in type_circle;
+		width	: in type_distance_positive := 0.0)
+		return boolean;
+
+
 end et_basic_objects.circle;
 
