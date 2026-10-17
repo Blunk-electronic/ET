@@ -50,9 +50,16 @@ with et_directions;					use et_directions;
 
 generic
 	type type_float is digits <>;
+	-- CS: rename to type_float_in ?
+
 	accuracy : type_float;
 
+
 package et_geometry_1 is
+
+	subtype type_float_2 is type_float; -- CS see header
+
+
 
 	-- Redefined equality test.
 	-- Returns true if the given arguments are equal.

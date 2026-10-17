@@ -131,17 +131,18 @@ package et_schematic_geometry is
 	package pac_basic_objects_circle is new pac_basic_objects.circle;
 	package pac_basic_objects_arc is new pac_basic_objects.arc;
 
-	package pac_contours_2 is new et_contours (
-		pac_objects	=> pac_basic_objects,
-		pac_circle	=> pac_basic_objects_circle,
-		pac_arc		=> pac_basic_objects_arc);
-
 
 	package pac_bounding_box is new et_bounding_box (
 		pac_objects	=> pac_basic_objects,
 		pac_circle	=> pac_basic_objects_circle,
 		pac_arc		=> pac_basic_objects_arc);
 
+
+	package pac_contours_2 is new et_contours (
+		pac_objects			=> pac_basic_objects,
+		pac_circle			=> pac_basic_objects_circle,
+		pac_arc				=> pac_basic_objects_arc,
+		pac_bounding_box	=> pac_bounding_box);
 
 
 	package pac_grid is new pac_geometry_2.grid;

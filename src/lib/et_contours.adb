@@ -1166,7 +1166,7 @@ package body et_contours is
 
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
-		offset	: in type_distance)
+		offset	: in type_distance_2)
 	is
 		procedure move (point : in out type_vector_model) is
 			new_y : type_distance;
@@ -1235,49 +1235,6 @@ package body et_contours is
 
 
 
---	function get_boundaries (
---		contour		: in type_contour;
---		line_width	: in type_distance_positive)
---		return type_boundaries
---	is
---		result : type_boundaries; -- to be returned
---
---		half_width : constant type_float_positive := type_float (line_width) * 0.5;
---
---
---		procedure query_segment (c : in pac_segments.cursor) is begin
---			case element (c).shape is
---				when LINE =>
---					union (result, get_boundaries (element (c).segment_line, zero));
---
---				when ARC =>
---					union (result, get_boundaries (element (c).segment_arc, zero));
---			end case;
---		end query_segment;
---
---
---	begin -- get_boundaries
---		if contour.contour.circular then
---
---			-- Get the boundaries of the single circle:
---			union (result, get_boundaries (contour.contour.circle, zero));
---
---		else
---			-- Iterate lines and arcs:
---			contour.contour.segments.iterate (query_segment'access);
---		end if;
---
---
---		-- Extend the boundaries by half the line width;
---		result.smallest_x := result.smallest_x - half_width;
---		result.smallest_y := result.smallest_y - half_width;
---
---		result.greatest_x := result.greatest_x + half_width;
---		result.greatest_y := result.greatest_y + half_width;
---
---		return result;
---	end get_boundaries;
-
 
 	function get_bounding_box (
 		contour	: in type_contour;
@@ -1286,6 +1243,8 @@ package body et_contours is
 	is
 		result : type_area; -- to be returned
 
+		use pac_bounding_box;
+		use pac_segments;
 
 		procedure query_segment (c : in pac_segments.cursor) is
 			-- CS use renames
@@ -1317,15 +1276,20 @@ package body et_contours is
 
 
 
+
+
+
 	function get_bounding_box (
 		contour		: in type_contour;
 		width		: in type_distance_positive := 0.0;
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
-		rotation	: in type_rotation;
+		rotation	: in type_rotation_2;
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
+		use pac_bounding_box;
+
 		-- This is the temporary bounding-box we are going to build
 		-- in the course of this procedure:
 		bbox_new : type_area;
@@ -1336,7 +1300,7 @@ package body et_contours is
 		-- this flag is cleared:
 		first_object : boolean := true;
 
-
+		use pac_segments;
 
 		procedure query_segment (c : in pac_segments.cursor) is
 			s : type_segment renames element (c);
@@ -1397,6 +1361,7 @@ package body et_contours is
 
 		return bbox_new;
 	end get_bounding_box;
+
 
 
 
@@ -1475,11 +1440,13 @@ package body et_contours is
 		end set_A;
 
 
-		procedure query_segment (c : in pac_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is
+			-- CS: use renames
+		begin
 			case element (c).shape is
 				when LINE =>
-					set_A (element (c).segment_line.A);
-					last_B := element (c).segment_line.B;
+					set_A (get_A (element (c).segment_line));
+					last_B := get_B (element (c).segment_line);
 
 				when ARC =>
 					set_A (element (c).segment_arc.A);
@@ -1581,6 +1548,7 @@ package body et_contours is
 
 
 
+
 	procedure mirror (
 		contour	: in out type_contour;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -1629,9 +1597,11 @@ package body et_contours is
 
 
 
+
+
 	procedure rotate_by (
 		contour		: in out type_contour;
-		rotation	: in type_rotation)
+		rotation	: in type_rotation_2)
 	is
 
 		procedure rotate_segment (c : in pac_segments.cursor) is
@@ -1667,7 +1637,7 @@ package body et_contours is
 		if contour.contour.circular then
 
 			-- rotate the single circle that forms the contour:
-			rotate_by (contour.contour.circle.center, rotation);
+			rotate_by (contour.contour.circle.place, rotation);
 		else
 			-- rotate lines and arcs:
 			contour.contour.segments.iterate (rotate_segment'access);
@@ -1723,8 +1693,8 @@ package body et_contours is
 		begin
 			case element (c).shape is
 				when LINE =>
-					corners.append (s.segment_line.A);
-					corners.append (s.segment_line.B);
+					corners.append (get_A (s.segment_line));
+					corners.append (get_B (s.segment_line));
 
 				when ARC =>
 					corners.append (s.segment_arc.A);
@@ -1734,7 +1704,7 @@ package body et_contours is
 
 	begin
 		if contour.contour.circular then
-			return contour.contour.circle.center;
+			return contour.contour.circle.place;
 		else
 			contour.contour.segments.iterate (query_segment'access);
 			return get_nearest (corners);
@@ -1753,10 +1723,12 @@ package body et_contours is
 	is
 		proceed : aliased boolean := true;
 
-		procedure query_segment (c : in pac_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is
+			-- CS use renames
+		begin
 			case element (c).shape is
 				when LINE =>
-					if element (c).segment_line.A = point then
+					if get_A (element (c).segment_line) = point then
 						proceed := false;
 					end if;
 
@@ -1788,11 +1760,11 @@ package body et_contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
-		return type_float
+		return type_float_2
 	is
-		result : type_float := type_float'last;
+		result : type_float_2 := type_float_2'last;
 
-		procedure update (d : in type_float) is begin
+		procedure update (d : in type_float_2) is begin
 			--put_line (to_string (d));
 			if d < result then
 				result := d;
@@ -1802,6 +1774,7 @@ package body et_contours is
 
 		procedure query_segment (c : in pac_segments.cursor) is
 			s : constant type_segment := element (c);
+			-- CS use renames ?
 		begin
 			case s.shape is
 				when LINE =>
@@ -1972,13 +1945,13 @@ package body et_contours is
 			return boolean
 		is begin
 			if
-				type_float (get_y (line.A)) >= y_threshold and
-				type_float (get_y (line.B))   <  y_threshold then
+				type_float (get_y (get_A (line))) >= y_threshold and
+				type_float (get_y (get_B (line))) <  y_threshold then
 				return true;
 
 			elsif
-				type_float (get_y (line.B))   >= y_threshold and
-				type_float (get_y (line.A)) <  y_threshold then
+				type_float (get_y (get_B (line))) >= y_threshold and
+				type_float (get_y (get_A (line))) <  y_threshold then
 				return true;
 
 			else
@@ -1988,7 +1961,7 @@ package body et_contours is
 
 
 		function crosses_threshold (
-			arc			: in type_arc;
+			arc			: in pac_arc.type_arc;
 			y_threshold	: in type_float)
 			return boolean
 		is begin
@@ -2068,8 +2041,8 @@ package body et_contours is
 
 
 
-		procedure query_arc (a : in type_arc) is
-			a_norm : constant type_arc := type_arc (normalize_arc (a));
+		procedure query_arc (a : in pac_arc.type_arc) is
+			a_norm : constant pac_arc.type_arc := pac_arc.type_arc (normalize_arc (a));
 
 			-- the radius of the arc:
 			unused_radius : constant type_float_positive := get_radius_start (a_norm);
@@ -2156,7 +2129,7 @@ package body et_contours is
 
 
 
-		procedure query_circle (c : in type_circle) is
+		procedure query_circle (c : in pac_circle.type_circle) is
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate circle of the contour.
 			i : constant type_intersection_of_line_and_circle :=
@@ -2381,7 +2354,7 @@ package body et_contours is
 
 	procedure rotate_contours (
 		contours	: in out pac_contour_list.list;
-		rotation	: in type_rotation)
+		rotation	: in type_rotation_2)
 	is
 		result : pac_contour_list.list;
 

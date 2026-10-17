@@ -36,16 +36,10 @@
 --   history of changes:
 --
 
--- with ada.containers;			use ada.containers;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
-
--- with et_primitive_objects;		use et_primitive_objects;
 with et_mirroring;					use et_mirroring;
 with et_basic_objects;
 with et_basic_objects.circle;
 with et_basic_objects.arc;
-
 
 generic
 
@@ -53,12 +47,15 @@ generic
 	with package pac_circle is new pac_objects.circle;
 	with package pac_arc is new pac_objects.arc;
 
-package et_bounding_box is
+
+package et_bounding_box is -- CS: rename to et_bounding_box_primitves ?
 	use pac_objects;
 	use pac_geometry;
 
 	use pac_circle;
 	use pac_arc;
+
+
 
 
 
@@ -106,7 +103,6 @@ package et_bounding_box is
 		rotation	: in type_rotation_2;
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
-
 
 end et_bounding_box;
 

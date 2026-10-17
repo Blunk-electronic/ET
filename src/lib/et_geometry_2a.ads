@@ -89,6 +89,9 @@ package et_geometry_2a is
 
 -- DISTANCE:
 
+	subtype type_distance_2 is type_distance; -- CS see header
+
+
 	-- For collecting and sorting distances:
 	package pac_distances is new doubly_linked_lists (type_distance);
 	package pac_distances_sorting is new pac_distances.generic_sorting;

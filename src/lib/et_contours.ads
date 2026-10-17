@@ -48,13 +48,19 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_basic_objects;
 with et_basic_objects.circle;
 with et_basic_objects.arc;
-
+with et_bounding_box;
 
 generic
 
 	with package pac_objects is new et_basic_objects (<>);
 	with package pac_circle is new pac_objects.circle;
 	with package pac_arc is new pac_objects.arc;
+
+	with package pac_bounding_box is new et_bounding_box (
+		pac_objects		=> pac_objects,
+		pac_circle		=> pac_circle,
+		pac_arc			=> pac_arc);
+
 
 package et_contours is
 	use pac_objects;
@@ -422,8 +428,8 @@ package et_contours is
 
 	procedure set_circle (
 		contour	: in out type_contour;
-		circle	: in pac_circle.type_circle'class);
-
+		-- circle	: in pac_circle.type_circle'class);
+		circle	: in pac_circle.type_circle);
 
 	function get_segments (
 		contour	: in type_contour)
@@ -478,7 +484,7 @@ package et_contours is
 	-- the formula new_y = offset - old_y:
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
-		offset	: in type_distance);
+		offset	: in type_distance_2);
 
 
 
@@ -505,7 +511,7 @@ package et_contours is
 		width		: in type_distance_positive := 0.0;
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
-		rotation	: in type_rotation;
+		rotation	: in type_rotation_2;
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area;
 
@@ -570,7 +576,7 @@ package et_contours is
 	-- Rotates a contour about the origin by the given rotation.
 	procedure rotate_by ( -- CS rename to rotate_contour
 		contour		: in out type_contour;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_2);
 
 
 
@@ -643,7 +649,7 @@ package et_contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
-		return type_float;
+		return type_float_2;
 
 
 	-- The location of a point relative to a contour:
@@ -659,7 +665,7 @@ package et_contours is
 	-- The intersection of a probe line with a segment of the contour can
 	-- be described as:
 	type type_probe_line_intersection_contour is record
-		x_position	: type_float;
+		x_position	: type_float_2;
 		segment		: type_intersected_segment;
 	end record;
 
@@ -683,7 +689,7 @@ package et_contours is
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
 				-- to the contour:
-				distance : type_float;
+				distance : type_float_2;
 
 			when ON_EDGE =>
 				edge : pac_segments.cursor;
@@ -734,7 +740,7 @@ package et_contours is
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
 		contours	: in out pac_contour_list.list;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_2);
 
 
 	-- Returns the first open contour among the
