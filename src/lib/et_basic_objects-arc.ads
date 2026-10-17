@@ -284,5 +284,20 @@ package et_basic_objects.arc is
 		return boolean;
 
 
+
+	-- Calculates the zone of the arc where point is nearest.
+	-- Point is not required to sit exactly on the arc.
+	function get_zone (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return type_line_zone;
+
+
+
+	procedure attack (
+		arc				: in out type_arc;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model);
+
 end et_basic_objects.arc;
 

@@ -529,5 +529,83 @@ package body et_basic_objects.arc is
 
 
 
+
+
+
+	function get_zone (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return type_line_zone
+	is
+		zone : type_line_zone := CENTER; -- to be returned
+
+		subtype type_arcs is type_arc_segments (1 .. 3);
+		segments : type_arcs;
+
+		idx : positive;
+
+	begin
+		-- Split the given arc into three segments
+		-- which are the start, center and end portion of the arc:
+		segments := split_arc (to_arc_fine (arc), 3);
+
+		-- Find the index of the segment that is
+		-- nearest to the given point:
+		idx := get_nearest (segments, to_vector (point));
+
+		-- put_line ("idx" & positive'image (idx));
+
+		case idx is
+			when 1 => zone := START_POINT;
+			when 3 => zone := END_POINT;
+			when others => null;
+		end case;
+
+		return zone;
+	end get_zone;
+
+
+
+
+
+
+	procedure attack (
+		arc				: in out type_arc;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model)
+	is
+		-- debug : boolean := true;
+		debug : constant boolean := false;
+
+		zone : type_line_zone;
+		offset : type_vector_model;
+	begin
+		zone := get_zone (arc, point_of_attack);
+
+		if debug then
+			put_line (to_string (arc));
+			put_line ("point of attack " & to_string (point_of_attack));
+			put_line ("destination     " & to_string (destination));
+			put_line ("zone            " & to_string (zone));
+		end if;
+
+
+		case zone is
+			when START_POINT =>
+				null;
+
+			when END_POINT =>
+				null;
+
+			when CENTER =>
+				-- Move the arc without changing
+				-- start, end or radius:
+				offset := destination - point_of_attack;
+				move_by (arc, offset);
+		end case;
+	end attack;
+
+
+
 end et_basic_objects.arc;
 
