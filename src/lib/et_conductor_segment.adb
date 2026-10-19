@@ -483,7 +483,7 @@ package body et_conductor_segment is
 			get_radius (circle) + 0.5 * circle.width;
 	begin
 		result.edges := to_edges (
-			circle		=> type_circle (to_circle (get_center (circle), outer_radius)),
+			circle		=> type_circle (to_circle (get_place (circle), outer_radius)),
 			tolerance	=> tolerance,
 			mode		=> EXPAND);
 
@@ -510,7 +510,7 @@ package body et_conductor_segment is
 
 	begin
 		result.edges := to_edges (
-			circle		=> type_circle (to_circle (get_center (circle), inner_radius)),
+			circle		=> type_circle (to_circle (get_place (circle), inner_radius)),
 			tolerance	=> tolerance,
 			mode		=> SHRINK);
 

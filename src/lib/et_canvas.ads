@@ -147,6 +147,7 @@ package et_canvas is
 	use pac_grid;
 	use pac_basic_objects_arc;
 	use pac_basic_objects_circle;
+	use pac_bounding_box;
 
 
 	-- This variable serves for logging debug messages an other stuff.

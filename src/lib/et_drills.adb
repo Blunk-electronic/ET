@@ -102,7 +102,7 @@ package body et_drills is
 		c : type_circle;
 	begin
 		-- Build a circle from the given drll:
-		set_center (c, drill.position);
+		set_place (c, drill.position);
 		set_radius (c, drill.diameter * 0.5);
 
 		-- Test whether the circle is in the catch zone:

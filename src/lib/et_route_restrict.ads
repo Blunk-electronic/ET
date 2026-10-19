@@ -48,8 +48,12 @@ with et_mirroring;				use et_mirroring;
 package et_route_restrict is
 
 	use pac_geometry_2;
-	use pac_contours;
 	use pac_polygons;
+
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+	use pac_contours;
+
 
 
 
@@ -84,7 +88,7 @@ package et_route_restrict is
 -- ARCS:
 
 	type type_route_restrict_arc is new
-		pac_geometry_2.type_arc with null record;
+		type_arc with null record;
 
 
 
@@ -112,7 +116,7 @@ package et_route_restrict is
 -- CIRCLES:
 
 	type type_route_restrict_circle is new
-		pac_geometry_2.type_circle with null record;
+		type_circle with null record;
 
 
 	-- Converts the outer edge of a circle to a polygon:

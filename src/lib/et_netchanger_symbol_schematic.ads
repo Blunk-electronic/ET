@@ -57,6 +57,8 @@ package et_netchanger_symbol_schematic is
 
 	use pac_geometry_2;
 
+	use pac_basic_objects_arc;
+
 
 
 

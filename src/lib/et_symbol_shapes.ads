@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -55,6 +55,8 @@ package et_symbol_shapes is
 
 	use pac_geometry_2;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 
@@ -92,7 +94,7 @@ package et_symbol_shapes is
 
 -- ARCS
 
-	type type_symbol_arc is new pac_geometry_2.type_arc with record
+	type type_symbol_arc is new type_arc with record
 		width	: type_line_width := line_width_default;
 	end record;
 
@@ -143,7 +145,7 @@ package et_symbol_shapes is
 
 -- CIRCLES
 
-	type type_circle_base is new pac_geometry_2.type_circle with record
+	type type_circle_base is new type_circle with record
 		width	: type_line_width := line_width_default;
 	end record;
 

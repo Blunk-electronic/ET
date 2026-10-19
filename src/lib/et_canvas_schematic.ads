@@ -113,7 +113,7 @@ package et_canvas_schematic is
 		pac_basic_objects_circle	=> et_schematic_geometry.pac_basic_objects_circle,
 		pac_basic_objects_arc		=> et_schematic_geometry.pac_basic_objects_arc,
 		pac_bounding_box	=> et_schematic_geometry.pac_bounding_box,
-		pac_contours_2		=> et_schematic_geometry.pac_contours_2,
+		-- pac_contours_2		=> et_schematic_geometry.pac_contours_2,
 		pac_grid			=> et_schematic_geometry.pac_grid,
 		pac_path			=> et_schematic_geometry.pac_path_and_bend,
 		pac_offsetting		=> et_schematic_geometry.pac_polygon_offsetting,

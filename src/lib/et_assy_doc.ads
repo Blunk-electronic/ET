@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -54,6 +54,9 @@ package et_assy_doc is
 	use pac_contours;
 	use pac_text_board_vectorized;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	linewidth_default : constant type_linewidth := 0.2;
 
@@ -61,7 +64,7 @@ package et_assy_doc is
 
 -- LINES:
 
-	type type_doc_line is new pac_geometry_2.type_line with record
+	type type_doc_line is new type_line with record
 		width	: type_linewidth := linewidth_default;
 	end record;
 
@@ -118,7 +121,7 @@ package et_assy_doc is
 
 -- ARCS:
 
-	type type_doc_arc is new pac_geometry_2.type_arc with record
+	type type_doc_arc is new type_arc with record
 		width	: type_linewidth := linewidth_default;
 	end record;
 
@@ -167,7 +170,7 @@ package et_assy_doc is
 
 -- CIRCLES:
 
-	type type_doc_circle is new pac_geometry_2.type_circle with record
+	type type_doc_circle is new type_circle with record
 		width	: type_linewidth := linewidth_default;
 	end record;
 

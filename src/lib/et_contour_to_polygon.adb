@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -131,7 +131,7 @@ package body et_contour_to_polygon is
 		use pac_geometry_brd;
 		arc : type_arc_angles;
 	begin
-		set_center (arc, to_vector (get_center (circle)));
+		set_center (arc, to_vector (get_place (circle)));
 		set_radius (arc, type_float_positive (get_radius (circle)));
 		set_angle_start (arc, 0.0);
 		set_angle_end (arc, 360.0);

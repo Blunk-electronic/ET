@@ -44,6 +44,8 @@ with et_object_status;			use et_object_status;
 package et_drills is
 	use pac_geometry_2;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 	-- We fit the diameter in a reasonable range via a subtype:
 	drill_size_min : constant type_distance_positive := 0.05;

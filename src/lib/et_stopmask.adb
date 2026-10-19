@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -571,7 +571,7 @@ package body et_stopmask is
 	begin
 		arc := element (cursor);
 		log (text => "stop mask arc face" & to_string (face) & space
-			 & to_string (type_arc (arc))
+			 & to_string (arc)
 			 & " width" & to_string (arc.width),
 			 level => log_threshold);
 	end arc_stop_mask_properties;

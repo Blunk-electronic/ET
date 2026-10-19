@@ -96,9 +96,9 @@ package et_basic_objects.circle is
 
 
 	function to_circle (
-		center	: in type_vector_model;
+		center	: in type_vector_model; -- CS rename to center ?
 		radius	: in type_distance_positive)
-		return type_circle'class;
+		return type_circle'class; -- CS class required ?
 
 
 	-- Resets the center to origin

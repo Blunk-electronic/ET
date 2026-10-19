@@ -57,6 +57,7 @@ with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_board_geometry;			use et_board_geometry;
+
 with et_design_rules_board;		use et_design_rules_board;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
@@ -68,6 +69,10 @@ package et_conductor_segment is
 	use pac_polygons;
 
 	use pac_geometry_2;
+
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+
 
 	linewidth_default : constant type_track_width := 0.3;
 
@@ -167,7 +172,7 @@ package et_conductor_segment is
 
 	-- The center of a conductor arc segment.
 	-- Drawn by the operator in the layout editor:
-	type type_conductor_arc is new pac_geometry_2.type_arc with record
+	type type_conductor_arc is new type_arc with record
 		width	: type_track_width;
 	end record;
 

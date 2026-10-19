@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,7 +49,6 @@ package et_keepout is
 
 	use pac_geometry_2;
 	use pac_contours;
-
 
 
 	type type_keepout_zone is new type_contour with null record;

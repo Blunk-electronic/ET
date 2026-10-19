@@ -439,7 +439,7 @@ begin
 
 	-- Set the radius and the center of the circle:
 	radius_base := via.diameter / 2.0;
-	set_center (circle, via.position);
+	set_place (circle, via.position);
 
 	set_brightness;
 

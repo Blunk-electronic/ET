@@ -44,6 +44,9 @@ package et_net_junction is
 
 	use pac_geometry_2;
 
+	use pac_basic_objects_circle;
+
+
 
 	procedure junction_in_sloping_segment (
 		point : in type_object_position);
