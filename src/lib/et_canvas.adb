@@ -4410,7 +4410,6 @@ package body et_canvas is
 		stroke		: in type_stroke := NO_STROKE)
 	is
 		pragma unreferenced (style);
-		use pac_bounding_box;
 
 		-- Make a copy of the given circle:
 		-- c : type_circle'class := circle;
@@ -4558,7 +4557,6 @@ package body et_canvas is
 		force		: in type_force := NO_FORCE)
 	is
 		pragma unreferenced (style, force);
-		use pac_bounding_box;
 
 		-- CS:
 		-- handle the force-flag as in procedure draw_line

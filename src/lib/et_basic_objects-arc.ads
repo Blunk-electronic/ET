@@ -43,9 +43,12 @@
 -- with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_directions;					use et_directions;
 
+with et_basic_objects.circle;
+
 
 generic
 
+	with package pac_circle is new et_basic_objects.circle;
 
 package et_basic_objects.arc is
 	use pac_geometry;
@@ -310,6 +313,33 @@ package et_basic_objects.arc is
 		arc				: in out type_arc;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);
+
+
+
+
+
+	-- Returns the bounding-box of the given circle.
+	-- It respects the linewidth of the circumfence.
+	-- CS: For simlicity the given arc is threated like a circle.
+	function get_bounding_box (
+		arc		: in type_arc;
+		width	: in type_distance_positive)
+		return type_area;
+
+
+
+	-- Computes the bounding-box of a given arc
+	-- taking into account the given offsets, rotation
+	-- and mirror style:
+	function get_bounding_box (
+		arc			: in type_arc;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
+		rotation	: in type_rotation_2;
+		mirror		: in type_mirror := MIRROR_NO)
+		return type_area;
+
 
 end et_basic_objects.arc;
 

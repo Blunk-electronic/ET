@@ -637,5 +637,69 @@ package body et_basic_objects.arc is
 
 
 
+
+
+
+	function get_bounding_box (
+		arc		: in type_arc;
+		width	: in type_distance_positive)
+		return type_area
+	is
+		-- CS: Optimization required. Compiler options ?
+
+		result : type_area;
+
+		use pac_circle;
+		c : type_circle;
+	begin
+		c.place := arc.place;
+		c.radius := type_distance_positive (get_radius_start (arc));
+
+		result := get_bounding_box (c, width);
+
+		return result;
+	end get_bounding_box;
+
+
+
+
+
+
+	function get_bounding_box (
+		arc			: in type_arc;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
+		rotation	: in type_rotation_2;
+		mirror		: in type_mirror := MIRROR_NO)
+		return type_area
+	is
+		-- Make a copy of the given arc:
+		c : type_arc := arc;
+
+		b : type_area;
+	begin
+		rotate_arc_by (c, rotation);
+
+		-- Mirror the arc:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => mirror_arc (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_arc (c, MIRROR_ALONG_Y_AXIS);
+		end case;
+
+		-- Move the arc by offset_1:
+		move_by (c, offset_1);
+
+		-- Move the arc by offset_2:
+		move_by (c, offset_2);
+
+		-- Get the bounding-box of arc:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+
+		return b;
+	end get_bounding_box;
+
 end et_basic_objects.arc;
 

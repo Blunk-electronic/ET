@@ -48,18 +48,18 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_basic_objects;
 with et_basic_objects.circle;
 with et_basic_objects.arc;
-with et_bounding_box;
+-- with et_bounding_box;
 
 generic
 
 	with package pac_objects is new et_basic_objects (<>);
 	with package pac_circle is new pac_objects.circle;
-	with package pac_arc is new pac_objects.arc;
+	with package pac_arc is new pac_objects.arc (pac_circle);
 
-	with package pac_bounding_box is new et_bounding_box (
-		pac_objects		=> pac_objects,
-		pac_circle		=> pac_circle,
-		pac_arc			=> pac_arc);
+	-- with package pac_bounding_box is new et_bounding_box (
+	-- 	pac_objects		=> pac_objects,
+	-- 	pac_circle		=> pac_circle,
+	-- 	pac_arc			=> pac_arc);
 
 
 package et_contours is
@@ -595,8 +595,8 @@ package et_contours is
 	type type_intersected_segment (shape : type_shape := LINE) is record
 		case shape is
 			when LINE	=> segment_line : type_line;
-			when ARC	=> segment_arc : pac_arc.type_arc;
-			when CIRCLE	=> segment_circle : pac_circle.type_circle;
+			when ARC	=> segment_arc : type_arc;
+			when CIRCLE	=> segment_circle : type_circle;
 		end case;
 	end record;
 

@@ -163,5 +163,27 @@ package et_basic_objects.circle is
 		return boolean;
 
 
+
+	-- Returns the bounding-box of the given circle.
+	-- It respects the linewidth of the circumfence:
+	function get_bounding_box (
+		circle	: in type_circle;
+		width	: in type_distance_positive)
+		return type_area;
+
+
+
+	-- Computes the bounding-box of a given circle
+	-- taking into account the given offsets, rotation
+	-- and mirror style:
+	function get_bounding_box (
+		circle		: in type_circle;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
+		rotation	: in type_rotation_2;
+		mirror		: in type_mirror := MIRROR_NO)
+		return type_area;
+
 end et_basic_objects.circle;
 

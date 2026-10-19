@@ -198,5 +198,74 @@ package body et_basic_objects.circle is
 
 
 
+
+
+	function get_bounding_box (
+		circle	: in type_circle;
+		width	: in type_distance_positive)
+		return type_area
+	is
+		-- CS: Optimization required. Compiler options ?
+		-- CS: output warning if radius is zero ?
+
+		result : type_area;
+		w : type_distance;
+
+		d : constant type_distance := width / 2.0;
+	begin
+		w := 2.0 * (circle.radius + d);
+
+		result.width := w;
+		result.height := w;
+
+		result.position.x := circle.place.x - w / 2.0;
+		result.position.y := circle.place.y - w / 2.0;
+
+		return result;
+	end get_bounding_box;
+
+
+	
+
+
+
+	function get_bounding_box (
+		circle		: in type_circle;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
+		rotation	: in type_rotation_2;
+		mirror		: in type_mirror := MIRROR_NO)
+		return type_area
+	is
+		-- Make a copy of the given circle:
+		c : type_circle := circle;
+
+		b : type_area;
+		unused_result : type_area;
+	begin
+		-- Rotate the center of the circle:
+		rotate_circle_by (c, rotation);
+
+		-- Mirror the circle:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
+		end case;
+
+		-- Move the circle by offset_1:
+		move_by (c, offset_1);
+
+		-- Move the arc by offset_2:
+		move_by (c, offset_2);
+
+		-- Get the bounding-box of arc:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+
+		return b;
+	end get_bounding_box;
+
 end et_basic_objects.circle;
 

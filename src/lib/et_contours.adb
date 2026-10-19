@@ -1243,7 +1243,6 @@ package body et_contours is
 	is
 		result : type_area; -- to be returned
 
-		use pac_bounding_box;
 		use pac_segments;
 
 		procedure query_segment (c : in pac_segments.cursor) is
@@ -1288,8 +1287,6 @@ package body et_contours is
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
-		use pac_bounding_box;
-
 		-- This is the temporary bounding-box we are going to build
 		-- in the course of this procedure:
 		bbox_new : type_area;
