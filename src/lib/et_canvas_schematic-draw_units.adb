@@ -322,7 +322,7 @@ procedure draw_units is
 					set_color_ports (brightness);
 
 					-- Set center and radius of the circle:
-					set_center (circle, get_A (line));
+					set_place (circle, get_A (line));
 					set_radius (circle, port_circle_radius);
 
 					-- Draw the circle. It is not filled:

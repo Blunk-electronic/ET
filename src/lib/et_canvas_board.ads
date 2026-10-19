@@ -60,6 +60,7 @@ with et_script_names;				use et_script_names;
 
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_basic_objects_circle;
 
 with et_board_text;
 with et_board_layer_category;			use et_board_layer_category;

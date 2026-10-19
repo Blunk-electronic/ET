@@ -98,13 +98,13 @@ procedure draw_nets is
 	begin
 		-- Probe start point of segment:
 		if segment.junctions.A then
-			set_center (j, get_A (segment));
+			set_place (j, get_A (segment));
 			draw;
 		end if;
 
 		-- Probe end point of segment:
 		if segment.junctions.B then
-			set_center (j, get_B (segment));
+			set_place (j, get_B (segment));
 			draw;
 		end if;
 	end draw_junctions;

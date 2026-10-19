@@ -68,6 +68,8 @@ use et_schematic_geometry.pac_geometry_2;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
 --
+use et_schematic_geometry.pac_basic_objects_circle;
+
 with et_schematic_text;				use et_schematic_text;
 
 -- with et_symbols;

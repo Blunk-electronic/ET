@@ -49,6 +49,9 @@
 --
 
 with et_board_geometry;			use et_board_geometry;
+use et_board_geometry.pac_basic_objects_circle;
+use et_board_geometry.pac_basic_objects_arc;
+
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 

@@ -137,7 +137,7 @@ is
 
 		use et_net_names;
 
-		position : constant type_vector_model := get_center (circle);
+		position : constant type_vector_model := get_place (circle);
 
 		use pac_draw_text;
 	begin
@@ -166,7 +166,7 @@ is
 	procedure draw_numbers (from, to : in string) is
 		use et_colors.board;
 		use et_alignment;
-		position : type_vector_model := get_center (circle);
+		position : type_vector_model := get_place (circle);
 
 		offset : constant type_vector_model :=
 			set (zero, +radius_base * text_position_layer_and_drill_factor);
@@ -196,7 +196,7 @@ is
 	procedure draw_drill_size is
 		use et_colors.board;
 		use et_alignment;
-		position : type_vector_model := get_center (circle);
+		position : type_vector_model := get_place (circle);
 		offset : type_vector_model;
 
 		use pac_draw_text;

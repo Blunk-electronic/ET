@@ -106,7 +106,8 @@ generic
 		pac_geometry => pac_geometry);
 
 	with package pac_basic_objects_circle is new pac_basic_objects.circle;
-	with package pac_basic_objects_arc is new pac_basic_objects.arc;
+	with package pac_basic_objects_arc is new pac_basic_objects.arc (
+		pac_circle => pac_basic_objects_circle);
 
 	-- with package pac_bounding_box is new et_bounding_box (
 	-- 	pac_objects	=> pac_basic_objects,

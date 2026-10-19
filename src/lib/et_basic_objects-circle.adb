@@ -225,7 +225,7 @@ package body et_basic_objects.circle is
 	end get_bounding_box;
 
 
-	
+
 
 
 

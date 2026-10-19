@@ -111,7 +111,7 @@ is
 
 			case drilled_milled is
 				when DRILLED =>
-					set_center (c, pad_position.place);
+					set_place (c, pad_position.place);
 					set_radius (c, drill_size * 0.5);
 
 					---put_line ("pad_pos" & to_string (pad_position));
@@ -245,7 +245,7 @@ is
 
 				-- Build a circle that represents
 				-- the restring of inner layers:
-				set_center (circle, pad_position.place);
+				set_place (circle, pad_position.place);
 				set_radius (circle, (drill_size + restring) * 0.5);
 
 
