@@ -104,7 +104,7 @@ package body et_module_read_board_contour is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (contour_arc, to_vector_model (line, 2));
+			set_place (contour_arc, to_vector_model (line, 2));
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
@@ -131,12 +131,12 @@ package body et_module_read_board_contour is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (contour_circle, to_vector_model (line, 2));
+			set_place (contour_circle, to_vector_model (line, 2));
 
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 
-			set_radius (contour_circle, to_radius (f (line, 2)));
+			set_radius (contour_circle, to_distance_positive (f (line, 2)));
 		else
 			invalid_keyword (kw);
 		end if;

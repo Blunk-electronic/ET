@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -75,7 +75,7 @@ package body et_terminals is
 			contour => (circular => true, circle => <>),
 			others	=> <>);
 	begin
-		set_center (result.contour.circle, to_vector_model (position));
+		set_place (result.contour.circle, to_vector_model (position));
 		set_radius (result.contour.circle, 0.5 * terminal.drill_size + terminal.width_inner_layers);
 
 		return result;

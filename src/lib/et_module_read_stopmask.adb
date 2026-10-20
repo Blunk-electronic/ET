@@ -135,7 +135,7 @@ package body et_module_read_stopmask is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (stop_arc, to_vector_model (line, 2));
+			set_place (stop_arc, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_direction then -- direction ccw
@@ -170,7 +170,7 @@ package body et_module_read_stopmask is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (stop_circle, to_vector_model (line, 2));
+			set_place (stop_circle, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_radius then

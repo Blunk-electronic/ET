@@ -139,7 +139,7 @@ package body et_symbol_write_body is
 			cursor : in pac_symbol_circles.cursor)
 		is begin
 			section_mark (section_circle, HEADER);
-			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
+			write (keyword => keyword_center, parameters => to_string (get_place (element (cursor)), FORMAT_2));
 			write (keyword => keyword_radius, parameters => to_string (get_radius (element (cursor))));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));

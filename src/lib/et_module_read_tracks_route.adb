@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -130,7 +130,7 @@ package body et_module_read_tracks_route is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (track_arc, to_vector_model (line, 2));
+			set_place (track_arc, to_vector_model (line, 2));
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);

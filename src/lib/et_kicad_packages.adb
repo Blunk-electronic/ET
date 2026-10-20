@@ -155,10 +155,9 @@ package body et_kicad_packages is
 		return type_contour
 	is
 		shape : type_contour; -- to be returned
-		c : type_circle;
-
+		c : pac_basic_objects_circle.type_circle;
 	begin
-		set_center (c, position.place);
+		set_place (c, position.place);
 		--c.radius := type_angle (diameter / 2.0);
 		set_radius (c, diameter / 2.0);
 		move_by (c, offset);
@@ -279,7 +278,7 @@ package body et_kicad_packages is
 
 		-- These are the two lines and the two arcs we need for the oval pad contour:
 		line_1, line_2	: pac_geometry_2.type_line;	-- upper/lower line
-		arc_1, arc_2	: pac_geometry_2.type_arc;	-- left/right arc
+		arc_1, arc_2	: pac_basic_objects_arc.type_arc;	-- left/right arc
 
 	begin -- to_pad_shape_oval
 
@@ -324,7 +323,7 @@ package body et_kicad_packages is
 
 		-- set right arc
 		set_A (arc_2, p12);
-		set_center (arc_2, p42);
+		set_place (arc_2, p42);
 		set_B (arc_2, p22);
 
 		-- set lower line
@@ -333,7 +332,7 @@ package body et_kicad_packages is
 
 		-- set left arc
 		set_A (arc_1, p21);
-		set_center (arc_1, p41);
+		set_place (arc_1, p41);
 		set_B (arc_1, p11);
 
 		-- build shape
@@ -1165,11 +1164,11 @@ package body et_kicad_packages is
 								when 1 =>
 									--set (axis => AXIS_X, point => circle.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
-									set_center (circle, scratch_point);
+									set_place (circle, scratch_point);
 								when 2 =>
 									--set (axis => AXIS_Y, point => circle.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
-									set_center (circle, scratch_point);
+									set_place (circle, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1197,11 +1196,11 @@ package body et_kicad_packages is
 								when 1 =>
 									-- set (axis => AXIS_X, point => arc.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
-									set_center (arc, scratch_point);
+									set_place (arc, scratch_point);
 								when 2 =>
 									--set (axis => AXIS_Y, point => arc.center, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
-									set_center (arc, scratch_point);
+									set_place (arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1746,7 +1745,7 @@ package body et_kicad_packages is
 			procedure insert_fp_arc is begin
 
 				-- compute end point of arc from center, start point and angle
-				set_B (arc, get_arc_B (get_center (arc), get_A (arc), arc.angle));
+				set_B (arc, get_arc_B (get_place (arc), get_A (arc), arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor
@@ -1754,45 +1753,45 @@ package body et_kicad_packages is
 				-- is formed and appended to the list of silk screen circles.
 				case arc.layer is
 					when TOP_SILK =>
-						silk_screen.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						silk_screen.top.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						silk_screen.bottom.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_ASSY =>
-						assy_doc.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						assy_doc.top.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						assy_doc.bottom.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_COPPER =>
-						copper.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						copper.top.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 
 					when BOT_COPPER =>
-						copper.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						copper.bottom.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 
 
 					when TOP_STOP =>
-						stop_mask.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						stop_mask.top.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						stop_mask.bottom.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						stencil.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						stencil.top.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
+						stencil.bottom.arcs.append ((pac_basic_objects_arc.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (BOTTOM, stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1806,7 +1805,7 @@ package body et_kicad_packages is
 
 				-- Compute the circle radius from its center and point at circle:
 				set_radius (circle, to_distance (
-					get_distance_absolute (get_center (circle), circle.point)));
+					get_distance_absolute (get_place (circle), circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -1816,62 +1815,62 @@ package body et_kicad_packages is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
 					when TOP_SILK =>
-						silk_screen.top.circles.append ((pac_geometry_2.type_circle (circle) with
+						silk_screen.top.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
+						silk_screen.bottom.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 
 
 					when TOP_ASSY =>
-						assy_doc.top.circles.append ((pac_geometry_2.type_circle (circle) with
+						assy_doc.top.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
+						assy_doc.bottom.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 
 
 					when TOP_COPPER =>
-						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
+						copper.top.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 					when BOT_COPPER =>
-						copper.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
+						copper.bottom.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 
 
 					when TOP_STOP =>
-						stop_mask.top.circles.append ((pac_geometry_2.type_circle (circle) with
+						stop_mask.top.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
+						stop_mask.bottom.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						stencil.top.circles.append ((pac_geometry_2.type_circle (circle) with
+						stencil.top.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
+						stencil.bottom.circles.append ((pac_basic_objects_circle.type_circle (circle) with
 							width => circle.width));
 
 						-- CS circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);

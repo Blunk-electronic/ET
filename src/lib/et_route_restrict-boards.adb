@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -61,7 +61,7 @@ package body et_route_restrict.boards is
 	is begin
 		set_A (arc, origin);
 		set_B (arc, origin);
-		set_center (arc, origin);
+		set_place (arc, origin);
 		-- CS probably no good idea because this default
 		-- results in an invalid arc.
 
@@ -74,7 +74,7 @@ package body et_route_restrict.boards is
 	procedure reset_circle (
 		circle : in out type_route_restrict_circle)
 	is begin
-		set_center (circle, origin);
+		set_place (circle, origin);
 		set_radius (circle, 0.0);
 		clear (circle.layers);
 	end reset_circle;

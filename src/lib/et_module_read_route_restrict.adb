@@ -136,7 +136,7 @@ package body et_module_read_route_restrict is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (restrict_arc, to_vector_model (line, 2));
+			set_place (restrict_arc, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_direction then -- direction ccw
@@ -173,7 +173,7 @@ package body et_module_read_route_restrict is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (restrict_circle, to_vector_model (line, 2));
+			set_place (restrict_circle, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_radius then

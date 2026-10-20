@@ -626,7 +626,7 @@ package body et_kicad_v6_to_native is
 							begin
 								pac_symbol_circles.append (result.circles, (
 									type_circle_base'(
-										pac_geometry_2.type_circle (pac_geometry_2.to_circle (
+										pac_basic_objects_circle.type_circle (pac_basic_objects_circle.to_circle (
 											center	=> center,
 											radius	=> et_schematic_geometry.pac_geometry_2.to_distance (radius)))
 										with width => w)
@@ -643,7 +643,7 @@ package body et_kicad_v6_to_native is
 									read_point (n, "end");
 							begin
 								pac_symbol_arcs.append (result.arcs, (
-									pac_geometry_2.type_arc (pac_geometry_2.to_arc (
+									pac_basic_objects_arc.type_arc (pac_basic_objects_arc.to_arc (
 										center		=> arc_center (start_p, mid_p, end_p),
 										A			=> start_p,
 										B			=> end_p,

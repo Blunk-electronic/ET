@@ -53,6 +53,7 @@ package et_vias is
 	use pac_polygons;
 	use pac_geometry_2;
 
+	use pac_basic_objects_circle;
 
 	type type_micro_vias_allowed is (NO, YES);
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;

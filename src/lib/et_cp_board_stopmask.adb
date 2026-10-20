@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -59,6 +59,9 @@ package body et_cp_board_stopmask is
 
 	use pac_geometry_2;
 	use pac_contours;
+
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 
@@ -173,7 +176,7 @@ package body et_cp_board_stopmask is
 
 							circle_tmp := type_circle (to_circle (
 								center		=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
-								radius		=> to_radius (get_field (cmd, 10))));
+								radius		=> to_distance_positive (get_field (cmd, 10))));
 
 							add_circle (
 								module_name	=> key (module),

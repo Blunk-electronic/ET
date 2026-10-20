@@ -56,6 +56,10 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package et_board_ops_outline is
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+
+
 	use pac_generic_modules;
 
 	subtype type_contour_segment_cursor is pac_contours.pac_segments.cursor;

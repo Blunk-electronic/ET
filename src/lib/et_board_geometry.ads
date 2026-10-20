@@ -157,7 +157,7 @@ package et_board_geometry is
 
 
 	package pac_contours is new et_contours (
-		pac_objects			=> pac_basic_objects,
+		pac_basic_objects	=> pac_basic_objects,
 		pac_circle			=> pac_basic_objects_circle,
 		pac_arc				=> pac_basic_objects_arc);
 		-- pac_bounding_box	=> pac_bounding_box);

@@ -62,6 +62,8 @@ package body et_cp_board_restrict is
 	use pac_geometry_2;
 	use pac_contours;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 
@@ -196,7 +198,7 @@ package body et_cp_board_restrict is
 
 							circle_tmp := type_circle (to_circle (
 								center	=> to_vector_model (get_field (cmd, 7), get_field (cmd, 8)),
-								radius	=> to_radius (get_field (cmd, 9)))); -- 40
+								radius	=> to_distance_positive (get_field (cmd, 9)))); -- 40
 
 								-- Circle is not filled.
 								draw_route_restrict_circle (

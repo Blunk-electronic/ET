@@ -162,7 +162,7 @@ package body et_track_segment is
 	begin
 		set_A (arc, origin);
 		set_B (arc, origin);
-		set_center (arc, origin);
+		set_place (arc, origin);
 		set_direction (arc, CCW);
 
 		arc.width := type_track_width'first;
@@ -185,7 +185,7 @@ package body et_track_segment is
 	is
 		a : type_track_arc renames arc;
 
-		text : constant string := to_string (pac_geometry_2.type_arc (a))
+		text : constant string := to_string (type_arc (a))
 				& "/ ly " & to_string (a.layer);
 	begin
 		if width then
@@ -238,7 +238,7 @@ package body et_track_segment is
 	is
 		c : type_track_circle renames circle;
 
-		text : constant string := to_string (pac_geometry_2.type_circle (c))
+		text : constant string := to_string (type_circle (c))
 				& "/ ly " & to_string (c.layer);
 	begin
 		if width then

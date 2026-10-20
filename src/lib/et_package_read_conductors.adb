@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -131,7 +131,7 @@ package body et_package_read_conductors is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (conductor_arc, to_vector_model (line, 2));
+			set_place (conductor_arc, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_direction then -- direction ccw
@@ -166,7 +166,7 @@ package body et_package_read_conductors is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (conductor_circle, to_vector_model (line, 2));
+			set_place (conductor_circle, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_radius then

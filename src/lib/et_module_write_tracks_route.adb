@@ -126,7 +126,7 @@ package body et_module_write_tracks_route is
 			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
-				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor)), FORMAT_2));
+				write (keyword => keyword_center, parameters => to_string (get_place (element (arc_cursor)), FORMAT_2));
 				write (keyword => keyword_start, parameters => to_string (get_A (arc_cursor), FORMAT_2));
 				write (keyword => keyword_end, parameters => to_string (get_B (arc_cursor), FORMAT_2));
 				write (keyword => keyword_width, parameters => to_string (element (arc_cursor).width));

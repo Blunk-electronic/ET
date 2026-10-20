@@ -225,6 +225,13 @@ package body et_geometry_2a is
 
 
 
+	function to_distance_positive (
+		distance : in string)
+		return type_distance_positive
+	is (type_distance_positive'value (distance));
+
+
+
 	function get_greatest (
 		distances	: in pac_distances_positive.list)
 		return type_distance_positive

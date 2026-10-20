@@ -52,9 +52,9 @@ with et_basic_objects.arc;
 
 generic
 
-	with package pac_objects is new et_basic_objects (<>);
-	with package pac_circle is new pac_objects.circle;
-	with package pac_arc is new pac_objects.arc (pac_circle);
+	with package pac_basic_objects is new et_basic_objects (<>);
+	with package pac_circle is new pac_basic_objects.circle;
+	with package pac_arc is new pac_basic_objects.arc (pac_circle);
 
 	-- with package pac_bounding_box is new et_bounding_box (
 	-- 	pac_objects		=> pac_objects,
@@ -63,7 +63,7 @@ generic
 
 
 package et_contours is
-	use pac_objects;
+	use pac_basic_objects;
 	use pac_geometry;
 	use pac_geometry.pac_geometry_1;
 

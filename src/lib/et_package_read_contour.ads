@@ -56,6 +56,8 @@ package et_package_read_contour is
 	use pac_geometry_2;
 	use pac_contours;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 	contour_line	: type_line;

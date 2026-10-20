@@ -129,7 +129,7 @@ package body et_module_read_freetracks is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (track_arc, to_vector_model (line, 2));
+			set_place (track_arc, to_vector_model (line, 2));
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
@@ -166,7 +166,7 @@ package body et_module_read_freetracks is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (track_circle, to_vector_model (line, 2));
+			set_place (track_circle, to_vector_model (line, 2));
 
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);

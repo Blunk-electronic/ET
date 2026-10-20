@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -48,7 +48,7 @@ with et_module;						use et_module;
 
 with et_module_names;				use et_module_names;
 -- with et_module_instance;			use et_module_instance;
-with et_board_geometry;
+with et_board_geometry;				use et_board_geometry;
 
 with et_module_read_board_contour;	use et_module_read_board_contour;
 with et_board_holes;				use et_board_holes;
@@ -61,6 +61,8 @@ package body et_module_read_board_outline is
 	use et_board_geometry.pac_geometry_2;
 	use et_board_geometry.pac_contours;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 
 	procedure insert_outline_line is begin

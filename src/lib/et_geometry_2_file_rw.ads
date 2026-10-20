@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -46,7 +46,7 @@ generic
 package et_geometry_2_file_rw is
 
 	use pac_contours;
-	use pac_objects;
+	use pac_basic_objects;
 	use pac_geometry;
 	use pac_arc;
 	use pac_circle;

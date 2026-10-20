@@ -91,7 +91,7 @@ package body et_vias is
 				restring := via.restring_inner;
 		end case;
 
-		set_center (circle, via.position);
+		set_place (circle, via.position);
 		set_radius (circle, 0.5 * via.diameter + restring);
 
 		b := get_bounding_box (circle => circle, width => 0.0);

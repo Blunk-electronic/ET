@@ -54,6 +54,7 @@
 --
 
 with et_board_geometry;			use et_board_geometry;
+
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_conductor_segment;		use et_conductor_segment;
 
@@ -62,6 +63,8 @@ package et_track_segment is
 
 	use pac_geometry_2;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
 
 	-- In the board drawing, objects in conductor
 	-- layers can be placed in various layers.

@@ -80,6 +80,9 @@ package et_kicad_packages is
 	subtype type_distance_positive	is et_board_geometry.pac_geometry_2.type_distance_positive;
 	subtype type_position			is et_board_geometry.pac_geometry_2.type_position;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+
 
 	-- NOTE: this is not a real file extension but just a part of a directory name:
 	package_library_directory_extension	: constant string := ".pretty";
@@ -145,13 +148,13 @@ package et_kicad_packages is
 		layer	: type_layer_abbreviation;
 	end record;
 
-	type type_arc is new pac_geometry_2.type_arc with record
+	type type_arc is new pac_basic_objects_arc.type_arc with record
 		width	: type_text_line_width;
 		angle	: et_board_geometry.pac_geometry_brd.type_angle;
 		layer	: type_layer_abbreviation;
 	end record;
 
-	type type_circle is new pac_geometry_2.type_circle with record -- center and radius incl.
+	type type_circle is new pac_basic_objects_circle.type_circle with record -- center and radius incl.
 		width	: type_text_line_width;
 		point	: type_vector_model;
 		layer	: type_layer_abbreviation;

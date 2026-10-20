@@ -135,7 +135,7 @@ package body et_module_read_stencil is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (stencil_arc, to_vector_model (line, 2));
+			set_place (stencil_arc, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_direction then -- direction ccw
@@ -170,7 +170,7 @@ package body et_module_read_stencil is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (stencil_circle, to_vector_model (line, 2));
+			set_place (stencil_circle, to_vector_model (line, 2));
 
 
 		elsif kw = keyword_radius then

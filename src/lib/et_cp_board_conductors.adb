@@ -91,6 +91,9 @@ package body et_cp_board_conductors is
 	use pac_grid;
 	use pac_generic_modules;
 
+	use pac_basic_objects_arc;
+	use pac_basic_objects_circle;
+
 	subtype type_net_name is et_net_names.type_net_name;
 
 

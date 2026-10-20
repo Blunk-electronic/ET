@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -63,6 +63,7 @@ package et_terminals is
 	use pac_geometry_2;
 	use pac_contours;
 
+	use pac_basic_objects_circle;
 
 
 	-- A SMT pad has stopmask on one side only:
