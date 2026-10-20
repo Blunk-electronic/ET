@@ -1659,7 +1659,7 @@ package body et_kicad_libraries is
 				-- It is probably a bug. However, when importing objects we must invert y.
 				mirror_point (point => scratch_point, axis => MIRROR_ALONG_X_AXIS);
 
-				set_center (circle, scratch_point);
+				set_place (circle, scratch_point);
 
 				set_radius (circle, mil_to_distance (mil => f (line, 4)));
 
@@ -1714,7 +1714,7 @@ package body et_kicad_libraries is
 				-- mirror (point => arc.center, axis => MIRROR_ALONG_X_AXIS);
 				mirror_point (scratch_point, MIRROR_ALONG_X_AXIS);
 
-				set_center (arc, scratch_point);
+				set_place (arc, scratch_point);
 
 
 				arc.radius		:= mil_to_distance (mil => f (line, 4));

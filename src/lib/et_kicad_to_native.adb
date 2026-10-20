@@ -336,17 +336,18 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 		procedure move (
-			arc : in out et_board_geometry.pac_geometry_2.type_arc'class)
+			arc : in out et_board_geometry.pac_basic_objects_arc.type_arc'class)
 		is
 			use et_board_geometry;
 			use pac_geometry_2;
+			use pac_basic_objects_arc;
 			new_y : type_position_axis;
 			S, E, C : type_vector_model;
 		begin
-			C := get_center (arc);
+			C := get_place (arc);
 			new_y := layout_sheet_height - get_y (C);
 			set (C, AXIS_Y, new_y);
-			set_center (arc, C);
+			set_place (arc, C);
 
 			S := get_A (arc);
 			new_y := layout_sheet_height - get_y (S);
@@ -364,17 +365,18 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 		procedure move (
-			circle : in out et_board_geometry.pac_geometry_2.type_circle'class)
+			circle : in out et_board_geometry.pac_basic_objects_circle.type_circle'class)
 		is
 			use et_board_geometry;
 			use pac_geometry_2;
+			use pac_basic_objects_circle;
 			new_y : type_position_axis;
 			C : type_vector_model;
 		begin
-			C := get_center (circle);
+			C := get_place (circle);
 			new_y := layout_sheet_height - get_y (C);
 			set (C, AXIS_Y, new_y);
-			set_center (circle, C);
+			set_place (circle, C);
 		end move;
 
 
@@ -1833,7 +1835,9 @@ package body et_kicad_to_native is
 				end move_line;
 
 
-				procedure move_arc (s : in out type_segment) is begin
+				procedure move_arc (s : in out type_segment) is
+					use pac_basic_objects_arc;
+				begin
 					log (text => contour & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1866,7 +1870,9 @@ package body et_kicad_to_native is
 				end move_segment;
 
 
-				procedure move_outline is begin
+				procedure move_outline is
+					use pac_basic_objects_circle;
+				begin
 					if module.board.board_contour.outline.contour.circular then
 
 						-- move the single circle the outline consists of:
