@@ -3312,25 +3312,6 @@ package body et_geometry_2a is
 
 
 
-
-
-
-	function to_radius (
-		r : in type_distance_positive)
-		return type_float_positive
-	is (type_float_positive (r));
-
-
-
-
-
-
-
-
-
-
-
-
 -- POSITION:
 
 
