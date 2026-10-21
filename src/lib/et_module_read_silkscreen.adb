@@ -177,7 +177,7 @@ package body et_module_read_silkscreen is
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
-			set_radius (silk_circle, to_radius (f (line, 2)));
+			set_radius (silk_circle, to_distance_positive (f (line, 2)));
 
 
 		elsif kw = keyword_width then -- width 0.5

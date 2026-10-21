@@ -159,7 +159,7 @@ package body et_package_read_route_restrict is
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
-			set_radius (route_restrict_circle, to_radius (f (line, 2)));
+			set_radius (route_restrict_circle, to_distance_positive (f (line, 2)));
 
 
 		else

@@ -179,7 +179,7 @@ package et_geometry_2a is
 		return type_distance_positive;
 
 
-	
+
 	-- For collecting and sorting distances:
 	package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
 	package pac_distances_positive_sorting is new pac_distances_positive.generic_sorting;
@@ -1551,14 +1551,10 @@ package et_geometry_2a is
 
 
 
-	function to_radius ( -- CS remove
-		r : in string)
-		return type_distance_positive;
-
-
-	function to_radius (
-		r : in type_distance_positive)
-		return type_float_positive;
+ -- 
+	-- function to_radius (
+	-- 	r : in type_distance_positive)
+	-- 	return type_float_positive;
 
 
 

@@ -40,6 +40,10 @@
 --
 --
 
+with ada.strings;					use ada.strings;
+with ada.characters.latin_1;
+with ada.characters.handling;		use ada.characters.handling;
+
 
 
 package body et_basic_objects is
@@ -64,6 +68,13 @@ package body et_basic_objects is
 	is begin
 		object.place := object.place + offset;
 	end move_by;
+
+
+	procedure reset_position (
+		object	: in out type_object)
+	is begin
+		object.place := origin;
+	end reset_position;
 
 
 	procedure mirror_along_axis (
@@ -181,6 +192,44 @@ package body et_basic_objects is
 	is begin
 		reset_status (object.status);
 	end reset_status;
+
+
+
+
+	procedure reset_position (
+		object	: in out type_object_with_rotation)
+	is begin
+		object.place := origin;
+		object.rotation := 0.0;
+	end reset_position;
+
+
+
+	function to_string (
+		object	: in type_object_with_rotation;
+		format	: in type_output_format := FORMAT_1)
+		return string
+	is
+		x : constant string := to_string (get_x (object.place));
+		y : constant string := to_string (get_y (object.place));
+		r : constant string := to_string (object.rotation);
+
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "x/y/rotation " & x & separator & y & separator & r;
+
+			when FORMAT_2 =>
+				return "x " & x & " y " & y & " rotation " & r;
+
+			when FORMAT_3 =>
+				return x & space & y & space & r;
+
+			when others => -- CS do the same as with FORMAT_1
+				return "x/y/rotation " & x & separator & y & separator & r;
+		end case;
+	end to_string;
 
 
 

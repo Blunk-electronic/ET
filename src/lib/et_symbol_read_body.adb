@@ -211,7 +211,7 @@ package body et_symbol_read_body is
 
 		elsif kw = keyword_radius then -- radius 5
 			expect_field_count (line, 2);
-			set_radius (symbol_circle, to_radius (f (line, 2)));
+			set_radius (symbol_circle, to_distance_positive (f (line, 2)));
 
 		elsif kw = keyword_filled then -- filled yes/no
 			expect_field_count (line, 2);

@@ -171,7 +171,7 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 
-			set_radius (track_circle, to_radius (f (line, 2)));
+			set_radius (track_circle, to_distance_positive (f (line, 2)));
 
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);

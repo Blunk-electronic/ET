@@ -45,7 +45,7 @@ with et_geometry_2a;
 
 with et_object_status;				use et_object_status;
 with et_mirroring;					use et_mirroring;
--- with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 generic
@@ -83,6 +83,10 @@ package et_basic_objects is
 	procedure move_by (
 		object	: in out type_object;
 		offset	: in type_vector_model);
+
+
+	procedure reset_position (
+		object	: in out type_object);
 
 
 
@@ -174,8 +178,19 @@ package et_basic_objects is
 	end record;
 
 
+	procedure reset_position (
+		object	: in out type_object_with_rotation);
 
 
+	-- This function returns the given object position
+	-- as string formatted as follows:
+	-- FORMAT_1 : x/y/rotation 4.5 / 5.6 / 90.0
+	-- FORMAT_2 : x 4.5 y 5.6 rotation 90.0
+	-- FORMAT_3 : 4.5 5.6 90.0
+	function to_string (
+		object	: in type_object_with_rotation;
+		format	: in type_output_format := FORMAT_1)
+		return string;
 
 
 end et_basic_objects;

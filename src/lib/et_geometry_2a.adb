@@ -3313,10 +3313,6 @@ package body et_geometry_2a is
 
 
 
-	function to_radius (
-		r : in string)
-		return type_distance_positive
-	is (type_distance_positive'value (r));
 
 
 	function to_radius (

@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -179,7 +179,7 @@ package body et_module_read_route_restrict is
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
-			set_radius (restrict_circle, to_radius (f (line, 2)));
+			set_radius (restrict_circle, to_distance_positive (f (line, 2)));
 
 
 		elsif kw = keyword_layers then -- layers 1 14 3

@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -176,7 +176,7 @@ package body et_module_read_stopmask is
 		elsif kw = keyword_radius then
 			expect_field_count (line, 2);
 
-			set_radius (stop_circle, to_radius (f (line, 2)));
+			set_radius (stop_circle, to_distance_positive (f (line, 2)));
 
 
 		elsif kw = keyword_width then -- width 0.5
