@@ -77,6 +77,32 @@ package body et_basic_objects is
 	end reset_position;
 
 
+	function get_position (
+		object	: in type_object;
+		format	: in type_output_format := FORMAT_1)
+		return string
+	is
+		x : constant string := to_string (get_x (object.place));
+		y : constant string := to_string (get_y (object.place));
+
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "x/y " & x & separator & y;
+
+			when FORMAT_2 =>
+				return "x " & x & " y " & y;
+
+			when FORMAT_3 =>
+				return x & space & y;
+
+			when others => -- CS do the same as with FORMAT_1
+				return "x/y " & x & separator & y;
+		end case;
+	end get_position;
+
+
 	procedure mirror_along_axis (
 		object	: in out type_object;
 		axis	: in type_mirror)
@@ -205,7 +231,7 @@ package body et_basic_objects is
 
 
 
-	function to_string (
+	function get_position (
 		object	: in type_object_with_rotation;
 		format	: in type_output_format := FORMAT_1)
 		return string
@@ -229,7 +255,7 @@ package body et_basic_objects is
 			when others => -- CS do the same as with FORMAT_1
 				return "x/y/rotation " & x & separator & y & separator & r;
 		end case;
-	end to_string;
+	end get_position;
 
 
 

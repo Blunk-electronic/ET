@@ -89,6 +89,15 @@ package et_basic_objects is
 		object	: in out type_object);
 
 
+	-- This function returns the object position
+	-- as string formatted as follows:
+	-- FORMAT_1 : x/y 4.5 / 5.6
+	-- FORMAT_2 : x 4.5 y 5.6
+	-- FORMAT_3 : 4.5 5.6
+	function get_position (
+		object	: in type_object;
+		format	: in type_output_format := FORMAT_1)
+		return string;
 
 
 
@@ -178,7 +187,7 @@ package et_basic_objects is
 	end record;
 
 
-	procedure reset_position (
+	overriding procedure reset_position (
 		object	: in out type_object_with_rotation);
 
 
@@ -187,7 +196,7 @@ package et_basic_objects is
 	-- FORMAT_1 : x/y/rotation 4.5 / 5.6 / 90.0
 	-- FORMAT_2 : x 4.5 y 5.6 rotation 90.0
 	-- FORMAT_3 : 4.5 5.6 90.0
-	function to_string (
+	overriding function get_position (
 		object	: in type_object_with_rotation;
 		format	: in type_output_format := FORMAT_1)
 		return string;
