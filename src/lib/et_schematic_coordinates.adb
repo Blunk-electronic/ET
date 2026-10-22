@@ -48,6 +48,80 @@ with et_keywords;						use et_keywords;
 package body et_schematic_coordinates is
 
 
+	function get_sheet (
+		object : in type_schematic_object)
+		return type_sheet
+	is (object.sheet);
+
+
+
+	procedure set_sheet (
+		object	: in out type_schematic_object;
+		sheet	: in type_sheet)
+	is begin
+		object.sheet := sheet;
+	end set_sheet;
+
+
+
+	function "<" (
+		left, right : in type_schematic_object)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_sheet (left) < get_sheet (right) then
+			result := true;
+		elsif get_sheet (left) > get_sheet (right) then
+			result := false;
+		else
+			-- sheet numbers are equal -> compare x
+
+			if get_x (left) < get_x (right) then
+				result := true;
+			elsif get_x (left) > get_x (right) then
+				result := false;
+			else
+				-- x positions equal -> compare y
+
+				if get_y (left) < get_y (right) then
+					result := true;
+				elsif get_y (left) > get_y (right) then
+					result := false;
+				else
+					-- y positions equal -> compare rotation
+
+					if get_rotation (left) < get_rotation (right) then
+						result := true;
+					elsif get_rotation (left) > get_rotation (right) then
+						result := false;
+					else
+						-- rotations equal
+						result := false;
+					end if;
+				end if;
+
+			end if;
+		end if;
+
+		return result;
+	end "<";
+
+
+
+
+
+	procedure set_position (
+		object	: in out type_schematic_object;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive)
+	is begin
+		null; -- CS
+	end set_position;
+
+
+
+
 
 
 	function "<" (left, right : in type_object_position)

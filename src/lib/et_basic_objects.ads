@@ -46,6 +46,8 @@ with et_geometry_2a;
 with et_object_status;				use et_object_status;
 with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_string_processing;			use et_string_processing;
+
 
 
 generic
@@ -63,11 +65,32 @@ package et_basic_objects is
 	end record;
 
 
+
 -- PLACE:
 
 	function get_place (
 		object	: in type_object)
 		return type_vector_model;
+
+
+
+	function get_x (
+		object	: in type_object)
+		return type_distance;
+
+	procedure set_x (
+		object	: in out type_object;
+		value	: in type_distance);
+
+
+	function get_y (
+		object	: in type_object)
+		return type_distance;
+
+	procedure set_y (
+		object	: in out type_object;
+		value	: in type_distance);
+
 
 
 	procedure move_to (
@@ -98,6 +121,7 @@ package et_basic_objects is
 		object	: in type_object;
 		format	: in type_output_format := FORMAT_1)
 		return string;
+
 
 
 
@@ -187,6 +211,31 @@ package et_basic_objects is
 	end record;
 
 
+	function get_rotation (
+		object	: in type_object_with_rotation)
+		return type_rotation;
+
+
+	procedure set_rotation (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation);
+
+
+	-- Changes the rotation of the object by the given
+	-- relative rotation.
+	-- Preserves x/y. Changes rotation only.
+	procedure set_rotation_relative (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation);
+
+
+	procedure set_position (
+		object	: in out type_object_with_rotation;
+		line	: in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+		from	: in type_field_count_positive);
+	-- CS: incomplete !
+
+
 	overriding procedure reset_position (
 		object	: in out type_object_with_rotation);
 
@@ -200,6 +249,30 @@ package et_basic_objects is
 		object	: in type_object_with_rotation;
 		format	: in type_output_format := FORMAT_1)
 		return string;
+
+
+	-- This is more than just adding
+	-- location vectors (place) and rotation.
+	-- This function does the follwing:
+	-- If mirror is MIRROR_NO, then
+	--  1. Rotates the place of the object about its
+	--     own origin by given rotation.
+	--  2. Adds to object.place the given offset.
+	--  3. Adds to object.rotation the given rotation.
+	--
+	-- If mirror is MIRROR_ALONG_Y_AXIS, then
+	--  1. Mirrors object.place along Y-axis.
+	--  2. Rotates the object.place about its
+	--     own origin by the negative rotation.
+	--  3. Adds to object.place the given offset.
+	--  4. Adds to object.rotation the given rotation.
+	--
+	-- If mirror is something else, then nothing happens:
+	procedure add (
+		object		: in out type_object_with_rotation;
+		offset		: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO);
 
 
 end et_basic_objects;

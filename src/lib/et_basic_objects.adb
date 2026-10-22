@@ -48,10 +48,42 @@ with ada.characters.handling;		use ada.characters.handling;
 
 package body et_basic_objects is
 
+
 	function get_place (
 		object	: in type_object)
 		return type_vector_model
 	is (object.place);
+
+
+
+	function get_x (
+		object	: in type_object)
+		return type_distance
+	is (get_x ((get_place (object))));
+
+
+	procedure set_x (
+		object	: in out type_object;
+		value	: in type_distance)
+	is begin
+		object.place.x := value;
+	end set_x;
+
+
+	function get_y (
+		object	: in type_object)
+		return type_distance
+	is (get_y ((get_place (object))));
+
+
+	procedure set_y (
+		object	: in out type_object;
+		value	: in type_distance)
+	is begin
+		object.place.y := value;
+	end set_y;
+
+
 
 
 	procedure move_to (
@@ -101,6 +133,10 @@ package body et_basic_objects is
 				return "x/y " & x & separator & y;
 		end case;
 	end get_position;
+
+
+
+
 
 
 	procedure mirror_along_axis (
@@ -222,6 +258,42 @@ package body et_basic_objects is
 
 
 
+
+
+
+
+
+	function get_rotation (
+		object	: in type_object_with_rotation)
+		return type_rotation
+	is (object.rotation);
+
+
+	procedure set_rotation (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation)
+	is begin
+		object.rotation := rotation;
+	end set_rotation;
+
+
+	procedure set_rotation_relative (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation)
+	is begin
+		object.rotation := add (object.rotation, rotation);
+	end set_rotation_relative;
+
+
+	procedure set_position (
+		object	: in out type_object_with_rotation;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive)
+	is begin
+		null; -- CS
+	end set_position;
+
+
 	procedure reset_position (
 		object	: in out type_object_with_rotation)
 	is begin
@@ -256,6 +328,32 @@ package body et_basic_objects is
 				return "x/y/rotation " & x & separator & y & separator & r;
 		end case;
 	end get_position;
+
+
+
+
+	procedure add (
+		object		: in out type_object_with_rotation;
+		offset		: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)
+	is begin
+		case mirror is
+			when MIRROR_NO =>
+				rotate_by (object.place, rotation);
+				add (object.place, offset);
+				add (object.rotation, rotation);
+
+			when MIRROR_ALONG_Y_AXIS =>
+				mirror_point (object.place, MIRROR_ALONG_Y_AXIS);
+				rotate_by (object.place, -rotation);
+				add (object.place, offset);
+				add (object.rotation, rotation);
+
+			when others =>
+				null; -- CS
+		end case;
+	end add;
 
 
 

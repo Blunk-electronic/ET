@@ -44,11 +44,10 @@ with et_string_processing;			use et_string_processing;
 
 -- with system.assertions;
 
-
 package et_schematic_coordinates is
 
 	use pac_geometry_2;
-
+	use pac_basic_objects;
 
 --	pragma assertion_policy (check);
 
@@ -64,6 +63,35 @@ package et_schematic_coordinates is
 	type type_object_position is new pac_geometry_2.type_position with private;
 
 	type type_object_position_relative is new pac_geometry_2.type_position with private;
+
+
+
+
+	type type_schematic_object
+		is new type_object_with_rotation with private;
+
+
+	function get_sheet (
+		object : in type_schematic_object)
+		return type_sheet;
+
+
+	procedure set_sheet (
+		object	: in out type_schematic_object;
+		sheet	: in type_sheet);
+
+
+	function "<" (
+		left, right : in type_schematic_object)
+		return boolean;
+
+
+	procedure set_position (
+		object	: in out type_schematic_object;
+		line	: in type_fields_of_line; -- "sheet 3 x 23 y 0.2 rotation 90.0"
+		from	: in type_field_count_positive);
+	-- CS: incomplete !
+
 
 
 
@@ -210,6 +238,16 @@ private
 	type type_object_position_relative is new pac_geometry_2.type_position with record
 		sheet : type_sheet_relative := 0;
 	end record;
+
+
+
+
+	type type_schematic_object
+		is new type_object_with_rotation with record
+			sheet : type_sheet := type_sheet'first;
+		end record;
+
+
 
 
 	zero_position : constant type_object_position := (
