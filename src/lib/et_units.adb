@@ -101,98 +101,91 @@ package body et_units is
 
 
 
-	function get_rotation (
-		unit	: in type_unit)
-		return type_rotation_model
-	is (get_rotation (unit.position));
+	-- function get_rotation (
+	-- 	unit	: in type_unit)
+	-- 	return type_rotation_model
+	-- is (get_rotation (unit.position));
 
-
-
-	procedure set_rotation (
-		unit		: in out type_unit;
-		rotation	: in type_rotation_model)
-	is begin
-		set_rotation (unit.position, rotation);
-	end set_rotation;
-
-
-
-
-	procedure rotate_by (
-		unit		: in out type_unit;
-		rotation	: in type_rotation_model)
-	is
-		-- Get the rotation before:
-		r_actual : type_rotation_model := get_rotation (unit);
-	begin
-		-- Add the given rotation to the actual rotation:
-		add (r_actual, rotation);
-
-		-- Assign the new rotation:
-		set_rotation (unit, r_actual);
-	end rotate_by;
+	-- procedure set_rotation (
+	-- 	unit		: in out type_unit;
+	-- 	rotation	: in type_rotation_model)
+	-- is begin
+	-- 	set_rotation (unit.position, rotation);
+	-- end set_rotation;
 
 
 
 
-	function get_sheet (
-		unit	: in type_unit)
-		return type_sheet
-	is (get_sheet (unit.position));
+	-- procedure rotate_by (
+	-- 	unit		: in out type_unit;
+	-- 	rotation	: in type_rotation_model)
+	-- is
+	-- 	-- Get the rotation before:
+	-- 	r_actual : type_rotation_model := get_rotation (unit);
+	-- begin
+	-- 	-- Add the given rotation to the actual rotation:
+	-- 	add (r_actual, rotation);
+
+	-- 	-- Assign the new rotation:
+	-- 	set_rotation (unit, r_actual);
+	-- end rotate_by;
+
+	-- function get_sheet (
+	-- 	unit	: in type_unit)
+	-- 	return type_sheet
+	-- is (get_sheet (unit.position));
+
+	-- procedure set_sheet (
+	-- 	unit	: in out type_unit;
+	-- 	sheet	: in type_sheet)
+	-- is begin
+	-- 	set_sheet (unit.position, sheet);
+	-- end set_sheet;
 
 
 
-	procedure set_sheet (
-		unit	: in out type_unit;
-		sheet	: in type_sheet)
-	is begin
-		set_sheet (unit.position, sheet);
-	end set_sheet;
+
+	-- procedure move_unit (
+	-- 	unit	: in out type_unit;
+	-- 	offset	: in type_vector_model)
+	-- is begin
+	-- 	move_by (unit.position, offset);
+	-- end move_unit;
 
 
 
-
-	procedure move_unit (
-		unit	: in out type_unit;
-		offset	: in type_vector_model)
-	is begin
-		move_by (unit.position, offset);
-	end move_unit;
-
-
-
-	procedure move_unit (
-		unit	: in out type_unit;
-		offset	: in type_sheet_relative)
-	is begin
-		move_by_sheets (unit.position, offset);
-	end move_unit;
+	-- procedure move_unit (
+	-- 	unit	: in out type_unit;
+	-- 	offset	: in type_sheet_relative)
+	-- is begin
+	-- 	move_by_sheets (unit.position, offset);
+	-- end move_unit;
 
 
 
 
 
-	function in_catch_zone (
-		unit	: in type_unit;
-		zone	: in type_catch_zone;
-		sheet	: in type_sheet)
-		return boolean
-	is
-		result : boolean := false;
+	-- function in_catch_zone (
+	-- 	unit	: in type_unit;
+	-- 	zone	: in type_catch_zone;
+	-- 	sheet	: in type_sheet)
+	-- 	return boolean
+	-- is
+	-- 	result : boolean := false;
 
-		unit_position : constant type_object_position := get_position (unit);
-	begin
-		-- The unit must be on the given sheet and
-		-- in the given catch zone:
-		if	get_sheet (unit_position) = sheet
-		and	in_catch_zone (zone, get_place (unit_position)) then
-			result := true;
-		else
-			result := false;
-		end if;
+	-- 	unit_position : constant type_object_position := get_position (unit);
+	-- begin
+	-- 	-- The unit must be on the given sheet and
+	-- 	-- in the given catch zone:
+	-- 	if	get_sheet (unit_position) = sheet
+	-- 	and	in_catch_zone (zone, get_place (unit_position)) then
+	-- 		result := true;
+	-- 	else
+	-- 		result := false;
+	-- 	end if;
 
-		return result;
-	end in_catch_zone;
+	-- 	return result;
+	-- end in_catch_zone;
 
 
 
@@ -200,34 +193,34 @@ package body et_units is
 
 
 
-	function on_sheet_and_in_area (
-		unit	: in type_unit;
-		sheet	: in type_sheet;
-		area	: in type_area)
-		return boolean
-	is
-		result : boolean := false;
-		place : type_vector_model;
-	begin
-		-- The given unit must be on the given sheet:
-		if get_sheet (unit) = sheet then
+	-- function on_sheet_and_in_area (
+	-- 	unit	: in type_unit;
+	-- 	sheet	: in type_sheet;
+	-- 	area	: in type_area)
+	-- 	return boolean
+	-- is
+	-- 	result : boolean := false;
+	-- 	place : type_vector_model;
+	-- begin
+	-- 	-- The given unit must be on the given sheet:
+	-- 	if get_sheet (unit) = sheet then
 
-			-- Get the x/y position of the unit:
-			place := get_place (get_position (unit));
+	-- 		-- Get the x/y position of the unit:
+	-- 		place := get_place (get_position (unit));
 
-			-- The unit must be in the given area:
-			if in_area (place, area) then
-				result := true;
-			else
-				result := false;
-			end if;
+	-- 		-- The unit must be in the given area:
+	-- 		if in_area (place, area) then
+	-- 			result := true;
+	-- 		else
+	-- 			result := false;
+	-- 		end if;
 
-		else
-			result := false;
-		end if;
+	-- 	else
+	-- 		result := false;
+	-- 	end if;
 
-		return result;
-	end on_sheet_and_in_area;
+	-- 	return result;
+	-- end on_sheet_and_in_area;
 
 
 
@@ -237,21 +230,21 @@ package body et_units is
 
 
 
-	function on_sheet_and_selected (
-		unit	: in type_unit;
-		sheet	: in type_sheet)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if get_sheet (unit) = sheet then
-			if is_selected (unit) then
-				result := true;
-			end if;
-		end if;
+	-- function on_sheet_and_selected (
+	-- 	unit	: in type_unit;
+	-- 	sheet	: in type_sheet)
+	-- 	return boolean
+	-- is
+	-- 	result : boolean := false;
+	-- begin
+	-- 	if get_sheet (unit) = sheet then
+	-- 		if is_selected (unit) then
+	-- 			result := true;
+	-- 		end if;
+	-- 	end if;
 
-		return result;
-	end on_sheet_and_selected;
+	-- 	return result;
+	-- end on_sheet_and_selected;
 
 
 
@@ -269,87 +262,69 @@ package body et_units is
 
 
 
-	procedure set_selected (
-		unit : in out type_unit)
-	is begin
-		set_selected (unit.status);
-	end set_selected;
+	-- procedure set_selected (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	set_selected (unit.status);
+	-- end set_selected;
 
+	-- procedure clear_selected (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	clear_selected (unit.status);
+	-- end clear_selected;
 
+	-- function is_selected (
+	-- 	unit : in type_unit)
+	-- 	return boolean
+	-- is (is_selected (unit.status));
 
-	procedure clear_selected (
-		unit : in out type_unit)
-	is begin
-		clear_selected (unit.status);
-	end clear_selected;
+	-- procedure set_proposed (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	set_proposed (unit.status);
+	-- end set_proposed;
 
+	-- procedure clear_proposed (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	clear_proposed (unit.status);
+	-- end clear_proposed;
 
-	function is_selected (
-		unit : in type_unit)
-		return boolean
-	is (is_selected (unit.status));
+	-- function is_proposed (
+	-- 	unit : in type_unit)
+	-- 	return boolean
+	-- is (is_proposed (unit.status));
 
+	-- procedure set_moving (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	set_moving (unit.status);
+	-- end set_moving;
 
+	-- procedure clear_moving (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	clear_moving (unit.status);
+	-- end clear_moving;
 
-	procedure set_proposed (
-		unit : in out type_unit)
-	is begin
-		set_proposed (unit.status);
-	end set_proposed;
+	-- function is_moving (
+	-- 	unit : in type_unit)
+	-- 	return boolean
+	-- is (is_moving (unit.status));
 
+	-- procedure modify_status (
+	-- 	unit		: in out type_unit;
+	-- 	operation	: in type_status_operation)
+	-- is begin
+	-- 	modify_status (unit.status, operation);
+	-- end modify_status;
 
-	procedure clear_proposed (
-		unit : in out type_unit)
-	is begin
-		clear_proposed (unit.status);
-	end clear_proposed;
-
-
-	function is_proposed (
-		unit : in type_unit)
-		return boolean
-	is (is_proposed (unit.status));
-
-
-
-
-	procedure set_moving (
-		unit : in out type_unit)
-	is begin
-		set_moving (unit.status);
-	end set_moving;
-
-
-	procedure clear_moving (
-		unit : in out type_unit)
-	is begin
-		clear_moving (unit.status);
-	end clear_moving;
-
-
-	function is_moving (
-		unit : in type_unit)
-		return boolean
-	is (is_moving (unit.status));
-
-
-
-
-	procedure modify_status (
-		unit		: in out type_unit;
-		operation	: in type_status_operation)
-	is begin
-		modify_status (unit.status, operation);
-	end modify_status;
-
-
-
-
-	procedure reset_status (
-		unit : in out type_unit)
-	is begin
-		reset_status (unit.status);
-	end reset_status;
+	-- procedure reset_status (
+	-- 	unit : in out type_unit)
+	-- is begin
+	-- 	reset_status (unit.status);
+	-- end reset_status;
 
 
 
@@ -385,7 +360,7 @@ package body et_units is
 		-- In case absolute movement is required, calculate the
 		-- new position of the placeholder relative to the unit origin:
 		pos_abs : constant type_vector_model :=
-			get_distance_relative (unit.position.place, point);
+			get_distance_relative (get_place (unit), point);
 
 	begin
 		case meaning is
@@ -479,10 +454,10 @@ package body et_units is
 
 
 
-	function get_position (
-		unit	: in pac_units.cursor)
-		return type_object_position
-	is (get_position (element (unit)));
+	-- function get_position (
+	-- 	unit	: in pac_units.cursor)
+	-- 	return type_object_position
+	-- is (get_position (element (unit)));
 
 
 
@@ -535,13 +510,17 @@ package body et_units is
 
 
 
-	function to_string (unit : in pac_units.cursor) return string is
+	function to_string (
+		unit : in pac_units.cursor)
+		return string
+	is
 		use pac_units;
 	begin
 		return get_unit_name (unit)
 			--& to_string (type_vector_model (element (unit).position));
-			& to_string (element (unit).position.place);
-			-- CS output sheet number and rotation ?
+			& to_string (get_place (element (unit)));
+		-- CS output sheet number and rotation ?
+		-- CS use function get_position (et_basic_objects) ?
 	end to_string;
 
 

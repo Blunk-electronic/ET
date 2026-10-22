@@ -81,6 +81,12 @@ package et_schematic_coordinates is
 		sheet	: in type_sheet);
 
 
+	-- Moves an object by the given number of sheets:
+	procedure move_by_sheets (
+		object	: in out type_schematic_object;
+		offset	: in type_sheet_relative);
+
+
 	function "<" (
 		left, right : in type_schematic_object)
 		return boolean;
@@ -92,6 +98,32 @@ package et_schematic_coordinates is
 		from	: in type_field_count_positive);
 	-- CS: incomplete !
 
+
+	-- Returns true if the given object is in
+	-- the given catch zone:
+	function in_catch_zone (
+		object	: in type_schematic_object;
+		zone	: in type_catch_zone;
+		sheet	: in type_sheet)
+		return boolean;
+
+
+	-- Returns true if the given object is
+	-- on the given sheet and in the given
+	-- rectangular area:
+	function on_sheet_and_in_area (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet;
+		area	: in type_area)
+		return boolean;
+
+
+	-- Returns true if the given object is
+	-- on the given sheet and if it is selected:
+	function on_sheet_and_selected (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet)
+		return boolean;
 
 
 

@@ -146,75 +146,73 @@ package et_units is
 
 
 
-	function get_rotation (
-		unit	: in type_unit)
-		return type_rotation_model;
+	-- function get_rotation (
+	-- 	unit	: in type_unit)
+	-- 	return type_rotation_model;
 
 
-	-- Sets the absolute rotation of a unit:
-	procedure set_rotation (
-		unit		: in out type_unit;
-		rotation	: in type_rotation_model);
+	-- -- Sets the absolute rotation of a unit:
+	-- procedure set_rotation (
+	-- 	unit		: in out type_unit;
+	-- 	rotation	: in type_rotation_model);
 
 
 	-- Rotates the unit by a given angle:
-	procedure rotate_by (
-		unit		: in out type_unit;
-		rotation	: in type_rotation_model);
+	-- procedure rotate_by (
+	-- 	unit		: in out type_unit;
+	-- 	rotation	: in type_rotation_model);
 
 
 
-	function get_sheet (
-		unit	: in type_unit)
-		return type_sheet;
+	-- function get_sheet (
+	-- 	unit	: in type_unit)
+	-- 	return type_sheet;
+
+	-- procedure set_sheet (
+	-- 	unit	: in out type_unit;
+	-- 	sheet	: in type_sheet);
 
 
-	procedure set_sheet (
-		unit	: in out type_unit;
-		sheet	: in type_sheet);
+
+	-- -- Moves a unit by the given offset:
+	-- procedure move_unit (
+	-- 	unit	: in out type_unit;
+	-- 	offset	: in type_vector_model);
 
 
-
-	-- Moves a unit by the given offset:
-	procedure move_unit (
-		unit	: in out type_unit;
-		offset	: in type_vector_model);
-
-
-	-- Moves a unit by the given number of sheets:
-	procedure move_unit (
-		unit	: in out type_unit;
-		offset	: in type_sheet_relative);
+	-- -- Moves a unit by the given number of sheets:
+	-- procedure move_unit (
+	-- 	unit	: in out type_unit;
+	-- 	offset	: in type_sheet_relative);
 
 
 
 
 	-- Returns true if the given unit is in
 	-- the given catch zone:
-	function in_catch_zone (
-		unit	: in type_unit;
-		zone	: in type_catch_zone;
-		sheet	: in type_sheet)
-		return boolean;
+	-- function in_catch_zone (
+	-- 	unit	: in type_unit;
+	-- 	zone	: in type_catch_zone;
+	-- 	sheet	: in type_sheet)
+	-- 	return boolean;
 
 
 
-	-- Returns true if the given unit is
-	-- on the given sheet and in the given
-	-- rectangular area:
-	function on_sheet_and_in_area (
-		unit	: in type_unit;
-		sheet	: in type_sheet;
-		area	: in type_area)
-		return boolean;
+	-- -- Returns true if the given unit is
+	-- -- on the given sheet and in the given
+	-- -- rectangular area:
+	-- function on_sheet_and_in_area (
+	-- 	unit	: in type_unit;
+	-- 	sheet	: in type_sheet;
+	-- 	area	: in type_area)
+	-- 	return boolean;
 
-
-	-- Returns true if the given unit is
-	-- on the given sheet and if it is selected:
-	function on_sheet_and_selected (
-		unit	: in type_unit;
-		sheet	: in type_sheet)
-		return boolean;
+	-- -- Returns true if the given unit is
+	-- -- on the given sheet and if it is selected:
+	-- function on_sheet_and_selected (
+	-- 	unit	: in type_unit;
+	-- 	sheet	: in type_sheet)
+	-- 	return boolean;
 
 
 	procedure unit_not_found (
@@ -223,58 +221,47 @@ package et_units is
 
 
 
-	procedure set_selected (
-		unit : in out type_unit);
+	-- procedure set_selected (
+	-- 	unit : in out type_unit);
 
+	-- procedure clear_selected (
+	-- 	unit : in out type_unit);
 
-	procedure clear_selected (
-		unit : in out type_unit);
+	-- function is_selected (
+	-- 	unit : in type_unit)
+	-- 	return boolean;
 
+	-- procedure set_proposed (
+	-- 	unit : in out type_unit);
 
-	function is_selected (
-		unit : in type_unit)
-		return boolean;
+	-- procedure clear_proposed (
+	-- 	unit : in out type_unit);
 
-
-
-	procedure set_proposed (
-		unit : in out type_unit);
-
-
-	procedure clear_proposed (
-		unit : in out type_unit);
-
-
-	function is_proposed (
-		unit : in type_unit)
-		return boolean;
+	-- function is_proposed (
+	-- 	unit : in type_unit)
+	-- 	return boolean;
 
 
 
 
-	procedure set_moving (
-		unit : in out type_unit);
+	-- procedure set_moving (
+	-- 	unit : in out type_unit);
 
+	-- procedure clear_moving (
+	-- 	unit : in out type_unit);
 
-	procedure clear_moving (
-		unit : in out type_unit);
+	-- function is_moving (
+	-- 	unit : in type_unit)
+	-- 	return boolean;
 
-
-	function is_moving (
-		unit : in type_unit)
-		return boolean;
-
-
-
-
-	procedure modify_status (
-		unit		: in out type_unit;
-		operation	: in type_status_operation);
+	-- procedure modify_status (
+	-- 	unit		: in out type_unit;
+	-- 	operation	: in type_status_operation);
 
 
 
-	procedure reset_status (
-		unit : in out type_unit);
+	-- procedure reset_status (
+	-- 	unit : in out type_unit);
 
 
 
@@ -330,9 +317,9 @@ package et_units is
 
 
 
-	function get_position (
-		unit	: in pac_units.cursor)
-		return type_object_position;
+	-- function get_position (
+	-- 	unit	: in pac_units.cursor)
+	-- 	return type_object_position;
 
 
 	function get_rotation (
@@ -370,8 +357,11 @@ package et_units is
 		return string;
 
 
-	-- Returns a string that tells the name and position of given unit.
-	function to_string (unit : in pac_units.cursor) return string;
+	-- Returns a string that tells the name
+	-- and position of given unit.
+	function to_string (
+		unit : in pac_units.cursor)
+		return string;
 
 
 
