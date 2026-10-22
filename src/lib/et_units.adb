@@ -52,26 +52,26 @@ package body et_units is
 
 
 
-	function get_place (
-		unit	: in type_unit)
-		return type_vector_model
-	is (get_place (unit.position));
+	-- function get_place (
+	-- 	unit	: in type_unit)
+	-- 	return type_vector_model
+	-- is (get_place (unit.position));
 
 
 
-	function get_position (
-		unit	: in type_unit)
-		return type_object_position
-	is (unit.position);
+	-- function get_position (
+	-- 	unit	: in type_unit)
+	-- 	return type_object_position
+	-- is (unit.position);
 
 
 
-	procedure set_position (
-		unit		: in out type_unit;
-		position	: in type_object_position)
-	is begin
-		unit.position := position;
-	end set_position;
+	-- procedure set_position (
+	-- 	unit		: in out type_unit;
+	-- 	position	: in type_object_position)
+	-- is begin
+	-- 	unit.position := position;
+	-- end set_position;
 
 
 

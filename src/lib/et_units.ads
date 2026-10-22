@@ -82,10 +82,13 @@ package et_units is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
-	type type_unit (appearance : type_appearance_schematic) is record -- CS make private
-		position		: type_object_position; -- incl. rotation and sheet number
+	--	type type_unit (appearance : type_appearance_schematic) is record -- CS make private
+	type type_unit (
+		appearance : type_appearance_schematic)
+	is new type_schematic_object with record -- CS make private
+		-- position		: type_object_position; -- incl. rotation and sheet number
 		mirror_status	: type_mirror := MIRROR_NO;
-		status			: type_object_status;
+		-- status			: type_object_status;
 		case appearance is
 			when APPEARANCE_VIRTUAL =>
 				null; -- CS
@@ -106,20 +109,20 @@ package et_units is
 
 
 	-- Returns x/y position of the given unit:
-	function get_place (
-		unit	: in type_unit)
-		return type_vector_model;
+	-- function get_place (
+	-- 	unit	: in type_unit)
+	-- 	return type_vector_model;
 
 
 
-	function get_position (
-		unit	: in type_unit)
-		return type_object_position;
+	-- function get_position (
+	-- 	unit	: in type_unit)
+	-- 	return type_object_position;
 
 
-	procedure set_position (
-		unit		: in out type_unit;
-		position	: in type_object_position);
+	-- procedure set_position (
+	-- 	unit		: in out type_unit;
+	-- 	position	: in type_object_position);
 
 
 
