@@ -43,408 +43,6 @@ with et_exceptions;						use et_exceptions;
 package body et_units is
 
 
-
-	function is_real (
-		unit : in type_unit)
-		return boolean
-	is (unit.appearance = APPEARANCE_PCB);
-
-
-
-
-	-- function get_place (
-	-- 	unit	: in type_unit)
-	-- 	return type_vector_model
-	-- is (get_place (unit.position));
-
-
-
-	-- function get_position (
-	-- 	unit	: in type_unit)
-	-- 	return type_object_position
-	-- is (unit.position);
-
-
-
-	-- procedure set_position (
-	-- 	unit		: in out type_unit;
-	-- 	position	: in type_object_position)
-	-- is begin
-	-- 	unit.position := position;
-	-- end set_position;
-
-
-
-
-	function get_mirror_status (
-		unit	: in type_unit)
-		return type_mirror
-	is (unit.mirror_status);
-
-
-
-	procedure set_mirror_status (
-		unit	: in out type_unit;
-		mirror	: in type_mirror)
-	is begin
-		unit.mirror_status := mirror;
-	end set_mirror_status;
-
-
-
-	procedure toggle_mirror_status (
-		unit	: in out type_unit)
-	is begin
-		toggle_along_y (unit.mirror_status);
-	end toggle_mirror_status;
-
-
-
-
-	-- function get_rotation (
-	-- 	unit	: in type_unit)
-	-- 	return type_rotation_model
-	-- is (get_rotation (unit.position));
-
-	-- procedure set_rotation (
-	-- 	unit		: in out type_unit;
-	-- 	rotation	: in type_rotation_model)
-	-- is begin
-	-- 	set_rotation (unit.position, rotation);
-	-- end set_rotation;
-
-
-
-
-	-- procedure rotate_by (
-	-- 	unit		: in out type_unit;
-	-- 	rotation	: in type_rotation_model)
-	-- is
-	-- 	-- Get the rotation before:
-	-- 	r_actual : type_rotation_model := get_rotation (unit);
-	-- begin
-	-- 	-- Add the given rotation to the actual rotation:
-	-- 	add (r_actual, rotation);
-
-	-- 	-- Assign the new rotation:
-	-- 	set_rotation (unit, r_actual);
-	-- end rotate_by;
-
-	-- function get_sheet (
-	-- 	unit	: in type_unit)
-	-- 	return type_sheet
-	-- is (get_sheet (unit.position));
-
-	-- procedure set_sheet (
-	-- 	unit	: in out type_unit;
-	-- 	sheet	: in type_sheet)
-	-- is begin
-	-- 	set_sheet (unit.position, sheet);
-	-- end set_sheet;
-
-
-
-
-	-- procedure move_unit (
-	-- 	unit	: in out type_unit;
-	-- 	offset	: in type_vector_model)
-	-- is begin
-	-- 	move_by (unit.position, offset);
-	-- end move_unit;
-
-
-
-	-- procedure move_unit (
-	-- 	unit	: in out type_unit;
-	-- 	offset	: in type_sheet_relative)
-	-- is begin
-	-- 	move_by_sheets (unit.position, offset);
-	-- end move_unit;
-
-
-
-
-
-	-- function in_catch_zone (
-	-- 	unit	: in type_unit;
-	-- 	zone	: in type_catch_zone;
-	-- 	sheet	: in type_sheet)
-	-- 	return boolean
-	-- is
-	-- 	result : boolean := false;
-
-	-- 	unit_position : constant type_object_position := get_position (unit);
-	-- begin
-	-- 	-- The unit must be on the given sheet and
-	-- 	-- in the given catch zone:
-	-- 	if	get_sheet (unit_position) = sheet
-	-- 	and	in_catch_zone (zone, get_place (unit_position)) then
-	-- 		result := true;
-	-- 	else
-	-- 		result := false;
-	-- 	end if;
-
-	-- 	return result;
-	-- end in_catch_zone;
-
-
-
-
-
-
-
-	-- function on_sheet_and_in_area (
-	-- 	unit	: in type_unit;
-	-- 	sheet	: in type_sheet;
-	-- 	area	: in type_area)
-	-- 	return boolean
-	-- is
-	-- 	result : boolean := false;
-	-- 	place : type_vector_model;
-	-- begin
-	-- 	-- The given unit must be on the given sheet:
-	-- 	if get_sheet (unit) = sheet then
-
-	-- 		-- Get the x/y position of the unit:
-	-- 		place := get_place (get_position (unit));
-
-	-- 		-- The unit must be in the given area:
-	-- 		if in_area (place, area) then
-	-- 			result := true;
-	-- 		else
-	-- 			result := false;
-	-- 		end if;
-
-	-- 	else
-	-- 		result := false;
-	-- 	end if;
-
-	-- 	return result;
-	-- end on_sheet_and_in_area;
-
-
-
-
-
-
-
-
-
-	-- function on_sheet_and_selected (
-	-- 	unit	: in type_unit;
-	-- 	sheet	: in type_sheet)
-	-- 	return boolean
-	-- is
-	-- 	result : boolean := false;
-	-- begin
-	-- 	if get_sheet (unit) = sheet then
-	-- 		if is_selected (unit) then
-	-- 			result := true;
-	-- 		end if;
-	-- 	end if;
-
-	-- 	return result;
-	-- end on_sheet_and_selected;
-
-
-
-
-
-
-
-	procedure unit_not_found (
-		name : in type_unit_name)
-	is begin
-		raise semantic_error_1 with
-			"ERROR: Unit " & to_string (name) & " not found !";
-	end unit_not_found;
-
-
-
-
-	-- procedure set_selected (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	set_selected (unit.status);
-	-- end set_selected;
-
-	-- procedure clear_selected (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	clear_selected (unit.status);
-	-- end clear_selected;
-
-	-- function is_selected (
-	-- 	unit : in type_unit)
-	-- 	return boolean
-	-- is (is_selected (unit.status));
-
-	-- procedure set_proposed (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	set_proposed (unit.status);
-	-- end set_proposed;
-
-	-- procedure clear_proposed (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	clear_proposed (unit.status);
-	-- end clear_proposed;
-
-	-- function is_proposed (
-	-- 	unit : in type_unit)
-	-- 	return boolean
-	-- is (is_proposed (unit.status));
-
-	-- procedure set_moving (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	set_moving (unit.status);
-	-- end set_moving;
-
-	-- procedure clear_moving (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	clear_moving (unit.status);
-	-- end clear_moving;
-
-	-- function is_moving (
-	-- 	unit : in type_unit)
-	-- 	return boolean
-	-- is (is_moving (unit.status));
-
-	-- procedure modify_status (
-	-- 	unit		: in out type_unit;
-	-- 	operation	: in type_status_operation)
-	-- is begin
-	-- 	modify_status (unit.status, operation);
-	-- end modify_status;
-
-	-- procedure reset_status (
-	-- 	unit : in out type_unit)
-	-- is begin
-	-- 	reset_status (unit.status);
-	-- end reset_status;
-
-
-
-
-
-
-
-
--- PLACEHOLDERS:
-
-
-	function get_placeholders (
-		unit : in type_unit)
-		return type_text_placeholders
-	is begin
-		if is_real (unit) then
-			return unit.placeholders;
-		else
-			return (others => <>);
-		end if;
-	end get_placeholders;
-
-
-
-
-
-	procedure move_placeholder (
-		unit		: in out type_unit;
-		meaning		: in type_placeholder_meaning;
-		coordinates	: in type_coordinates; -- relative/absolute
-		point		: in type_vector_model) -- x/y
-	is
-		-- In case absolute movement is required, calculate the
-		-- new position of the placeholder relative to the unit origin:
-		pos_abs : constant type_vector_model :=
-			get_distance_relative (get_place (unit), point);
-
-	begin
-		case meaning is
-			when NAME =>
-				case coordinates is
-					when ABSOLUTE =>
-						--log (text => "pos " & to_string (point));
-						unit.placeholders.name.position := pos_abs;
-
-					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.name.position,
-							offset	=> point);
-				end case;
-
-
-			when VALUE =>
-				case coordinates is
-					when ABSOLUTE =>
-						unit.placeholders.value.position := pos_abs;
-
-					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.value.position,
-							offset	=> point);
-				end case;
-
-
-			when PURPOSE =>
-				case coordinates is
-					when ABSOLUTE =>
-						unit.placeholders.purpose.position := pos_abs;
-
-					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.purpose.position,
-							offset	=> point);
-				end case;
-
-		end case;
-	end move_placeholder;
-
-
-
-
-
-
-	procedure rotate_placeholder (
-		unit		: in out type_unit;
-		meaning		: in type_placeholder_meaning;
-		toggle		: in boolean;
-		rotation	: in type_rotation_documentation)
-	is begin
-		case meaning is
-			when NAME =>
-				if toggle then
-					toggle_rotation (unit.placeholders.name);
-				else
-					unit.placeholders.name.rotation := rotation;
-				end if;
-
-
-			when VALUE =>
-				if toggle then
-					toggle_rotation (unit.placeholders.value);
-				else
-					unit.placeholders.value.rotation := rotation;
-				end if;
-
-
-			when PURPOSE =>
-				if toggle then
-					toggle_rotation (unit.placeholders.purpose);
-				else
-					unit.placeholders.purpose.rotation := rotation;
-				end if;
-
-		end case;
-	end rotate_placeholder;
-
-
-
-
-
 	function get_unit (
 		unit_cursor : in pac_units.cursor)
 		return type_unit
@@ -551,8 +149,45 @@ package body et_units is
 
 
 
+	-- function extract_sheets (
+	-- 	positions	: in pac_unit_positions.map)
+	-- 	return pac_sheet_numbers.list
+	-- is
+	-- 	use pac_sheet_numbers;
+	-- 	use pac_sheet_sorting;
+
+	-- 	result : pac_sheet_numbers.list;
+
+
+	-- 	procedure query_position (c : in pac_unit_positions.cursor) is
+	-- 		use pac_unit_positions;
+	-- 		pos : constant type_object_position := element (c);
+	-- 		sheet : type_sheet;
+	-- 	begin
+	-- 		sheet := get_sheet (pos);
+
+	-- 		if not result.contains (sheet) then
+	-- 			result.append (sheet);
+	-- 		end if;
+	-- 	end query_position;
+
+	-- begin
+	-- 	positions.iterate (query_position'access);
+
+	-- 	-- Sort the sheets in ascending order:
+	-- 	sort (result);
+
+	-- 	return result;
+	-- end extract_sheets;
+
+
+
+
+
+
+
 	function extract_sheets (
-		positions	: in pac_unit_positions.map)
+		units	: in pac_units.map)
 		return pac_sheet_numbers.list
 	is
 		use pac_sheet_numbers;
@@ -561,21 +196,23 @@ package body et_units is
 		result : pac_sheet_numbers.list;
 
 
-		procedure query_position (c : in pac_unit_positions.cursor) is
-			use pac_unit_positions;
-			pos : constant type_object_position := element (c);
+		procedure query_unit (
+			c : in pac_units.cursor)
+		is
+			use pac_units;
+			unit : type_unit renames element (c);
 			sheet : type_sheet;
 		begin
-			sheet := get_sheet (pos);
+			sheet := get_sheet (unit);
 
 			if not result.contains (sheet) then
 				result.append (sheet);
 			end if;
-		end query_position;
+		end query_unit;
 
 
 	begin
-		positions.iterate (query_position'access);
+		units.iterate (query_unit'access);
 
 		-- Sort the sheets in ascending order:
 		sort (result);
@@ -589,22 +226,22 @@ package body et_units is
 
 
 
-	function get_unit_positions (
-		units : in pac_units.map)
-		return pac_unit_positions.map
-	is
-		list : pac_unit_positions.map; -- to be returned
-		use pac_units;
-		use pac_unit_positions;
+	-- function get_unit_positions (
+	-- 	units : in pac_units.map)
+	-- 	return pac_unit_positions.map
+	-- is
+	-- 	list : pac_unit_positions.map; -- to be returned
+	-- 	use pac_units;
+	-- 	use pac_unit_positions;
 
-		procedure query_unit (cursor : pac_units.cursor) is begin
-			list.insert (key (cursor), element (cursor).position);
-		end query_unit;
+	-- 	procedure query_unit (cursor : pac_units.cursor) is begin
+	-- 		list.insert (key (cursor), element (cursor).position);
+	-- 	end query_unit;
 
-	begin
-		iterate (units, query_unit'access);
-		return list;
-	end get_unit_positions;
+	-- begin
+	-- 	iterate (units, query_unit'access);
+	-- 	return list;
+	-- end get_unit_positions;
 
 
 
