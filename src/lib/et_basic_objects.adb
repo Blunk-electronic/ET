@@ -44,6 +44,7 @@ with ada.strings;					use ada.strings;
 with ada.characters.latin_1;
 with ada.characters.handling;		use ada.characters.handling;
 
+with et_keywords;
 
 
 package body et_basic_objects is
@@ -109,6 +110,7 @@ package body et_basic_objects is
 	end reset_position;
 
 
+
 	function get_position (
 		object	: in type_object;
 		format	: in type_output_format := FORMAT_1)
@@ -135,6 +137,17 @@ package body et_basic_objects is
 	end get_position;
 
 
+
+	procedure set_position (
+		object	: in out type_object;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive)
+	is
+		v : type_vector_model;
+	begin
+		v := to_vector_model (line, from);
+		set_place (object, v);
+	end set_position;
 
 
 
@@ -285,13 +298,7 @@ package body et_basic_objects is
 	end set_rotation_relative;
 
 
-	procedure set_position (
-		object	: in out type_object_with_rotation;
-		line	: in type_fields_of_line;
-		from	: in type_field_count_positive)
-	is begin
-		null; -- CS
-	end set_position;
+
 
 
 	procedure reset_position (
@@ -328,6 +335,51 @@ package body et_basic_objects is
 				return "x/y/rotation " & x & separator & y & separator & r;
 		end case;
 	end get_position;
+
+
+
+
+
+	overriding procedure set_position (
+		object	: in out type_object_with_rotation;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive)
+	is
+
+		procedure parse_fields is
+			-- Points to the field being read
+			-- starting with the given field:
+			place : type_field_count_positive := from;
+
+			use et_keywords;
+		begin
+			while place <= get_field_count (line) loop
+
+				-- We expect after the x the corresponding value for x
+				if get_field (line, place) = keyword_x then
+					set_x (object, to_distance (get_field (line, place + 1)));
+
+				-- We expect after the y the corresponding value for y
+				elsif get_field (line, place) = keyword_y then
+					set_y (object, to_distance (get_field (line, place + 1)));
+
+				-- We expect after "rotation" the corresponding value for the rotation
+				elsif get_field (line, place) = keyword_rotation then
+					set_rotation (object, to_rotation (get_field (line, place + 1)));
+
+				else
+					-- CS invalid_keyword (f (line, place));
+					raise constraint_error; -- CS
+				end if;
+
+				place := place + 2;
+			end loop;
+		end parse_fields;
+
+	begin
+		parse_fields;
+	end set_position;
+
 
 
 

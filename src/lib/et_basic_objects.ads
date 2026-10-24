@@ -123,6 +123,12 @@ package et_basic_objects is
 		return string;
 
 
+	-- Reads a line like "position x 44.5 y 53.5"
+	-- and assigns the position to the object:
+	procedure set_position (
+		object	: in out type_object;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive);
 
 
 -- MIRROR:
@@ -229,12 +235,6 @@ package et_basic_objects is
 		rotation	: in type_rotation);
 
 
-	procedure set_position (
-		object	: in out type_object_with_rotation;
-		line	: in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from	: in type_field_count_positive);
-	-- CS: incomplete !
-
 
 	overriding procedure reset_position (
 		object	: in out type_object_with_rotation);
@@ -249,6 +249,14 @@ package et_basic_objects is
 		object	: in type_object_with_rotation;
 		format	: in type_output_format := FORMAT_1)
 		return string;
+
+
+	-- Reads a line like "position x 44.5 y 53.5 rotation 90.0"
+	-- and assigns the position to the object:
+	overriding procedure set_position (
+		object	: in out type_object_with_rotation;
+		line	: in type_fields_of_line;
+		from	: in type_field_count_positive);
 
 
 	-- This is more than just adding

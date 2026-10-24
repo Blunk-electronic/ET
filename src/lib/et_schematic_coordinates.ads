@@ -92,11 +92,13 @@ package et_schematic_coordinates is
 		return boolean;
 
 
-	procedure set_position (
+	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"
+	-- and assigns the position to the object:
+	overriding procedure set_position (
 		object	: in out type_schematic_object;
-		line	: in type_fields_of_line; -- "sheet 3 x 23 y 0.2 rotation 90.0"
+		line	: in type_fields_of_line;
 		from	: in type_field_count_positive);
-	-- CS: incomplete !
+
 
 
 	-- This function returns the given object position

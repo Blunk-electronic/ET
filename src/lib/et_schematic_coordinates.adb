@@ -124,8 +124,43 @@ package body et_schematic_coordinates is
 		object	: in out type_schematic_object;
 		line	: in type_fields_of_line;
 		from	: in type_field_count_positive)
-	is begin
-		null; -- CS
+	is
+		procedure parse_fields is
+			-- Points to the field being read
+			-- starting with the given field:
+			place : type_field_count_positive := from;
+
+			use et_keywords;
+		begin
+			while place <= get_field_count (line) loop
+
+				-- We expect after the sheet the corresponding value for sheet
+				if get_field (line, place) = keyword_sheet then
+					set_sheet (object, to_sheet (get_field (line, place + 1)));
+
+				-- We expect after the x the corresponding value for x
+				elsif get_field (line, place) = keyword_x then
+					set_x (object, to_distance (get_field (line, place + 1)));
+
+				-- We expect after the y the corresponding value for y
+				elsif get_field (line, place) = keyword_y then
+					set_y (object, to_distance (get_field (line, place + 1)));
+
+				-- We expect after "rotation" the corresponding value for the rotation
+				elsif get_field (line, place) = keyword_rotation then
+					set_rotation (object, to_rotation (get_field (line, place + 1)));
+
+				else
+					-- CS invalid_keyword (f (line, place));
+					raise constraint_error; -- CS
+				end if;
+
+				place := place + 2;
+			end loop;
+		end parse_fields;
+
+	begin
+		parse_fields;
 	end set_position;
 
 
