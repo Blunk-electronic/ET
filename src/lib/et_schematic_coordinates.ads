@@ -71,6 +71,12 @@ package et_schematic_coordinates is
 		is new type_object_with_rotation with private;
 
 
+	-- function to_schematic_object (
+	-- 	object	: in type_object_with_rotation;
+	-- 	sheet	: in type_sheet)
+	-- 	return type_schematic_object'class;
+
+
 	function get_sheet (
 		object : in type_schematic_object)
 		return type_sheet;
@@ -90,6 +96,12 @@ package et_schematic_coordinates is
 	function "<" (
 		left, right : in type_schematic_object)
 		return boolean;
+
+
+	-- Resets the object. Sets its sheet to 1:
+	overriding procedure reset_position (
+		object	: in out type_schematic_object);
+
 
 
 	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -72,7 +72,7 @@ package body et_device_model_unit_internal is
 
 	function get_default_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in type_object_position)
+		destination		: in type_schematic_object)
 		return type_text_placeholders
 	is
 		sym : type_unit_internal renames element (symbol_cursor);

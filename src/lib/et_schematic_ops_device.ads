@@ -315,7 +315,7 @@ package et_schematic_ops_device is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in type_device_model_name; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in type_package_variant_name; -- N, D, S_0805
-		destination		: in type_object_position; -- sheet/x/y/rotation
+		destination		: in type_schematic_object; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -340,7 +340,7 @@ package et_schematic_ops_device is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- IC45
 		unit_name_explicit	: in type_unit_name; -- D
-		destination			: in type_object_position; -- sheet/x/y
+		destination			: in type_schematic_object; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
 		device_created		: out type_device_name;
 		log_threshold		: in type_log_level);

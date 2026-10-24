@@ -170,7 +170,7 @@ package body et_schematic_ops_nets is
 
 				procedure query_units (unit_cursor : in pac_units.cursor) is
 					use pac_units;
-					unit_position : type_object_position;
+					unit_position : type_schematic_object;
 					ports : pac_symbol_ports.map;
 
 
@@ -203,7 +203,7 @@ package body et_schematic_ops_nets is
 
 
 				begin -- query_units
-					unit_position := element (unit_cursor).position;
+					unit_position := get_position (unit_cursor);
 
 					-- Look at units on the given sheet of place:
 					if get_sheet (unit_position) = get_sheet (place) then

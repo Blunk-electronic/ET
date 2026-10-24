@@ -52,10 +52,10 @@ package body et_units is
 
 
 
-	-- function get_position (
-	-- 	unit	: in pac_units.cursor)
-	-- 	return type_object_position
-	-- is (get_position (element (unit)));
+	function get_position (
+		unit	: in pac_units.cursor)
+		return type_schematic_object
+	is (get_position (element (unit)));
 
 
 
@@ -149,36 +149,38 @@ package body et_units is
 
 
 
-	-- function extract_sheets (
-	-- 	positions	: in pac_unit_positions.map)
-	-- 	return pac_sheet_numbers.list
-	-- is
-	-- 	use pac_sheet_numbers;
-	-- 	use pac_sheet_sorting;
+	function extract_sheets (
+		positions	: in pac_unit_positions.map)
+		return pac_sheet_numbers.list
+	is
+		use pac_sheet_numbers;
+		use pac_sheet_sorting;
 
-	-- 	result : pac_sheet_numbers.list;
+		result : pac_sheet_numbers.list;
 
 
-	-- 	procedure query_position (c : in pac_unit_positions.cursor) is
-	-- 		use pac_unit_positions;
-	-- 		pos : constant type_object_position := element (c);
-	-- 		sheet : type_sheet;
-	-- 	begin
-	-- 		sheet := get_sheet (pos);
+		procedure query_position (
+			c : in pac_unit_positions.cursor)
+		is
+			use pac_unit_positions;
+			pos : constant type_schematic_object := element (c);
+			sheet : type_sheet;
+		begin
+			sheet := get_sheet (pos);
 
-	-- 		if not result.contains (sheet) then
-	-- 			result.append (sheet);
-	-- 		end if;
-	-- 	end query_position;
+			if not result.contains (sheet) then
+				result.append (sheet);
+			end if;
+		end query_position;
 
-	-- begin
-	-- 	positions.iterate (query_position'access);
+	begin
+		positions.iterate (query_position'access);
 
-	-- 	-- Sort the sheets in ascending order:
-	-- 	sort (result);
+		-- Sort the sheets in ascending order:
+		sort (result);
 
-	-- 	return result;
-	-- end extract_sheets;
+		return result;
+	end extract_sheets;
 
 
 
@@ -226,22 +228,26 @@ package body et_units is
 
 
 
-	-- function get_unit_positions (
-	-- 	units : in pac_units.map)
-	-- 	return pac_unit_positions.map
-	-- is
-	-- 	list : pac_unit_positions.map; -- to be returned
-	-- 	use pac_units;
-	-- 	use pac_unit_positions;
+	function get_unit_positions (
+		units : in pac_units.map)
+		return pac_unit_positions.map
+	is
+		list : pac_unit_positions.map; -- to be returned
+		use pac_units;
+		use pac_unit_positions;
 
-	-- 	procedure query_unit (cursor : pac_units.cursor) is begin
-	-- 		list.insert (key (cursor), element (cursor).position);
-	-- 	end query_unit;
+		procedure query_unit (
+			cursor : pac_units.cursor)
+		is begin
+			list.insert (
+				key (cursor),
+				get_position (cursor));
+		end query_unit;
 
-	-- begin
-	-- 	iterate (units, query_unit'access);
-	-- 	return list;
-	-- end get_unit_positions;
+	begin
+		iterate (units, query_unit'access);
+		return list;
+	end get_unit_positions;
 
 
 

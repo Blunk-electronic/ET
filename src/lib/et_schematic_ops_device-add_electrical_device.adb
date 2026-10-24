@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -54,6 +54,7 @@ with et_device_library.packages;		use et_device_library.packages;
 with et_device_library.units;			use et_device_library.units;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_device_category;				use et_device_category;
+with et_device_unit;					use et_device_unit;
 with et_conventions;					use et_conventions;
 
 
@@ -63,7 +64,7 @@ procedure add_electrical_device (
 	module_cursor	: in pac_generic_modules.cursor;
 	device_model	: in type_device_model_name;
 	variant			: in type_package_variant_name;
-	destination		: in type_object_position;
+	destination		: in type_schematic_object;
 	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level)
 is
@@ -271,15 +272,11 @@ is
 			-- This procedure composes the virtual unit and adds
 			-- it to the schematic:
 			procedure add_virtual is
-				unit : type_unit (APPEARANCE_VIRTUAL);
+				unit : constant type_unit := to_unit (
+					appearance	=> APPEARANCE_VIRTUAL,
+					object		=> destination);
 			begin
 				log (text => "add_virtual", level => log_threshold + 3);
-
-				-- Compose a virtual unit:
-				unit := (
-					appearance	=> APPEARANCE_VIRTUAL,
-					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-					others		=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -294,7 +291,10 @@ is
 			-- This procedure composes the real unit and adds
 			-- it to the schematic:
 			procedure add_real is
-				unit : type_unit (APPEARANCE_PCB);
+				unit : type_unit := to_unit (
+					appearance	=> APPEARANCE_PCB,
+					object		=> destination);
+
 				placeholders : type_text_placeholders;
 			begin
 				log (text => "add_real", level => log_threshold + 3);
@@ -310,12 +310,7 @@ is
 				placeholders := get_default_placeholders (
 					first_available_unit.int, destination);
 
-				-- Compose a real unit:
-				unit := (
-					appearance		=> APPEARANCE_PCB,
-					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-					placeholders	=> placeholders,
-					others			=> <>);
+				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -357,15 +352,12 @@ is
 			-- This procedure composes the virtual unit and adds
 			-- it to the schematic:
 			procedure add_virtual is
-				unit : type_unit (appearance => APPEARANCE_VIRTUAL);
+				unit : constant type_unit := to_unit (
+					appearance	=> APPEARANCE_VIRTUAL,
+					object		=> destination);
+
 			begin
 				log (text => "add_virtual", level => log_threshold + 3);
-
-				-- Compose a virtual unit:
-				unit := (
-					appearance	=> APPEARANCE_VIRTUAL,
-					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-					others		=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -384,7 +376,9 @@ is
 				symbol_cursor : pac_symbol_models.cursor;
 				placeholders : type_text_placeholders;
 
-				unit : type_unit (appearance => APPEARANCE_PCB);
+				unit : type_unit := to_unit (
+					appearance	=> APPEARANCE_PCB,
+					object		=> destination);
 			begin
 				log (text => "add_real", level => log_threshold + 3);
 
@@ -400,14 +394,9 @@ is
 				-- is changed AFTER the unit has been added to the drawing,
 				-- then it DOES NOT get updated.
 				placeholders := get_default_placeholders (
-									symbol_cursor, destination);
+					symbol_cursor, destination);
 
-				-- Compose a real unit:
-				unit := (
-					appearance		=> APPEARANCE_PCB,
-					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-					placeholders	=> placeholders,
-					others			=> <>);
+				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -566,18 +555,18 @@ is
 
 
 
-begin -- add_electrical_device
+begin
 	if not is_empty (variant) then -- real device
 		log (text => "module " & to_string (module_cursor)
 			 & " add real electrical device " & to_string (device_model)
 			 & " package variant " & to_string (variant)
-			 & " at " & to_string (destination),
+			 & " at " & get_position (destination),
 			level => log_threshold);
 
 	else -- virtual device
 		log (text => "module " & to_string (module_cursor)
 			 & " add virtual electrical device " & to_string (device_model)
-			 & " at " & to_string (destination),
+			 & " at " & get_position (destination),
 			level => log_threshold);
 	end if;
 

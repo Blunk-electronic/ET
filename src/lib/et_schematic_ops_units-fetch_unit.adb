@@ -52,7 +52,7 @@ procedure fetch_unit (
 	module_cursor	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-	destination		: in type_object_position; -- sheet/x/y/rotation
+	destination		: in type_schematic_object; -- sheet/x/y/rotation
 	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level)
 is
@@ -118,10 +118,9 @@ is
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B
-							new_item	=> (
+							new_item	=> to_unit (
 								appearance	=> APPEARANCE_VIRTUAL,
-								position	=> destination,
-								others		=> <>));
+								object		=> destination));
 
 					when APPEARANCE_PCB =>
 
@@ -137,16 +136,16 @@ is
 						-- Get the default positions and rotations of placeholders
 						-- according to the rotation of the unit in the schematic:
 						placeholders := get_default_placeholders (
-											unit_cursors.int, destination);
+							unit_cursors.int, destination);
 
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
-							new_item	=> (
+							new_item	=> to_unit (
 								appearance		=> APPEARANCE_PCB,
-								position		=> destination,
-								placeholders	=> placeholders,
-								others			=> <>));
+								object			=> destination,
+								placeholders	=> placeholders));
+
 				end case;
 			end do_it;
 
@@ -201,10 +200,9 @@ is
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
-							new_item	=> (
+							new_item	=> to_unit (
 								appearance	=> APPEARANCE_VIRTUAL,
-								position	=> destination,
-								others		=> <>));
+								object		=> destination));
 
 
 					when APPEARANCE_PCB =>
@@ -226,16 +224,15 @@ is
 						-- Get the default positions and rotations of placeholders
 						-- according to the rotation of the unit in the schematic:
 						placeholders := get_default_placeholders (
-											symbol_cursor, destination);
+							symbol_cursor, destination);
 
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
-							new_item	=> (
+							new_item	=> to_unit (
 								appearance		=> APPEARANCE_PCB,
-								position		=> destination,
-								placeholders	=> placeholders,
-								others			=> <>));
+								object			=> destination,
+								placeholders	=> placeholders));
 				end case;
 			end do_it;
 
@@ -297,7 +294,7 @@ is
 		if unit_query.exists then
 			log (SEVERITY_WARNING, "Unit " & to_string (unit_name)
 				& " is already deployed in the schematic at "
-				& to_string (unit_query.position));
+				& get_position (unit_query.position));
 		else
 			-- Locate the device model in the library:
 			device_cursor_lib := get_device_model (device_cursor_sch);
@@ -328,7 +325,7 @@ begin
 	log (text => "module " & to_string (module_cursor)
 		& " device " & to_string (device_name)
 		& " fetch unit " & to_string (unit_name) & " and place at "
-		& to_string (destination),
+		& get_position (destination),
 		level => log_threshold);
 
 	log_indentation_up;

@@ -122,7 +122,7 @@ package et_devices_electrical.units is
 	type type_unit_query (exists : boolean := false) is record
 		case exists is
 			when true =>
-				position : type_object_position;
+				position : type_schematic_object;
 				-- x/y, rotation, sheet
 
 			when false =>
@@ -208,7 +208,7 @@ package et_devices_electrical.units is
 	function get_position (
 		device	: in type_device_electrical; -- R2
 		unit	: in type_unit_name) -- A, B, C
-		return type_object_position;
+		return type_schematic_object;
 
 
 
@@ -217,7 +217,7 @@ package et_devices_electrical.units is
 	function get_position (
 		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor) -- A, B, C
-		return type_object_position;
+		return type_schematic_object;
 
 
 

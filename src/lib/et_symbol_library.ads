@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -154,7 +154,7 @@ package et_symbol_library is
 	-- It translates according to the rotation given by destination:
 	function get_default_placeholders (
 		symbol_cursor	: in pac_symbol_models.cursor;
-		destination		: in type_object_position) -- x/y/rotation of the unit
+		destination		: in type_schematic_object) -- x/y/rotation of the unit
 		return type_text_placeholders;
 
 

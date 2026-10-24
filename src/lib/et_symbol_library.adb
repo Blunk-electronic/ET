@@ -151,7 +151,7 @@ package body et_symbol_library is
 
 	function get_default_placeholders (
 		symbol_cursor	: in pac_symbol_models.cursor;
-		destination		: in type_object_position)
+		destination		: in type_schematic_object)
 		return type_text_placeholders
 	is
 		sym : type_symbol_model renames element (symbol_cursor);

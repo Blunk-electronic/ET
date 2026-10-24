@@ -164,13 +164,13 @@ package et_schematic_ops_units is
 
 
 
-	-- Returns the position (x/y/sheet) of the given unit.
+	-- Returns the position (x/y/sheet/rotation) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
 		unit			: in type_unit_name)
-		return type_object_position;
+		return type_schematic_object;
 
 
 
@@ -221,7 +221,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		destination		: in type_object_position; -- sheet/x/y/rotation
+		destination		: in type_schematic_object; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -964,7 +964,7 @@ package et_schematic_ops_units is
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;
+		destination		: in pac_basic_objects.type_object_with_rotation;
 		log_threshold	: in type_log_level);
 
 

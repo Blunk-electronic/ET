@@ -108,7 +108,7 @@ package et_device_unit is
 	function to_unit (
 		appearance		: in type_appearance_schematic;
 		object			: in type_schematic_object;
-		mirror			: in type_mirror;
+		mirror			: in type_mirror := MIRROR_NO;
 		placeholders	: in type_text_placeholders := default_text_placeholders)
 		return type_unit;
 
@@ -120,9 +120,9 @@ package et_device_unit is
 
 
 
-	-- function get_position (
-	-- 	unit	: in type_unit)
-	-- 	return type_object_position;
+	function get_position (
+		unit	: in type_unit)
+		return type_schematic_object;
 
 
 	-- procedure set_position (
@@ -284,6 +284,13 @@ package et_device_unit is
 	function get_placeholders (
 		unit : in type_unit)
 		return type_text_placeholders;
+
+
+	-- Assigns the placeholders to the given unit.
+	-- The unit must be real. Otherwise exception is raised:
+	procedure set_placeholders (
+		unit			: in out type_unit;
+		placeholders	: in type_text_placeholders);
 
 
 	-- Moves the placeholder given by meaning.

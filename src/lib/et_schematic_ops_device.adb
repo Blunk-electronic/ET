@@ -125,22 +125,29 @@ package body et_schematic_ops_device is
 		is
 			pragma unreferenced (module_name);
 
-			procedure query_units (device_cursor : in pac_devices_electrical.cursor) is
+			procedure query_units (
+				device_cursor : in pac_devices_electrical.cursor)
+			is
 				use pac_units;
-				device_name : constant type_device_name := pac_devices_electrical.key (device_cursor); -- R1
+
+				device_name : constant type_device_name :=
+					pac_devices_electrical.key (device_cursor); -- R1
 
 
 				procedure sort (
 					unit_cursor : in pac_units.cursor)
 				is
 					unit_name : constant type_unit_name := key (unit_cursor);  -- 1, C, IO_BANK1
-					unit_position : constant type_object_position := element (unit_cursor).position;
+
+					unit_position : constant type_schematic_object :=
+						get_position (unit_cursor);
+
 					inserted : boolean := false;
 					cursor_sort : pac_renumber_devices.cursor;
 
 				begin
 					log (text => "unit " & to_string (unit_name) &
-						" at " & to_string (unit_position),
+						" at " & get_position (unit_position),
 						 level => log_threshold + 2);
 
 					pac_renumber_devices.insert (
@@ -149,16 +156,15 @@ package body et_schematic_ops_device is
 						inserted	=> inserted,
 						position	=> cursor_sort,
 						new_item	=> (
-									name => device_name, -- R1, IC3
-									unit => unit_name, -- 1, C, IO_BANK1
-									done => false -- not renumbered yet
-									)
-						);
+							name => device_name, -- R1, IC3
+							unit => unit_name, -- 1, C, IO_BANK1
+							done => false)); -- not renumbered yet
+
 
 					if not inserted then
 						log (SEVERITY_ERROR, "device " & to_string (device_name) &
 							 " unit " & to_string (unit_name) &
-							 " at " & to_string (unit_position) &
+							 " at " & get_position (unit_position) &
 							 " sits on top of another unit !",
 							 console => true);
 						raise constraint_error;
@@ -1092,7 +1098,7 @@ package body et_schematic_ops_device is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in type_device_model_name;
 		variant			: in type_package_variant_name;
-		destination		: in type_object_position;
+		destination		: in type_schematic_object;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
@@ -1104,7 +1110,7 @@ package body et_schematic_ops_device is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- IC45
 		unit_name_explicit	: in type_unit_name; -- D
-		destination			: in type_object_position; -- sheet/x/y
+		destination			: in type_schematic_object; -- sheet/x/y
 		commit_design		: in type_commit_design := DO_COMMIT;
 		device_created		: out type_device_name;
 		log_threshold		: in type_log_level) is separate;
@@ -1183,7 +1189,7 @@ package body et_schematic_ops_device is
 				cursor_done : pac_renumber_devices.cursor := cursor;
 
 				procedure set_done (
-					coordinates : in type_object_position;
+					coordinates : in type_schematic_object;
 					device		: in out type_renumber_device)
 				is
 					pragma unreferenced (coordinates);
@@ -1212,7 +1218,7 @@ package body et_schematic_ops_device is
 					next (cursor_done);
 				end loop;
 			end mark_units_done;
-			pragma unreferenced (mark_units_done);
+			pragma unreferenced (mark_units_done); -- CS
 
 
 

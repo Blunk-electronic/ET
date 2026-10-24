@@ -48,6 +48,19 @@ with et_keywords;						use et_keywords;
 package body et_schematic_coordinates is
 
 
+	-- function to_schematic_object (
+	-- 	object	: in type_object_with_rotation;
+	-- 	sheet	: in type_sheet)
+	-- 	return type_schematic_object'class
+	-- is 
+	-- 	result : type_schematic_object;
+	-- begin
+	-- 	result := (object with sheet);
+	-- 	return result;
+	-- end to_schematic_object;
+
+
+
 	function get_sheet (
 		object : in type_schematic_object)
 		return type_sheet
@@ -68,6 +81,8 @@ package body et_schematic_coordinates is
 		object	: in out type_schematic_object;
 		offset	: in type_sheet_relative)
 	is begin
+		-- Constraint error will arise here if
+		-- resulting sheet number is less than 1.
 		add (object.sheet, offset);
 	end move_by_sheets;
 
@@ -116,6 +131,16 @@ package body et_schematic_coordinates is
 		return result;
 	end "<";
 
+
+
+
+	overriding procedure reset_position (
+		object	: in out type_schematic_object)
+	is
+		owr : type_object_with_rotation;
+	begin
+		object := (owr with type_sheet'first);
+	end reset_position;
 
 
 

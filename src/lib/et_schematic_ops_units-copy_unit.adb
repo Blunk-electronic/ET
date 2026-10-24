@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -62,7 +62,7 @@ is
 
 	-- Here we store the position of the new unit.
 	-- It is an absolute position:
-	position_new : type_object_position;
+	position_new : type_schematic_object;
 
 
 	-- This procedure computes the position

@@ -62,7 +62,7 @@ package et_device_renumbering is
 
 
 	package pac_renumber_devices is new ordered_maps (
-		key_type		=> type_object_position, -- sheet/x/y
+		key_type		=> type_schematic_object, -- sheet/x/y
 		element_type	=> type_renumber_device);
 
 

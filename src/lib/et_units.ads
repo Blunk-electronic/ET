@@ -84,9 +84,9 @@ package et_units is
 
 
 
-	-- function get_position (
-	-- 	unit	: in pac_units.cursor)
-	-- 	return type_object_position;
+	function get_position (
+		unit	: in pac_units.cursor)
+		return type_schematic_object;
 
 
 	function get_rotation (
@@ -150,16 +150,16 @@ package et_units is
 
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> type_unit_name, -- A, B, IO_BANK_1
-		element_type	=> type_object_position); -- sheet, x, y
+		element_type	=> type_schematic_object); -- sheet, x, y
 
 
 
-	-- -- Extracts from the given list of object positions a list
-	-- -- of sheet numbers. A sheet number occurs only once
-	-- -- in the returned list:
-	-- function extract_sheets (
-	-- 	positions	: in pac_unit_positions.map)
-	-- 	return pac_sheet_numbers.list;
+	-- Extracts from the given list of object positions a list
+	-- of sheet numbers. A sheet number occurs only once
+	-- in the returned list:
+	function extract_sheets (
+		positions	: in pac_unit_positions.map)
+		return pac_sheet_numbers.list;
 
 	-- Extracts from the given list of units a list
 	-- of sheet numbers. A sheet number occurs only once
@@ -171,11 +171,12 @@ package et_units is
 
 
 
-		-- -- Returns a list of units and their
-		-- -- coordinates in the schematic:
-		-- function get_unit_positions (
-		-- 	units : in pac_units.map)
-		-- 	return pac_unit_positions.map;
+	-- Returns a list of units and their
+	-- coordinates in the schematic:
+	function get_unit_positions (
+		units : in pac_units.map)
+		return pac_unit_positions.map;
+
 
 
 

@@ -173,7 +173,7 @@ package et_symbol_ports is
 	-- Moves the given ports by given offset.
 	procedure move_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
-		offset	: in type_object_position); -- the offset (only x/y matters)
+		offset	: in type_schematic_object); -- the offset (only x/y matters)
 
 
 	-- Rotates the given ports by given

@@ -234,6 +234,11 @@ package et_basic_objects is
 		object		: in out type_object_with_rotation;
 		rotation	: in type_rotation);
 
+	procedure rotate_by (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation)
+		renames set_rotation_relative;
+
 
 
 	overriding procedure reset_position (

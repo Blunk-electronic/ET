@@ -145,10 +145,10 @@ package body et_devices_electrical.units is
 			if get_length (unit_name) > 0 then
 				return "Location of device " & to_string (device_name)
 					& " unit " & to_string (unit_name)
-					& " :" & to_string (query_result.position);
+					& " :" & get_position (query_result.position);
 			else
 				return "Location of device " & to_string (device_name)
-					& " :" & to_string (query_result.position);
+					& " :" & get_position (query_result.position);
 			end if;
 		else
 			return "device " & to_string (device_name)
@@ -265,13 +265,13 @@ package body et_devices_electrical.units is
 	function get_position (
 		device	: in type_device_electrical;
 		unit	: in type_unit_name)
-		return type_object_position
+		return type_schematic_object
 	is
 		-- Locate the given unit in the device:
 		unit_cursor : constant pac_units.cursor :=
 			device.units.find (unit);
 
-		result : type_object_position;
+		result : type_schematic_object;
 
 
 		procedure query_unit (
@@ -298,9 +298,9 @@ package body et_devices_electrical.units is
 	function get_position (
 		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor)
-		return type_object_position
+		return type_schematic_object
 	is
-		unit_position : type_object_position;
+		unit_position : type_schematic_object;
 
 
 		procedure query_unit (
@@ -310,7 +310,7 @@ package body et_devices_electrical.units is
 			pragma unreferenced (device_name, device);
 		begin
 			-- get the coordinates of the unit
-			unit_position := element (unit).position;
+			unit_position := get_position (unit);
 		end query_unit;
 
 
@@ -331,7 +331,7 @@ package body et_devices_electrical.units is
 		unit	: in pac_units.cursor) -- A, B, C
 		return type_sheet
 	is
-		position : type_object_position;
+		position : type_schematic_object;
 	begin
 		position := get_position (device, unit);
 		return get_sheet (position);
@@ -348,7 +348,7 @@ package body et_devices_electrical.units is
 	is
 		exists : boolean := false;
 
-		position : type_object_position;
+		position : type_schematic_object;
 
 
 		procedure query_device (
@@ -419,12 +419,12 @@ package body et_devices_electrical.units is
 		log_threshold	: in type_log_level)
 	is
 
-		procedure write (cursor : in pac_unit_positions.cursor) is
-		begin
-			log (text =>
-				"unit " &
-				to_string (pac_unit_positions.key (cursor)) & -- unit name
-				to_string (pac_unit_positions.element (cursor)), -- sheet x y
+		procedure write (
+			cursor : in pac_unit_positions.cursor)
+		is begin
+			log (text => "unit "
+				& to_string (pac_unit_positions.key (cursor)) -- unit name
+				& get_position (pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end write;
 
@@ -508,7 +508,8 @@ package body et_devices_electrical.units is
 
 
 		-- Get the position of the given unit in the schematic:
-		unit_position : constant type_object_position := get_position (unit);
+		unit_position : constant type_schematic_object :=
+			get_position (unit);
 
 	begin
 		-- Locate the given unit among the external units
@@ -568,7 +569,7 @@ package body et_devices_electrical.units is
 	is
 		ports : pac_symbol_ports.map;
 
-		position : type_object_position;
+		position : type_schematic_object;
 		rotation : type_rotation_model;
 
 		use et_mirroring;
@@ -620,7 +621,7 @@ package body et_devices_electrical.units is
 	is
 		placeholder_position : type_vector_model; -- to be returned
 
-		unit_position : type_object_position;
+		unit_position : type_schematic_object;
 
 
 		procedure query_unit (
@@ -630,7 +631,7 @@ package body et_devices_electrical.units is
 			pragma unreferenced (device_name, device);
 		begin
 			-- get the coordinates of the unit
-			unit_position := element (unit).position;
+			unit_position := get_position (unit);
 
 			-- get the coordinates of the placeholder:
 			case category is
@@ -907,7 +908,7 @@ package body et_devices_electrical.units is
 
 			when others =>
 				result := result & get_unit_name (unit_cursor)
-						  & " position: " & to_string (get_position (unit), FORMAT_2) & ins_LF;
+					& " position: " & get_position (unit, FORMAT_2) & ins_LF;
 
 			-- CS symbol model
 		end case;
@@ -1216,8 +1217,8 @@ package body et_devices_electrical.units is
 	begin
 		-- Move the unit by the given offset
 		-- and the number of given sheets:
-		move_unit (unit, offset);
-		move_unit (unit, sheet);
+		move_by (unit, offset);
+		move_by_sheets (unit, sheet);
 
 		-- Insert the unit in the given target device:
 		target_device.units.insert (

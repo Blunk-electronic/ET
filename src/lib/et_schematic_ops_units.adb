@@ -583,11 +583,11 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
 		unit			: in type_unit_name)
-		return type_object_position
+		return type_schematic_object
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
-		unit_position : type_object_position;
+		unit_position : type_schematic_object;
 
 
 		procedure query_unit (
@@ -597,11 +597,11 @@ package body et_schematic_ops_units is
 			pragma unreferenced (device_name);
 			unit_cursor : pac_units.cursor;
 		begin
-			-- locate the given unit in the given device
+			-- Locate the given unit in the given device:
 			unit_cursor := find (device.units, unit);
 
-			-- get the coordinates of the unit
-			unit_position := element (unit_cursor).position;
+			-- Get the position of the unit:
+			unit_position := get_position (element (unit_cursor));
 		end query_unit;
 
 
@@ -937,7 +937,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		destination		: in type_object_position; -- sheet/x/y/rotation
+		destination		: in type_schematic_object; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
@@ -1407,7 +1407,9 @@ package body et_schematic_ops_units is
 		-- For each sheet we look at the net segments there
 		-- and rename the ports of the given device_before to device_after:
 		use pac_sheet_numbers;
-		sheets : constant pac_sheet_numbers.list := extract_sheets (unit_positions);
+
+		sheets : constant pac_sheet_numbers.list :=
+			extract_sheets (unit_positions);
 
 		-- Points to the sheet being processed:
 		sheet : type_sheet;
@@ -1724,16 +1726,13 @@ package body et_schematic_ops_units is
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
-							unit.position := to_position (
-								point		=> destination,
-								sheet		=> type_sheet (sheet),
-								rotation	=> get_rotation (unit.position));
+							set_place (unit, destination);
+							set_sheet (unit, type_sheet (sheet));
 
 						when RELATIVE =>
-							move (
-								position	=> unit.position,
-								offset		=> to_position_relative (destination, sheet));
-								-- rotation remains as it is
+							move_by_sheets (unit, sheet);
+							move_by (unit, destination);
+							-- rotation remains as it is
 					end case;
 				end move_unit;
 
@@ -1862,13 +1861,15 @@ package body et_schematic_ops_units is
 		offset			: in type_sheet_relative;
 		log_threshold	: in type_log_level)
 	is
-	pragma unreferenced (log_threshold);
+		pragma unreferenced (log_threshold); -- CS use it
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
 			module		: in out type_generic_module)
 		is
-	pragma unreferenced (module_name);
+			pragma unreferenced (module_name);
+
 
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -1887,7 +1888,7 @@ package body et_schematic_ops_units is
 					pragma unreferenced (unit_name);
 				begin
 					if get_sheet (unit) = sheet_old then
-						move_unit (unit, offset);
+						move_by_sheets (unit, offset);
 					end if;
 				end query_unit;
 
@@ -2110,7 +2111,7 @@ package body et_schematic_ops_units is
 		return type_unit_query
 	is
 		exists : boolean := false;
-		pos : type_object_position; -- x/y, rotation, sheet
+		pos : type_schematic_object; -- x/y, rotation, sheet
 
 
 		procedure query_devices (
@@ -2136,7 +2137,7 @@ package body et_schematic_ops_units is
 
 					if unit_cursor /= pac_units.no_element then -- unit exists
 						exists := true;
-						pos := element (unit_cursor).position;
+						pos := get_position (element (unit_cursor));
 					else
 						exists := false; -- unit does not exist
 					end if;
@@ -2147,7 +2148,7 @@ package body et_schematic_ops_units is
 
 					if unit_cursor /= pac_units.no_element then -- unit exists
 						exists := true;
-						pos := element (unit_cursor).position;
+						pos := get_position (element (unit_cursor));
 					else
 						exists := false; -- unit does not exist
 						raise constraint_error; -- CS do something
@@ -2485,19 +2486,15 @@ package body et_schematic_ops_units is
 				begin
 					case coordinates is
 						when ABSOLUTE =>
-							-- build the new position while preserving rotation:
-							unit.position := to_position (
-								point		=> destination,
-								sheet		=> sheet,
-								rotation	=> get_rotation (unit.position));
+							-- build the new position. rotation not changed:
+							move_to (unit, destination);
+							set_sheet (unit, sheet);
 
 						when RELATIVE =>
-							move (
-								position	=> unit.position,
-								offset		=> to_position_relative (destination, 0));
-								-- The relative sheet change is 0 because
-								-- we only drag the unit across the current sheet.
-								-- The rotation remains as it is.
+							move_by (unit, destination);
+							-- The relative sheet change is 0 because
+							-- we only drag the unit across the current sheet.
+							-- The rotation remains as it is.
 					end case;
 				end move_unit;
 
@@ -4591,7 +4588,7 @@ package body et_schematic_ops_units is
 					unit_name	: in type_unit_name;
 					unit		: in out type_unit)
 				is
-					unit_position : constant type_vector_model := get_place (unit.position);
+					unit_position : constant type_vector_model := get_place (unit);
 
 					use et_device_placeholders.symbols;
 				begin
@@ -5722,10 +5719,11 @@ package body et_schematic_ops_units is
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;
+		destination		: in pac_basic_objects.type_object_with_rotation;
 		log_threshold	: in type_log_level)
 	is
-		object_position : type_object_position;
+		use pac_basic_objects;
+		object_position : type_schematic_object;
 
 		device_created : type_device_name;
 	begin
@@ -5738,7 +5736,13 @@ package body et_schematic_ops_units is
 
 		case object.cat is
 			when CAT_UNIT =>
-				object_position := to_position (destination, active_sheet);
+				-- object_position := to_schematic_object (
+				-- destination, active_sheet);
+
+				-- CS: make a subprogram for this stuff:
+				set_place (object_position, get_place (destination));
+				set_rotation (object_position, get_rotation (destination));
+				set_sheet (object_position, active_sheet);
 
 
 				copy_device (

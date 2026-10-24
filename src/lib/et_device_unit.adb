@@ -54,7 +54,7 @@ package body et_device_unit is
 	function to_unit (
 		appearance		: in type_appearance_schematic;
 		object			: in type_schematic_object;
-		mirror			: in type_mirror;
+		mirror			: in type_mirror := MIRROR_NO;
 		placeholders	: in type_text_placeholders := default_text_placeholders)
 		return type_unit
 	is
@@ -80,10 +80,10 @@ package body et_device_unit is
 
 
 
-	-- function get_position (
-	-- 	unit	: in type_unit)
-	-- 	return type_object_position
-	-- is (unit.position);
+	function get_position (
+		unit	: in type_unit)
+		return type_schematic_object
+	is (type_schematic_object (unit));
 
 
 
@@ -374,6 +374,12 @@ package body et_device_unit is
 	end get_placeholders;
 
 
+	procedure set_placeholders (
+		unit			: in out type_unit;
+		placeholders	: in type_text_placeholders)
+	is begin
+		unit.placeholders := placeholders;
+	end set_placeholders;
 
 
 

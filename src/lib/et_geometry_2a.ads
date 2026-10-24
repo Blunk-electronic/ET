@@ -339,8 +339,10 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
+	-- Reads a line like "position x 44.5 y 53.5"
+	-- and returns a location vector:
 	function to_vector_model (
-		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_vector_model;
 

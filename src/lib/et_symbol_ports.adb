@@ -123,7 +123,7 @@ package body et_symbol_ports is
 
 	procedure move_ports (
 		ports	: in out pac_symbol_ports.map; -- the portlist
-		offset	: in type_object_position) -- the offset (only x/y matters)
+		offset	: in type_schematic_object) -- the offset (only x/y matters)
 	is
 		use pac_symbol_ports;
 
@@ -133,7 +133,7 @@ package body et_symbol_ports is
 		is
 			pragma unreferenced (name);
 		begin
-			move_by (port.position, offset.place);
+			move_by (port.position, get_place (offset));
 			-- CS use primitive operation of et_symbol_port_general
 		end move;
 
@@ -144,7 +144,7 @@ package body et_symbol_ports is
 				process		=> move'access);
 		end query_port;
 
-	begin -- move_ports
+	begin
 		iterate (ports, query_port'access);
 	end move_ports;
 

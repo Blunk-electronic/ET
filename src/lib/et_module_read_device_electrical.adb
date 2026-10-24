@@ -565,7 +565,8 @@ package body et_module_read_device_electrical is
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
 	device_unit_name		: et_unit_name.type_unit_name; -- GPIO_BANK_1
-	device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
+	-- device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
+	device_unit_position	: et_schematic_coordinates.type_schematic_object;
 
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
 	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
@@ -592,8 +593,7 @@ package body et_module_read_device_electrical is
 			expect_field_count (line, 9);
 
 			-- extract position of unit starting at field 2
-			device_unit_position := to_position (line, 2);
-
+			set_position (device_unit_position, line, 2);
 
 		elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 			expect_field_count (line, 2);
@@ -619,6 +619,7 @@ package body et_module_read_device_electrical is
 
 		procedure insert_unit is
 			use et_schematic_coordinates;
+			use et_device_unit;
 			use et_units;
 			use et_unit_name;
 			use et_device_appearance;
@@ -636,24 +637,23 @@ package body et_module_read_device_electrical is
 					pac_units.insert (
 						container	=> device_units,
 						key			=> device_unit_name,
-						new_item	=> (
-							appearance		=> APPEARANCE_VIRTUAL,
-							status			=> get_default_status,
-							mirror_status	=> device_unit_mirror,
-							position		=> device_unit_position));
+						new_item	=> to_unit (
+							appearance	=> APPEARANCE_VIRTUAL,
+							object		=> device_unit_position,
+							mirror		=> device_unit_mirror));
+
 
 				when APPEARANCE_PCB =>
 					-- A unit of a real device has placeholders:
 					pac_units.insert (
 						container	=> device_units,
 						key			=> device_unit_name,
-						new_item	=> (
-							mirror_status	=> device_unit_mirror,
-							status			=> get_default_status,
-							position		=> device_unit_position,
+						new_item	=> to_unit (
 							appearance		=> APPEARANCE_PCB,
+							object			=> device_unit_position,
+							mirror			=> device_unit_mirror,
 							placeholders	=> (
-								-- The placeholders for reference, value and purpose have
+								-- The placeholders for name, value and purpose have
 								-- been built and can now be assigned to the unit:
 								name		=> unit_placeholder_reference,
 								value		=> unit_placeholder_value,
@@ -661,7 +661,8 @@ package body et_module_read_device_electrical is
 			end case;
 
 			-- clean up for next unit
-			device_unit_position := zero_position;
+			reset_position (device_unit_position);
+
 			device_unit_name := unit_name_default;
 			--device_unit := (others => <>);
 			device_unit_mirror := MIRROR_NO;
@@ -671,8 +672,6 @@ package body et_module_read_device_electrical is
 
 			log_indentation_down;
 		end insert_unit;
-
-
 
 
 	begin
