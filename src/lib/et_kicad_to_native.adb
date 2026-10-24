@@ -2297,16 +2297,19 @@ package body et_kicad_to_native is
 	function to_native_coordinates (
 		point		: in et_kicad_coordinates.type_position;
 		rotation	: in et_schematic_geometry.type_rotation_model := et_schematic_geometry.pac_geometry_2.zero_rotation)
-		return et_schematic_coordinates.type_object_position
+		return et_schematic_coordinates.type_schematic_object
 	is
 		use et_schematic_coordinates;
-		point_out : type_object_position;
+		point_out : type_schematic_object;
 	begin
-		point_out := et_schematic_coordinates.to_position (
-			point		=> et_kicad_coordinates.get_point (point), -- x,y
-			sheet		=> et_kicad_coordinates.sheet (point), -- sheet
-			rotation	=> rotation);
+		-- point_out := et_schematic_coordinates.to_position (
+		-- 	point		=> et_kicad_coordinates.get_point (point), -- x,y
+		-- 	sheet		=> et_kicad_coordinates.sheet (point), -- sheet
+		-- 	rotation	=> rotation);
 
+		set_place (point_out, et_kicad_coordinates.get_point (point)); -- x,y
+		set_sheet (point_out, et_kicad_coordinates.sheet (point)); -- sheet
+		set_rotation (point_out, rotation);
 		return point_out;
 	end to_native_coordinates;
 
@@ -2700,6 +2703,7 @@ package body et_kicad_to_native is
 				unit_native_virtual	: et_device_unit.type_unit (APPEARANCE_VIRTUAL);
 				unit_native_real	: et_device_unit.type_unit (APPEARANCE_PCB);
 
+				use et_device_unit;
 				use et_object_status;
 			begin
 				log_indentation_up;
@@ -2715,13 +2719,23 @@ package body et_kicad_to_native is
 					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
 						when APPEARANCE_VIRTUAL =>
-							unit_native_virtual := (
-								mirror_status	=> element (unit_cursor_kicad).mirror,
-								status			=> get_default_status,
-								position		=> to_native_coordinates (
-												point		=> element (unit_cursor_kicad).position,
-												rotation	=> element (unit_cursor_kicad).rotation),
-								appearance	=> APPEARANCE_VIRTUAL);
+							-- unit_native_virtual := (
+							-- 	mirror_status	=> element (unit_cursor_kicad).mirror,
+							-- 	status			=> get_default_status,
+							-- 	position		=> to_native_coordinates (
+							-- 					point		=> element (unit_cursor_kicad).position,
+							-- 					rotation	=> element (unit_cursor_kicad).rotation),
+							-- 	appearance	=> APPEARANCE_VIRTUAL);
+
+							set_place (unit_native_virtual, et_kicad_coordinates.get_point (
+								element (unit_cursor_kicad).position));
+
+							set_rotation (unit_native_virtual, element (unit_cursor_kicad).rotation);
+
+							set_sheet (unit_native_virtual, et_kicad_coordinates.sheet (
+								element (unit_cursor_kicad).position));
+
+							set_mirror_status (unit_native_virtual, element (unit_cursor_kicad).mirror);
 
 							et_units.pac_units.insert (
 								container	=> component.units,
@@ -2732,23 +2746,43 @@ package body et_kicad_to_native is
 
 
 						when APPEARANCE_PCB => -- real device
-							unit_native_real := (
-								mirror_status	=> element (unit_cursor_kicad).mirror,
-								status			=> get_default_status,
-								position		=> to_native_coordinates (
-												point		=> element (unit_cursor_kicad).position,
-												rotation	=> element (unit_cursor_kicad).rotation),
-								appearance		=> APPEARANCE_PCB,
+							-- unit_native_real := (
+							-- 	mirror_status	=> element (unit_cursor_kicad).mirror,
+							-- 	status			=> get_default_status,
+							-- 	position		=> to_native_coordinates (
+							-- 					point		=> element (unit_cursor_kicad).position,
+							-- 					rotation	=> element (unit_cursor_kicad).rotation),
+							-- 	appearance		=> APPEARANCE_PCB,
 
-								-- and stuff that comes with a real device:
-								placeholders => (
+							-- 	-- and stuff that comes with a real device:
+							-- 	placeholders => (
 
+							-- 		name		=> element (unit_cursor_kicad).reference,
+							-- 		value		=> element (unit_cursor_kicad).value,
+
+							-- 		-- create a placeholder for purpose because kicad does not know such a thing
+							-- 		purpose		=> (meaning => PURPOSE, others => <>)
+							-- 	));
+
+							set_place (unit_native_real, et_kicad_coordinates.get_point (
+								element (unit_cursor_kicad).position));
+
+							set_rotation (unit_native_real, element (unit_cursor_kicad).rotation);
+
+							set_sheet (unit_native_real, et_kicad_coordinates.sheet (
+								element (unit_cursor_kicad).position));
+
+							set_mirror_status (unit_native_real, element (unit_cursor_kicad).mirror);
+
+							set_placeholders (
+								unit			=> unit_native_real,
+								placeholders	=> (
 									name		=> element (unit_cursor_kicad).reference,
 									value		=> element (unit_cursor_kicad).value,
 
-									-- create a placeholder for purpose because kicad does not know such a thing
-									purpose		=> (meaning => PURPOSE, others => <>)
-								));
+									-- create a placeholder for purpose because kicad
+									-- does not know such a thing:
+									purpose		=> (meaning => PURPOSE, others => <>)));
 
 							et_units.pac_units.insert (
 								container	=> component.units,

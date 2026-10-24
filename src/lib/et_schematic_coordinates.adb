@@ -52,7 +52,7 @@ package body et_schematic_coordinates is
 	-- 	object	: in type_object_with_rotation;
 	-- 	sheet	: in type_sheet)
 	-- 	return type_schematic_object'class
-	-- is 
+	-- is
 	-- 	result : type_schematic_object;
 	-- begin
 	-- 	result := (object with sheet);
