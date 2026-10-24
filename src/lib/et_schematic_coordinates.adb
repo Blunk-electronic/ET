@@ -132,6 +132,37 @@ package body et_schematic_coordinates is
 
 
 
+	function get_position (
+		object	: in type_schematic_object;
+		format	: in type_output_format := FORMAT_1)
+		return string
+	is
+		s : constant string := to_string (get_sheet (object));
+		x : constant string := to_string (get_x (object));
+		y : constant string := to_string (get_y (object));
+		r : constant string := to_string (get_rotation (object));
+
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+
+			when FORMAT_2 =>
+				return "sheet " & s & " x " & x & " y " & y & " rotation " & r;
+
+			when FORMAT_3 =>
+				return s & space & x & space & y & space & r;
+
+			when others => -- CS: do the same as with FORMAT_1
+				return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+
+		end case;
+	end get_position;
+
+
+
+
 
 	function in_catch_zone (
 		object	: in type_schematic_object;

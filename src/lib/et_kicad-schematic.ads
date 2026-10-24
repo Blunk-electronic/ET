@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -83,6 +83,7 @@ with et_drawing_frame;
 
 with et_kicad_libraries;		-- use et_kicad_libraries;
 
+with et_device_unit;			use et_device_unit;
 with et_units;					use et_units;
 with et_mirroring;				use et_mirroring;
 

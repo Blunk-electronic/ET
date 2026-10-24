@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -68,6 +68,7 @@ with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
+with et_device_unit;			use et_device_unit;
 with et_units;					use et_units;
 
 with et_package_variant_name;

@@ -55,6 +55,7 @@ with et_device_partcode;
 with et_device_purpose;
 with et_device_name;
 with et_devices_electrical;				use et_devices_electrical;
+with et_device_unit;					use et_device_unit;
 with et_units;							use et_units;
 with et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
@@ -1198,20 +1199,30 @@ package body et_kicad_v6_to_native is
 				unit_inserted	: boolean;
 				unit_cursor		: pac_units.cursor;
 
-				unit_position : constant type_object_position := to_position (
-					point		=> flip_sheet_y (sym.position, containing.data.paper_height),
-					sheet		=> sheet_num,
-					rotation	=> sym.orientation);
+				-- unit_position : constant type_object_position := to_position (
+				-- 	point		=> flip_sheet_y (sym.position, containing.data.paper_height),
+				-- 	sheet		=> sheet_num,
+				-- 	rotation	=> sym.orientation);
 
 				new_unit : type_unit (element.appearance);
 			begin
+				set_place (new_unit, flip_sheet_y (
+					sym.position, containing.data.paper_height));
+
+				set_sheet (new_unit, sheet_num);
+
+				set_mirror_status (new_unit, sym.mirror);
+
+
 				case element.appearance is
 					when APPEARANCE_VIRTUAL =>
-						new_unit := (
-							appearance		=> APPEARANCE_VIRTUAL,
-							position		=> unit_position,
-							mirror_status	=> sym.mirror,
-							status			=> object_status_default);
+						null;
+						-- new_unit := (
+						-- 	appearance		=> APPEARANCE_VIRTUAL,
+						-- 	position		=> unit_position,
+						-- 	mirror_status	=> sym.mirror,
+						-- 	status			=> object_status_default);
+
 
 					when APPEARANCE_PCB =>
 						declare
@@ -1231,12 +1242,14 @@ package body et_kicad_v6_to_native is
 							plc.value.alignment   := placeholder_alignment (sym, "Value");
 							plc.purpose.alignment := placeholder_alignment (sym, "Name");
 
-							new_unit := (
-								appearance		=> APPEARANCE_PCB,
-								position		=> unit_position,
-								mirror_status	=> sym.mirror,
-								status			=> object_status_default,
-								placeholders	=> plc);
+							-- new_unit := (
+							-- 	appearance		=> APPEARANCE_PCB,
+							-- 	position		=> unit_position,
+							-- 	mirror_status	=> sym.mirror,
+							-- 	status			=> object_status_default,
+							-- 	placeholders	=> plc);
+
+							new_unit.placeholders := plc;
 						end;
 				end case;
 

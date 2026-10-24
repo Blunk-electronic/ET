@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -74,6 +74,7 @@ with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
 with et_unit_name;
+with et_device_unit;
 with et_units;
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
@@ -124,6 +125,7 @@ package body et_module_write_devices_electrical is
 		is
 			pragma unreferenced (device_name);
 			use et_schematic_coordinates;
+			use et_device_unit;
 			use et_units;
 			use pac_units;
 
@@ -160,10 +162,12 @@ package body et_module_write_devices_electrical is
 
 				write (
 					keyword => keyword_position,
-					parameters => to_string (element (unit_cursor).position, FORMAT_2)); -- position sheet 1 x 147.32 y 96.97 rotation 90.0
+					parameters => get_position (element (unit_cursor), FORMAT_2));
+					-- position sheet 1 x 147.32 y 96.97 rotation 90.0
 
 				write (keyword => keyword_mirrored,
-					   parameters => to_string (element (unit_cursor).mirror_status, verbose => false)); -- x_axis, y_axis, none
+					parameters => get_mirror_status (element (unit_cursor)));
+					-- x_axis, y_axis, none
 
 				if element (unit_cursor).appearance = APPEARANCE_PCB then
 					section_mark (section_placeholders, HEADER);

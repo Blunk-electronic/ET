@@ -179,6 +179,7 @@ package et_units is
 
 
 
+-- CS: The following stuff is probably obsolete:
 
 	-- When units are dragged about the sheet then connected
 	-- net segments must be dragged along.

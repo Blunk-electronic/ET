@@ -52,6 +52,7 @@ with et_net_junction;
 with et_net_ports_devices;
 with et_net_segment;
 with et_net_class_name;
+with et_device_unit;
 with et_units;
 with et_schematic_text;
 
@@ -2696,8 +2697,8 @@ package body et_kicad_to_native is
 				unit_cursor_native	: et_units.pac_units.cursor;
 				unit_inserted		: boolean;
 
-				unit_native_virtual	: et_units.type_unit (APPEARANCE_VIRTUAL);
-				unit_native_real	: et_units.type_unit (APPEARANCE_PCB);
+				unit_native_virtual	: et_device_unit.type_unit (APPEARANCE_VIRTUAL);
+				unit_native_real	: et_device_unit.type_unit (APPEARANCE_PCB);
 
 				use et_object_status;
 			begin

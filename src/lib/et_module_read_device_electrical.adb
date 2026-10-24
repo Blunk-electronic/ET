@@ -89,6 +89,7 @@ with et_device_placeholders.symbols;
 with et_pcb_stack;
 
 with et_unit_name;
+with et_device_unit;
 with et_units;
 
 with et_mirroring;						use et_mirroring;
@@ -110,7 +111,7 @@ package body et_module_read_device_electrical is
 	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
 
 	device_value		: et_device_value.type_device_value; -- 470R
-	device_appearance	: et_units.type_appearance_schematic;
+	device_appearance	: et_device_unit.type_appearance_schematic;
 
 
 	device_partcode	: et_device_partcode.type_device_partcode;

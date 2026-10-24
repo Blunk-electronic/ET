@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -81,6 +81,7 @@ package et_device_placeholders.symbols is
 
 
 
+
 	-- Clears the proposed-flag and the selected-flag of the placeholders:
 	procedure reset_status (
 		placeholders : in out type_text_placeholders);
@@ -116,7 +117,7 @@ package et_device_placeholders.symbols is
 		log_threshold	: in type_log_level);
 
 
-
+	default_text_placeholders : constant type_text_placeholders := (others => <>);
 
 
 

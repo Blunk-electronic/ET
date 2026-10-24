@@ -527,15 +527,18 @@ package body et_schematic_ops_units is
 			device		: in type_device_electrical)
 		is
 			pragma unreferenced (device_name);
+
 			procedure query_unit (c : in pac_units.cursor) is
 				use pac_unit_names;
+				unit : type_unit renames element (c);
+				name : constant type_unit_name := key (c);
 			begin
 				-- If the unit is on the given sheet then append it to the result:
-				if get_sheet (element (c).position) = sheet then
-					log (text => "unit " & to_string (key (c)) & " on sheet.",
+				if get_sheet (unit) = sheet then
+					log (text => "unit " & to_string (name) & " on sheet.",
 						level => log_threshold + 2);
 
-					names_of_units.append (key (c));
+					names_of_units.append (name);
 				end if;
 			end query_unit;
 

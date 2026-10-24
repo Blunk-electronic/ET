@@ -78,7 +78,7 @@ package et_device_unit is
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
 	--	type type_unit (appearance : type_appearance_schematic) is record -- CS make private
-	type type_unit (
+	type type_unit ( -- CS: rename to type_device_unit ?
 		appearance : type_appearance_schematic)
 	is new type_schematic_object with record -- CS make private
 		-- position		: type_object_position; -- incl. rotation and sheet number
@@ -101,6 +101,16 @@ package et_device_unit is
 		unit : in type_unit)
 		return boolean;
 
+
+
+	-- Builds a unit. If appearance is virtual, then
+	-- the given placeholders are ignored:
+	function to_unit (
+		appearance		: in type_appearance_schematic;
+		object			: in type_schematic_object;
+		mirror			: in type_mirror;
+		placeholders	: in type_text_placeholders := default_text_placeholders)
+		return type_unit;
 
 
 	-- Returns x/y position of the given unit:
@@ -126,6 +136,11 @@ package et_device_unit is
 	function get_mirror_status (
 		unit	: in type_unit)
 		return type_mirror;
+
+
+	function get_mirror_status (
+		unit	: in type_unit)
+		return string;
 
 
 	procedure set_mirror_status (

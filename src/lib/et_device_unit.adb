@@ -51,6 +51,27 @@ package body et_device_unit is
 
 
 
+	function to_unit (
+		appearance		: in type_appearance_schematic;
+		object			: in type_schematic_object;
+		mirror			: in type_mirror;
+		placeholders	: in type_text_placeholders := default_text_placeholders)
+		return type_unit
+	is
+		unit : type_unit (appearance => appearance);
+	begin
+		case unit.appearance is
+			when APPEARANCE_VIRTUAL =>
+				unit := (object with APPEARANCE_VIRTUAL, mirror);
+
+			when APPEARANCE_PCB =>
+				unit := (object with APPEARANCE_PCB, mirror, placeholders);
+
+		end case;
+
+		return unit;
+	end to_unit;
+
 
 	-- function get_place (
 	-- 	unit	: in type_unit)
@@ -81,6 +102,11 @@ package body et_device_unit is
 		return type_mirror
 	is (unit.mirror_status);
 
+
+	function get_mirror_status (
+		unit	: in type_unit)
+		return string
+	is (type_mirror'image (unit.mirror_status));
 
 
 	procedure set_mirror_status (
