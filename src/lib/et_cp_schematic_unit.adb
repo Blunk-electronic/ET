@@ -899,6 +899,16 @@ package body et_cp_schematic_unit is
 			sheet		: type_sheet;
 			place		: type_vector_model;
 			rotation	: type_rotation;
+			position	: type_schematic_object;
+
+
+			procedure set_position is begin
+				set_sheet (position, sheet);
+				set_place (position, place);
+				set_rotation (position, rotation);
+			end set_position;
+
+
 		begin
 			device_name := to_device_name (get_field (cmd, 5)); -- IC1
 			unit_name	:= to_unit_name (get_field (cmd, 6)); -- C
@@ -910,12 +920,13 @@ package body et_cp_schematic_unit is
 
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
-
+				set_position;
+	
 				fetch_unit (
 					module_cursor	=> module,
 					device_name		=> device_name,
 					unit_name		=> unit_name,
-					destination		=> to_position (place, sheet, rotation),
+					destination		=> position,
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:

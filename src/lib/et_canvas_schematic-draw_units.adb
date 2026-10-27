@@ -54,6 +54,7 @@ with et_port_visibility;
 with et_symbol_library;					use et_symbol_library;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
+with et_device_unit;					use et_device_unit;
 with et_units;							use et_units;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
@@ -999,7 +1000,7 @@ procedure draw_units is
 			is
 				-- Get the position of the unit candidate as it is
 				-- in the schematic database:
-				unit_position : constant type_object_position :=
+				unit_position : constant type_schematic_object :=
 					get_position (unit);
 
 				unit_place : type_vector_model; -- x/y
@@ -1380,7 +1381,7 @@ procedure draw_units is
 
 				-- Get the position of the unit candidate as it is
 				-- in the clipboard:
-				unit_position : constant type_object_position :=
+				unit_position : constant type_schematic_object :=
 					get_position (unit);
 
 				unit_place : type_vector_model; -- x/y

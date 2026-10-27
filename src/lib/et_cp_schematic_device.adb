@@ -84,6 +84,21 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		position : type_schematic_object;
+
+
+		procedure read_position is begin
+			set_sheet (position, to_sheet (get_field (cmd, 6)));
+
+			set_place (position, set (
+				x => to_distance (get_field (cmd, 7)),
+				y => to_distance (get_field (cmd, 8))));
+
+			set_rotation (position, to_rotation (get_field (cmd, 9)));
+		end read_position;
+
+
 	begin
 		log (text => "add device", level => log_threshold);
 		log_indentation_up;
@@ -91,20 +106,13 @@ package body et_cp_schematic_device is
 
 		case cmd_field_count is
 			when 9 =>
+				read_position;
+
 				-- If a virtual device is added, then no variant is required.
 				add_electrical_device (
 					module_cursor	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
-					destination		=> to_position
-						(
-						sheet => to_sheet (get_field (cmd, 6)),
-						point => set
-									(
-									x => to_distance (get_field (cmd, 7)),
-									y => to_distance (get_field (cmd, 8))
-									),
-						rotation => to_rotation (get_field (cmd, 9))),
-
+					destination		=> position,
 					variant			=> to_variant_name (""),
 
 					-- Depending on the origin of the command,
@@ -114,20 +122,13 @@ package body et_cp_schematic_device is
 
 
 			when 10 =>
+				read_position;
+
 				-- A real device requires specification of a package variant.
 				add_electrical_device (
 					module_cursor	=> module,
 					device_model	=> to_file_name (get_field (cmd, 5)),
-					destination		=> to_position
-						(
-						sheet => to_sheet (get_field (cmd, 6)),
-						point => set
-									(
-									x => to_distance (get_field (cmd, 7)),
-									y => to_distance (get_field (cmd, 8))
-									),
-						rotation		=> to_rotation (get_field (cmd, 9))
-						),
+					destination		=> position,
 					variant			=> to_variant_name (get_field (cmd, 10)),
 
 					-- Depending on the origin of the command,
@@ -272,6 +273,21 @@ package body et_cp_schematic_device is
 		name, device_created : type_device_name;
 
 		use et_unit_name;
+
+		position : type_schematic_object;
+
+
+		procedure read_position is begin
+			set_sheet (position, to_sheet (get_field (cmd, 6)));
+
+			set_place (position, set (
+				x => to_distance (get_field (cmd, 7)),
+				y => to_distance (get_field (cmd, 8))));
+
+			set_rotation (position, to_rotation (get_field (cmd, 9)));
+		end read_position;
+
+
 	begin
 		log (text => "copy device", level => log_threshold);
 		log_indentation_up;
@@ -282,6 +298,7 @@ package body et_cp_schematic_device is
 				name := to_device_name (get_field (cmd, 5));
 
 				if electrical_device_exists (module, name) then
+					read_position;
 
 					copy_device (
 						module_cursor	=> module,
@@ -291,13 +308,7 @@ package body et_cp_schematic_device is
 						-- an explicit unit name requested by the caller:
 						unit_name_explicit	=> unit_name_default,
 
-						destination		=> to_position (
-							sheet => to_sheet (get_field (cmd, 6)),
-							point => set
-										(
-										x => to_distance (get_field (cmd, 7)),
-										y => to_distance (get_field (cmd, 8))),
-							rotation		=> to_rotation (get_field (cmd, 9))),
+						destination		=> position,
 
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:

@@ -2131,15 +2131,21 @@ package body et_canvas_schematic_units is
 
 	procedure add_electrical_device (
 		place : in type_vector_model)
-	is begin
+	is
+		position : type_schematic_object;
+	begin
 		log (text => "add_electrical_device", level => log_threshold);
 		log_indentation_up;
+
+		set_sheet (position, active_sheet);
+		set_place (position, place);
+		set_rotation (position, unit_add.rotation);
 
 		add_electrical_device (
 			module_cursor	=> active_module,
 			device_model	=> get_device_model_file (unit_add.device),
 			variant			=> unit_add.variant,
-			destination		=> to_position (place, active_sheet, unit_add.rotation),
+			destination		=> position,
 			log_threshold	=> log_threshold + 1);
 
 		status_clear;
@@ -2169,7 +2175,10 @@ package body et_canvas_schematic_units is
 		-- Deletes the selected object:
 		procedure finalize is
 			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
+
+			use et_schematic_geometry.pac_basic_objects;
+			position : type_object_with_rotation;
 		begin
 			log (text => "finalize copy", level => log_threshold);
 			log_indentation_up;
@@ -2180,11 +2189,14 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 
+				set_place (position, point);
+				set_rotation (position, unit_add.rotation);
+
 				-- Do the copy operation:
 				copy_object (
 					module_cursor	=> active_module,
 					object			=> object,
-					destination		=> type_position (to_position (point, unit_add.rotation)),
+					destination		=> position,
 					log_threshold	=> log_threshold + 1);
 
 				-- If a device has been copied, then the board
@@ -2553,17 +2565,23 @@ package body et_canvas_schematic_units is
 	is
 
 
-		procedure finalize is begin
+		procedure finalize is
+			position : type_schematic_object;
+		begin
 			log (text => "finalize fetch", level => log_threshold);
 			log_indentation_up;
 
 			reset_status_objects (active_module, log_threshold + 1);
 
+			set_sheet (position, active_sheet);
+			set_place (position, point);
+			set_rotation (position, unit_fetch.rotation);
+
 			fetch_unit (
 				module_cursor	=> active_module,
 				device_name		=> unit_fetch.device_pre,
 				unit_name		=> unit_fetch.name,
-				destination		=> to_position (point, active_sheet, unit_fetch.rotation),
+				destination		=> position,
 				log_threshold	=> log_threshold + 1);
 
 			-- If a unit has been fetched, then the board
