@@ -94,7 +94,7 @@ package et_schematic_ops_nets is
 	-- submodule ports at the given place:
 	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return type_net_ports;
 

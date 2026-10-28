@@ -144,7 +144,7 @@ package body et_schematic_ops_nets is
 
 	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return type_net_ports
 	is
@@ -243,7 +243,7 @@ package body et_schematic_ops_nets is
 
 
 			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
-				submodule_position : type_object_position;
+				submodule_position : type_schematic_object;
 				ports : et_submodules.pac_submodule_ports.map;
 
 
@@ -366,7 +366,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " locate ports at " & to_string (place),
+			& " locate ports at " & get_position (place),
 			level => log_threshold);
 
 		log_indentation_up;

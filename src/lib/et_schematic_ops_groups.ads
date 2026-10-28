@@ -74,7 +74,7 @@ package et_schematic_ops_groups is
 
 	-- When a group is copy/pasted then this is the
 	-- place at which a group is grabbed:
-	group_reference_point : type_object_position;
+	group_reference_point : type_schematic_object;
 
 
 

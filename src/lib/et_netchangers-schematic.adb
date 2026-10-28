@@ -228,7 +228,7 @@ package body et_netchangers.schematic is
 
 
 	function to_netchanger_position (
-		position : in type_object_position)
+		position : in type_schematic_object)
 		return type_netchanger_position_schematic
 	is
 		result : type_netchanger_position_schematic;
@@ -252,9 +252,9 @@ package body et_netchangers.schematic is
 
 	function to_object_position (
 		position : in type_netchanger_position_schematic)
-		return type_object_position
+		return type_schematic_object
 	is
-		result : type_object_position;
+		result : type_schematic_object;
 	begin
 		set_place (result, position.place);
 		set_rotation (result, position.rotation);
@@ -271,10 +271,10 @@ package body et_netchangers.schematic is
 		return string
 	is
 		use et_schematic_coordinates;
-		p : type_object_position;
+		p : type_schematic_object;
 	begin
 		p := to_object_position (position);
-		return to_string (p);
+		return get_position (p);
 	end to_string;
 
 
@@ -282,7 +282,7 @@ package body et_netchangers.schematic is
 
 	function get_object_position (
 		netchanger : in type_netchanger)
-		return type_object_position
+		return type_schematic_object
 	is (to_object_position (netchanger.position_sch));
 
 
@@ -506,7 +506,7 @@ package body et_netchangers.schematic is
 	is
 		result : boolean := false;
 
-		netchanger_position : constant type_object_position :=
+		netchanger_position : constant type_schematic_object :=
 			to_object_position (netchanger.position_sch);
 	begin
 		-- The netchanger must be on the given sheet and
@@ -674,7 +674,7 @@ package body et_netchangers.schematic is
 
 	procedure copy_netchanger_with_offset (
 		netchanger_in	: in type_netchanger;
-		offset			: in type_object_position_relative;
+		offset			: in type_object_position_relative_2;
 		netchanger_out	: out type_netchanger)
 	is
 		procedure reset_board_position is

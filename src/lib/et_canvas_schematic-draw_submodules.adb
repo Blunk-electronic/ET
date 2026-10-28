@@ -64,7 +64,9 @@ procedure draw_submodules is
 	use et_colors.schematic;
 
 
-	procedure query_submods (cursor : in pac_submodules.cursor) is
+	procedure query_submods (
+		cursor : in pac_submodules.cursor) -- CS rename to submodule_cursor
+	is
 		submod : type_submodule renames element (cursor);
 
 
@@ -74,7 +76,7 @@ procedure draw_submodules is
 			set_color_submodules;
 
 			-- The lower left corner of the submodule box in the schematic:
-			box.position := submod.position.place;
+			box.position := get_place (submod);
 			box.width  := submod.size.x;
 			box.height := submod.size.y;
 
@@ -88,9 +90,10 @@ procedure draw_submodules is
 		-- The position of the instance name is below the lower left corner of the box.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_instance_name is
-			position : type_vector_model := submod.position.place;
+			position : type_vector_model := get_place (submod);
 
-			offset : constant type_vector_model := set (x => zero, y => -text_spacing);
+			offset : constant type_vector_model :=
+				set (x => zero, y => -text_spacing);
 
 			use pac_draw_text;
 			use et_alignment;
@@ -112,7 +115,7 @@ procedure draw_submodules is
 		-- The position of the file name is below the instance name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_file_name is
-			position : type_vector_model := submod.position.place;
+			position : type_vector_model := get_place (submod);
 
 			offset : constant type_vector_model := set (
 					x => zero,
@@ -138,7 +141,7 @@ procedure draw_submodules is
 		-- The position of module in the board is below the file name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_position_in_board is
-			position : type_vector_model := submod.position.place;
+			position : type_vector_model := get_place (submod);
 
 			offset : constant type_vector_model := set (
 					x => zero,
@@ -180,7 +183,7 @@ procedure draw_submodules is
 			procedure draw_port (pc : in pac_submodule_ports.cursor) is
 				port : type_submodule_port renames element (pc);
 
-				submod_position : constant type_vector_model := submod.position.place;
+				submod_position : constant type_vector_model := get_place (submod);
 
 				-- The final position of the port:
 				pos : type_vector_model := submod_position;
@@ -364,7 +367,7 @@ procedure draw_submodules is
 
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
-		if get_sheet (element (cursor).position) = active_sheet then
+		if get_sheet (element (cursor)) = active_sheet then
 
 			draw_box;
 			draw_ports;

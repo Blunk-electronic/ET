@@ -179,7 +179,7 @@ package body et_module_clipboard.netchangers is
 
 	procedure paste_netchangers_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;
+		offset			: in type_object_position_relative_2;
 		log_threshold	: in type_log_level)
 	is
 
@@ -250,7 +250,8 @@ package body et_module_clipboard.netchangers is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " paste netchangers from clipboard. Group offset: " & to_string (offset),
+			& " paste netchangers from clipboard. Group offset: "
+			& get_position (offset),
 			 level => log_threshold);
 
 		log_indentation_up;

@@ -205,9 +205,9 @@ package et_submodules is
 
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
-	type type_submodule is record
+	-- The place of the submodule is where its lower left corner is.
+	type type_submodule is new type_schematic_object with record
 		file				: type_submodule_path; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : type_object_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_board_geometry.pac_geometry_2.type_position := et_board_geometry.pac_geometry_2.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;

@@ -921,7 +921,7 @@ package body et_cp_schematic_unit is
 			-- Proceed if the specified device exists:
 			if electrical_device_exists (module, device_name) then
 				set_position;
-	
+
 				fetch_unit (
 					module_cursor	=> module,
 					device_name		=> device_name,

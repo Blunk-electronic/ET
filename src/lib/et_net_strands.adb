@@ -2124,7 +2124,7 @@ package body et_net_strands is
 
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in type_object_position)
+		place			: in type_schematic_object)
 		return boolean
 	is
 		-- This flag goes false if the given point is

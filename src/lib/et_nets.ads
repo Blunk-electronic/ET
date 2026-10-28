@@ -214,7 +214,7 @@ package et_nets is
 	-- If no strand found then the return is no_element:
 	function get_strand (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		return pac_strands.cursor;
 
 
@@ -233,7 +233,7 @@ package et_nets is
 	-- So in the result there should be only one item:
 	function get_strands (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		-- CS log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 
@@ -301,7 +301,7 @@ package et_nets is
 	-- starts or ends at the given place:
 	function has_end_point (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		return boolean;
 
 

@@ -123,7 +123,7 @@ package body et_module_write_submodules is
 			write (keyword => keyword_file, parameters => to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position,
-				parameters => to_string (element (submodule_cursor).position, FORMAT_2));
+				parameters => get_position (element (submodule_cursor), FORMAT_2));
 
 			write (keyword => keyword_size, parameters =>
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &

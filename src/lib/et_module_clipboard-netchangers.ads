@@ -78,7 +78,7 @@ package et_module_clipboard.netchangers is
 	-- by the given offset:
 	procedure paste_netchangers_from_clipboard (
 		module_cursor	: in pac_generic_modules.cursor;
-		offset			: in type_object_position_relative;
+		offset			: in type_object_position_relative_2;
 		log_threshold	: in type_log_level);
 
 

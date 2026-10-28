@@ -71,6 +71,10 @@ package et_schematic_coordinates is
 		is new type_object_with_rotation with private;
 
 
+	type type_object_position_relative_2
+		is new type_object_with_rotation with private;
+
+
 	-- function to_schematic_object (
 	-- 	object	: in type_object_with_rotation;
 	-- 	sheet	: in type_sheet)
@@ -199,16 +203,16 @@ package et_schematic_coordinates is
 	-- FORMAT_1 : sheet/x/y/rotation 2 / 4.5 / 5.6 / 90.0
 	-- FORMAT_2 : sheet 2 x 4.5 y 5.6 rotation 90.0
 	-- FORMAT_3 : 2 4.5 5.6 90.0
-	overriding function to_string (
-		position	: in type_object_position;
-		format		: in type_output_format := FORMAT_1)
-		return string;
+	-- overriding function to_string (
+	-- 	position	: in type_object_position;
+	-- 	format		: in type_output_format := FORMAT_1)
+	-- 	return string;
 
 
-	overriding function to_string (
-		position	: in type_object_position_relative;
-		format		: in type_output_format := FORMAT_1)
-		return string;
+	-- overriding function to_string (
+	-- 	position	: in type_object_position_relative;
+	-- 	format		: in type_output_format := FORMAT_1)
+	-- 	return string;
 
 
 
@@ -218,6 +222,10 @@ package et_schematic_coordinates is
 		left, right : in type_object_position'class)
 		return type_object_position_relative;
 
+
+	function get_offset (
+		left, right : in type_schematic_object'class)
+		return type_object_position_relative_2;
 
 
 	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"
@@ -262,15 +270,20 @@ package et_schematic_coordinates is
 
 
 	-- Returns the sheet number of the given position:
-	function get_sheet (
-		position : in type_object_position)
-		return type_sheet;
+	-- function get_sheet (
+	-- 	position : in type_object_position)
+	-- 	return type_sheet;
 
 
 	-- Returns the sheet number of the given position:
+	-- function get_sheet (
+	-- 	position : in type_object_position_relative)
+	-- 	return type_sheet_relative;
+
 	function get_sheet (
-		position : in type_object_position_relative)
+		position : in type_object_position_relative_2)
 		return type_sheet_relative;
+
 
 
 	-- Sets the sheet number in given position:
@@ -280,9 +293,9 @@ package et_schematic_coordinates is
 
 
 	-- Moves the position by the given number of sheets:
-	procedure move_by_sheets (
-		position	: in out type_object_position;
-		offset		: in type_sheet_relative);
+	-- procedure move_by_sheets (
+	-- 	position	: in out type_object_position;
+	-- 	offset		: in type_sheet_relative);
 
 
 
@@ -306,6 +319,10 @@ private
 		end record;
 
 
+	type type_object_position_relative_2
+		is new type_object_with_rotation with record
+			sheet : type_sheet_relative := 0;
+		end record;
 
 
 	zero_position : constant type_object_position := (

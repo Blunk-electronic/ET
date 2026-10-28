@@ -232,7 +232,7 @@ package et_netchangers.schematic is
 
 
 	function to_netchanger_position (
-		position : in type_object_position)
+		position : in type_schematic_object)
 		return type_netchanger_position_schematic;
 
 
@@ -246,7 +246,7 @@ package et_netchangers.schematic is
 
 	function to_object_position (
 		position : in type_netchanger_position_schematic)
-		return type_object_position;
+		return type_schematic_object;
 
 
 	function to_string (
@@ -256,7 +256,7 @@ package et_netchangers.schematic is
 
 	function get_object_position (
 		netchanger : in type_netchanger)
-		return type_object_position;
+		return type_schematic_object;
 
 
 
@@ -412,7 +412,7 @@ package et_netchangers.schematic is
 	-- the given offset:
 	procedure copy_netchanger_with_offset (
 		netchanger_in	: in type_netchanger;
-		offset			: in type_object_position_relative;
+		offset			: in type_object_position_relative_2;
 		netchanger_out	: out type_netchanger);
 
 

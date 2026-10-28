@@ -191,7 +191,7 @@ package et_netchangers is
 	end record;
 
 
-	netchanger_default_place : constant 
+	netchanger_default_place : constant
 		et_board_geometry.pac_geometry_2.type_vector_model :=
 		et_board_geometry.pac_geometry_2.origin;
 

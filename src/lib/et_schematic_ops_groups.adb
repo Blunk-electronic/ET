@@ -923,18 +923,19 @@ package body et_schematic_ops_groups is
 		use et_undo_redo;
 		use et_modes.schematic;
 
-		offset : type_object_position_relative;
+		offset : type_object_position_relative_2;
 
 
 
 		procedure compute_offset is
-			destination : type_object_position;
+			destination : type_schematic_object;
 		begin
-			destination := to_position (place, sheet);
+			set_place (destination, place);
+			set_sheet (destination, sheet);
 
 			offset := get_offset (group_reference_point, destination);
 
-			log (text => "group offset " & to_string (offset),
+			log (text => "group offset " & get_position (offset),
 				 level => log_threshold + 1);
 		end compute_offset;
 

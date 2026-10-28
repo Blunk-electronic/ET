@@ -583,7 +583,7 @@ package et_net_strands is
 	-- Returns true if the given point is on the given strand:
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in type_object_position)
+		place			: in type_schematic_object)
 		return boolean;
 
 

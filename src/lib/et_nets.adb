@@ -229,7 +229,7 @@ package body et_nets is
 
 	function get_strand (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		return pac_strands.cursor
 	is
 		result : pac_strands.cursor := pac_strands.no_element;
@@ -281,7 +281,7 @@ package body et_nets is
 
 	function get_strands (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		return pac_strand_cursors.list
 	is
 		result : pac_strand_cursors.list;
@@ -580,7 +580,7 @@ package body et_nets is
 
 	function has_end_point (
 		net		: in type_net;
-		place	: in type_object_position)
+		place	: in type_schematic_object)
 		return boolean
 	is
 		-- If the given net has no segment that starts
