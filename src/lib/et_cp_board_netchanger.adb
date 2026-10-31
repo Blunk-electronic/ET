@@ -96,7 +96,7 @@ package body et_cp_board_netchanger is
 
 				-- In order to zoom on the targeted netchanger
 				-- we need its position in the schematic:
-				position : type_object_position;
+				position : type_schematic_object;
 
 				use et_canvas_schematic;
 				use pac_canvas;

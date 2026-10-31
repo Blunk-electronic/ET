@@ -76,12 +76,11 @@ package body et_schematic_ops_netchangers is
 
 	procedure dragging_not_possible (
 		port		: in string;
-		position	: in type_object_position) is
-	begin
-		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
-			 " is directly connected with other ports at" &
-			to_string (position) &
-			 ". Dragging not possible !",
+		position	: in type_schematic_object)
+	is begin
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port)
+			& " is directly connected with other ports at"
+			& get_position (position) & ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
 	end dragging_not_possible;
@@ -219,9 +218,9 @@ package body et_schematic_ops_netchangers is
 	function get_netchanger_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id) -- 1,2,3,...
-		return type_object_position
+		return type_schematic_object
 	is
-		result : type_object_position;
+		result : type_schematic_object;
 		netchanger_cursor : pac_netchangers.cursor;
 	begin
 		netchanger_cursor := get_netchanger (module_cursor, index);
@@ -1087,7 +1086,7 @@ package body et_schematic_ops_netchangers is
 
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position;
+		position		: in type_schematic_object;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1146,7 +1145,7 @@ package body et_schematic_ops_netchangers is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " add netchanger at " & to_string (position)
+			 & " add netchanger at " & get_position (position)
 			 & " rotation " & to_string (get_rotation (position)),
 			level => log_threshold);
 
@@ -1195,7 +1194,7 @@ package body et_schematic_ops_netchangers is
 		-- use et_undo_redo;
 
 		-- Get the position of the given netchanger:
-		position : constant type_object_position :=
+		position : constant type_schematic_object :=
 			get_object_position (netchanger);
 
 
@@ -1242,7 +1241,7 @@ package body et_schematic_ops_netchangers is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " add netchanger " & to_string (index)
-			 & " at " & to_string (position)
+			 & " at " & get_position (position)
 			 & " rotation " & to_string (get_rotation (position)),
 			 -- CS & " direction " & to_string (get_direction (netchanger)),
 			level => log_threshold);
@@ -1284,15 +1283,15 @@ package body et_schematic_ops_netchangers is
 	procedure movable_test (
 		module_cursor		: in pac_generic_modules.cursor;
 		index				: in type_netchanger_id;
-		location			: in type_object_position; -- only sheet number matters
-		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
+		location			: in type_schematic_object;
+		netchanger_ports	: in type_netchanger_ports;
 		log_threshold		: in type_log_level)
 	is
 		-- CS: clean up, rework
 
 
 		procedure test_point (
-			point		: in type_object_position; -- sheet/x/y -- the point to be probed
+			point		: in type_schematic_object; -- sheet/x/y -- the point to be probed
 			port_name	: in type_netchanger_port_name) -- master/slave
 		is
 			use ada.containers;
@@ -1345,24 +1344,21 @@ package body et_schematic_ops_netchangers is
 		end test_point;
 
 
+		point : type_schematic_object;
+
 	begin
 		log (text => "movable test", level => log_threshold);
 		log_indentation_up;
 
 		-- Test the point where the master port is:
-		test_point (
-			point		=> to_position (
-							point => netchanger_ports.master,
-							sheet => get_sheet (location)),
-			port_name	=> MASTER);
+		set_place (point, netchanger_ports.master);
+		set_sheet (point, get_sheet (location));
 
+		test_point (point, MASTER);
 
 		-- Test the point where the slave port is:
-		test_point (
-			point		=> to_position (
-							point => netchanger_ports.slave,
-							sheet => get_sheet (location)),
-			port_name	=> SLAVE);
+		set_place (point, netchanger_ports.slave);
+		test_point (point, SLAVE);
 
 		log_indentation_down;
 	end movable_test;
@@ -1400,7 +1396,7 @@ package body et_schematic_ops_netchangers is
 			-- in the schematic:
 			sheet : type_sheet;
 
-			location : type_object_position;
+			location : type_schematic_object;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 
@@ -1422,9 +1418,7 @@ package body et_schematic_ops_netchangers is
 						-- The new relative position is the netchanger position BEFORE
 						-- the move operation shifted by the given point (x/y).
 						-- The sheet number does not change.
-						move_by (
-							point		=> location.place,
-							offset		=> point);
+						move_by (location, point);
 				end case;
 
 
@@ -1586,14 +1580,15 @@ package body et_schematic_ops_netchangers is
 				netchanger	: in out type_netchanger)
 			is
 				pragma unreferenced (index);
-				location : type_object_position;
+				location : type_schematic_object;
 			begin
 				-- calculate the new position
 				case coordinates is
 					when ABSOLUTE =>
 						-- The absolute position is defined by the given point (x/y)
 						-- and the given sheet number:
-						location := to_position (point, type_sheet (sheet));
+						set_place (location, point);
+						set_sheet (location, type_sheet (sheet));
 
 					when RELATIVE =>
 						-- The relative position is the netchanger position BEFORE
@@ -1602,10 +1597,12 @@ package body et_schematic_ops_netchangers is
 						location := to_object_position (
 							get_position_schematic (netchanger_cursor));
 
-						move (
-							position	=> location,
-							offset		=> to_position_relative (point, sheet));
+						-- move (
+						-- 	position	=> location,
+						-- 	offset		=> to_position_relative (point, sheet));
 
+						move_by (location, point);
+						move_by_sheets (location, sheet);
 				end case;
 
 				-- Assign the new position to the netchanger candidate:
@@ -2349,7 +2346,7 @@ package body et_schematic_ops_netchangers is
 		procedure query_index (c : pac_netchanger_ids.cursor) is
 			-- The index candidate being queried:
 			index : type_netchanger_id renames element (c);
-			position : type_object_position;
+			position : type_schematic_object;
 		begin
 			-- Get the position of the netchanger:
 			position := get_netchanger_position (module_cursor, index);
@@ -4064,11 +4061,12 @@ package body et_schematic_ops_netchangers is
 				-- and sets start or end points of net segments which are
 				-- at the port position as "moving":
 				procedure query_position (place : in type_vector_model) is
-					position : type_object_position;
+					position : type_schematic_object;
 				begin
 					-- Compose the position of inquiry
 					-- from port position and sheet number:
-					position := to_position (place, sheet);
+					set_place (position, place);
+					set_sheet (position, sheet);
 
 					-- Set the connected net segments as "moving":
 					et_schematic_ops_nets.set_segments_moving (

@@ -79,7 +79,7 @@ package body et_module_read_netchangers is
 		use et_schematic_coordinates;
 		kw : constant string := f (line, 1);
 
-		position : type_object_position;
+		position : type_schematic_object;
 		-- rotation : et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
 		direction : type_netchanger_direction := FORWARD;
 	begin
@@ -103,7 +103,7 @@ package body et_module_read_netchangers is
 			expect_field_count (line, 9);
 
 			-- extract position (in schematic) starting at field 2
-			position := to_position (line, 2);
+			set_position (position, line, 2);
 
 			set_sheet (netchanger, get_sheet (position));
 			set_place (netchanger, get_place (position));

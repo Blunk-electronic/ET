@@ -130,8 +130,8 @@ package body et_submodules is
 
 
 	procedure move_ports (
-		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in type_object_position) -- the offset (only x/y matters)
+		ports	: in out pac_submodule_ports.map;
+		offset	: in type_schematic_object)
 	is
 
 		procedure move (
@@ -140,21 +140,40 @@ package body et_submodules is
 		is
 			pragma unreferenced (name);
 		begin
-			move_by (port.position, offset.place);
+			move_by (port.position, get_place (offset));
 		end move;
 
-		procedure query_port (cursor : in pac_submodule_ports.cursor) is begin
+		procedure query_port (
+			cursor : in pac_submodule_ports.cursor)
+		is begin
 			pac_submodule_ports.update_element (
 				container	=> ports,
 				position	=> cursor,
 				process		=> move'access);
 		end query_port;
 
-	begin -- move_ports
+	begin
 		pac_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
 
 
+
+
+
+	function get_position (
+		submodule : in type_submodule)
+		return type_schematic_object
+	is (type_schematic_object (submodule));
+
+
+
+	overriding procedure reset_position (
+		object	: in out type_submodule)
+	is
+		sm : type_submodule;
+	begin
+		object := sm;
+	end reset_position;
 
 
 

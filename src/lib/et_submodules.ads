@@ -35,9 +35,10 @@
 --
 --   history of changes:
 --
---   ToDo:
+--  To Do:
 -- 1. Separate stuff related to schematic and board in a child package.
---
+-- 2. Move stuff related to the type_submodule to a separate package
+--    like et_submodule ?
 
 
 with ada.strings.bounded;			use ada.strings.bounded;
@@ -199,7 +200,7 @@ package et_submodules is
 	-- Moves the given submodule ports by the given offset.
 	procedure move_ports (
 		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in type_object_position); -- the offset (only x/y matters)
+		offset	: in type_schematic_object); -- the offset (only x/y matters)
 
 
 
@@ -213,6 +214,16 @@ package et_submodules is
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: pac_submodule_ports.map;
 	end record;
+
+
+	function get_position ( -- CS: move to et_schematic_coordinates ?
+		submodule : in type_submodule)
+		return type_schematic_object;
+
+
+	-- Resets the object:
+	overriding procedure reset_position (
+		object	: in out type_submodule);
 
 
 
@@ -254,6 +265,8 @@ package et_submodules is
 
 
 
+
+
 	package pac_submodules is new ordered_maps (
 		key_type		=> type_module_instance_name, -- MOT_DRV_3
 		element_type	=> type_submodule);
@@ -265,6 +278,10 @@ package et_submodules is
 		return natural;
 
 
+	-- CS
+	-- function get_position (
+	-- 	cursor	: in pac_submodules.cursor)
+	-- 	return type_schematic_object;
 
 
 

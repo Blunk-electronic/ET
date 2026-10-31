@@ -242,8 +242,13 @@ package body et_schematic_ops_nets is
 
 
 
-			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
+			procedure query_submodules (
+				submodule_cursor : in et_submodules.pac_submodules.cursor)
+			is
+				-- CS use renames
 				submodule_position : type_schematic_object;
+				-- CS no need if renames is used ?
+
 				ports : et_submodules.pac_submodule_ports.map;
 
 
@@ -272,8 +277,9 @@ package body et_schematic_ops_nets is
 				end query_port;
 
 
+				use et_submodules;
 			begin -- query_submodules
-				submodule_position := element (submodule_cursor).position;
+				submodule_position := get_position (element (submodule_cursor));
 
 				-- Look at submodules on the given sheet of place:
 				if get_sheet (submodule_position) = get_sheet (place) then
@@ -391,7 +397,7 @@ package body et_schematic_ops_nets is
 
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position;
+		position		: in type_schematic_object;
 		log_threshold	: in type_log_level)
 	is
 		use pac_net_segments;
@@ -474,7 +480,7 @@ package body et_schematic_ops_nets is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " set start/end points of net segments as moving."
-			 & " Reference point " & to_string (position),
+			 & " Reference point " & get_position (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1395,7 +1401,7 @@ package body et_schematic_ops_nets is
 
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position)
+		place			: in type_schematic_object)
 		return boolean
 	is
 
@@ -1426,13 +1432,13 @@ package body et_schematic_ops_nets is
 
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
-						if get_A (segment) = place.place then
+						if get_A (segment) = get_place (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
 						-- if place is an end point of a segment
-						if get_B (segment) = place.place then
+						if get_B (segment) = get_place (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
@@ -1729,13 +1735,20 @@ package body et_schematic_ops_nets is
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
 
-						A_end : constant type_object_position :=
-							to_position (get_A (segment), sheet);
+						-- A_end : constant type_object_position :=
+						-- 	to_position (get_A (segment), sheet);
 
-						B_end : constant type_object_position :=
-							to_position (get_B (segment), sheet);
+						-- B_end : constant type_object_position :=
+						-- 	to_position (get_B (segment), sheet);
 
+						A_end, B_end : type_schematic_object;
 					begin
+						set_place (A_end, get_A (segment));
+						set_sheet (A_end, sheet);
+
+						set_place (B_end, get_B (segment));
+						set_sheet (B_end, sheet);
+
 						case zone is
 							when START_POINT =>
 								ports := get_ports (
@@ -3217,7 +3230,7 @@ package body et_schematic_ops_nets is
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list
 	is
@@ -3248,7 +3261,7 @@ package body et_schematic_ops_nets is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " looking up strands of net " & get_net_name (net_cursor)
-			 & " at " & to_string (place),
+			 & " at " & get_position (place),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -3260,7 +3273,7 @@ package body et_schematic_ops_nets is
 		-- Issue a warning if more than one strand has been found:
 		if result.length > 1 then
 			log (text => " WARNING. More than one strand found at "
-				 & to_string (place) & " !",
+				 & get_position (place) & " !",
 				 level => log_threshold);
 		end if;
 
@@ -5764,7 +5777,7 @@ package body et_schematic_ops_nets is
 
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list
 	is
@@ -5782,6 +5795,7 @@ package body et_schematic_ops_nets is
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
 				net : constant type_net := element (net_cursor);
+				-- CS use renames instead ?
 
 				-- Cnce a segment has been found at the given
 				-- place, then this flag is cleared so that
@@ -5798,7 +5812,7 @@ package body et_schematic_ops_nets is
 						log (text => to_string (segment_cursor), level => log_threshold + 2);
 
 						if on_line (
-							point	=> place.place,
+							point	=> get_place (place),
 							line	=> element (segment_cursor)) then
 
 							log (text => "match", level => log_threshold + 2);
@@ -5847,7 +5861,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			 " identify nets at" & to_string (place),
+			 " identify nets at" & get_position (place),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -5888,7 +5902,7 @@ package body et_schematic_ops_nets is
 		procedure test_segment (c : in pac_net_segments.cursor) is
 
 			-- This is the actual place where the test is performed:
-			place : type_object_position;
+			place : type_schematic_object;
 
 
 			-- This procedure iterates the nets of the module,
@@ -5911,7 +5925,7 @@ package body et_schematic_ops_nets is
 						-- required. The flag "proceed" is cleared
 						-- so that all iterators are stopped:
 						if has_end_point (net, place) then
-							log (text => " segment found at " & to_string (place),
+							log (text => " segment found at " & get_position (place),
 								level => log_threshold + 2);
 							proceed := false;
 						end if;
@@ -6005,12 +6019,16 @@ package body et_schematic_ops_nets is
 			-- net) that run across the A or B end of the
 			-- given segment:
 			procedure get_strands_at_AB is
-				place : type_object_position;
+				place : type_schematic_object;
 			begin
-				place := to_position (get_A (segment), sheet);
+				-- place := to_position (get_A (segment), sheet);
+				set_place (place, get_A (segment));
+				set_sheet (place, sheet);
 				strands_at_A := get_strands (module_cursor, net_cursor, place, log_threshold + 2);
 
-				place := to_position (get_B (segment), sheet);
+				-- place := to_position (get_B (segment), sheet);
+				set_place (place, get_B (segment));
+				set_sheet (place, sheet);
 				strands_at_B := get_strands (module_cursor, net_cursor, place, log_threshold + 2);
 			end get_strands_at_AB;
 
@@ -6063,7 +6081,7 @@ package body et_schematic_ops_nets is
 						s : type_net_segment := segment;
 
 						-- This is the place where ports are searched for:
-						place : type_object_position;
+						place : type_schematic_object;
 
 						-- Here the ports will be stored Temporarily:
 						ports : type_net_ports;
@@ -6107,7 +6125,7 @@ package body et_schematic_ops_nets is
 						s : type_net_segment := segment;
 
 						-- This is the place where ports are searched for:
-						place : type_object_position;
+						place : type_schematic_object;
 
 						-- Here the ports will be stored temporarily:
 						ports : type_net_ports;
@@ -6378,7 +6396,7 @@ package body et_schematic_ops_nets is
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		A				: in type_object_position; -- sheet/x/y
+		A				: in type_schematic_object; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -7236,7 +7254,7 @@ package body et_schematic_ops_nets is
 
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -7289,7 +7307,7 @@ package body et_schematic_ops_nets is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place net label next to segment at "
-			& to_string (position),
+			& get_position (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -7307,13 +7325,13 @@ package body et_schematic_ops_nets is
 		-- one segment exists at the specified place:
 		case length (segments) is
 			when 0 =>
-				log (SEVERITY_WARNING, "No net found at" & to_string (position));
+				log (SEVERITY_WARNING, "No net found at" & get_position (position));
 
 			when 1 =>
 				do_it;
 
 			when others =>
-				log (SEVERITY_WARNING, "More than one net found at" & to_string (position));
+				log (SEVERITY_WARNING, "More than one net found at" & get_position (position));
 				-- CS show the net names ?
 		end case;
 
@@ -7412,7 +7430,7 @@ package body et_schematic_ops_nets is
 
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -7456,7 +7474,7 @@ package body et_schematic_ops_nets is
 
 							-- If label sits at position, delete it from the label list
 							-- of that segment:
-							if element (label_cursor).position = position.place then
+							if element (label_cursor).position = get_place (position) then
 								delete (segment.labels, label_cursor);
 								label_found := true;
 								exit;
@@ -7513,7 +7531,7 @@ package body et_schematic_ops_nets is
 	begin -- delete_net_label
 		log (text => "module " & to_string (module_cursor)
 			& " delete net label at "
-			& et_schematic_coordinates.to_string (position),
+			& get_position (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -8290,7 +8308,7 @@ package body et_schematic_ops_nets is
 
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -8344,7 +8362,7 @@ package body et_schematic_ops_nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " place net connector at " & to_string (position)
+			& " place net connector at " & get_position (position)
 			& " direction " & to_string (direction),
 			level => log_threshold);
 
@@ -8363,13 +8381,13 @@ package body et_schematic_ops_nets is
 		-- one segment exists at the specified place:
 		case length (segments) is
 			when 0 =>
-				log (SEVERITY_WARNING, "No net found at" & to_string (position));
+				log (SEVERITY_WARNING, "No net found at" & get_position (position));
 
 			when 1 =>
 				do_it;
 
 			when others =>
-				log (SEVERITY_WARNING, "More than one net found at" & to_string (position));
+				log (SEVERITY_WARNING, "More than one net found at" & get_position (position));
 				-- CS show the net names ?
 		end case;
 
@@ -9404,19 +9422,23 @@ package body et_schematic_ops_nets is
 					-- This procedure and sets start or end points of net
 					-- segments which are connected with the given segment as "moving":
 					procedure query_segment (seg : in type_net_segment) is
-						position : type_object_position;
+						position : type_schematic_object;
 					begin
 						if is_selected (seg) then
 							log (text => " is selected", level => log_threshold + 3);
 
 							-- Set segments which are connected with the start point
 							-- of the candidate segment as "moving":
-							position := to_position (get_A (seg), sheet);
+							-- position := to_position (get_A (seg), sheet);
+							set_place (position, get_A (seg));
+							set_sheet (position, sheet);
 							set_segments_moving (module_cursor, position, log_threshold + 4);
 
 							-- Set segments which are connected with the end point
 							-- of the candidate segment as "moving":
-							position := to_position (get_B (seg), sheet);
+							--position := to_position (get_B (seg), sheet);
+							set_place (position, get_B (seg));
+							set_sheet (position, sheet);
 							set_segments_moving (module_cursor, position, log_threshold + 4);
 						end if;
 					end query_segment;

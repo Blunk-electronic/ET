@@ -88,15 +88,16 @@ package body et_schematic_ops_submodules is
 	subtype type_module_instance_name	is et_module_instance.type_module_instance_name;
 	subtype type_assembly_variant_name	is et_assembly_variant_name.type_assembly_variant_name;
 
+
 	procedure dragging_not_possible (
 		port		: in string;
-		position	: in type_object_position) is
+		position	: in type_schematic_object)
+	is
 		use et_string_processing;
 	begin
-		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
-			 " is directly connected with other ports at" &
-			to_string (position) &
-			 ". Dragging not possible !",
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port)
+			& " is directly connected with other ports at"
+			& get_position (position) & ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
 	end dragging_not_possible;
@@ -418,16 +419,16 @@ package body et_schematic_ops_submodules is
 
 
 	function get_submodule_port_position (
-		module_name		: in type_module_name; -- motor_driver (without extension *.mod)
-		submod_name		: in type_module_instance_name; -- MOT_DRV_3
-		port_name		: in et_net_names.type_net_name; -- RESET
+		module_name		: in type_module_name;
+		submod_name		: in type_module_instance_name;
+		port_name		: in et_net_names.type_net_name;
 		log_threshold	: in type_log_level)
-		return type_object_position
+		return type_schematic_object
 	is
 		use et_net_names;
 		use et_module_instance;
 
-		port_position : type_object_position; -- to be returned
+		port_position : type_schematic_object; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
 
@@ -440,7 +441,7 @@ package body et_schematic_ops_submodules is
 			use et_submodules;
 
 			submod_cursor : pac_submodules.cursor;
-			submod_position : type_object_position;
+			submod_position : type_schematic_object;
 
 
 			procedure query_ports (
@@ -460,15 +461,18 @@ package body et_schematic_ops_submodules is
 					-- Calculate the absolute port position:
 					move_by (
 						point	=> port_xy,
-						offset	=> submod_position.place);
+						offset	=> get_place (submod_position));
 
 					-- Now port_xy holds the absolute x/y of the port in the schematic.
 
 					-- Assemble the port_position to be returned:
-					port_position := to_position (
-						point	=> port_xy,
-						sheet	=> get_sheet (submod_position)
-						);
+					-- port_position := to_position (
+					-- 	point	=> port_xy,
+					-- 	sheet	=> get_sheet (submod_position)
+					-- 	);
+
+					set_place (port_position, port_xy);
+					set_sheet (port_position, get_sheet (submod_position));
 
 				else
 					log (SEVERITY_ERROR, "port "
@@ -487,7 +491,10 @@ package body et_schematic_ops_submodules is
 				log_indentation_up;
 
 				-- get submodule position (sheet/x/y)
-				submod_position := element (submod_cursor).position;
+				-- submod_position := element (submod_cursor).position;
+				submod_position := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor).
+				-- CS write this function in et_submodules ?
 
 				-- look for the given port
 				query_element (
@@ -538,10 +545,10 @@ package body et_schematic_ops_submodules is
 
 
 	procedure insert_port (
-		module			: in pac_generic_modules.cursor;		-- the module
-		instance		: in type_module_instance_name; -- OSC
-		port			: in et_net_names.type_net_name; -- clock_output
-		position		: in type_object_position; -- the port position
+		module			: in pac_generic_modules.cursor;
+		instance		: in type_module_instance_name;
+		port			: in et_net_names.type_net_name;
+		position		: in type_schematic_object;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -656,9 +663,12 @@ package body et_schematic_ops_submodules is
 		end query_module;
 
 
-	begin -- insert_port
-		log (text => "inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" &
-			 to_string (position) & " ...", level => log_threshold);
+	begin
+		log (text => "inserting submodule port "
+			& enclose_in_quotes (to_string (port)) & " in net at"
+			& get_position (position) & " ...",
+			level => log_threshold);
+
 		log_indentation_up;
 
 		update_element (
@@ -703,10 +713,10 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : type_object_position;
+		submodule_position : type_schematic_object;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : type_object_position;
+		port_position : type_schematic_object;
 
 
 		procedure query_submodules (
@@ -776,7 +786,8 @@ package body et_schematic_ops_submodules is
 
 				-- For inserting the submodule port in the nets
 				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
+				--submodule_position := element (submod_cursor).position;
+				submodule_position := get_position (element (submod_cursor));
 
 				log_indentation_up;
 
@@ -826,21 +837,27 @@ package body et_schematic_ops_submodules is
 		-- Build the absoltue port_position:
 
 		-- 1. assume x/y as given by position (which is the relative position):
-		set (
-			point		=> port_position.place,
-			position	=> position); -- the relative port position
+		-- set (
+		-- 	point		=> port_position.place,
+		-- 	position	=> position); -- the relative port position
+
+		set_place (port_position, position);
 
 		-- 2. move port_position by x/y of submodule_position:
-		move_by (
-			point		=> port_position.place,
-			offset		=> submodule_position.place);
+		-- move_by (
+		-- 	point		=> port_position.place,
+		-- 	offset		=> submodule_position.place);
+
+		move_by (port_position, get_place (submodule_position));
 
 		-- x/y of port_position is now absolute
 
 		-- 3. set sheet number as given by submodule_position:
-		set_sheet (
-			position	=> port_position,
-			sheet		=> get_sheet (submodule_position));
+		-- set_sheet (
+		-- 	position	=> port_position,
+		-- 	sheet		=> get_sheet (submodule_position));
+
+		set_sheet (port_position, get_sheet (submodule_position));
 
 		-- port_position is now ready to insert the submodule port in the nets:
 		insert_port (
@@ -867,9 +884,9 @@ package body et_schematic_ops_submodules is
 
 
 	procedure delete_submodule_port (
-		module			: in pac_generic_modules.cursor;		-- the module
-		port			: in type_net_submodule_port; -- OSC1 / clock_output
-		position		: in type_object_position; -- the submodule position (only sheet matters)
+		module			: in pac_generic_modules.cursor;
+		port			: in type_net_submodule_port;
+		position		: in type_schematic_object;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -1032,7 +1049,8 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : type_object_position;
+		submodule_position : type_schematic_object;
+
 
 		procedure query_submodules (
 			module_name	: in type_module_name;
@@ -1072,7 +1090,9 @@ package body et_schematic_ops_submodules is
 
 				-- For removing the submodule port from the nets
 				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
+				--submodule_position := element (submod_cursor).position;
+				submodule_position := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor);
 
 				log_indentation_up;
 
@@ -1155,10 +1175,10 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : type_object_position;
+		submodule_position : type_schematic_object;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : type_object_position;
+		port_position : type_schematic_object;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -1184,7 +1204,7 @@ package body et_schematic_ops_submodules is
 					port_name	: in type_net_name;
 					port		: in out et_submodules.type_submodule_port)
 				is
-					submod_pos_tmp : type_vector_model := submodule_position.place;
+					submod_pos_tmp : type_vector_model := get_place (submodule_position);
 					point_tmp : type_vector_model := point;
 				begin
 					case coordinates is
@@ -1217,13 +1237,18 @@ package body et_schematic_ops_submodules is
 
 						-- Later, for inserting the new port in the nets the
 						-- absolute port position must be built:
-						port_position := to_position (
-									point	=> port.position, -- relative x/y to submodule position
-									sheet	=> get_sheet (submodule_position));
+						-- port_position := to_position (
+						-- 			point	=> port.position, -- relative x/y to submodule position
+						-- 			sheet	=> get_sheet (submodule_position));
 
-						move_by (
-							point	=> port_position.place,
-							offset	=> submodule_position.place);
+						set_place (port_position, port.position);
+						set_sheet (port_position, get_sheet (submodule_position));
+
+						-- move_by (
+						-- 	point	=> port_position.place,
+						-- 	offset	=> submodule_position.place);
+
+						move_by (port_position, get_place (submodule_position));
 						-- now port_position contains the absolute port position
 
 					else
@@ -1261,7 +1286,9 @@ package body et_schematic_ops_submodules is
 
 				-- For moving the submodule port
 				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
+				--submodule_position := element (submod_cursor).position;
+				submodule_position := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor);
 
 				log_indentation_up;
 
@@ -1344,14 +1371,14 @@ package body et_schematic_ops_submodules is
 
 
 
-	procedure movable_test (
 	-- Tests whether the submodule port at the given point is movable. The criteria
 	-- for movement are: no device, no netchanger ports there.
 	-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
+	procedure movable_test (
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in type_module_instance_name;
 		port_name		: in et_net_names.type_net_name;
-		point			: in type_object_position;
+		point			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -1431,12 +1458,13 @@ package body et_schematic_ops_submodules is
 	procedure drag_net_segments (
 		module			: in pac_generic_modules.cursor; -- the module
 		port			: in type_net_submodule_port;	-- instance and port name
-		pos_before		: in type_object_position;	-- the old port position
-		pos_after		: in type_object_position;	-- the new port position
+		pos_before		: in type_schematic_object;	-- the old port position
+		pos_after		: in type_schematic_object;	-- the new port position
 		log_threshold	: in type_log_level)
 	is
 		pragma unreferenced (port);
 		use et_net_names;
+
 
 		procedure query_nets (
 			module_name	: in type_module_name;
@@ -1623,13 +1651,14 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : type_object_position;
+		submodule_position : type_schematic_object;
 
 		-- Handling the absolute position of the port requires these variables:
-		port_position_before : type_object_position;
-		port_position_after  : type_object_position;
+		port_position_before : type_schematic_object;
+		port_position_after  : type_schematic_object;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
 
 		procedure query_submodules (
 			module_name	: in type_module_name;
@@ -1647,21 +1676,23 @@ package body et_schematic_ops_submodules is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
+
 				procedure move (
 					port_name	: in type_net_name;
 					port		: in out et_submodules.type_submodule_port)
 				is
-					submod_pos_tmp : type_vector_model := submodule_position.place;
+					submod_pos_tmp : type_vector_model := get_place (submodule_position);
 					point_tmp : type_vector_model := point;
 				begin
 					-- BACKUP THE PORT POSITION BEFORE THE DRAG OPERATION:
-					port_position_before := to_position (
-								point	=> port.position, -- relative x/y to submodule position
-								sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
+					-- port_position_before := to_position (
+					-- 			point	=> port.position, -- relative x/y to submodule position
+					-- 			sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
-					move_by (
-						point	=> port_position_before.place,
-						offset	=> submodule_position.place);
+					set_place (port_position_before, port.position);
+					set_sheet (port_position_before, get_sheet (submodule_position));
+
+					move_by (port_position_before, get_place (submodule_position));
 					-- Now port_position_before contains the absolute port position of
 					-- the port BEFORE the drag operation.
 
@@ -1705,13 +1736,14 @@ package body et_schematic_ops_submodules is
 
 						-- Later, for inserting the new port in the nets the
 						-- absolute port position must be built:
-						port_position_after := to_position (
-									point	=> port.position, -- relative x/y to submodule position
-									sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
+						-- port_position_after := to_position (
+						-- 			point	=> port.position, -- relative x/y to submodule position
+						-- 			sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
-						move_by (
-							point	=> port_position_after.place,
-							offset	=> submodule_position.place);
+						set_place (port_position_after, port.position);
+						set_sheet (port_position_after, get_sheet (submodule_position));
+
+						move_by (port_position_after, get_place (submodule_position));
 						-- Now port_position_after contains the absolute port position of
 						-- the port AFTER the drag operation.
 
@@ -1751,7 +1783,9 @@ package body et_schematic_ops_submodules is
 
 				-- For moving the submodule port
 				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
+				--submodule_position := element (submod_cursor).position;
+				submodule_position := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor);
 
 				log_indentation_up;
 
@@ -1989,11 +2023,11 @@ package body et_schematic_ops_submodules is
 
 
 	procedure add_submodule (
-		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in type_module_instance_name; -- OSC1
-		position		: in type_object_position; -- sheet, lower left corner x/y
-		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
+		module_name		: in type_module_name;
+		file			: in et_submodules.type_submodule_path;
+		instance		: in type_module_instance_name;
+		position		: in type_schematic_object;
+		size			: in et_submodules.type_submodule_size;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2024,7 +2058,14 @@ package body et_schematic_ops_submodules is
 
 			-- initialize the submodule with basic properties
 			submodule.file := file;
-			submodule.position := position;
+
+			--submodule.position := position;
+			set_place (submodule, get_place (position));
+			set_sheet (submodule, get_sheet (position));
+			set_rotation (submodule, get_rotation (position));
+			-- CS make a function that assigns a the elements of a type_schematic_object
+			-- to a type_schematic_object and its derivatives.
+
 			submodule.size := size;
 			-- Other properties like view mode, device name offset and ports
 			-- have to be set via other commands.
@@ -2044,13 +2085,14 @@ package body et_schematic_ops_submodules is
 			end if;
 		end add;
 
+
 	begin -- add_submodule
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" adding submodule " & to_string (file) &
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
 
-		log (text => " at " & to_string (position) &
+		log (text => " at " & get_position (position) &
 			to_submodule_size (size),
 			level => log_threshold);
 
@@ -2097,12 +2139,13 @@ package body et_schematic_ops_submodules is
 
 
 	procedure delete_ports (
-		module_cursor	: in pac_generic_modules.cursor; -- the module
-		instance		: in type_module_instance_name; -- the submodule instance
-		position		: in type_object_position;		-- the location in the schematic (only sheet matters)
+		module_cursor	: in pac_generic_modules.cursor;
+		instance		: in type_module_instance_name;
+		position		: in type_schematic_object;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
+
 
 		-- Removes all references to the submodule instance from the net segments.
 		procedure query_nets (
@@ -2228,7 +2271,7 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : type_object_position;
+		submodule_position : type_schematic_object;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -2247,7 +2290,9 @@ package body et_schematic_ops_submodules is
 
 				-- For removing the submodule ports
 				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
+				-- submodule_position := element (submod_cursor).position;
+				submodule_position := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor);
 
 				-- delete the submodule (the box)
 				delete (module.submods, submod_cursor);
@@ -2307,10 +2352,11 @@ package body et_schematic_ops_submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module BEFORE and AFTER the move:
-		submodule_position_before : type_object_position;
-		submodule_position_after : type_object_position;
+		submodule_position_before : type_schematic_object;
+		submodule_position_after : type_schematic_object;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
 
 		procedure query_submodules (
 			module_name	: in type_module_name;
@@ -2322,24 +2368,32 @@ package body et_schematic_ops_submodules is
 			-- the submodule ports to be moved
 			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 
+
 			procedure move (
 				instance	: in type_module_instance_name;
-				submodule	: in out et_submodules.type_submodule) is
-			pragma unreferenced (instance);
+				submodule	: in out et_submodules.type_submodule)
+			is
+				pragma unreferenced (instance);
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						submodule.position := to_position (point, sheet);
+						-- submodule.position := to_position (point, sheet);
+						set_place (submodule, point);
+						set_sheet (submodule, sheet);
 
 					when RELATIVE =>
-						move (
-							position	=> submodule.position,
-							offset		=> to_position_relative (point, sheet)
-							);
+						-- move (
+						-- 	position	=> submodule.position,
+						-- 	offset		=> to_position_relative (point, sheet)
+						-- 	);
+
+						move_by (submodule, point);
+						move_by_sheets (submodule, sheet);
 				end case;
 
 				-- store new submodule position
-				submodule_position_after := submodule.position;
+				-- submodule_position_after := submodule.position;
+				submodule_position_after := get_position (submodule);
 
 			exception
 				when event : others =>
@@ -2355,16 +2409,19 @@ package body et_schematic_ops_submodules is
 			procedure insert_ports is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
-				position : type_object_position;
+				position : type_schematic_object;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_position
-							(
-							point	=> element (port_cursor).position,
-							sheet	=> get_sheet (submodule_position_after)
-							);
+					-- position := to_position
+					-- 		(
+					-- 		point	=> element (port_cursor).position,
+					-- 		sheet	=> get_sheet (submodule_position_after)
+					-- 		);
+
+					set_place (position, element (port_cursor).position);
+					set_sheet (position, get_sheet (submodule_position_after));
 
 					-- insert the port
 					insert_port (
@@ -2390,7 +2447,9 @@ package body et_schematic_ops_submodules is
 				-- For moving the submodule ports
 				-- we take a copy of the coordinates of the submodule (the box)
 				-- BEFORE the move operation:
-				submodule_position_before := element (submod_cursor).position;
+				-- submodule_position_before := element (submod_cursor).position;
+				submodule_position_before := get_position (element (submod_cursor));
+				-- CS use function get_position (submod_cursor);
 
 				log_indentation_up;
 
@@ -2498,8 +2557,8 @@ package body et_schematic_ops_submodules is
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
 			name	: type_net_name;
-			before	: type_object_position;
-			after	: type_object_position;
+			before	: type_schematic_object;
+			after	: type_schematic_object;
 		end record;
 
 		-- Since there are lots of submodule ports we store the drag points in a simple list:
@@ -2523,12 +2582,14 @@ package body et_schematic_ops_submodules is
 			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 			unused_port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
 
+
 			procedure query_ports (
 				submod_name	: in type_module_instance_name;
 				submodule	: in et_submodules.type_submodule)
 			is
 				pragma unreferenced (submod_name);
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
+
 
 				procedure build_drag_point (
 					port_name	: in type_net_name;
@@ -2541,11 +2602,9 @@ package body et_schematic_ops_submodules is
 
 					-- Build and the absolute port position BEFORE the drag operation.
 					-- The result is stored in drag.before.
-					drag.before := submodule.position;
+					drag.before := get_position (submodule);
 
-					move_by (
-						point	=> drag.before.place,
-						offset	=> port.position);
+					move_by (drag.before, port.position);
 
 					-- Now drag.before contains the absolute port position of
 					-- the port BEFORE the drag operation.
@@ -2563,17 +2622,17 @@ package body et_schematic_ops_submodules is
 					case coordinates is
 						when ABSOLUTE =>
 
-							drag.after := to_position (
-								point	=> point,
-								sheet	=> get_sheet (submodule.position));
+							-- drag.after := to_position (
+							-- 	point	=> point,
+							-- 	sheet	=> get_sheet (submodule.position));
+
+							set_place (drag.after, point);
+							set_sheet (drag.after, get_sheet (submodule));
 
 						when RELATIVE =>
 
-							drag.after := submodule.position;
-
-							move_by (
-								point	=> drag.after.place,
-								offset	=> point);
+							drag.after := get_position (submodule);
+							move_by (drag.after, point);
 
 					end case;
 
@@ -2611,12 +2670,10 @@ package body et_schematic_ops_submodules is
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
 					when ABSOLUTE =>
-						set_place (submodule.position, point);
+						set_place (submodule, point);
 
 					when RELATIVE =>
-						move_by (
-							point	=> submodule.position.place,
-							offset	=> point);
+						move_by (submodule, point);
 				end case;
 
 			exception
@@ -2734,10 +2791,10 @@ package body et_schematic_ops_submodules is
 
 
 	procedure copy_submodule (
-		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
-		instance_origin	: in type_module_instance_name; -- OSC1
-		instance_new	: in type_module_instance_name; -- CLOCK_GENERATOR
-		destination		: in type_object_position; -- sheet/x/y
+		module_name		: in type_module_name;
+		instance_origin	: in type_module_instance_name;
+		instance_new	: in type_module_instance_name;
+		destination		: in type_schematic_object;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -2750,6 +2807,7 @@ package body et_schematic_ops_submodules is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_submodules;
+
 
 		procedure query_submodules (
 			module_name	: in type_module_name;
@@ -2771,16 +2829,19 @@ package body et_schematic_ops_submodules is
 			procedure insert_ports is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
-				position : type_object_position;
+				position : type_schematic_object;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_position
-							(
-							point	=> element (port_cursor).position,
-							sheet	=> get_sheet (element (submod_cursor).position)
-							);
+					-- position := to_position
+					-- 		(
+					-- 		point	=> element (port_cursor).position,
+					-- 		sheet	=> get_sheet (element (submod_cursor).position)
+					-- 		);
+
+					set_place (position, element (port_cursor).position);
+					set_sheet (position, get_sheet (element (submod_cursor)));
 
 					-- insert the port
 					insert_port (
@@ -2808,7 +2869,11 @@ package body et_schematic_ops_submodules is
 				submodule := element (submod_cursor);
 
 				-- overwrite position as given by destination
-				submodule.position := destination;
+				-- submodule.position := destination;
+				set_place (submodule, get_place (destination));
+				set_sheet (submodule, get_sheet (destination));
+				set_rotation (submodule, get_rotation (destination));
+				-- CS use subprogram that assigns place, sheet and rotation at once
 
 				-- Overwrite position in schematic by zero so that the new instance sits at
 				-- the lower left corner of the layout drawing:
@@ -2835,7 +2900,8 @@ package body et_schematic_ops_submodules is
 				ports := element (submod_cursor).ports;
 
 				-- calculate the absolute port positions:
-				et_submodules.move_ports (ports, element (submod_cursor).position);
+				et_submodules.move_ports (ports, get_position (element (submod_cursor)));
+				-- CS use function get_position (submod_cursor)
 
 				-- ports now provides port names and absoltue x/y positions.
 				-- The new ports will be inserted in the nets now:
@@ -2852,7 +2918,7 @@ package body et_schematic_ops_submodules is
 		log (text => "module " & to_string (module_name) &
 			 " copy submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
 			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
-			" at" & et_schematic_coordinates.to_string (destination), level => log_threshold);
+			" at" & et_schematic_coordinates.get_position (destination), level => log_threshold);
 
 
 		log_indentation_up;
@@ -2923,16 +2989,19 @@ package body et_schematic_ops_submodules is
 			-- from the submodule position.
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule_old.ports.first;
-				position : type_object_position;
+				position : type_schematic_object;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_position
-							(
-							point	=> element (port_cursor).position,
-							sheet	=> get_sheet (submodule_old.position)
-							);
+					-- position := to_position
+					-- 		(
+					-- 		point	=> element (port_cursor).position,
+					-- 		sheet	=> get_sheet (submodule_old.position)
+					-- 		);
+
+					set_place (position, element (port_cursor).position);
+					set_sheet (position, get_sheet (submodule_old));
 
 					-- insert the port
 					insert_port (
@@ -2968,11 +3037,11 @@ package body et_schematic_ops_submodules is
 				delete_ports (
 					module_cursor	=> module_cursor,
 					instance		=> instance_old,
-					position		=> submodule_old.position,
+					position		=> get_position (submodule_old),
 					log_threshold	=> log_threshold + 1);
 
 				-- calculate the absolute port positions:
-				et_submodules.move_ports (submodule_old.ports, submodule_old.position);
+				et_submodules.move_ports (submodule_old.ports, get_position (submodule_old));
 
 				-- submodule_old.ports provides port names and absolute x/y positions.
 				-- The new ports will be inserted in the nets now:

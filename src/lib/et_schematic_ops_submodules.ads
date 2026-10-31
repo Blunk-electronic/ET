@@ -127,7 +127,7 @@ package et_schematic_ops_submodules is
 		submod_name		: in et_module_instance.type_module_instance_name; -- MOT_DRV_3
 		port_name		: in et_net_names.type_net_name; -- RESET
 		log_threshold	: in type_log_level)
-		return type_object_position;
+		return type_schematic_object;
 
 
 
@@ -143,7 +143,7 @@ package et_schematic_ops_submodules is
 		module			: in pac_generic_modules.cursor;		-- the module
 		instance		: in et_module_instance.type_module_instance_name; -- OSC
 		port			: in et_net_names.type_net_name; -- clock_output
-		position		: in type_object_position; -- the port position
+		position		: in type_schematic_object; -- the port position
 		log_threshold	: in type_log_level);
 
 
@@ -169,7 +169,7 @@ package et_schematic_ops_submodules is
 	procedure delete_submodule_port (
 		module			: in pac_generic_modules.cursor;		-- the module
 		port			: in type_net_submodule_port; -- OSC1 / clock_output
-		position		: in type_object_position; -- the submodule position (only sheet matters)
+		position		: in type_schematic_object; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level);
 
 
@@ -240,7 +240,7 @@ package et_schematic_ops_submodules is
 		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.type_submodule_path; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_module_instance.type_module_instance_name; -- OSC1
-		position		: in type_object_position; -- sheet, lower left corner x/y
+		position		: in type_schematic_object; -- sheet, lower left corner x/y
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -251,7 +251,7 @@ package et_schematic_ops_submodules is
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in et_module_instance.type_module_instance_name;
-		position		: in type_object_position; -- the location in the schematic (only sheet matters)
+		position		: in type_schematic_object; -- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level);
 
 
@@ -296,7 +296,7 @@ package et_schematic_ops_submodules is
 		module_name		: in type_module_name; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in et_module_instance.type_module_instance_name; -- OSC1
 		instance_new	: in et_module_instance.type_module_instance_name; -- CLOCK_GENERATOR
-		destination		: in type_object_position; -- sheet/x/y
+		destination		: in type_schematic_object; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 

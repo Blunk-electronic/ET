@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -131,7 +131,7 @@ package body et_module_read_submodules is
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
-			submodule.position := et_schematic_coordinates.to_position (line, 2);
+			set_position (submodule, line, 2);
 
 		elsif kw = keyword_size then -- size x 30 y 30
 			expect_field_count (line, 5);
@@ -285,7 +285,7 @@ package body et_module_read_submodules is
 
 			-- clean up for next submodule
 			submodule_name := to_instance_name ("");
-			submodule := (others => <>);
+			reset_position (submodule);
 		end insert_submodule;
 
 

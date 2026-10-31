@@ -431,7 +431,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_object_position; -- only sheet number matters
+		location		: in type_schematic_object; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean;

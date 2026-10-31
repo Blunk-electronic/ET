@@ -101,12 +101,11 @@ package body et_schematic_ops_units is
 
 	procedure dragging_not_possible (
 		port		: in string;
-		position	: in type_object_position) is
-	begin
-		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
-			 " is directly connected with other ports at" &
-			to_string (position) &
-			 ". Dragging not possible !",
+		position	: in type_schematic_object)
+	is begin
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port)
+			& " is directly connected with other ports at"
+			& get_position (position) & ". Dragging not possible !",
 			 console => true);
 		raise constraint_error;
 	end dragging_not_possible;
@@ -2020,7 +2019,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_object_position; -- only sheet number matters
+		location		: in type_schematic_object; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 	is
@@ -2028,19 +2027,27 @@ package body et_schematic_ops_units is
 		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
 
-		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
-			point : type_object_position; -- the point
+		procedure test_point (
+			port_cursor : in pac_symbol_ports.cursor)
+		is
+			symbol_port : type_symbol_port renames element (port_cursor);
+
+			point : type_schematic_object; -- the point
 			ports : type_net_ports;
 			port : type_device_port;
+
 			use et_net_ports_submodules.pac_net_submodule_ports;
 			use pac_device_ports;
 			use et_net_ports_netchangers.pac_netchanger_ports;
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
-			point := to_position (
-				point	=> element (port_cursor).position,
-				sheet	=> get_sheet (location));
+			-- point := to_position (
+			-- 	point	=> element (port_cursor).position,
+			-- 	sheet	=> get_sheet (location));
+
+			set_place (point, symbol_port.position);
+			set_sheet (point, get_sheet (location));
 
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
@@ -2192,7 +2199,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_object_position; -- only sheet number matters
+		location		: in type_schematic_object;
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
@@ -2203,8 +2210,12 @@ package body et_schematic_ops_units is
 		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
 
-		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
-			point : type_object_position; -- the point
+		procedure test_point (
+			port_cursor : in pac_symbol_ports.cursor)
+		is
+			symbol_port : type_symbol_port renames element (port_cursor);
+
+			point : type_schematic_object; -- the point
 			ports : type_net_ports;
 			port : type_device_port;
 			use et_net_ports_submodules.pac_net_submodule_ports;
@@ -2213,9 +2224,12 @@ package body et_schematic_ops_units is
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
-			point := to_position (
-				point	=> element (port_cursor).position,
-				sheet	=> get_sheet (location));
+			-- point := to_position (
+			-- 	point	=> element (port_cursor).position,
+			-- 	sheet	=> get_sheet (location));
+
+			set_place (point, get_place (symbol_port));
+			set_sheet (point, get_sheet (location));
 
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
@@ -5468,10 +5482,11 @@ package body et_schematic_ops_units is
 					procedure query_position (c : in pac_points.cursor) is
 						use pac_points;
 						place : type_vector_model renames element (c);
-						position : type_object_position;
+						position : type_schematic_object;
 					begin
 						-- Compose the position of inquiry from port position and sheet number:
-						position := to_position (place, sheet);
+						set_place (position, place);
+						set_sheet (position, sheet);
 
 						-- Set the connected net segments as "moving":
 						et_schematic_ops_nets.set_segments_moving (module_cursor, position, log_threshold + 3);

@@ -81,6 +81,10 @@ package et_schematic_coordinates is
 	-- 	return type_schematic_object'class;
 
 
+	-- CS make a function that assigns a the elements of a type_schematic_object
+	-- to a type_schematic_object and its derivatives.
+
+
 	function get_sheet (
 		object : in type_schematic_object)
 		return type_sheet;

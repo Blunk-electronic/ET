@@ -104,7 +104,7 @@ package et_schematic_ops_netchangers is
 	function get_netchanger_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id) -- 1,2,3,...
-		return type_object_position;
+		return type_schematic_object;
 
 
 
@@ -197,7 +197,7 @@ package et_schematic_ops_netchangers is
 	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y/rotation
+		position		: in type_schematic_object; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -223,7 +223,7 @@ package et_schematic_ops_netchangers is
 	procedure movable_test (
 		module_cursor		: in pac_generic_modules.cursor;
 		index				: in type_netchanger_id;
-		location			: in type_object_position; -- only sheet number matters
+		location			: in type_schematic_object; -- only sheet number matters
 		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
 		log_threshold		: in type_log_level);
 

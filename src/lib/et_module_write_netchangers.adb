@@ -81,9 +81,8 @@ package body et_module_write_netchangers is
 
 			use et_schematic_coordinates;
 
-			-- Convert the netchanger position in the schematic
-			-- to the regular type_object_position:
-			position_sch : constant type_object_position :=
+			-- Get the netchanger position in the schematic:
+			position_sch : constant type_schematic_object :=
 				to_object_position (netchanger.position_sch);
 
 		begin
@@ -101,7 +100,7 @@ package body et_module_write_netchangers is
 
 			write (
 				keyword => keyword_position_in_schematic,
-				parameters => to_string (position_sch, FORMAT_2));
+				parameters => get_position (position_sch, FORMAT_2));
 				-- position_in_schematic sheet 1 x 147.32 y 96.97 rotation 0
 
 			write (

@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -78,10 +78,10 @@ package body et_module_read_text_schematic is
 
 			declare
 				-- extract position of schematic_text starting at field 2
-				pos : constant type_object_position :=
-					to_position (line, 2);
+				pos : type_schematic_object;
 			begin
-				schematic_text.position := pos.place;
+				set_position (pos, line, 2);
+				schematic_text.position := get_place (pos);
 				schematic_text.sheet := get_sheet (pos);
 			end;
 

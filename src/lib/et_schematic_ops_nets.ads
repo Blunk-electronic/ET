@@ -111,7 +111,7 @@ package et_schematic_ops_nets is
 	-- If a segment ends an the given position then B will be set as "moving".
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position;
+		position		: in type_schematic_object;
 		log_threshold	: in type_log_level);
 
 
@@ -234,7 +234,7 @@ package et_schematic_ops_nets is
 	-- a net segment starts or ends:
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position)
+		place			: in type_schematic_object)
 		return boolean;
 
 
@@ -466,7 +466,7 @@ package et_schematic_ops_nets is
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 
@@ -835,7 +835,7 @@ package et_schematic_ops_nets is
 	-- Returns a lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
+		place			: in type_schematic_object;
 		log_threshold	: in type_log_level)
 		return type_net_names_list; -- CS return a list of cursors ?
 
@@ -894,7 +894,7 @@ package et_schematic_ops_nets is
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		A				: in type_object_position; -- sheet/x/y
+		A				: in type_schematic_object; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
@@ -996,7 +996,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 
 		-- The reference point at the segment:
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -1015,7 +1015,7 @@ package et_schematic_ops_nets is
 	-- This procedure is intended to be called via the command processor:
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -1097,7 +1097,7 @@ package et_schematic_ops_nets is
 	-- CS: The direction is currently ignored.
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
+		position		: in type_schematic_object; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);

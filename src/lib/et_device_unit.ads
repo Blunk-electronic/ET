@@ -120,7 +120,7 @@ package et_device_unit is
 
 
 
-	function get_position (
+	function get_position ( -- CS move to et_schematic_coordinates ?
 		unit	: in type_unit)
 		return type_schematic_object;
 
