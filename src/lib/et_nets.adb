@@ -281,7 +281,7 @@ package body et_nets is
 
 	function get_strands (
 		net		: in type_net;
-		place	: in type_schematic_object)
+		place	: in type_schematic_object'class)
 		return pac_strand_cursors.list
 	is
 		result : pac_strand_cursors.list;

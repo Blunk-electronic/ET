@@ -233,7 +233,7 @@ package et_nets is
 	-- So in the result there should be only one item:
 	function get_strands (
 		net		: in type_net;
-		place	: in type_schematic_object)
+		place	: in type_schematic_object'class)
 		-- CS log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 

@@ -548,11 +548,12 @@ package body et_schematic_ops_submodules is
 		module			: in pac_generic_modules.cursor;
 		instance		: in type_module_instance_name;
 		port			: in et_net_names.type_net_name;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
 		use et_string_processing;
+
 
 		procedure query_module (
 			module_name	: in type_module_name;
@@ -886,10 +887,11 @@ package body et_schematic_ops_submodules is
 	procedure delete_submodule_port (
 		module			: in pac_generic_modules.cursor;
 		port			: in type_net_submodule_port;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
+
 
 		procedure query_nets (
 			module_name	: in type_module_name;
@@ -2026,7 +2028,7 @@ package body et_schematic_ops_submodules is
 		module_name		: in type_module_name;
 		file			: in et_submodules.type_submodule_path;
 		instance		: in type_module_instance_name;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		size			: in et_submodules.type_submodule_size;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -2141,7 +2143,7 @@ package body et_schematic_ops_submodules is
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in type_module_instance_name;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
@@ -2794,7 +2796,7 @@ package body et_schematic_ops_submodules is
 		module_name		: in type_module_name;
 		instance_origin	: in type_module_instance_name;
 		instance_new	: in type_module_instance_name;
-		destination		: in type_schematic_object;
+		destination		: in type_schematic_object'class;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is

@@ -94,7 +94,7 @@ package et_schematic_ops_nets is
 	-- submodule ports at the given place:
 	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_schematic_object;
+		place			: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return type_net_ports;
 
@@ -111,7 +111,7 @@ package et_schematic_ops_nets is
 	-- If a segment ends an the given position then B will be set as "moving".
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		log_threshold	: in type_log_level);
 
 
@@ -234,7 +234,7 @@ package et_schematic_ops_nets is
 	-- a net segment starts or ends:
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_schematic_object)
+		place			: in type_schematic_object'class)
 		return boolean;
 
 
@@ -466,7 +466,7 @@ package et_schematic_ops_nets is
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
-		place			: in type_schematic_object;
+		place			: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 

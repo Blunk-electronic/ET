@@ -1086,7 +1086,7 @@ package body et_schematic_ops_netchangers is
 
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -1283,7 +1283,7 @@ package body et_schematic_ops_netchangers is
 	procedure movable_test (
 		module_cursor		: in pac_generic_modules.cursor;
 		index				: in type_netchanger_id;
-		location			: in type_schematic_object;
+		location			: in type_schematic_object'class;
 		netchanger_ports	: in type_netchanger_ports;
 		log_threshold		: in type_log_level)
 	is

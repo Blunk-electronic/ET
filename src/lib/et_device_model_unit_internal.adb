@@ -72,7 +72,7 @@ package body et_device_model_unit_internal is
 
 	function get_default_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in type_schematic_object)
+		destination		: in type_schematic_object'class)
 		return type_text_placeholders
 	is
 		sym : type_unit_internal renames element (symbol_cursor);

@@ -170,7 +170,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device			: in type_device_name; -- R2
 		unit			: in type_unit_name)
-		return type_schematic_object;
+		return type_schematic_object;  -- CS: 'class ?
 
 
 
@@ -221,7 +221,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		destination		: in type_schematic_object; -- sheet/x/y/rotation
+		destination		: in type_schematic_object'class; -- sheet/x/y/rotation
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
@@ -431,7 +431,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_schematic_object; -- only sheet number matters
+		location		: in type_schematic_object'class; -- only sheet number matters
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean;

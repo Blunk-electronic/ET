@@ -632,7 +632,7 @@ package body et_cp_schematic_netchanger is
 			begin
 				-- Zoom on the netchanger:
 				position := get_netchanger_position (module, index);
-				
+
 				active_sheet := get_sheet (position);
 				update_sheet_number_display;
 

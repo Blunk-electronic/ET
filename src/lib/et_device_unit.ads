@@ -107,7 +107,7 @@ package et_device_unit is
 	-- the given placeholders are ignored:
 	function to_unit (
 		appearance		: in type_appearance_schematic;
-		object			: in type_schematic_object;
+		object			: in type_schematic_object'class;
 		mirror			: in type_mirror := MIRROR_NO;
 		placeholders	: in type_text_placeholders := default_text_placeholders)
 		return type_unit;

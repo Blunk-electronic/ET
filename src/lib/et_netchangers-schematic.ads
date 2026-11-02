@@ -232,7 +232,7 @@ package et_netchangers.schematic is
 
 
 	function to_netchanger_position (
-		position : in type_schematic_object)
+		position : in type_schematic_object'class)
 		return type_netchanger_position_schematic;
 
 

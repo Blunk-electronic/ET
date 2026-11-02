@@ -936,7 +936,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name; -- A, B, IO_BANK_2
-		destination		: in type_schematic_object; -- sheet/x/y/rotation
+		destination		: in type_schematic_object'class;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
@@ -2011,15 +2011,11 @@ package body et_schematic_ops_units is
 
 
 
-	-- Tests whether the given unit ports at their individual location are movable.
-	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
-	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
-	-- CS: Becomes obsolete once ports at the same x/y position are prevented.
 	procedure movable_test (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_schematic_object; -- only sheet number matters
+		location		: in type_schematic_object'class;
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 	is
@@ -2199,7 +2195,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in type_unit_name;
-		location		: in type_schematic_object;
+		location		: in type_schematic_object'class;
 		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean

@@ -144,7 +144,7 @@ package body et_schematic_ops_nets is
 
 	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_schematic_object;
+		place			: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return type_net_ports
 	is
@@ -397,7 +397,7 @@ package body et_schematic_ops_nets is
 
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object;
+		position		: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 	is
 		use pac_net_segments;
@@ -1401,7 +1401,7 @@ package body et_schematic_ops_nets is
 
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_schematic_object)
+		place			: in type_schematic_object'class)
 		return boolean
 	is
 
@@ -3230,7 +3230,7 @@ package body et_schematic_ops_nets is
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
-		place			: in type_schematic_object;
+		place			: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list
 	is

@@ -122,8 +122,8 @@ package body et_symbol_ports is
 
 
 	procedure move_ports (
-		ports	: in out pac_symbol_ports.map; -- the portlist
-		offset	: in type_schematic_object) -- the offset (only x/y matters)
+		ports	: in out pac_symbol_ports.map;
+		offset	: in type_schematic_object'class)
 	is
 		use pac_symbol_ports;
 

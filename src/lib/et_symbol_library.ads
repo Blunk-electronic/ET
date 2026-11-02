@@ -154,7 +154,7 @@ package et_symbol_library is
 	-- It translates according to the rotation given by destination:
 	function get_default_placeholders (
 		symbol_cursor	: in pac_symbol_models.cursor;
-		destination		: in type_schematic_object) -- x/y/rotation of the unit
+		destination		: in type_schematic_object'class) -- x/y/rotation of the unit
 		return type_text_placeholders;
 
 
