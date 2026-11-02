@@ -180,7 +180,7 @@ package et_schematic_ops_nets is
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
-		point_of_attack	: in type_object_position;
+		point_of_attack	: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return boolean;
 

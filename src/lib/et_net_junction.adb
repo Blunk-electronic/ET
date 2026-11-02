@@ -44,10 +44,10 @@ package body et_net_junction is
 
 
 	procedure junction_in_sloping_segment (
-		point : in type_object_position)
+		point : in type_schematic_object)
 	is begin
 		log (SEVERITY_ERROR, "Junction not allowed in a sloping net segment at"
-			 & to_string (point),
+			 & get_position (point),
 			 console => true);
 		raise constraint_error;
 	end junction_in_sloping_segment;

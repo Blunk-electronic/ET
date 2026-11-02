@@ -58,13 +58,10 @@ package et_schematic_coordinates is
 
 
 
--- POSITION OF AN OBJECT:
-
-	type type_object_position is new pac_geometry_2.type_position with private;
-
-	type type_object_position_relative is new pac_geometry_2.type_position with private;
 
 
+
+-- POSITION OF AN OBJECT IN THE SCHEMATIC:
 
 
 	type type_schematic_object
@@ -168,109 +165,12 @@ package et_schematic_coordinates is
 
 
 
-	greatest_position : constant type_object_position;
-
-
-	function "<" (left, right : in type_object_position)
-		return boolean;
-
-
-	procedure move (
-		position	: in out type_object_position'class;
-		offset		: in type_object_position_relative);
-
-
-	procedure move_by (
-		position	: in out type_object_position;
-		offset		: in type_vector_model);
-
-	function to_position (
-		position	: in type_position;
-		sheet		: in type_sheet)
-		return type_object_position;
-
-
-	function to_position (
-		point		: in type_vector_model;
-		sheet		: in type_sheet;
-		rotation	: in type_rotation_model := zero_rotation)
-		return type_object_position;
-
-
-	function to_position_relative (
-		point		: in type_vector_model;
-		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation_model := zero_rotation)
-		return type_object_position_relative;
-
-	zero_position : constant type_object_position;
-
-
-
-
-
-	-- This function returns the given object position
-	-- as string formatted as follows:
-	-- FORMAT_1 : sheet/x/y/rotation 2 / 4.5 / 5.6 / 90.0
-	-- FORMAT_2 : sheet 2 x 4.5 y 5.6 rotation 90.0
-	-- FORMAT_3 : 2 4.5 5.6 90.0
-	-- overriding function to_string (
-	-- 	position	: in type_object_position;
-	-- 	format		: in type_output_format := FORMAT_1)
-	-- 	return string;
-
-
-	-- overriding function to_string (
-	-- 	position	: in type_object_position_relative;
-	-- 	format		: in type_output_format := FORMAT_1)
-	-- 	return string;
-
-
-
-	-- Computes the distance from left to right.
-	-- Each component of left is subtracted from right:
-	function get_offset (
-		left, right : in type_object_position'class)
-		return type_object_position_relative;
-
 
 	function get_offset (
 		left, right : in type_schematic_object'class)
 		return type_object_position_relative_2;
 
 
-	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"
-	-- starting at a field given by "from" and returns
-	-- an object position:
-	-- CS should be a procedure with an error flag output
-	-- and the position output ?
-	overriding function to_position (
-		line : in type_fields_of_line;
-		from : in type_field_count_positive)
-		return type_object_position;
-
-
-	overriding function to_position (
-		line : in type_fields_of_line;
-		from : in type_field_count_positive)
-		return type_object_position_relative;
-
-
-
-
-
-
-
--- ROTATION:
-
-	function get_rotation (
-		position : in type_object_position)
-		return type_rotation_model;
-
-
-	procedure set_rotation (
-		position	: in out type_object_position;
-		rotation	: in type_rotation_model);
 
 
 
@@ -280,48 +180,13 @@ package et_schematic_coordinates is
 	active_sheet : type_sheet := type_sheet'first;
 
 
-	-- Returns the sheet number of the given position:
-	-- function get_sheet (
-	-- 	position : in type_object_position)
-	-- 	return type_sheet;
-
-
-	-- Returns the sheet number of the given position:
-	-- function get_sheet (
-	-- 	position : in type_object_position_relative)
-	-- 	return type_sheet_relative;
-
 	function get_sheet (
 		position : in type_object_position_relative_2)
 		return type_sheet_relative;
 
 
 
-	-- Sets the sheet number in given position:
-	procedure set_sheet (
-		position	: in out type_object_position;
-		sheet		: in type_sheet);
-
-
-	-- Moves the position by the given number of sheets:
-	-- procedure move_by_sheets (
-	-- 	position	: in out type_object_position;
-	-- 	offset		: in type_sheet_relative);
-
-
-
-
 private
-
-	type type_object_position is new pac_geometry_2.type_position with record
-		sheet : type_sheet := type_sheet'first;
-	end record;
-
-	type type_object_position_relative is new pac_geometry_2.type_position with record
-		sheet : type_sheet_relative := 0;
-	end record;
-
-
 
 
 	type type_schematic_object
@@ -334,17 +199,6 @@ private
 		is new type_object_with_rotation with record
 			sheet : type_sheet_relative := 0;
 		end record;
-
-
-	zero_position : constant type_object_position := (
-		origin_zero_rotation with sheet => type_sheet'first);
-
-
-	-- A position in a schematic which is on the
-	-- last possible sheet and the greatest distance in
-	-- x and y from the origin:
-	greatest_position : constant type_object_position := (
-		far_upper_right_zero_rotation with sheet => type_sheet'last);
 
 
 end et_schematic_coordinates;

@@ -1004,9 +1004,9 @@ package body et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
-		return type_object_position
+		return type_schematic_object
 	is
-		port_position : type_object_position; -- to be returned
+		port_position : type_schematic_object; -- to be returned
 
 
 		procedure query_module (
@@ -1051,11 +1051,9 @@ package body et_schematic_ops_netchangers is
 
 				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
-				-- Assemble the port_position to be returned:
-				port_position := to_position (
-					point	=> port_xy,
-					sheet	=> get_sheet (nc_position)
-					);
+				-- Set the port_position to be returned:
+				set_place (port_position, port_xy);
+				set_sheet (port_position, get_sheet (nc_position));
 
 				log_indentation_down;
 			else
