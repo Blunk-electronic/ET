@@ -85,6 +85,13 @@ package et_schematic_coordinates is
 	-- to a type_schematic_object and its derivatives.
 
 
+	function to_position (
+		point		: in type_vector_model;
+		sheet		: in type_sheet;
+		rotation	: in type_rotation_model := zero_rotation)
+		return type_schematic_object'class;
+
+
 	function get_sheet (
 		object : in type_schematic_object)
 		return type_sheet;

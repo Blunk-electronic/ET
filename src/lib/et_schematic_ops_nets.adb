@@ -5777,7 +5777,7 @@ package body et_schematic_ops_nets is
 
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_schematic_object;
+		place			: in type_schematic_object'class;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list
 	is
@@ -6395,9 +6395,9 @@ package body et_schematic_ops_nets is
 
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name; -- RESET, MOTOR_ON_OFF
-		A				: in type_schematic_object; -- sheet/x/y
-		B				: in type_vector_model; -- x/y
+		net_name		: in type_net_name;
+		A				: in type_schematic_object'class;
+		B				: in type_vector_model;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -7254,7 +7254,7 @@ package body et_schematic_ops_nets is
 
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object; -- sheet/x/y
+		position		: in type_schematic_object'class;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -7430,7 +7430,7 @@ package body et_schematic_ops_nets is
 
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object; -- sheet/x/y
+		position		: in type_schematic_object'class;
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -8308,7 +8308,7 @@ package body et_schematic_ops_nets is
 
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_schematic_object; -- sheet/x/y
+		position		: in type_schematic_object'class;
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)

@@ -611,8 +611,13 @@ package body et_cp_schematic_nets is
 			name_s : constant string := get_field (cmd, 5); -- RESET_N
 			name_b : type_net_name;
 
-			A : type_object_position; -- start point of segment
-			B : type_vector_model; -- end point of segment
+			-- Assign the start and end of the segment:
+			A : constant type_schematic_object'class := to_position (
+				point => to_vector_model (get_field (cmd, 7), get_field (cmd, 8)), -- x/y
+				sheet => to_sheet (get_field (cmd, 6))); -- sheet number
+
+			B : constant type_vector_model := to_vector_model (
+				get_field (cmd, 9), get_field (cmd, 10)); -- x/y;
 		begin
 			-- Validate the given net name:
 			check_net_name_length (name_s);
@@ -621,13 +626,6 @@ package body et_cp_schematic_nets is
 
 			-- Assign the net name:
 			object_net_name := name_b;
-
-			-- Assign the start and end of the segment:
-			A := to_position (
-				point => to_vector_model (get_field (cmd, 7), get_field (cmd, 8)), -- x/y
-				sheet => to_sheet (get_field (cmd, 6))); -- sheet number
-
-			B := to_vector_model (get_field (cmd, 9), get_field (cmd, 10)); -- x/y
 
 			-- Insert the net segment in the database:
 			insert_net_segment (

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -83,6 +83,8 @@ package body et_cp_schematic_submodule is
 
 		use et_sheets;
 		use et_submodules;
+
+		position : type_schematic_object;
 	begin
 		log (text => "add submodule", level => log_threshold);
 		log_indentation_up;
@@ -90,19 +92,17 @@ package body et_cp_schematic_submodule is
 
 		case cmd_field_count is
 			when 11 =>
+				set_sheet (position, to_sheet (get_field (cmd, 7)));
+
+				set_place (position, set (
+					x => to_distance (get_field (cmd, 8)),
+					y => to_distance (get_field (cmd, 9))));
+
 				add_submodule (
 					module_name	=> key (module), -- parent module (where the submodule is to be inserted)
 					file			=> to_submodule_path (get_field (cmd, 5)),
 					instance		=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
-					position		=> to_position
-						(
-						sheet => to_sheet (get_field (cmd, 7)),
-						point => set
-									(
-									x => to_distance (get_field (cmd, 8)),
-									y => to_distance (get_field (cmd, 9))
-									)
-						),
+					position		=> position,
 					size => (
 						x => to_distance (get_field (cmd, 10)),
 						y => to_distance (get_field (cmd, 11))
@@ -238,6 +238,8 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_sheets;
+
+		position : type_schematic_object;
 	begin
 		log (text => "copy submodule", level => log_threshold);
 		log_indentation_up;
@@ -245,19 +247,17 @@ package body et_cp_schematic_submodule is
 
 		case cmd_field_count is
 			when 9 =>
+				set_sheet (position, to_sheet (get_field (cmd, 7)));
+
+				set_place (position, set (
+					x => to_distance (get_field (cmd, 8)),
+					y => to_distance (get_field (cmd, 9))));
+
 				copy_submodule (
 					module_name	=> key (module), -- parent module (where the submodule is to be copied)
 					instance_origin	=> to_instance_name (get_field (cmd, 5)), -- submodule instance name
 					instance_new	=> to_instance_name (get_field (cmd, 6)), -- submodule instance name
-					destination		=> to_position
-						(
-						sheet => to_sheet (get_field (cmd, 7)),
-						point => set
-									(
-									x => to_distance (get_field (cmd, 8)),
-									y => to_distance (get_field (cmd, 9))
-									)
-						),
+					destination		=> position,
 
 					-- Depending on the origin of the command,
 					-- the design state is to be commited or not:

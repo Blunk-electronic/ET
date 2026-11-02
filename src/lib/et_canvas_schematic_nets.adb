@@ -158,8 +158,8 @@ package body et_canvas_schematic_nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
-		A : constant type_object_position := to_position (get_A (segment), sheet);
-		B : constant type_object_position := to_position (get_B (segment), sheet);
+		A : constant type_schematic_object'class := to_position (get_A (segment), sheet);
+		B : constant type_schematic_object'class := to_position (get_B (segment), sheet);
 
 		-- When a net segment is added to the drawing, then
 		-- it may become connected with already existing segments of other nets.

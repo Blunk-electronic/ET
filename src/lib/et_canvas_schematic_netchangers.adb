@@ -976,13 +976,19 @@ package body et_canvas_schematic_netchangers is
 
 	procedure add_netchanger (
 		place : in type_vector_model)
-	is begin
+	is
+		position : type_schematic_object;
+	begin
 		log (text => "add_netchanger", level => log_threshold);
 		log_indentation_up;
 
+		set_sheet (position, active_sheet);
+		set_place (position, place);
+		set_rotation (position, netchanger_add.rotation);
+
 		add_netchanger (
 			module_cursor	=> active_module,
-			position		=> to_position (place, active_sheet, netchanger_add.rotation),
+			position		=> position,
 			log_threshold	=> log_threshold + 1);
 
 		status_clear;
