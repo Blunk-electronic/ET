@@ -51,7 +51,7 @@ package et_basic_objects.circle is
 	use pac_geometry;
 
 
-	type type_circle is new type_object with record
+	type type_circle is new type_abstract_object with record
 		radius : type_distance_positive := 0.0;
 	end record;
 

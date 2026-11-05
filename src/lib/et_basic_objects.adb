@@ -51,20 +51,20 @@ package body et_basic_objects is
 
 
 	function get_place (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_vector_model
 	is (object.place);
 
 
 
 	function get_x (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_distance
 	is (get_x ((get_place (object))));
 
 
 	procedure set_x (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		value	: in type_distance)
 	is begin
 		object.place.x := value;
@@ -72,13 +72,13 @@ package body et_basic_objects is
 
 
 	function get_y (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_distance
 	is (get_y ((get_place (object))));
 
 
 	procedure set_y (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		value	: in type_distance)
 	is begin
 		object.place.y := value;
@@ -88,7 +88,7 @@ package body et_basic_objects is
 
 
 	procedure move_to (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		place	: in type_vector_model)
 	is begin
 		object.place := place;
@@ -96,7 +96,7 @@ package body et_basic_objects is
 
 
 	procedure move_by (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		offset	: in type_vector_model)
 	is begin
 		object.place := object.place + offset;
@@ -104,7 +104,7 @@ package body et_basic_objects is
 
 
 	procedure reset_position (
-		object	: in out type_object)
+		object	: in out type_abstract_object)
 	is begin
 		object.place := origin;
 	end reset_position;
@@ -112,7 +112,7 @@ package body et_basic_objects is
 
 
 	function get_position (
-		object	: in type_object;
+		object	: in type_abstract_object;
 		format	: in type_output_format := FORMAT_1)
 		return string
 	is
@@ -139,7 +139,7 @@ package body et_basic_objects is
 
 
 	procedure set_position (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		line	: in type_fields_of_line;
 		from	: in type_field_count_positive)
 	is
@@ -153,7 +153,7 @@ package body et_basic_objects is
 
 
 	procedure mirror_along_axis (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		axis	: in type_mirror)
 	is begin
 		mirror_point (object.place, axis);
@@ -161,7 +161,7 @@ package body et_basic_objects is
 
 
 	procedure rotate_about_origin (
-		object		: in out type_object;
+		object		: in out type_abstract_object;
 		rotation	: in type_rotation)
 	is begin
 		rotate_by (object.place, rotation);
@@ -171,20 +171,20 @@ package body et_basic_objects is
 
 
 	function is_selected (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean
 	is (is_selected (object.status));
 
 
 	procedure set_selected (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		set_selected (object.status);
 	end set_selected;
 
 
 	procedure clear_selected (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		clear_selected (object.status);
 	end clear_selected;
@@ -195,20 +195,20 @@ package body et_basic_objects is
 
 
 	function is_proposed (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean
 	is (is_proposed (object.status));
 
 
 	procedure set_proposed (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		set_proposed (object.status);
 	end set_proposed;
 
 
 	procedure clear_proposed (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		clear_proposed (object.status);
 	end clear_proposed;
@@ -218,20 +218,20 @@ package body et_basic_objects is
 
 
 	function is_moving (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean
 	is (is_moving (object.status));
 
 
 	procedure set_moving (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		set_moving (object.status);
 	end set_moving;
 
 
 	procedure clear_moving (
-		object : in out type_object)
+		object : in out type_abstract_object)
 	is begin
 		clear_moving (object.status);
 	end clear_moving;
@@ -240,13 +240,13 @@ package body et_basic_objects is
 
 
 	function get_status (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_object_status
 	is (object.status);
 
 
 	procedure set_status (
-		object		: in out type_object;
+		object		: in out type_abstract_object;
 		status		: in type_object_status)
 	is begin
 		object.status := status;
@@ -254,7 +254,7 @@ package body et_basic_objects is
 
 
 	procedure modify_status (
-		object		: in out type_object;
+		object		: in out type_abstract_object;
 		operation	: in type_status_operation)
 	is begin
 		modify_status (object.status, operation);
@@ -263,7 +263,7 @@ package body et_basic_objects is
 
 
 	procedure reset_status (
-		object		: in out type_object)
+		object		: in out type_abstract_object)
 	is begin
 		reset_status (object.status);
 	end reset_status;
