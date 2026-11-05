@@ -33,9 +33,18 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+-- DESCRIPTION:
+--
+-- This package is about a circular drill that is made usually by
+-- means of a drilling machine. So a drill in this world has a
+-- circular shape. In contrast, a hole can have an arbitrary shape,
+-- and it is usually made with a milling machine.
+--
 --   history of changes:
 --
---   to do:
+-- to do:
+-- 1. rename the package to et_drill
+--
 
 with et_board_geometry;			use et_board_geometry;
 with et_object_status;			use et_object_status;
@@ -44,45 +53,52 @@ with et_object_status;			use et_object_status;
 package et_drills is
 	use pac_geometry_2;
 
+	use pac_basic_objects;
 	use pac_basic_objects_arc;
 	use pac_basic_objects_circle;
 
 	-- We fit the diameter in a reasonable range via a subtype:
 	drill_size_min : constant type_distance_positive := 0.05;
 	drill_size_max : constant type_distance_positive := 10.0;
-	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
+
+
+	subtype type_drill_size is type_distance_positive
+		range drill_size_min .. drill_size_max;
 
 
 	-- Checks whether given drill size is in range of type_drill_size
-	procedure validate_drill_size (drill : in type_distance_model);
+	procedure validate_drill_size (
+		drill : in type_distance_model);
 
-	-- DRILLS
-	type type_drill is tagged record
-		position	: type_vector_model;
-		diameter	: type_drill_size := drill_size_min;
-		status		: type_object_status;
+
+
+	type type_drill is new type_abstract_object with record
+		diameter : type_drill_size := drill_size_min;
 	end record;
 
 
-	-- returns the properties of the given drill as string:
-	function to_string (drill : in type_drill) return string;
 
-
-
-
-	function get_position (
+	-- Returns the properties of the given drill as string:
+	function to_string (
 		drill : in type_drill)
-		return type_vector_model;
+		return string;
 
 
-	procedure set_position (
-		drill		: in out type_drill;
-		position	: in type_vector_model);
 
 
-	procedure move_by (
-		drill		: in out type_drill;
-		offset		: in type_vector_model);
+	-- function get_position (
+	-- 	drill : in type_drill)
+	-- 	return type_vector_model;
+
+
+	-- procedure set_position (
+	-- 	drill		: in out type_drill;
+	-- 	position	: in type_vector_model);
+
+
+	-- procedure move_by (
+	-- 	drill		: in out type_drill;
+	-- 	offset		: in type_vector_model);
 
 
 	-- Returns true if the given drill (center)
@@ -101,48 +117,48 @@ package et_drills is
 		return boolean;
 
 
-	function is_selected (
-		drill : in type_drill)
-		return boolean;
+	-- function is_selected (
+	-- 	drill : in type_drill)
+	-- 	return boolean;
+ -- 
+	-- procedure set_selected (
+	-- 	drill : in out type_drill);
+ -- 
+	-- procedure clear_selected (
+	-- 	drill : in out type_drill);
+ -- 
+ -- 
+	-- function is_proposed (
+	-- 	drill : in type_drill)
+	-- 	return boolean;
+ -- 
+	-- procedure set_proposed (
+	-- 	drill : in out type_drill);
+ -- 
+	-- procedure clear_proposed (
+	-- 	drill : in out type_drill);
+ -- 
+ -- 
+	-- function is_moving (
+	-- 	drill : in type_drill)
+	-- 	return boolean;
+ -- 
+	-- procedure set_moving (
+	-- 	drill : in out type_drill);
+ -- 
+	-- procedure clear_moving (
+	-- 	drill : in out type_drill);
+ -- 
+ -- 
+	-- procedure modify_status (
+	-- 	drill		: in out type_drill;
+	-- 	operation	: in type_status_operation);
 
-	procedure set_selected (
-		drill : in out type_drill);
-
-	procedure clear_selected (
-		drill : in out type_drill);
 
 
-	function is_proposed (
-		drill : in type_drill)
-		return boolean;
-
-	procedure set_proposed (
-		drill : in out type_drill);
-
-	procedure clear_proposed (
-		drill : in out type_drill);
-
-
-	function is_moving (
-		drill : in type_drill)
-		return boolean;
-
-	procedure set_moving (
-		drill : in out type_drill);
-
-	procedure clear_moving (
-		drill : in out type_drill);
-
-
-	procedure modify_status (
-		drill		: in out type_drill;
-		operation	: in type_status_operation);
-
-
-
-	procedure reset_status (
-		drill : in out type_drill);
-
+	-- procedure reset_status (
+	-- 	drill : in out type_drill);
+ -- 
 
 
 

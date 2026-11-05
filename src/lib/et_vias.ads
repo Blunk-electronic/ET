@@ -33,6 +33,10 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+-- DESCRIPTION:
+--
+--
 --   history of changes:
 --
 --   to do:
