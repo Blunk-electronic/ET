@@ -54,7 +54,7 @@ package et_basic_objects.arc is
 	use pac_geometry;
 
 
-	type type_arc is new type_object with record
+	type type_arc is new type_abstract_object with record
 		A, B		: type_vector_model; -- start and end point
 		direction	: type_direction_of_rotation := CW;
 		-- CS status_AB	: type_AB_status;
