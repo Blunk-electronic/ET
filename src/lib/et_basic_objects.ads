@@ -59,7 +59,7 @@ package et_basic_objects is
 	use pac_geometry.pac_geometry_1;
 
 
-	type type_object is abstract tagged record
+	type type_abstract_object is abstract tagged record
 		place 	: type_vector_model;
 		status	: type_object_status;
 	end record;
@@ -69,47 +69,47 @@ package et_basic_objects is
 -- PLACE:
 
 	function get_place (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_vector_model;
 
 
 
 	function get_x (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_distance;
 
 	procedure set_x (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		value	: in type_distance);
 
 
 	function get_y (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_distance;
 
 	procedure set_y (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		value	: in type_distance);
 
 
 
 	procedure move_to (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		place	: in type_vector_model);
 
 	procedure set_place (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		place	: in type_vector_model)
 		renames move_to;
 
 
 	procedure move_by (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		offset	: in type_vector_model);
 
 
 	procedure reset_position (
-		object	: in out type_object);
+		object	: in out type_abstract_object);
 
 
 	-- This function returns the object position
@@ -118,7 +118,7 @@ package et_basic_objects is
 	-- FORMAT_2 : x 4.5 y 5.6
 	-- FORMAT_3 : 4.5 5.6
 	function get_position (
-		object	: in type_object;
+		object	: in type_abstract_object;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
@@ -126,7 +126,7 @@ package et_basic_objects is
 	-- Reads a line like "position x 44.5 y 53.5"
 	-- and assigns the position to the object:
 	procedure set_position (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		line	: in type_fields_of_line;
 		from	: in type_field_count_positive);
 
@@ -135,7 +135,7 @@ package et_basic_objects is
 
 	-- Mirrors the place along the given axis.
 	procedure mirror_along_axis (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		axis	: in type_mirror);
 
 
@@ -145,7 +145,7 @@ package et_basic_objects is
 	-- Rotates the place about the origin
 	-- by the given angle:
 	procedure rotate_about_origin (
-		object		: in out type_object;
+		object		: in out type_abstract_object;
 		rotation	: in type_rotation);
 
 
@@ -154,65 +154,65 @@ package et_basic_objects is
 -- STATUS FLAGS:
 
 	function is_selected (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean;
 
 	procedure set_selected (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 	procedure clear_selected (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 
 
 
 	function is_proposed (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean;
 
 	procedure set_proposed (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 	procedure clear_proposed (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 
 
 
 	function is_moving (
-		object : in type_object)
+		object : in type_abstract_object)
 		return boolean;
 
 	procedure set_moving (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 	procedure clear_moving (
-		object : in out type_object);
+		object : in out type_abstract_object);
 
 
 
 
 
 	function get_status (
-		object	: in type_object)
+		object	: in type_abstract_object)
 		return type_object_status;
 
 	procedure set_status (
-		object	: in out type_object;
+		object	: in out type_abstract_object;
 		status	: in type_object_status);
 
 	procedure modify_status (
-		object		: in out type_object;
+		object		: in out type_abstract_object;
 		operation	: in type_status_operation);
 
 	procedure reset_status (
-		object		: in out type_object);
+		object		: in out type_abstract_object);
 
 
 
 
 
-	type type_object_with_rotation is new type_object with record
+	type type_object_with_rotation is new type_abstract_object with record
 		rotation	: type_rotation;
 	end record;
 
