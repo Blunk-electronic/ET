@@ -46,6 +46,8 @@ with et_route;
 with et_module_names;
 with et_board_ops_vias;
 with et_cmd_origin_to_commit;
+with et_vias;						use et_vias;
+
 
 package body et_module_clipboard.vias is
 

@@ -72,7 +72,7 @@ with et_kicad_general;				use et_kicad_general;
 with et_text_content;				use et_text_content;
 with et_board_text;					use et_board_text;
 
-with et_vias;						use et_vias;
+with et_via;						use et_via;
 with et_drills;						use et_drills;
 
 with et_device_name;					use et_device_name;

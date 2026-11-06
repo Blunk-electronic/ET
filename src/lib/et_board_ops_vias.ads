@@ -46,6 +46,7 @@ use et_board_geometry.pac_geometry_2;
 
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_generic_modules;				use et_generic_modules;
+with et_via;							use et_via;
 with et_vias;							use et_vias;
 with et_net_names;						use et_net_names;
 with et_nets;							use et_nets;

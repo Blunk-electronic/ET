@@ -95,6 +95,7 @@ with et_via_restrict;
 with et_via_restrict.boards;
 
 with et_fill_zones.boards;
+with et_via;
 with et_vias;
 
 
@@ -1770,6 +1771,7 @@ is
 					end query_arc;
 
 					-------------------------------
+					use et_via;
 					use et_vias;
 					use pac_vias;
 

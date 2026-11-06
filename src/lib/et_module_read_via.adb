@@ -49,6 +49,7 @@ with et_keywords;					use et_keywords;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
+with et_via;						use et_via;
 with et_vias;
 with et_drills;						use et_drills;
 
@@ -65,11 +66,11 @@ package body et_module_read_via is
 
 	via_place			: type_vector_model;
 	via_diameter		: type_drill_size;
-	via_category		: et_vias.type_via_category;
+	via_category		: type_via_category;
 	via_restring_inner	: type_restring_width; -- CS default DRC
 	via_restring_outer	: type_restring_width; -- CS default DRC
-	via_layers_buried	: et_vias.type_buried_layers;
-	via_layer_blind		: et_vias.type_via_layer;
+	via_layers_buried	: type_buried_layers;
+	via_layer_blind		: type_via_layer;
 
 
 

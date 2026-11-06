@@ -65,7 +65,7 @@ with et_import;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
-
+with et_vias;						use et_vias;
 with et_device_appearance;
 with et_device_prefix;
 with et_board_holes;				use et_board_holes;
@@ -4914,7 +4914,8 @@ package body et_kicad.pcb is
 
 
 
-				-- Collects segments and vias by the given net_id and returns them as a type_route.
+				-- Collects segments and vias by the given net_id
+				-- and returns them as a type_route.
 				function route (
 					net_id : in type_net_id)
 					return type_net_route
@@ -4926,7 +4927,7 @@ package body et_kicad.pcb is
 
 					use pac_vias; -- kicad vias !
 					via_cursor : pac_vias.cursor := board.vias.first;
-					via : et_vias.type_via := (category => THROUGH, others => <>); -- an ET via
+					via : et_via.type_via := (category => THROUGH, others => <>); -- an ET via
 					restring : type_restring_width;
 
 					use pac_polygons;

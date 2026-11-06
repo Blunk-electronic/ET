@@ -42,6 +42,11 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+
+with et_via;						use et_via;
+
+
+
 package body et_route is
 
 
@@ -107,7 +112,7 @@ package body et_route is
 			use pac_vias;
 			via : type_via renames element (v);
 		begin
-			-- CS use function via_to_polyon
+			-- CS use function et_via.to_polygon ?
 			case via.category is
 				when THROUGH =>
 					if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then

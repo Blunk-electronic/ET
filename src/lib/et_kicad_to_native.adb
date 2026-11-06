@@ -64,6 +64,7 @@ with et_module_write;
 with et_string_processing;			use et_string_processing;
 with et_project;
 with et_generic_modules;
+with et_via;
 with et_vias;
 with et_package_name;
 with et_package_library;
@@ -755,13 +756,15 @@ package body et_kicad_to_native is
 
 
 
+				-- Move y position of copper objects of the net:
+				-- lines, arcs, vias, polygons
 				procedure move_route is
-				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
 					use et_track_segment.lines;
 					use et_track_segment.arcs;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
 
+					use et_via;
 					use et_vias;
 					use pac_vias;
 

@@ -43,7 +43,7 @@ with et_board_geometry;				use et_board_geometry;
 with et_module;
 with et_generic_modules;			use et_generic_modules;
 with et_nets;						use et_nets;
-with et_vias;						use et_vias;
+with et_via;						use et_via;
 with et_logging;					use et_logging;
 
 

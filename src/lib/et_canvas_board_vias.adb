@@ -88,6 +88,7 @@ with et_commit;
 with et_module_board_user_settings;
 with et_board_ops_user_settings;	use et_board_ops_user_settings;
 
+with et_vias;						use et_vias;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_coordinates_abs_rel;		use et_coordinates_abs_rel;

@@ -42,6 +42,7 @@
 --with ada.text_io;					use ada.text_io;
 
 with et_primitive_objects;			use et_primitive_objects;
+with et_via;						use et_via;
 with et_vias;						use et_vias;
 with et_nets;						use et_nets;
 

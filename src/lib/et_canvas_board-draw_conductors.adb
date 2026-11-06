@@ -50,6 +50,7 @@ with et_track_segment.circles;		use et_track_segment.circles;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_conductor_text.boards;		use et_conductor_text.boards;
+with et_via;						use et_via;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,7 +45,7 @@ with et_canvas_messages;				use et_canvas_messages;
 with et_board_geometry;					use et_board_geometry;
 
 with et_drills;							use et_drills;
-with et_vias;							use et_vias;
+with et_via;							use et_via;
 with et_design_rules_board;				use et_design_rules_board;
 
 

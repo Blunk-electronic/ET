@@ -58,6 +58,7 @@ with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_net_names;
 with et_drills;
 with et_design_rules_board;
+with et_via;							use et_via;
 with et_vias;
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 

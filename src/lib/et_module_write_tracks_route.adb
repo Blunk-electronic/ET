@@ -58,6 +58,7 @@ with et_track_segment.lines;
 with et_track_segment.arcs;
 with et_track_segment.circles;
 
+with et_via;
 with et_vias;
 with et_thermal_relief;
 with et_fill_zones;
@@ -299,6 +300,7 @@ package body et_module_write_tracks_route is
 
 
 		procedure write_vias is
+			use et_via;
 			use et_vias;
 			use pac_vias;
 
