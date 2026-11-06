@@ -852,12 +852,12 @@ package body et_canvas_board_vias is
 
 		via : type_via (category => preliminary_via.category);
 	begin
-		via.position := preliminary_via.drill.position;
-		via.diameter := preliminary_via.drill.diameter;
+		set_place (via, get_place (preliminary_via.drill));
+		set_diameter (via, preliminary_via.drill.diameter);
 
 		via.restring_inner := preliminary_via.restring_inner;
 
-		move_to (via.position, point);
+		move_to (via, point);
 
 		case preliminary_via.category is
 			when THROUGH =>
@@ -906,7 +906,7 @@ package body et_canvas_board_vias is
 	begin
 		set_status (praeamble
 			& "net " & et_nets.get_net_name (selected.net_cursor)
-			& " " & to_string (selected.via_cursor) & ". "
+			& " " & get_position (selected.via_cursor) & ". "
 			& status_next_object_clarification);
 	end show_selected_object;
 

@@ -1158,14 +1158,15 @@ procedure draw_conductors is
 
 
 		procedure build_via_through is
-			via : constant type_via := (
+			via : type_via := (
 				category		=> THROUGH,
 				diameter		=> preliminary_via.drill.diameter,
-				position		=> position,
 				restring_inner	=> preliminary_via.restring_inner,
 				restring_outer	=> preliminary_via.restring_outer,
 				others			=> <>);
 		begin
+			set_place (via, position);
+
 			draw_via (
 				via			=> via,
 				net_name	=> net_name);
@@ -1174,15 +1175,16 @@ procedure draw_conductors is
 
 
 		procedure build_via_drilled_from_top is
-			via : constant type_via := (
+			via : type_via := (
 				category		=> BLIND_DRILLED_FROM_TOP,
 				diameter		=> preliminary_via.drill.diameter,
-				position		=> position,
 				restring_inner	=> preliminary_via.restring_inner,
 				restring_top	=> preliminary_via.restring_outer,
 				lower			=> preliminary_via.destination_blind,
 				others			=> <>);
 		begin
+			set_place (via, position);
+
 			draw_via (
 				via			=> via,
 				net_name	=> net_name);
@@ -1191,15 +1193,16 @@ procedure draw_conductors is
 
 
 		procedure build_via_drilled_from_bottom is
-			via : constant type_via := (
+			via : type_via := (
 				category		=> BLIND_DRILLED_FROM_BOTTOM,
 				diameter		=> preliminary_via.drill.diameter,
-				position		=> position,
 				restring_inner	=> preliminary_via.restring_inner,
 				restring_bottom	=> preliminary_via.restring_outer,
 				upper			=> preliminary_via.destination_blind,
 				others			=> <>);
 		begin
+			set_place (via, position);
+
 			draw_via (
 				via			=> via,
 				net_name	=> net_name);
@@ -1208,14 +1211,15 @@ procedure draw_conductors is
 
 
 		procedure build_via_buried is
-			via : constant type_via := (
+			via : type_via := (
 				category		=> BURIED,
 				diameter		=> preliminary_via.drill.diameter,
-				position		=> position,
 				layers			=> preliminary_via.layers_buried,
 				restring_inner	=> preliminary_via.restring_inner,
 				others			=> <>);
 		begin
+			set_place (via, position);
+
 			draw_via (
 				via			=> via,
 				net_name	=> net_name);

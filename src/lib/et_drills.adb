@@ -62,42 +62,8 @@ package body et_drills is
 	function to_string (
 		drill : in type_drill)
 		return string
-	is (("C:" & to_string (drill.position)
+	is (("C:" & get_position (drill)
 		& " / D:" & to_string (drill.diameter)));
-
-
-
-
-
-	-- function get_position (
-	-- 	drill : in type_drill)
-	-- 	return type_vector_model
-	-- is (drill.position);
-
-
-
-	-- procedure set_position (
-	-- 	drill		: in out type_drill;
-	-- 	position	: in type_vector_model)
-	-- is begin
-	-- 	drill.position := position;
-	-- end set_position;
-
-
-	-- procedure move_by (
-	-- 	drill		: in out type_drill;
-	-- 	offset		: in type_vector_model)
-	-- is begin
-	-- 	move_by (drill.position, offset);
-	-- end move_by;
-
-
-
-	function in_area (
-		drill	: in type_drill;
-		area	: in type_area)
-		return boolean
-	is (in_area (drill.position, area));
 
 
 
@@ -109,92 +75,12 @@ package body et_drills is
 		c : type_circle;
 	begin
 		-- Build a circle from the given drll:
-		set_place (c, drill.position);
+		set_place (c, get_place (drill));
 		set_radius (c, drill.diameter * 0.5);
 
 		-- Test whether the circle is in the catch zone:
 		return in_catch_zone (zone, c);
 	end in_catch_zone;
-
-
-
-	-- function is_selected (
-	-- 	drill : in type_drill)
-	-- 	return boolean
-	-- is (is_selected (drill.status));
- -- 
- -- 
-	-- procedure set_selected (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	set_selected (drill.status);
-	-- end set_selected;
- -- 
- -- 
-	-- procedure clear_selected (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	clear_selected (drill.status);
-	-- end clear_selected;
- -- 
- -- 
-	-- function is_proposed (
-	-- 	drill : in type_drill)
-	-- 	return boolean
-	-- is (is_proposed (drill.status));
- -- 
- -- 
- -- 
-	-- procedure set_proposed (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	set_proposed (drill.status);
-	-- end set_proposed;
- -- 
- -- 
-	-- procedure clear_proposed (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	clear_proposed (drill.status);
-	-- end clear_proposed;
- -- 
- -- 
-	-- function is_moving (
-	-- 	drill : in type_drill)
-	-- 	return boolean
-	-- is (is_moving (drill.status));
- -- 
- -- 
-	-- procedure set_moving (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	set_moving (drill.status);
-	-- end set_moving;
- -- 
- -- 
-	-- procedure clear_moving (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	clear_moving (drill.status);
-	-- end clear_moving;
- -- 
- -- 
- -- 
-	-- procedure modify_status (
-	-- 	drill		: in out type_drill;
-	-- 	operation	: in type_status_operation)
-	-- is begin
-	-- 	modify_status (drill.status, operation);
-	-- end modify_status;
- -- 
- -- 
- -- 
- -- 
-	-- procedure reset_status (
-	-- 	drill : in out type_drill)
-	-- is begin
-	-- 	reset_status (drill.status);
-	-- end reset_status;
 
 
 end et_drills;

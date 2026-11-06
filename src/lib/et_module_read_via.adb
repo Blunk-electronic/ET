@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -63,7 +63,8 @@ package body et_module_read_via is
 	use pac_geometry_2;
 
 
-	drill				: type_drill;
+	via_place			: type_vector_model;
+	via_diameter		: type_drill_size;
 	via_category		: et_vias.type_via_category;
 	via_restring_inner	: type_restring_width; -- CS default DRC
 	via_restring_outer	: type_restring_width; -- CS default DRC
@@ -85,7 +86,7 @@ package body et_module_read_via is
 			expect_field_count (line, 5);
 
 			-- extract the position starting at field 2 of line
-			drill.position := to_vector_model (line, 2);
+			via_place := to_vector_model (line, 2);
 
 		elsif kw = keyword_via_category then -- category through/buried/...
 			expect_field_count (line, 2);
@@ -93,7 +94,7 @@ package body et_module_read_via is
 
 		elsif kw = keyword_diameter then -- diameter 0.35
 			expect_field_count (line, 2);
-			drill.diameter := to_distance (f (line, 2));
+			via_diameter := to_distance (f (line, 2));
 			-- CS validate against dru settings
 
 		elsif kw = keyword_restring_outer then -- restring_outer 0.3
@@ -139,43 +140,56 @@ package body et_module_read_via is
 		-- insert via in route.vias
 		case via_category is
 			when THROUGH =>
-				append (route.vias, ((drill with
+				append (route.vias, (
 					category		=> THROUGH,
+					place			=> via_place,
+					diameter		=> via_diameter,
 					restring_inner	=> via_restring_inner,
-					restring_outer	=> via_restring_outer)));
+					restring_outer	=> via_restring_outer,
+					others			=> <>));
 
 			when BLIND_DRILLED_FROM_TOP =>
 				-- CS validate via_layer_blind. must be higher than
 				-- deepest used layer.
 
-				append (route.vias, ((drill with
+				append (route.vias, (
 					category		=> BLIND_DRILLED_FROM_TOP,
+					place			=> via_place,
+					diameter		=> via_diameter,
 					restring_inner	=> via_restring_inner,
 					restring_top	=> via_restring_outer,
-					lower			=> via_layer_blind)));
+					lower			=> via_layer_blind,
+					others			=> <>));
 
 			when BLIND_DRILLED_FROM_BOTTOM =>
 				-- CS validate via_layer_blind. must be lower than
 				-- top layer and higher than deepest used layer.
 
-				append (route.vias, ((drill with
+				append (route.vias, (
 					category		=> BLIND_DRILLED_FROM_BOTTOM,
+					place			=> via_place,
+					diameter		=> via_diameter,
 					restring_inner	=> via_restring_inner,
 					restring_bottom	=> via_restring_outer,
-					upper			=> via_layer_blind)));
+					upper			=> via_layer_blind,
+					others			=> <>));
 
 			when BURIED =>
 				-- CS validate via_layers_buried. must be higher than
 				-- deepst used layer.
 
-				append (route.vias, ((drill with
+				append (route.vias, (
 					category		=> BURIED,
+					place			=> via_place,
+					diameter		=> via_diameter,
 					restring_inner	=> via_restring_inner,
-					layers			=> via_layers_buried)));
+					layers			=> via_layers_buried,
+					others			=> <>));
 
 		end case;
 
-		drill := (others => <>); -- clean up for next via
+		via_place := origin;
+		via_diameter := type_drill_size'first;
 		via_category := via_category_default;
 		via_layers_buried := (others => <>);
 		via_layer_blind := type_via_layer'first;

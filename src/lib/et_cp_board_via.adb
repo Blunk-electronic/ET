@@ -272,7 +272,8 @@ package body et_cp_board_via is
 
 
 		procedure set_position is begin
-			drill.position := to_vector_model (get_field (cmd, 6), get_field (cmd, 7));
+			set_place (drill, to_vector_model (
+				get_field (cmd, 6), get_field (cmd, 7)));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -288,10 +289,14 @@ package body et_cp_board_via is
 		procedure through is
 			via : type_via (THROUGH);
 		begin
-			via := (drill with
+			via := (
 				category		=> THROUGH,
 				restring_inner	=> restring_inner,
-				restring_outer	=> restring_outer);
+				restring_outer	=> restring_outer,
+				others			=> <>);
+
+			set_place (via, get_place (drill));
+			set_diameter (via, drill.diameter);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -308,11 +313,15 @@ package body et_cp_board_via is
 		procedure blind_top is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
-			via := (drill with
+			via := (
 				category		=> BLIND_DRILLED_FROM_TOP,
 				restring_inner	=> restring_inner,
 				restring_top	=> restring_top,
-				lower			=> lower_layer);
+				lower			=> lower_layer,
+				others			=> <>);
+
+			set_place (via, get_place (drill));
+			set_diameter (via, drill.diameter);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -329,11 +338,15 @@ package body et_cp_board_via is
 		procedure blind_bottom is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
-			via := (drill with
+			via := (
 				category		=> BLIND_DRILLED_FROM_BOTTOM,
 				restring_inner	=> restring_inner,
 				restring_bottom	=> restring_bottom,
-				upper			=> upper_layer);
+				upper			=> upper_layer,
+				others			=> <>);
+
+			set_place (via, get_place (drill));
+			set_diameter (via, drill.diameter);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -350,10 +363,14 @@ package body et_cp_board_via is
 		procedure buried is
 			via : type_via (BURIED);
 		begin
-			via := (drill with
+			via := (
 				category		=> BURIED,
 				restring_inner	=> restring_inner,
-				layers			=> buried_layers);
+				layers			=> buried_layers,
+				others			=> <>);
+
+			set_place (via, get_place (drill));
+			set_diameter (via, drill.diameter);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,

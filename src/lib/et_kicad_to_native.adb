@@ -817,15 +817,20 @@ package body et_kicad_to_native is
 
 					procedure move_via (via : in out type_via) is
 						use et_board_geometry.pac_geometry_2;
+						p : type_vector_model;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
 
-						log (text => before & to_string (via.position), level => log_threshold + 4);
+						log (text => before & get_position (via),
+							level => log_threshold + 4);
 
-						move (via.position);
+						p := get_place (via);
+						move (p);
+						set_place (via, p);
 
-						log (text => now & to_string (via.position), level => log_threshold + 4);
+						log (text => now & get_position (via),
+							level => log_threshold + 4);
 
 						log_indentation_down;
 					end move_via;

@@ -161,6 +161,8 @@ package et_basic_objects.circle is
 		circle	: in type_circle;
 		width	: in type_distance_positive := 0.0)
 		return boolean;
+	-- CS: probably no longer useful. See body to
+	-- figure out what it does.
 
 
 

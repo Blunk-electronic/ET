@@ -2791,9 +2791,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set (axis => AXIS_X, point => via.position, value => to_distance (to_string (arg)));
+									set_x (via, to_distance (to_string (arg)));
 								when 2 =>
-									set (axis => AXIS_Y, point => via.position, value => to_distance (to_string (arg)));
+									set_y (via, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4978,34 +4978,42 @@ package body et_kicad.pcb is
 							-- It is the (total via diameter - drill diameter) divided by 2:
 							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2.0;
 
-							-- copy position, drill diameter (by a conversion to the base type)
-							via := (type_drill (element (via_cursor)) with
+							-- copy position, drill diameter:
 
-									-- Currently all vias in the kicad design are theated as THROUGH vias.
-									category => THROUGH,
+							set_place (via, get_place (element (via_cursor)));
 
-									-- To distinguish between categories BLIND, BLIND_DRILLED_FROM_TOP
-									-- and BLIND_DRILLED_FROM_BOTTOM the total number of layers must be known.
-									-- CS to be done.
+							-- via := (type_drill (element (via_cursor)) with
+							via := (
+								-- Currently all vias in the kicad design are treated as THROUGH vias.
+								category => THROUGH,
 
-									-- Translate the kicad layer id to the ET signal layer:
-									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-									-- The bottom layer in kicad is always number 31. Top layer is number 0.
-									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									--layers => (
-										--l_start	=> type_signal_layer (element (via_cursor).layer_start + 1),
-										--l_end	=> type_signal_layer (element (via_cursor).layer_end + 1)
-									--),
+								diameter => element (via_cursor).diameter_total, -- CS correct ?
 
-									-- Since kicad does not distinguish between restring in outer or inner layers
-									-- both are assigned the same value here:
-									restring_outer => restring,
-									restring_inner => restring
+								-- To distinguish between categories BLIND, BLIND_DRILLED_FROM_TOP
+								-- and BLIND_DRILLED_FROM_BOTTOM the total number of layers must be known.
+								-- CS to be done.
 
-									-- CS Translate the locked and differential status
-									-- CS locked => et_pcb.NO -- translate from segment status to locked status
-									-- CS differential -- translate from segment status to differential status
-									);
+								-- Translate the kicad layer id to the ET signal layer:
+								-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+								-- The bottom layer in kicad is always number 31. Top layer is number 0.
+								-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+								--layers => (
+									--l_start	=> type_signal_layer (element (via_cursor).layer_start + 1),
+									--l_end	=> type_signal_layer (element (via_cursor).layer_end + 1)
+								--),
+
+								-- CS: read layer_start and layer_end ?
+
+								-- Since kicad does not distinguish between restring in outer or inner layers
+								-- both are assigned the same value here:
+								restring_outer => restring,
+								restring_inner => restring,
+
+								-- CS Translate the locked and differential status
+								-- CS locked => et_pcb.NO -- translate from segment status to locked status
+								-- CS differential -- translate from segment status to differential status
+								others => <>
+								);
 
 							route.vias.append (via); -- append the via to the vias of the route
 							-- CS et_pcb.route_via_properties (route.vias.last, log_threshold + 3);

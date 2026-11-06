@@ -57,10 +57,13 @@ package et_vias is
 	use pac_polygons;
 	use pac_geometry_2;
 
+	use pac_basic_objects;
 	use pac_basic_objects_circle;
 
 	type type_micro_vias_allowed is (NO, YES);
+
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
+
 	function to_string (allowed : in type_micro_vias_allowed) return string;
 
 
@@ -117,8 +120,15 @@ package et_vias is
 	function to_via_category (category : in string) return type_via_category;
 
 
+	-- NOTE: The via type is derived from type_object_with_rotation
+	-- because a square or octagonal shaped via can have a rotation.
+	-- CS: The shape is currently assumed as circular.
 
-	type type_via (category : type_via_category) is new type_drill with record
+	type type_via ( -- CS make private
+		category : type_via_category)
+	is new type_object_with_rotation with record
+
+		diameter : type_drill_size := drill_size_min;
 
 		-- Whatever the via category, there is always a restring
 		-- in inner layers (mostly wider than restring_outer).
@@ -157,8 +167,20 @@ package et_vias is
 
 
 	-- returns the properties of the given via as string:
-	function to_string (via : in type_via) return string;
+	function to_string (
+		via : in type_via)
+	return string;
 
+
+
+	function get_diameter (
+		via		: in type_via)
+		return type_drill_size;
+
+
+	procedure set_diameter (
+		via			: in out type_via;
+		diameter	: in type_drill_size);
 
 
 
@@ -228,12 +250,12 @@ package et_vias is
 
 
 	-- Returns the position of a via as a string:
-	function to_string (
+	function get_position (
 		via : in pac_vias.cursor)
 		return string;
 
 
-	function get_position (
+	function get_place (
 		via : in pac_vias.cursor)
 		return type_vector_model;
 

@@ -67,6 +67,19 @@ package body et_vias is
 
 
 
+	function get_diameter (
+		via		: in type_via)
+		return type_drill_size
+	is (via.diameter);
+
+
+	procedure set_diameter (
+		via			: in out type_via;
+		diameter	: in type_drill_size)
+	is begin
+		via.diameter := diameter;
+	end set_diameter;
+
 
 
 	function get_bounding_box (
@@ -91,7 +104,7 @@ package body et_vias is
 				restring := via.restring_inner;
 		end case;
 
-		set_place (circle, via.position);
+		set_place (circle, get_place (via));
 		set_radius (circle, 0.5 * via.diameter + restring);
 
 		b := get_bounding_box (circle => circle, width => 0.0);
@@ -210,17 +223,17 @@ package body et_vias is
 
 
 
-	function to_string (
-		via : in pac_vias.cursor)
-		return string
-	is (to_string (element (via).position));
-
-
-
 	function get_position (
 		via : in pac_vias.cursor)
-		return type_vector_model
+		return string
 	is (get_position (element (via)));
+
+
+
+	function get_place (
+		via : in pac_vias.cursor)
+		return type_vector_model
+	is (get_place (element (via)));
 
 
 
@@ -262,7 +275,10 @@ package body et_vias is
 
 
 
-	function to_string (via : in type_via) return string is
+
+	function to_string (
+		via : in type_via)
+	return string is
 
 		function get_misc return string is begin
 			case via.category is
@@ -283,11 +299,12 @@ package body et_vias is
 		end get_misc;
 
 	begin
-		return "via: " & to_string (type_drill (via))
+		return "via: " & get_position (via) -- CS: sufficient ?
 			& " / CAT: " & to_string (via.category)
 			& " / restr. inner: " & to_string (via.restring_inner)
 			& get_misc;
 	end to_string;
+
 
 
 

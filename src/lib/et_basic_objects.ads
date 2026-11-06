@@ -121,6 +121,13 @@ package et_basic_objects is
 		object	: in type_abstract_object;
 		format	: in type_output_format := FORMAT_1)
 		return string;
+	-- NOTE: This subprogram is intentionally given the
+	-- name "get_position". It is about full position data.
+	-- Objects derived from type_abstract_object may have more
+	-- position information like sheet, top/bottom side,
+	-- rotation, etc. For this reason a name like "get_place"
+	-- would not be adequate. So do not rename the function.
+	-- Leave the name as it is !
 
 
 	-- Reads a line like "position x 44.5 y 53.5"
@@ -129,6 +136,32 @@ package et_basic_objects is
 		object	: in out type_abstract_object;
 		line	: in type_fields_of_line;
 		from	: in type_field_count_positive);
+	-- NOTE: Regarding the name of this subprogram, please
+	-- see the function get_position above.
+
+
+
+-- AREA:
+
+	-- This function returns true if the
+	-- object is in the given area:
+	function in_area (
+		object	: in type_abstract_object;
+		area	: in type_area)
+		return boolean;
+
+
+-- CATCH ZONE:
+
+	-- Returns true if the object is
+	-- in the given catch zone:
+	function in_catch_zone (
+		object	: in type_abstract_object;
+		zone	: in type_catch_zone)
+		return boolean;
+
+
+
 
 
 -- MIRROR:
@@ -147,6 +180,8 @@ package et_basic_objects is
 	procedure rotate_about_origin (
 		object		: in out type_abstract_object;
 		rotation	: in type_rotation);
+
+
 
 
 

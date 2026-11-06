@@ -54,7 +54,6 @@ package et_drills is
 	use pac_geometry_2;
 
 	use pac_basic_objects;
-	use pac_basic_objects_arc;
 	use pac_basic_objects_circle;
 
 	-- We fit the diameter in a reasonable range via a subtype:
@@ -75,6 +74,7 @@ package et_drills is
 	type type_drill is new type_abstract_object with record
 		diameter : type_drill_size := drill_size_min;
 	end record;
+	-- CS: should be private
 
 
 
@@ -86,81 +86,12 @@ package et_drills is
 
 
 
-	-- function get_position (
-	-- 	drill : in type_drill)
-	-- 	return type_vector_model;
-
-
-	-- procedure set_position (
-	-- 	drill		: in out type_drill;
-	-- 	position	: in type_vector_model);
-
-
-	-- procedure move_by (
-	-- 	drill		: in out type_drill;
-	-- 	offset		: in type_vector_model);
-
-
-	-- Returns true if the given drill (center)
-	-- is in the given area:
-	function in_area (
-		drill	: in type_drill;
-		area	: in type_area)
-		return boolean;
-
-
-
 	-- Returns true if the drill is inside the given zone:
 	function in_catch_zone (
 		zone	: in type_catch_zone;
 		drill	: in type_drill)
 		return boolean;
-
-
-	-- function is_selected (
-	-- 	drill : in type_drill)
-	-- 	return boolean;
- -- 
-	-- procedure set_selected (
-	-- 	drill : in out type_drill);
- -- 
-	-- procedure clear_selected (
-	-- 	drill : in out type_drill);
- -- 
- -- 
-	-- function is_proposed (
-	-- 	drill : in type_drill)
-	-- 	return boolean;
- -- 
-	-- procedure set_proposed (
-	-- 	drill : in out type_drill);
- -- 
-	-- procedure clear_proposed (
-	-- 	drill : in out type_drill);
- -- 
- -- 
-	-- function is_moving (
-	-- 	drill : in type_drill)
-	-- 	return boolean;
- -- 
-	-- procedure set_moving (
-	-- 	drill : in out type_drill);
- -- 
-	-- procedure clear_moving (
-	-- 	drill : in out type_drill);
- -- 
- -- 
-	-- procedure modify_status (
-	-- 	drill		: in out type_drill;
-	-- 	operation	: in type_status_operation);
-
-
-
-	-- procedure reset_status (
-	-- 	drill : in out type_drill);
- -- 
-
-
+	-- CS: probably no longer required ?
 
 
 	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;

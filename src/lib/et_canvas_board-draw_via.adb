@@ -433,13 +433,11 @@ is
 
 begin
 	-- Copy the status of the given via:
-	set_status (circle, via.status);
-	-- CS: This is a makeshift. Once type_via is derived
-	-- from type_circle this is no longer necessary.
+	set_status (circle, get_status (via));
 
 	-- Set the radius and the center of the circle:
-	radius_base := via.diameter / 2.0;
-	set_place (circle, via.position);
+	radius_base := get_diameter (via) / 2.0;
+	set_place (circle, get_place (via));
 
 	set_brightness;
 

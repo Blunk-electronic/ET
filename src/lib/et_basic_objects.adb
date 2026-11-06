@@ -151,6 +151,33 @@ package body et_basic_objects is
 
 
 
+	function in_area (
+		object	: in type_abstract_object;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		return (in_area (get_place (object), area));
+	end in_area;
+
+
+
+	function in_catch_zone (
+		object	: in type_abstract_object;
+		zone	: in type_catch_zone)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		result := in_catch_zone (
+			point	=> get_place (object),
+			zone	=> zone);
+
+		return result;
+	end in_catch_zone;
+
+
 
 	procedure mirror_along_axis (
 		object	: in out type_abstract_object;

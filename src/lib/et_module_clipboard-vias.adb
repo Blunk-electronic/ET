@@ -142,7 +142,7 @@ package body et_module_clipboard.vias is
 
 	begin
 		log (text => "copy via " & to_string (net_name)
-			& " position " & to_string (get_position (via)),
+			& " position " & get_position (via),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -194,7 +194,7 @@ package body et_module_clipboard.vias is
 					via : in type_via)
 				is begin
 					if is_selected (via) then
-						log (text => "position " & to_string (get_position (via)),
+						log (text => "position " & get_position (via),
 							 level => log_threshold + 2);
 
 						log_indentation_up;

@@ -71,7 +71,7 @@ package body et_board_ops_vias is
 
 		use pac_vias;
 		procedure query_via (v : in pac_vias.cursor) is begin
-			append (result, element (v).position);
+			append (result, get_place (element (v)));
 		end query_via;
 
 	begin
@@ -150,7 +150,7 @@ package body et_board_ops_vias is
 
 				procedure query_via (via : in out type_via) is
 				begin
-					if in_catch_zone (catch_zone, via) then
+					if in_catch_zone (via, catch_zone) then
 						set_proposed (via);
 						count := count + 1;
 						log (text => to_string (via), level => log_threshold + 2);
@@ -398,7 +398,7 @@ package body et_board_ops_vias is
 					position : type_vector_model;
 				begin
 					if is_selected (via) then
-						position := get_position (via);
+						position := get_place (via);
 
 						log (text => to_string (position),
 							level => log_threshold + 2);
@@ -495,7 +495,7 @@ package body et_board_ops_vias is
 					if is_selected (via) then
 						object_via := (via_cursor, net_cursor);
 
-						log (text => to_string (get_position (via)),
+						log (text => get_position (via),
 							level => log_threshold + 2);
 
 						-- Abort all iterators:
@@ -599,7 +599,7 @@ package body et_board_ops_vias is
 				is begin
 					if is_selected (via) then
 
-						log (text => to_string (get_position (via)),
+						log (text => get_position (via),
 							level => log_threshold + 2);
 
 						move_by (via, offset);
@@ -682,7 +682,7 @@ package body et_board_ops_vias is
 				is begin
 					if is_selected (via) then
 
-						log (text => to_string (get_position (via)),
+						log (text => get_position (via),
 							level => log_threshold + 2);
 
 						if invert then
@@ -781,7 +781,7 @@ package body et_board_ops_vias is
 				is begin
 					if is_selected (via) then
 
-						log (text => to_string (get_position (via)),
+						log (text => get_position (via),
 							level => log_threshold + 2);
 
 						-- We have a selected via.
@@ -946,7 +946,9 @@ package body et_board_ops_vias is
 									result.net_cursor := net_cursor;
 									result.via_cursor := v;
 									proceed := false;  -- no further probing required
-									log (text => to_string (v), level => log_threshold + 2);
+
+									log (text => get_position (v),
+										level => log_threshold + 2);
 								end if;
 
 							when SELECTED =>
@@ -954,7 +956,9 @@ package body et_board_ops_vias is
 									result.net_cursor := net_cursor;
 									result.via_cursor := v;
 									proceed := false;  -- no further probing required
-									log (text => to_string (v), level => log_threshold + 2);
+
+									log (text => get_position (v),
+										level => log_threshold + 2);
 								end if;
 
 							when others =>
@@ -1035,13 +1039,17 @@ package body et_board_ops_vias is
 							when PROPOSED =>
 								if is_proposed (v) then
 									result.append ((v, net_cursor));
-									log (text => to_string (v), level => log_threshold + 2);
+
+									log (text => get_position (v),
+										level => log_threshold + 2);
 								end if;
 
 							when SELECTED =>
 								if is_selected (v) then
 									result.append ((v, net_cursor));
-									log (text => to_string (v), level => log_threshold + 2);
+
+									log (text => get_position (v),
+										level => log_threshold + 2);
 								end if;
 
 							when others =>
@@ -1138,7 +1146,7 @@ package body et_board_ops_vias is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of via "
-			& to_string (object.via_cursor)
+			& get_position (object.via_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1234,7 +1242,7 @@ package body et_board_ops_vias is
 		log (text => "module "
 			& to_string (module_cursor)
 			& " place via in net " & to_string (net_name)
-			& " at" & to_string (via.position)
+			& " at" & get_position (via)
 			& " drill size " & to_string (via.diameter)
 			& " cat " & to_string (via.category),
 			console => console,
@@ -1425,7 +1433,7 @@ package body et_board_ops_vias is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " net " & to_string (net_name)
-			& " copy via " & to_string (get_position (via_original)),
+			& " copy via " & get_position (via_original),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1480,7 +1488,7 @@ package body et_board_ops_vias is
 				pragma unreferenced (net_name);
 
 				procedure query_via (v : in out type_via) is begin
-					set_position (v, new_position);
+					set_place (v, new_position);
 				end query_via;
 
 			begin
@@ -1499,14 +1507,14 @@ package body et_board_ops_vias is
 				new_position := destination;
 
 			when RELATIVE =>
-				new_position := get_position (object.via_cursor);
+				new_position := get_place (object.via_cursor);
 				move_by (new_position, destination);
 		end case;
 
 
 		log (text => "module " & to_string (module_cursor)
 			& " net " & get_net_name (object.net_cursor)
-			& " moving via from" & to_string (get_position (object.via_cursor))
+			& " moving via from" & get_position (object.via_cursor)
 			& " to" & to_string (new_position),
 			level => log_threshold);
 
@@ -1553,7 +1561,7 @@ package body et_board_ops_vias is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " net " & get_net_name (object.net_cursor)
-			& " deleting via at" & to_string (get_position (object.via_cursor)),
+			& " deleting via at" & get_position (object.via_cursor),
 			level => log_threshold);
 
 		update_element (
