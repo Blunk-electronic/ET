@@ -856,24 +856,24 @@ package body et_canvas_board_vias is
 		set_place (via, get_place (preliminary_via.drill));
 		set_diameter (via, preliminary_via.drill.diameter);
 
-		via.restring_inner := preliminary_via.restring_inner;
+		set_restring_inner (via, preliminary_via.restring_inner);
 
 		move_to (via, point);
 
 		case preliminary_via.category is
 			when THROUGH =>
-				via.restring_outer := preliminary_via.restring_outer;
+				set_restring_outer (via, preliminary_via.restring_outer);
 
 			when BURIED =>
-				via.layers := preliminary_via.layers_buried;
+				set_buried_layers (via, preliminary_via.layers_buried);
 
 			when BLIND_DRILLED_FROM_TOP =>
-				via.restring_top := preliminary_via.restring_outer;
-				via.lower := preliminary_via.destination_blind;
+				set_restring_top (via, preliminary_via.restring_outer);
+				set_bottom_layer (via, preliminary_via.destination_blind);
 
 			when BLIND_DRILLED_FROM_BOTTOM =>
-				via.restring_bottom := preliminary_via.restring_outer;
-				via.upper := preliminary_via.destination_blind;
+				set_restring_bottom (via, preliminary_via.restring_outer);
+				set_top_layer (via, preliminary_via.destination_blind);
 
 		end case;
 

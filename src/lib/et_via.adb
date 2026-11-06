@@ -67,6 +67,9 @@ package body et_via is
 
 
 
+
+-- DIAMETER:
+
 	function get_diameter (
 		via		: in type_via)
 		return type_drill_size
@@ -79,6 +82,8 @@ package body et_via is
 	is begin
 		via.diameter := diameter;
 	end set_diameter;
+
+
 
 
 
@@ -117,6 +122,153 @@ package body et_via is
 		via : in type_via)
 		return type_via_category
 	is (via.category);
+
+
+
+-- RESTRING:
+
+	function get_restring_inner (
+		via		: in type_via)
+		return type_restring_width
+	is (via.restring_inner);
+
+
+	procedure set_restring_inner (
+		via		: in out type_via;
+		width 	: in type_restring_width)
+	is begin
+		via.restring_inner := width;
+	end set_restring_inner;
+
+
+
+	function get_restring_outer (
+		via		: in type_via)
+		return type_restring_width
+	is (via.restring_outer);
+
+
+	procedure set_restring_outer (
+		via		: in out type_via;
+		width 	: in type_restring_width)
+	is begin
+		via.restring_outer := width;
+	end set_restring_outer;
+
+
+
+
+	function get_restring_top (
+		via		: in type_via)
+		return type_restring_width
+	is (via.restring_top);
+
+
+	procedure set_restring_top (
+		via		: in out type_via;
+		width 	: in type_restring_width)
+	is begin
+		via.restring_top := width;
+	end set_restring_top;
+
+
+
+
+	function get_restring_bottom (
+		via		: in type_via)
+		return type_restring_width
+	is (via.restring_bottom);
+
+
+	procedure set_restring_bottom (
+		via		: in out type_via;
+		width 	: in type_restring_width)
+	is begin
+		via.restring_bottom := width;
+	end set_restring_bottom;
+
+
+
+
+
+-- SIGNAL LAYER:
+
+
+	function get_bottom_layer (
+		via		: in type_via)
+		return type_via_layer
+	is (via.lower);
+
+
+	procedure set_bottom_layer (
+		via		: in out type_via;
+		bottom	: in type_via_layer)
+	is begin
+		via.lower := bottom;
+	end set_bottom_layer;
+
+
+	function get_top_layer (
+		via		: in type_via)
+		return type_via_layer
+	is (via.upper);
+
+
+	procedure set_top_layer (
+		via		: in out type_via;
+		top		: in type_via_layer)
+	is begin
+		via.upper := top;
+	end set_top_layer;
+
+
+
+
+	function get_buried_layers (
+		via		: in type_via)
+		return type_buried_layers
+	is (via.layers);
+
+
+	procedure set_buried_layers (
+		via		: in out type_via;
+		layers	: in type_buried_layers)
+	is begin
+		via.layers := layers;
+	end set_buried_layers;
+
+
+	function get_buried_top_layer (
+		via		: in type_via)
+		return type_via_layer
+	is (via.layers.upper);
+
+
+	procedure set_buried_top_layer (
+		via		: in out type_via;
+		layer	: in type_via_layer)
+	is begin
+		via.layers.upper := layer;
+	end set_buried_top_layer;
+
+
+	function get_buried_bottom_layer (
+		via		: in type_via)
+		return type_via_layer
+	is (via.layers.lower);
+
+
+	procedure set_buried_bottom_layer (
+		via		: in out type_via;
+		layer	: in type_via_layer)
+	is begin
+		via.layers.lower := layer;
+	end set_buried_bottom_layer;
+
+
+
+
+
 
 
 

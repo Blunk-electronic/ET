@@ -1159,14 +1159,12 @@ procedure draw_conductors is
 
 
 		procedure build_via_through is
-			via : type_via := (
-				category		=> THROUGH,
-				diameter		=> preliminary_via.drill.diameter,
-				restring_inner	=> preliminary_via.restring_inner,
-				restring_outer	=> preliminary_via.restring_outer,
-				others			=> <>);
+			via : type_via (THROUGH);
 		begin
 			set_place (via, position);
+			set_diameter (via, preliminary_via.drill.diameter);
+			set_restring_inner (via, preliminary_via.restring_inner);
+			set_restring_outer (via, preliminary_via.restring_outer);
 
 			draw_via (
 				via			=> via,
@@ -1176,15 +1174,13 @@ procedure draw_conductors is
 
 
 		procedure build_via_drilled_from_top is
-			via : type_via := (
-				category		=> BLIND_DRILLED_FROM_TOP,
-				diameter		=> preliminary_via.drill.diameter,
-				restring_inner	=> preliminary_via.restring_inner,
-				restring_top	=> preliminary_via.restring_outer,
-				lower			=> preliminary_via.destination_blind,
-				others			=> <>);
+			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
 			set_place (via, position);
+			set_diameter (via, preliminary_via.drill.diameter);
+			set_restring_inner (via, preliminary_via.restring_inner);
+			set_restring_top (via, preliminary_via.restring_outer);
+			set_bottom_layer (via, preliminary_via.destination_blind);
 
 			draw_via (
 				via			=> via,
@@ -1194,15 +1190,13 @@ procedure draw_conductors is
 
 
 		procedure build_via_drilled_from_bottom is
-			via : type_via := (
-				category		=> BLIND_DRILLED_FROM_BOTTOM,
-				diameter		=> preliminary_via.drill.diameter,
-				restring_inner	=> preliminary_via.restring_inner,
-				restring_bottom	=> preliminary_via.restring_outer,
-				upper			=> preliminary_via.destination_blind,
-				others			=> <>);
+			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
 			set_place (via, position);
+			set_diameter (via, preliminary_via.drill.diameter);
+			set_restring_inner (via, preliminary_via.restring_inner);
+			set_restring_bottom (via, preliminary_via.restring_outer);
+			set_top_layer (via, preliminary_via.destination_blind);
 
 			draw_via (
 				via			=> via,
@@ -1212,14 +1206,12 @@ procedure draw_conductors is
 
 
 		procedure build_via_buried is
-			via : type_via := (
-				category		=> BURIED,
-				diameter		=> preliminary_via.drill.diameter,
-				layers			=> preliminary_via.layers_buried,
-				restring_inner	=> preliminary_via.restring_inner,
-				others			=> <>);
+			via : type_via (BURIED);
 		begin
 			set_place (via, position);
+			set_diameter (via, preliminary_via.drill.diameter);
+			set_buried_layers (via, preliminary_via.layers_buried);
+			set_restring_inner (via, preliminary_via.restring_inner);
 
 			draw_via (
 				via			=> via,

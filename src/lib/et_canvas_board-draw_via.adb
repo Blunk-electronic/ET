@@ -149,7 +149,7 @@ is
 
 			draw_text (
 				content		=> to_content (to_string (net_name)),
-				size		=> via.diameter * ratio_diameter_to_text_size,
+				size		=> get_diameter (via) * ratio_diameter_to_text_size,
 				font		=> via_text_font,
 				anchor		=> position,
 				origin		=> false,
@@ -181,7 +181,7 @@ is
 
 		draw_text (
 			content		=> to_content (from & "-" & to),
-			size		=> via.diameter * ratio_diameter_to_text_size,
+			size		=> get_diameter (via) * ratio_diameter_to_text_size,
 			font		=> via_text_font,
 			anchor		=> position,
 			origin		=> false,
@@ -212,8 +212,8 @@ is
 			set_color_via_drill_size; -- CS
 
 			draw_text (
-				content		=> to_content (to_string (via.diameter)),
-				size		=> via.diameter * ratio_diameter_to_text_size,
+				content		=> to_content (to_string (get_diameter (via))),
+				size		=> get_diameter (via) * ratio_diameter_to_text_size,
 				font		=> via_text_font,
 				anchor		=> position,
 				origin		=> false,
@@ -236,7 +236,7 @@ is
 			if not numbers_drawn then
 				draw_numbers (
 					from	=> "T",
-					to		=> to_string (via.lower));
+					to		=> to_string (get_bottom_layer (via)));
 
 				numbers_drawn := true;
 			end if;
@@ -248,7 +248,7 @@ is
 			if not numbers_drawn then
 				draw_numbers (
 					from	=> "B",
-					to		=> to_string (via.upper));
+					to		=> to_string (get_top_layer (via)));
 
 				numbers_drawn := true;
 			end if;
@@ -258,12 +258,12 @@ is
 		procedure through_hole_via is begin
 			if is_inner_layer (current_layer) then
 				-- current_layer is an inner layer
-				set_width_and_radius (via.restring_inner);
+				set_width_and_radius (get_restring_inner (via));
 
 				inner_restring_drawn := true;
 			else
 				-- current_layer is an outer layer
-				set_width_and_radius (via.restring_outer);
+				set_width_and_radius (get_restring_outer (via));
 
 				outer_restring_drawn := true;
 			end if;
@@ -294,9 +294,9 @@ is
 
 
 		procedure buried_via is begin
-			if via.layers.upper = current_layer
-			or via.layers.lower = current_layer then
-				set_width_and_radius (via.restring_inner);
+			if get_buried_top_layer (via) = current_layer
+			or get_buried_bottom_layer (via) = current_layer then
+				set_width_and_radius (get_restring_inner (via));
 
 				draw_restring;
 
@@ -307,8 +307,8 @@ is
 
 				-- Draw the layer numbers only once (cancel flag already set)
 				draw_numbers (
-					from	=> to_string (via.layers.upper),
-					to		=> to_string (via.layers.lower));
+					from	=> to_string (get_buried_top_layer (via)),
+					to		=> to_string (get_buried_bottom_layer (via)));
 
 				draw_net_name;
 				draw_drill_size;
@@ -318,7 +318,7 @@ is
 
 		procedure blind_via_from_top is begin
 			if current_layer = top_layer then
-				set_width_and_radius (via.restring_top);
+				set_width_and_radius (get_restring_top (via));
 				outer_restring_drawn := true;
 				draw_restring;
 				draw_numbers_blind_top;
@@ -326,8 +326,8 @@ is
 				draw_drill_size;
 			end if;
 
-			if current_layer = via.lower then
-				set_width_and_radius (via.restring_inner);
+			if current_layer = get_bottom_layer (via) then
+				set_width_and_radius (get_restring_inner (via));
 				inner_restring_drawn := true;
 				draw_restring;
 				draw_numbers_blind_top;
@@ -346,7 +346,7 @@ is
 
 		procedure blind_via_from_bottom is begin
 			if current_layer = bottom_layer then
-				set_width_and_radius (via.restring_bottom);
+				set_width_and_radius (get_restring_bottom (via));
 				outer_restring_drawn := true;
 				draw_restring;
 				draw_numbers_blind_bottom;
@@ -354,8 +354,8 @@ is
 				draw_drill_size;
 			end if;
 
-			if current_layer = via.upper then
-				set_width_and_radius (via.restring_inner);
+			if current_layer = get_top_layer (via) then
+				set_width_and_radius (get_restring_inner (via));
 				inner_restring_drawn := true;
 				draw_restring;
 				draw_numbers_blind_bottom;

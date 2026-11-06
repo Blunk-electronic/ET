@@ -290,14 +290,10 @@ package body et_cp_board_via is
 		procedure through is
 			via : type_via (THROUGH);
 		begin
-			via := (
-				category		=> THROUGH,
-				restring_inner	=> restring_inner,
-				restring_outer	=> restring_outer,
-				others			=> <>);
-
 			set_place (via, get_place (drill));
 			set_diameter (via, drill.diameter);
+			set_restring_inner (via, restring_inner);
+			set_restring_outer (via, restring_outer);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -314,15 +310,11 @@ package body et_cp_board_via is
 		procedure blind_top is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
-			via := (
-				category		=> BLIND_DRILLED_FROM_TOP,
-				restring_inner	=> restring_inner,
-				restring_top	=> restring_top,
-				lower			=> lower_layer,
-				others			=> <>);
-
 			set_place (via, get_place (drill));
 			set_diameter (via, drill.diameter);
+			set_restring_inner (via, restring_inner);
+			set_restring_top (via, restring_top);
+			set_bottom_layer (via, lower_layer);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -339,15 +331,14 @@ package body et_cp_board_via is
 		procedure blind_bottom is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
-			via := (
-				category		=> BLIND_DRILLED_FROM_BOTTOM,
-				restring_inner	=> restring_inner,
-				restring_bottom	=> restring_bottom,
-				upper			=> upper_layer,
-				others			=> <>);
+			set_place (via, get_place (drill));
+			set_diameter (via, drill.diameter);
 
 			set_place (via, get_place (drill));
 			set_diameter (via, drill.diameter);
+			set_restring_inner (via, restring_inner);
+			set_restring_bottom (via, restring_bottom);
+			set_top_layer (via, upper_layer);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,
@@ -364,14 +355,10 @@ package body et_cp_board_via is
 		procedure buried is
 			via : type_via (BURIED);
 		begin
-			via := (
-				category		=> BURIED,
-				restring_inner	=> restring_inner,
-				layers			=> buried_layers,
-				others			=> <>);
-
 			set_place (via, get_place (drill));
 			set_diameter (via, drill.diameter);
+			set_restring_inner (via, restring_inner);
+			set_buried_layers (via, buried_layers);
 
 			et_board_ops_vias.place_via (
 				module_cursor	=> module,

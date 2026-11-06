@@ -117,38 +117,38 @@ package body et_route is
 				when THROUGH =>
 					if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
 						result.append (to_polygon (get_place (via),
-							via.restring_outer, via.diameter, fill_tolerance));
+							get_restring_outer (via), get_diameter (via), fill_tolerance));
 
 					else
 						result.append (to_polygon (get_place (via),
-							via.restring_inner, via.diameter, fill_tolerance));
+							get_restring_inner (via), get_diameter (via), fill_tolerance));
 					end if;
 
 				when BLIND_DRILLED_FROM_TOP =>
 					if layer_category = OUTER_TOP then
 						result.append (to_polygon (get_place (via),
-							via.restring_top, via.diameter, fill_tolerance));
+							get_restring_top (via), get_diameter (via), fill_tolerance));
 
 					elsif blind_via_uses_layer (via, layer, bottom_layer) then
 						result.append (to_polygon (get_place (via),
-							via.restring_inner, via.diameter, fill_tolerance));
+							get_restring_inner (via), get_diameter (via), fill_tolerance));
 					end if;
 
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					if layer_category = OUTER_BOTTOM then
 						result.append (to_polygon (get_place (via),
-							via.restring_bottom, via.diameter, fill_tolerance));
+							get_restring_bottom (via), get_diameter (via), fill_tolerance));
 
 					elsif blind_via_uses_layer (via, layer, bottom_layer) then
 						result.append (to_polygon (get_place (via),
-							via.restring_inner, via.diameter, fill_tolerance));
+							get_restring_inner (via), get_diameter (via), fill_tolerance));
 					end if;
 
 				when BURIED =>
 					if layer_category = INNER and then
 					buried_via_uses_layer (via, layer) then
 						result.append (to_polygon (get_place (via),
-							via.restring_inner, via.diameter, fill_tolerance));
+							get_restring_inner (via), get_diameter (via), fill_tolerance));
 					end if;
 			end case;
 		end query_via;

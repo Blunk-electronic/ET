@@ -137,58 +137,80 @@ package body et_module_read_via is
 		use et_module_read_nets;
 		use et_vias;
 		use pac_vias;
+
+
+		procedure build_through is
+			via : type_via (THROUGH);
+		begin
+			set_place (via, via_place);
+			set_diameter (via, via_diameter);
+			set_restring_inner (via, via_restring_inner);
+			set_restring_outer (via, via_restring_outer);
+
+			route.vias.append (via);
+		end build_through;
+
+
+		procedure build_blind_from_top is
+			via : type_via (BLIND_DRILLED_FROM_TOP);
+		begin
+			set_place (via, via_place);
+			set_diameter (via, via_diameter);
+			set_restring_inner (via, via_restring_inner);
+			set_restring_top (via, via_restring_outer);
+			set_bottom_layer (via, via_layer_blind);
+
+			-- CS validate via_layer_blind. must be higher than
+			-- deepest used layer.
+
+			route.vias.append (via);
+		end build_blind_from_top;
+
+
+		procedure build_blind_from_bottom is
+			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
+		begin
+			set_place (via, via_place);
+			set_diameter (via, via_diameter);
+			set_restring_inner (via, via_restring_inner);
+			set_restring_bottom (via, via_restring_outer);
+			set_top_layer (via, via_layer_blind);
+
+			-- CS validate via_layer_blind. must be lower than
+			-- top layer and higher than deepest used layer.
+
+			route.vias.append (via);
+		end build_blind_from_bottom;
+
+
+		procedure build_buried is
+			via : type_via (BURIED);
+		begin
+			set_place (via, via_place);
+			set_diameter (via, via_diameter);
+			set_restring_inner (via, via_restring_inner);
+			set_buried_layers (via, via_layers_buried);
+
+			-- CS validate via_layers_buried. must be higher than
+			-- deepst used layer.
+
+			route.vias.append (via);
+		end build_buried;
+
+
 	begin
 		-- insert via in route.vias
 		case via_category is
-			when THROUGH =>
-				append (route.vias, (
-					category		=> THROUGH,
-					place			=> via_place,
-					diameter		=> via_diameter,
-					restring_inner	=> via_restring_inner,
-					restring_outer	=> via_restring_outer,
-					others			=> <>));
+			when THROUGH => build_through;
 
-			when BLIND_DRILLED_FROM_TOP =>
-				-- CS validate via_layer_blind. must be higher than
-				-- deepest used layer.
+			when BLIND_DRILLED_FROM_TOP => build_blind_from_top;
 
-				append (route.vias, (
-					category		=> BLIND_DRILLED_FROM_TOP,
-					place			=> via_place,
-					diameter		=> via_diameter,
-					restring_inner	=> via_restring_inner,
-					restring_top	=> via_restring_outer,
-					lower			=> via_layer_blind,
-					others			=> <>));
+			when BLIND_DRILLED_FROM_BOTTOM => build_blind_from_bottom;
 
-			when BLIND_DRILLED_FROM_BOTTOM =>
-				-- CS validate via_layer_blind. must be lower than
-				-- top layer and higher than deepest used layer.
-
-				append (route.vias, (
-					category		=> BLIND_DRILLED_FROM_BOTTOM,
-					place			=> via_place,
-					diameter		=> via_diameter,
-					restring_inner	=> via_restring_inner,
-					restring_bottom	=> via_restring_outer,
-					upper			=> via_layer_blind,
-					others			=> <>));
-
-			when BURIED =>
-				-- CS validate via_layers_buried. must be higher than
-				-- deepst used layer.
-
-				append (route.vias, (
-					category		=> BURIED,
-					place			=> via_place,
-					diameter		=> via_diameter,
-					restring_inner	=> via_restring_inner,
-					layers			=> via_layers_buried,
-					others			=> <>));
-
+			when BURIED => build_buried;
 		end case;
 
+		-- clean up:
 		via_place := origin;
 		via_diameter := type_drill_size'first;
 		via_category := via_category_default;

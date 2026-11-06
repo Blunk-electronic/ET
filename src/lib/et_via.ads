@@ -80,9 +80,12 @@ package et_via is
 	type type_buried_layers is record
 		-- The topmost signal layer of the via:
 		upper	: type_via_layer := type_via_layer'first;
+		-- CS rename to top
 
 		-- The deepest signal layer of the via:
 		lower	: type_via_layer := type_via_layer'first;
+		-- CS rename to bottom
+
 		-- NOTE: It is reasonable to use as default the
 		-- same as for the upper layer. The last value in
 		-- range type_via_layer would always produce a lower
@@ -103,6 +106,7 @@ package et_via is
 	function to_string (layers : in type_buried_layers) return string;
 
 
+	-- CS: move category related stuff to separate package
 	type type_via_category is (
 		THROUGH,
 		BURIED,
@@ -123,46 +127,9 @@ package et_via is
 	-- because a square or octagonal shaped via can have a rotation.
 	-- CS: The shape is currently assumed as circular.
 
-	type type_via ( -- CS make private
+	type type_via (
 		category : type_via_category)
-	is new type_object_with_rotation with record
-
-		diameter : type_drill_size := drill_size_min;
-
-		-- Whatever the via category, there is always a restring
-		-- in inner layers (mostly wider than restring_outer).
-		-- Exception: One or two layer boards do not have innner restring.
-		restring_inner	: type_restring_width;
-
-		case category is
-			when THROUGH =>
-				-- Restring in outer layers (top/bottom)
-				restring_outer	: type_restring_width;
-
-				-- CS: stop mask open top/bottom
-
-			when BLIND_DRILLED_FROM_TOP =>
-				restring_top	: type_restring_width;
-
-				-- the deepest layer of the via:
-				lower			: type_via_layer; -- CS rename to deepest
-
-				-- CS: stop mask open
-
-			when BLIND_DRILLED_FROM_BOTTOM =>
-				restring_bottom	: type_restring_width;
-
-				-- the topmost layer of the via:
-				upper			: type_via_layer; -- CS rename to highest
-
-				-- CS: stop mask open
-
-			when BURIED =>
-				layers : type_buried_layers;
-
-		end case;
-	end record;
-
+	is new type_object_with_rotation with private;
 
 
 	-- returns the properties of the given via as string:
@@ -172,14 +139,20 @@ package et_via is
 
 
 
+-- DIAMETER:
+
 	function get_diameter (
 		via		: in type_via)
 		return type_drill_size;
+
+	-- CS: function that returns a string
 
 
 	procedure set_diameter (
 		via			: in out type_via;
 		diameter	: in type_drill_size);
+
+
 
 
 
@@ -189,9 +162,165 @@ package et_via is
 		return type_area;
 
 
+
+
+-- CATEGORY:
+
 	function get_category (
 		via : in type_via)
 		return type_via_category;
+
+	-- CS: function that returns a string
+
+
+
+
+-- RESTRING:
+
+	-- This function works with every via category:
+	function get_restring_inner (
+		via		: in type_via)
+		return type_restring_width;
+
+	-- CS: function that returns a string
+
+	-- This procedure works with every via category:
+	procedure set_restring_inner (
+		via		: in out type_via;
+		width 	: in type_restring_width);
+
+
+
+	-- This function works with a THROUGH via only.
+	-- Otherwise an exception is raised:
+	function get_restring_outer (
+		via		: in type_via)
+		return type_restring_width;
+
+	-- CS: function that returns a string
+
+	-- This procedure works with a THROUGH via only.
+	-- Otherwise an exception is raised:
+	procedure set_restring_outer (
+		via		: in out type_via;
+		width 	: in type_restring_width);
+
+
+
+	-- This function works with a BLIND_DRILLED_FROM_TOP via only.
+	-- Otherwise an exception is raised:
+	function get_restring_top (
+		via		: in type_via)
+		return type_restring_width;
+
+	-- CS: function that returns a string
+
+	-- This procedure works with a BLIND_DRILLED_FROM_TOP via only.
+	-- Otherwise an exception is raised:
+	procedure set_restring_top (
+		via		: in out type_via;
+		width 	: in type_restring_width);
+
+
+
+	-- This function works with a BLIND_DRILLED_FROM_BOTTOM via only.
+	-- Otherwise an exception is raised:
+	function get_restring_bottom (
+		via		: in type_via)
+		return type_restring_width;
+
+	-- CS: function that returns a string
+
+	-- This procedure works with a BLIND_DRILLED_FROM_BOTTOM via only.
+	-- Otherwise an exception is raised:
+	procedure set_restring_bottom (
+		via		: in out type_via;
+		width 	: in type_restring_width);
+
+
+
+
+
+-- SIGNAL LAYER:
+
+
+	-- This function works with a BLIND_DRILLED_FROM_TOP via only.
+	-- Otherwise an exception is raised:
+	function get_bottom_layer (
+		via		: in type_via)
+		return type_via_layer;
+
+	-- CS: function that returns a string
+
+	-- This function works with a BLIND_DRILLED_FROM_TOP via only.
+	-- Otherwise an exception is raised:
+	procedure set_bottom_layer (
+		via		: in out type_via;
+		bottom	: in type_via_layer);
+
+
+	-- This function works with a BLIND_DRILLED_FROM_BOTTOM via only.
+	-- Otherwise an exception is raised:
+	function get_top_layer (
+		via		: in type_via)
+		return type_via_layer;
+
+	-- CS: function that returns a string
+
+	-- This function works with a BLIND_DRILLED_FROM_BOTTOM via only.
+	-- Otherwise an exception is raised:
+	procedure set_top_layer (
+		via		: in out type_via;
+		top		: in type_via_layer);
+
+
+
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	function get_buried_layers (
+		via		: in type_via)
+		return type_buried_layers;
+
+	-- CS: function that returns a string
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	procedure set_buried_layers (
+		via		: in out type_via;
+		layers	: in type_buried_layers);
+
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	function get_buried_top_layer (
+		via		: in type_via)
+		return type_via_layer;
+
+	-- CS: function that returns a string
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	procedure set_buried_top_layer (
+		via		: in out type_via;
+		layer	: in type_via_layer);
+
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	function get_buried_bottom_layer (
+		via		: in type_via)
+		return type_via_layer;
+
+	-- CS: function that returns a string
+
+	-- This function works with a BURIED via only.
+	-- Otherwise an exception is raised:
+	procedure set_buried_bottom_layer (
+		via		: in out type_via;
+		layer	: in type_via_layer);
+
+
 
 
 
@@ -295,6 +424,51 @@ package et_via is
 		diameter	: in type_drill_size;
 		tolerance	: in type_distance_positive)
 		return type_polygon;
+
+
+
+private
+
+	type type_via (
+		category : type_via_category)
+	is new type_object_with_rotation with record
+
+		diameter : type_drill_size := drill_size_min;
+
+		-- Whatever the via category, there is always a restring
+		-- in inner layers (mostly wider than restring_outer).
+		-- Exception: One or two layer boards do not have innner restring.
+		restring_inner	: type_restring_width;
+
+		case category is
+			when THROUGH =>
+				-- Restring in outer layers (top/bottom)
+				restring_outer	: type_restring_width;
+
+				-- CS: stop mask open top/bottom
+
+			when BLIND_DRILLED_FROM_TOP =>
+				restring_top	: type_restring_width;
+
+				-- the deepest layer of the via:
+				lower			: type_via_layer; -- CS rename to bottom_layer
+
+				-- CS: stop mask open
+
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				restring_bottom	: type_restring_width;
+
+				-- the topmost layer of the via:
+				upper			: type_via_layer; -- CS rename to top_layer
+
+				-- CS: stop mask open
+
+			when BURIED =>
+				layers : type_buried_layers; -- CS rename to buried_layers
+
+		end case;
+	end record;
+
 
 
 end et_via;

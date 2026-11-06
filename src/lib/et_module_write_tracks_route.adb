@@ -307,34 +307,36 @@ package body et_module_write_tracks_route is
 
 			procedure query_via (c : in pac_vias.cursor) is
 				via : type_via renames element (c);
+				-- CS: apply functions that return a string directly
+				-- so that calls of to_string are no longer needed.
 			begin
 				section_mark (section_via, HEADER);
 
-				write (keyword => keyword_via_category, parameters => to_string (via.category));
+				write (keyword => keyword_via_category, parameters => to_string (get_category (via)));
 				write (keyword => keyword_position, parameters => get_position (via, FORMAT_2));
-				write (keyword => keyword_diameter, parameters => to_string (via.diameter));
+				write (keyword => keyword_diameter, parameters => to_string (get_diameter (via)));
 				-- CS function get_position (c) return string
 				-- CS also for category and diameter
 
 				case via.category is
 					when THROUGH =>
 						write (keyword => keyword_restring_outer,
-							parameters => to_string (via.restring_outer));
+							parameters => to_string (get_restring_outer (via)));
 
 					when BLIND_DRILLED_FROM_TOP =>
-						write (keyword => keyword_restring_outer, parameters => to_string (via.restring_top));
-						write (keyword => keyword_destination, parameters => to_string (via.lower));
+						write (keyword => keyword_restring_outer, parameters => to_string (get_restring_top (via)));
+						write (keyword => keyword_destination, parameters => to_string (get_bottom_layer (via)));
 
 					when BLIND_DRILLED_FROM_BOTTOM =>
-						write (keyword => keyword_restring_outer, parameters => to_string (via.restring_bottom));
-						write (keyword => keyword_destination, parameters => to_string (via.upper));
+						write (keyword => keyword_restring_outer, parameters => to_string (get_restring_bottom (via)));
+						write (keyword => keyword_destination, parameters => to_string (get_top_layer (via)));
 
 					when BURIED =>
-						write (keyword => keyword_layers, parameters => to_string (via.layers));
+						write (keyword => keyword_layers, parameters => to_string (get_buried_layers (via)));
 				end case;
 
 				write (keyword => keyword_restring_inner,
-					parameters => to_string (via.restring_inner));
+					parameters => to_string (get_restring_inner (via)));
 
 				section_mark (section_via, FOOTER);
 			end query_via;

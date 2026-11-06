@@ -1243,66 +1243,66 @@ package body et_board_ops_vias is
 			& to_string (module_cursor)
 			& " place via in net " & to_string (net_name)
 			& " at" & get_position (via)
-			& " drill size " & to_string (via.diameter)
-			& " cat " & to_string (via.category),
+			& " drill size " & to_string (get_diameter (via))
+			& " cat " & to_string (get_category (via)),
 			console => console,
 			level => log_threshold);
 
 		case via.category is
 			when THROUGH =>
 				log (text => keyword_restring_inner & space
-					 & to_string (via.restring_inner),
+					 & to_string (get_restring_inner (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_outer & space
-					 & to_string (via.restring_outer),
+					 & to_string (get_restring_outer (via)),
 					console => console,
 					level => log_threshold);
 
 
 			when BLIND_DRILLED_FROM_TOP =>
 				log (text => keyword_destination & space
-					 & to_string (via.lower),
+					 & to_string (get_bottom_layer (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_inner & space
-					 & to_string (via.restring_inner),
+					 & to_string (get_restring_inner (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_outer & space
-					 & to_string (via.restring_top),
+					 & to_string (get_restring_top (via)),
 					console => console,
 					level => log_threshold);
 
 
 			when BLIND_DRILLED_FROM_BOTTOM =>
 				log (text => keyword_destination & space
-					 & to_string (via.upper),
+					 & to_string (get_top_layer (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_inner & space
-					 & to_string (via.restring_inner),
+					 & to_string (get_restring_inner (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_outer & space
-					 & to_string (via.restring_bottom),
+					 & to_string (get_restring_bottom (via)),
 					console => console,
 					level => log_threshold);
 
 
 			when BURIED =>
 				log (text => keyword_layers & space
-					 & to_string (via.layers),
+					 & to_string (get_buried_layers (via)),
 					console => console,
 					level => log_threshold);
 
 				log (text => keyword_restring_inner & space
-					 & to_string (via.restring_inner),
+					 & to_string (get_restring_inner (via)),
 					console => console,
 					level => log_threshold);
 
