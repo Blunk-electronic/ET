@@ -183,6 +183,10 @@ package et_basic_objects is
 
 
 
+-- CS: ? function get_bounding_box (
+		-- object : in type_abstract_object)
+		-- return type_area;
+
 
 
 
