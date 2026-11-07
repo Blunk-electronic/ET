@@ -256,7 +256,9 @@ package body et_cp_board_via is
 
 
 		net_name		: type_net_name;
-		drill			: type_drill;
+		-- drill			: type_drill;
+		place			: type_vector_model;
+		diameter		: type_drill_size;
 		restring_outer	: type_restring_width;
 		restring_top	: type_restring_width;
 		restring_bottom	: type_restring_width;
@@ -273,8 +275,8 @@ package body et_cp_board_via is
 
 
 		procedure set_position is begin
-			set_place (drill, to_vector_model (
-				get_field (cmd, 6), get_field (cmd, 7)));
+			place := to_vector_model (
+				get_field (cmd, 6), get_field (cmd, 7));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -290,8 +292,8 @@ package body et_cp_board_via is
 		procedure through is
 			via : type_via (THROUGH);
 		begin
-			set_place (via, get_place (drill));
-			set_diameter (via, drill.diameter);
+			set_place (via, place);
+			set_diameter (via, diameter);
 			set_restring_inner (via, restring_inner);
 			set_restring_outer (via, restring_outer);
 
@@ -310,8 +312,8 @@ package body et_cp_board_via is
 		procedure blind_top is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
-			set_place (via, get_place (drill));
-			set_diameter (via, drill.diameter);
+			set_place (via, place);
+			set_diameter (via, diameter);
 			set_restring_inner (via, restring_inner);
 			set_restring_top (via, restring_top);
 			set_bottom_layer (via, lower_layer);
@@ -331,11 +333,11 @@ package body et_cp_board_via is
 		procedure blind_bottom is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
-			set_place (via, get_place (drill));
-			set_diameter (via, drill.diameter);
+			set_place (via, place);
+			set_diameter (via, diameter);
 
-			set_place (via, get_place (drill));
-			set_diameter (via, drill.diameter);
+			set_place (via, place);
+			set_diameter (via, diameter);
 			set_restring_inner (via, restring_inner);
 			set_restring_bottom (via, restring_bottom);
 			set_top_layer (via, upper_layer);
@@ -355,8 +357,8 @@ package body et_cp_board_via is
 		procedure buried is
 			via : type_via (BURIED);
 		begin
-			set_place (via, get_place (drill));
-			set_diameter (via, drill.diameter);
+			set_place (via, place);
+			set_diameter (via, diameter);
 			set_restring_inner (via, restring_inner);
 			set_buried_layers (via, buried_layers);
 
@@ -390,9 +392,9 @@ package body et_cp_board_via is
 
 		-- set drill size:
 		if settings.vias.drill.active then
-			drill.diameter	:= settings.vias.drill.size;
+			diameter	:= settings.vias.drill.size;
 		else
-			drill.diameter	:= rules.sizes.drills;
+			diameter	:= rules.sizes.drills;
 		end if;
 
 		-- CS: take minimum drill diameter as defined in net class into account
@@ -403,7 +405,7 @@ package body et_cp_board_via is
 		if settings.vias.restring_outer.active then
 			restring_outer	:= settings.vias.restring_outer.width;
 		else
-			restring_outer	:= auto_set_restring (OUTER, drill.diameter);
+			restring_outer	:= auto_set_restring (OUTER, diameter);
 		end if;
 
 		restring_top	:= restring_outer; -- for blind via drilled from top
@@ -414,7 +416,7 @@ package body et_cp_board_via is
 		if settings.vias.restring_inner.active then
 			restring_inner	:= settings.vias.restring_inner.width;
 		else
-			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
+			restring_inner	:= auto_set_restring (INNER, diameter, rules.sizes.restring.delta_size);
 		end if;
 
 
